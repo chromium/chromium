@@ -123,8 +123,8 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   // the stored response is blocked, CorsURLLoader falls back to a URLLoader and
   // the URLLoader performs appropriate Opaque Resource Blocking checks.
   //
-  // TODO(https://crbug.com/1339708): Consider moving CORB/ORB handling from
-  // URLLoader to CorsURLLoader. It will eliminate the need for CORB/ORB checks
+  // TODO(https://crbug.com/1339708): Consider moving ORB handling from
+  // URLLoader to CorsURLLoader. It will eliminate the need for ORB checks
   // here.
   orb::PerFactoryState state;
   auto analyzer = orb::ResponseAnalyzer::Create(state);

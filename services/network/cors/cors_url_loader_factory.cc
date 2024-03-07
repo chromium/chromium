@@ -566,7 +566,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   // overridden for renderer navigations, however.
   std::optional<url::Origin> origin_to_validate = request.request_initiator;
 
-  // Ensure that renderer requests are covered either by CORS or CORB.
+  // Ensure that renderer requests are covered either by CORS or ORB.
   if (process_id_ != mojom::kBrowserProcessId) {
     switch (request.mode) {
       case mojom::RequestMode::kNavigate:
@@ -618,7 +618,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
         break;
 
       case mojom::RequestMode::kNoCors:
-        // SOP enforced by CORB.
+        // SOP enforced by ORB.
         break;
     }
   }

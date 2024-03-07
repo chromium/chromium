@@ -1786,8 +1786,9 @@ void URLLoader::ContinueOnResponseStarted() {
     auto decision =
         orb_analyzer_->Init(url_request_->url(), url_request_->initiator(),
                             request_mode_, request_destination_, *response_);
-    if (MaybeBlockResponseForCorb(decision))
+    if (MaybeBlockResponseForOrb(decision)) {
       return;
+    }
   }
 
   if ((options_ & mojom::kURLLoadOptionSniffMimeType)) {
@@ -2003,7 +2004,7 @@ void URLLoader::DidRead(int num_bytes,
           DCHECK_NE(orb::ResponseAnalyzer::Decision::kSniffMore, orb_decision);
         }
 
-        if (MaybeBlockResponseForCorb(orb_decision)) {
+        if (MaybeBlockResponseForOrb(orb_decision)) {
           return;
         }
       }
@@ -2606,11 +2607,11 @@ void URLLoader::CompleteBlockedResponse(
   memory_cache_writer_.reset();
 }
 
-URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
-  // CORB should only do work after the response headers have been received.
+URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
+  // ORB should only do work after the response headers have been received.
   DCHECK(has_received_response_);
 
-  // Caller should have set up a CorbAnalyzer for BlockResponseForCorb to be
+  // Caller should have set up a OrbAnalyzer for BlockResponseForOrb to be
   // able to do its job.
   DCHECK(orb_analyzer_);
 
@@ -2676,14 +2677,14 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
   return kWillCancelRequest;
 }
 
-bool URLLoader::MaybeBlockResponseForCorb(
+bool URLLoader::MaybeBlockResponseForOrb(
     orb::ResponseAnalyzer::Decision orb_decision) {
   DCHECK(orb_analyzer_);
   DCHECK(is_more_orb_sniffing_needed_);
   bool will_cancel = false;
   switch (orb_decision) {
     case network::orb::ResponseAnalyzer::Decision::kBlock: {
-      will_cancel = BlockResponseForCorb() == kWillCancelRequest;
+      will_cancel = BlockResponseForOrb() == kWillCancelRequest;
       orb_analyzer_.reset();
       is_more_orb_sniffing_needed_ = false;
       break;

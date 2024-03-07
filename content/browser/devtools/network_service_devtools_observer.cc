@@ -257,7 +257,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 
-void NetworkServiceDevToolsObserver::OnCorbError(
+void NetworkServiceDevToolsObserver::OnOrbError(
     const std::optional<std::string>& devtools_request_id,
     const GURL& url) {
   RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);

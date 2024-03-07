@@ -959,8 +959,8 @@ void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
       CloneClientSecurityState(), request_.url, status, is_warning);
 }
 
-void CorsURLLoader::ReportCorbErrorToDevTools() {
-  devtools_observer_->OnCorbError(request_.devtools_request_id, request_.url);
+void CorsURLLoader::ReportOrbErrorToDevTools() {
+  devtools_observer_->OnOrbError(request_.devtools_request_id, request_.url);
 }
 
 std::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
@@ -1154,7 +1154,7 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
   // way of displaying them compared to just dumping them on the console.
   if (devtools_observer_ && (status.should_report_orb_blocking ||
                              status.error_code == net::ERR_BLOCKED_BY_ORB)) {
-    ReportCorbErrorToDevTools();
+    ReportOrbErrorToDevTools();
   }
 
   // If we detect a private network access when we were not expecting one, we

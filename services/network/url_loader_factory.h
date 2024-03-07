@@ -135,7 +135,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   // `orb_per_factory_state_` is slightly bigger (URLLoaderFactory is typically
   // associated with a single HTML document and covers all media documents
   // within) but this approach seems easiest to implement.
-  // TODO(https://crbug.com/1178928): Add UMA tracking the size of CORB state.
   orb::PerFactoryState orb_state_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;

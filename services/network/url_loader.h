@@ -542,20 +542,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       bool should_report_orb_blocking,
       std::optional<mojom::BlockedByResponseReason> reason = std::nullopt);
 
-  enum BlockResponseForCorbResult {
-    // Returned when caller of BlockResponseForCorb doesn't need to continue,
+  enum BlockResponseForOrbResult {
+    // Returned when caller of BlockResponseForOrb doesn't need to continue,
     // because the request will be cancelled soon.
     kWillCancelRequest,
 
-    // Returned when the caller of BlockResponseForCorb should continue
+    // Returned when the caller of BlockResponseForOrb should continue
     // processing the request (e.g. by calling ReadMore as necessary).
     kContinueRequest,
   };
-  // Block the response because of CORB (or ORB).
-  BlockResponseForCorbResult BlockResponseForCorb();
-  // Decide whether to call block a response via BlockResponseForCorb.
+  // Block the response because of ORB.
+  BlockResponseForOrbResult BlockResponseForOrb();
+  // Decide whether to call block a response via BlockResponseForOrb.
   // Returns true if the request should be cancelled.
-  bool MaybeBlockResponseForCorb(orb::ResponseAnalyzer::Decision);
+  bool MaybeBlockResponseForOrb(orb::ResponseAnalyzer::Decision);
 
   void ReportFlaggedResponseCookies(bool call_cookie_observer);
   void StartReading();

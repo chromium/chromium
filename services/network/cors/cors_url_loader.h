@@ -155,8 +155,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   void ReportCorsErrorToDevTools(const CorsErrorStatus& status,
                                  bool is_warning = false);
 
-  // Reports a Corb/ORB error for `request_` to DevTools, if possible.
-  void ReportCorbErrorToDevTools();
+  // Reports an ORB error for `request_` to DevTools, if possible.
+  void ReportOrbErrorToDevTools();
 
   // Handles OnComplete() callback.
   void HandleComplete(URLLoaderCompletionStatus status);

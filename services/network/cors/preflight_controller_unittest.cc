@@ -398,8 +398,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
                    const network::CorsErrorStatus& status,
                    bool is_warning) override {}
 
-  void OnCorbError(const std::optional<std::string>& devtools_request_id,
-                   const GURL& url) override {}
+  void OnOrbError(const std::optional<std::string>& devtools_request_id,
+                  const GURL& url) override {}
 
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override {
     receivers_.Add(this, std::move(observer));

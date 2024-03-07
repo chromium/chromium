@@ -268,11 +268,11 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     deleteThis();
   }
 
-  void BlockResponseForCorb(mojom::URLResponseHeadPtr response_head) {
-    // A minimum implementation to block CORB-protected resources.
+  void BlockResponseForOrb(mojom::URLResponseHeadPtr response_head) {
+    // A minimum implementation to block ORB-protected resources.
     //
     // TODO(crbug.com/1082020): Re-use
-    // network::URLLoader::BlockResponseForCorb(), instead of copying
+    // network::URLLoader::BlockResponseForOrb(), instead of copying
     // essential parts from there, so that the two implementations won't
     // diverge further. That requires non-trivial refactoring.
     orb::SanitizeBlockedResponseHeaders(*response_head);
@@ -288,7 +288,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     client_->OnReceiveResponse(std::move(response_head), std::move(consumer),
                                std::nullopt);
 
-    // CORB responses are reported as a success.
+    // ORB responses are reported as a success.
     CompleteBlockedResponse(net::OK, std::nullopt);
   }
 
@@ -920,7 +920,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
       loader->request_destination(), *response_head);
   switch (decision) {
     case network::orb::ResponseAnalyzer::Decision::kBlock:
-      loader->BlockResponseForCorb(std::move(response_head));
+      loader->BlockResponseForOrb(std::move(response_head));
       return;
     case network::orb::ResponseAnalyzer::Decision::kAllow:
     case network::orb::ResponseAnalyzer::Decision::kSniffMore:

@@ -155,12 +155,12 @@ interface DevToolsObserver {
     CorsErrorStatus status,
     bool is_warning);
 
-  // Called to report a CORB or ORB error. This callback is intended to
-  // deliver a DevTools issue.
+  // Called to report an ORB error. This callback is intended to deliver a
+  // DevTools issue.
   //
   // |devtools_request_id| id of the affected request.
-  // |url| is the URL that was blocked by CORB.
-  OnCorbError(
+  // |url| is the URL that was blocked by ORB.
+  OnOrbError(
     string? devtools_request_id,
     url.mojom.Url url);
 

@@ -12,7 +12,7 @@ Some design goals
     not have hooks here. The only exception is when it's impossible for these
     features to function without some hooks in the network service. In that
     case, we add the minimal code required. Some examples included traffic
-    shaping for devtools, CORB blocking, and CORS.
+    shaping for devtools, ORB blocking, and CORS.
   * every PostTask, thread hop and process hop (IPC) should be counted carefully
     as they introduce delays which could harm this performance critical code.
   * `NetworkContext` and `NetworkService` are trusted interfaces that aren't

@@ -112,7 +112,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
                    bool is_warning) override;
 
   MOCK_METHOD(void,
-              OnCorbError,
+              OnOrbError,
               (const std::optional<std::string>& devtools_request_id,
                const GURL& url),
               (override));

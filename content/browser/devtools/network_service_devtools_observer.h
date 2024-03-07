@@ -78,8 +78,8 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
                    const GURL& url,
                    const network::CorsErrorStatus& status,
                    bool is_warning) override;
-  void OnCorbError(const std::optional<std::string>& devtools_request_id,
-                   const GURL& url) override;
+  void OnOrbError(const std::optional<std::string>& devtools_request_id,
+                  const GURL& url) override;
   void OnSubresourceWebBundleMetadata(const std::string& devtools_request_id,
                                       const std::vector<GURL>& urls) override;
   void OnSubresourceWebBundleMetadataError(

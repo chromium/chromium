@@ -6803,8 +6803,7 @@ TEST_F(URLLoaderTest, OnRawResponseIPAddressSpace) {
             mojom::IPAddressSpace::kLocal);
 }
 
-TEST_F(URLLoaderMockSocketTest,
-       CorbDoesNotCloseSocketsWhenResourcesNotBlocked) {
+TEST_F(URLLoaderMockSocketTest, OrbDoesNotCloseSocketsWhenResourcesNotBlocked) {
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
@@ -6845,7 +6844,7 @@ TEST_F(URLLoaderMockSocketTest,
   EXPECT_TRUE(socket_data_reads_writes.socket());
 }
 
-TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
+TEST_F(URLLoaderMockSocketTest, OrbClosesSocketOnReceivingHeaders) {
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
@@ -6889,7 +6888,7 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
 }
 
 TEST_F(URLLoaderMockSocketTest,
-       CorbDoesNotCloseSocketsWhenResourcesNotBlockedAfterSniffingMimeType) {
+       OrbDoesNotCloseSocketsWhenResourcesNotBlockedAfterSniffingMimeType) {
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
@@ -6931,7 +6930,7 @@ TEST_F(URLLoaderMockSocketTest,
   EXPECT_TRUE(socket_data_reads_writes.socket());
 }
 
-TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnSniffingMimeType) {
+TEST_F(URLLoaderMockSocketTest, OrbClosesSocketOnSniffingMimeType) {
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
