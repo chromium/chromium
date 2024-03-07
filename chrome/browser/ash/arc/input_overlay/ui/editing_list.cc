@@ -58,16 +58,22 @@ namespace {
 constexpr int kMainContainerWidth = 296;
 
 constexpr int kHeaderBottomMargin = 16;
-constexpr int kAddRowBottomMargin = 8;
 constexpr float kAddContainerCornerRadius = 16.0f;
 constexpr float kAddButtonCornerRadius = 10.0f;
 // This is associated to the size of `ash::IconButton::Type::kMedium`.
 constexpr int kIconButtonSize = 32;
 
 // Gap from focus ring outer edge to the edge of the view.
-constexpr float kHaloInset = -4.0f;
+constexpr float kFocusRingHaloInset = -4.0f;
 // Thickness of focus ring.
-constexpr float kHaloThickness = 2.0f;
+constexpr float kFocusRingHaloThickness = 2.0f;
+
+// Space for focus ring of the list item.
+constexpr int kSpaceForFocusRing = 1 - kFocusRingHaloInset;
+
+// Move the space of `kSpaceForFocusRing` to `scroll_content_` so the focus ring
+// will not be cut for the top and bottom list item.
+constexpr int kAddRowBottomMargin = 8 - kSpaceForFocusRing;
 
 constexpr size_t kMaxActionCount = 50;
 
@@ -85,8 +91,8 @@ void UpdateFocusRingOnThemeChanged(views::Button* button) {
   // needs to set the focus ring size after calling
   // `StyleUtil::SetUpInkDropForButton()`.
   auto* focus_ring = views::FocusRing::Get(button);
-  focus_ring->SetHaloInset(kHaloInset);
-  focus_ring->SetHaloThickness(kHaloThickness);
+  focus_ring->SetHaloInset(kFocusRingHaloInset);
+  focus_ring->SetHaloThickness(kFocusRingHaloThickness);
 }
 
 }  // namespace
@@ -246,9 +252,6 @@ void EditingList::Init() {
           /*inside_border_insets=*/gfx::Insets(),
           /*between_child_spacing=*/8))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
-  scroll_content_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(0, kEditingListInsideBorderInsets)));
-
   // Add contents.
   if (HasControls()) {
     AddControlListContent();
@@ -380,7 +383,7 @@ void EditingList::PerformPulseAnimation() {
 void EditingList::UpdateOnZeroState(bool is_zero_state) {
   is_zero_state_ = is_zero_state;
 
-  DCHECK(add_container_);
+  CHECK(add_container_);
   add_container_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, kEditingListInsideBorderInsets,
@@ -388,6 +391,12 @@ void EditingList::UpdateOnZeroState(bool is_zero_state) {
                         kEditingListInsideBorderInsets));
 
   add_container_->UpdateTitle(is_zero_state_);
+
+  // Add extra space on the vertical border to ensure the focus ring is not cut
+  // off for the top and bottom list item.
+  CHECK(scroll_content_);
+  scroll_content_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+      is_zero_state ? 0 : kSpaceForFocusRing, kEditingListInsideBorderInsets)));
 }
 
 void EditingList::OnAddButtonPressed() {
