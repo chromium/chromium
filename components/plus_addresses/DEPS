@@ -3,8 +3,6 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/prefs",
   "+components/signin/public",
-  "+components/strings/grit/components_strings.h",
-  "+components/signin/public",
   "+components/vector_icons",
   "+components/webdata/common",
   "+google_apis",
@@ -13,5 +11,4 @@ include_rules = [
   "+services/data_decoder",
   "+services/network/public",
   "+services/network/test",
-  "+ui/base",
 ]

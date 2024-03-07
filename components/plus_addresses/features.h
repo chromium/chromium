@@ -14,6 +14,18 @@ namespace plus_addresses::features {
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kFeature);
 
+// Used to control the enterprise plus address feature's autofill suggestion
+// label. Defaults to generic Lorem Ipsum as strings are not yet determined.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<std::string>
+    kEnterprisePlusAddressSuggestionLabelOverride;
+
+// Used to control the enterprise plus address feature's label in settings.
+// Defaults to generic Lorem Ipsum as strings are not yet determined.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<std::string>
+    kEnterprisePlusAddressSettingsLabelOverride;
+
 // Used to control the enterprise plus address feature's OAuth scope.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope;

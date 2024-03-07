@@ -34,11 +34,9 @@ source_set("plus_addresses") {
     "//components/plus_addresses/webdata",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/strings:components_strings_grit",
     "//net",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
-    "//ui/base",
   ]
   public_deps = [
     # While not strictly public by h file inclusion, this is a temporary move
