@@ -1117,7 +1117,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
 
-  permission_context()->RevokeActiveGrants(kTestOrigin, kTestPath);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin, kTestPath);
 
   // Permission should be auto-granted here via the persisted permission.
   base::test::TestFuture<PermissionRequestOutcome> future;
@@ -1199,7 +1199,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // Revoke the active grant, but not the persisted permission. The granted
   // object for the given origin is not revoked.
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   ASSERT_THAT(
       permission_context()->GetExtendedPersistedObjectsForTesting(kTestOrigin),
       testing::SizeIs(1));
@@ -1360,7 +1360,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grant.
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   grant1.reset();
   grant2.reset();
 
@@ -1411,7 +1411,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grant.
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   grant1.reset();
   grant2.reset();
 
@@ -1525,7 +1525,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grants.
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grants.
@@ -1573,7 +1573,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grants.
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   // The granted permissions are cleared after navigating away from the page.
   ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
               testing::IsEmpty());
@@ -1760,7 +1760,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto write_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
 
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
 
   // Create another grant, with granted active permissions.
   auto read_grant2 = permission_context()->GetReadPermissionGrant(
@@ -1791,7 +1791,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   auto write_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
               testing::SizeIs(1));
   EXPECT_EQ(
@@ -2191,7 +2191,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
-  permission_context()->RevokeActiveGrants(kTestOrigin, kTestPath);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin, kTestPath);
 
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -2253,7 +2253,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Navigate away so that the persisted grant becomes dormant.
   // TODO(crbug.com/1011533): Update this test to navigate away from the page,
   // instead of manually resetting the grant.
-  permission_context()->RevokeActiveGrants(kTestOrigin);
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
 
   // On a revisit, requesting permission does not trigger the restore permission
