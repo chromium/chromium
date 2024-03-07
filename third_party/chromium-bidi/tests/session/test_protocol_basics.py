@@ -14,7 +14,8 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import json, read_JSON_message, send_JSON_command
+from test_helpers import (execute_command, json, read_JSON_message,
+                          send_JSON_command)
 
 # Tests for "handle an incoming message" error handling, when the message
 # can't be decoded as known command.
@@ -125,3 +126,17 @@ async def test_channel_empty(websocket):
             "message": "already connected"
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_command_unknown(websocket):
+    unknown_command = "some.unknown.command"
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'unknown command',
+                           'message': f"Unknown command '{unknown_command}'."
+                       })):
+        await execute_command(websocket, {
+            "method": unknown_command,
+            "params": {}
+        })
