@@ -114,7 +114,7 @@ crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled a
 crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ angle-vulkan arm fuchsia no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
-crbug.com/1302427 [ clang-coverage fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
+crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 

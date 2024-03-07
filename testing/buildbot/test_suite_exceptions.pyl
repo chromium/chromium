@@ -2094,9 +2094,6 @@
         },
       },
       'fuchsia-x64-cast-receiver-dbg': {
-        # Temporarily only run this on CI due to resource requirements.
-        # TODO(crbug.com/1374125): Remove this once resources are available.
-        'ci_only': True,
         'swarming': {
           'shards': 41,
         },
