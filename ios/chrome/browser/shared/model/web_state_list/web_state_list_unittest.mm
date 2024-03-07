@@ -377,13 +377,13 @@ TEST_F(WebStateListRangeTest, SomeRange) {
 TEST_F(WebStateListRangeTest, Move) {
   WebStateList::Range range(1, 2);
 
-  range.moveLeft();
+  range.MoveLeft();
   EXPECT_EQ(WebStateList::Range(0, 2), range);
 
-  range.moveRight();
+  range.MoveRight();
   EXPECT_EQ(WebStateList::Range(1, 2), range);
 
-  range.moveRight();
+  range.MoveRight();
   EXPECT_EQ(WebStateList::Range(2, 2), range);
 }
 
@@ -391,10 +391,10 @@ TEST_F(WebStateListRangeTest, Move) {
 TEST_F(WebStateListRangeTest, Expand) {
   WebStateList::Range range(1, 2);
 
-  range.expandLeft();
+  range.ExpandLeft();
   EXPECT_EQ(WebStateList::Range(0, 3), range);
 
-  range.expandRight();
+  range.ExpandRight();
   EXPECT_EQ(WebStateList::Range(0, 4), range);
 }
 
@@ -402,10 +402,10 @@ TEST_F(WebStateListRangeTest, Expand) {
 TEST_F(WebStateListRangeTest, Contract) {
   WebStateList::Range range(1, 2);
 
-  range.contractLeft();
+  range.ContractLeft();
   EXPECT_EQ(WebStateList::Range(2, 1), range);
 
-  range.contractRight();
+  range.ContractRight();
   EXPECT_EQ(WebStateList::Range(2, 0), range);
 }
 

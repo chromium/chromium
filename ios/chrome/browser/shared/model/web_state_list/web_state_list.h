@@ -200,23 +200,23 @@ class WebStateList {
     }
 
     // Updates the range by moving it by one in a given direction.
-    constexpr void moveLeft() {
+    constexpr void MoveLeft() {
       CHECK_GT(start_, 0);
       --start_;
     }
-    constexpr void moveRight() { ++start_; }
+    constexpr void MoveRight() { ++start_; }
 
     // Updates the range by expanding/contracting by one in a given direction.
-    constexpr void expandLeft() {
-      moveLeft();
-      expandRight();
+    constexpr void ExpandLeft() {
+      MoveLeft();
+      ExpandRight();
     }
-    constexpr void expandRight() { ++count_; }
-    constexpr void contractLeft() {
-      moveRight();
-      contractRight();
+    constexpr void ExpandRight() { ++count_; }
+    constexpr void ContractLeft() {
+      MoveRight();
+      ContractRight();
     }
-    constexpr void contractRight() {
+    constexpr void ContractRight() {
       CHECK_GT(count_, 0);
       --count_;
     }

@@ -498,9 +498,9 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
     Range& group_range = group_it->second;
     if (group_it->first.get() == group) {
-      group_range.expandRight();
+      group_range.ExpandRight();
     } else if (group_range.start() >= index) {
-      group_range.moveRight();
+      group_range.MoveRight();
     }
   }
 
@@ -640,9 +640,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
     Range& group_range = group_it->second;
     if (group_it->first.get() == group) {
-      group_range.contractRight();
+      group_range.ContractRight();
     } else if (group_range.start() > index) {
-      group_range.moveLeft();
+      group_range.MoveLeft();
     }
   }
 
@@ -857,7 +857,7 @@ const TabGroup* WebStateList::CreateGroupImpl(
     if (old_group) {
       auto it = groups_.find(old_group);
       DCHECK(it != groups_.end());
-      it->second.contractRight();
+      it->second.ContractRight();
     }
 
     // Notify the changes to the observers.
@@ -896,14 +896,14 @@ const TabGroup* WebStateList::CreateGroupImpl(
     {
       auto it = groups_.find(new_group);
       DCHECK(it != groups_.end());
-      it->second.expandRight();
+      it->second.ExpandRight();
     }
 
     // Update the old group range.
     if (old_group) {
       auto it = groups_.find(old_group);
       DCHECK(it != groups_.end());
-      it->second.contractLeft();
+      it->second.ContractLeft();
     }
 
     // Notify the changes to the observers.
