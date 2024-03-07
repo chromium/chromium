@@ -22,6 +22,7 @@
 
 namespace blink {
 
+class LockManagerSnapshot;
 class NavigatorBase;
 class ScriptState;
 class V8LockGrantedCallback;
@@ -52,7 +53,7 @@ class LockManager final : public ScriptWrappable,
                                      V8LockGrantedCallback*,
                                      ExceptionState&);
 
-  ScriptPromise query(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<LockManagerSnapshot> query(ScriptState*, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -81,7 +82,7 @@ class LockManager final : public ScriptWrappable,
   void RemovePendingRequest(LockRequestImpl*);
   bool IsPendingRequest(LockRequestImpl*);
 
-  void QueryImpl(ScriptPromiseResolver* resolver);
+  void QueryImpl(ScriptPromiseResolverTyped<LockManagerSnapshot>* resolver);
   void RequestImpl(const LockOptions* options,
                    const String& name,
                    V8LockGrantedCallback* callback,

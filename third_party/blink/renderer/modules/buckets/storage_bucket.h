@@ -25,6 +25,7 @@ class CacheStorage;
 class IDBFactory;
 class LockManager;
 class ScriptState;
+class StorageEstimate;
 class V8StorageBucketDurability;
 
 class StorageBucket final : public ScriptWrappable,
@@ -41,7 +42,7 @@ class StorageBucket final : public ScriptWrappable,
   const String& name();
   ScriptPromiseTyped<IDLBoolean> persist(ScriptState*);
   ScriptPromiseTyped<IDLBoolean> persisted(ScriptState*);
-  ScriptPromise estimate(ScriptState*);
+  ScriptPromiseTyped<StorageEstimate> estimate(ScriptState*);
   ScriptPromiseTyped<V8StorageBucketDurability> durability(ScriptState*);
   ScriptPromise setExpires(ScriptState*, const DOMHighResTimeStamp&);
   ScriptPromiseTyped<IDLNullable<IDLDOMHighResTimeStamp>> expires(ScriptState*);
@@ -65,7 +66,7 @@ class StorageBucket final : public ScriptWrappable,
   void DidGetPersisted(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
                        bool persisted,
                        bool success);
-  void DidGetEstimate(ScriptPromiseResolver* resolver,
+  void DidGetEstimate(ScriptPromiseResolverTyped<StorageEstimate>*,
                       int64_t current_usage,
                       int64_t current_quota,
                       bool success);

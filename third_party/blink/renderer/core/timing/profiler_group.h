@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PROFILER_GROUP_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -23,7 +24,7 @@ class ExecutionContext;
 class LocalDOMWindow;
 class Profiler;
 class ProfilerInitOptions;
-class ScriptPromiseResolver;
+class ProfilerTrace;
 class ScriptState;
 
 // A ProfilerGroup represents a set of profilers sharing an underlying
@@ -73,7 +74,9 @@ class CORE_EXPORT ProfilerGroup
   void InitV8Profiler();
   void TeardownV8Profiler();
 
-  void StopProfiler(ScriptState*, Profiler*, ScriptPromiseResolver*);
+  void StopProfiler(ScriptState*,
+                    Profiler*,
+                    ScriptPromiseResolverTyped<ProfilerTrace>*);
 
   // Cancels a profiler, discarding its associated trace.
   void CancelProfiler(Profiler*);

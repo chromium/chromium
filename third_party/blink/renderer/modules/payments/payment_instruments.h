@@ -37,9 +37,9 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   ScriptPromiseTyped<IDLBoolean> deleteInstrument(ScriptState*,
                                                   const String& instrument_key,
                                                   ExceptionState&);
-  ScriptPromise get(ScriptState*,
-                    const String& instrument_key,
-                    ExceptionState&);
+  ScriptPromiseTyped<IDLAny> get(ScriptState*,
+                                 const String& instrument_key,
+                                 ExceptionState&);
   ScriptPromiseTyped<IDLSequence<IDLString>> keys(ScriptState*,
                                                   ExceptionState&);
   ScriptPromiseTyped<IDLBoolean> has(ScriptState*,
@@ -62,7 +62,7 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
 
   void onDeletePaymentInstrument(ScriptPromiseResolverTyped<IDLBoolean>*,
                                  payments::mojom::blink::PaymentHandlerStatus);
-  void onGetPaymentInstrument(ScriptPromiseResolver*,
+  void onGetPaymentInstrument(ScriptPromiseResolverTyped<IDLAny>*,
                               payments::mojom::blink::PaymentInstrumentPtr,
                               payments::mojom::blink::PaymentHandlerStatus);
   void onKeysOfPaymentInstruments(

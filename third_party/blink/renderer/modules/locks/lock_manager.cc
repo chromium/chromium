@@ -424,13 +424,14 @@ void LockManager::RequestImpl(const LockOptions* options,
   service_->RequestLock(name, mode, wait, std::move(request_remote));
 }
 
-ScriptPromise LockManager::query(ScriptState* script_state,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<LockManagerSnapshot> LockManager::query(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // Observed context may be gone if frame is detached.
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidStateErrorMessage);
-    return ScriptPromise();
+    return ScriptPromiseTyped<LockManagerSnapshot>();
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -438,15 +439,16 @@ ScriptPromise LockManager::query(ScriptState* script_state,
   if (!context->GetSecurityOrigin()->CanAccessLocks()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<LockManagerSnapshot>();
   }
   if (context->GetSecurityOrigin()->IsLocal()) {
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<LockManagerSnapshot>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   CheckStorageAccessAllowed(
       context, resolver,
@@ -455,7 +457,8 @@ ScriptPromise LockManager::query(ScriptState* script_state,
   return promise;
 }
 
-void LockManager::QueryImpl(ScriptPromiseResolver* resolver) {
+void LockManager::QueryImpl(
+    ScriptPromiseResolverTyped<LockManagerSnapshot>* resolver) {
   ExecutionContext* context = resolver->GetExecutionContext();
   if (!service_.is_bound()) {
     context->GetBrowserInterfaceBroker().GetInterface(
@@ -468,7 +471,7 @@ void LockManager::QueryImpl(ScriptPromiseResolver* resolver) {
   }
 
   service_->QueryState(WTF::BindOnce(
-      [](ScriptPromiseResolver* resolver,
+      [](ScriptPromiseResolverTyped<LockManagerSnapshot>* resolver,
          Vector<mojom::blink::LockInfoPtr> pending,
          Vector<mojom::blink::LockInfoPtr> held) {
         LockManagerSnapshot* snapshot = LockManagerSnapshot::Create();

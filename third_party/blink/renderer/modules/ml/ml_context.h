@@ -7,6 +7,7 @@
 
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
@@ -23,6 +24,7 @@
 namespace blink {
 
 class ML;
+class MLComputeResult;
 class MLContextOptions;
 class MLModelLoader;
 
@@ -65,11 +67,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   // IDL interface:
-  ScriptPromise compute(ScriptState* script_state,
-                        MLGraph* graph,
-                        const MLNamedArrayBufferViews& inputs,
-                        const MLNamedArrayBufferViews& outputs,
-                        ExceptionState& exception_state);
+  ScriptPromiseTyped<MLComputeResult> compute(
+      ScriptState* script_state,
+      MLGraph* graph,
+      const MLNamedArrayBufferViews& inputs,
+      const MLNamedArrayBufferViews& outputs,
+      ExceptionState& exception_state);
 
   // Creates a platform-specific compute graph described by `graph_info`.
   void CreateWebNNGraph(

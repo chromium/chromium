@@ -60,8 +60,8 @@ class MODULES_EXPORT ImageCapture final
 
   MediaStreamTrack* videoStreamTrack() const { return stream_track_.Get(); }
 
-  ScriptPromise getPhotoCapabilities(ScriptState*);
-  ScriptPromise getPhotoSettings(ScriptState*);
+  ScriptPromiseTyped<PhotoCapabilities> getPhotoCapabilities(ScriptState*);
+  ScriptPromiseTyped<PhotoSettings> getPhotoSettings(ScriptState*);
   ScriptPromise takePhoto(ScriptState*, const PhotoSettings*);
   ScriptPromiseTyped<ImageBitmap> grabFrame(ScriptState*);
 
@@ -121,7 +121,7 @@ class MODULES_EXPORT ImageCapture final
   // Called when we get an updated PTZ permission value from the browser.
   void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
 
-  ScriptPromise GetMojoPhotoState(ScriptState*, PromiseResolverFunction);
+  void GetMojoPhotoState(ScriptPromiseResolver*, PromiseResolverFunction);
   void OnMojoGetPhotoState(ScriptPromiseResolver*,
                            PromiseResolverFunction,
                            bool trigger_take_photo,

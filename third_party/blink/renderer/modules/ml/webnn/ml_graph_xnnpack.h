@@ -19,8 +19,6 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
-
 namespace {
 class SharedXnnpackContext;
 class XnnRuntimeWrapper;
@@ -136,7 +134,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   void ComputeImpl(ScopedMLTrace scoped_trace,
                    const MLNamedArrayBufferViews& inputs,
                    const MLNamedArrayBufferViews& outputs,
-                   ScriptPromiseResolver* resolver,
+                   ScriptPromiseResolverTyped<MLComputeResult>* resolver,
                    ExceptionState& exception_state) override;
 
   // Invoking an XNNPACK Runtime object can be time-consuming. Calling this
@@ -155,7 +153,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
       NamedArrayBufferViewsInfoPtr inputs_info,
       NamedArrayBufferViewsInfoPtr outputs_info,
       CrossThreadHandle<MLGraphXnnpack> graph,
-      CrossThreadHandle<ScriptPromiseResolver> resolver,
+      CrossThreadHandle<ScriptPromiseResolverTyped<MLComputeResult>> resolver,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner);
 
   // Resolve the promise with an `MLComputeResult` on the thread owning this
@@ -168,7 +166,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
                     xnn_status status,
                     NamedArrayBufferViewsInfoPtr inputs_info,
                     NamedArrayBufferViewsInfoPtr outputs_info,
-                    ScriptPromiseResolver* resolver,
+                    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
                     String error_message = String());
 
   // XNNPACK Subgraph is an abstract representation of a neural network model.

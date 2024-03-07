@@ -44,10 +44,6 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
 
 }  // namespace
 
-ScriptPromise Socket::opened(ScriptState* script_state) const {
-  return ScriptPromise(script_state, opened_.Get(script_state->GetIsolate()));
-}
-
 ScriptPromise Socket::closed(ScriptState* script_state) const {
   return ScriptPromise(script_state, closed_.Get(script_state->GetIsolate()));
 }
@@ -61,10 +57,6 @@ Socket::Socket(ScriptState* script_state)
           GetExecutionContext()->GetScheduler()->RegisterFeature(
               SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
               {SchedulingPolicy::DisableBackForwardCache()})),
-      opened_resolver_(
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      opened_(script_state->GetIsolate(),
-              opened_resolver_->Promise().V8Promise()),
       closed_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
       closed_(script_state->GetIsolate(),
@@ -125,9 +117,6 @@ DOMException* Socket::CreateDOMExceptionFromNetErrorCode(int32_t net_error) {
 void Socket::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(service_);
-
-  visitor->Trace(opened_resolver_);
-  visitor->Trace(opened_);
 
   visitor->Trace(closed_resolver_);
   visitor->Trace(closed_);

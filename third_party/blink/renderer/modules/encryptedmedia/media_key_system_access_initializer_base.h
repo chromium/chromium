@@ -20,7 +20,8 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
                                             public ExecutionContextClient {
  public:
   MediaKeySystemAccessInitializerBase(
-      ScriptState* script_state,
+      ExecutionContext*,
+      ScriptPromiseResolver*,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations);

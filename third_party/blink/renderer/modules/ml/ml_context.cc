@@ -128,20 +128,22 @@ void MLContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromise MLContext::compute(ScriptState* script_state,
-                                 MLGraph* graph,
-                                 const MLNamedArrayBufferViews& inputs,
-                                 const MLNamedArrayBufferViews& outputs,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<MLComputeResult> MLContext::compute(
+    ScriptState* script_state,
+    MLGraph* graph,
+    const MLNamedArrayBufferViews& inputs,
+    const MLNamedArrayBufferViews& outputs,
+    ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLContext::compute");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromise();
+    return ScriptPromiseTyped<MLComputeResult>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   if (graph->Context() != this) {

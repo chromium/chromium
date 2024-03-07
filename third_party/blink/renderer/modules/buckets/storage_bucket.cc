@@ -80,9 +80,12 @@ ScriptPromiseTyped<IDLBoolean> StorageBucket::persisted(
   return promise;
 }
 
-ScriptPromise StorageBucket::estimate(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<StorageEstimate> StorageBucket::estimate(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<StorageEstimate>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -259,10 +262,11 @@ void StorageBucket::DidGetPersisted(
   resolver->Resolve(persisted);
 }
 
-void StorageBucket::DidGetEstimate(ScriptPromiseResolver* resolver,
-                                   int64_t current_usage,
-                                   int64_t current_quota,
-                                   bool success) {
+void StorageBucket::DidGetEstimate(
+    ScriptPromiseResolverTyped<StorageEstimate>* resolver,
+    int64_t current_usage,
+    int64_t current_quota,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;

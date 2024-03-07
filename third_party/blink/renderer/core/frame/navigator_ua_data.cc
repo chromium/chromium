@@ -184,11 +184,13 @@ const String& NavigatorUAData::platform() const {
   return WTF::g_empty_string;
 }
 
-ScriptPromise NavigatorUAData::getHighEntropyValues(
+ScriptPromiseTyped<UADataValues> NavigatorUAData::getHighEntropyValues(
     ScriptState* script_state,
     Vector<String>& hints) const {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<UADataValues>>(
+          script_state);
+  auto promise = resolver->Promise();
   auto* execution_context =
       ExecutionContext::From(script_state);  // GetExecutionContext();
   DCHECK(execution_context);
@@ -258,7 +260,7 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
   execution_context->GetTaskRunner(TaskType::kPermission)
       ->PostTask(
           FROM_HERE,
-          WTF::BindOnce([](ScriptPromiseResolver* resolver,
+          WTF::BindOnce([](ScriptPromiseResolverTyped<UADataValues>* resolver,
                            UADataValues* values) { resolver->Resolve(values); },
                         WrapPersistent(resolver), WrapPersistent(values)));
 

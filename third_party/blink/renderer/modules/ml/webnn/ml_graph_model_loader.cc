@@ -215,11 +215,12 @@ void MLGraphModelLoader::SetFlatbufferForTesting(
   g_flatbuffer_for_testing = flatbuffer;
 }
 
-void MLGraphModelLoader::ComputeImpl(ScopedMLTrace scoped_trace,
-                                     const MLNamedArrayBufferViews& inputs,
-                                     const MLNamedArrayBufferViews& outputs,
-                                     ScriptPromiseResolver* resolver,
-                                     ExceptionState& exception_state) {
+void MLGraphModelLoader::ComputeImpl(
+    ScopedMLTrace scoped_trace,
+    const MLNamedArrayBufferViews& inputs,
+    const MLNamedArrayBufferViews& outputs,
+    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+    ExceptionState& exception_state) {
   // Transfer the `MLNamedArrayBufferViews` to `NamedArrayBufferViewsInfo` which
   // is safe to compute asynchronously.
   auto inputs_info = TransferNamedArrayBufferViews(
@@ -258,7 +259,7 @@ void MLGraphModelLoader::ComputeImpl(ScopedMLTrace scoped_trace,
 
 void MLGraphModelLoader::OnComputeGraph(
     ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
         outputs_info,

@@ -17,6 +17,7 @@ namespace blink {
 
 class NavigatorUABrandVersion;
 class ScriptState;
+class UADataValues;
 
 class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -43,7 +44,8 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   const HeapVector<Member<NavigatorUABrandVersion>>& brands() const;
   bool mobile() const;
   const String& platform() const;
-  ScriptPromise getHighEntropyValues(ScriptState*, Vector<String>&) const;
+  ScriptPromiseTyped<UADataValues> getHighEntropyValues(ScriptState*,
+                                                        Vector<String>&) const;
   ScriptValue toJSON(ScriptState*) const;
 
   void Trace(Visitor* visitor) const final;

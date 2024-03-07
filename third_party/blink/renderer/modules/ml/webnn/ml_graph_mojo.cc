@@ -158,11 +158,12 @@ void MLGraphMojo::BuildImpl(ScopedMLTrace scoped_trace,
                     std::move(scoped_trace), WrapPersistent(resolver)));
 }
 
-void MLGraphMojo::ComputeImpl(ScopedMLTrace scoped_trace,
-                              const MLNamedArrayBufferViews& inputs,
-                              const MLNamedArrayBufferViews& outputs,
-                              ScriptPromiseResolver* resolver,
-                              ExceptionState& exception_state) {
+void MLGraphMojo::ComputeImpl(
+    ScopedMLTrace scoped_trace,
+    const MLNamedArrayBufferViews& inputs,
+    const MLNamedArrayBufferViews& outputs,
+    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+    ExceptionState& exception_state) {
   // TransferNamedArrayBufferViews deteches input and output array buffers, so
   // JavaScript can't modify them during Compute().
   auto inputs_info = TransferNamedArrayBufferViews(
@@ -200,7 +201,7 @@ void MLGraphMojo::ComputeImpl(ScopedMLTrace scoped_trace,
 
 void MLGraphMojo::OnDidCompute(
     ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
         outputs_info,

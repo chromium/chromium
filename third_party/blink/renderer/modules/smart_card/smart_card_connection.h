@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-
+class SmartCardConnectionStatus;
 class SmartCardContext;
 class SmartCardTransactionOptions;
 class SmartCardTransmitOptions;
@@ -44,8 +44,9 @@ class SmartCardConnection final : public ScriptWrappable,
                          const DOMArrayPiece& send_buffer,
                          SmartCardTransmitOptions* options,
                          ExceptionState& exception_state);
-  ScriptPromise status(ScriptState* script_state,
-                       ExceptionState& exception_state);
+  ScriptPromiseTyped<SmartCardConnectionStatus> status(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
   ScriptPromise control(ScriptState* script_state,
                         uint32_t control_code,
                         const DOMArrayPiece& data,
@@ -81,7 +82,7 @@ class SmartCardConnection final : public ScriptWrappable,
                      device::mojom::blink::SmartCardResultPtr result);
   void OnDataResult(ScriptPromiseResolver* resolver,
                     device::mojom::blink::SmartCardDataResultPtr result);
-  void OnStatusDone(ScriptPromiseResolver* resolver,
+  void OnStatusDone(ScriptPromiseResolverTyped<SmartCardConnectionStatus>*,
                     device::mojom::blink::SmartCardStatusResultPtr result);
   void OnBeginTransactionDone(
       ScriptPromiseResolver* resolver,

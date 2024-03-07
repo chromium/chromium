@@ -136,9 +136,17 @@ TCPSocket::TCPSocket(ScriptState* script_state)
     : Socket(script_state),
       ActiveScriptWrappable<TCPSocket>({}),
       tcp_socket_{GetExecutionContext()},
-      socket_observer_{this, GetExecutionContext()} {}
+      socket_observer_{this, GetExecutionContext()},
+      opened_(MakeGarbageCollected<
+              ScriptPromiseProperty<TCPSocketOpenInfo, DOMException>>(
+          GetExecutionContext())) {}
 
 TCPSocket::~TCPSocket() = default;
+
+ScriptPromiseTyped<TCPSocketOpenInfo> TCPSocket::opened(
+    ScriptState* script_state) const {
+  return opened_->Promise(script_state->World());
+}
 
 ScriptPromise TCPSocket::close(ScriptState*, ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
@@ -219,8 +227,7 @@ void TCPSocket::OnTCPSocketOpened(
     base::UmaHistogramSparse(kTCPNetworkFailuresHistogramName, -result);
     ReleaseResources();
 
-    GetOpenedPromiseResolver()->Reject(
-        CreateDOMExceptionFromNetErrorCode(result));
+    opened_->Reject(CreateDOMExceptionFromNetErrorCode(result));
     GetClosedPromiseResolver()->Reject();
 
     SetState(State::kAborted);
@@ -267,7 +274,7 @@ void TCPSocket::FinishOpenOrAccept(
     open_info->setLocalPort(local_addr->port());
   }
 
-  GetOpenedPromiseResolver()->Resolve(open_info);
+  opened_->Resolve(open_info);
   SetState(State::kOpen);
 }
 
@@ -307,7 +314,7 @@ void TCPSocket::OnWriteError(int32_t net_error) {
 void TCPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(tcp_socket_);
   visitor->Trace(socket_observer_);
-
+  visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
 

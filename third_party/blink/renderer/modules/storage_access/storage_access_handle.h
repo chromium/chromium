@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-blink.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -28,6 +29,7 @@ class Blob;
 class BroadcastChannel;
 class ExceptionState;
 class SharedWorker;
+class StorageEstimate;
 class V8UnionSharedWorkerOptionsOrString;
 
 class MODULES_EXPORT StorageAccessHandle final
@@ -60,8 +62,9 @@ class MODULES_EXPORT StorageAccessHandle final
   CacheStorage* caches(ExceptionState& exception_state) const;
   ScriptPromise getDirectory(ScriptState* script_state,
                              ExceptionState& exception_state) const;
-  ScriptPromise estimate(ScriptState* script_state,
-                         ExceptionState& exception_state) const;
+  ScriptPromiseTyped<StorageEstimate> estimate(
+      ScriptState* script_state,
+      ExceptionState& exception_state) const;
   String createObjectURL(Blob* blob, ExceptionState& exception_state) const;
   void revokeObjectURL(const String& url,
                        ExceptionState& exception_state) const;

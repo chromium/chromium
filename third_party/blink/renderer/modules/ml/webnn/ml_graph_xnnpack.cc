@@ -2166,11 +2166,12 @@ void MLGraphXnnpack::OnDidCreateXnnRuntime(
   resolver->Resolve(this);
 }
 
-void MLGraphXnnpack::ComputeImpl(ScopedMLTrace scoped_trace,
-                                 const MLNamedArrayBufferViews& inputs,
-                                 const MLNamedArrayBufferViews& outputs,
-                                 ScriptPromiseResolver* resolver,
-                                 ExceptionState& exception_state) {
+void MLGraphXnnpack::ComputeImpl(
+    ScopedMLTrace scoped_trace,
+    const MLNamedArrayBufferViews& inputs,
+    const MLNamedArrayBufferViews& outputs,
+    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+    ExceptionState& exception_state) {
   scoped_trace.AddStep("MLGraphXnnpack::TransferNamedArrayBufferViews");
   // `MLNamedArrayBufferViews` objects should be accessed on the thread owning
   // the heap before transferring.
@@ -2228,7 +2229,7 @@ void MLGraphXnnpack::ComputeOnBackgroundThread(
     NamedArrayBufferViewsInfoPtr inputs_info,
     NamedArrayBufferViewsInfoPtr outputs_info,
     CrossThreadHandle<MLGraphXnnpack> graph,
-    CrossThreadHandle<ScriptPromiseResolver> resolver,
+    CrossThreadHandle<ScriptPromiseResolverTyped<MLComputeResult>> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   CHECK(!IsMainThread());
   scoped_trace.AddStep("MLGraphXnnpack::ComputeOnBackgroundThread");
@@ -2246,12 +2247,13 @@ void MLGraphXnnpack::ComputeOnBackgroundThread(
                           std::move(error_message)));
 }
 
-void MLGraphXnnpack::OnDidCompute(ScopedMLTrace scoped_trace,
-                                  xnn_status status,
-                                  NamedArrayBufferViewsInfoPtr inputs_info,
-                                  NamedArrayBufferViewsInfoPtr outputs_info,
-                                  ScriptPromiseResolver* resolver,
-                                  String error_message) {
+void MLGraphXnnpack::OnDidCompute(
+    ScopedMLTrace scoped_trace,
+    xnn_status status,
+    NamedArrayBufferViewsInfoPtr inputs_info,
+    NamedArrayBufferViewsInfoPtr outputs_info,
+    ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+    String error_message) {
   if (status != xnn_status_success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         XnnStatusToDOMExceptionCode(status), error_message));

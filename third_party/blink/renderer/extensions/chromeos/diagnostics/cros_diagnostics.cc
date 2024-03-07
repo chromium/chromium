@@ -54,8 +54,11 @@ void CrosDiagnostics::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromise CrosDiagnostics::getCpuInfo(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<CrosCpuInfo> CrosDiagnostics::getCpuInfo(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<CrosCpuInfo>>(
+          script_state);
   auto* cros_diagnostics = GetCrosDiagnosticsOrNull();
 
   if (cros_diagnostics) {
@@ -68,7 +71,7 @@ ScriptPromise CrosDiagnostics::getCpuInfo(ScriptState* script_state) {
 }
 
 void CrosDiagnostics::OnGetCpuInfoResponse(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<CrosCpuInfo>* resolver,
     mojom::blink::GetCpuInfoResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

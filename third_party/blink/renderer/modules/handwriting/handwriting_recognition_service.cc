@@ -55,15 +55,13 @@ void OnCreateHandwritingRecognizer(
 
 void OnQueryHandwritingRecognizer(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLNullable<HandwritingRecognizerQueryResult>>*
+        resolver,
     handwriting::mojom::blink::QueryHandwritingRecognizerResultPtr
         query_result) {
-  if (query_result) {
-    resolver->Resolve(mojo::ConvertTo<HandwritingRecognizerQueryResult*>(
-        std::move(query_result)));
-  } else {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
-  }
+  auto* result = mojo::ConvertTo<HandwritingRecognizerQueryResult*>(
+      std::move(query_result));
+  resolver->Resolve(result);
 }
 
 }  // namespace
@@ -149,7 +147,8 @@ ScriptPromise HandwritingRecognitionService::CreateHandwritingRecognizer(
 }
 
 // static
-ScriptPromise HandwritingRecognitionService::queryHandwritingRecognizer(
+ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
+HandwritingRecognitionService::queryHandwritingRecognizer(
     ScriptState* script_state,
     Navigator& navigator,
     const HandwritingModelConstraint* constraint,
@@ -158,15 +157,17 @@ ScriptPromise HandwritingRecognitionService::queryHandwritingRecognizer(
       .QueryHandwritingRecognizer(script_state, constraint, exception_state);
 }
 
-ScriptPromise HandwritingRecognitionService::QueryHandwritingRecognizer(
+ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
+HandwritingRecognitionService::QueryHandwritingRecognizer(
     ScriptState* script_state,
     const HandwritingModelConstraint* constraint,
     ExceptionState& exception_state) {
   if (!BootstrapMojoConnectionIfNeeded(script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>();
   }
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<
+      IDLNullable<HandwritingRecognizerQueryResult>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

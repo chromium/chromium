@@ -133,21 +133,24 @@ ScriptPromiseTyped<IDLBoolean> PaymentInstruments::deleteInstrument(
   return promise;
 }
 
-ScriptPromise PaymentInstruments::get(ScriptState* script_state,
-                                      const String& instrument_key,
-                                      ExceptionState& exception_state) {
-  if (!AllowedToUsePaymentFeatures(script_state))
-    return RejectNotAllowedToUsePaymentFeatures(script_state, exception_state);
+ScriptPromiseTyped<IDLAny> PaymentInstruments::get(
+    ScriptState* script_state,
+    const String& instrument_key,
+    ExceptionState& exception_state) {
+  if (!AllowedToUsePaymentFeatures(script_state)) {
+    ThrowNotAllowedToUsePaymentFeatures(exception_state);
+    return ScriptPromiseTyped<IDLAny>();
+  }
 
   if (!manager_->is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPaymentManagerUnavailable);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLAny>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   (*manager_)->GetPaymentInstrument(
       instrument_key,
@@ -356,7 +359,7 @@ void PaymentInstruments::onDeletePaymentInstrument(
 }
 
 void PaymentInstruments::onGetPaymentInstrument(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLAny>* resolver,
     payments::mojom::blink::PaymentInstrumentPtr stored_instrument,
     payments::mojom::blink::PaymentHandlerStatus status) {
   DCHECK(resolver);
@@ -386,7 +389,8 @@ void PaymentInstruments::onGetPaymentInstrument(
   instrument->setIcons(icons);
   instrument->setMethod(stored_instrument->method);
 
-  resolver->Resolve(instrument);
+  resolver->Resolve(ToV8Traits<PaymentInstrument>::ToV8(
+      resolver->GetScriptState(), instrument));
 }
 
 void PaymentInstruments::onKeysOfPaymentInstruments(

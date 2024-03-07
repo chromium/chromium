@@ -17,6 +17,7 @@
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_connection_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_datagram_stats.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -41,8 +42,6 @@ class IncomingStream;
 class OutgoingStream;
 class ReadableStream;
 class ReadableByteStreamController;
-class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptState;
 class WebTransportCloseInfo;
 class WebTransportOptions;
@@ -82,7 +81,7 @@ class MODULES_EXPORT WebTransport final
   ScriptPromise ready() { return ready_; }
   ScriptPromise closed() { return closed_; }
   void setDatagramWritableQueueExpirationDuration(double ms);
-  ScriptPromise getStats(ScriptState*);
+  ScriptPromiseTyped<WebTransportConnectionStats> getStats(ScriptState*);
 
   // WebTransportHandshakeClient implementation
   void OnConnectionEstablished(
@@ -221,7 +220,8 @@ class MODULES_EXPORT WebTransport final
   // stats are requested after the transport is closed.
   Member<WebTransportConnectionStats> latest_stats_;
   // Tracks resolvers for in-progress getStats() calls.
-  HeapVector<Member<ScriptPromiseResolver>> pending_get_stats_resolvers_;
+  HeapVector<Member<ScriptPromiseResolverTyped<WebTransportConnectionStats>>>
+      pending_get_stats_resolvers_;
 
   // Tracks resolvers for in-progress createSendStream() and
   // createBidirectionalStream() operations so they can be rejected.

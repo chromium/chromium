@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -16,9 +17,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
-
+class MLComputeResult;
 class MLContext;
-class ScriptPromiseResolver;
 
 // Implement the MLNamedArrayBufferViews type definition of WebNN spec:
 // https://www.w3.org/TR/webnn/#typedefdef-mlnamedarraybufferviews
@@ -59,7 +59,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   void Compute(ScopedMLTrace scoped_trace,
                const MLNamedArrayBufferViews& inputs,
                const MLNamedArrayBufferViews& outputs,
-               ScriptPromiseResolver* resolver,
+               ScriptPromiseResolverTyped<MLComputeResult>* resolver,
                ExceptionState& exception_state);
 
   const MLContext* Context() const;
@@ -98,11 +98,12 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // the resolver will be resolved with an MLComputeResult that contains the
   // input and output buffers. Otherwise, the resolver will be rejected with a
   // DOMException accordingly.
-  virtual void ComputeImpl(ScopedMLTrace scoped_trace,
-                           const MLNamedArrayBufferViews& inputs,
-                           const MLNamedArrayBufferViews& outputs,
-                           ScriptPromiseResolver* resolver,
-                           ExceptionState& exception_state) = 0;
+  virtual void ComputeImpl(
+      ScopedMLTrace scoped_trace,
+      const MLNamedArrayBufferViews& inputs,
+      const MLNamedArrayBufferViews& outputs,
+      ScriptPromiseResolverTyped<MLComputeResult>* resolver,
+      ExceptionState& exception_state) = 0;
 
   Member<MLContext> ml_context_;
   bool resources_info_initialized_{false};

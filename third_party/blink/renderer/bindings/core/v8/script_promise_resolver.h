@@ -280,26 +280,6 @@ class CORE_EXPORT ScriptPromiseResolver
     return impl->ToV8(isolate, creation_context);
   }
 
-  // Dictionary
-  static v8::Local<v8::Value> ToV8(const bindings::DictionaryBase* dictionary,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    if (UNLIKELY(!dictionary)) {
-      return v8::Null(isolate);
-    }
-    ScriptState* script_state =
-        ScriptState::From(creation_context->GetCreationContextChecked());
-    return dictionary->ToV8(script_state);
-  }
-
-  // Union
-  static v8::Local<v8::Value> ToV8(const bindings::UnionBase* union_value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return union_value->ToV8(
-        ScriptState::From(creation_context->GetCreationContextChecked()));
-  }
-
   static v8::Local<v8::Value> ToV8(bool value,
                                    v8::Local<v8::Object> creation_context,
                                    v8::Isolate* isolate) = delete;

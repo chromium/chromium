@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
+class AdAuctionData;
 class AdAuctionDataConfig;
 class AdRequestConfig;
 class Ads;
@@ -159,12 +159,12 @@ class MODULES_EXPORT NavigatorAuction final
       const Vector<std::pair<String, String>>& replacement,
       ExceptionState& exception_state);
 
-  ScriptPromise getInterestGroupAdAuctionData(
+  ScriptPromiseTyped<AdAuctionData> getInterestGroupAdAuctionData(
       ScriptState* script_state,
       const AdAuctionDataConfig* config,
       ExceptionState& exception_state,
       base::TimeTicks start_time = base::TimeTicks::Now());
-  static ScriptPromise getInterestGroupAdAuctionData(
+  static ScriptPromiseTyped<AdAuctionData> getInterestGroupAdAuctionData(
       ScriptState* script_state,
       Navigator& navigator,
       const AdAuctionDataConfig* config,
@@ -277,7 +277,7 @@ class MODULES_EXPORT NavigatorAuction final
 
   void GetInterestGroupAdAuctionDataComplete(
       base::TimeTicks start_time,
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<AdAuctionData>* resolver,
       mojo_base::BigBuffer request,
       const std::optional<base::Uuid>& request_id,
       const WTF::String& error_message);

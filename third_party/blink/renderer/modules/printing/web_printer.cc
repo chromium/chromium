@@ -90,23 +90,25 @@ void WebPrinter::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromise WebPrinter::fetchAttributes(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<WebPrinterAttributes> WebPrinter::fetchAttributes(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<WebPrinterAttributes>();
   }
 
   if (fetch_attributes_resolver_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "A call to fetchAttributes() is already in progress.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<WebPrinterAttributes>();
   }
 
-  fetch_attributes_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  fetch_attributes_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<WebPrinterAttributes>>(
+          script_state, exception_state.GetContext());
   printer_->FetchAttributes(
       fetch_attributes_resolver_->WrapCallbackInScriptScope(
           WTF::BindOnce(&WebPrinter::OnFetchAttributes, WrapPersistent(this))));
@@ -143,7 +145,7 @@ ScriptPromise WebPrinter::printJob(
 }
 
 void WebPrinter::OnFetchAttributes(
-    ScriptPromiseResolver*,
+    ScriptPromiseResolverTyped<WebPrinterAttributes>*,
     mojom::blink::WebPrinterFetchResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

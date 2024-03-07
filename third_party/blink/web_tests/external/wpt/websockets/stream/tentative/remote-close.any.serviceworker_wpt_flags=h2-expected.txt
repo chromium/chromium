@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: WebSocket was not cleanly closed.
 [FAIL] clean close should be clean
   promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
 [FAIL] close frame with no body should result in status code 1005

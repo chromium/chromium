@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_GET_NAMED_COOKIE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_GET_NAMED_COOKIE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace WTF {
@@ -12,18 +13,18 @@ class String;
 }  // namespace WTF
 
 namespace blink {
-
+class InternalCookie;
 class Internals;
-class ScriptPromise;
 class ScriptState;
 
 class InternalsGetNamedCookie {
   STATIC_ONLY(InternalsGetNamedCookie);
 
  public:
-  static ScriptPromise getNamedCookie(ScriptState* script_state,
-                                      Internals& internals,
-                                      const WTF::String& name);
+  static ScriptPromiseTyped<IDLNullable<InternalCookie>> getNamedCookie(
+      ScriptState* script_state,
+      Internals& internals,
+      const WTF::String& name);
 };
 
 }  // namespace blink

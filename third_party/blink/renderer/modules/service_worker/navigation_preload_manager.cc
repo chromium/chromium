@@ -40,9 +40,12 @@ ScriptPromise NavigationPreloadManager::setHeaderValue(
   return promise;
 }
 
-ScriptPromise NavigationPreloadManager::getState(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<NavigationPreloadState> NavigationPreloadManager::getState(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<NavigationPreloadState>>(
+          script_state);
+  auto promise = resolver->Promise();
   registration_->GetNavigationPreloadState(resolver);
   return promise;
 }

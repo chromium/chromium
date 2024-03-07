@@ -199,9 +199,17 @@ UDPSocket::UDPSocket(ScriptState* script_state)
     : Socket(script_state),
       ActiveScriptWrappable<UDPSocket>({}),
       udp_socket_(
-          MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())) {}
+          MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())),
+      opened_(MakeGarbageCollected<
+              ScriptPromiseProperty<UDPSocketOpenInfo, DOMException>>(
+          GetExecutionContext())) {}
 
 UDPSocket::~UDPSocket() = default;
+
+ScriptPromiseTyped<UDPSocketOpenInfo> UDPSocket::opened(
+    ScriptState* script_state) const {
+  return opened_->Promise(script_state->World());
+}
 
 ScriptPromise UDPSocket::close(ScriptState*, ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
@@ -311,7 +319,7 @@ void UDPSocket::FinishOpen(
     open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
     open_info->setLocalPort(local_addr->port());
 
-    GetOpenedPromiseResolver()->Resolve(open_info);
+    opened_->Resolve(open_info);
 
     SetState(State::kOpen);
   } else {
@@ -348,7 +356,7 @@ void UDPSocket::FailOpenWith(int32_t error) {
   ReleaseResources();
 
   auto* exception = CreateDOMExceptionFromNetErrorCode(error);
-  GetOpenedPromiseResolver()->Reject(exception);
+  opened_->Reject(exception);
   GetClosedPromiseResolver()->Reject(exception);
 }
 
@@ -375,7 +383,7 @@ void UDPSocket::ContextDestroyed() {
 
 void UDPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(udp_socket_);
-
+  visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
 

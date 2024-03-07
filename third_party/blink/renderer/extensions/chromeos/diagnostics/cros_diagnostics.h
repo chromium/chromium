@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
-
+class CrosCpuInfo;
 class CrosNetworkInterface;
 
 class CrosDiagnostics : public ScriptWrappable,
@@ -29,7 +29,7 @@ class CrosDiagnostics : public ScriptWrappable,
 
   explicit CrosDiagnostics(ExecutionContext&);
 
-  ScriptPromise getCpuInfo(ScriptState* script_state);
+  ScriptPromiseTyped<CrosCpuInfo> getCpuInfo(ScriptState* script_state);
 
   ScriptPromiseTyped<IDLSequence<CrosNetworkInterface>> getNetworkInterfaces(
       ScriptState* script_state);
@@ -41,7 +41,7 @@ class CrosDiagnostics : public ScriptWrappable,
   // the ExecutionContext has been deleted.
   mojom::blink::CrosDiagnostics* GetCrosDiagnosticsOrNull();
 
-  void OnGetCpuInfoResponse(ScriptPromiseResolver* resolver,
+  void OnGetCpuInfoResponse(ScriptPromiseResolverTyped<CrosCpuInfo>* resolver,
                             mojom::blink::GetCpuInfoResultPtr result);
 
   void OnGetNetworkInterfacesResponse(

@@ -62,7 +62,8 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
                                             MLNamedArrayBufferViews& inputs,
                                             MLNamedArrayBufferViews& outputs) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<MLComputeResult>>(
+          scope.GetScriptState());
   ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
   graph->Compute(ScopedMLTrace("Compute"), inputs, outputs, resolver,
                  scope.GetExceptionState());

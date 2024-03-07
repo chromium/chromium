@@ -22,6 +22,7 @@ namespace blink {
 class ExceptionState;
 class ScriptState;
 class ProfilerInitOptions;
+class ProfilerTrace;
 
 // A web-exposed JS sampling profiler created via blink::ProfilerGroup,
 // wrapping a handle to v8::CpuProfiler. Records samples periodically from the
@@ -65,7 +66,7 @@ class CORE_EXPORT Profiler final : public EventTarget {
 
   DOMHighResTimeStamp sampleInterval() { return target_sample_rate_; }
   bool stopped() const { return !profiler_group_; }
-  ScriptPromise stop(ScriptState*);
+  ScriptPromiseTyped<ProfilerTrace> stop(ScriptState*);
 
   void RemovedFromProfilerGroup() { profiler_group_ = nullptr; }
 

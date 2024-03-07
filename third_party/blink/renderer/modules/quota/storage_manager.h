@@ -22,6 +22,7 @@ namespace blink {
 
 class ExecutionContext;
 class ScriptState;
+class StorageEstimate;
 
 class StorageManager final : public EventTarget,
                              public ExecutionContextClient,
@@ -35,7 +36,7 @@ class StorageManager final : public EventTarget,
   ScriptPromiseTyped<IDLBoolean> persisted(ScriptState*, ExceptionState&);
   ScriptPromiseTyped<IDLBoolean> persist(ScriptState*, ExceptionState&);
 
-  ScriptPromise estimate(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<StorageEstimate> estimate(ScriptState*, ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 

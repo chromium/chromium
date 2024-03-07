@@ -4225,14 +4225,15 @@ ProtectedAudience* NavigatorAuction::protectedAudience(
       .protected_audience_;
 }
 
-ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
+ScriptPromiseTyped<AdAuctionData>
+NavigatorAuction::getInterestGroupAdAuctionData(
     ScriptState* script_state,
     const AdAuctionDataConfig* config,
     ExceptionState& exception_state,
     base::TimeTicks start_time) {
   CHECK(config);
   if (!script_state->ContextIsValid()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<AdAuctionData>();
   }
 
   scoped_refptr<const SecurityOrigin> seller = ParseOrigin(config->seller());
@@ -4240,7 +4241,7 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
     exception_state.ThrowTypeError(String::Format(
         "seller '%s' for AdAuctionDataConfig must be a valid https origin.",
         config->seller().Utf8().c_str()));
-    return ScriptPromise();
+    return ScriptPromiseTyped<AdAuctionData>();
   }
 
   scoped_refptr<const SecurityOrigin> coordinator;
@@ -4251,14 +4252,14 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
           "coordinatorOrigin '%s' for AdAuctionDataConfig must be "
           "a valid https origin.",
           config->coordinatorOrigin().Utf8().c_str()));
-      return ScriptPromise();
+      return ScriptPromiseTyped<AdAuctionData>();
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<AdAuctionData>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   ad_auction_service_->GetInterestGroupAdAuctionData(
       seller, coordinator,
@@ -4270,7 +4271,7 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
 
 void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
     base::TimeTicks start_time,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<AdAuctionData>* resolver,
     mojo_base::BigBuffer data,
     const std::optional<base::Uuid>& request_id,
     const WTF::String& error_message) {
@@ -4296,7 +4297,8 @@ void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
 }
 
 /* static */
-ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
+ScriptPromiseTyped<AdAuctionData>
+NavigatorAuction::getInterestGroupAdAuctionData(
     ScriptState* script_state,
     Navigator& navigator,
     const AdAuctionDataConfig* config,
@@ -4305,7 +4307,7 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<AdAuctionData>();
   }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
@@ -4314,7 +4316,7 @@ ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature run-ad-auction is not enabled by Permissions Policy");
-    return ScriptPromise();
+    return ScriptPromiseTyped<AdAuctionData>();
   }
 
   return From(ExecutionContext::From(script_state), navigator)

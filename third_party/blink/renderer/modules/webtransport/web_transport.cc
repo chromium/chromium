@@ -930,10 +930,12 @@ void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
   }
 }
 
-ScriptPromise WebTransport::getStats(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<WebTransportConnectionStats> WebTransport::getStats(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<WebTransportConnectionStats>>(script_state);
   if (!transport_remote_.is_bound() && !connection_pending_) {
-    ScriptPromise promise = resolver->Promise();
+    auto promise = resolver->Promise();
     if (latest_stats_) {
       resolver->Resolve(latest_stats_);
     } else {
@@ -991,9 +993,10 @@ void WebTransport::OnConnectionEstablished(
   connection_pending_ = false;
   ready_resolver_->Resolve();
 
-  HeapVector<Member<ScriptPromiseResolver>> stats_resolvers;
+  HeapVector<Member<ScriptPromiseResolverTyped<WebTransportConnectionStats>>>
+      stats_resolvers;
   pending_get_stats_resolvers_.swap(stats_resolvers);
-  for (ScriptPromiseResolver* resolver : stats_resolvers) {
+  for (auto& resolver : stats_resolvers) {
     resolver->Resolve(latest_stats_);
   }
 }
@@ -1471,9 +1474,10 @@ void WebTransport::RejectPendingStreamResolvers(v8::Local<v8::Value> error) {
 }
 
 void WebTransport::HandlePendingGetStatsResolvers(v8::Local<v8::Value> error) {
-  HeapVector<Member<ScriptPromiseResolver>> stats_resolvers;
+  HeapVector<Member<ScriptPromiseResolverTyped<WebTransportConnectionStats>>>
+      stats_resolvers;
   stats_resolvers.swap(pending_get_stats_resolvers_);
-  for (ScriptPromiseResolver* resolver : stats_resolvers) {
+  for (auto& resolver : stats_resolvers) {
     if (latest_stats_) {
       // "If transport.[[State]] is "closed", resolve p with the most recent
       // stats available for the connection [...]"
@@ -1593,9 +1597,10 @@ void WebTransport::OnGetStatsResponse(
     network::mojom::blink::WebTransportStatsPtr stats) {
   auto* idl_stats = ConvertStatsFromMojom(std::move(stats));
   latest_stats_ = idl_stats;
-  HeapVector<Member<ScriptPromiseResolver>> resolvers;
+  HeapVector<Member<ScriptPromiseResolverTyped<WebTransportConnectionStats>>>
+      resolvers;
   pending_get_stats_resolvers_.swap(resolvers);
-  for (ScriptPromiseResolver* resolver : resolvers) {
+  for (auto& resolver : resolvers) {
     resolver->Resolve(idl_stats);
   }
 }

@@ -89,7 +89,7 @@ void DidEnableNavigationPreload(ScriptPromiseResolver* resolver,
 }
 
 void DidGetNavigationPreloadState(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<NavigationPreloadState>* resolver,
     mojom::ServiceWorkerErrorType error,
     const String& error_msg,
     mojom::blink::NavigationPreloadStatePtr state) {
@@ -252,7 +252,7 @@ void ServiceWorkerRegistration::EnableNavigationPreload(
 }
 
 void ServiceWorkerRegistration::GetNavigationPreloadState(
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<NavigationPreloadState>* resolver) {
   if (!host_.is_bound()) {
     return;
   }

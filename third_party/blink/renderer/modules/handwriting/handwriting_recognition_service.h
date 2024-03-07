@@ -16,6 +16,7 @@ namespace blink {
 
 class ExecutionContext;
 class HandwritingModelConstraint;
+class HandwritingRecognizerQueryResult;
 class ScriptState;
 
 class HandwritingRecognitionService final
@@ -34,11 +35,11 @@ class HandwritingRecognitionService final
       Navigator&,
       const HandwritingModelConstraint*,
       ExceptionState&);
-  static ScriptPromise queryHandwritingRecognizer(
-      ScriptState*,
-      Navigator&,
-      const HandwritingModelConstraint*,
-      ExceptionState&);
+  static ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
+  queryHandwritingRecognizer(ScriptState*,
+                             Navigator&,
+                             const HandwritingModelConstraint*,
+                             ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 
@@ -52,10 +53,10 @@ class HandwritingRecognitionService final
                                             const HandwritingModelConstraint*,
                                             ExceptionState&);
 
-  ScriptPromise QueryHandwritingRecognizer(
-      ScriptState*,
-      const HandwritingModelConstraint* constraint,
-      ExceptionState&);
+  ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
+  QueryHandwritingRecognizer(ScriptState*,
+                             const HandwritingModelConstraint* constraint,
+                             ExceptionState&);
 
   HeapMojoRemote<handwriting::mojom::blink::HandwritingRecognitionService>
       remote_service_;

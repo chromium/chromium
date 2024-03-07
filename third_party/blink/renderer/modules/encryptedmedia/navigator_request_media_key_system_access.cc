@@ -44,7 +44,8 @@ class MediaKeySystemAccessInitializer final
     : public MediaKeySystemAccessInitializerBase {
  public:
   MediaKeySystemAccessInitializer(
-      ScriptState*,
+      ExecutionContext*,
+      ScriptPromiseResolver*,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations);
@@ -69,11 +70,13 @@ class MediaKeySystemAccessInitializer final
 };
 
 MediaKeySystemAccessInitializer::MediaKeySystemAccessInitializer(
-    ScriptState* script_state,
+    ExecutionContext* context,
+    ScriptPromiseResolver* resolver,
     const String& key_system,
     const HeapVector<Member<MediaKeySystemConfiguration>>&
         supported_configurations)
-    : MediaKeySystemAccessInitializerBase(script_state,
+    : MediaKeySystemAccessInitializerBase(context,
+                                          resolver,
                                           key_system,
                                           supported_configurations) {}
 
@@ -175,9 +178,10 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   //    (Passed with the execution context.)
 
   // 5. Let promise be a new promise.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   MediaKeySystemAccessInitializer* initializer =
       MakeGarbageCollected<MediaKeySystemAccessInitializer>(
-          script_state, key_system, supported_configurations);
+          window, resolver, key_system, supported_configurations);
   ScriptPromise promise = initializer->Promise();
 
   // Defer to determine support until the prerendering page is activated.

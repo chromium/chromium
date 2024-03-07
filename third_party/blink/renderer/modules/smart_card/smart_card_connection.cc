@@ -358,14 +358,16 @@ ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise SmartCardConnection::status(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<SmartCardConnectionStatus> SmartCardConnection::status(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<SmartCardConnectionStatus>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<SmartCardConnectionStatus>>(
       script_state, exception_state.GetContext());
   SetOperationInProgress(resolver);
 
@@ -613,7 +615,7 @@ void SmartCardConnection::OnDataResult(
 }
 
 void SmartCardConnection::OnStatusDone(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<SmartCardConnectionStatus>* resolver,
     device::mojom::blink::SmartCardStatusResultPtr result) {
   ClearOperationInProgress(resolver);
 

@@ -27,6 +27,7 @@ class SmartCardGetStatusChangeOptions;
 class SmartCardReaderStateOut;
 class SmartCardConnection;
 class SmartCardConnectOptions;
+class SmartCardConnectResult;
 
 class SmartCardContext final : public ScriptWrappable,
                                public ExecutionContextClient {
@@ -47,11 +48,12 @@ class SmartCardContext final : public ScriptWrappable,
       SmartCardGetStatusChangeOptions* options,
       ExceptionState& exception_state);
 
-  ScriptPromise connect(ScriptState* script_state,
-                        const String& reader_name,
-                        V8SmartCardAccessMode access_mode,
-                        SmartCardConnectOptions* options,
-                        ExceptionState& exception_state);
+  ScriptPromiseTyped<SmartCardConnectResult> connect(
+      ScriptState* script_state,
+      const String& reader_name,
+      V8SmartCardAccessMode access_mode,
+      SmartCardConnectOptions* options,
+      ExceptionState& exception_state);
 
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
@@ -90,8 +92,9 @@ class SmartCardContext final : public ScriptWrappable,
       AbortSignal::AlgorithmHandle* abort_handle,
       device::mojom::blink::SmartCardStatusChangeResultPtr result);
   void OnCancelDone(device::mojom::blink::SmartCardResultPtr result);
-  void OnConnectDone(ScriptPromiseResolver* resolver,
-                     device::mojom::blink::SmartCardConnectResultPtr result);
+  void OnConnectDone(
+      ScriptPromiseResolverTyped<SmartCardConnectResult>* resolver,
+      device::mojom::blink::SmartCardConnectResultPtr result);
 
   HeapMojoRemote<device::mojom::blink::SmartCardContext> scard_context_;
   // The currently ongoing request, if any.

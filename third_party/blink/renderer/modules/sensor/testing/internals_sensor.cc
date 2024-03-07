@@ -249,10 +249,10 @@ ScriptPromise InternalsSensor::removeVirtualSensor(ScriptState* script_state,
 }
 
 // static
-ScriptPromise InternalsSensor::getVirtualSensorInformation(
-    ScriptState* script_state,
-    Internals&,
-    V8VirtualSensorType type) {
+ScriptPromiseTyped<VirtualSensorInformation>
+InternalsSensor::getVirtualSensorInformation(ScriptState* script_state,
+                                             Internals&,
+                                             V8VirtualSensorType type) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   CHECK(window);
   mojo::Remote<test::mojom::blink::WebSensorProviderAutomation>
@@ -260,15 +260,16 @@ ScriptPromise InternalsSensor::getVirtualSensorInformation(
   window->GetBrowserInterfaceBroker().GetInterface(
       virtual_sensor_provider.BindNewPipeAndPassReceiver());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<VirtualSensorInformation>>(script_state);
+  auto promise = resolver->Promise();
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->GetVirtualSensorInformation(
       ToMojoSensorType(type.AsEnum()),
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolver* resolver,
+          [](ScriptPromiseResolverTyped<VirtualSensorInformation>* resolver,
              mojo::Remote<test::mojom::blink::WebSensorProviderAutomation>,
              device::mojom::blink::GetVirtualSensorInformationResultPtr
                  result) {

@@ -67,7 +67,10 @@ mojom::blink::DirectTCPServerSocketOptionsPtr CreateTCPServerSocketOptions(
 }  // namespace
 
 TCPServerSocket::TCPServerSocket(ScriptState* script_state)
-    : Socket(script_state) {}
+    : Socket(script_state),
+      opened_(MakeGarbageCollected<
+              ScriptPromiseProperty<TCPServerSocketOpenInfo, DOMException>>(
+          GetExecutionContext())) {}
 
 TCPServerSocket::~TCPServerSocket() = default;
 
@@ -85,6 +88,11 @@ TCPServerSocket* TCPServerSocket::Create(ScriptState* script_state,
     return nullptr;
   }
   return socket;
+}
+
+ScriptPromiseTyped<TCPServerSocketOpenInfo> TCPServerSocket::opened(
+    ScriptState* script_state) const {
+  return opened_->Promise(script_state->World());
 }
 
 ScriptPromise TCPServerSocket::close(ScriptState* script_state,
@@ -156,7 +164,7 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
     open_info->setLocalPort(local_addr->port());
 
-    GetOpenedPromiseResolver()->Resolve(open_info);
+    opened_->Resolve(open_info);
 
     SetState(State::kOpen);
   } else {
@@ -165,7 +173,7 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     ReleaseResources();
 
     auto* exception = CreateDOMExceptionFromNetErrorCode(result);
-    GetOpenedPromiseResolver()->Reject(exception);
+    opened_->Reject(exception);
     GetClosedPromiseResolver()->Reject(exception);
 
     SetState(State::kAborted);
@@ -175,6 +183,7 @@ void TCPServerSocket::OnTCPServerSocketOpened(
 }
 
 void TCPServerSocket::Trace(Visitor* visitor) const {
+  visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
 
   ScriptWrappable::Trace(visitor);

@@ -47,13 +47,13 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   void ComputeImpl(ScopedMLTrace scoped_trace,
                    const MLNamedArrayBufferViews& inputs,
                    const MLNamedArrayBufferViews& outputs,
-                   ScriptPromiseResolver* resolver,
+                   ScriptPromiseResolverTyped<MLComputeResult>* resolver,
                    ExceptionState& exception_state) override;
   // The callback of computing `WebNNGraph` by calling hardware accelerated OS
   // machine learning APIs.
   void OnDidCompute(
       ScopedMLTrace scoped_trace,
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<MLComputeResult>* resolver,
       std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
           inputs_info,
       std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>

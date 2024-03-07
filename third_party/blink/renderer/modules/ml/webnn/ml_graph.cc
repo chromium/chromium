@@ -96,7 +96,7 @@ const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetOutputResourcesInfo()
 void MLGraph::Compute(ScopedMLTrace scoped_trace,
                       const MLNamedArrayBufferViews& inputs,
                       const MLNamedArrayBufferViews& outputs,
-                      ScriptPromiseResolver* resolver,
+                      ScriptPromiseResolverTyped<MLComputeResult>* resolver,
                       ExceptionState& exception_state) {
   // The MLGraph object should be initialized before computing.
   DCHECK(resources_info_initialized_);

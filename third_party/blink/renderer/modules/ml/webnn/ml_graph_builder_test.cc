@@ -6653,7 +6653,7 @@ class FakeMLGraphBackend final : public MLGraph {
   void ComputeImpl(ScopedMLTrace scoped_trace,
                    const MLNamedArrayBufferViews& inputs,
                    const MLNamedArrayBufferViews& outputs,
-                   ScriptPromiseResolver* resolver,
+                   ScriptPromiseResolverTyped<MLComputeResult>* resolver,
                    ExceptionState& exception_state) override {
     resolver->Resolve();
   }

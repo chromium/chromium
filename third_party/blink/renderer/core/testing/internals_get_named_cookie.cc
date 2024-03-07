@@ -18,35 +18,38 @@
 namespace blink {
 
 // static
-ScriptPromise InternalsGetNamedCookie::getNamedCookie(ScriptState* script_state,
-                                                      Internals&,
-                                                      const String& name) {
+ScriptPromiseTyped<IDLNullable<InternalCookie>>
+InternalsGetNamedCookie::getNamedCookie(ScriptState* script_state,
+                                        Internals&,
+                                        const String& name) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   mojo::Remote<test::mojom::blink::CookieManagerAutomation> cookie_manager;
   window->GetBrowserInterfaceBroker().GetInterface(
       cookie_manager.BindNewPipeAndPassReceiver());
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<InternalCookie>>>(script_state);
+  auto promise = resolver->Promise();
   // Get the interface so `cookie_manager` can be moved below.
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
   raw_cookie_manager->GetNamedCookie(
-      name, WTF::BindOnce(
-                [](ScriptPromiseResolver* resolver, ScriptState* script_state,
-                   mojo::Remote<test::mojom::blink::CookieManagerAutomation>,
-                   network::mojom::blink::CookieWithAccessResultPtr cookie) {
-                  InternalCookie* result = nullptr;
-                  if (cookie) {
-                    result = CookieMojomToInternalCookie(
-                        cookie, script_state->GetIsolate());
-                  }
-                  resolver->Resolve(result);
-                },
-                WrapPersistent(resolver), WrapPersistent(script_state),
-                // Keep `cookie_manager` alive to wait for callback.
-                std::move(cookie_manager)));
+      name,
+      WTF::BindOnce(
+          [](ScriptPromiseResolverTyped<IDLNullable<InternalCookie>>* resolver,
+             ScriptState* script_state,
+             mojo::Remote<test::mojom::blink::CookieManagerAutomation>,
+             network::mojom::blink::CookieWithAccessResultPtr cookie) {
+            InternalCookie* result = nullptr;
+            if (cookie) {
+              result = CookieMojomToInternalCookie(cookie,
+                                                   script_state->GetIsolate());
+            }
+            resolver->Resolve(result);
+          },
+          WrapPersistent(resolver), WrapPersistent(script_state),
+          // Keep `cookie_manager` alive to wait for callback.
+          std::move(cookie_manager)));
   return promise;
 }
 

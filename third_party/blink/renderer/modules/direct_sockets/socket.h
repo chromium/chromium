@@ -28,7 +28,6 @@ class ExceptionState;
 class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
  public:
   // IDL definitions
-  virtual ScriptPromise opened(ScriptState*) const;
   virtual ScriptPromise closed(ScriptState*) const;
   virtual ScriptPromise close(ScriptState*, ExceptionState&) = 0;
 
@@ -49,10 +48,6 @@ class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
  protected:
   ScriptState* GetScriptState() const { return script_state_.Get(); }
 
-  ScriptPromiseResolver* GetOpenedPromiseResolver() const {
-    DCHECK_EQ(state_, State::kOpening);
-    return opened_resolver_.Get();
-  }
 
   ScriptPromiseResolver* GetClosedPromiseResolver() const {
     DCHECK(state_ == State::kOpening || state_ == State::kOpen);
@@ -81,9 +76,6 @@ class MODULES_EXPORT Socket : public ExecutionContextLifecycleStateObserver {
 
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
-
-  Member<ScriptPromiseResolver> opened_resolver_;
-  const TraceWrapperV8Reference<v8::Promise> opened_;
 
   Member<ScriptPromiseResolver> closed_resolver_;
   const TraceWrapperV8Reference<v8::Promise> closed_;

@@ -76,10 +76,11 @@ const char StorageAccessHandle::kSharedWorkerNotRequested[] =
 
 namespace {
 
-void EstimateImplAfterRemoteEstimate(ScriptPromiseResolver* resolver,
-                                     int64_t current_usage,
-                                     int64_t current_quota,
-                                     bool success) {
+void EstimateImplAfterRemoteEstimate(
+    ScriptPromiseResolverTyped<StorageEstimate>* resolver,
+    int64_t current_usage,
+    int64_t current_quota,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
     return;
@@ -341,12 +342,13 @@ void StorageAccessHandle::GetDirectoryImpl(
                     WrapPersistent(resolver)));
 }
 
-ScriptPromise StorageAccessHandle::estimate(
+ScriptPromiseTyped<StorageEstimate> StorageAccessHandle::estimate(
     ScriptState* script_state,
     ExceptionState& exception_state) const {
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<StorageEstimate>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   if (!storage_access_types_->all() && !storage_access_types_->estimate()) {
     resolver->RejectWithSecurityError(kEstimateNotRequested,
                                       kEstimateNotRequested);
