@@ -29,6 +29,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/key_system_capability.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
 #include "media/cdm/win/media_foundation_cdm_util.h"
 #include "media/media_buildflags.h"
@@ -453,7 +454,7 @@ void MediaFoundationService::IsKeySystemSupported(
 
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to GetCdmFactory.";
-    std::move(callback).Run(false, nullptr);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
@@ -464,13 +465,13 @@ void MediaFoundationService::IsKeySystemSupported(
 
   if (!sw_secure_capability && !hw_secure_capability) {
     DVLOG(2) << "Get empty CdmCapability.";
-    std::move(callback).Run(false, nullptr);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
-  auto capability = media::mojom::KeySystemCapability::New();
-  capability->sw_secure_capability = sw_secure_capability;
-  capability->hw_secure_capability = hw_secure_capability;
+  auto capability = media::KeySystemCapability();
+  capability.sw_secure_capability = sw_secure_capability;
+  capability.hw_secure_capability = hw_secure_capability;
   std::move(callback).Run(true, std::move(capability));
 }
 

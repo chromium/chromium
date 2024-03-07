@@ -62,6 +62,8 @@ source_set("cdm") {
     "default_cdm_factory.h",
     "json_web_key.cc",
     "json_web_key.h",
+    "key_system_capability.cc",
+    "key_system_capability.h",
     "supported_audio_codecs.cc",
     "supported_audio_codecs.h",
   ]

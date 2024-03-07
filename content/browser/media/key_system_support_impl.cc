@@ -62,7 +62,7 @@ void KeySystemSupportImpl::AddObserver(
   // immediately. All observers will be notified if there are updates later.
   if (key_system_capabilities_.has_value()) {
     observer_remotes_.Get(id)->OnKeySystemSupportUpdated(
-        CloneKeySystemCapabilities());
+        key_system_capabilities_.value());
     return;
   }
 
@@ -103,18 +103,7 @@ void KeySystemSupportImpl::OnKeySystemCapabilitiesUpdated(
   key_system_capabilities_ = std::move(key_system_capabilities);
 
   for (auto& observer : observer_remotes_)
-    observer->OnKeySystemSupportUpdated(CloneKeySystemCapabilities());
-}
-
-KeySystemCapabilityPtrMap KeySystemSupportImpl::CloneKeySystemCapabilities() {
-  DCHECK(key_system_capabilities_.has_value());
-
-  base::flat_map<std::string, media::mojom::KeySystemCapabilityPtr> result;
-  for (const auto& [key_system, capability] :
-       key_system_capabilities_.value()) {
-    result[key_system] = capability.Clone();
-  }
-  return result;
+    observer->OnKeySystemSupportUpdated(key_system_capabilities_.value());
 }
 
 }  // namespace content

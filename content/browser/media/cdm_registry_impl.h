@@ -17,13 +17,14 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/key_system_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 
 namespace content {
 
 // Map from `key_system` string to `KeySystemCapability`.
 using KeySystemCapabilities =
-    base::flat_map<std::string, media::mojom::KeySystemCapability>;
+    base::flat_map<std::string, media::KeySystemCapability>;
 using KeySystemCapabilitiesUpdateCB =
     base::RepeatingCallback<void(KeySystemCapabilities)>;
 

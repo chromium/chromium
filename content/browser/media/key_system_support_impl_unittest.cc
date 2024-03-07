@@ -15,6 +15,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/key_system_capability.h"
 #include "mojo/public/cpp/bindings/equals_traits.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -29,7 +30,7 @@ using CdmSessionType = media::CdmSessionType;
 using Robustness = CdmInfo::Robustness;
 using base::test::RunOnceCallback;
 using media::CdmCapability;
-using media::mojom::KeySystemCapability;
+using media::KeySystemCapability;
 using testing::_;
 using testing::SaveArg;
 
@@ -48,13 +49,10 @@ ACTION_TEMPLATE(PostOnceCallback,
 
 namespace {
 
-using KeySystemSupportCB =
-    base::RepeatingCallback<void(KeySystemCapabilityPtrMap)>;
-
 class KeySystemSupportObserverImpl
     : public media::mojom::KeySystemSupportObserver {
  public:
-  explicit KeySystemSupportObserverImpl(KeySystemSupportCB cb)
+  explicit KeySystemSupportObserverImpl(KeySystemCapabilitiesUpdateCB cb)
       : key_system_support_cb_(std::move(cb)) {}
   KeySystemSupportObserverImpl(const KeySystemSupportObserverImpl&) = delete;
   KeySystemSupportObserverImpl& operator=(const KeySystemSupportObserverImpl&) =
@@ -62,12 +60,13 @@ class KeySystemSupportObserverImpl
   ~KeySystemSupportObserverImpl() override = default;
 
   // media::mojom::KeySystemSupportObserver
-  void OnKeySystemSupportUpdated(KeySystemCapabilityPtrMap capabilities) final {
+  void OnKeySystemSupportUpdated(
+      const KeySystemCapabilities& capabilities) final {
     key_system_support_cb_.Run(std::move(capabilities));
   }
 
  private:
-  KeySystemSupportCB key_system_support_cb_;
+  KeySystemCapabilitiesUpdateCB key_system_support_cb_;
 };
 
 CdmCapability TestCdmCapability() {
@@ -100,7 +99,7 @@ class KeySystemSupportImplTest : public testing::Test {
 
   void OnKeySystemSupportUpdated(int observer_id,
                                  base::OnceClosure done_cb,
-                                 KeySystemCapabilityPtrMap capabilities) {
+                                 KeySystemCapabilities capabilities) {
     results_[observer_id].push_back(std::move(capabilities));
     std::move(done_cb).Run();
   }
@@ -128,7 +127,7 @@ class KeySystemSupportImplTest : public testing::Test {
 
   // KeySystemSupport update results. It's a map from the "observer ID" to the
   // list of updates received by that observer.
-  std::map<int, std::vector<KeySystemCapabilityPtrMap>> results_;
+  std::map<int, std::vector<KeySystemCapabilities>> results_;
 };
 
 TEST_F(KeySystemSupportImplTest, NoKeySystems) {
@@ -157,8 +156,8 @@ TEST_F(KeySystemSupportImplTest, OneObserver) {
   auto& capabilities = results_[kObserver1][0];
   ASSERT_TRUE(capabilities.count(kTestKeySystem));
   const auto& capability = capabilities[kTestKeySystem];
-  EXPECT_TRUE(capability->sw_secure_capability);
-  EXPECT_FALSE(capability->hw_secure_capability);
+  EXPECT_TRUE(capability.sw_secure_capability);
+  EXPECT_FALSE(capability.hw_secure_capability);
 }
 
 TEST_F(KeySystemSupportImplTest, TwoObservers) {
@@ -190,8 +189,8 @@ TEST_F(KeySystemSupportImplTest, TwoObservers) {
   auto& capabilities = results_[kObserver1][0];
   ASSERT_TRUE(capabilities.count(kTestKeySystem));
   const auto& capability = capabilities[kTestKeySystem];
-  EXPECT_TRUE(capability->sw_secure_capability);
-  EXPECT_FALSE(capability->hw_secure_capability);
+  EXPECT_TRUE(capability.sw_secure_capability);
+  EXPECT_FALSE(capability.hw_secure_capability);
 
   EXPECT_TRUE(results_.count(kObserver2));     // Observer 2
   EXPECT_EQ(results_[kObserver2].size(), 1u);  // One update for observer 1
@@ -226,14 +225,14 @@ TEST_F(KeySystemSupportImplTest, TwoUpdates) {
   auto& capabilities_1 = results_[kObserver1][0];
   ASSERT_TRUE(capabilities_1.count(kTestKeySystem));
   const auto& capability_1 = capabilities_1[kTestKeySystem];
-  EXPECT_TRUE(capability_1->sw_secure_capability);
-  EXPECT_FALSE(capability_1->hw_secure_capability);
+  EXPECT_TRUE(capability_1.sw_secure_capability);
+  EXPECT_FALSE(capability_1.hw_secure_capability);
 
   auto& capabilities_2 = results_[kObserver1][1];
   ASSERT_TRUE(capabilities_2.count(kTestKeySystem));
   const auto& capability_2 = capabilities_2[kTestKeySystem];
-  EXPECT_TRUE(capability_2->sw_secure_capability);
-  EXPECT_TRUE(capability_2->hw_secure_capability);
+  EXPECT_TRUE(capability_2.sw_secure_capability);
+  EXPECT_TRUE(capability_2.hw_secure_capability);
 }
 
 }  // namespace content

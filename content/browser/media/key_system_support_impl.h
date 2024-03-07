@@ -22,11 +22,6 @@
 
 namespace content {
 
-// TODO(xhwang): Use StructTraits to convert to KeySystemCapabilities to avoid
-// this type.
-using KeySystemCapabilityPtrMap =
-    base::flat_map<std::string, media::mojom::KeySystemCapabilityPtr>;
-
 // A singleton class living in the browser process handling all KeySystemSupport
 // requests.
 class CONTENT_EXPORT KeySystemSupportImpl final
@@ -65,11 +60,6 @@ class CONTENT_EXPORT KeySystemSupportImpl final
 
   void OnKeySystemCapabilitiesUpdated(
       KeySystemCapabilities key_system_capabilities);
-
-  // `KeySystemSupport` uses `media::mojom::KeySystemCapability` while the mojom
-  // interface uses `media::mojom::KeySystemCapabilityPtr`. This function does
-  // the conversion.
-  KeySystemCapabilityPtrMap CloneKeySystemCapabilities();
 
   GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing_;
   bool is_observing_ = false;

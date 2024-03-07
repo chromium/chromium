@@ -637,6 +637,17 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.KeySystemCapability"
+          cpp = "::media::KeySystemCapability"
+        },
+      ]
+      traits_headers = [ "key_system_capability_mojom_traits.h" ]
+      traits_sources = [ "key_system_capability_mojom_traits.cc" ]
+      traits_public_deps = [ "//media" ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.CdmSessionClosedReason"
           cpp = "::media::CdmSessionClosedReason"
         },

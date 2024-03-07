@@ -25,7 +25,7 @@ class KeySystemSupportObserverImpl
 
   // media::mojom::KeySystemSupportObserver
   void OnKeySystemSupportUpdated(
-      KeySystemCapabilityPtrMap key_system_capabilities) final {
+      const KeySystemCapabilities& key_system_capabilities) final {
     key_system_support_cb_.Run(std::move(key_system_capabilities));
   }
 
