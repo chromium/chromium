@@ -100,14 +100,6 @@ suite('<settings-traffic-counters>', () => {
     return dataUsageSubLabelDiv.textContent!.trim();
   }
 
-  function getResetDataUsageLabel(): string {
-    const resetDataUsageSubLabelDiv =
-        settingsTrafficCounters.shadowRoot!.querySelector(
-            '#resetDataUsageLabel');
-    assertTrue(!!resetDataUsageSubLabelDiv);
-    return resetDataUsageSubLabelDiv.textContent!.trim();
-  }
-
   function getResetDataUsageButton(): HTMLButtonElement {
     const resetDataUsageButton =
         settingsTrafficCounters.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -199,9 +191,6 @@ suite('<settings-traffic-counters>', () => {
 
     assertEquals(EXPECTED_INITIAL_DATA_USAGE_LABEL, getDataUsageLabel());
     assertEquals(EXPECTED_INITIAL_DATA_USAGE_SUBLABEL, getDataUsageSubLabel());
-    assertEquals(
-        settingsTrafficCounters.i18n('TrafficCountersDataUsageResetLabel'),
-        getResetDataUsageLabel());
     assertEquals(31, getDaySelectionInput().value);
 
     // Simulate a reset by updating the last reset time for the cellular
@@ -222,8 +211,5 @@ suite('<settings-traffic-counters>', () => {
     assertEquals(EXPECTED_POST_RESET_DATA_USAGE_LABEL, getDataUsageLabel());
     assertEquals(
         EXPECTED_POST_RESET_DATA_USAGE_SUBLABEL, getDataUsageSubLabel());
-    assertEquals(
-        settingsTrafficCounters.i18n('TrafficCountersDataUsageResetLabel'),
-        getResetDataUsageLabel());
   });
 });

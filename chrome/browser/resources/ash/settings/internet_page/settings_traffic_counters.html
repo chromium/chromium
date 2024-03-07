@@ -15,17 +15,9 @@
           [[value_]]
         </div>
       </div>
-    </div>
-    <div id="data-usage-wrapper">
-      <div class="start settings-box-text" aria-hidden="true">
-        <div id="resetDataUsageLabel">
-          [[i18n('TrafficCountersDataUsageResetLabel')]]
-        </div>
-      </div>
-      <div class="separator"></div>
       <cr-button id="resetDataUsageButton"
-          aria-labelledby="resetDataUsageLabel"
-          on-click="onResetDataUsageClick_">
+        aria-label$="$i18n{TrafficCountersDataUsageResetLabel}"
+        on-click="onResetDataUsageClick_">
         [[i18n('TrafficCountersDataUsageResetButtonLabel')]]
       </cr-button>
     </div>
