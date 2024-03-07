@@ -129,18 +129,18 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the vector icon.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
-  // Sets the button's background color or toggled color with color ID when the
-  // button wants to have a different background color from the default one.
+  // Setters to apply custom background colors.
   void SetBackgroundColorId(ui::ColorId background_color_id);
   void SetBackgroundToggledColorId(ui::ColorId background_toggled_color_id);
+  void SetBackgroundDisabledColorId(ui::ColorId background_disabled_color_id);
 
   // Sets the radius determining the tile's curved edges.
   void SetButtonCornerRadius(const int radius);
 
-  // Sets the button's foreground color or toggled color with color ID when the
-  // button wants to have a different foreground color from the default one.
+  // Setters to apply custom foreground colors.
   void SetForegroundColorId(ui::ColorId foreground_color_id);
   void SetForegroundToggledColorId(ui::ColorId foreground_toggled_color_id);
+  void SetForegroundDisabledColorId(ui::ColorId foreground_disabled_color_id);
 
   // Sets the tile icon from an ImageSkia.
   void SetImage(gfx::ImageSkia image);
@@ -258,8 +258,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Customized value for the tile's background color and foreground color.
   std::optional<ui::ColorId> background_color_;
   std::optional<ui::ColorId> background_toggled_color_;
+  std::optional<ui::ColorId> background_disabled_color_;
   std::optional<ui::ColorId> foreground_color_;
   std::optional<ui::ColorId> foreground_toggled_color_;
+  std::optional<ui::ColorId> foreground_disabled_color_;
 
   // Owned by views hierarchy.
   raw_ptr<views::ImageButton> icon_button_ = nullptr;

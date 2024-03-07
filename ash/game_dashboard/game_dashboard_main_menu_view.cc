@@ -70,6 +70,7 @@ namespace ash {
 
 namespace {
 
+// Corner radius for the main menu.
 constexpr int kBubbleCornerRadius = 24;
 // Horizontal padding for the border around the main menu.
 constexpr int kPaddingWidth = 20;
@@ -81,6 +82,9 @@ constexpr int kCenterPadding = 8;
 constexpr int kMainMenuFixedWidth = 416;
 // Corner radius for the detail row container.
 constexpr float kDetailRowCornerRadius = 16.0f;
+// Corner radius for feature tiles.
+constexpr int kTileCornerRadius = 20;
+
 constexpr gfx::RoundedCornersF kGCDetailRowCorners =
     gfx::RoundedCornersF(/*upper_left=*/kDetailRowCornerRadius,
                          /*upper_right=*/kDetailRowCornerRadius,
@@ -116,15 +120,17 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   tile->SetVectorIcon(icon);
   tile->SetLabel(text);
   tile->SetTooltipText(text);
+  tile->SetButtonCornerRadius(kTileCornerRadius);
+  tile->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
+  tile->SetBackgroundToggledColorId(cros_tokens::kCrosSysPrimary);
+  tile->SetBackgroundDisabledColorId(cros_tokens::kCrosSysSystemOnBaseOpaque);
+  tile->SetForegroundToggledColorId(cros_tokens::kCrosSysOnPrimary);
+
   if (sub_label.has_value()) {
     tile->SetSubLabel(sub_label.value());
     tile->SetSubLabelVisibility(true);
   }
-  if (type == FeatureTile::TileType::kPrimary) {
-    // Remove any corner radius because it's set on the container for any
-    // primary `FeatureTile` objects.
-    tile->SetButtonCornerRadius(0);
-  }
+
   return tile;
 }
 
@@ -722,9 +728,6 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*sub_label=*/std::nullopt));
-    record_game_tile_->SetBackgroundColorId(
-        cros_tokens::kCrosSysSystemOnBaseOpaque);
-    record_game_tile_->SetForegroundColorId(cros_tokens::kCrosSysOnSurface);
     record_game_tile_->SetBackgroundToggledColorId(
         cros_tokens::kCrosSysSystemNegativeContainer);
     record_game_tile_->SetForegroundToggledColorId(

@@ -347,9 +347,12 @@ void FeatureTile::UpdateColors() {
         toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                  : cros_tokens::kCrosSysOnSurfaceVariant;
   } else {
-    background_color = cros_tokens::kCrosSysDisabledContainer;
-    foreground_color = cros_tokens::kCrosSysDisabled;
-    foreground_optional_color = cros_tokens::kCrosSysDisabled;
+    background_color = background_disabled_color_.value_or(
+        cros_tokens::kCrosSysDisabledContainer);
+    foreground_color =
+        foreground_disabled_color_.value_or(cros_tokens::kCrosSysDisabled);
+    foreground_optional_color =
+        foreground_disabled_color_.value_or(cros_tokens::kCrosSysDisabled);
   }
 
   SetBackground(
@@ -425,6 +428,16 @@ void FeatureTile::SetBackgroundToggledColorId(
     UpdateColors();
   }
 }
+void FeatureTile::SetBackgroundDisabledColorId(
+    ui::ColorId background_disabled_color_id) {
+  if (background_disabled_color_ == background_disabled_color_id) {
+    return;
+  }
+  background_disabled_color_ = background_disabled_color_id;
+  if (!GetEnabled()) {
+    UpdateColors();
+  }
+}
 
 void FeatureTile::SetButtonCornerRadius(const int radius) {
   corner_radius_ = radius;
@@ -450,6 +463,17 @@ void FeatureTile::SetForegroundToggledColorId(
   }
   foreground_toggled_color_ = foreground_toggled_color_id;
   if (toggled_) {
+    UpdateColors();
+  }
+}
+
+void FeatureTile::SetForegroundDisabledColorId(
+    ui::ColorId foreground_disabled_color_id) {
+  if (foreground_disabled_color_ == foreground_disabled_color_id) {
+    return;
+  }
+  foreground_disabled_color_ = foreground_disabled_color_id;
+  if (!GetEnabled()) {
     UpdateColors();
   }
 }
