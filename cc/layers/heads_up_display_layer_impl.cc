@@ -1213,13 +1213,25 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
                                                     int left,
                                                     int top,
                                                     int width) const {
-  const int height = ComputeTotalHeight(3);
+  const int height = ComputeTotalHeight(5);
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
   PaintFlags flags;
   DrawGraphBackground(canvas, &flags, area);
 
   int current_top = top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight;
+
+  // Add a deprecation notice
+  flags.setColor(DebugColors::PlatformLayerTreeTextColor());
+  std::string line1 = "This overlay is deprecated. Use the";
+  DrawText(canvas, flags, line1, TextAlign::kLeft, metrics_sizes.kFontHeight,
+           left + metrics_sizes.kSidePadding, current_top);
+  current_top += metrics_sizes.kFontHeight * 1.2;
+  std::string line2 = "Web Vitals Extension: goo.gle/wve";
+  DrawText(canvas, flags, line2, TextAlign::kLeft, metrics_sizes.kFontHeight,
+           left + metrics_sizes.kSidePadding, current_top);
+  current_top += metrics_sizes.kTopPadding;
+
   double metric_value = 0.f;
   bool has_lcp = web_vital_metrics_ && web_vital_metrics_->has_lcp;
   if (has_lcp)
