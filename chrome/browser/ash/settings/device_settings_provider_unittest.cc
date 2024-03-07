@@ -324,14 +324,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     Mock::VerifyAndClearExpectations(this);
   }
 
-  // Helper routine that sets the device DeviceWilcoDtcAllowed policy.
-  void SetDeviceWilcoDtcAllowedSetting(bool device_wilco_dtc_allowed) {
-    em::DeviceWilcoDtcAllowedProto* proto =
-        device_policy_->payload().mutable_device_wilco_dtc_allowed();
-    proto->set_device_wilco_dtc_allowed(device_wilco_dtc_allowed);
-    BuildAndInstallDevicePolicy();
-  }
-
   void SetDeviceDockMacAddressSourceSetting(
       em::DeviceDockMacAddressSourceProto::Source
           device_dock_mac_address_source) {
@@ -1019,17 +1011,6 @@ TEST_F(DeviceSettingsProviderTest, DeviceRebootAfterUserSignout) {
     base::Value expected_value(PolicyProto::VM_STARTED_OR_ARC_SESSION);
     VerifyPolicyValue(kDeviceRebootOnUserSignout, &expected_value);
   }
-}
-
-TEST_F(DeviceSettingsProviderTest, DeviceWilcoDtcAllowedSetting) {
-  // Policy should not be set by default
-  VerifyPolicyValue(kDeviceWilcoDtcAllowed, nullptr);
-
-  SetDeviceWilcoDtcAllowedSetting(true);
-  EXPECT_EQ(base::Value(true), *provider_->Get(kDeviceWilcoDtcAllowed));
-
-  SetDeviceWilcoDtcAllowedSetting(false);
-  EXPECT_EQ(base::Value(false), *provider_->Get(kDeviceWilcoDtcAllowed));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDockMacAddressSourceSetting) {

@@ -1519,16 +1519,6 @@ void DecodeExternalDataPolicies(
                                   external_data_manager, policies);
     }
   }
-
-  if (policy.has_device_wilco_dtc_configuration()) {
-    const em::DeviceWilcoDtcConfigurationProto& container(
-        policy.device_wilco_dtc_configuration());
-    if (container.has_device_wilco_dtc_configuration()) {
-      SetExternalDataDevicePolicy(key::kDeviceWilcoDtcConfiguration,
-                                  container.device_wilco_dtc_configuration(),
-                                  external_data_manager, policies);
-    }
-  }
 }
 
 void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
@@ -1907,22 +1897,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.plugin_vm_allowed()), nullptr);
     }
-  }
-
-  if (policy.has_device_wilco_dtc_allowed() &&
-      policy.device_wilco_dtc_allowed().has_device_wilco_dtc_allowed()) {
-    VLOG(2) << "Set Wilco DTC allowed to "
-            << policy.device_wilco_dtc_allowed().device_wilco_dtc_allowed();
-    policies->Set(
-        key::kDeviceWilcoDtcAllowed, POLICY_LEVEL_MANDATORY,
-        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-        base::Value(
-            policy.device_wilco_dtc_allowed().device_wilco_dtc_allowed()),
-        nullptr);
-  } else {
-    VLOG(2) << "No Wilco DTC allowed policy: "
-            << policy.has_device_wilco_dtc_allowed() << " "
-            << policy.device_wilco_dtc_allowed().has_device_wilco_dtc_allowed();
   }
 
   if (policy.has_device_wifi_allowed()) {

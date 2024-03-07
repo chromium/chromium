@@ -1,4 +1,5 @@
 caption: Allows wilco diagnostics and telemetry controller
+deprecated: true
 desc: |-
   Setting the policy to Enabled when <ph name="WILCO_NAME">wilco</ph> diagnostics and telemetry controller (DTC) is available on the device turns collecting, processing, and reporting of telemetry and diagnostics data on.
 
@@ -22,6 +23,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:74-
+- chrome_os:74-122
 tags: []
 type: main

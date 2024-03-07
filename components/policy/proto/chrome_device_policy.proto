@@ -1571,14 +1571,18 @@ message DeviceRebootOnUserSignoutProto {
   optional RebootOnSignoutMode reboot_on_signout_mode = 1 [default = NEVER];
 }
 
+// Obsolete: This policy is not supported starting with M-122.
 // Setting that controls whether wilco diagnostics and telemetry controller is
 // allowed on this device.
+// TODO(b/328547362): Add obsolete prefix after server-side usages are removed.
 message DeviceWilcoDtcAllowedProto {
   optional bool device_wilco_dtc_allowed = 1;
 }
 
+// Obsolete: This policy is not supported starting with M-122.
 // Setting that specifies wilco diagnostics and telemetry controller
 // configuration for this device.
+// TODO(b/328547362): Add obsolete prefix after server-side usages are removed.
 message DeviceWilcoDtcConfigurationProto {
   optional string device_wilco_dtc_configuration = 1;
 }
@@ -1943,8 +1947,10 @@ message ChromeDeviceSettingsProto {
       77;
   optional PluginVmLicenseKeyProto plugin_vm_license_key = 78;
   optional DeviceRebootOnUserSignoutProto device_reboot_on_user_signout = 79;
-  optional DeviceWilcoDtcAllowedProto device_wilco_dtc_allowed = 80;
-  optional DeviceWilcoDtcConfigurationProto device_wilco_dtc_configuration = 81;
+  optional DeviceWilcoDtcAllowedProto device_wilco_dtc_allowed = 80
+      [deprecated = true];
+  optional DeviceWilcoDtcConfigurationProto device_wilco_dtc_configuration = 81
+      [deprecated = true];
   optional DeviceWiFiAllowedProto device_wifi_allowed = 82;
   optional DevicePowerPeakShiftProto device_power_peak_shift = 83;
   optional DeviceBootOnAcProto device_boot_on_ac = 84;

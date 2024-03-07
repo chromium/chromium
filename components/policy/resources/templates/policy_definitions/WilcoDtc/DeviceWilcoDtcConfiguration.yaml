@@ -1,4 +1,5 @@
 caption: Wilco DTC configuration
+deprecated: true
 desc: |-
   Setting the policy configures the <ph name="WILCO_NAME">wilco</ph> diagnostics and telemetry controller (DTC), if available on the device. The setup size can't exceed 1MB (1,000,000 bytes) and must be in JSON format. The <ph name="WILCO_NAME">wilco</ph> DTC is responsible for handling it. The cryptographic hash verifies the integrity of the download. The configuration is downloaded and cached. It's redownloaded whenever the URL or the hash changes.
 
@@ -25,6 +26,6 @@ schema:
       type: string
   type: object
 supported_on:
-- chrome_os:75-
+- chrome_os:75-122
 tags: []
 type: external
