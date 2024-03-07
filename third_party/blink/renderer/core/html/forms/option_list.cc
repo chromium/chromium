@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 
@@ -14,6 +15,8 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
   // This function returns only
   // - An OPTION child of select_, or
   // - An OPTION child of an OPTGROUP child of select_.
+  // - An OPTION descendant of a DATALIST child of select_ if StylableSelect is
+  // enabled.
 
   Element* current;
   if (previous) {
@@ -30,6 +33,20 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
     if (IsA<HTMLOptGroupElement>(current) && current->parentNode() == select_) {
       if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current)))
         return;
+    }
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      // TODO(crbug.com/1511354): Consider using a flat tree traversal here
+      // instead of a node traversal. That would probably also require changing
+      // HTMLOptionsCollection to support flat tree traversals as well.
+      if (auto* datalist = select_->FirstChildDatalist()) {
+        // TODO(crbug.com/1511354): We shouldn't have to call IsDescendantOf
+        // here since we are already doing a tree traversal. This increases
+        // runtime.
+        if (current == datalist || current->IsDescendantOf(datalist)) {
+          current = ElementTraversal::Next(*current, select_);
+          continue;
+        }
+      }
     }
     current = ElementTraversal::NextSkippingChildren(*current, select_);
   }

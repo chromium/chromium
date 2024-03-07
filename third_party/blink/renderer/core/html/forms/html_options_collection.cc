@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -103,6 +104,32 @@ IndexedPropertySetterResult HTMLOptionsCollection::AnonymousIndexedSetter(
   }
   base.SetOption(index, value, exception_state);
   return IndexedPropertySetterResult::kIntercepted;
+}
+
+bool HTMLOptionsCollection::ElementMatches(const HTMLElement& element) const {
+  if (!IsA<HTMLOptionElement>(element)) {
+    return false;
+  }
+  Node* parent = element.parentNode();
+  if (!parent) {
+    return false;
+  }
+  if (parent == &RootNode()) {
+    return true;
+  }
+  if (IsA<HTMLOptGroupElement>(*parent) &&
+      parent->parentNode() == &RootNode()) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (auto* datalist =
+            To<HTMLSelectElement>(RootNode()).FirstChildDatalist()) {
+      if (element.IsDescendantOf(datalist)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace blink

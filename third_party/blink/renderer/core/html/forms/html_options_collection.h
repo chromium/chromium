@@ -72,19 +72,6 @@ struct DowncastTraits<HTMLOptionsCollection> {
   }
 };
 
-inline bool HTMLOptionsCollection::ElementMatches(
-    const HTMLElement& element) const {
-  if (!IsA<HTMLOptionElement>(element))
-    return false;
-  Node* parent = element.parentNode();
-  if (!parent)
-    return false;
-  if (parent == &RootNode())
-    return true;
-  return IsA<HTMLOptGroupElement>(*parent) &&
-         parent->parentNode() == &RootNode();
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OPTIONS_COLLECTION_H_

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
@@ -85,6 +87,79 @@ static const unsigned kMaxListItems = 100000;
 // absent.
 const int kDefaultListBoxSize = 4;
 
+class HTMLSelectElement::SelectMutationObserver
+    : public GarbageCollected<HTMLSelectElement::SelectMutationObserver>,
+      public SynchronousMutationObserver {
+ public:
+  explicit SelectMutationObserver(HTMLSelectElement* select) : select_(select) {
+    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+    SetDocument(&select_->GetDocument());
+  }
+
+  void DidChangeChildren(const ContainerNode& container,
+                         const ContainerNode::ChildrenChange& change) override {
+    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+    EventDispatchForbiddenScope assert_no_event_dispatch;
+
+    bool modified_datalist = false;
+    if (container == select_ &&
+        (((change.type == ChildrenChangeType::kElementInserted ||
+           change.type == ChildrenChangeType::kElementRemoved) &&
+          IsA<HTMLDataListElement>(change.sibling_changed)) ||
+         change.type == ChildrenChangeType::kAllChildrenRemoved)) {
+      select_->RecalcFirstChildDatalist();
+      modified_datalist = true;
+    }
+
+    if (!modified_datalist) {
+      if (container == select_) {
+        // Direct children are handled by HTMLSelectElement::ElementInserted.
+        // Checking IsDescendantOf slows down a performance test too much.
+        return;
+      }
+
+      auto* first_datalist = select_->FirstChildDatalist();
+      if (!first_datalist || (container != first_datalist &&
+                              !container.IsDescendantOf(first_datalist))) {
+        return;
+      }
+    }
+
+    if (change.type == ChildrenChangeType::kElementInserted) {
+      for (Node& node :
+           NodeTraversal::InclusiveDescendantsOf(*change.sibling_changed)) {
+        if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
+          select_->OptionInserted(*option, option->Selected());
+        }
+      }
+    } else if (change.type == ChildrenChangeType::kElementRemoved) {
+      for (Node& node :
+           NodeTraversal::InclusiveDescendantsOf(*change.sibling_changed)) {
+        if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
+          select_->OptionRemoved(*option);
+        }
+      }
+    } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
+      for (Member<Node> removed_node : change.removed_nodes) {
+        for (Node& node :
+             NodeTraversal::InclusiveDescendantsOf(*removed_node)) {
+          if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
+            select_->OptionRemoved(*option);
+          }
+        }
+      }
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(select_);
+    SynchronousMutationObserver::Trace(visitor);
+  }
+
+ private:
+  Member<HTMLSelectElement> select_;
+};
+
 HTMLSelectElement::HTMLSelectElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectTag, document),
       type_ahead_(this),
@@ -97,6 +172,10 @@ HTMLSelectElement::HTMLSelectElement(Document& document)
   select_type_ = SelectType::Create(*this);
   SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
+
+  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    mutation_observer_ = MakeGarbageCollected<SelectMutationObserver>(this);
+  }
 }
 
 HTMLSelectElement::~HTMLSelectElement() = default;
@@ -1251,6 +1330,8 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(option_slot_);
   visitor->Trace(last_on_change_option_);
   visitor->Trace(suggested_option_);
+  visitor->Trace(first_child_datalist_);
+  visitor->Trace(mutation_observer_);
   visitor->Trace(select_type_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
@@ -1561,6 +1642,19 @@ HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
 
 HTMLDataListElement* HTMLSelectElement::SlottedDatalist() const {
   return select_type_->SlottedDatalist();
+}
+
+HTMLDataListElement* HTMLSelectElement::FirstChildDatalist() const {
+  return first_child_datalist_;
+}
+
+void HTMLSelectElement::RecalcFirstChildDatalist() {
+  first_child_datalist_ = nullptr;
+  Node* next_child = firstChild();
+  while (next_child && !first_child_datalist_) {
+    first_child_datalist_ = DynamicTo<HTMLDataListElement>(next_child);
+    next_child = next_child->nextSibling();
+  }
 }
 
 bool HTMLSelectElement::IsAppearanceBikeshed() const {

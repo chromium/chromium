@@ -391,6 +391,7 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
     CHECK(!button_slot_);
     return nullptr;
   }
+  CHECK(button_slot_);
   return To<HTMLButtonElement>(button_slot_->FirstAssignedNode());
 }
 
@@ -399,6 +400,7 @@ HTMLDataListElement* MenuListSelectType::SlottedDatalist() const {
     CHECK(!datalist_slot_);
     return nullptr;
   }
+  CHECK(datalist_slot_);
   return To<HTMLDataListElement>(datalist_slot_->FirstAssignedNode());
 }
 

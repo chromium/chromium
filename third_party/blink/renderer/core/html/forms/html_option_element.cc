@@ -367,6 +367,21 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
     return nullptr;
   if (auto* select = DynamicTo<HTMLSelectElement>(*parentNode()))
     return select;
+  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    // TODO(crbug.com/1511354): Consider using a flat tree traversal here
+    // instead of a node traversal. That would probably also require
+    // changing HTMLOptionsCollection to support flat tree traversals as well.
+    for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+      if (auto* datalist = DynamicTo<HTMLDataListElement>(ancestor)) {
+        if (auto* select =
+                DynamicTo<HTMLSelectElement>(datalist->parentNode())) {
+          if (datalist == select->FirstChildDatalist()) {
+            return select;
+          }
+        }
+      }
+    }
+  }
   if (IsA<HTMLOptGroupElement>(*parentNode()))
     return DynamicTo<HTMLSelectElement>(parentNode()->parentNode());
   return nullptr;
