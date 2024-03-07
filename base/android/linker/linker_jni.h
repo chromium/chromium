@@ -102,6 +102,14 @@ class String {
   size_t size_;
 };
 
+inline uintptr_t PageStart(size_t page_size, uintptr_t x) {
+  return x & ~(page_size - 1);
+}
+
+inline uintptr_t PageEnd(size_t page_size, uintptr_t x) {
+  return PageStart(page_size, x + page_size - 1);
+}
+
 // Returns true iff casting a java-side |address| to uintptr_t does not lose
 // bits.
 bool IsValidAddress(jlong address);
