@@ -1102,6 +1102,72 @@ TEST_F(ClientControlledStateTest, ResizeToDismissSplitView) {
   }
 }
 
+// Tests that to-tablet/clamshell conversion carries over the snapped ratio.
+TEST_F(ClientControlledStateTest, ClamshellTabletConversionWithSnappedWindow) {
+  UpdateDisplay("900x600");
+  auto* const split_view_controller = SplitViewController::Get(window());
+
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(AppType::ARC_APP));
+  widget_delegate()->EnableSnap();
+  ASSERT_TRUE(window_state()->CanResize());
+  ASSERT_TRUE(window_state()->CanSnap());
+
+  // The scenario starts in clamshell mode.
+  ShellTestApi().SetTabletModeEnabledForTest(false);
+  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+
+  // Create a normal (non-client-controlled) window in addition to `window()`
+  // (client-controlled window) to fill the one side of the split view.
+  auto non_client_controlled_window = CreateAppWindow();
+  auto* const non_client_controlled_window_state =
+      WindowState::Get(non_client_controlled_window.get());
+
+  // Snap `window()` to 1/3 left.
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY,
+                                       chromeos::kOneThirdSnapRatio);
+  window_state()->OnWMEvent(&snap_primary);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+
+  // Snap `non_client_controlled_window` to 2/3 right.
+  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY,
+                                         chromeos::kTwoThirdSnapRatio);
+  non_client_controlled_window_state->OnWMEvent(&snap_secondary);
+
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            non_client_controlled_window_state->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kOneThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kTwoThirdSnapRatio);
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+
+  // Clamshell-to-tablet transition should carry over the bounds.
+  ShellTestApi().SetTabletModeEnabledForTest(true);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            non_client_controlled_window_state->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kOneThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kTwoThirdSnapRatio);
+  EXPECT_TRUE(split_view_controller->InSplitViewMode());
+
+  // Tablet-to-clamshell transition should carry over the bounds.
+  ShellTestApi().SetTabletModeEnabledForTest(false);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            non_client_controlled_window_state->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kOneThirdSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kTwoThirdSnapRatio);
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+}
+
 // Pin events should not be applied immediately. The request should be sent
 // to delegate.
 TEST_F(ClientControlledStateTest, Pinned) {
