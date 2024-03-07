@@ -421,12 +421,11 @@ void PartitionAddressSpace::UninitThreadIsolatedPoolForTesting() {
 }
 #endif
 
-#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64)
+#if defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
 
 PageCharacteristics page_characteristics;
 
-#endif  // (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) &&
-        // defined(ARCH_CPU_ARM64)
+#endif
 
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 

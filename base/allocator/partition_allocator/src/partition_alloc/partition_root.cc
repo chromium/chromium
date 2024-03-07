@@ -376,9 +376,8 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   constexpr size_t kMaxSlotCount =
       (PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan) /
       MinPurgeableSlotSize();
-#elif BUILDFLAG(IS_APPLE) ||                           \
-    ((BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) && \
-     defined(ARCH_CPU_ARM64))
+#elif BUILDFLAG(IS_APPLE) || \
+    defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
   // It's better for slot_usage to be stack-allocated and fixed-size, which
   // demands that its size be constexpr. On IS_APPLE and Linux on arm64,
   // PartitionPageSize() is always SystemPageSize() << 2, so regardless of

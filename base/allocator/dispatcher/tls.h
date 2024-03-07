@@ -74,6 +74,8 @@ struct BASE_EXPORT MMapAllocator {
       partition_alloc::PartitionPageSize();
 #elif BUILDFLAG(IS_APPLE)
   constexpr static size_t AllocationChunkSize = 16384;
+#elif BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_64_BITS)
+  constexpr static size_t AllocationChunkSize = 16384;
 #elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
   constexpr static size_t AllocationChunkSize = 16384;
 #else

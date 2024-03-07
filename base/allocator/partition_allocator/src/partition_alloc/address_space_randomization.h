@@ -104,10 +104,12 @@ AslrMask(uintptr_t bits) {
 
       // Linux (and macOS) support the full 47-bit user space of x64 processors.
       // Use only 46 to allow the kernel a chance to fulfill the request.
-      PA_ALWAYS_INLINE constexpr uintptr_t ASLRMask() {
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+      ASLRMask() {
         return AslrMask(46);
       }
-      PA_ALWAYS_INLINE constexpr uintptr_t ASLROffset() {
+      PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
+      ASLROffset() {
         return AslrAddress(0);
       }
 
