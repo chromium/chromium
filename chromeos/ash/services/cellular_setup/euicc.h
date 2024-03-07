@@ -45,6 +45,8 @@ class Euicc : public mojom::Euicc {
       InstallProfileFromActivationCodeCallback callback) override;
   void RequestAvailableProfiles(
       RequestAvailableProfilesCallback callback) override;
+  void RefreshInstalledProfiles(
+      RefreshInstalledProfilesCallback callback) override;
   void RequestPendingProfiles(RequestPendingProfilesCallback callback) override;
   void GetEidQRCode(GetEidQRCodeCallback callback) override;
 

@@ -50,6 +50,21 @@ mojom::ESimOperationResult RequestPendingProfiles(
   return result;
 }
 
+mojom::ESimOperationResult RefreshInstalledProfiles(
+    mojo::Remote<mojom::Euicc>& euicc) {
+  mojom::ESimOperationResult result;
+  base::RunLoop run_loop;
+  euicc->RefreshInstalledProfiles(base::BindOnce(
+      [](mojom::ESimOperationResult* out, base::OnceClosure quit_closure,
+         mojom::ESimOperationResult result) {
+        *out = result;
+        std::move(quit_closure).Run();
+      },
+      &result, run_loop.QuitClosure()));
+  run_loop.Run();
+  return result;
+}
+
 }  // namespace
 
 class EuiccTest : public ESimTestBase {
@@ -645,6 +660,27 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles_FailToInhibit) {
                   profile_properties->activation_code),
         smds_activation_codes.end());
   }
+}
+
+TEST_F(EuiccTest_SmdsSupportEnabled, RefreshInstalledProfiles) {
+  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
+  ASSERT_TRUE(euicc.is_bound());
+
+  HermesEuiccClient::TestInterface* euicc_test =
+      HermesEuiccClient::Get()->GetTestInterface();
+
+  // Failing to inhibit the cellular device will cause the refresh attempt to
+  // fail.
+  SetErrorForNextSetPropertyAttempt("error_name");
+  EXPECT_EQ(mojom::ESimOperationResult::kFailure,
+            RefreshInstalledProfiles(euicc));
+
+  euicc_test->QueueHermesErrorStatus(HermesResponseStatus::kErrorNoResponse);
+  EXPECT_EQ(mojom::ESimOperationResult::kFailure,
+            RefreshInstalledProfiles(euicc));
+
+  EXPECT_EQ(mojom::ESimOperationResult::kSuccess,
+            RefreshInstalledProfiles(euicc));
 }
 
 }  // namespace ash::cellular_setup

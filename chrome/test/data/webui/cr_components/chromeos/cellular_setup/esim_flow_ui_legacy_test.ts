@@ -103,6 +103,19 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         wifiGuidPrefix + '_guid', ConnectionStateType.kNotConnected);
   }
 
+  test('Dialog refreshes installed profiles when opened', async function() {
+    eSimManagerRemote.addEuiccForTest(0);
+    const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+    assertTrue(!!availableEuiccs.euiccs[0]);
+    const euicc: FakeEuicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
+    assertTrue(!!euicc);
+    assertEquals(0, euicc.getRefreshInstalledProfilesCount());
+
+    eSimPage.initSubflow();
+    await flushAsync();
+    assertEquals(1, euicc.getRefreshInstalledProfilesCount());
+  });
+
   test('Error fetching profiles', async function() {
     eSimManagerRemote.addEuiccForTest(0);
     const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
