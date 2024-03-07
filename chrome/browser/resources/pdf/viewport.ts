@@ -1970,12 +1970,11 @@ class ScrollContent {
   }
 
   get overlayScrollbarWidth(): number {
-    let overlayScrollbarWidth = 0;
+    // Default width for overlay scrollbars to avoid painting the page indicator
+    // over the scrollbar parts.
+    let overlayScrollbarWidth = 16;
 
-    // TODO(crbug.com/1286009): Support overlay scrollbars on all platforms.
-    // <if expr="is_macosx">
-    overlayScrollbarWidth = 16;
-    // </if>
+    // MacOS has a fixed width independent of the presence of a pdf plugin.
     // <if expr="not is_macosx">
     if (this.plugin_) {
       overlayScrollbarWidth = this.scrollbarWidth_;
