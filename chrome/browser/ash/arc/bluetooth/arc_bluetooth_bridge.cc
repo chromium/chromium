@@ -2029,7 +2029,10 @@ void ArcBluetoothBridge::AddCharacteristic(int32_t service_handle,
                                            int32_t permissions,
                                            AddCharacteristicCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(gatt_identifier_.find(service_handle) != gatt_identifier_.end());
+
+  auto gatt_id = gatt_identifier_.find(service_handle);
+  DCHECK(gatt_id != gatt_identifier_.end());
+
   if (!IsGattServerAttributeHandleAvailable(1)) {
     std::move(callback).Run(kInvalidGattAttributeHandle);
     return;
@@ -2038,10 +2041,14 @@ void ArcBluetoothBridge::AddCharacteristic(int32_t service_handle,
   const auto& [bluez_properties, bluez_permissions] =
       floss::BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
           static_cast<uint8_t>(properties), static_cast<uint16_t>(permissions));
+
+  auto* service = bluetooth_adapter_->GetGattService(gatt_id->second);
+  if (!service) {
+    return;
+  }
+
   base::WeakPtr<BluetoothLocalGattCharacteristic> characteristic =
-      BluetoothLocalGattCharacteristic::Create(
-          uuid, bluez_properties, bluez_permissions,
-          bluetooth_adapter_->GetGattService(gatt_identifier_[service_handle]));
+      service->CreateCharacteristic(uuid, bluez_properties, bluez_permissions);
   int32_t characteristic_handle =
       CreateGattAttributeHandle(characteristic.get());
   last_characteristic_[service_handle] = characteristic_handle;

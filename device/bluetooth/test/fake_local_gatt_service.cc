@@ -68,4 +68,13 @@ FakeLocalGattService::GetCharacteristic(const std::string& identifier) {
   return it->second.get();
 }
 
+base::WeakPtr<device::BluetoothLocalGattCharacteristic>
+FakeLocalGattService::CreateCharacteristic(
+    const device::BluetoothUUID& uuid,
+    device::BluetoothGattCharacteristic::Properties properties,
+    device::BluetoothGattCharacteristic::Permissions permissions) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 }  // namespace bluetooth

@@ -23,11 +23,10 @@ class BluetoothLocalGattDescriptorTest : public BluetoothGattServerTest {
     // We will need this device to use with simulating read/write attribute
     // value events.
     device_ = SimulateLowEnergyDevice(1);
-    characteristic_ = BluetoothLocalGattCharacteristic::Create(
+    characteristic_ = service_->CreateCharacteristic(
         BluetoothUUID(kTestUUIDGenericAttribute),
         device::BluetoothLocalGattCharacteristic::Properties(),
-        device::BluetoothLocalGattCharacteristic::Permissions(),
-        service_.get());
+        device::BluetoothLocalGattCharacteristic::Permissions());
     read_descriptor_ = BluetoothLocalGattDescriptor::Create(
         BluetoothUUID(kTestUUIDGenericAttribute),
         device::BluetoothLocalGattCharacteristic::PERMISSION_READ,

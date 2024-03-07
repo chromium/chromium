@@ -1815,16 +1815,16 @@ TEST_F(BluetoothTest, MAYBE_RegisterLocalGattServices) {
       adapter_->CreateLocalGattService(BluetoothUUID(kTestUUIDGenericAttribute),
                                        true, nullptr);
   base::WeakPtr<BluetoothLocalGattCharacteristic> characteristic1 =
-      BluetoothLocalGattCharacteristic::Create(
+      service->CreateCharacteristic(
           BluetoothUUID(kTestUUIDGenericAttribute),
           BluetoothLocalGattCharacteristic::Properties(),
-          BluetoothLocalGattCharacteristic::Permissions(), service.get());
+          BluetoothLocalGattCharacteristic::Permissions());
 
   base::WeakPtr<BluetoothLocalGattCharacteristic> characteristic2 =
-      BluetoothLocalGattCharacteristic::Create(
+      service->CreateCharacteristic(
           BluetoothUUID(kTestUUIDGenericAttribute),
           BluetoothLocalGattCharacteristic::Properties(),
-          BluetoothLocalGattCharacteristic::Permissions(), service.get());
+          BluetoothLocalGattCharacteristic::Permissions());
 
   base::WeakPtr<BluetoothLocalGattDescriptor> descriptor =
       BluetoothLocalGattDescriptor::Create(

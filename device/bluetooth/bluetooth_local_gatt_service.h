@@ -193,6 +193,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
   virtual BluetoothLocalGattCharacteristic* GetCharacteristic(
       const std::string& identifier) = 0;
 
+  // Constructs a BluetoothLocalGattCharacteristic associated with a local GATT
+  // service when the adapter is in the peripheral role.
+  //
+  // This method constructs a characteristic with UUID |uuid|,
+  // properties |properties|, and permissions |permissions|. The service
+  // instance will contain this characteristic.
+  // TODO(rkc): Investigate how to handle |PROPERTY_EXTENDED_PROPERTIES|
+  // correctly.
+  virtual base::WeakPtr<BluetoothLocalGattCharacteristic> CreateCharacteristic(
+      const BluetoothUUID& uuid,
+      BluetoothGattCharacteristic::Properties properties,
+      BluetoothGattCharacteristic::Permissions permissions) = 0;
+
  protected:
   BluetoothLocalGattService() = default;
 };

@@ -141,7 +141,6 @@ component("bluetooth") {
     "bluetooth_gatt_notify_session.h",
     "bluetooth_gatt_service.cc",
     "bluetooth_gatt_service.h",
-    "bluetooth_local_gatt_characteristic.cc",
     "bluetooth_local_gatt_characteristic.h",
     "bluetooth_local_gatt_descriptor.cc",
     "bluetooth_local_gatt_descriptor.h",

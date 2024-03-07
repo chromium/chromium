@@ -120,6 +120,15 @@ BluetoothLocalGattServiceFloss::GetCharacteristic(
   return nullptr;
 }
 
+base::WeakPtr<device::BluetoothLocalGattCharacteristic>
+BluetoothLocalGattServiceFloss::CreateCharacteristic(
+    const device::BluetoothUUID& uuid,
+    device::BluetoothGattCharacteristic::Permissions properties,
+    device::BluetoothGattCharacteristic::Permissions permissions) {
+  return floss::BluetoothLocalGattCharacteristicFloss::Create(
+      uuid, properties, permissions, /*service=*/this);
+}
+
 int32_t BluetoothLocalGattServiceFloss::AddCharacteristic(
     std::unique_ptr<BluetoothLocalGattCharacteristicFloss> characteristic) {
   characteristics_.push_back(std::move(characteristic));

@@ -54,6 +54,10 @@ class BluetoothLocalGattServiceFloss
   device::BluetoothLocalGattCharacteristic* GetCharacteristic(
       const std::string& identifier) override;
   std::string GetIdentifier() const override;
+  base::WeakPtr<device::BluetoothLocalGattCharacteristic> CreateCharacteristic(
+      const device::BluetoothUUID& uuid,
+      device::BluetoothGattCharacteristic::Properties properties,
+      device::BluetoothGattCharacteristic::Permissions permissions) override;
 
   // BluetoothGattServiceFloss overrides.
   void GattServerServiceAdded(GattStatus status, GattService service) override;
