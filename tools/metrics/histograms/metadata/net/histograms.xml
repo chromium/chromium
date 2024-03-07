@@ -5432,15 +5432,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SSLRSAKeyUsage.UnknownRoot" enum="RSAKeyUsage"
-    expires_after="2024-09-01">
-  <owner>davidben@chromium.org</owner>
-  <summary>
-    For each TLS connection which uses a unknown root, an RSA key, and TLS 1.2
-    or below, what the result of checking the RSA key usage would have been.
-  </summary>
-</histogram>
-
 <histogram name="Net.SSLSignatureAlgorithm" enum="SSLSignatureAlgorithm"
     expires_after="never">
 <!-- expires-never: Used to keep track of the TLS ecosystem. -->

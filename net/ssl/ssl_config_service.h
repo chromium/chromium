@@ -59,17 +59,6 @@ struct NET_EXPORT SSLContextConfig {
   // If specified, controls whether insecure hashes are allowed in TLS
   // handshakes. If `std::nullopt`, this is determined by feature flags.
   std::optional<bool> insecure_hash_override;
-
-  // If specified, controls whether the X.509 keyUsage extension is checked in
-  // TLS 1.2 for RSA certificates that chain to a local trust anchor. If
-  // `std::nullopt`, this is determined by feature flags.
-  //
-  // Independent of the setting of this value, keyUsage is always checked at TLS
-  // 1.3, for ECDSA certificates, and for all certificates that chain to a known
-  // root.
-  //
-  // TODO(crbug.com/795089): Enable this unconditionally.
-  std::optional<bool> rsa_key_usage_for_local_anchors_override;
 };
 
 // The interface for retrieving global SSL configuration.  This interface

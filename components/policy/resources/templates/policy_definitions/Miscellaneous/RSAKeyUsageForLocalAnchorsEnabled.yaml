@@ -1,11 +1,18 @@
 caption: Check RSA key usage for server certificates issued by local trust anchors
 default: null
+deprecated: true
 desc: |-
   The X.509 key usage extension declares how the key in a certificate may be
   used. Such instructions ensure certificates are not used in an unintended
   context, which protects against a class of cross-protocol attacks on HTTPS and
   other protocols. For this to work, HTTPS clients must check that server
   certificates match the connection's TLS parameters.
+
+  Starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 124, this
+  check is always enabled.
+
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 123 and earlier have the
+  following behavior:
 
   If this policy is set to enabled,
   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will perform this check.
@@ -21,12 +28,7 @@ desc: |-
 
   If the policy is not configured,
   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will behave as if the
-  policy is disabled.
-
-  This policy is available for administrators to preview the behavior of a
-  future release, which will enable this check by default. At that point, this
-  policy will remain temporarily available for administrators that need more
-  time to update.
+  policy is enabled.
 
   Connections which fail this check will fail with the error
   ERR_SSL_KEY_USAGE_INCOMPATIBLE. Sites which fail with this error likely have a
@@ -51,10 +53,10 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:116-
-- chrome_os:116-
-- android:116-
-- fuchsia:116-
+- chrome.*:116-123
+- chrome_os:116-123
+- android:116-123
+- fuchsia:116-123
 tags:
 - system-security
 type: main

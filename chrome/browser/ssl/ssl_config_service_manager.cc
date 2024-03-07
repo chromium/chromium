@@ -132,9 +132,6 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
                     local_state_callback);
   insecure_hash_enabled_.Init(prefs::kInsecureHashesInTLSHandshakesEnabled,
                               local_state, local_state_callback);
-  rsa_key_usage_for_local_anchors_enabled_.Init(
-      prefs::kRSAKeyUsageForLocalAnchorsEnabled, local_state,
-      local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -167,8 +164,6 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kPostQuantumKeyAgreementEnabled, false);
-  registry->RegisterBooleanPref(prefs::kRSAKeyUsageForLocalAnchorsEnabled,
-                                false);
 }
 
 void SSLConfigServiceManager::AddToNetworkContextParams(
@@ -246,16 +241,6 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
                                          : network::mojom::OptionalBool::kFalse;
   } else {
     config->insecure_hash_override = network::mojom::OptionalBool::kUnset;
-  }
-
-  if (rsa_key_usage_for_local_anchors_enabled_.IsManaged()) {
-    config->rsa_key_usage_for_local_anchors_override =
-        rsa_key_usage_for_local_anchors_enabled_.GetValue()
-            ? network::mojom::OptionalBool::kTrue
-            : network::mojom::OptionalBool::kFalse;
-  } else {
-    config->rsa_key_usage_for_local_anchors_override =
-        network::mojom::OptionalBool::kUnset;
   }
 
   return config;

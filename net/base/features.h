@@ -112,14 +112,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableIPv6ReachabilityOverride);
 // Enables TLS 1.3 early data.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
 
-// Enables checking the X.509 keyUsage extension in TLS 1.2 for RSA server
-// certificates that chain to a local trust anchor.
-//
-// Independent of the setting of this feature, keyUsage is always checked at TLS
-// 1.3, for ECDSA certificates, and for all certificates that chain to a known
-// root.
-NET_EXPORT BASE_DECLARE_FEATURE(kRSAKeyUsageForLocalAnchors);
-
 // Enables optimizing the network quality estimation algorithms in network
 // quality estimator (NQE).
 NET_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimator);

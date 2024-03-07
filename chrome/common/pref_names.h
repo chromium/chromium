@@ -2588,12 +2588,6 @@ inline constexpr char kEncryptedClientHelloEnabled[] = "ssl.ech_enabled";
 inline constexpr char kInsecureHashesInTLSHandshakesEnabled[] =
     "ssl.insecure_hash_enabled";
 
-// If true, checks the X.509 keyUsage extension in TLS 1.2 for RSA
-// certificates that chain to a local trust anchor. If false, the checks are
-// disabled.
-inline constexpr char kRSAKeyUsageForLocalAnchorsEnabled[] =
-    "ssl.rsa_key_usage_for_local_anchors_enabled";
-
 // Boolean that specifies whether the built-in asynchronous DNS client is used.
 inline constexpr char kBuiltInDnsClientEnabled[] = "async_dns.enabled";
 

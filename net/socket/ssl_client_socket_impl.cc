@@ -65,8 +65,6 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
-#include "third_party/boringssl/src/pki/parse_certificate.h"
-#include "third_party/boringssl/src/pki/parse_values.h"
 
 namespace net {
 
@@ -146,96 +144,6 @@ base::Value::Dict NetLogSSLMessageParams(bool is_write,
   }
 
   return dict;
-}
-
-// This enum is used in histograms, so values may not be reused.
-enum class RSAKeyUsage {
-  // The TLS cipher suite was not RSA or ECDHE_RSA.
-  kNotRSA = 0,
-  // The Key Usage extension is not present, which is consistent with TLS usage.
-  kOKNoExtension = 1,
-  // The Key Usage extension has both the digitalSignature and keyEncipherment
-  // bits, which is consistent with TLS usage.
-  kOKHaveBoth = 2,
-  // The Key Usage extension contains only the digitalSignature bit, which is
-  // consistent with TLS usage.
-  kOKHaveDigitalSignature = 3,
-  // The Key Usage extension contains only the keyEncipherment bit, which is
-  // consistent with TLS usage.
-  kOKHaveKeyEncipherment = 4,
-  // The Key Usage extension is missing the digitalSignature bit.
-  kMissingDigitalSignature = 5,
-  // The Key Usage extension is missing the keyEncipherment bit.
-  kMissingKeyEncipherment = 6,
-  // There was an error processing the certificate.
-  kError = 7,
-
-  kLastValue = kError,
-};
-
-RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
-                             const SSL_CIPHER* cipher) {
-  bool need_key_encipherment = false;
-  switch (SSL_CIPHER_get_kx_nid(cipher)) {
-    case NID_kx_rsa:
-      need_key_encipherment = true;
-      break;
-    case NID_kx_ecdhe:
-      if (SSL_CIPHER_get_auth_nid(cipher) != NID_auth_rsa) {
-        return RSAKeyUsage::kNotRSA;
-      }
-      break;
-    default:
-      return RSAKeyUsage::kNotRSA;
-  }
-
-  const CRYPTO_BUFFER* buffer = cert->cert_buffer();
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
-  bssl::ParsedTbsCertificate tbs;
-  if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(buffer),
-                                               CRYPTO_BUFFER_len(buffer)),
-                              &tbs_certificate_tlv, &signature_algorithm_tlv,
-                              &signature_value, nullptr) ||
-      !ParseTbsCertificate(tbs_certificate_tlv,
-                           x509_util::DefaultParseCertificateOptions(), &tbs,
-                           nullptr)) {
-    return RSAKeyUsage::kError;
-  }
-
-  if (!tbs.extensions_tlv) {
-    return RSAKeyUsage::kOKNoExtension;
-  }
-
-  std::map<bssl::der::Input, bssl::ParsedExtension> extensions;
-  if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions)) {
-    return RSAKeyUsage::kError;
-  }
-  bssl::ParsedExtension key_usage_ext;
-  if (!ConsumeExtension(bssl::der::Input(bssl::kKeyUsageOid), &extensions,
-                        &key_usage_ext)) {
-    return RSAKeyUsage::kOKNoExtension;
-  }
-  bssl::der::BitString key_usage;
-  if (!bssl::ParseKeyUsage(key_usage_ext.value, &key_usage)) {
-    return RSAKeyUsage::kError;
-  }
-
-  bool have_digital_signature =
-      key_usage.AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE);
-  bool have_key_encipherment =
-      key_usage.AssertsBit(bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT);
-  if (have_digital_signature && have_key_encipherment) {
-    return RSAKeyUsage::kOKHaveBoth;
-  }
-
-  if (need_key_encipherment) {
-    return have_key_encipherment ? RSAKeyUsage::kOKHaveKeyEncipherment
-                                 : RSAKeyUsage::kMissingKeyEncipherment;
-  }
-  return have_digital_signature ? RSAKeyUsage::kOKHaveDigitalSignature
-                                : RSAKeyUsage::kMissingDigitalSignature;
 }
 
 bool HostIsIPAddressNoBrackets(base::StringPiece host) {
@@ -1027,17 +935,6 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
   // in server_cert_.
   CHECK(ok);
 
-  // See how feasible enforcing RSA key usage would be. See
-  // https://crbug.com/795089.
-  if (!server_cert_verify_result_.is_issued_by_known_root) {
-    RSAKeyUsage rsa_key_usage = CheckRSAKeyUsage(
-        server_cert_.get(), SSL_get_current_cipher(ssl_.get()));
-    if (rsa_key_usage != RSAKeyUsage::kNotRSA) {
-      UMA_HISTOGRAM_ENUMERATION("Net.SSLRSAKeyUsage.UnknownRoot", rsa_key_usage,
-                                static_cast<int>(RSAKeyUsage::kLastValue) + 1);
-    }
-  }
-
   SSLHandshakeDetails details;
   if (SSL_version(ssl_.get()) < TLS1_3_VERSION) {
     if (SSL_session_reused(ssl_.get())) {
@@ -1224,17 +1121,6 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
   cert_verification_result_ = kCertVerifyPending;
 
   cert_verifier_request_.reset();
-
-  // Enforce keyUsage extension for RSA leaf certificates chaining up to known
-  // roots unconditionally. Enforcement for local anchors is, for now,
-  // conditional on feature flags and external configuration. See
-  // https://crbug.com/795089.
-  bool rsa_key_usage_for_local_anchors =
-      context_->config().rsa_key_usage_for_local_anchors_override.value_or(
-          base::FeatureList::IsEnabled(features::kRSAKeyUsageForLocalAnchors));
-  SSL_set_enforce_rsa_key_usage(
-      ssl_.get(), rsa_key_usage_for_local_anchors ||
-                      server_cert_verify_result_.is_issued_by_known_root);
 
   // If the connection was good, check HPKP and CT status simultaneously,
   // but prefer to treat the HPKP error as more serious, if there was one.

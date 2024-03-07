@@ -4124,10 +4124,7 @@ struct KeyUsageTest {
 class SSLClientSocketKeyUsageTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<
-          std::tuple<KeyUsageTest,
-                     bool /*known_root*/,
-                     bool /*rsa_key_usage_for_local_anchors_enabled*/,
-                     bool /*override_feature*/>> {};
+          std::tuple<KeyUsageTest, bool /*known_root*/>> {};
 
 const KeyUsageTest kKeyUsageTests[] = {
     // keyUsage matches cipher suite.
@@ -4143,38 +4140,13 @@ const KeyUsageTest kKeyUsageTests[] = {
 };
 
 TEST_P(SSLClientSocketKeyUsageTest, RSAKeyUsage) {
-  const auto& [test, known_root, rsa_key_usage_for_local_anchors_enabled,
-               override_feature] = GetParam();
-  bool enable_feature;
-  if (override_feature) {
-    // Configure the feature in the opposite way that we intend, to test that
-    // the configuration overrides it.
-    enable_feature = !rsa_key_usage_for_local_anchors_enabled;
-  } else {
-    enable_feature = rsa_key_usage_for_local_anchors_enabled;
-  }
-  base::test::ScopedFeatureList scoped_feature_list;
-  if (enable_feature) {
-    scoped_feature_list.InitAndEnableFeature(
-        features::kRSAKeyUsageForLocalAnchors);
-  } else {
-    scoped_feature_list.InitAndDisableFeature(
-        features::kRSAKeyUsageForLocalAnchors);
-  }
-
+  const auto& [test, known_root] = GetParam();
   SSLServerConfig server_config;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
   server_config.cipher_suite_for_testing = test.cipher_suite;
   ASSERT_TRUE(StartEmbeddedTestServer(test.server_cert, server_config));
   scoped_refptr<X509Certificate> server_cert =
       embedded_test_server()->GetCertificate();
-
-  SSLContextConfig context_config;
-  if (override_feature) {
-    context_config.rsa_key_usage_for_local_anchors_override =
-        rsa_key_usage_for_local_anchors_enabled;
-  }
-  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
 
   // Certificate is trusted.
   CertVerifyResult verify_result;
@@ -4190,7 +4162,7 @@ TEST_P(SSLClientSocketKeyUsageTest, RSAKeyUsage) {
   SSLInfo ssl_info;
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
 
-  if (test.match || (!known_root && !rsa_key_usage_for_local_anchors_enabled)) {
+  if (test.match) {
     EXPECT_THAT(rv, IsOk());
     EXPECT_TRUE(sock_->IsConnected());
   } else {
@@ -4199,10 +4171,9 @@ TEST_P(SSLClientSocketKeyUsageTest, RSAKeyUsage) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    RSAKeyUsageInstantiation,
-    SSLClientSocketKeyUsageTest,
-    Combine(ValuesIn(kKeyUsageTests), Bool(), Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(RSAKeyUsageInstantiation,
+                         SSLClientSocketKeyUsageTest,
+                         Combine(ValuesIn(kKeyUsageTests), Bool()));
 
 // Test that when CT is required (in this case, by the delegate), the
 // absence of CT information is a socket error.
