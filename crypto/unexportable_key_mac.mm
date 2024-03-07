@@ -178,9 +178,11 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
 // TODO(nsatragno): add facilities to remove keys.
 class UnexportableKeyProviderMac : public UnexportableKeyProvider {
  public:
-  explicit UnexportableKeyProviderMac(std::string keychain_access_group)
-      : keychain_access_group_(base::SysUTF8ToNSString(keychain_access_group)) {
-  }
+  explicit UnexportableKeyProviderMac(std::string keychain_access_group,
+                                      std::string application_tag)
+      : keychain_access_group_(
+            base::SysUTF8ToNSString(std::move(keychain_access_group))),
+        application_tag_(base::SysUTF8ToNSString(std::move(application_tag))) {}
   ~UnexportableKeyProviderMac() override = default;
 
   std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
@@ -223,6 +225,7 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
       CFToNSPtrCast(kSecPrivateKeyAttrs) : key_attributes,
       CFToNSPtrCast(kSecAttrAccessGroup) : keychain_access_group_,
       CFToNSPtrCast(kSecAttrLabel) : base::SysUTF8ToNSString(kAttrLabel),
+      CFToNSPtrCast(kSecAttrApplicationTag) : application_tag_,
     };
 
     base::apple::ScopedCFTypeRef<CFErrorRef> error;
@@ -270,12 +273,14 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
 
  private:
   NSString* __strong keychain_access_group_;
+  NSString* __strong application_tag_;
 };
 
 }  // namespace
 
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
-    std::string keychain_access_group) {
+    std::string keychain_access_group,
+    std::string application_tag) {
   if (!base::FeatureList::IsEnabled(crypto::kEnableMacUnexportableKeys)) {
     return nullptr;
   }
@@ -283,8 +288,7 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
       << "A keychain access group must be set when using unexportable keys on "
          "macOS";
   if (![AppleKeychainV2::GetInstance().GetTokenIDs()
-          containsObject:base::apple::CFToNSPtrCast(
-                             kSecAttrTokenIDSecureEnclave)]) {
+          containsObject:CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]) {
     return nullptr;
   }
   // Inspecting the binary for the entitlement is not available on iOS, assume
@@ -298,7 +302,7 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
   }
 #endif  // !BUILDFLAG(IS_IOS)
   return std::make_unique<UnexportableKeyProviderMac>(
-      std::move(keychain_access_group));
+      std::move(keychain_access_group), std::move(application_tag));
 }
 
 }  // namespace crypto

@@ -70,6 +70,13 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
     // This must be set to a non empty value when using unexportable keys on
     // macOS.
     std::string keychain_access_group;
+
+    // An optional application tag that will be set for all keys created by this
+    // provider. If non empty, this should uniquely identify a group of related
+    // keys, and can be used to query or delete all credentials with the same
+    // tag.
+    // https://developer.apple.com/documentation/security/ksecattrapplicationtag?language=objc
+    std::string application_tag;
 #endif  // BUILDFLAG(IS_MAC)
   };
 

@@ -10,11 +10,13 @@
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace crypto {
+
 namespace {
 
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
 
-const crypto::UnexportableKeyProvider::Config config = {
+const UnexportableKeyProvider::Config config = {
     .keychain_access_group = kTestKeychainAccessGroup,
 };
 
@@ -22,19 +24,21 @@ const crypto::UnexportableKeyProvider::Config config = {
 // keys.
 class UnexportableKeyMacTest : public testing::Test {
  protected:
-  crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+  ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kTestKeychainAccessGroup};
 
   base::test::ScopedFeatureList scoped_feature_list_{
-      crypto::kEnableMacUnexportableKeys};
+      kEnableMacUnexportableKeys};
 };
 
 TEST_F(UnexportableKeyMacTest, SecureEnclaveAvailability) {
   for (bool available : {true, false}) {
     scoped_fake_apple_keychain_.keychain()->set_secure_enclave_available(
         available);
-    EXPECT_EQ(crypto::GetUnexportableKeyProvider(config) != nullptr, available);
+    EXPECT_EQ(GetUnexportableKeyProvider(config) != nullptr, available);
   }
 }
 
 }  // namespace
+
+}  // namespace crypto
