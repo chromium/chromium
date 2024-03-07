@@ -304,11 +304,6 @@ void OnImageEmbedderCreated(
 }
 #endif
 
-int* GetLiveScorerCount() {
-  static int count = 0;
-  return &count;
-}
-
 }  // namespace
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -372,14 +367,8 @@ double Scorer::LogOdds2Prob(const double log_odds) const {
   return odds / (odds + 1.0);
 }
 
-Scorer::Scorer() {
-  *GetLiveScorerCount() += 1;
-  base::UmaHistogramCounts1000("SBClientPhishing.LiveScorersAtCreation",
-                               *GetLiveScorerCount());
-}
-Scorer::~Scorer() {
-  *GetLiveScorerCount() -= 1;
-}
+Scorer::Scorer() = default;
+Scorer::~Scorer() = default;
 
 // static
 ScorerStorage* ScorerStorage::GetInstance() {
