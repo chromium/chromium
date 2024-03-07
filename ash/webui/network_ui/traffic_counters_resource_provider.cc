@@ -48,6 +48,8 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
      IDS_TRAFFIC_COUNTERS_DATA_USAGE_ENABLE_AUTO_RESET_SUBLABEL},
     {"TrafficCountersDataUsageAutoResetDayOfMonthLabel",
      IDS_TRAFFIC_COUNTERS_DATA_USAGE_AUTO_RESET_DAY_OF_MONTH_LABEL},
+    {"TrafficCountersDataUsageAutoResetDayOfMonthSubLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_AUTO_RESET_DAY_OF_MONTH_SUBLABEL},
     {"TrafficCountersDataUsageDifferentFromProviderLabel",
      IDS_TRAFFIC_COUNTERS_DATA_USAGE_DIFFERENT_FROM_PROVIDER_LABEL},
 };

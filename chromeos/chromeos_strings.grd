@@ -4048,7 +4048,10 @@
           Automatically resets data usage every month on a selected day
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_AUTO_RESET_DAY_OF_MONTH_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
-          Day of month for reset
+          Reset date
+        </message>
+        <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_AUTO_RESET_DAY_OF_MONTH_SUBLABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text explaining data usage reset day">
+          Your data usage will be reset each month on this day
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_DIFFERENT_FROM_PROVIDER_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, disclaimer about differences with data provider">
           Data is measured by your Chromebook. This may be different from provider data.
