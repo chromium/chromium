@@ -387,7 +387,7 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   EXPECT_EQ(Shell::Get()->birch_model()->GetTabsForTest().size(), 0u);
 
   // Request birch data fetch, then verify that tabs data is correct.
-  Shell::Get()->birch_model()->RequestBirchDataFetch(base::DoNothing());
+  birch_keyed_service()->GetRecentTabsProvider()->RequestBirchDataFetch();
 
   auto& tabs = Shell::Get()->birch_model()->GetTabsForTest();
   ASSERT_EQ(tabs.size(), 2u);
@@ -405,13 +405,15 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
 
 TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   BirchModel* model = Shell::Get()->birch_model();
+  BirchDataProvider* release_notes_provider =
+      birch_keyed_service()->GetReleaseNotesProvider();
 
   SetUpReleaseNotesStorage();
   MakePrimaryAccountAvailable();
 
   EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 0u);
 
-  model->RequestBirchDataFetch(base::DoNothing());
+  release_notes_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
@@ -432,7 +434,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   MarkReleaseNotesSurfacesTimesLeftToShow(1);
   task_environment()->FastForwardBy(base::Hours(23));
 
-  model->RequestBirchDataFetch(base::DoNothing());
+  release_notes_provider->RequestBirchDataFetch();
   model->SetCalendarItems({});
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
@@ -448,7 +450,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
 
   ClearReleaseNotesSurfacesTimesLeftToShowPref();
 
-  model->RequestBirchDataFetch(base::DoNothing());
+  release_notes_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());

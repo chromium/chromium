@@ -33,9 +33,12 @@ BirchModel::BirchModel() {
   if (features::IsBirchWeatherEnabled()) {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
   }
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
-BirchModel::~BirchModel() = default;
+BirchModel::~BirchModel() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+}
 
 void BirchModel::SetCalendarItems(
     std::vector<BirchCalendarItem> calendar_items) {
@@ -90,6 +93,13 @@ void BirchModel::SetReleaseNotesItems(
 }
 
 void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
+  if (!Shell::Get()->session_controller()->IsUserPrimary()) {
+    // Fetches are only supported for the primary user. Return with empty data.
+    ClearAllItems();
+    std::move(callback).Run();
+    return;
+  }
+
   const bool fetch_in_progress = !pending_requests_.empty();
 
   size_t request_id = next_request_id_++;
@@ -105,12 +115,7 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
     return;
   }
 
-  is_calendar_data_fresh_ = false;
-  is_attachment_data_fresh_ = false;
-  is_files_data_fresh_ = false;
-  is_tabs_data_fresh_ = false;
-  is_weather_data_fresh_ = false;
-  is_release_notes_data_fresh_ = false;
+  MarkDataNotFresh();
 
   // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {
@@ -190,6 +195,21 @@ bool BirchModel::IsDataFresh() {
          (!weather_provider_ || is_weather_data_fresh_);
 }
 
+void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
+  if (!has_active_user_session_changed_) {
+    // This is the initial notification on signin. Don't do anything.
+    has_active_user_session_changed_ = true;
+    return;
+  }
+
+  // On multi-profile switch, first cancel any pending requests.
+  pending_requests_.clear();
+
+  // Clear the existing data and mark the data as not fresh.
+  ClearAllItems();
+  MarkDataNotFresh();
+}
+
 void BirchModel::OverrideWeatherProviderForTest(
     std::unique_ptr<BirchDataProvider> weather_provider) {
   CHECK(weather_provider_);
@@ -232,6 +252,24 @@ base::Time BirchModel::GetTime() const {
     return clock_override_->Now();
   }
   return base::Time::Now();
+}
+
+void BirchModel::ClearAllItems() {
+  calendar_items_.clear();
+  attachment_items_.clear();
+  file_suggest_items_.clear();
+  recent_tab_items_.clear();
+  weather_items_.clear();
+  release_notes_items_.clear();
+}
+
+void BirchModel::MarkDataNotFresh() {
+  is_calendar_data_fresh_ = false;
+  is_attachment_data_fresh_ = false;
+  is_files_data_fresh_ = false;
+  is_tabs_data_fresh_ = false;
+  is_weather_data_fresh_ = false;
+  is_release_notes_data_fresh_ = false;
 }
 
 }  // namespace ash

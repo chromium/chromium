@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/birch/birch_client.h"
 #include "ash/birch/birch_item.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 
@@ -21,12 +22,12 @@ class BirchDataProvider;
 
 // Birch model, which is used to aggregate and store relevant information from
 // different providers.
-class ASH_EXPORT BirchModel {
+class ASH_EXPORT BirchModel : public SessionObserver {
  public:
   BirchModel();
   BirchModel(const BirchModel&) = delete;
   BirchModel& operator=(const BirchModel&) = delete;
-  ~BirchModel();
+  ~BirchModel() override;
 
   // Sends a request to the birch keyed service to fetch data into the model.
   // `callback` will run once either all data is fresh or the request timeout
@@ -72,6 +73,9 @@ class ASH_EXPORT BirchModel {
   // Returns whether all data in the model is currently fresh.
   bool IsDataFresh();
 
+  // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
   void OverrideWeatherProviderForTest(
       std::unique_ptr<BirchDataProvider> weather_provider);
   void OverrideClockForTest(base::Clock* clock);
@@ -96,6 +100,12 @@ class ASH_EXPORT BirchModel {
 
   // Get current time. The clock may be overridden for testing purposes.
   base::Time GetTime() const;
+
+  // Clears all items.
+  void ClearAllItems();
+
+  // Marks all data types as not fresh.
+  void MarkDataNotFresh();
 
   // Whether the calendar event data is freshly fetched.
   bool is_calendar_data_fresh_ = false;
@@ -148,6 +158,10 @@ class ASH_EXPORT BirchModel {
   // When set, this clock is used to ensure a consistent current time is used
   // for testing.
   raw_ptr<base::Clock> clock_override_ = nullptr;
+
+  // Whether an active user session changed notification has been seen. Used to
+  // detect the initial notification on signin.
+  bool has_active_user_session_changed_ = false;
 };
 
 }  // namespace ash

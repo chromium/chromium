@@ -190,6 +190,30 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
+TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
+  BirchModel* model = Shell::Get()->birch_model();
+  TestModelConsumer consumer;
+
+  // Sign in to a secondary user.
+  SimulateUserLogin("user2@test.com");
+  ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
+
+  // Add an item to the model.
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
+  model->SetFileSuggestItems(std::move(file_item_list));
+
+  // Request a data fetch.
+  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+                                              base::Unretained(&consumer),
+                                              /*id=*/"0"));
+  // The fetch callback was called.
+  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
+
+  // The model is empty.
+  EXPECT_TRUE(model->GetAllItems().empty());
+}
+
 // TODO(https://crbug.com/324963992): Fix `BirchModel*Test.DataFetchTimeout`
 // for debug builds.
 #if defined(NDEBUG)
@@ -658,6 +682,34 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
   ASSERT_EQ(items.size(), 1u);
   EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
   EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+}
+
+TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
+  BirchModel* model = Shell::Get()->birch_model();
+  TestModelConsumer consumer;
+
+  // Add an item to the model.
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
+  model->SetFileSuggestItems(std::move(file_item_list));
+
+  // Set the other types as empty so the model has fresh data.
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetRecentTabItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+  ASSERT_TRUE(model->IsDataFresh());
+
+  // Sign in to a secondary user.
+  SimulateUserLogin("user2@test.com");
+  ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
+
+  // The model is empty.
+  EXPECT_TRUE(model->GetAllItems().empty());
+
+  // The data is not fresh.
+  EXPECT_FALSE(model->IsDataFresh());
 }
 
 }  // namespace ash
