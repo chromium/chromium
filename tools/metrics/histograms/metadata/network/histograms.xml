@@ -2216,6 +2216,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Network.SharedDictionary.CreateBrotliSourceStreamWithDictionary"
+    units="microseconds" expires_after="2024-06-06">
+  <owner>horo@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time spent creating a brotli source stream with a dictionary. Logged
+    when the network service receives an HTTP response compressed with Shared
+    Brotli.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
+<histogram name="Network.SharedDictionary.CreateZstdSourceStreamWithDictionary"
+    units="microseconds" expires_after="2024-06-06">
+  <owner>horo@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time spent creating a zstd source stream with a dictionary. Logged when
+    the network service receives an HTTP response compressed with Shared
+    Zstandard.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
 <histogram name="Network.SharedDictionary.EncodingType"
     enum="SharedDictionaryEncodingType" expires_after="2024-08-09">
   <owner>nidhijaju@chromium.org</owner>
