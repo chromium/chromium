@@ -281,9 +281,7 @@ static_library("libaom") {
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
 
   sources = aom_av1_common_sources
-  sources += aom_av1_decoder_sources
   sources += aom_dsp_common_sources
-  sources += aom_dsp_decoder_sources
   sources += aom_mem_sources
   sources += aom_rtcd_sources
   sources += aom_scale_sources
@@ -359,13 +357,6 @@ static_library("libaomrc") {
   public_deps = [ ":libaom" ]
 }
 
-fuzzer_test("libaom_av1_dec_fuzzer") {
-  sources = [ "source/libaom/examples/av1_dec_fuzzer.cc" ]
-  seed_corpus = "fuzz/av1_dec_fuzzer_corpus"
-  deps = [ ":libaom" ]
-  additional_configs = [ ":libaom_config" ]
-}
-
 if (fuzztest_supported) {
   test("av1_encoder_fuzz_test") {
     sources = [ "fuzz/av1_encoder_fuzz_test.cc" ]
@@ -388,13 +379,10 @@ config("test_libaom_config") {
 
 test("test_libaom") {
   sources = aom_libwebm_sources
-  sources += aom_webm_decoder_sources
   sources += aom_webm_encoder_sources
   sources += aom_common_app_util_sources
-  sources += aom_decoder_app_util_sources
   sources += aom_encoder_app_util_sources
   sources += aom_unit_test_common_sources
-  sources += aom_unit_test_decoder_sources
   sources += aom_unit_test_encoder_sources
   sources += aom_unit_test_wrapper_sources
   sources += [ "source/gen_src/usage_exit.c" ]

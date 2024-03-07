@@ -165,25 +165,6 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/common/args_helper.h",
 ]
 
-aom_av1_decoder_sources = [
-  "//third_party/libaom/source/libaom/av1/av1_dx_iface.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodeframe.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodeframe.h",
-  "//third_party/libaom/source/libaom/av1/decoder/decodemv.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodemv.h",
-  "//third_party/libaom/source/libaom/av1/decoder/decoder.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decoder.h",
-  "//third_party/libaom/source/libaom/av1/decoder/decodetxb.c",
-  "//third_party/libaom/source/libaom/av1/decoder/decodetxb.h",
-  "//third_party/libaom/source/libaom/av1/decoder/detokenize.c",
-  "//third_party/libaom/source/libaom/av1/decoder/detokenize.h",
-  "//third_party/libaom/source/libaom/av1/decoder/dthread.h",
-  "//third_party/libaom/source/libaom/av1/decoder/grain_synthesis.c",
-  "//third_party/libaom/source/libaom/av1/decoder/grain_synthesis.h",
-  "//third_party/libaom/source/libaom/av1/decoder/obu.c",
-  "//third_party/libaom/source/libaom/av1/decoder/obu.h",
-]
-
 aom_av1_encoder_asm_sse2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/dct_sse2.asm",
   "//third_party/libaom/source/libaom/av1/encoder/x86/error_sse2.asm",
@@ -431,13 +412,6 @@ aom_common_app_util_sources = [
   "//third_party/libaom/source/libaom/common/y4menc.h",
 ]
 
-aom_decoder_app_util_sources = [
-  "//third_party/libaom/source/libaom/common/obudec.c",
-  "//third_party/libaom/source/libaom/common/obudec.h",
-  "//third_party/libaom/source/libaom/common/video_reader.c",
-  "//third_party/libaom/source/libaom/common/video_reader.h",
-]
-
 aom_dsp_common_asm_sse2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_8t_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_high_subpixel_bilinear_sse2.asm",
@@ -556,15 +530,6 @@ aom_dsp_common_sources = [
   "//third_party/libaom/source/libaom/aom_dsp/subtract.c",
   "//third_party/libaom/source/libaom/aom_dsp/txfm_common.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/convolve_common_intrin.h",
-]
-
-aom_dsp_decoder_sources = [
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_reader.c",
-  "//third_party/libaom/source/libaom/aom_dsp/binary_codes_reader.h",
-  "//third_party/libaom/source/libaom/aom_dsp/bitreader.c",
-  "//third_party/libaom/source/libaom/aom_dsp/bitreader.h",
-  "//third_party/libaom/source/libaom/aom_dsp/entdec.c",
-  "//third_party/libaom/source/libaom/aom_dsp/entdec.h",
 ]
 
 aom_dsp_encoder_asm_sse2 = [
@@ -757,7 +722,6 @@ aom_scale_sources = [
 aom_sources = [
   "//third_party/libaom/source/libaom/aom/aom.h",
   "//third_party/libaom/source/libaom/aom/aom_codec.h",
-  "//third_party/libaom/source/libaom/aom/aom_decoder.h",
   "//third_party/libaom/source/libaom/aom/aom_encoder.h",
   "//third_party/libaom/source/libaom/aom/aom_external_partition.h",
   "//third_party/libaom/source/libaom/aom/aom_frame_buffer.h",
@@ -768,7 +732,6 @@ aom_sources = [
   "//third_party/libaom/source/libaom/aom/internal/aom_codec_internal.h",
   "//third_party/libaom/source/libaom/aom/internal/aom_image_internal.h",
   "//third_party/libaom/source/libaom/aom/src/aom_codec.c",
-  "//third_party/libaom/source/libaom/aom/src/aom_decoder.c",
   "//third_party/libaom/source/libaom/aom/src/aom_encoder.c",
   "//third_party/libaom/source/libaom/aom/src/aom_image.c",
   "//third_party/libaom/source/libaom/aom/src/aom_integer.c",
@@ -779,11 +742,6 @@ aom_util_sources = [
   "//third_party/libaom/source/libaom/aom_util/aom_thread.c",
   "//third_party/libaom/source/libaom/aom_util/aom_thread.h",
   "//third_party/libaom/source/libaom/aom_util/endian_inl.h",
-]
-
-aom_webm_decoder_sources = [
-  "//third_party/libaom/source/libaom/common/webmdec.cc",
-  "//third_party/libaom/source/libaom/common/webmdec.h",
 ]
 
 aom_webm_encoder_sources = [
