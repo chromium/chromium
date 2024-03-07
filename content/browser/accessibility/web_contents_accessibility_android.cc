@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -233,11 +234,6 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
       web_contents_(static_cast<WebContentsImpl*>(web_contents)) {
   // A Connector is not required for a simple snapshot.
   connector_ = nullptr;
-
-  // Stubbed method.
-  if (!jassist_data_builder.is_null()) {
-    Java_AssistDataBuilder_stubbed(env, jassist_data_builder);
-  }
 }
 
 WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
@@ -1725,7 +1721,7 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
   auto combiner = base::MakeRefCounted<AccessibilityTreeSnapshotCombiner>(
       base::BindOnce(&WebContentsAccessibilityAndroid::
                          ProcessCompletedAccessibilityTreeSnapshot,
-                     GetWeakPtr()),
+                     GetWeakPtr(), env),
       std::move(params));
   web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&combiner](RenderFrameHostImpl* rfhi) {
@@ -1734,8 +1730,33 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
 }
 
 void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
+    JNIEnv* env,
     const ui::AXTreeUpdate& result) {
+  // If we don't have a connection back to the Java-side objects, then fail.
+  ScopedJavaLocalRef<jobject> obj = java_adb_ref_.get(env);
+  CHECK(obj);
+
+  // Construct a root manager without a delegate if one does not already exist.
+  // In some situations (e.g. unit tests) the full accessibility engine may
+  // already be running and we do not need to create a new manager.
+  if (!GetRootBrowserAccessibilityManager()) {
+    snapshot_root_manager_ =
+        std::make_unique<BrowserAccessibilityManagerAndroid>(
+            result, GetWeakPtr(), /* delegate= */ nullptr);
+  }
+
+  // Construct the Java-side tree, use the JNI builder `java_adb_ref_` to
+  // recursively construct each node of the tree starting with the provided
+  // root. Stubbed.
+  Java_AssistDataBuilder_stubbed(env, obj);
+
+  // Add tree-level data to Java-side tree.
   // Stubbed.
+
+  // We have fulfilled the request for an accessibility tree snapshot, so we can
+  // now call the provided Java-side callback to inform original client that the
+  // async construction is complete.
+  base::android::RunRunnableAndroid(on_done_callback_);
 }
 
 base::WeakPtr<WebContentsAccessibilityAndroid>

@@ -336,6 +336,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const base::android::JavaParamRef<jobject>& view_structure_root,
       const base::android::JavaParamRef<jobject>& on_done_callback);
   void ProcessCompletedAccessibilityTreeSnapshot(
+      JNIEnv* env,
       const ui::AXTreeUpdate& result);
 
   // --------------------------------------------------------------------------
