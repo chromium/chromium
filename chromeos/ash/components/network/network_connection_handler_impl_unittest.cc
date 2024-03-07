@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -366,6 +367,16 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
                                        std::string(),  // no username hash
                                        network_configs, global_config);
     task_environment_.RunUntilIdle();
+  }
+
+  // For a user-scoped network policy (previously set through `SetupUserPolicy`)
+  // that configures a client certificate pattern, sets the resolved client
+  // certificate. Outside of unit tests, `ClientCertResolver` would do this.
+  void SetResolvedClientCertForUserPolicyNetwork(
+      const std::string& network_policy_guid,
+      client_cert::ResolvedCert resolved_cert) {
+    managed_config_handler_->SetResolvedClientCertificate(
+        helper_.UserHash(), network_policy_guid, std::move(resolved_cert));
   }
 
   std::string ConfigureService(const std::string& shill_json_string) {
@@ -787,6 +798,8 @@ constexpr char kPolicyWithCertPatternTemplate[] =
     "    }"
     "} ]";
 
+constexpr char kPolicyWithCertPatternGuid[] = "wifi4";
+
 }  // namespace
 
 // Handle certificates.
@@ -797,7 +810,12 @@ TEST_F(NetworkConnectionHandlerImplTest, ConnectCertificateMissing) {
   SetupUserPolicy(
       base::StringPrintf(kPolicyWithCertPatternTemplate, "unknown"));
 
-  Connect(ServicePathFromGuid("wifi4"));
+  // Simulate that ClientCertResolver finished its run and marked that no
+  // certificate matched the pattern.
+  SetResolvedClientCertForUserPolicyNetwork(
+      kPolicyWithCertPatternGuid, client_cert::ResolvedCert::NothingMatched());
+
+  Connect(ServicePathFromGuid(kPolicyWithCertPatternGuid));
   EXPECT_EQ(NetworkConnectionHandler::kErrorCertificateRequired,
             GetResultAndReset());
 }
@@ -812,7 +830,7 @@ TEST_F(NetworkConnectionHandlerImplTest, ConnectWithCertificateSuccess) {
   SetupUserPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
                                      cert->subject().common_name.c_str()));
 
-  Connect(ServicePathFromGuid("wifi4"));
+  Connect(ServicePathFromGuid(kPolicyWithCertPatternGuid));
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 
@@ -826,7 +844,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
   SetupUserPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
                                      cert->subject().common_name.c_str()));
 
-  Connect(ServicePathFromGuid("wifi4"));
+  Connect(ServicePathFromGuid(kPolicyWithCertPatternGuid));
 
   // Connect request came when no client certificates can exist because
   // NetworkCertLoader doesn't have a NSSCertDatabase configured and also has
@@ -849,7 +867,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
   // NetworkConnectionHandler attempts to wait for certificates to be loaded.
   NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
 
-  Connect(ServicePathFromGuid("wifi4"));
+  Connect(ServicePathFromGuid(kPolicyWithCertPatternGuid));
 
   // Connect request came before the cert loader loaded certificates, so the
   // connect request should have been throttled until the certificates are
@@ -880,7 +898,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
   // NetworkConnectionHandler attempts to wait for certificates to be loaded.
   NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
 
-  Connect(ServicePathFromGuid("wifi4"));
+  Connect(ServicePathFromGuid(kPolicyWithCertPatternGuid));
 
   // Connect request came before the cert loader loaded certificates, so the
   // connect request should have been throttled until the certificates are

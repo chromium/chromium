@@ -712,10 +712,13 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   const base::Value::Dict* policy = nullptr;
   if (guid && profile) {
+    // Fetch network policy with PolicyType::kOriginal to be able to process a
+    // client certificate pattern (which would be replaced with a certificate
+    // reference in PolicyType::kWithRuntimeValues).
     policy = managed_configuration_handler_->FindPolicyByGuidAndProfile(
         *guid, *profile,
-        ManagedNetworkConfigurationHandler::PolicyType::kWithRuntimeValues,
-        &onc_source, /*out_userhash=*/nullptr);
+        ManagedNetworkConfigurationHandler::PolicyType::kOriginal, &onc_source,
+        /*out_userhash=*/nullptr);
   }
   // Check if network is blocked by policy.
   if (*type == shill::kTypeWifi &&
