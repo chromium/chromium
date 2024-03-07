@@ -68,7 +68,7 @@
             ? [NSString stringWithCString:aboutThisPageInfo->description()
                                               .description()
                                               .c_str()
-                                 encoding:[NSString defaultCStringEncoding]]
+                                 encoding:NSUTF8StringEncoding]
             : l10n_util::GetNSString(
                   IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
     info.moreAboutURL = GURL(aboutThisPageInfo->more_about().url());
