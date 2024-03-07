@@ -1101,7 +1101,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     }
 
     AXNode* node = GetFromId(new_data.id);
-    if (node &&
+
+    // For performance, skip text deletion/insertion events on ignored nodes.
+    if (node && !new_data.IsIgnored() && !node->data().IsIgnored() &&
         notified_node_attributes_will_change.insert(new_data.id).second) {
       for (AXTreeObserver& observer : observers_) {
         if (new_data.HasIntListAttribute(
