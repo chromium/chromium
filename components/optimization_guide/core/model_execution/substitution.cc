@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -60,7 +61,7 @@ bool EvaluateCondition(const google::protobuf::MessageLite& message,
     case proto::OPERATOR_TYPE_NOT_EQUAL_TO:
       return !AreValuesEqual(*proto_value, condition.value());
     default:
-      NOTREACHED();
+      base::debug::DumpWithoutCrashing();
       return false;
   }
 }
@@ -98,6 +99,7 @@ bool DoConditionsApply(const google::protobuf::MessageLite& message,
     case proto::CONDITION_EVALUATION_TYPE_AND:
       return AndConditions(message, conditions.conditions());
     default:
+      base::debug::DumpWithoutCrashing();
       return false;
   }
 }

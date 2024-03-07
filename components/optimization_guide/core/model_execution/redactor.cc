@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -43,6 +44,7 @@ std::unique_ptr<Redactor> Redactor::FromProto(
     if (proto_rule.regex().empty() ||
         proto_rule.group_index() < 0 || proto_rule.min_pattern_length() < 0 ||
         proto_rule.max_pattern_length() < 0) {
+      base::debug::DumpWithoutCrashing();
       continue;
     }
     Behavior behavior = Redactor::Behavior::kReject;
@@ -57,10 +59,12 @@ std::unique_ptr<Redactor> Redactor::FromProto(
         behavior = Redactor::Behavior::kRedactAlways;
         break;
       default:
+        base::debug::DumpWithoutCrashing();
         continue;
     }
     auto re = std::make_unique<re2::RE2>(proto_rule.regex());
     if (!re->ok() || re->NumberOfCapturingGroups() < proto_rule.group_index()) {
+      base::debug::DumpWithoutCrashing();
       continue;
     }
     rules.emplace_back(std::move(re), behavior, proto_rule.replacement_string(),
