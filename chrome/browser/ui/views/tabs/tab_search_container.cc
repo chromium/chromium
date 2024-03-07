@@ -236,7 +236,7 @@ void TabSearchContainer::ApplyAnimationValue(const gfx::Animation* animation) {
 void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
                                                bool should_show) {
   CHECK(tab_organization_service_);
-  if (should_show) {
+  if (should_show && browser_ == browser) {
     ShowTabOrganization();
   } else {
     HideTabOrganization();

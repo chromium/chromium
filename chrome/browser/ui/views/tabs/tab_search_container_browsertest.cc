@@ -79,6 +79,31 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, TogglesActionUIState) {
       tab_search_container()->expansion_animation_for_testing()->IsShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       TogglesActionUIStateOnlyInCorrectBrowser) {
+  const Browser* const second_browser = CreateBrowser(browser()->profile());
+  TabSearchContainer* const second_search_container =
+      BrowserView::GetBrowserViewForBrowser(second_browser)
+          ->tab_strip_region_view()
+          ->tab_search_container();
+
+  ASSERT_FALSE(
+      second_search_container->expansion_animation_for_testing()->IsShowing());
+
+  TabOrganizationService* service =
+      tab_search_container()->tab_organization_service_for_testing();
+  // Same profile -> same service.
+  ASSERT_EQ(service,
+            second_search_container->tab_organization_service_for_testing());
+
+  service->OnTriggerOccured(browser());
+
+  EXPECT_TRUE(
+      tab_search_container()->expansion_animation_for_testing()->IsShowing());
+  EXPECT_FALSE(
+      second_search_container->expansion_animation_for_testing()->IsShowing());
+}
+
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysShow) {
   ASSERT_FALSE(
       tab_search_container()->expansion_animation_for_testing()->IsShowing());
