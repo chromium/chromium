@@ -61,6 +61,10 @@ export function isVolumeEntry(entry: Entry|
   return 'volumeInfo' in entry;
 }
 
+export function isVolumeFileData(fileData: FileData): boolean {
+  return fileData.type === EntryType.VOLUME_ROOT;
+}
+
 /**
  * Check if the entry is MyFiles or not.
  * Note: if the return value is true, the input entry is guaranteed to be
@@ -292,6 +296,14 @@ export function isRecentRootType(rootType: RootType|null) {
  */
 export function isRecentRoot(entry: Entry|FilesAppEntry) {
   return isFakeEntry(entry) && isRecentRootType(getRootType(entry));
+}
+
+/**
+ * Whether the `fileData` the is RECENT root.
+ * NOTE: Drive shared with me and offline are marked as RECENT.
+ */
+export function isRecentFileData(fileData: FileData): boolean {
+  return fileData.type === EntryType.RECENT;
 }
 
 /**

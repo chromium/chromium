@@ -6,7 +6,7 @@ import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {canHaveSubDirectories, isEntryInsideDrive, isGrandRootEntryInDrives, isMyFilesFileData, isOneDrive, isOneDriveId, isTrashFileData, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
+import {canHaveSubDirectories, isEntryInsideDrive, isGrandRootEntryInDrives, isMyFilesFileData, isOneDrive, isOneDriveId, isRecentFileData, isTrashFileData, isVolumeFileData, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
@@ -21,7 +21,7 @@ import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots} from '../state/ducks/navigation.js';
 import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
-import {type AndroidApp, type CurrentDirectory, EntryType, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../state/state.js';
+import {type AndroidApp, type CurrentDirectory, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../state/state.js';
 import {getFileData, getStore, getVolume, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
@@ -260,7 +260,7 @@ export class DirectoryTreeContainer {
       // it here and restore it later if needed.
       const isFocused = document.activeElement === navigationRootItem;
       const isRenaming = navigationRootItem.renaming;
-      if (fileData && fileData.type === EntryType.VOLUME_ROOT) {
+      if (fileData && isVolumeFileData(fileData)) {
         const volume = getVolume(state, fileData);
         const isOneDriveRoot = volume && isOneDrive(volume);
         if (isOneDriveRoot) {
@@ -511,7 +511,7 @@ export class DirectoryTreeContainer {
     if (!navigationRoot) {
       element.setAttribute('full-path-for-testing', fileData.fullPath);
     }
-    if (fileData.type !== EntryType.VOLUME_ROOT) {
+    if (!isVolumeFileData(fileData)) {
       return;
     }
     // Add volume-type for the root volume items.
@@ -1074,7 +1074,7 @@ export class DirectoryTreeContainer {
     }
     // Disable menus for disabled items and RECENT items.
     // NOTE: Drive shared with me and offline are marked as RECENT.
-    if (element.disabled || fileData.type === EntryType.RECENT) {
+    if (element.disabled || isRecentFileData(fileData)) {
       if (this.contextMenuForDisabledItems) {
         contextMenuHandler.setContextMenu(
             element, this.contextMenuForDisabledItems);

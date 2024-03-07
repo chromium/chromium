@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getParentEntry} from '../../common/js/api.js';
-import {canHaveSubDirectories, isDirectoryEntry, isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries, supportsUiChildren} from '../../common/js/entry_utils.js';
+import {canHaveSubDirectories, isDirectoryEntry, isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, isVolumeFileData, readEntries, shouldSupportDriveSpecificIcons, sortEntries, supportsUiChildren} from '../../common/js/entry_utils.js';
 import {getIcon} from '../../common/js/file_type.js';
 import type {FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
@@ -238,8 +238,7 @@ export function shouldDelayLoadingChildren(
   // When this function is triggered when mounting new volumes, volumeInfo is
   // not available in the VolumeManager yet, we need to get volumeInfo from the
   // entry itself.
-  const volume: Volume|VolumeInfo|undefined =
-      fileData.type === EntryType.VOLUME_ROOT ?
+  const volume: Volume|VolumeInfo|undefined = isVolumeFileData(fileData) ?
       // TODO: Confirm how to remove the usage of entry here.
       (fileData.entry as VolumeEntry).volumeInfo :
       state!.volumes[fileData.volumeId!];

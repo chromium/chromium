@@ -827,13 +827,13 @@ export async function testAddProviderAndSMB() {
 
   const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
   // Add a volume representing a non-Smb provider to the mock filesystem.
-  const nonSmbProviderVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeType.PROVIDED, 'not_smb', 'NOT_SMB_LABEL');
+  const nonSmbProviderVolumeInfo =
+      volumeManager.createVolumeInfo(VolumeType.PROVIDED, 'fsp', 'FSP_LABEL');
   volumeManager.volumeInfoList.add(nonSmbProviderVolumeInfo);
   // Add a sub directory to the non-Smb provider.
   const providerFs =
       assert(volumeManager.volumeInfoList.item(2).fileSystem) as MockFileSystem;
-  providerFs.populate(['/non_smb_child/']);
+  providerFs.populate(['/fsp_child/']);
   store.dispatch(addVolume({
     volumeInfo: nonSmbProviderVolumeInfo,
     volumeMetadata: createFakeVolumeMetadata(nonSmbProviderVolumeInfo),
@@ -858,9 +858,16 @@ export async function testAddProviderAndSMB() {
   assertEquals('Downloads', directoryTree.items[0]!.label);
   assertEquals('Google Drive', directoryTree.items[1]!.label);
   assertEquals('SMBFS_LABEL', directoryTree.items[2]!.label);
-  assertEquals('NOT_SMB_LABEL', directoryTree.items[3]!.label);
+  assertEquals('FSP_LABEL', directoryTree.items[3]!.label);
 
   const smbFsItem = directoryTree.items[2]!;
+  const smbFsKey = smbFsItem.dataset['navigationKey']!;
+  // At first rendering, SMB is marked as mayHaveChildren without any scanning.
+  // So it shouldn't have any children in the store.
+  assertTrue(smbFsItem.mayHaveChildren);
+  assertEquals(0, smbFsItem.items.length);
+  assertEquals(0, store.getState().allEntries[smbFsKey]!.children.length);
+
   const providerItem = directoryTree.items[3]!;
   // Expand it before checking children items.
   providerItem.expanded = true;
@@ -868,61 +875,28 @@ export async function testAddProviderAndSMB() {
     // Under providerItem there should be 1 entry, 'non_smb_child'.
     return providerItem.items.length === 1;
   });
-  assertEquals('non_smb_child', providerItem.items[0]!.label);
+  assertEquals('fsp_child', providerItem.items[0]!.label);
   // Ensure there are no entries under smbItem.
   assertEquals(0, smbFsItem.items.length);
-}
 
-/**
- * Test sub directories are not fetched for SMB, until the directory is
- * clicked.
- */
-export async function testSmbNotFetchedUntilClick() {
-  const store = getStore();
-  const directoryTree = directoryTreeContainer.tree;
-
-  // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveVolumes();
-
-  const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
-  // Add a volume representing a smb provider to the mock filesystem.
-  const smbProviderVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
-  volumeManager.volumeInfoList.add(smbProviderVolumeInfo);
-  // Add a sub directory to the smb provider.
-  const smbProviderFs =
-      assert(volumeManager.volumeInfoList.item(2).fileSystem) as MockFileSystem;
-  smbProviderFs.populate(['/smb_child/']);
-  store.dispatch(addVolume({
-    volumeInfo: smbProviderVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(smbProviderVolumeInfo),
-  }));
-
-  // At top level, MyFiles and Drive, smb provider volume should be listed.
-  await waitUntil(() => directoryTree.items.length === 3);
-  assertEquals('Downloads', directoryTree.items[0]!.label);
-  assertEquals('Google Drive', directoryTree.items[1]!.label);
-  assertEquals('SMB_LABEL', directoryTree.items[2]!.label);
-
-  // Expect the SMB share has no children.
-  const smbItem = directoryTree.items[2]!;
-  assertEquals(0, smbItem.items.length);
-
-  // Click on the SMB volume.
-  smbItem.click();
+  // After clicking on the SMB, we still don't scan for children, because it
+  // already has the canExpand=true.
+  smbFsItem.click();
   await waitUntil(() => {
-    // Wait until the SMB share item has expand icon shown
-    return smbItem.mayHaveChildren;
+    return smbFsItem.selected &&
+        store.getState().allEntries[smbFsKey]!.children.length === 0;
   });
 
   // Expand SMB volume.
-  smbItem.expanded = true;
+  smbFsItem.expanded = true;
   await waitUntil(() => {
     // Wait until the SMB share item has been updated with its sub
     // directories.
-    return smbItem.items.length === 1;
+    return smbFsItem.items.length === 1 &&
+        // Wait until the SMB file data has children.
+        store.getState().allEntries[smbFsKey]!.children.length > 0;
   });
-  assertEquals('smb_child', smbItem.items[0]!.label);
+  assertEquals('smbfs_child', smbFsItem.items[0]!.label);
 }
 
 /** Test aria-expanded attribute for directory tree item. */
