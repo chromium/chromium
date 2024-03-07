@@ -56,7 +56,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
 }  // namespace
 
-void ShowPWAInstallBubble(
+void ShowSimpleInstallDialogForWebApps(
     content::WebContents* web_contents,
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,

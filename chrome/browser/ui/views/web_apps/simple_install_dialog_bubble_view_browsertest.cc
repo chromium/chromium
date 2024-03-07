@@ -105,9 +105,9 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       GetInstallTracker(browser);
 
   // Tests that we don't crash when showing the install prompt in a PWA window.
-  ShowPWAInstallBubble(browser->tab_strip_model()->GetActiveWebContents(),
-                       std::move(app_info), std::move(install_tracker),
-                       base::DoNothing());
+  ShowSimpleInstallDialogForWebApps(
+      browser->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      std::move(install_tracker), base::DoNothing());
 }
 
 IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       GetInstallTracker(browser());
 
   base::RunLoop loop;
-  ShowPWAInstallBubble(
+  ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
       std::move(install_tracker),
       base::BindLambdaForTesting(
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       GetInstallTracker(browser());
 
   base::RunLoop loop;
-  ShowPWAInstallBubble(
+  ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
       std::move(install_tracker),
       base::BindLambdaForTesting(
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       GetInstallTracker(browser());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ShowPWAInstallBubble(
+  ShowSimpleInstallDialogForWebApps(
       web_contents, std::move(app_info), std::move(install_tracker),
       base::BindLambdaForTesting(
           [&](bool accepted,
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
   // Show the PWA install dialog.
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
-  ShowPWAInstallBubble(
+  ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
       std::move(install_tracker),
       base::BindLambdaForTesting(
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
-  ShowPWAInstallBubble(
+  ShowSimpleInstallDialogForWebApps(
       browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
       std::move(install_tracker),
       base::BindLambdaForTesting(

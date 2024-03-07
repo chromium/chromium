@@ -150,7 +150,7 @@ enum class PwaInProductHelpState {
 // |callback| is called when install bubble closed.
 // |iph_state| records whether PWA install iph is shown before Install bubble is
 // shown.
-void ShowPWAInstallBubble(
+void ShowSimpleInstallDialogForWebApps(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
@@ -168,8 +168,8 @@ void ShowWebAppDetailedInstallDialog(
     std::vector<webapps::Screenshot> screenshots,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
-// Sets whether |ShowPWAInstallBubble| should accept immediately without any
-// user interaction.
+// Sets whether |ShowSimpleInstallDialogForWebApps| should accept immediately
+// without any user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
 // Sets whether the bubble should close when it is not in an active window

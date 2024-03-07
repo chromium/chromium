@@ -160,9 +160,10 @@ void OnWebAppInstallShowInstallDialog(
             std::move(screenshots), iph_state);
         return;
       } else {
-        ShowPWAInstallBubble(initiator_web_contents, std::move(web_app_info),
-                             std::move(install_tracker),
-                             std::move(web_app_acceptance_callback), iph_state);
+        ShowSimpleInstallDialogForWebApps(
+            initiator_web_contents, std::move(web_app_info),
+            std::move(install_tracker), std::move(web_app_acceptance_callback),
+            iph_state);
         return;
       }
     case WebAppInstallFlow::kCreateShortcut:
