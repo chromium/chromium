@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 """Handles the download of the search engine favicons.
 
-For all search engines referenced in template_url_prepopulate_data.cc,
+For all search engines referenced in search_engine_countries-inc.cc,
 downloads their Favicon, scales it and puts it as resource into the repository
 for display, e.g. in the search engine choice UI and settings.
 
-This should be run whenever template_url_prepopulate_data.cc changes the list of
+This should be run whenever search_engine_countries-inc.cc changes the list of
 search engines used per country, or whenever prepopulated_engines.json changes
 a favicon.
 
@@ -59,11 +59,11 @@ def populate_used_engines():
   """Populates the `used_engines` set.
 
   Populates the `used_engines` set by checking which engines are used in
-  `template_url_prepopulate_data.cc`.
+  `search_engine_countries-inc.cc`.
   """
   print('Populating used engines set')
   SE_NAME_REGEX = re.compile(r'.*SearchEngineTier::[A-Za-z]+, &(.+)},')
-  with open('../search_engines/template_url_prepopulate_data.cc',
+  with open('../search_engines/search_engine_countries-inc.cc',
             'r',
             encoding='utf-8') as file:
     lines = file.readlines()
@@ -342,7 +342,7 @@ finally:
 # Move to working directory to `src/components/resources/`.
 os.chdir('../../components/resources')
 
-# A set of search engines that are used in `template_url_prepopulate_data.cc`
+# A set of search engines that are used in `search_engine_countries-inc.cc`
 used_engines = set()
 
 # This is a dictionary of engine keyword to corresponding icon name. Have an
