@@ -53,6 +53,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -342,6 +343,48 @@ class BookmarkManagerMediator
                 }
             };
 
+    private final SubscriptionsObserver mSubscriptionsObserver =
+            new SubscriptionsObserver() {
+                @Override
+                public void onSubscribe(CommerceSubscription subscription, boolean succeeded) {
+                    // Bookmark updates are pushed prior to subscriptions being updated, so we can
+                    // safely check the folder for product items before initiating a full refresh of
+                    // the list. The same applies for the unsubscribe event below.
+                    if (hasShoppingItems(mModelList)) {
+                        mPendingRefresh.post();
+                    }
+                }
+
+                @Override
+                public void onUnsubscribe(CommerceSubscription subscription, boolean succeeded) {
+                    if (hasShoppingItems(mModelList)) {
+                        mPendingRefresh.post();
+                    }
+                }
+
+                private static boolean hasShoppingItems(ModelList list) {
+                    for (ListItem item : list) {
+                        if (isShoppingItem(item)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                private static boolean isShoppingItem(ListItem item) {
+                    if (!item.model.containsKey(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY)
+                            || item.model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY)
+                                    == null) {
+                        return false;
+                    }
+                    PowerBookmarkMeta meta =
+                            item.model
+                                    .get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY)
+                                    .getPowerBookmarkMeta();
+                    return meta != null && meta.hasShoppingSpecifics();
+                }
+            };
+
     private final ObserverList<BookmarkUiObserver> mUiObservers = new ObserverList<>();
     private final BookmarkDragStateDelegate mDragStateDelegate = new BookmarkDragStateDelegate();
     private final Context mContext;
@@ -443,6 +486,10 @@ class BookmarkManagerMediator
         mBookmarkUndoController = bookmarkUndoController;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
 
+        if (mShoppingService.isShoppingListEligible()) {
+            mShoppingService.addSubscriptionsObserver(mSubscriptionsObserver);
+        }
+
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mBookmarkQueryHandler =
                     new ImprovedBookmarkQueryHandler(
@@ -516,6 +563,10 @@ class BookmarkManagerMediator
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
         mBookmarkMoveSnackbarManager.destroy();
+
+        if (mShoppingService != null && mShoppingService.isShoppingListEligible()) {
+            mShoppingService.removeSubscriptionsObserver(mSubscriptionsObserver);
+        }
 
         for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();
