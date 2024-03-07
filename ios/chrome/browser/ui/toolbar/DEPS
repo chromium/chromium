@@ -14,5 +14,4 @@ include_rules = [
   "+ios/chrome/browser/ui/sharing",
   "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h",
-  "+third_party/material_color_utilities",
 ]
