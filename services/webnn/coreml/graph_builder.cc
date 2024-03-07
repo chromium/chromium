@@ -220,6 +220,30 @@ base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
       op->set_type("add");
       break;
     }
+    case mojom::ElementWiseBinary::Kind::kDiv: {
+      op->set_type("real_div");
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMul: {
+      op->set_type("mul");
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kSub: {
+      op->set_type("sub");
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMax: {
+      op->set_type("maximum");
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMin: {
+      op->set_type("minimum");
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kPow: {
+      op->set_type("pow");
+      break;
+    }
     default:
       return base::unexpected("Unimplemented Binary Operator.");
   }

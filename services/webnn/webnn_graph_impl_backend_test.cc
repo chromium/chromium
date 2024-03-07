@@ -1592,9 +1592,6 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {7, 7, 7, 7, 7, 7}}}
         .Test();
   }
-  // TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
-  // after adding support for other binary operators.
-#if !BUILDFLAG(IS_MAC)
   // Test building and computing a graph with single operator add using
   // broadcasting from 0-D scalar.
   {
@@ -1813,7 +1810,9 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {-1, 0, 1, 2, 3, 4}}}
         .Test();
   }
-
+  // TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
+  // after adding support for other binary operators.
+#if !BUILDFLAG(IS_MAC)
   // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
   // after adding support for other binary operators.
 #if !BUILDFLAG(IS_LINUX)
