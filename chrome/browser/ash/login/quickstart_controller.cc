@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
@@ -166,6 +168,8 @@ void QuickStartController::ForceEnableQuickStart() {
   }
 
   InitTargetDeviceBootstrapController();
+  StartObservingBluetoothState();
+
   QS_LOG(INFO) << "Force enabling LocalPasswordsForConsumers!";
   ash::features::ForceEnableLocalPasswordsForConsumers();
 }
@@ -175,6 +179,13 @@ void QuickStartController::DetermineEntryPointVisibility(
   // Bootstrap controller is only instantiated when the feature is enabled (also
   // via the keyboard shortcut. See |ForceEnableQuickStart|.)
   if (!bootstrap_controller_) {
+    std::move(callback).Run(/*visible=*/false);
+    return;
+  }
+
+  // QuickStart should not be enabled for Demo mode or OS Install flows
+  if (DemoSetupController::IsOobeDemoSetupFlowInProgress() ||
+      ash::switches::IsOsInstallAllowed()) {
     std::move(callback).Run(/*visible=*/false);
     return;
   }

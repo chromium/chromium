@@ -212,17 +212,12 @@ void GaiaScreen::ShowImpl() {
   context()->skip_to_login_for_tests = false;
   view_->Show();
 
-  // QuickStart should not be enabled for Demo mode or OS Install flows
-  if (features::IsOobeQuickStartEnabled() &&
-      !DemoSetupController::IsOobeDemoSetupFlowInProgress() &&
-      !switches::IsOsInstallAllowed()) {
-    // Determine the QuickStart button visibility
-    WizardController::default_controller()
-        ->quick_start_controller()
-        ->DetermineEntryPointVisibility(
-            base::BindOnce(&GaiaScreen::SetQuickStartButtonVisibility,
-                           weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Determine the QuickStart button visibility
+  WizardController::default_controller()
+      ->quick_start_controller()
+      ->DetermineEntryPointVisibility(
+          base::BindOnce(&GaiaScreen::SetQuickStartButtonVisibility,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GaiaScreen::HideImpl() {

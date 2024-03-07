@@ -125,17 +125,12 @@ void NetworkScreen::ShowImpl() {
   controller->SetTechnologiesEnabled(NetworkTypePattern::Physical(), true,
                                      network_handler::ErrorCallback());
 
-  // QuickStart should not be enabled for Demo mode or OS Install flows
-  if (features::IsOobeQuickStartEnabled() &&
-      !DemoSetupController::IsOobeDemoSetupFlowInProgress() &&
-      !switches::IsOsInstallAllowed()) {
-    // Determine the QuickStart button visibility
-    WizardController::default_controller()
-        ->quick_start_controller()
-        ->DetermineEntryPointVisibility(
-            base::BindOnce(&NetworkScreen::SetQuickStartButtonVisibility,
-                           weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Determine the QuickStart button visibility.
+  WizardController::default_controller()
+      ->quick_start_controller()
+      ->DetermineEntryPointVisibility(
+          base::BindOnce(&NetworkScreen::SetQuickStartButtonVisibility,
+                         weak_ptr_factory_.GetWeakPtr()));
 
   if (context()->quick_start_setup_ongoing) {
     ShowStepsWhenQuickStartOngoing();
