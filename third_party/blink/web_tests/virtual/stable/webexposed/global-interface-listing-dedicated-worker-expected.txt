@@ -3398,6 +3398,18 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onerror
 [Worker]     setter onmessage
 [Worker]     setter onopen
+[Worker] interface WebSocketError : DOMException
+[Worker]     attribute @@toStringTag
+[Worker]     getter closeCode
+[Worker]     getter reason
+[Worker]     method constructor
+[Worker] interface WebSocketStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter closed
+[Worker]     getter opened
+[Worker]     getter url
+[Worker]     method close
+[Worker]     method constructor
 [Worker] interface WebTransport
 [Worker]     attribute @@toStringTag
 [Worker]     getter closed

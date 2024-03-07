@@ -4293,7 +4293,7 @@
     },
     {
       name: "WebSocketStream",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebTransportCustomCertificates",
