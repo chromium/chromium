@@ -2093,7 +2093,8 @@ IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, LoginSucceeded) {
 }
 
 // Verify that no password attributes are stored when login fails.
-IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, LoginFailed) {
+// TODO(crbug.com/325657256): Test is flaky.
+IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, DISABLED_LoginFailed) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   fake_saml_idp()->SetSamlResponseFile("saml_with_password_attributes.xml");
   ShowGAIALoginForm();
