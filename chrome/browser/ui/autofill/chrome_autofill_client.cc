@@ -1179,17 +1179,11 @@ void ChromeAutofillClient::DismissOfferNotification() {
 void ChromeAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
-  // Show the virtual card snackbar only if the ManualFillingComponent component
-  // is enabled for credit cards.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableManualFallbackForVirtualCards)) {
-    if (!autofill_snackbar_controller_impl_) {
-      autofill_snackbar_controller_impl_ =
-          std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
-    }
-    autofill_snackbar_controller_impl_->Show(
-        AutofillSnackbarType::kVirtualCard);
+  if (!autofill_snackbar_controller_impl_) {
+    autofill_snackbar_controller_impl_ =
+        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
   }
+  autofill_snackbar_controller_impl_->Show(AutofillSnackbarType::kVirtualCard);
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
       web_contents());

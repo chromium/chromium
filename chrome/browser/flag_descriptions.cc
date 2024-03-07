@@ -433,12 +433,6 @@ const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
     "When enabled, server card retrieval will begin with a risk-based check "
     "instead of jumping straight to CVC or biometric auth.";
 
-const char kAutofillEnableManualFallbackForVirtualCardsName[] =
-    "Show manual fallback for virtual cards";
-const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
-    "When enabled, manual fallback will be enabled for virtual cards on "
-    "Android.";
-
 const char kAutofillEnableManuallFallbackIPHName[] =
     "Show autofill manuall fallback IPH";
 const char kAutofillEnableManuallFallbackIPHDescription[] =

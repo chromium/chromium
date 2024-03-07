@@ -91,11 +91,6 @@ class MockAutofillDriver : public TestContentAutofillDriver {
 class CreditCardAccessoryControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  CreditCardAccessoryControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableManualFallbackForVirtualCards);
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL(kExampleSite));

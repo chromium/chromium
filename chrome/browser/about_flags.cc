@@ -8001,15 +8001,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kUseWallpaperStagingUrl)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-manual-fallback-for-virtual-cards",
-     flag_descriptions::kAutofillEnableManualFallbackForVirtualCardsName,
-     flag_descriptions::kAutofillEnableManualFallbackForVirtualCardsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableManualFallbackForVirtualCards)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-card-product-name",
      flag_descriptions::kAutofillEnableCardProductNameName,
      flag_descriptions::kAutofillEnableCardProductNameDescription, kOsAll,

@@ -111,11 +111,6 @@ BASE_FEATURE(kAutofillEnableIbanAndroidBottomSheet,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// When enabled, enable manual falling component for virtual cards on Android.
-BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
-             "AutofillEnableManualFallbackForVirtualCards",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the merchant_domain field is included in requests to unmask a
 // card.
 BASE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest,
