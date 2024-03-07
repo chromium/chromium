@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Welcome Screen"/>
   <int value="3" label="Network Screen"/>
   <int value="4" label="Gaia Screen"/>
-  <int value="5" label="Setup Android Phone with Quick Start"/>
+  <int value="5" label="Set up Chromebook with Android Phone"/>
   <int value="6" label="Connecting to Wifi with Quick Start"/>
   <int value="7"
       label="Checking for Update and Determining Device Configuration"/>

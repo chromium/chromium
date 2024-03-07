@@ -271,7 +271,7 @@ void QuickStartController::OnStatusChanged(
       qr_code_data_ = absl::get<QRCode::PixelData>(status.payload);
       UpdateUiState(UiState::SHOWING_QR);
       QuickStartMetrics::RecordScreenOpened(
-          QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
+          QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone);
       return;
     case Step::ADVERTISING_WITHOUT_QR_CODE:
       UpdateUiState(UiState::CONNECTING_TO_PHONE);
@@ -282,7 +282,7 @@ void QuickStartController::OnStatusChanged(
       CHECK_EQ(pin_.value().length(), 4UL);
       UpdateUiState(UiState::SHOWING_PIN);
       QuickStartMetrics::RecordScreenOpened(
-          QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
+          QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone);
       return;
     case Step::CONNECTED:
       controller_state_ = ControllerState::CONNECTED;

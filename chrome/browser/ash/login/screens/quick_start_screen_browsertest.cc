@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpAndroidPhone, 0);
+      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 0);
   test::WaitForWelcomeScreen();
   test::OobeJS().ExpectVisiblePath(kQuickStartButtonPath);
 
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
   EXPECT_EQ(canvas_cell_count * canvas_cell_count, qr_code_size);
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpAndroidPhone, 1);
+      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpAndroidPhone, 0);
+      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 0);
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kConnectingToWifi, 0);
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   EnterQuickStartFlowFromWelcomeScreen();
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kSetUpAndroidPhone, 1);
+      quick_start::QuickStartMetrics::ScreenName::kSetUpWithAndroidPhone, 1);
 
   SimulatePhoneConnection();
   SimulateUserVerification();

@@ -29,8 +29,8 @@ class QuickStartMetrics {
     kNetworkScreen = 3,  // Quick Start entry point 2, or in the middle of Quick
                          // Start when the host device is not connected to wifi.
     kGaiaScreen = 4,     // Quick Start entry point 3.
-    kSetUpAndroidPhone = 5,  // Beginning of Quick Start flow.
-    kConnectingToWifi = 6,   // Transferring wifi with Quick Start.
+    kSetUpWithAndroidPhone = 5,  // Beginning of Quick Start flow.
+    kConnectingToWifi = 6,       // Transferring wifi with Quick Start.
     kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,
     kChooseChromebookSetup = 8,
     kInstallingLatestUpdate = 9,
