@@ -44,6 +44,17 @@ class WatermarkView : public views::View {
   // `text_blocks_` at the provided coordinates.
   void DrawTextBlock(cc::PaintCanvas* canvas, int x, int y);
 
+  // The width/height of individual blocks of text, including spacing.
+  int block_width_offset() const;
+  int block_height_offset() const;
+
+  // Calculate X/Y bounds for the rotates canvas to cover the entire `bounds`
+  // the waternarj is overlapping.
+  int min_x(double angle, const gfx::Rect& bounds) const;
+  int max_x(double angle, const gfx::Rect& bounds) const;
+  int min_y(double angle, const gfx::Rect& bounds) const;
+  int max_y(double angle, const gfx::Rect& bounds) const;
+
   std::vector<sk_sp<SkTextBlob>> text_blocks_;
   SkColor background_color_;
   int block_width_;

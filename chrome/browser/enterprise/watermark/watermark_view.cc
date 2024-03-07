@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 
+#include <math.h>
 #include <algorithm>
 
 #include "cc/paint/paint_canvas.h"
@@ -21,6 +22,7 @@ namespace {
 
 constexpr float kTextSize = 30.0f;
 constexpr int kWatermarkBlockSpacing = 80;
+constexpr double kRotationAngle = 45;
 
 const SkFont& WatermarkFont() {
   static SkFont font = []() {
@@ -78,20 +80,21 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
 
   // Get ptr to Skia canvas.
   cc::PaintCanvas* sk_canvas = canvas->sk_canvas();
+  sk_canvas->rotate(360 - kRotationAngle);
 
   // Get contents are in order to center the text inside it.
   gfx::Rect bounds = GetContentsBounds();
 
-  int horizontal_offset = block_width_ + kWatermarkBlockSpacing;
-  int stagger_offset = horizontal_offset / 2;
-  int vertical_offset = block_height_ + kWatermarkBlockSpacing;
-
-  for (int x = 0; x <= bounds.width(); x += horizontal_offset) {
+  int upper_x = max_x(kRotationAngle, bounds);
+  int upper_y = max_y(kRotationAngle, bounds);
+  for (int x = min_x(kRotationAngle, bounds); x <= upper_x;
+       x += block_width_offset()) {
     bool apply_stagger = false;
-    for (int y = kTextSize; y < bounds.height(); y += vertical_offset) {
-      // Every other row, stagger the text horizontally to give a "brick tiling"
-      // effect.
-      int stagger = apply_stagger ? stagger_offset : 0;
+    for (int y = min_y(kRotationAngle, bounds); y < upper_y;
+         y += block_height_offset()) {
+      // Every other row, stagger the text horizontally to give a
+      // "brick tiling" effect.
+      int stagger = apply_stagger ? block_width_offset() / 2 : 0;
       apply_stagger = !apply_stagger;
 
       DrawTextBlock(sk_canvas, x - stagger, y);
@@ -131,6 +134,109 @@ void WatermarkView::DrawTextBlock(cc::PaintCanvas* canvas, int x, int y) {
     // Re-calculate `y` every loop so the next line is below the previous one.
     y += kTextSize;
   }
+}
+
+int WatermarkView::block_width_offset() const {
+  return block_width_ + kWatermarkBlockSpacing;
+}
+
+int WatermarkView::block_height_offset() const {
+  return block_height_ + kWatermarkBlockSpacing;
+}
+
+int WatermarkView::min_x(double angle, const gfx::Rect& bounds) const {
+  // Due to the rotation of the watermark, X needs to start in the negatives so
+  // that the rotated canvas is still large enough to cover `bounds`. This means
+  // our initial X needs to be proportional to this triangle side:
+  //             |
+  //   +---------+
+  //   |
+  //   |     ╱angle
+  //   |    ╱┌────────────────────
+  //   V   ╱ │
+  //      ╱  │
+  //   X ╱   │
+  //    ╱    │
+  //   ╱     │  `bounds`
+  //  ╱90    │
+  //  ╲deg.  │
+  //   ╲     │
+  //    ╲    │
+  //     ╲   │
+  //      ╲  │
+  //       ╲ │
+  //        ╲│
+  //
+  // -X also needs to be a factor of `block_width_offset()` so that there is no
+  // sliding of the watermark blocks when `bounds` resize and there's always a
+  // text block drawn at X=0.
+  int min = cos(90 - angle) * bounds.height();
+  return -((min / block_width_offset()) + 1) * block_width_offset();
+}
+
+int WatermarkView::max_x(double angle, const gfx::Rect& bounds) const {
+  // Due to the rotation of the watermark, X needs to end further then the
+  // `bounds` width. This means our final X needs to be proportional to this
+  // triangle side:
+  //           |
+  //           |
+  //           |     ╱╲
+  //           |    ╱90╲
+  //           V   ╱deg.╲
+  //              ╱      ╲
+  //           X ╱        ╲
+  //            ╱          ╲
+  //           ╱            ╲
+  //          ╱              ╲
+  //         ╱angle           ╲
+  //        ┌──────────────────┐
+  //        │  `bounds`        │
+  //
+  // An extra `block_width_offset()` length is added so that the last column for
+  // staggered rows doesn't appear on resizes.
+  return cos(angle) * bounds.width() + block_width_offset();
+}
+
+int WatermarkView::min_y(double angle, const gfx::Rect& bounds) const {
+  // Instead of starting at Y=0, starting at `kTextSize` lets the first line of
+  // text be in frame as text is drawn with (0,0) as the bottom-left corner.
+  return kTextSize;
+}
+
+int WatermarkView::max_y(double angle, const gfx::Rect& bounds) const {
+  // Due to the rotation of the watermark, Y needs to end further then the
+  // `bounds` height. This means our final Y needs to be proportional to these
+  // two triangle sides:  +-----------+
+  //                      |           |
+  //                      |           |
+  //                 ╱╲   V           |
+  //                ╱90╲              |
+  //               ╱deg.╲ Y1          |
+  //              ╱      ╲            |
+  //             ╱        ╲           |
+  //            ╱          ╲          |
+  //           ╱            ╲         |
+  //          ╱              ╲        |
+  //         ╱angle           ╲       |
+  //        ┌──────────────────┐      |
+  //        │  `bounds`        │╲     |
+  //                           │ ╲    |
+  //                           │  ╲   V
+  //                           │   ╲
+  //                           │    ╲ Y2
+  //                           │     ╲
+  //                           │      ╲
+  //                           │    90 ╲
+  //                           │   deg.╱
+  //                           │      ╱
+  //                           │     ╱
+  //                           │    ╱
+  //                           │   ╱
+  //                           │  ╱
+  //                           │ ╱
+  //                           │╱
+  //
+  return sin(angle) * bounds.width() + cos(angle) * bounds.height();
 }
 
 BEGIN_METADATA(WatermarkView)
