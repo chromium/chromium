@@ -912,7 +912,7 @@ class SignedExchangeSubresourcePrefetchBrowserTest
     }
   }
 
-  // Test that CORB logic works well with prefetched signed exchange
+  // Test that ORB logic works well with prefetched signed exchange
   // subresources. This test loads a main SXG which signed by
   // "publisher.example.com", and loads a SXG subresource using a <script> tag.
   //

@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest, BasicDownload) {
 }
 
 // This test is fetching a source map from a cross-origin URL. While the fetch
-// isn't a CORS fetch, the source map is JSON, so this tests that CORB is
+// isn't a CORS fetch, the source map is JSON, so this tests that ORB is
 // disabled.
 IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest,
                        BasicDownloadCrossOrigin) {

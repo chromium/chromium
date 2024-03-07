@@ -4706,7 +4706,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Set of isolated world origins that require a separate URLLoaderFactory
   // (e.g. for handling requests initiated by extension content scripts that
-  // require relaxed CORS/CORB rules).
+  // require relaxed CORS/ORB rules).
   //
   // TODO(https://crbug.com/1098410): Remove the field below once Chrome
   // Platform Apps are gone.

@@ -1889,7 +1889,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
   // Here we give nullptr for |factory_override|, because CORS is no-op for
   // requests for this factory.
   // TODO(yhirano): Use |factory_override| because someday not just CORS but
-  // CORB/CORP will use the factory and those are not no-ops for it
+  // ORB/CORP will use the factory and those are not no-ops for it
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       storage_partition_->browser_context(), /*frame=*/nullptr,
       ChildProcessHost::kInvalidUniqueID,

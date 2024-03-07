@@ -227,7 +227,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // URL's scheme is https and not uuid-in-package. However, unlike
     // traditional network requests, the browser cannot read the response if
     // kNoCors is used, even with CORS-safe methods and headers -- the response
-    // is blocked by CORB.
+    // is blocked by ORB.
     new_request.mode = network::mojom::RequestMode::kCors;
   } else {
     // CORS is not needed.
@@ -238,9 +238,9 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     //
     // For seller worklets, while the publisher page provides both the script
     // and the trusted signals URLs, both requests use safe methods (GET), and
-    // don't set any headers, so CORS is not needed. CORB would block the
+    // don't set any headers, so CORS is not needed. ORB would block the
     // signal's JSON response, if made in the context of the page, but the JSON
-    // is only made available to the same-origin script, so CORB isn't needed
+    // is only made available to the same-origin script, so ORB isn't needed
     // here.
     new_request.mode = network::mojom::RequestMode::kNoCors;
   }

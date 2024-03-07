@@ -125,7 +125,7 @@ class CONTENT_EXPORT StoragePartition {
   // network process restarts.
   //
   // SECURITY NOTE: This browser-process factory relaxes many security features
-  // (e.g. may disable CORB, won't set |request_initiator_origin_lock| or
+  // (e.g. may disable ORB, won't set |request_initiator_origin_lock| or
   // IsolationInfo, etc.).  Network requests that may be initiated or influenced
   // by a web origin should typically use a different factory (e.g.  the one
   // from RenderFrameHost::CreateNetworkServiceDefaultFactory).

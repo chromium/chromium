@@ -611,8 +611,8 @@ class PrefetchedNavigationLoaderInterceptor
     // guaranteed to have a value here.
     CHECK(resource_request.request_initiator.has_value());
 
-    // Okay to use separate/empty CORB/ORB state for each navigation request.
-    // (Because CORB doesn't apply to navigation requests.)
+    // Okay to use separate/empty ORB state for each navigation request.
+    // (Because ORB doesn't apply to navigation requests.)
     network::orb::PerFactoryState empty_orb_state;
 
     mojo::MakeSelfOwnedReceiver(

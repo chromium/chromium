@@ -122,7 +122,7 @@ void InterestGroupPermissionsChecker::CheckPermissions(
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     // These requests are JSON requests made using a URLLoaderFactory matching
     // the one created for the renderer process. Therefore, CORS needs to be
-    // enabled to avoid CORB blocking.
+    // enabled to avoid ORB blocking.
     //
     // TODO(mmenke): Figure if we really need CORS.
     resource_request->mode = network::mojom::RequestMode::kCors;
