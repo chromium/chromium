@@ -51,7 +51,7 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishLoad(
   }
   auto& driver = GetOrCreateForFrame(render_frame_host);
   // Initialize PIX code detection.
-  driver.DidFinishLoad(validated_url);
+  driver.DidFinishLoad(validated_url, render_frame_host->GetPageUkmSourceId());
 }
 
 ContentFacilitatedPaymentsDriver&

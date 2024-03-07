@@ -18,8 +18,10 @@ void FacilitatedPaymentsDriver::DidFinishNavigation() const {
   manager_->Reset();
 }
 
-void FacilitatedPaymentsDriver::DidFinishLoad(const GURL& url) const {
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+void FacilitatedPaymentsDriver::DidFinishLoad(
+    const GURL& url,
+    ukm::SourceId ukm_source_id) const {
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url, ukm_source_id);
 }
 
 }  // namespace payments::facilitated

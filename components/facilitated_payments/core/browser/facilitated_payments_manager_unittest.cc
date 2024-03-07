@@ -79,8 +79,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
         std::make_unique<MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
-        driver_.get(), optimization_guide_decider_.get(),
-        ukm::UkmRecorder::GetNewSourceID());
+        driver_.get(), optimization_guide_decider_.get());
   }
 
   void TearDown() override {
@@ -223,7 +222,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
       .WillOnce(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(1);
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
@@ -247,7 +247,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
       .WillOnce(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
@@ -275,7 +276,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
       .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
@@ -309,7 +311,8 @@ TEST_F(
       .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(1);
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
@@ -343,7 +346,8 @@ TEST_F(
       .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
@@ -379,7 +383,8 @@ TEST_F(
       .WillRepeatedly(testing::ReturnPointee(&allowlist_result_));
   EXPECT_CALL(*driver_, TriggerPixCodeDetection).Times(0);
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 }
@@ -409,7 +414,8 @@ TEST_F(FacilitatedPaymentsManagerTest,
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
           testing::ByRef(pix_code_detection_result_)));
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
   AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();
@@ -490,7 +496,8 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
       .Times(1)
       .WillOnce(base::test::RunOnceCallback<0>(GetParam()));
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
 
@@ -540,7 +547,8 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
           testing::ByRef(pix_code_detection_result_)));
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
   AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();
@@ -591,7 +599,8 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
           testing::ByRef(pix_code_detection_result_)));
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
   AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();
@@ -641,7 +650,8 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
           testing::ByRef(pix_code_detection_result_)));
 
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
+  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      url, ukm::UkmRecorder::GetNewSourceID());
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
   AdvanceTimeToPixCodeFoundResultReceivedOrMaxAttemptsReached();

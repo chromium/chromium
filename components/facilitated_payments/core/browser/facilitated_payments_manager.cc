@@ -14,11 +14,9 @@ namespace payments::facilitated {
 
 FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     FacilitatedPaymentsDriver* driver,
-    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    ukm::SourceId ukm_source_id)
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : driver_(*driver),
-      optimization_guide_decider_(optimization_guide_decider),
-      ukm_source_id_(ukm_source_id) {
+      optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(optimization_guide_decider_);
   // TODO(b/314826708): Check if at least 1 GPay linked PIX account is
   // available for the user. If not, do not register the PIX allowlist.
@@ -29,16 +27,19 @@ FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
 
 void FacilitatedPaymentsManager::Reset() {
   pix_code_detection_attempt_count_ = 0;
+  ukm_source_id_ = 0;
   weak_ptr_factory_.InvalidateWeakPtrs();
   pix_code_detection_triggering_timer_.Stop();
 }
 
 void FacilitatedPaymentsManager::
     DelayedCheckAllowlistAndTriggerPixCodeDetection(const GURL& url,
+                                                    ukm::SourceId ukm_source_id,
                                                     int attempt_number) {
   Reset();
   switch (GetAllowlistCheckResult(url)) {
     case optimization_guide::OptimizationGuideDecision::kTrue: {
+      ukm_source_id_ = ukm_source_id;
       // The PIX code detection should be triggered after `kPageLoadWaitTime`.
       // Time spent waiting for the allowlist checking infra should be accounted
       // for.
@@ -57,7 +58,7 @@ void FacilitatedPaymentsManager::
           FROM_HERE, kOptimizationGuideDeciderWaitTime,
           base::BindOnce(&FacilitatedPaymentsManager::
                              DelayedCheckAllowlistAndTriggerPixCodeDetection,
-                         weak_ptr_factory_.GetWeakPtr(), url,
+                         weak_ptr_factory_.GetWeakPtr(), url, ukm_source_id,
                          attempt_number + 1));
       break;
     }

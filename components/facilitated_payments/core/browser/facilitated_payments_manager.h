@@ -28,8 +28,7 @@ class FacilitatedPaymentsManager {
  public:
   FacilitatedPaymentsManager(
       FacilitatedPaymentsDriver* driver,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      ukm::SourceId ukm_source_id);
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   FacilitatedPaymentsManager(const FacilitatedPaymentsManager&) = delete;
   FacilitatedPaymentsManager& operator=(const FacilitatedPaymentsManager&) =
       delete;
@@ -49,8 +48,10 @@ class FacilitatedPaymentsManager {
   // 2. Trigger PIX code detection on the page after `kPageLoadWaitTime`. The
   // delay allows async content to load on the page. It also prevents PIX code
   // detection negatively impacting page load performance.
-  void DelayedCheckAllowlistAndTriggerPixCodeDetection(const GURL& url,
-                                                       int attempt_number = 1);
+  void DelayedCheckAllowlistAndTriggerPixCodeDetection(
+      const GURL& url,
+      ukm::SourceId ukm_source_id,
+      int attempt_number = 1);
 
  private:
   // Defined here so they can be accessed by the tests.
@@ -125,7 +126,7 @@ class FacilitatedPaymentsManager {
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
 
-  const ukm::SourceId ukm_source_id_;
+  ukm::SourceId ukm_source_id_;
 
   // Counter for the number of attempts at PIX code detection.
   int pix_code_detection_attempt_count_ = 0;
