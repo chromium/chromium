@@ -54,17 +54,26 @@ suite('cr_tabs_test', function() {
     });
   }
 
-  async function checkKey(
+  function checkKey(
       key: string, initialSelection: number, expectedSelection: number) {
-    await checkUiChange(
+    return checkUiChange(
         () => keyDownOn(tabs, 0, [], key), initialSelection, expectedSelection);
   }
 
-  async function checkClickTab(
-      initialSelection: number, expectedSelection: number) {
-    await checkUiChange(
+  function checkClickTab(initialSelection: number, expectedSelection: number) {
+    return checkUiChange(
         () => getTabElement(expectedSelection).click(), initialSelection,
         expectedSelection);
+  }
+
+  function checkClickTabChild(
+      initialSelection: number, expectedSelection: number) {
+    return checkUiChange(() => {
+      const tabIndicator = getTabElement(expectedSelection)
+                               .querySelector<HTMLElement>('.tab-indicator');
+      assertTrue(!!tabIndicator);
+      tabIndicator.click();
+    }, initialSelection, expectedSelection);
   }
 
   test('check CSS classes, aria-selected and tabindex for a tab', async () => {
@@ -127,6 +136,20 @@ suite('cr_tabs_test', function() {
     await checkClickTab(1, 2);
     await checkClickTab(2, 2);
   });
+
+  test(
+      'clicking on tabs children, selection changes and event fires',
+      async () => {
+        await checkClickTabChild(0, 0);
+        await checkClickTabChild(1, 0);
+        await checkClickTabChild(2, 0);
+        await checkClickTabChild(0, 1);
+        await checkClickTabChild(1, 1);
+        await checkClickTabChild(2, 1);
+        await checkClickTabChild(0, 2);
+        await checkClickTabChild(1, 2);
+        await checkClickTabChild(2, 2);
+      });
 
   test('initial tab out of bound', async () => {
     // When old selected tab is out of bound, onSelectedChanged_ should early

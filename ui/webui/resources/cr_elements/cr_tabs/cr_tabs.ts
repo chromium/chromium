@@ -167,7 +167,7 @@ export class CrTabsElement extends CrLitElement {
   }
 
   protected onTabClick_(e: Event) {
-    const target = e.target as HTMLElement;
+    const target = e.currentTarget as HTMLElement;
     this.selected = Number(target.dataset['index']);
   }
 
