@@ -128,10 +128,10 @@ bool IsNetworkConnected() {
     return g_is_network_connected_for_test.value();
   }
 
-  const auto* network =
+  const auto* const network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
 
-  return network->IsConnectedState();
+  return network && network->IsConnectedState();
 }
 
 class TaskViewTextField : public SystemTextfield,
