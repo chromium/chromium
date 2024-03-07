@@ -2565,7 +2565,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   // Notify all local frames that we've updated the page lifecycle state.
   for (WebFrame* frame = MainFrame(); frame; frame = frame->TraverseNext()) {
     if (frame->IsWebLocalFrame()) {
-      frame->ToWebLocalFrame()->Client()->DidSetPageLifecycleState();
+      frame->ToWebLocalFrame()->Client()->DidSetPageLifecycleState(
+          restoring_from_bfcache);
     }
   }
 

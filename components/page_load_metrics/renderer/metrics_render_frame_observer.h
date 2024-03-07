@@ -114,7 +114,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   void DidStartNavigation(
       const GURL& url,
       std::optional<blink::WebNavigationType> navigation_type) override;
-  void DidSetPageLifecycleState() override;
+  void DidSetPageLifecycleState(bool restoring_from_bfcache) override;
 
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;

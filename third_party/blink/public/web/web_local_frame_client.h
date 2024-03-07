@@ -465,7 +465,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidOpenDocumentInputStream(const WebURL&) {}
 
   // Called when a frame's page lifecycle state gets updated.
-  virtual void DidSetPageLifecycleState() {}
+  virtual void DidSetPageLifecycleState(bool restoring_from_bfcache) {}
 
   // Immediately notifies the browser of a change in the current HistoryItem.
   // Prefer DidUpdateCurrentHistoryItem().

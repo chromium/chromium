@@ -127,7 +127,7 @@ class CONTENT_EXPORT RenderFrameObserver
       blink::WebDocumentLoader* document_loader) {}
 
   // Called when a RenderFrame's page lifecycle state gets updated.
-  virtual void DidSetPageLifecycleState() {}
+  virtual void DidSetPageLifecycleState(bool restoring_from_bfcache) {}
 
   // These match the Blink API notifications. These will not be called for the
   // initial empty document, since that already exists before an observer for a

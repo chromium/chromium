@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/language/accept_languages_service_factory.h"
@@ -27,8 +28,11 @@
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1174,6 +1178,95 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
 
   // Check noisy data was filtered out.
   histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
+}
+
+class TranslateManagerBackForwardCacheBrowserTest
+    : public TranslateManagerBrowserTest {
+ public:
+  TranslateManagerBackForwardCacheBrowserTest() = default;
+  ~TranslateManagerBackForwardCacheBrowserTest() override = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    TranslateManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetupFeaturesAndParameters();
+    TranslateManagerBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::RenderFrameHost* current_frame_host() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  GURL GetURL(const std::string& host) {
+    return embedded_test_server()->GetURL(host, "/french_page.html");
+  }
+
+  void SetupFeaturesAndParameters() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            {// Entry to the cache can be slow during testing and cause
+             // flakiness.
+             ::features::kBackForwardCacheEntryTimeout}));
+
+    vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
+                       RestorePageTranslatorAfterBackForwardCache) {
+  SetTranslateScript(kTestValidScript);
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+
+  EXPECT_EQ("fr",
+            GetChromeTranslateClient()->GetLanguageState().source_language());
+  ResetObserver();
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
+  content::RenderFrameHostWrapper rfh_b(current_frame_host());
+
+  // A is frozen in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 3) Navigate back.
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+  ResetObserver();
+
+  // A is restored, B is stored.
+  EXPECT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Translate the page through TranslateManager.
+  TranslateManager* manager = GetChromeTranslateClient()->GetTranslateManager();
+
+  LanguageState* language_state = manager->GetLanguageState();
+  EXPECT_EQ(TranslationType::kUninitialized,
+            language_state->translation_type());
+
+  manager->TranslatePage(
+      GetChromeTranslateClient()->GetLanguageState().source_language(), "en",
+      true, TranslationType::kAutomaticTranslationByPref);
+
+  EXPECT_EQ(TranslationType::kAutomaticTranslationByPref,
+            language_state->translation_type());
+  WaitUntilPageTranslated();
 }
 
 }  // namespace

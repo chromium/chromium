@@ -80,6 +80,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       mojo::ScopedInterfaceEndpointHandle* handle) override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
+  void DidSetPageLifecycleState(bool restoring_from_bfcache) override;
   void DidFinishLoad() override;
   void DidCreateNewDocument() override;
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;

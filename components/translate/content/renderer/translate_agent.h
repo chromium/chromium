@@ -44,6 +44,9 @@ class TranslateAgent : public content::RenderFrameObserver,
   // Informs us that the page's text has been extracted.
   void PageCaptured(const std::u16string& contents);
 
+  // Updates page registration in translate driver.
+  void RenewPageRegistration();
+
   // Lets the translation system know that we are preparing to navigate to
   // the specified URL. If there is anything that can or should be done before
   // this URL loads, this is the time to prepare for it.
@@ -186,6 +189,8 @@ class TranslateAgent : public content::RenderFrameObserver,
   // LanguageDetectionTabHelper (which implements the ContentTranslateDriver
   // Mojo interface).
   mojo::Remote<mojom::ContentTranslateDriver> translate_handler_;
+
+  std::optional<LanguageDetectionDetails> last_details_;
 
   mojo::Receiver<mojom::TranslateAgent> receiver_{this};
 

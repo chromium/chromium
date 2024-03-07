@@ -4287,9 +4287,9 @@ void RenderFrameImpl::DidOpenDocumentInputStream(const blink::WebURL& url) {
   GetFrameHost()->DidOpenDocumentInputStream(filtered_url);
 }
 
-void RenderFrameImpl::DidSetPageLifecycleState() {
+void RenderFrameImpl::DidSetPageLifecycleState(bool restoring_from_bfcache) {
   for (auto& observer : observers_)
-    observer.DidSetPageLifecycleState();
+    observer.DidSetPageLifecycleState(restoring_from_bfcache);
 }
 
 void RenderFrameImpl::NotifyCurrentHistoryItemChanged() {

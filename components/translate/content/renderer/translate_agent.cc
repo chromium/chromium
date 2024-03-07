@@ -214,10 +214,9 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     details.contents = contents;
     details.has_run_lang_detection = true;
     ResetPage();
-    GetTranslateHandler()->RegisterPage(
-        receiver_.BindNewPipeAndPassRemote(
-            main_frame->GetTaskRunner(blink::TaskType::kInternalTranslation)),
-        details, !details.has_notranslate && !language.empty());
+
+    last_details_ = std::move(details);
+    RenewPageRegistration();
     return;
   }
 
@@ -276,10 +275,30 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
   // For the same render frame with the same url, each time when its texts are
   // captured, it should be treated as a new page to do translation.
   ResetPage();
+
+  last_details_ = std::move(details);
+  RenewPageRegistration();
+}
+
+void TranslateAgent::RenewPageRegistration() {
+  if (!last_details_.has_value()) {
+    return;
+  }
+
+  WebLocalFrame* main_frame = render_frame()->GetWebFrame();
+  if (!main_frame) {
+    return;
+  }
+
+  LanguageDetectionDetails details = std::move(*last_details_);
+
+  ResetPage();
   GetTranslateHandler()->RegisterPage(
       receiver_.BindNewPipeAndPassRemote(
           main_frame->GetTaskRunner(blink::TaskType::kInternalTranslation)),
-      details, !details.has_notranslate && !language.empty());
+      details, !details.has_notranslate && !details.adopted_language.empty());
+
+  last_details_ = std::move(details);
 }
 
 void TranslateAgent::CancelPendingTranslation() {
@@ -606,6 +625,7 @@ TranslateAgent::GetTranslateHandler() {
 }
 
 void TranslateAgent::ResetPage() {
+  last_details_ = {};
   receiver_.reset();
   translate_callback_pending_.Reset();
   CancelPendingTranslation();

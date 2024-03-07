@@ -337,7 +337,8 @@ void MetricsRenderFrameObserver::DidStartNavigation(
   }
 }
 
-void MetricsRenderFrameObserver::DidSetPageLifecycleState() {
+void MetricsRenderFrameObserver::DidSetPageLifecycleState(
+    bool restoring_from_bfcache) {
   // Send current metrics, as this RenderFrame might be replaced by a new
   // RenderFrame or its process might be killed, and this might be the last
   // point we can send the metrics to the browser. See crbug.com/1150242 for
