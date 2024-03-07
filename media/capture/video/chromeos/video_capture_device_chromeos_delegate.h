@@ -55,12 +55,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate {
                        VideoCaptureDevice::SetPhotoOptionsCallback callback);
 
  private:
-  // Helper to interact with PowerManagerClient on DBus original thread.
-  class PowerManagerClientProxy;
+  class PowerObserver;
 
   void OpenDevice();
   void ReconfigureStreams();
-  void CloseDevice(base::UnguessableToken unblock_suspend_token);
+  void CloseDevice(base::OnceClosure suspend_callback);
 
   void SetRotation(int rotation);
 
@@ -103,7 +102,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate {
 
   base::WaitableEvent device_closed_;
 
-  scoped_refptr<PowerManagerClientProxy> power_manager_client_proxy_;
+  base::SequenceBound<PowerObserver> power_observer_;
 
   base::SequenceBound<ScreenObserverDelegate> screen_observer_delegate_;
 
