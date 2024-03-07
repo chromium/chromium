@@ -42,16 +42,13 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -65,7 +62,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -80,11 +76,9 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.url.GURL;
 
 import java.io.File;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -109,8 +103,6 @@ public class TabsTest {
     private boolean mNotifyChangedCalled;
 
     private static final long WAIT_RESIZE_TIMEOUT_MS = 3000;
-
-    private static final int STRESSFUL_TAB_COUNT = 100;
 
     private static final String INITIAL_SIZE_TEST_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -446,86 +438,6 @@ public class TabsTest {
         Assert.assertTrue("innerHeight was not set by page load time", innerHeight > 0);
     }
 
-    /**
-     * Verify that we can open a large number of tabs without running out of memory. This test waits
-     * for the NTP to load before opening the next one. This is a LargeTest but because we're doing
-     * it "slowly", we need to further scale the timeout for adb am instrument and the various
-     * events.
-     */
-    @Test
-    @Manual(message = "Slow test")
-    @Feature({"Android-TabSwitcher"})
-    public void testOpenManyTabsSlowly() {
-        int startCount = sActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        for (int i = 1; i <= STRESSFUL_TAB_COUNT; ++i) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
-            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-            Assert.assertEquals(
-                    startCount + i,
-                    sActivityTestRule.getActivity().getCurrentTabModel().getCount());
-        }
-    }
-
-    /**
-     * Verify that we can open a large number of tabs without running out of memory. This test
-     * hammers the "new tab" button quickly to stress the app.
-     */
-    @Test
-    @Manual(message = "Slow test")
-    @Feature({"Android-TabSwitcher"})
-    public void testOpenManyTabsQuickly() {
-        int startCount = sActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        for (int i = 1; i <= STRESSFUL_TAB_COUNT; ++i) {
-            MenuUtils.invokeCustomMenuActionSync(
-                    InstrumentationRegistry.getInstrumentation(),
-                    sActivityTestRule.getActivity(),
-                    R.id.new_tab_menu_id);
-            Assert.assertEquals(
-                    startCount + i,
-                    sActivityTestRule.getActivity().getCurrentTabModel().getCount());
-        }
-    }
-
-    /**
-     * Verify that we can open a burst of new tabs, even when there are already a large number of
-     * tabs open.
-     */
-    @Test
-    @Manual(message = "Slow test")
-    @Feature({"Navigation"})
-    public void testOpenManyTabsInBursts() throws TimeoutException {
-        final int burstSize = 5;
-        final String url = getUrl(TEST_PAGE_FILE_PATH);
-        final int startCount = sActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        for (int tabCount = startCount; tabCount < STRESSFUL_TAB_COUNT; tabCount += burstSize) {
-            loadUrlInManyNewTabs(url, burstSize);
-            Assert.assertEquals(
-                    tabCount + burstSize,
-                    sActivityTestRule.getActivity().getCurrentTabModel().getCount());
-        }
-    }
-
-    /** Verify opening 10 tabs at once and that each tab loads when selected. */
-    @Test
-    @Manual(message = "Slow test")
-    @Feature({"Navigation"})
-    public void testOpenManyTabsAtOnce10() throws TimeoutException {
-        openAndVerifyManyTestTabs(10);
-    }
-
-    /**
-     * Verify that we can open a large number of tabs all at once and that each tab loads when
-     * selected.
-     */
-    private void openAndVerifyManyTestTabs(final int num) throws TimeoutException {
-        final String url = getUrl(TEST_PAGE_FILE_PATH);
-        int startCount = sActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        loadUrlInManyNewTabs(url, num);
-        Assert.assertEquals(
-                startCount + num, sActivityTestRule.getActivity().getCurrentTabModel().getCount());
-    }
-
     /** Enters the tab switcher without animation. */
     private void showOverviewWithNoAnimation() {
         LayoutTestUtils.startShowingAndWaitForLayout(
@@ -536,38 +448,6 @@ public class TabsTest {
     private void hideOverviewWithNoAnimation() {
         LayoutTestUtils.startShowingAndWaitForLayout(
                 sActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
-    }
-
-    /**
-     * Opens tabs to populate the model to a given count.
-     *
-     * @param targetTabCount The desired number of tabs in the model.
-     * @param waitToLoad Whether the tabs need to be fully loaded.
-     * @return The new number of tabs in the model.
-     */
-    private int openTabs(final int targetTabCount, boolean waitToLoad) {
-        final ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        Callable<Integer> countOnUi =
-                () -> {
-                    return activity.getCurrentTabModel().getCount();
-                };
-        int tabCount = TestThreadUtils.runOnUiThreadBlockingNoException(countOnUi);
-        while (tabCount < targetTabCount) {
-            ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
-            tabCount++;
-            Assert.assertEquals(
-                    "The tab count is wrong",
-                    tabCount,
-                    (int) TestThreadUtils.runOnUiThreadBlockingNoException(countOnUi));
-            if (waitToLoad) {
-                CriteriaHelper.pollUiThread(
-                        () -> {
-                            return !TabModelUtils.getCurrentTab(activity.getCurrentTabModel())
-                                    .isLoading();
-                        });
-            }
-        }
-        return tabCount;
     }
 
     /** Test that we can safely close a tab during a fling (http://b/issue?id=5364043) */
@@ -1009,59 +889,6 @@ public class TabsTest {
     private void assertFileExists(final File fileToCheck, final boolean expected) {
         CriteriaHelper.pollInstrumentationThread(
                 () -> Criteria.checkThat(fileToCheck.exists(), Matchers.is(expected)));
-    }
-
-    /**
-     * Load a url in multiple new tabs in parallel. Each {@link Tab} will pretend to be created from
-     * a link.
-     *
-     * @param url The url of the page to load.
-     * @param numTabs The number of tabs to open.
-     */
-    private void loadUrlInManyNewTabs(final String url, final int numTabs) throws TimeoutException {
-        final CallbackHelper[] pageLoadedCallbacks = new CallbackHelper[numTabs];
-        final int[] tabIds = new int[numTabs];
-        for (int i = 0; i < numTabs; ++i) {
-            final int index = i;
-            InstrumentationRegistry.getInstrumentation()
-                    .runOnMainSync(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Tab currentTab =
-                                            sActivityTestRule
-                                                    .getActivity()
-                                                    .getCurrentTabCreator()
-                                                    .launchUrl(url, TabLaunchType.FROM_LINK);
-                                    final CallbackHelper pageLoadCallback = new CallbackHelper();
-                                    pageLoadedCallbacks[index] = pageLoadCallback;
-                                    currentTab.addObserver(
-                                            new EmptyTabObserver() {
-                                                @Override
-                                                public void onPageLoadFinished(Tab tab, GURL url) {
-                                                    pageLoadCallback.notifyCalled();
-                                                    tab.removeObserver(this);
-                                                }
-                                            });
-                                    tabIds[index] = currentTab.getId();
-                                }
-                            });
-        }
-        //  When opening many tabs some may be frozen due to memory pressure and won't send
-        //  PAGE_LOAD_FINISHED events. Iterate over the newly opened tabs and wait for each to load.
-        for (int i = 0; i < numTabs; ++i) {
-            final TabModel tabModel = sActivityTestRule.getActivity().getCurrentTabModel();
-            final Tab tab = TabModelUtils.getTabById(tabModel, tabIds[i]);
-            InstrumentationRegistry.getInstrumentation()
-                    .runOnMainSync(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    TabModelUtils.setIndex(tabModel, tabModel.indexOf(tab), false);
-                                }
-                            });
-            pageLoadedCallbacks[i].waitForCallback(0);
-        }
     }
 
     private JavascriptTabModalDialog getCurrentAlertDialog() {
