@@ -1011,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.FileTypeUpdate.ResourceBundleResult"
-    enum="SBFileTypeUpdateResult" expires_after="2024-03-17">
+    enum="SBFileTypeUpdateResult" expires_after="2025-03-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1684,16 +1684,6 @@ chromium-metrics-reviews@google.com.
     This records whether DLP scanning succeeded or not. It is logged once for
     each binary upload with DLP scanning enabled (file download or upload with
     the appropriate enterprise policies enabled).
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.MetricsCollectorEventCountAtCleanup"
-    units="events" expires_after="2024-03-17">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the number of events in the metrics collector at cleanup time. This is
-    logged at the beginning of cleanup, which occurs once every 24 hours.
   </summary>
 </histogram>
 
