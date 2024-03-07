@@ -26,13 +26,13 @@ inline constexpr base::FilePath::CharType kMainSwbnFileName[] =
 // It is located in the profile directory.
 class IwaStorageOwnedBundle {
  public:
-  explicit IwaStorageOwnedBundle(std::string dir_name_ascii);
+  IwaStorageOwnedBundle(std::string dir_name_ascii, bool dev_mode);
   ~IwaStorageOwnedBundle();
 
   bool operator==(const IwaStorageOwnedBundle& other) const;
 
   const std::string& dir_name_ascii() const { return dir_name_ascii_; }
-  bool dev_mode() const { return false; }
+  bool dev_mode() const { return dev_mode_; }
 
   base::FilePath GetPath(const base::FilePath profile_dir) const;
 
@@ -40,6 +40,7 @@ class IwaStorageOwnedBundle {
 
  private:
   std::string dir_name_ascii_;
+  bool dev_mode_;
 };
 
 std::ostream& operator<<(std::ostream& os, IwaStorageOwnedBundle location);

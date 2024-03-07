@@ -820,7 +820,7 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
       ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &bundle_path));
       location = IwaStorageUnownedBundle{bundle_path};
     } else {
-      IwaStorageOwnedBundle source{"some_folder"};
+      IwaStorageOwnedBundle source{"some_folder", /*dev_mode=*/false};
       bundle_path = source.GetPath(profile()->GetPath());
       ASSERT_TRUE(base::CreateDirectory(bundle_path.DirName()));
       location = source;

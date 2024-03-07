@@ -338,13 +338,15 @@ TEST(WebAppTest, IsolationDataDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
                            GURL("https://example.com"))};
   app.SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+      base::Version("1.0.0")));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
   base::Value expected_isolation_data = base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
           "owned_bundle": {
+            "dev_mode": false,
             "dir_name_ascii": "random_name"
           }
         },
@@ -365,15 +367,19 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
                            GURL("https://example.com"))};
   app.SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0"), {},
+      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/true},
+      base::Version("1.0.0"), {},
       WebApp::IsolationData::PendingUpdateInfo(
-          IwaStorageOwnedBundle{"random_name"}, base::Version("2.0.0"))));
+          IwaStorageUnownedBundle{
+              base::FilePath(FILE_PATH_LITERAL("random_folder"))},
+          base::Version("2.0.0"))));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
   base::Value expected_isolation_data = base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
           "owned_bundle": {
+            "dev_mode": true,
             "dir_name_ascii": "random_name"
           }
         },
@@ -381,8 +387,8 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
         "controlled_frame_partitions (on-disk)": [],
         "pending_update_info": {
           "isolated_web_app_location": {
-            "owned_bundle": {
-              "dir_name_ascii": "random_name"
+            "unowned_bundle": {
+              "path": "random_folder"
             }
           },
           "version": "2.0.0"

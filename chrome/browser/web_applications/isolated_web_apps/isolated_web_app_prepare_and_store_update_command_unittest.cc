@@ -198,7 +198,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
 
   IsolatedWebAppStorageLocation installed_location_ =
-      IwaStorageOwnedBundle{"a"};
+      IwaStorageOwnedBundle{"a", /*dev_mode=*/false};
   base::Version installed_version_ = base::Version("1.0.0");
 
   base::FilePath update_bundle_path_;

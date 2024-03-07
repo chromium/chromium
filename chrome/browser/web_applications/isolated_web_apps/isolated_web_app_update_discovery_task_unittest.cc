@@ -188,8 +188,9 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, AppIsNotIwa) {
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, NoUpdateFound) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(IwaStorageOwnedBundle{"some_folder"},
-                            base::Version("3.0.0")));
+      WebApp::IsolationData(
+          IwaStorageOwnedBundle{"some_folder", /*dev_mode=*/false},
+          base::Version("3.0.0")));
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
     {
@@ -213,12 +214,13 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
        UpdateAlreadyPending) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(IwaStorageOwnedBundle{"some_folder"},
-                            base::Version("1.0.0"),
-                            /*controlled_frame_partitions=*/{},
-                            WebApp::IsolationData::PendingUpdateInfo(
-                                IwaStorageOwnedBundle{"another_folder"},
-                                base::Version("2.0.0"))));
+      WebApp::IsolationData(
+          IwaStorageOwnedBundle{"some_folder", /*dev_mode=*/false},
+          base::Version("1.0.0"),
+          /*controlled_frame_partitions=*/{},
+          WebApp::IsolationData::PendingUpdateInfo(
+              IwaStorageOwnedBundle{"another_folder", /*dev_mode=*/false},
+              base::Version("2.0.0"))));
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
     {
@@ -244,8 +246,9 @@ using IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest =
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest, NotFound) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(IwaStorageOwnedBundle{"old_folder"},
-                            base::Version("1.0.0")));
+      WebApp::IsolationData(
+          IwaStorageOwnedBundle{"old_folder", /*dev_mode=*/false},
+          base::Version("1.0.0")));
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
       {
@@ -335,7 +338,7 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
   }
 
   IsolatedWebAppStorageLocation installed_bundle_location_ =
-      IwaStorageOwnedBundle{"old_folder"};
+      IwaStorageOwnedBundle{"old_folder", /*dev_mode=*/false};
 
   GURL install_url_ = GURL(base::StrCat(
       {chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
@@ -410,7 +413,8 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
   // point before that update had a chance to be applied).
   InstallIwa(base::Version("1.0.0"),
              WebApp::IsolationData::PendingUpdateInfo(
-                 IwaStorageOwnedBundle{"some_path"}, base::Version("3.0.0")));
+                 IwaStorageOwnedBundle{"some_path", /*dev_mode=*/false},
+                 base::Version("3.0.0")));
   CreateUpdateManifesteAndBundle(base::Version("2.0.0"));
 
   Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),

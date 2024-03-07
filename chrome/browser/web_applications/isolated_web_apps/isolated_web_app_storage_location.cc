@@ -16,8 +16,9 @@
 
 namespace web_app {
 
-IwaStorageOwnedBundle::IwaStorageOwnedBundle(std::string dir_name_ascii)
-    : dir_name_ascii_(std::move(dir_name_ascii)) {}
+IwaStorageOwnedBundle::IwaStorageOwnedBundle(std::string dir_name_ascii,
+                                             bool dev_mode)
+    : dir_name_ascii_(std::move(dir_name_ascii)), dev_mode_(dev_mode) {}
 IwaStorageOwnedBundle::~IwaStorageOwnedBundle() = default;
 
 bool IwaStorageOwnedBundle::operator==(
@@ -31,8 +32,9 @@ base::FilePath IwaStorageOwnedBundle::GetPath(
 }
 
 base::Value IwaStorageOwnedBundle::ToDebugValue() const {
-  return base::Value(
-      base::Value::Dict().Set("dir_name_ascii", dir_name_ascii_));
+  return base::Value(base::Value::Dict()
+                         .Set("dir_name_ascii", dir_name_ascii_)
+                         .Set("dev_mode", dev_mode_));
 }
 
 std::ostream& operator<<(std::ostream& os, IwaStorageOwnedBundle location) {
@@ -86,6 +88,9 @@ IsolatedWebAppLocation IsolatedWebAppStorageLocation::ToLocationDeprecated(
       base::Overloaded{
           [&](const IwaStorageOwnedBundle& bundle) -> IsolatedWebAppLocation {
             base::FilePath path = bundle.GetPath(profile_dir);
+            if (bundle.dev_mode()) {
+              return DevModeBundle{.path = path};
+            }
             return InstalledBundle{.path = path};
           },
           [&](const IwaStorageUnownedBundle& bundle) -> IsolatedWebAppLocation {

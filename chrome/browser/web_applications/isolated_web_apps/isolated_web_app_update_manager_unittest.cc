@@ -352,14 +352,16 @@ class IsolatedWebAppUpdateManagerUpdateTest
     fake_provider().SetScheduler(std::move(command_scheduler));
 
     iwa_info1_ = IwaInfo(web_package::WebBundleSigner::KeyPair::CreateRandom(),
-                         IwaStorageOwnedBundle{"iwa1"}, base::Version("1.0.0"),
+                         IwaStorageOwnedBundle{"iwa1", /*dev_mode=*/false},
+                         base::Version("1.0.0"),
                          GURL("https://example.com/update_manifest1.json"),
                          GURL("https://example.com/bundle1.swbn"),
                          base::Version("2.0.0"), "updated app 1");
     SetUpIwaInfo(*iwa_info1_);
 
     iwa_info2_ = IwaInfo(web_package::WebBundleSigner::KeyPair::CreateRandom(),
-                         IwaStorageOwnedBundle{"iwa2"}, base::Version("4.0.0"),
+                         IwaStorageOwnedBundle{"iwa2", /*dev_mode=*/false},
+                         base::Version("4.0.0"),
                          GURL("https://example.com/update_manifest2.json"),
                          GURL("https://example.com/bundle2.swbn"),
                          base::Version("7.0.0"), "updated app 2");
@@ -921,7 +923,7 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     database_factory.WriteRegistry(registry);
   }
 
-  IwaStorageOwnedBundle update_location_{"update_folder"};
+  IwaStorageOwnedBundle update_location_{"update_folder", /*dev_mode=*/false};
 
  private:
   void CreateStoragePartition(IsolatedWebAppUrlInfo& url_info) {

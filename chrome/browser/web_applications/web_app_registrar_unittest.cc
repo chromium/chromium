@@ -929,7 +929,8 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+      base::Version("1.0.0")));
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs =
@@ -956,7 +957,8 @@ TEST_F(
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+      base::Version("1.0.0")));
   isolated_web_app->SetIsLocallyInstalled(false);
   RegisterAppUnsafe(std::move(isolated_web_app));
 
@@ -983,7 +985,8 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name"}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+      base::Version("1.0.0")));
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   auto output_config =

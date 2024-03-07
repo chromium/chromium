@@ -94,9 +94,9 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
     Profile* profile,
     const GURL& start_url,
     const std::string& name,
-    const WebApp::IsolationData& isolation_data =
-        WebApp::IsolationData(IwaStorageOwnedBundle{/*dir_name_ascii=*/""},
-                              base::Version("1.0.0")));
+    const WebApp::IsolationData& isolation_data = WebApp::IsolationData(
+        IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
+        base::Version("1.0.0")));
 
 // TODO(cmfcmf): Move more test utils into this `test` namespace
 namespace test {

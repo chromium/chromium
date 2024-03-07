@@ -13,6 +13,7 @@ message IsolationData {
   // Information needed to load data from a browser-owned Web Bundle.
   message OwnedBundle {
     optional string dir_name_ascii = 1;
+    optional bool dev_mode = 2;
   }
   // Information needed to load data from a Web Bundle that is not owned by the
   // browser.

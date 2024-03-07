@@ -191,7 +191,8 @@ class TestIwaInstallCommandWrapper
       }
 
       std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
-          expected_version, IwaStorageOwnedBundle{"random_folder"}));
+          expected_version,
+          IwaStorageOwnedBundle{"random_folder", /*dev_mode=*/false}));
       return;
     }
 

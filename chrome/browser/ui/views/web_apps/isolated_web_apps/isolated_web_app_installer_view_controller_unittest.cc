@@ -348,8 +348,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(IwaStorageOwnedBundle{/*dir_name_ascii=*/""},
-                            base::Version("2.0")));
+      WebApp::IsolationData(
+          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
+          base::Version("2.0")));
 
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
   model.SetStep(Step::kGetMetadata);
@@ -384,8 +385,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(IwaStorageOwnedBundle{/*dir_name_ascii=*/""},
-                            base::Version("1.0")));
+      WebApp::IsolationData(
+          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
+          base::Version("1.0")));
 
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
   model.SetStep(Step::kGetMetadata);

@@ -117,10 +117,11 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
       const base::Location& call_location) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       web_app::InstallIsolatedWebAppCommandSuccess(
-                           base::Version{},
-                           web_app::IwaStorageOwnedBundle{"random_folder"})));
+        base::BindOnce(
+            std::move(callback),
+            web_app::InstallIsolatedWebAppCommandSuccess(
+                base::Version{}, web_app::IwaStorageOwnedBundle{
+                                     "random_folder", /*dev_mode=*/false})));
   }
 };
 

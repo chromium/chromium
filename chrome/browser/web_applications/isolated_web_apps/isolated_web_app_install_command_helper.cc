@@ -73,7 +73,8 @@ std::string GenerateRandomDirName() {
 
 base::expected<IsolatedWebAppStorageLocation, std::string> CopySwbnToIwaDir(
     const base::FilePath& swbn_path,
-    const base::FilePath& profile_dir) {
+    const base::FilePath& profile_dir,
+    bool dev_mode) {
   const base::FilePath iwa_dir_path = profile_dir.Append(kIwaDirName);
   if (!base::DirectoryExists(iwa_dir_path)) {
     base::File::Error error;
@@ -107,7 +108,7 @@ base::expected<IsolatedWebAppStorageLocation, std::string> CopySwbnToIwaDir(
         destination_swbn_path.AsUTF8Unsafe() + " IWA directory");
   }
 
-  return IwaStorageOwnedBundle{dir_name_ascii};
+  return IwaStorageOwnedBundle{dir_name_ascii, dev_mode};
 }
 
 void RemoveParentDirectory(const base::FilePath& path) {
@@ -156,7 +157,8 @@ void CopyLocationToProfileDirectory(
                 FROM_HERE,
                 {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                base::BindOnce(CopySwbnToIwaDir, location.path, profile_dir),
+                base::BindOnce(CopySwbnToIwaDir, location.path, profile_dir,
+                               /*dev_mode=*/false),
                 std::move(callback));
           },
           [&](const DevModeBundle& location) {

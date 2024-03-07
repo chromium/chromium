@@ -818,18 +818,20 @@ TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
 TEST_F(WebAppDatabaseProtoDataTest, SavesOwnedBundleIsolationData) {
   std::string dir_name_ascii = "folder_name";
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      IwaStorageOwnedBundle{dir_name_ascii}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{dir_name_ascii, /*dev_mode=*/false},
+      base::Version("1.0.0")));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
   EXPECT_THAT(web_app->isolation_data()->location,
-              IwaStorageOwnedBundle{dir_name_ascii});
+              IwaStorageOwnedBundle(dir_name_ascii, /*dev_mode=*/false));
   EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedOwnedBundleIsolationData) {
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"folder_name"}, base::Version("1.0.0")));
+      IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
+      base::Version("1.0.0")));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -916,7 +918,8 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedProxyIsolationData) {
 
 TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"folder_name"}, base::Version("1.2.3")));
+      IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
+      base::Version("1.2.3")));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -931,9 +934,11 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedIsolationDataPendingUpdateVersion) {
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"folder_name"}, base::Version("1.2.3"), {},
+      IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
+      base::Version("1.2.3"), {},
       WebApp::IsolationData::PendingUpdateInfo(
-          IwaStorageOwnedBundle{"folder_name"}, base::Version("1.2.3"))));
+          IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
+          base::Version("1.2.3"))));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -949,26 +954,67 @@ TEST_F(WebAppDatabaseProtoDataTest,
 }
 
 TEST_F(WebAppDatabaseProtoDataTest,
-       HandlesMismatchedIsolationDataPendingUpdateLocation) {
+       HandlesDifferentTypeOfIsolationDataPendingUpdateLocation) {
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"folder_name"}, base::Version("1.0.0"), {},
+      IwaStorageOwnedBundle{"folder_name", /*dev_mode*/ true},
+      base::Version("1.0.0"), {},
       WebApp::IsolationData::PendingUpdateInfo(
-          IwaStorageOwnedBundle{"folder_name"}, base::Version("2.0.0"))));
+          IwaStorageProxy{url::Origin::Create(GURL("https://example.com"))},
+          base::Version("2.0.0"))));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
-  ASSERT_THAT(web_app_proto, NotNull());
-  web_app_proto->mutable_isolation_data()
-      ->mutable_pending_update_info()
-      ->clear_location();
-  web_app_proto->mutable_isolation_data()
-      ->mutable_pending_update_info()
-      ->mutable_proxy()
-      ->set_proxy_url("https://example.com");
-
   std::unique_ptr<WebApp> protoed_web_app =
       WebAppDatabase::CreateWebApp(*web_app_proto);
-  EXPECT_THAT(protoed_web_app, IsNull());
+  EXPECT_THAT(protoed_web_app, NotNull());
+}
+
+TEST_F(WebAppDatabaseProtoDataTest,
+       HandlesMismatchedIsolationDataPendingUpdateLocation) {
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      IwaStorageOwnedBundle{"folder_name", /*dev_mode*/ false},
+      base::Version("1.0.0"), {},
+      WebApp::IsolationData::PendingUpdateInfo(
+          IwaStorageOwnedBundle{"folder_name", /*dev_mode*/ false},
+          base::Version("2.0.0"))));
+
+  // Test what happens if both are owned bundles, but one is dev mode and
+  // the other one is not.
+  {
+    std::unique_ptr<WebAppProto> web_app_proto =
+        WebAppDatabase::CreateWebAppProto(*web_app);
+    ASSERT_THAT(web_app_proto, NotNull());
+    web_app_proto->mutable_isolation_data()
+        ->mutable_pending_update_info()
+        ->mutable_owned_bundle()
+        ->set_dev_mode(true);
+    web_app_proto->mutable_isolation_data()
+        ->mutable_pending_update_info()
+        ->mutable_proxy();
+
+    std::unique_ptr<WebApp> protoed_web_app =
+        WebAppDatabase::CreateWebApp(*web_app_proto);
+    EXPECT_THAT(protoed_web_app, IsNull());
+  }
+
+  // Test what happens if one is an owned non-dev-mode bundle, but the other one
+  // is a proxy.
+  {
+    std::unique_ptr<WebAppProto> web_app_proto =
+        WebAppDatabase::CreateWebAppProto(*web_app);
+    ASSERT_THAT(web_app_proto, NotNull());
+    web_app_proto->mutable_isolation_data()
+        ->mutable_pending_update_info()
+        ->clear_location();
+    web_app_proto->mutable_isolation_data()
+        ->mutable_pending_update_info()
+        ->mutable_proxy()
+        ->set_proxy_url("https://example.com");
+
+    std::unique_ptr<WebApp> protoed_web_app =
+        WebAppDatabase::CreateWebApp(*web_app_proto);
+    EXPECT_THAT(protoed_web_app, IsNull());
+  }
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {

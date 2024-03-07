@@ -902,21 +902,32 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       GenerateRandomWebAppOsIntegrationState(random, *app));
 
   if (random.next_bool()) {
-    constexpr size_t kNumLocationTypes =
-        absl::variant_size<IsolatedWebAppStorageLocation::Variant>::value;
-    size_t location_index = random.next_uint(kNumLocationTypes);
+    bool dev_mode = random.next_bool();
 
-    auto get_location_type = [&seed_str](size_t location_index) {
-      std::array<IsolatedWebAppStorageLocation, kNumLocationTypes>
-          location_types = {
-              IwaStorageOwnedBundle{base32::Base32Encode(
-                  base::as_byte_span(seed_str),
-                  base32::Base32EncodePolicy::OMIT_PADDING)},
-              IwaStorageUnownedBundle{base::FilePath::FromUTF8Unsafe(seed_str)},
-              IwaStorageProxy{url::Origin::Create(
-                  GURL(base::StrCat({"https://proxy-", seed_str, ".com/"})))},
-          };
-      return location_types.at(location_index);
+    auto get_location_type = [&seed_str, &random,
+                              &dev_mode]() -> IsolatedWebAppStorageLocation {
+      if (!dev_mode) {
+        return IwaStorageOwnedBundle{
+            base32::Base32Encode(base::as_byte_span(seed_str),
+                                 base32::Base32EncodePolicy::OMIT_PADDING),
+            /*dev_mode=*/false};
+      } else {
+        constexpr size_t kNumLocationTypes =
+            absl::variant_size<IsolatedWebAppStorageLocation::Variant>::value;
+        std::array<IsolatedWebAppStorageLocation, kNumLocationTypes>
+            location_types = {
+                IwaStorageOwnedBundle{
+                    base32::Base32Encode(
+                        base::as_byte_span(seed_str),
+                        base32::Base32EncodePolicy::OMIT_PADDING),
+                    /*dev_mode=*/true},
+                IwaStorageUnownedBundle{
+                    base::FilePath::FromUTF8Unsafe(seed_str)},
+                IwaStorageProxy{url::Origin::Create(
+                    GURL(base::StrCat({"https://proxy-", seed_str, ".com/"})))},
+            };
+        return location_types.at(random.next_uint(kNumLocationTypes));
+      }
     };
 
     base::Version version = base::Version({
@@ -925,8 +936,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
         random.next_uint(),
     });
 
-    WebApp::IsolationData isolation_data(get_location_type(location_index),
-                                         version);
+    WebApp::IsolationData isolation_data(get_location_type(), version);
     if (random.next_bool()) {
       isolation_data.controlled_frame_partitions.insert("partition_name");
     }
@@ -937,7 +947,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
           random.next_uint(),
       });
       WebApp::IsolationData::PendingUpdateInfo pending_update_info(
-          get_location_type(location_index), pending_version);
+          get_location_type(), pending_version);
       isolation_data.SetPendingUpdateInfo(pending_update_info);
     }
     app->SetIsolationData(isolation_data);

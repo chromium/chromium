@@ -106,7 +106,7 @@ class SignedWebBundleMetadataTest : public WebAppTest {
 
  private:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  IwaStorageOwnedBundle location_{"some_folder"};
+  IwaStorageOwnedBundle location_{"some_folder", /*dev_mode=*/false};
 };
 
 TEST_F(SignedWebBundleMetadataTest, Succeeds) {

@@ -336,22 +336,24 @@ std::optional<base::FilePath> ProtoToFilePath(const std::string& bytes) {
 template <typename T>
 void IsolationDataLocationToProto(const IsolatedWebAppStorageLocation& location,
                                   T* proto) {
-  absl::visit(base::Overloaded{
-                  [&proto](const IwaStorageOwnedBundle& bundle) {
-                    proto->mutable_owned_bundle()->set_dir_name_ascii(
-                        bundle.dir_name_ascii());
-                  },
-                  [&proto](const IwaStorageUnownedBundle& bundle) {
-                    proto->mutable_unowned_bundle()->set_path(
-                        FilePathToProto(bundle.path()));
-                  },
-                  [&proto](const IwaStorageProxy& proxy) {
-                    DCHECK(!proxy.proxy_url().opaque());
-                    proto->mutable_proxy()->set_proxy_url(
-                        proxy.proxy_url().Serialize());
-                  },
-              },
-              location.variant());
+  absl::visit(
+      base::Overloaded{
+          [&proto](const IwaStorageOwnedBundle& bundle) {
+            proto->mutable_owned_bundle()->set_dir_name_ascii(
+                bundle.dir_name_ascii());
+            proto->mutable_owned_bundle()->set_dev_mode(bundle.dev_mode());
+          },
+          [&proto](const IwaStorageUnownedBundle& bundle) {
+            proto->mutable_unowned_bundle()->set_path(
+                FilePathToProto(bundle.path()));
+          },
+          [&proto](const IwaStorageProxy& proxy) {
+            DCHECK(!proxy.proxy_url().opaque());
+            proto->mutable_proxy()->set_proxy_url(
+                proxy.proxy_url().Serialize());
+          },
+      },
+      location.variant());
 }
 
 template <typename T>
@@ -365,7 +367,8 @@ ProtoToIsolationDataLocation(const T& proto) {
             ".owned_bundle.dir_name_ascii parse error: cannot "
             "deserialize directory name");
       }
-      return IwaStorageOwnedBundle{folder_name};
+      return IwaStorageOwnedBundle{folder_name,
+                                   proto.owned_bundle().dev_mode()};
     }
 
     case T::LocationCase::kUnownedBundle: {

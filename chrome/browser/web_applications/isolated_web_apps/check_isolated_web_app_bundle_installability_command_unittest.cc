@@ -44,7 +44,7 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
 
   std::unique_ptr<BundledIsolatedWebApp> CreateApp(const std::string& version) {
     base::FilePath bundle_path =
-        IwaStorageOwnedBundle{"bundle-" + version}.GetPath(
+        IwaStorageOwnedBundle{"bundle-" + version, /*dev_mode=*/false}.GetPath(
             profile()->GetPath());
     EXPECT_TRUE(base::CreateDirectory(bundle_path.DirName()));
 
