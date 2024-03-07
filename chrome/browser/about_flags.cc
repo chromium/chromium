@@ -2368,10 +2368,17 @@ const FeatureEntry::FeatureParam
     kNewTabSearchEngineUrlAndroid_EeaCountryOnly[] = {
         {"eea_country_only", "true"}};
 
+const FeatureEntry::FeatureParam
+    kNewTabSearchEngineUrlAndroid_SkipEeaCountryCheck[] = {
+        {"skip_eea_country_check", "true"}};
+
 const FeatureEntry::FeatureVariation kNewTabSearchEngineUrlAndroidVariations[] =
     {
         {"EEA Country Only", kNewTabSearchEngineUrlAndroid_EeaCountryOnly,
          std::size(kNewTabSearchEngineUrlAndroid_EeaCountryOnly), nullptr},
+        {"Skip EEA Country check",
+         kNewTabSearchEngineUrlAndroid_SkipEeaCountryCheck,
+         std::size(kNewTabSearchEngineUrlAndroid_SkipEeaCountryCheck), nullptr},
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA[] = {

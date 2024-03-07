@@ -43,6 +43,14 @@ public class DseNewTabUrlManager {
                     EEA_COUNTRY_ONLY_PARAM,
                     true);
 
+    // A parameter of whether to skip the check for users in EEA countries only.
+    private static final String SKIP_EEA_COUNTRY_CHECK_PARAM = "skip_eea_country_check";
+    public static final BooleanCachedFieldTrialParameter SKIP_EEA_COUNTRY_CHECK =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID,
+                    SKIP_EEA_COUNTRY_CHECK_PARAM,
+                    false);
+
     public DseNewTabUrlManager(ObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
         mProfileCallback = this::onProfileAvailable;
@@ -108,9 +116,12 @@ public class DseNewTabUrlManager {
     /** Returns whether the feature NewTabSearchEngineUrlAndroid is enabled. */
     public static boolean isNewTabSearchEngineUrlAndroidEnabled() {
         return ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled()
-                && (!EEA_COUNTRY_ONLY.getValue()
-                        || ChromeSharedPreferences.getInstance()
-                                .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
+                && (SKIP_EEA_COUNTRY_CHECK.getValue()
+                        || (EEA_COUNTRY_ONLY.getValue()
+                                && ChromeSharedPreferences.getInstance()
+                                        .readBoolean(
+                                                ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY,
+                                                false)));
     }
 
     /**
@@ -154,7 +165,6 @@ public class DseNewTabUrlManager {
     void onProfileAvailable(Profile profile) {
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this::onTemplateURLServiceChanged);
-
         onTemplateURLServiceChanged();
         mProfileSupplier.removeObserver(mProfileCallback);
         mProfileCallback = null;

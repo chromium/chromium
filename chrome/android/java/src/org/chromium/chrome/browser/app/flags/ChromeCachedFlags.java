@@ -91,6 +91,7 @@ public class ChromeCachedFlags {
                         CustomTabIntentDataProvider.DENYLIST_ENTRIES,
                         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                         DseNewTabUrlManager.EEA_COUNTRY_ONLY,
+                        DseNewTabUrlManager.SKIP_EEA_COUNTRY_CHECK,
                         DseNewTabUrlManager.SWAP_OUT_NTP,
                         FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
                         HubFieldTrial.FLOATING_ACTION_BUTTON,

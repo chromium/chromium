@@ -117,6 +117,19 @@ public class DseNewTabUrlManagerUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testIsNewTabSearchEngineUrlAndroidSkipEeaCountryCheck() {
+        DseNewTabUrlManager.SKIP_EEA_COUNTRY_CHECK.setForTesting(true);
+        assertTrue(DseNewTabUrlManager.EEA_COUNTRY_ONLY.getValue());
+        assertTrue(DseNewTabUrlManager.SKIP_EEA_COUNTRY_CHECK.getValue());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
+
+        assertTrue(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
+    }
+
+    @Test
     public void testGetDSENewTabUrl() {
         String newTabUrl = DseNewTabUrlManager.getDSENewTabUrl(null);
         assertNull(newTabUrl);
