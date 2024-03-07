@@ -1531,6 +1531,8 @@ static_library("ui") {
       "tabs/tab_group_controller.h",
       "tabs/tab_group_model.cc",
       "tabs/tab_group_model.h",
+      "tabs/tab_group_tab_collection.cc",
+      "tabs/tab_group_tab_collection.h",
       "tabs/tab_group_theme.cc",
       "tabs/tab_group_theme.h",
       "tabs/tab_menu_model.cc",
