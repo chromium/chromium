@@ -34,3 +34,8 @@ sed --regexp-extended \
   --expression "s/\\$\\{REVISION\\}/$revision/gi" \
   --expression "s/\\$\\{TAR-SHA512\\}/$sha512/gi" \
   README.chromium.in > README.chromium
+
+python3 -- ./append_notices.py \
+  --readme=README.chromium \
+  --license-dir=licenses \
+  --third-party-notices=src/lib/THIRD_PARTY_NOTICES
