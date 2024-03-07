@@ -127,15 +127,26 @@ class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
     base::UmaHistogramCounts1000(metric_infix_ + "UpdateLoginCount",
                                  update_logins_count_);
     if (migration_type_ == MigrationType::kForLocalUsers) {
-      ReportAdditionalMetricsForLocalPasswordsMigration();
+      ReportAdditionalMetricsForLocalPasswordsMigration(migration_succeeded);
     }
   }
 
-  void ReportAdditionalMetricsForLocalPasswordsMigration() {
+  void ReportAdditionalMetricsForLocalPasswordsMigration(
+      bool migration_succeeded) {
     base::UmaHistogramCounts1000(metric_infix_ + "AddLoginCount",
                                  added_logins_count_);
     base::UmaHistogramCounts1000(metric_infix_ + "MigratedLoginsTotalCount",
                                  added_logins_count_ + update_logins_count_);
+    if (migration_succeeded &&
+        migration_conflict_won_by_android_count_.has_value()) {
+      base::UmaHistogramCounts1000(
+          metric_infix_ + "MergeWhereAndroidHasMostRecent",
+          migration_conflict_won_by_android_count_.value());
+    }
+  }
+
+  void SetLocalConflictsWonByAndroidCount(int count) {
+    migration_conflict_won_by_android_count_ = count;
   }
 
   void AddUpdatedCredential() { update_logins_count_++; }
@@ -146,6 +157,7 @@ class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
   base::Time start_ = base::Time::Now();
   MigrationType migration_type_;
   const std::string metric_infix_;
+  std::optional<int> migration_conflict_won_by_android_count_;
   int added_logins_count_ = 0;
   int update_logins_count_ = 0;
 };
@@ -408,7 +420,7 @@ void BuiltInBackendToAndroidBackendMigrator::
   base::OnceClosure callbacks_chain =
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::MigrationFinished,
                      weak_ptr_factory_.GetWeakPtr(), /*is_success=*/true);
-
+  int migration_conflict_won_by_android_count = 0;
   for (auto* const login : built_in_backend_logins) {
     auto android_login_iter = android_logins.find(login);
 
@@ -442,9 +454,12 @@ void BuiltInBackendToAndroidBackendMigrator::
           &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
           weak_ptr_factory_.GetWeakPtr(), android_backend_, *login,
           std::move(callbacks_chain));
+    } else {
+      migration_conflict_won_by_android_count++;
     }
   }
-
+  metrics_reporter_->SetLocalConflictsWonByAndroidCount(
+      migration_conflict_won_by_android_count);
   std::move(callbacks_chain).Run();
 }
 

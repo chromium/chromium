@@ -3825,6 +3825,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.MergeWhereAndroidHasMostRecent"
+    units="passwords" expires_after="2024-07-07">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The number of conflicts found while migrating local passwords where the
+    credential already stored in GMS Core is kept instead of the one in Chrome.
+    A conflict is defined as both Chrome and GMS Core having credentials with
+    the same primary key, but different passwords. In that case the credential
+    that was updated or used last is considered to be the correct one.
+
+    Recorded when the entire migration finished successfully in order to avoid
+    double-counting.
+
+    The counterpart of this histogram, recording counts of conflicts where
+    Chrome had the more recent credential. is
+    &quot;PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.UpdateLoginCount&quot;
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
     enum="BooleanSuccess" expires_after="2024-07-28">
   <owner>vsemeniuk@google.com</owner>

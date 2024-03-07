@@ -465,8 +465,8 @@ struct MigrationParam {
     return EntriesToPasswordForms(merged_logins);
   }
 
-  std::vector<PasswordForm> GetAndroidLoginsAfterMigration() const {
-    return EntriesToPasswordForms(android_logins_after_migration);
+  std::vector<PasswordForm> GetAndroidLoginsAfterInitialSyncMigration() const {
+    return EntriesToPasswordForms(initial_sync_migration_android_logins);
   }
 
   std::vector<PasswordForm> EntriesToPasswordForms(
@@ -480,8 +480,21 @@ struct MigrationParam {
   std::vector<Entry> built_in_logins;
   std::vector<Entry> android_logins;
   std::vector<Entry> merged_logins;
-  std::vector<Entry> android_logins_after_migration;
+
+  // The initial sync migration updates built-in backend logins in
+  // the android backend, since the data is assumed to be the same apart
+  // from non-syncable data. However, this means that no merge logic is
+  // applies so these might differ from `merged_logins`.
+  std::vector<Entry> initial_sync_migration_android_logins;
+
   int updated_in_android_backend_credentials_count = 0;
+
+  // The local passwords migration uses a merge algorithm for credentials
+  // with the same primary key in both backends,but different passwords.
+  // The conflicts are resolved in favor or the most recently created/mdoified
+  // entry. The conflict is won by the android backend when the most
+  // recent credential is stored there.
+  int conflicts_won_by_android = 0;
 };
 
 // Tests that initial and rolling migration actually works by comparing
@@ -520,8 +533,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 
   // The android logins are updated. Existing logins are retained.
   base::MockCallback<LoginsOrErrorReply> android_reply;
-  EXPECT_CALL(android_reply, Run(VariantWith<LoginsResult>(ElementsAreArray(
-                                 p.GetAndroidLoginsAfterMigration()))));
+  EXPECT_CALL(android_reply,
+              Run(VariantWith<LoginsResult>(ElementsAreArray(
+                  p.GetAndroidLoginsAfterInitialSyncMigration()))));
   android_backend().GetAllLoginsAsync(android_reply.Get());
   RunUntilIdle();
 
@@ -532,6 +546,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 // Tests the initial migration result.
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
        LocalPwdMigrationAfterEnrollingIntoTheExperiment) {
+  base::HistogramTester histogram_tester;
   // Set current_migration_version to 0 to imitate a user enrolling into the
   // experiment.
   BuiltInBackendToAndroidBackendMigratorTest::Init(
@@ -572,6 +587,11 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetBuiltInLogins()))));
   built_in_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+      "MergeWhereAndroidHasMostRecent",
+      GetParam().conflicts_won_by_android, 1);
 }
 
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
@@ -711,37 +731,44 @@ INSTANTIATE_TEST_SUITE_P(
         MigrationParam{.built_in_logins = {},
                        .android_logins = {},
                        .merged_logins = {},
-                       .android_logins_after_migration = {}},
+                       .initial_sync_migration_android_logins = {},
+                       .conflicts_won_by_android = 0},
         MigrationParam{.built_in_logins = {{1}, {2}},
                        .android_logins = {},
                        .merged_logins = {{1}, {2}},
-                       .android_logins_after_migration = {{1}, {2}},
-                       .updated_in_android_backend_credentials_count = 0},
+                       .initial_sync_migration_android_logins = {{1}, {2}},
+                       .updated_in_android_backend_credentials_count = 0,
+                       .conflicts_won_by_android = 0},
         MigrationParam{.built_in_logins = {},
                        .android_logins = {{1}, {2}},
                        .merged_logins = {{1}, {2}},
-                       .android_logins_after_migration = {{1}, {2}}},
+                       .initial_sync_migration_android_logins = {{1}, {2}},
+                       .conflicts_won_by_android = 0},
         MigrationParam{.built_in_logins = {{1}, {2}},
                        .android_logins = {{3}},
                        .merged_logins = {{1}, {2}, {3}},
-                       .android_logins_after_migration = {{1}, {2}, {3}}},
+                       .initial_sync_migration_android_logins = {{1}, {2}, {3}},
+                       .conflicts_won_by_android = 0},
         MigrationParam{.built_in_logins = {{1}, {2}, {3}},
                        .android_logins = {{1}, {2}, {3}},
                        .merged_logins = {{1}, {2}, {3}},
-                       .android_logins_after_migration = {{1}, {2}, {3}}},
+                       .initial_sync_migration_android_logins = {{1}, {2}, {3}},
+                       .conflicts_won_by_android = 0},
         MigrationParam{
             .built_in_logins = {{1, "old_password", base::Days(1)}, {2}},
             .android_logins = {{1, "new_password", base::Days(2)}, {3}},
             .merged_logins = {{1, "new_password", base::Days(2)}, {2}, {3}},
-            .android_logins_after_migration =
-                {{1, "old_password", base::Days(1)}, {2}, {3}}},
+            .initial_sync_migration_android_logins =
+                {{1, "old_password", base::Days(1)}, {2}, {3}},
+            .conflicts_won_by_android = 1},
         MigrationParam{
             .built_in_logins = {{1, "new_password", base::Days(2)}, {2}},
             .android_logins = {{1, "old_password", base::Days(1)}, {3}},
             .merged_logins = {{1, "new_password", base::Days(2)}, {2}, {3}},
-            .android_logins_after_migration =
+            .initial_sync_migration_android_logins =
                 {{1, "new_password", base::Days(2)}, {2}, {3}},
-            .updated_in_android_backend_credentials_count = 1},
+            .updated_in_android_backend_credentials_count = 1,
+            .conflicts_won_by_android = 0},
         MigrationParam{.built_in_logins = {{1, "new_password",
                                             /*date_created=*/base::Days(1),
                                             /*date_last_used=*/base::Days(2)}},
@@ -749,10 +776,12 @@ INSTANTIATE_TEST_SUITE_P(
                                            /*date_created=*/base::Days(1)}},
                        .merged_logins = {{1, "new_password", base::Days(1),
                                           /*date_last_used=*/base::Days(2)}},
-                       .android_logins_after_migration =
+                       .initial_sync_migration_android_logins =
                            {{1, "new_password", base::Days(1),
                              /*date_last_used=*/base::Days(2)}},
-                       .updated_in_android_backend_credentials_count = 1},
+                       .updated_in_android_backend_credentials_count = 1,
+                       .conflicts_won_by_android = 0},
+
         MigrationParam{
             .built_in_logins = {{1, "old_password",
                                  /*date_created=*/base::Days(1),
@@ -766,11 +795,12 @@ INSTANTIATE_TEST_SUITE_P(
                                /*date_created=*/base::Days(1),
                                /*date_last_used=*/base::Days(2),
                                /*date_password_modified=*/base::Days(3)}},
-            .android_logins_after_migration = {
-                {1, "old_password",
-                 /*date_created=*/base::Days(1),
-                 /*date_last_used=*/base::Days(2),
-                 /*date_password_modified=*/base::Days(2)}}}));
+            .initial_sync_migration_android_logins =
+                {{1, "old_password",
+                  /*date_created=*/base::Days(1),
+                  /*date_last_used=*/base::Days(2),
+                  /*date_password_modified=*/base::Days(2)}},
+            .conflicts_won_by_android = 1}));
 
 struct MigrationParamForMetrics {
   // Whether migration has already happened.
