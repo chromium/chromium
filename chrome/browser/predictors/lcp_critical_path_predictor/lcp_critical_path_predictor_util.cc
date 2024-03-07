@@ -546,6 +546,9 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
 }
 
 std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
+    return std::vector<GURL>();
+  }
   std::vector<std::pair<double, std::string>> font_urls_with_frequency =
       ConvertToFrequencyStringPair(data.lcpp_stat().fetched_font_url_stat());
 
