@@ -250,10 +250,10 @@ EGLDisplay GetPlatformANGLEDisplay(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kANGLEDebugLayer)) {
-    display_attribs.push_back(EGL_PLATFORM_ANGLE_DEBUG_LAYERS_ENABLED_ANGLE);
-    display_attribs.push_back(EGL_TRUE);
-  }
+  display_attribs.push_back(EGL_PLATFORM_ANGLE_DEBUG_LAYERS_ENABLED_ANGLE);
+  display_attribs.push_back(
+      base::FeatureList::IsEnabled(features::kANGLEDebugLayer) ? EGL_TRUE
+                                                               : EGL_FALSE);
 
   display_attribs.push_back(EGL_NONE);
 
