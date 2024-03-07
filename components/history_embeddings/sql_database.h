@@ -13,6 +13,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
+#include "components/history_embeddings/vector_database.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 
@@ -21,16 +22,16 @@ namespace history_embeddings {
 inline constexpr base::FilePath::CharType kHistoryEmbeddingsName[] =
     FILE_PATH_LITERAL("HistoryEmbeddings");
 
-// Wraps the Sqlite database that provides on-disk storage for History
+// Wraps the SQLite database that provides on-disk storage for History
 // Embeddings component. This class is expected to live and die on a backend
 // sequence owned by `HistoryEmbeddingsService`.
-class SqlDatabase {
+class SqlDatabase : public VectorDatabase {
  public:
   // `storage_dir` will generally be the Profile directory.
   explicit SqlDatabase(const base::FilePath& storage_dir);
   SqlDatabase(const SqlDatabase&) = delete;
   SqlDatabase& operator=(const SqlDatabase&) = delete;
-  ~SqlDatabase();
+  ~SqlDatabase() override;
 
   // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
   // `visit_time` are needed too, to respect History deletions and expirations.
@@ -44,6 +45,11 @@ class SqlDatabase {
   // Gets the passages associated with `url_id`. Returns nullopt if there's
   // nothing available.
   std::optional<proto::PassagesValue> GetPassages(history::URLID url_id);
+
+  // VectorDatabase:
+  size_t GetEmbeddingDimensions() const override;
+  void AddUrlEmbeddings(UrlEmbeddings url_embeddings) override;
+  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() const override;
 
  private:
   // Initializes the database, if it's not already initialized. Returns true if

@@ -5,20 +5,19 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
 
-#include "components/keyed_service/core/keyed_service.h"
-
 #include <vector>
 
+#include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
 namespace history_embeddings {
 
 class Embedding {
  public:
-  Embedding(std::vector<float> data);
+  explicit Embedding(std::vector<float> data);
   ~Embedding();
   Embedding(Embedding&&);
-  Embedding(const Embedding&) = delete;
+  Embedding(const Embedding&);
 
   // The number of elements in the data vector.
   size_t Dimensions() const;
@@ -53,13 +52,54 @@ struct ScoredUrl {
   float score;
 };
 
+// This base class decouples storage classes and inverts the dependency so that
+// a vector database can work with a SQLite database, simple in-memory storage,
+// flat files, or whatever kinds of storage will work efficiently.
 class VectorDatabase {
  public:
-  VectorDatabase();
-  ~VectorDatabase();
+  struct EmbeddingsIterator {
+    virtual ~EmbeddingsIterator() = default;
 
-  void Add(UrlEmbeddings url_embeddings);
+    // Returns nullptr if none remain; otherwise advances the iterator
+    // and returns a pointer to the next instance (which may be owned
+    // by the iterator itself).
+    virtual const UrlEmbeddings* Next() = 0;
+  };
+
+  virtual ~VectorDatabase() = default;
+
+  // Returns the expected number of dimensions for an embedding.
+  virtual size_t GetEmbeddingDimensions() const = 0;
+
+  // Insert or update all embeddings for a URL's full set of passages.
+  virtual void AddUrlEmbeddings(UrlEmbeddings url_embeddings) = 0;
+
+  // Create an iterator that steps through database items.
+  // Null may be returned if there are none.
+  virtual std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator()
+      const = 0;
+
+  // Searches the database for embeddings near given `query` and returns
+  // information about where they were found and how nearly the query matched.
   std::vector<ScoredUrl> FindNearest(size_t count, const Embedding& query);
+};
+
+// This is an in-memory vector store that supports searching and saving to
+// another persistent backing store.
+class VectorDatabaseInMemory : public VectorDatabase {
+ public:
+  VectorDatabaseInMemory();
+  ~VectorDatabaseInMemory() override;
+
+  // Save this store's data to another given store. Most implementations don't
+  // need this, but it's useful for an in-memory store to work with a separate
+  // backing database on a worker sequence.
+  void SaveTo(VectorDatabase* database);
+
+  // VectorDatabase:
+  size_t GetEmbeddingDimensions() const override;
+  void AddUrlEmbeddings(UrlEmbeddings url_embeddings) override;
+  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() const override;
 
  private:
   std::vector<UrlEmbeddings> data_;

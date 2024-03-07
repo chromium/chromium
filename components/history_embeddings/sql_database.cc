@@ -167,6 +167,21 @@ std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
   return std::nullopt;
 }
 
+size_t SqlDatabase::GetEmbeddingDimensions() const {
+  // TODO(b/325106935): Keep model version and dimensions metadata.
+  return 0u;
+}
+
+void SqlDatabase::AddUrlEmbeddings(UrlEmbeddings url_embeddings) {
+  // TODO(b/325106935): Save to database.
+}
+
+std::unique_ptr<VectorDatabase::EmbeddingsIterator>
+SqlDatabase::MakeEmbeddingsIterator() const {
+  // TODO(b/325106935): Implement row iteration.
+  return nullptr;
+}
+
 void SqlDatabase::DatabaseErrorCallback(int extended_error,
                                         sql::Statement* statement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

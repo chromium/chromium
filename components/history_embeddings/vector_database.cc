@@ -17,6 +17,7 @@ constexpr float kEpsilon = 0.01f;
 Embedding::Embedding(std::vector<float> data) : data(std::move(data)) {}
 Embedding::~Embedding() = default;
 Embedding::Embedding(Embedding&&) = default;
+Embedding::Embedding(const Embedding&) = default;
 
 size_t Embedding::Dimensions() const {
   return data.size();
@@ -58,30 +59,21 @@ float UrlEmbeddings::BestScoreWith(const Embedding& query) const {
   return best;
 }
 
-VectorDatabase::VectorDatabase() = default;
-VectorDatabase::~VectorDatabase() = default;
-
-void VectorDatabase::Add(UrlEmbeddings url_embeddings) {
-  if (!data_.empty()) {
-    for (const Embedding& embedding : url_embeddings.embeddings) {
-      // All embeddings in the database must have equal dimensions.
-      CHECK_EQ(embedding.Dimensions(), data_[0].embeddings[0].Dimensions());
-      // All embeddings in the database are expected to be normalized.
-      CHECK_LT(std::abs(embedding.Magnitude() - kUnitLength), kEpsilon);
-    }
-  }
-
-  data_.push_back(std::move(url_embeddings));
-}
+////////////////////////////////////////////////////////////////////////////////
 
 std::vector<ScoredUrl> VectorDatabase::FindNearest(size_t count,
                                                    const Embedding& query) {
-  if (count == 0 || data_.empty()) {
+  if (count == 0) {
+    return {};
+  }
+
+  std::unique_ptr<EmbeddingsIterator> iterator = MakeEmbeddingsIterator();
+  if (!iterator) {
     return {};
   }
 
   // Dimensions are always equal.
-  CHECK_EQ(query.Dimensions(), data_[0].embeddings[0].Dimensions());
+  CHECK_EQ(query.Dimensions(), GetEmbeddingDimensions());
 
   // Magnitudes are also assumed equal; they are provided normalized by design.
   CHECK_LT(std::abs(query.Magnitude() - kUnitLength), kEpsilon);
@@ -94,13 +86,13 @@ std::vector<ScoredUrl> VectorDatabase::FindNearest(size_t count,
   };
   std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, Compare> q;
 
-  for (const UrlEmbeddings& item : data_) {
+  while (const UrlEmbeddings* item = iterator->Next()) {
     while (q.size() > count) {
       q.pop();
     }
     q.push(ScoredUrl{
-        .url = item.url,
-        .score = item.BestScoreWith(query),
+        .url = item->url,
+        .score = item->BestScoreWith(query),
     });
   }
 
@@ -111,6 +103,60 @@ std::vector<ScoredUrl> VectorDatabase::FindNearest(size_t count,
     q.pop();
   }
   return nearest;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+VectorDatabaseInMemory::VectorDatabaseInMemory() = default;
+VectorDatabaseInMemory::~VectorDatabaseInMemory() = default;
+
+void VectorDatabaseInMemory::SaveTo(VectorDatabase* database) {
+  for (UrlEmbeddings& url_embeddings : data_) {
+    database->AddUrlEmbeddings(std::move(url_embeddings));
+  }
+  data_.clear();
+}
+
+size_t VectorDatabaseInMemory::GetEmbeddingDimensions() const {
+  return data_.empty() ? 0 : data_[0].embeddings[0].Dimensions();
+}
+
+void VectorDatabaseInMemory::AddUrlEmbeddings(UrlEmbeddings url_embeddings) {
+  if (!data_.empty()) {
+    for (const Embedding& embedding : url_embeddings.embeddings) {
+      // All embeddings in the database must have equal dimensions.
+      CHECK_EQ(embedding.Dimensions(), data_[0].embeddings[0].Dimensions());
+      // All embeddings in the database are expected to be normalized.
+      CHECK_LT(std::abs(embedding.Magnitude() - kUnitLength), kEpsilon);
+    }
+  }
+
+  data_.push_back(std::move(url_embeddings));
+}
+
+std::unique_ptr<VectorDatabase::EmbeddingsIterator>
+VectorDatabaseInMemory::MakeEmbeddingsIterator() const {
+  struct SimpleEmbeddingsIterator : public EmbeddingsIterator {
+    explicit SimpleEmbeddingsIterator(const std::vector<UrlEmbeddings>& source)
+        : iterator_(source.cbegin()), end_(source.cend()) {}
+    ~SimpleEmbeddingsIterator() override = default;
+
+    const UrlEmbeddings* Next() override {
+      if (iterator_ == end_) {
+        return nullptr;
+      }
+      return &(*iterator_++);
+    }
+
+    std::vector<UrlEmbeddings>::const_iterator iterator_;
+    std::vector<UrlEmbeddings>::const_iterator end_;
+  };
+
+  if (data_.empty()) {
+    return nullptr;
+  }
+
+  return std::make_unique<SimpleEmbeddingsIterator>(data_);
 }
 
 }  // namespace history_embeddings

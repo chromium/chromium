@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/history_embeddings/sql_database.h"
+#include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
@@ -22,8 +23,8 @@ namespace history_embeddings {
 struct UrlPassages {
   UrlPassages();
   ~UrlPassages();
-  UrlPassages(const UrlPassages&) = delete;
-  UrlPassages& operator=(const UrlPassages&) = delete;
+  UrlPassages(const UrlPassages&);
+  UrlPassages& operator=(const UrlPassages&);
   UrlPassages(UrlPassages&&);
   UrlPassages& operator=(UrlPassages&&);
 
@@ -32,6 +33,8 @@ struct UrlPassages {
 };
 
 using PassagesCallback = base::OnceCallback<void(UrlPassages)>;
+using ComputeEmbeddingsCallback =
+    base::OnceCallback<std::vector<Embedding>(const UrlPassages&)>;
 
 class HistoryEmbeddingsService : public KeyedService {
  public:
@@ -51,12 +54,32 @@ class HistoryEmbeddingsService : public KeyedService {
   void Shutdown() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsTest,
+                           ConstructsAndComputesEmbeddings);
+
+  // A utility container to wrap anything that should be accessed on
+  // the separate storage worker sequence.
+  struct Storage {
+    explicit Storage(const base::FilePath& storage_dir);
+
+    // Called on the worker sequence to process and persist passages &
+    // embeddings.
+    void ProcessAndStorePassages(ComputeEmbeddingsCallback compute_embeddings,
+                                 UrlPassages url_passages);
+
+    // A VectorDatabase implementation that holds data in memory.
+    VectorDatabaseInMemory vector_database;
+
+    // The underlying SQL database for persistent storage.
+    SqlDatabase sql_database;
+  };
+
   // Called indirectly via RetrievePassages when passage extraction completes.
   void OnPassagesRetrieved(PassagesCallback callback, UrlPassages passages);
 
-  // The underlying SQL database, bound to a separate storage sequence.
+  // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.
-  base::SequenceBound<SqlDatabase> database_;
+  base::SequenceBound<Storage> storage_;
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;
 };
