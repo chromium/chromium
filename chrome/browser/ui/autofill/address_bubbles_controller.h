@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
+#include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -19,8 +19,8 @@ namespace autofill {
 class AutofillBubbleBase;
 
 // The controller of the address page action icon, see the implementation of
-// the `SaveUpdateAddressProfileIconController` interface. Different types of
-// address bubbles can be bound to the icon (e.g. save or update address). This
+// the `AddressBubblesIconController` interface. Different types of address
+// bubbles can be bound to the icon (e.g. save or update address). This
 // controller acts as the delegate for them (hence implementing
 // `AddressBubbleControllerDelegate`) to support higher level flows like saving
 // an address with editing.
@@ -29,7 +29,7 @@ class AutofillBubbleBase;
 // the `OfferSave()` method.
 class AddressBubblesController
     : public AutofillBubbleControllerBase,
-      public SaveUpdateAddressProfileIconController,
+      public AddressBubblesIconController,
       public content::WebContentsUserData<
           AddressBubblesController>,
       public AddressBubbleControllerDelegate {

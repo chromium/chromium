@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/save_update_address_profile_icon_view.h"
+#include "chrome/browser/ui/views/autofill/address_bubbles_icon_view.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
+#include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -16,7 +16,7 @@
 
 namespace autofill {
 
-SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
+AddressBubblesIconView::AddressBubblesIconView(
     CommandUpdater* command_updater,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     PageActionIconView::Delegate* page_action_icon_delegate)
@@ -29,11 +29,11 @@ SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
                              GetTextForTooltipAndAccessibleName());
 }
 
-SaveUpdateAddressProfileIconView::~SaveUpdateAddressProfileIconView() = default;
+AddressBubblesIconView::~AddressBubblesIconView() = default;
 
-views::BubbleDialogDelegate* SaveUpdateAddressProfileIconView::GetBubble()
+views::BubbleDialogDelegate* AddressBubblesIconView::GetBubble()
     const {
-  SaveUpdateAddressProfileIconController* controller = GetController();
+  AddressBubblesIconController* controller = GetController();
   if (!controller) {
     return nullptr;
   }
@@ -42,8 +42,8 @@ views::BubbleDialogDelegate* SaveUpdateAddressProfileIconView::GetBubble()
       controller->GetBubbleView());
 }
 
-void SaveUpdateAddressProfileIconView::UpdateImpl() {
-  SaveUpdateAddressProfileIconController* controller = GetController();
+void AddressBubblesIconView::UpdateImpl() {
+  AddressBubblesIconController* controller = GetController();
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsBubbleActive());
   SetVisible(command_enabled);
@@ -51,8 +51,8 @@ void SaveUpdateAddressProfileIconView::UpdateImpl() {
 }
 
 std::u16string
-SaveUpdateAddressProfileIconView::GetTextForTooltipAndAccessibleName() const {
-  SaveUpdateAddressProfileIconController* controller = GetController();
+AddressBubblesIconView::GetTextForTooltipAndAccessibleName() const {
+  AddressBubblesIconController* controller = GetController();
   if (!controller) {
     // If the controller is nullptr, the tab has been closed already, and the
     // icon will disappear soon. Return a save address prompt title to make
@@ -62,22 +62,22 @@ SaveUpdateAddressProfileIconView::GetTextForTooltipAndAccessibleName() const {
   return controller->GetPageActionIconTootip();
 }
 
-void SaveUpdateAddressProfileIconView::OnExecuting(
+void AddressBubblesIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
-const gfx::VectorIcon& SaveUpdateAddressProfileIconView::GetVectorIcon() const {
+const gfx::VectorIcon& AddressBubblesIconView::GetVectorIcon() const {
   // TODO(crbug.com/1167060): Update the icon upon having final mocks.
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
              ? vector_icons::kLocationOnChromeRefreshIcon
              : vector_icons::kLocationOnIcon;
 }
 
-SaveUpdateAddressProfileIconController*
-SaveUpdateAddressProfileIconView::GetController() const {
-  return SaveUpdateAddressProfileIconController::Get(GetWebContents());
+AddressBubblesIconController*
+AddressBubblesIconView::GetController() const {
+  return AddressBubblesIconController::Get(GetWebContents());
 }
 
-BEGIN_METADATA(SaveUpdateAddressProfileIconView)
+BEGIN_METADATA(AddressBubblesIconView)
 END_METADATA
 
 }  // namespace autofill

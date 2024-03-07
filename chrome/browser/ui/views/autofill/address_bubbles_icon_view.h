@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_BUBBLES_ICON_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_BUBBLES_ICON_VIEW_H_
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -12,22 +12,22 @@ class CommandUpdater;
 
 namespace autofill {
 
-class SaveUpdateAddressProfileIconController;
+class AddressBubblesIconController;
 
 // The location bar icon to show the Save Address Profile bubble.
-class SaveUpdateAddressProfileIconView : public PageActionIconView {
-  METADATA_HEADER(SaveUpdateAddressProfileIconView, PageActionIconView)
+class AddressBubblesIconView : public PageActionIconView {
+  METADATA_HEADER(AddressBubblesIconView, PageActionIconView)
 
  public:
-  SaveUpdateAddressProfileIconView(
+  AddressBubblesIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
-  SaveUpdateAddressProfileIconView(const SaveUpdateAddressProfileIconView&) =
+  AddressBubblesIconView(const AddressBubblesIconView&) =
       delete;
-  SaveUpdateAddressProfileIconView& operator=(
-      const SaveUpdateAddressProfileIconView&) = delete;
-  ~SaveUpdateAddressProfileIconView() override;
+  AddressBubblesIconView& operator=(
+      const AddressBubblesIconView&) = delete;
+  ~AddressBubblesIconView() override;
 
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
@@ -40,9 +40,9 @@ class SaveUpdateAddressProfileIconView : public PageActionIconView {
   const gfx::VectorIcon& GetVectorIcon() const override;
 
  private:
-  SaveUpdateAddressProfileIconController* GetController() const;
+  AddressBubblesIconController* GetController() const;
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_ICON_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_BUBBLES_ICON_VIEW_H_

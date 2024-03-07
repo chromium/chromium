@@ -18,13 +18,13 @@
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/views/autofill/address_bubbles_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
-#include "chrome/browser/ui/views/autofill/save_update_address_profile_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
@@ -204,7 +204,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         break;
       case PageActionIconType::kSaveAutofillAddress:
         add_page_action_icon(
-            type, std::make_unique<autofill::SaveUpdateAddressProfileIconView>(
+            type, std::make_unique<autofill::AddressBubblesIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
