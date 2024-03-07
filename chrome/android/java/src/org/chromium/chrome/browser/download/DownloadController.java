@@ -44,7 +44,7 @@ public class DownloadController {
         assert nativePage instanceof PdfPage;
         ((PdfPage) nativePage)
                 .onDownloadComplete(downloadInfo.getFileName(), downloadInfo.getFilePath());
-        // TODO(shuyng): Update tab title.
+        tab.updateTitle();
     }
 
     /**

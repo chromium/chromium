@@ -1355,7 +1355,9 @@ class TabImpl implements Tab {
         while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, themeColor);
     }
 
-    void updateTitle() {
+    /** Update the title for the current page if changed. */
+    @Override
+    public void updateTitle() {
         if (isFrozen()) return;
 
         // When restoring the tabs, the title will no longer be populated, so request it from the

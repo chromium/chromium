@@ -376,4 +376,7 @@ public interface Tab extends TabLifecycle {
 
     /** Sets the TabLaunchType for tabs launched with an unset launch type. */
     void setTabLaunchType(@TabLaunchType int launchType);
+
+    /** Update the title for the current page if changed. */
+    void updateTitle();
 }
