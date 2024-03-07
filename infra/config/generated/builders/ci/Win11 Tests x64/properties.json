@@ -76,7 +76,8 @@
           "builder": "win11-x64-fyi-rel",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {
