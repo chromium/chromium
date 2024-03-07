@@ -70,5 +70,8 @@ mojom("deprecated_experimental_interfaces") {
 
     # Nearby Sharing feature
     "//chromeos/ash/services/nearby/public/mojom:*",
+
+    # For device unittests
+    "//device:*",
   ]
 }

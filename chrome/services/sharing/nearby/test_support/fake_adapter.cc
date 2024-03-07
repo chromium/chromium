@@ -222,6 +222,13 @@ void FakeAdapter::CreateRfcommServiceInsecurely(
   std::move(callback).Run(std::move(pending_server_socket));
 }
 
+void FakeAdapter::CreateLocalGattService(
+    const device::BluetoothUUID& service_id,
+    mojo::PendingRemote<mojom::GattServiceObserver> observer,
+    CreateLocalGattServiceCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void FakeAdapter::SetShouldDiscoverySucceed(bool should_discovery_succeed) {
   should_discovery_succeed_ = should_discovery_succeed;
 }

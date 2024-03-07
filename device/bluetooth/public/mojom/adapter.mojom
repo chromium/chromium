@@ -241,6 +241,14 @@ interface Adapter {
   [Sync]
   CreateRfcommServiceInsecurely(string service_name, UUID service_uuid)
       => (pending_remote<ServerSocket>? server_socket);
+
+  // Creates a local GATT service corresponding to |service_id|, and
+  // communicates events to the |observer|. This call is only expected to be
+  // used to create a local GATT service that does not exist at |service_id|.
+  [Sync]
+  CreateLocalGattService(UUID service_id,
+       pending_remote<GattServiceObserver> observer)
+      => (pending_remote<GattService> gatt_service);
 };
 
 // Listener on Bluetooth events. Register as an observer via AddObserver().

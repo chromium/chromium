@@ -15,10 +15,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "device/bluetooth/advertisement.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/device.h"
 #include "device/bluetooth/discovery_session.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/connect_result_type_converter.h"
 #include "device/bluetooth/server_socket.h"
@@ -274,6 +276,37 @@ void Adapter::CreateRfcommServiceInsecurely(
       base::BindOnce(&Adapter::OnCreateRfcommServiceInsecurelyError,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(split_callback.second)));
+}
+
+void Adapter::CreateLocalGattService(
+    const device::BluetoothUUID& service_id,
+    mojo::PendingRemote<mojom::GattServiceObserver> observer,
+    CreateLocalGattServiceCallback callback) {
+  // It is expected that callers of `CreateLocalGattService()` only call this
+  // method when creating a new GATT service that corresponds to |service_id|.
+  // See more details in //device/bluetooth/public/mojom/adapter.mojom method
+  // documentation.
+  CHECK(!base::Contains(uuid_to_local_gatt_service_map_, service_id));
+
+  mojo::PendingReceiver<mojom::GattService> pending_gatt_service_receiver;
+  mojo::PendingRemote<mojom::GattService> pending_gatt_service_remote =
+      pending_gatt_service_receiver.InitWithNewPipeAndPassRemote();
+
+  // TODO(crbug.com/311430390): `gatt_service` can become invalidated if the
+  // consumer of `pending_gatt_service_remote` calls `Stop()` (which will be
+  // added in a follow up CL as part of this work). When that happens,
+  // `Adapter` needs to observe the invalidation event, and clean up the
+  // `gatt_service` from `uuid_to_local_gatt_service_map_`. This TODO tracks
+  // adding an observer interface to `GattService` to notify `Adapter` when it
+  // is invalidated, which then `Adapter` can erase `gatt_service` from
+  // `uuid_to_local_gatt_service_map_`.
+  auto gatt_service =
+      std::make_unique<GattService>(std::move(pending_gatt_service_receiver),
+                                    std::move(observer), service_id, adapter_);
+  uuid_to_local_gatt_service_map_.try_emplace(service_id,
+                                              std::move(gatt_service));
+  std::move(callback).Run(
+      /*gatt_service=*/std::move(pending_gatt_service_remote));
 }
 
 void Adapter::AdapterPresentChanged(device::BluetoothAdapter* adapter,

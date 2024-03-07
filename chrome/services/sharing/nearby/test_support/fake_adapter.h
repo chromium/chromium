@@ -46,6 +46,10 @@ class FakeAdapter : public mojom::Adapter {
       const std::string& service_name,
       const device::BluetoothUUID& service_uuid,
       CreateRfcommServiceInsecurelyCallback callback) override;
+  void CreateLocalGattService(
+      const device::BluetoothUUID& service_id,
+      mojo::PendingRemote<mojom::GattServiceObserver> observer,
+      CreateLocalGattServiceCallback callback) override;
 
   void SetAdvertisementDestroyedCallback(base::OnceClosure callback);
   const std::vector<uint8_t>* GetRegisteredAdvertisementServiceData(

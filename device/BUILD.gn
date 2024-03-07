@@ -128,6 +128,7 @@ test("device_unittests") {
     "//device/bluetooth:deprecated_experimental_mojo",
     "//device/bluetooth:fake_bluetooth",
     "//device/bluetooth:mocks",
+    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
     "//device/gamepad",
     "//device/gamepad:test_helpers",
     "//device/gamepad/public/cpp:shared_with_blink",

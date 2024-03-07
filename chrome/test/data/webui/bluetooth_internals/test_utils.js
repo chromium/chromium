@@ -188,6 +188,10 @@ export class TestAdapter extends TestBrowserProxy {
     return {result: null};
   }
 
+  async createLocalGattService(service_id, observer) {
+    return {result: null};
+  }
+
   setTestConnectResult(connectResult) {
     this.connectResult_ = connectResult;
   }
