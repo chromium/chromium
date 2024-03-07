@@ -17,6 +17,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "ipc/ipc_channel.h"
 
@@ -103,6 +104,8 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(
       return;
 
     if (agent_host_) {
+      WebTestControlHost::Get()->PrintMessageToStderr(
+          "Protocol message: " + *protocol_message + "\n");
       agent_host_->DispatchProtocolMessage(
           this, base::as_bytes(base::make_span(*protocol_message)));
     }
@@ -115,6 +118,9 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     base::span<const uint8_t> message) {
   base::StringPiece str_message(reinterpret_cast<const char*>(message.data()),
                                 message.size());
+  WebTestControlHost::Get()->PrintMessageToStderr(
+      "Protocol message: " + std::string(str_message) + "\n");
+
   if (str_message.size() < kWebTestMaxMessageChunkSize) {
     std::string param;
     base::EscapeJSONString(str_message, true, &param);

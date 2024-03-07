@@ -144,6 +144,9 @@ class WebTestControlHost : public WebContentsObserver,
   WebTestResultPrinter* printer() { return printer_.get(); }
   void set_printer(WebTestResultPrinter* printer) { printer_.reset(printer); }
 
+  // WebTestControlHost implementation.
+  void PrintMessageToStderr(const std::string& message) override;
+
   void DevToolsProcessCrashed();
 
   // Called when a renderer wants to bind a connection to the
@@ -211,7 +214,6 @@ class WebTestControlHost : public WebContentsObserver,
       bool capture_navigation_history,
       bool capture_pixels) override;
   void TestFinishedInSecondaryRenderer() override;
-  void PrintMessageToStderr(const std::string& message) override;
   void PrintMessage(const std::string& message) override;
   void Reload() override;
   void OverridePreferences(
