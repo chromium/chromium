@@ -232,7 +232,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                            const MLOperand* recurrent_weight,
                                            const uint32_t steps,
                                            const uint32_t hidden_size,
-                                           const MLLstmOptions* options,
+                                           MLLstmOptions* options,
                                            ExceptionState& exception_state);
 
   MLOperand* matmul(const MLOperand* a,

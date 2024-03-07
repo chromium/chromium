@@ -432,9 +432,7 @@ webnn::LstmAttributes ConvertToLstmAttributes(
     attributes.initial_cell_state =
         ConvertToComponentOperand(options->initialCellState());
   }
-  if (options->hasActivations()) {
-    attributes.activation_count = options->activations().size();
-  }
+  attributes.activation_count = options->activations().size();
   attributes.return_sequence = options->returnSequence();
   attributes.direction =
       BlinkRecurrentNetworkDirectionToComponent(options->direction().AsEnum());
@@ -1349,8 +1347,19 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
     const MLOperand* recurrent_weight,
     const uint32_t steps,
     const uint32_t hidden_size,
-    const MLLstmOptions* options,
+    MLLstmOptions* options,
     ExceptionState& exception_state) {
+  // If the activations are not specified, create a default activation sequence
+  // [sigmoid, tanh, tanh] as defined in the spec.
+  if (!options->hasActivations()) {
+    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
+        this, webnn::mojom::blink::Activation::Tag::kSigmoid);
+    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
+        this, webnn::mojom::blink::Activation::Tag::kTanh);
+    options->setActivations(
+        {activation_sigmoid, activation_tanh, activation_tanh});
+  }
+
   auto validated_outputs = webnn::ValidateLstmAndInferOutput(
       ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
       ConvertToComponentOperand(recurrent_weight), steps, hidden_size,
@@ -1362,9 +1371,42 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
     return {};
   }
 
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return {};
+  auto* lstm =
+      MakeGarbageCollected<MLLstmOperator>(this, steps, hidden_size, options);
+
+  HeapVector<Member<const MLOperand>> outputs;
+  for (const auto& validated_output : validated_outputs.value()) {
+    auto output = MLOperand::ValidateAndCreateOutput(
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
+        Vector<uint32_t>(validated_output.dimensions), lstm);
+    if (!output.has_value()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        output.error());
+      return {};
+    }
+    outputs.push_back(output.value());
+  }
+
+  HeapVector<Member<const MLOperand>> inputs = {input, weight,
+                                                recurrent_weight};
+  if (options->hasBias()) {
+    inputs.push_back(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    inputs.push_back(options->recurrentBias());
+  }
+  if (options->hasPeepholeWeight()) {
+    inputs.push_back(options->peepholeWeight());
+  }
+  if (options->hasInitialHiddenState()) {
+    inputs.push_back(options->initialHiddenState());
+  }
+  if (options->hasInitialCellState()) {
+    inputs.push_back(options->initialCellState());
+  }
+
+  lstm->Connect(std::move(inputs), outputs);
+  return outputs;
 }
 
 MLOperand* MLGraphBuilder::matmul(const MLOperand* a,

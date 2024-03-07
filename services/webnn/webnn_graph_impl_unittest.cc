@@ -3320,6 +3320,283 @@ TEST_F(WebNNGraphImplTest, LayerNormalizationTest) {
   }
 }
 
+struct LstmTester {
+  struct LstmAttributes {
+    std::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> recurrent_bias_operand_id;
+    std::optional<uint64_t> peephole_weight_operand_id;
+    std::optional<uint64_t> initial_hidden_state_operand_id;
+    std::optional<uint64_t> initial_cell_state_operand_id;
+    bool return_sequence = false;
+    mojom::RecurrentNetworkDirection direction =
+        mojom::RecurrentNetworkDirection::kForward;
+    mojom::Lstm::WeightLayout layout = mojom::Lstm::WeightLayout::kIofg;
+    std::vector<Activation> activations = {
+        Activation{.kind = mojom::Activation::Tag::kSigmoid},
+        Activation{.kind = mojom::Activation::Tag::kTanh},
+        Activation{.kind = mojom::Activation::Tag::kTanh}};
+  };
+
+  OperandInfo input;
+  OperandInfo weight;
+  OperandInfo recurrent_weight;
+  uint32_t steps;
+  uint32_t hidden_size;
+  std::optional<OperandInfo> bias;
+  std::optional<OperandInfo> recurrent_bias;
+  std::optional<OperandInfo> peephole_weight;
+  std::optional<OperandInfo> initial_hidden_state;
+  std::optional<OperandInfo> initial_cell_state;
+  LstmAttributes attributes;
+  std::vector<OperandInfo> outputs;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t weight_operand_id =
+        builder.BuildInput("weight", weight.dimensions, weight.type);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", recurrent_weight.dimensions, recurrent_weight.type);
+
+    std::vector<uint64_t> output_operand_ids;
+    output_operand_ids.reserve(outputs.size());
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      output_operand_ids.push_back(
+          builder.BuildOutput(base::StringPrintf("output%zu", i),
+                              outputs[i].dimensions, outputs[i].type));
+    }
+
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    if (recurrent_bias.has_value()) {
+      attributes.recurrent_bias_operand_id = builder.BuildInput(
+          "recurrentBias", recurrent_bias->dimensions, recurrent_bias->type);
+    }
+    if (peephole_weight.has_value()) {
+      attributes.peephole_weight_operand_id = builder.BuildInput(
+          "peepholeWeight", peephole_weight->dimensions, peephole_weight->type);
+    }
+    if (initial_hidden_state.has_value()) {
+      attributes.initial_hidden_state_operand_id = builder.BuildInput(
+          "initialHiddenState", initial_hidden_state->dimensions,
+          initial_hidden_state->type);
+    }
+    if (initial_cell_state.has_value()) {
+      attributes.initial_cell_state_operand_id =
+          builder.BuildInput("initialCellState", initial_cell_state->dimensions,
+                             initial_cell_state->type);
+    }
+
+    builder.BuildLstm(input_operand_id, weight_operand_id,
+                      recurrent_weight_operand_id,
+                      std::move(output_operand_ids), steps, hidden_size,
+                      std::move(attributes));
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, LstmTest) {
+  {
+    // Test the lstm operator.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t direction_count = 2;
+    LstmTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size,
+                                  input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {direction_count, 4 * hidden_size}},
+        .recurrent_bias =
+            OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {direction_count, 4 * hidden_size}},
+        .peephole_weight =
+            OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {direction_count, 3 * hidden_size}},
+        .initial_hidden_state =
+            OperandInfo{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {direction_count, batch_size, hidden_size}},
+        .initial_cell_state =
+            OperandInfo{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {direction_count, batch_size, hidden_size}},
+        .attributes = {.return_sequence = true,
+                       .direction = mojom::RecurrentNetworkDirection::kBoth},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {steps, direction_count, batch_size,
+                                    hidden_size}}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shape of weight is incorrect.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t direction_count = 1;
+    LstmTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size, 1000}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the clamp activation has incorrect
+    // attributes.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t direction_count = 1;
+    LstmTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size,
+                                  input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .attributes =
+            {.direction = mojom::RecurrentNetworkDirection::kBackward,
+             .activations = {Activation{.kind =
+                                            mojom::Activation::Tag::kSigmoid},
+                             Activation{.kind = mojom::Activation::Tag::kTanh},
+                             Activation{
+                                 .kind = mojom::Activation::Tag::kClamp,
+                                 .clamp_attributes =
+                                     ClampTester::ClampAttributes{
+                                         .min_value = 3.0, .max_value = 2.0}}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output is incorrect.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t direction_count = 1;
+    LstmTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size,
+                                  input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, 1000}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the recurrent weight has the same id as
+    // one of the outputs.
+    uint32_t steps = 2;
+    uint32_t batch_size = 16;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t direction_count = 1;
+
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {steps, batch_size, input_size},
+                           mojom::Operand::DataType::kFloat32);
+    uint64_t weight_operand_id = builder.BuildInput(
+        "weight", {direction_count, 4 * hidden_size, input_size},
+        mojom::Operand::DataType::kFloat32);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", {direction_count, 4 * hidden_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+
+    uint64_t output_operand_id = builder.BuildOutput(
+        "output", {direction_count, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+    builder.BuildLstm(input_operand_id, weight_operand_id,
+                      recurrent_weight_operand_id,
+                      {output_operand_id, recurrent_weight_operand_id}, steps,
+                      hidden_size, LstmTester::LstmAttributes{});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the initial cell state has the same id as
+    // one of the outputs.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t direction_count = 1;
+
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {steps, batch_size, input_size},
+                           mojom::Operand::DataType::kFloat32);
+    uint64_t weight_operand_id = builder.BuildInput(
+        "weight", {direction_count, 4 * hidden_size, input_size},
+        mojom::Operand::DataType::kFloat32);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", {direction_count, 4 * hidden_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+
+    uint64_t initial_cell_state_operand_id = builder.BuildInput(
+        "initialCellState", {direction_count, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+    uint64_t output_operand_id = builder.BuildOutput(
+        "output", {direction_count, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+
+    builder.BuildLstm(
+        input_operand_id, weight_operand_id, recurrent_weight_operand_id,
+        {initial_cell_state_operand_id, output_operand_id}, steps, hidden_size,
+        LstmTester::LstmAttributes{.initial_cell_state_operand_id =
+                                       initial_cell_state_operand_id});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct MatmulTester {
   OperandInfo a;
   OperandInfo b;

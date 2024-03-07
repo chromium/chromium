@@ -117,9 +117,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kLinear:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "linear";
-
-      // TODO: crbug.com/40206287 - Add the LSTM operation to mojo.
-
+    case webnn::mojom::blink::Operation::Tag::kLstm:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "lstm";
     case webnn::mojom::blink::Operation::Tag::kElu:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "elu";
@@ -277,6 +277,27 @@ MLConcatOperator::~MLConcatOperator() = default;
 
 uint32_t MLConcatOperator::Axis() const {
   return axis_;
+}
+
+MLLstmOperator::MLLstmOperator(MLGraphBuilder* builder,
+                               uint32_t steps,
+                               uint32_t hidden_size,
+                               const bindings::DictionaryBase* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kLstm,
+                 /*sub_kind=*/absl::monostate{},
+                 options),
+      steps_(steps),
+      hidden_size_(hidden_size) {}
+
+MLLstmOperator::~MLLstmOperator() = default;
+
+uint32_t MLLstmOperator::steps() const {
+  return steps_;
+}
+
+uint32_t MLLstmOperator::hidden_size() const {
+  return hidden_size_;
 }
 
 MLPadOperator::MLPadOperator(MLGraphBuilder* builder,

@@ -291,6 +291,53 @@ class GraphInfoBuilder final {
         std::move(layer_normalization)));
   }
 
+  // A `LstmAttributes` type should have the following members:
+  // struct LstmAttributes {
+  //   std::optional<uint64_t> bias_operand_id;
+  //   std::optional<uint64_t> recurrent_bias_operand_id;
+  //   std::optional<uint64_t> peephole_weight_operand_id;
+  //   std::optional<uint64_t> initial_hidden_state_operand_id;
+  //   std::optional<uint64_t> initial_cell_state_operand_id;
+  //   bool return_sequence;
+  //   mojom::RecurrentNetworkDirection direction;
+  //   mojom::Lstm::WeightLayout layout;
+  //   std::vector<Activation> activations;
+  // };
+  template <typename LstmAttributes>
+  void BuildLstm(uint64_t input_operand_id,
+                 uint64_t weight_operand_id,
+                 uint64_t recurrent_weight_operand_id,
+                 std::vector<uint64_t> output_operand_ids,
+                 uint32_t steps,
+                 uint32_t hidden_size,
+                 const LstmAttributes& attributes) {
+    mojom::LstmPtr lstm = mojom::Lstm::New();
+    lstm->input_operand_id = input_operand_id;
+    lstm->weight_operand_id = weight_operand_id;
+    lstm->recurrent_weight_operand_id = recurrent_weight_operand_id;
+    lstm->output_operand_ids = std::move(output_operand_ids);
+    lstm->steps = steps;
+    lstm->hidden_size = hidden_size;
+
+    lstm->bias_operand_id = attributes.bias_operand_id;
+    lstm->recurrent_bias_operand_id = attributes.recurrent_bias_operand_id;
+    lstm->peephole_weight_operand_id = attributes.peephole_weight_operand_id;
+    lstm->initial_hidden_state_operand_id =
+        attributes.initial_hidden_state_operand_id;
+    lstm->initial_cell_state_operand_id =
+        attributes.initial_cell_state_operand_id;
+    lstm->return_sequence = attributes.return_sequence;
+    lstm->direction = attributes.direction;
+    lstm->layout = attributes.layout;
+
+    for (const auto& activation : attributes.activations) {
+      lstm->activations.push_back(CreateActivation(activation));
+    }
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewLstm(std::move(lstm)));
+  }
+
   // A `InstanceNormalizationAttributes` type should have the following members:
   // struct InstanceNormalizationAttributes {
   //  std::optional<uint64_t> scale_operand_id;

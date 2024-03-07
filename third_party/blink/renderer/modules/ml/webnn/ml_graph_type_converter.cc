@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
@@ -56,6 +57,28 @@ blink_mojom::Operand::DataType BlinkOperandTypeToMojo(
       return blink_mojom::Operand::DataType::kUint8;
   }
   NOTREACHED_NORETURN();
+}
+
+blink_mojom::RecurrentNetworkDirection BlinkRecurrentNetworkDirectionToMojo(
+    blink::V8MLRecurrentNetworkDirection::Enum direction) {
+  switch (direction) {
+    case blink::V8MLRecurrentNetworkDirection::Enum::kForward:
+      return blink_mojom::RecurrentNetworkDirection::kForward;
+    case blink::V8MLRecurrentNetworkDirection::Enum::kBackward:
+      return blink_mojom::RecurrentNetworkDirection::kBackward;
+    case blink::V8MLRecurrentNetworkDirection::Enum::kBoth:
+      return blink_mojom::RecurrentNetworkDirection::kBoth;
+  }
+}
+
+blink_mojom::Lstm::WeightLayout BlinkLstmWeightLayoutToMojo(
+    blink::V8MLLstmWeightLayout::Enum layout) {
+  switch (layout) {
+    case blink::V8MLLstmWeightLayout::Enum::kIofg:
+      return blink_mojom::Lstm::WeightLayout::kIofg;
+    case blink::V8MLLstmWeightLayout::Enum::kIfgo:
+      return blink_mojom::Lstm::WeightLayout::kIfgo;
+  }
 }
 
 // Converters from IDL to Mojo.
@@ -694,6 +717,67 @@ base::expected<OperationPtr, String> CreateInstanceNormalizationOperation(
       std::move(instance_normalization_mojo));
 }
 
+base::expected<OperationPtr, String> CreateLstmOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* lstm) {
+  auto lstm_mojo = blink_mojom::Lstm::New();
+  lstm_mojo->input_operand_id = GetOperatorInputId(lstm, operand_to_id_map, 0);
+  lstm_mojo->weight_operand_id = GetOperatorInputId(lstm, operand_to_id_map, 1);
+  lstm_mojo->recurrent_weight_operand_id =
+      GetOperatorInputId(lstm, operand_to_id_map, 2);
+
+  const auto* lstm_operator = static_cast<const MLLstmOperator*>(lstm);
+  lstm_mojo->hidden_size = lstm_operator->hidden_size();
+  lstm_mojo->steps = lstm_operator->steps();
+
+  const auto* options = static_cast<const MLLstmOptions*>(lstm->Options());
+  CHECK(options);
+
+  if (options->hasBias()) {
+    lstm_mojo->bias_operand_id = operand_to_id_map.at(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    lstm_mojo->recurrent_bias_operand_id =
+        operand_to_id_map.at(options->recurrentBias());
+  }
+  if (options->hasPeepholeWeight()) {
+    lstm_mojo->peephole_weight_operand_id =
+        operand_to_id_map.at(options->peepholeWeight());
+  }
+  if (options->hasInitialHiddenState()) {
+    lstm_mojo->initial_hidden_state_operand_id =
+        operand_to_id_map.at(options->initialHiddenState());
+  }
+  if (options->hasInitialCellState()) {
+    lstm_mojo->initial_cell_state_operand_id =
+        operand_to_id_map.at(options->initialCellState());
+  }
+  lstm_mojo->return_sequence = options->returnSequence();
+  lstm_mojo->direction =
+      mojo::BlinkRecurrentNetworkDirectionToMojo(options->direction().AsEnum());
+  lstm_mojo->layout =
+      mojo::BlinkLstmWeightLayoutToMojo(options->layout().AsEnum());
+
+  const auto& activations = options->activations();
+  lstm_mojo->activations.reserve(activations.size());
+  for (const auto& activation : activations) {
+    auto validated_activation = CreateActivation(operand_to_id_map, activation);
+    if (!validated_activation.has_value()) {
+      return base::unexpected(validated_activation.error());
+    }
+    lstm_mojo->activations.push_back(std::move(validated_activation.value()));
+  }
+
+  const wtf_size_t output_count = lstm->Outputs().size();
+  lstm_mojo->output_operand_ids.reserve(output_count);
+  for (wtf_size_t i = 0; i < output_count; ++i) {
+    lstm_mojo->output_operand_ids.push_back(
+        GetOperatorOutputId(lstm, operand_to_id_map, i));
+  }
+
+  return blink_mojom::Operation::NewLstm(std::move(lstm_mojo));
+}
+
 OperationPtr CreateMatmulOperation(const OperandToIdMap& operand_to_id_map,
                                    const MLOperator* matmul) {
   auto matmul_mojo = blink_mojom::Matmul::New();
@@ -1055,6 +1139,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case blink_mojom::Operation::Tag::kLinear:
       return blink_mojom::Operation::NewLinear(
           CreateLinear(operand_to_id_map, op, false));
+    case blink_mojom::Operation::Tag::kLstm:
+      return CreateLstmOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kMatmul:
       return CreateMatmulOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kPad:

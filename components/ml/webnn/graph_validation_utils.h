@@ -331,7 +331,7 @@ struct LstmAttributes {
   // The initial cell state operand.
   std::optional<Operand> initial_cell_state;
   // The number of activations.
-  std::optional<uint32_t> activation_count;
+  size_t activation_count;
   // Indicates whether to return the outputs of the entire sequence.
   bool return_sequence;
   // The processing direction of the input sequence.

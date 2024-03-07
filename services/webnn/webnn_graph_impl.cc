@@ -115,6 +115,18 @@ webnn::ReduceKind MojoReduceTypeToComponent(mojom::Reduce::Kind kind) {
   NOTREACHED_NORETURN();
 }
 
+webnn::RecurrentNetworkDirection MojoRecurrentNetworkDirectionToComponent(
+    mojom::RecurrentNetworkDirection direction) {
+  switch (direction) {
+    case mojom::RecurrentNetworkDirection::kForward:
+      return webnn::RecurrentNetworkDirection::kForward;
+    case mojom::RecurrentNetworkDirection::kBackward:
+      return webnn::RecurrentNetworkDirection::kBackward;
+    case mojom::RecurrentNetworkDirection::kBoth:
+      return webnn::RecurrentNetworkDirection::kBoth;
+  }
+}
+
 bool ValidateClampAttributes(const mojom::ClampPtr& clamp) {
   if (std::isnan(clamp->min_value) || std::isnan(clamp->max_value)) {
     // The min or max value are nan.
@@ -261,6 +273,46 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
     std::optional<Operand> bias_operand) {
   return ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
       id_to_operand_map, conv2d, std::move(bias_operand));
+}
+
+webnn::LstmAttributes ConvertToLstmAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const webnn::mojom::LstmPtr& lstm) {
+  webnn::LstmAttributes attributes;
+  attributes.return_sequence = lstm->return_sequence;
+  attributes.direction =
+      MojoRecurrentNetworkDirectionToComponent(lstm->direction);
+  attributes.activation_count = lstm->activations.size();
+
+  if (lstm->bias_operand_id.has_value()) {
+    const auto* bias =
+        GetMojoOperand(id_to_operand_map, lstm->bias_operand_id.value());
+    attributes.bias = ConvertToComponentOperand(bias);
+  }
+  if (lstm->recurrent_bias_operand_id.has_value()) {
+    const auto* recurrent_bias = GetMojoOperand(
+        id_to_operand_map, lstm->recurrent_bias_operand_id.value());
+    attributes.recurrent_bias = ConvertToComponentOperand(recurrent_bias);
+  }
+  if (lstm->peephole_weight_operand_id.has_value()) {
+    const auto* peephole_weight = GetMojoOperand(
+        id_to_operand_map, lstm->peephole_weight_operand_id.value());
+    attributes.peephole_weight = ConvertToComponentOperand(peephole_weight);
+  }
+  if (lstm->initial_hidden_state_operand_id.has_value()) {
+    const auto* initial_hidden_state = GetMojoOperand(
+        id_to_operand_map, lstm->initial_hidden_state_operand_id.value());
+    attributes.initial_hidden_state =
+        ConvertToComponentOperand(initial_hidden_state);
+  }
+  if (lstm->initial_cell_state_operand_id.has_value()) {
+    const auto* initial_cell_state = GetMojoOperand(
+        id_to_operand_map, lstm->initial_cell_state_operand_id.value());
+    attributes.initial_cell_state =
+        ConvertToComponentOperand(initial_cell_state);
+  }
+
+  return attributes;
 }
 
 webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
@@ -884,6 +936,89 @@ bool ValidateLinear(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
+                  const mojom::LstmPtr& lstm) {
+  const auto* input = GetMojoOperand(id_to_operand_map, lstm->input_operand_id);
+  const auto* weight =
+      GetMojoOperand(id_to_operand_map, lstm->weight_operand_id);
+  const auto* recurrent_weight =
+      GetMojoOperand(id_to_operand_map, lstm->recurrent_weight_operand_id);
+  if (!input || !weight || !recurrent_weight) {
+    return false;
+  }
+
+  const auto& bias_operand_id = lstm->bias_operand_id;
+  if (bias_operand_id.has_value() &&
+      !id_to_operand_map.contains(bias_operand_id.value())) {
+    return false;
+  }
+  const auto& recurrent_bias_operand_id = lstm->recurrent_bias_operand_id;
+  if (recurrent_bias_operand_id.has_value() &&
+      !id_to_operand_map.contains(recurrent_bias_operand_id.value())) {
+    return false;
+  }
+  const auto& peephole_weight_operand_id = lstm->peephole_weight_operand_id;
+  if (peephole_weight_operand_id.has_value() &&
+      !id_to_operand_map.contains(peephole_weight_operand_id.value())) {
+    return false;
+  }
+  const auto& initial_hidden_state_operand_id =
+      lstm->initial_hidden_state_operand_id;
+  if (initial_hidden_state_operand_id.has_value() &&
+      !id_to_operand_map.contains(initial_hidden_state_operand_id.value())) {
+    return false;
+  }
+  const auto& initial_cell_state_operand_id =
+      lstm->initial_cell_state_operand_id;
+  if (initial_cell_state_operand_id.has_value() &&
+      !id_to_operand_map.contains(initial_cell_state_operand_id.value())) {
+    return false;
+  }
+
+  for (uint64_t output_operand_id : lstm->output_operand_ids) {
+    if (output_operand_id == lstm->input_operand_id ||
+        output_operand_id == lstm->weight_operand_id ||
+        output_operand_id == lstm->recurrent_weight_operand_id) {
+      return false;
+    }
+    if ((initial_hidden_state_operand_id.has_value() &&
+         initial_hidden_state_operand_id.value() == output_operand_id) ||
+        (initial_cell_state_operand_id.has_value() &&
+         initial_cell_state_operand_id.value() == output_operand_id)) {
+      return false;
+    }
+  }
+
+  const auto validated_outputs = ValidateLstmAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
+      ConvertToComponentOperand(recurrent_weight), lstm->steps,
+      lstm->hidden_size, ConvertToLstmAttributes(id_to_operand_map, lstm));
+  if (!validated_outputs.has_value()) {
+    return false;
+  }
+  if (lstm->output_operand_ids.size() != validated_outputs->size()) {
+    return false;
+  }
+  for (size_t i = 0; i < validated_outputs->size(); ++i) {
+    const auto* output =
+        GetMojoOperand(id_to_operand_map, lstm->output_operand_ids[i]);
+    if (!output) {
+      return false;
+    }
+    if (validated_outputs->at(i) != ConvertToComponentOperand(output)) {
+      return false;
+    }
+  }
+
+  for (const auto& activation : lstm->activations) {
+    if (!ValidateActivation(activation)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool ValidateInstanceNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalizationPtr& instance_normalization) {
@@ -1321,6 +1456,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateLeakyRelu(id_to_operand_map, operation->get_leaky_relu());
     case mojom::Operation::Tag::kLinear:
       return ValidateLinear(id_to_operand_map, operation->get_linear());
+    case mojom::Operation::Tag::kLstm:
+      return ValidateLstm(id_to_operand_map, operation->get_lstm());
     case mojom::Operation::Tag::kMatmul:
       return ValidateMatmul(id_to_operand_map, operation->get_matmul());
     case mojom::Operation::Tag::kPad:

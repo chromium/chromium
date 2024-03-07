@@ -114,6 +114,26 @@ class MODULES_EXPORT MLConcatOperator : public MLOperator {
   uint32_t axis_;
 };
 
+class MODULES_EXPORT MLLstmOperator : public MLOperator {
+ public:
+  MLLstmOperator(MLGraphBuilder* builder,
+                 uint32_t steps,
+                 uint32_t hidden_size,
+                 const bindings::DictionaryBase* options);
+
+  MLLstmOperator(const MLLstmOperator&) = delete;
+  MLLstmOperator& operator=(const MLLstmOperator&) = delete;
+
+  ~MLLstmOperator() override;
+
+  uint32_t steps() const;
+  uint32_t hidden_size() const;
+
+ private:
+  uint32_t steps_;
+  uint32_t hidden_size_;
+};
+
 class MODULES_EXPORT MLPadOperator : public MLOperator {
  public:
   MLPadOperator(MLGraphBuilder* builder,

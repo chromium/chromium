@@ -1494,7 +1494,7 @@ base::expected<std::vector<Operand>, std::string> ValidateLstmAndInferOutput(
     }
   }
 
-  if (attributes.activation_count && attributes.activation_count.value() != 3) {
+  if (attributes.activation_count != 3) {
     return base::unexpected(
         "The activations should be a sequence of length 3.");
   }

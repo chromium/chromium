@@ -2007,6 +2007,7 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case webnn::mojom::blink::Operation::Tag::kLayerNormalization:
     case webnn::mojom::blink::Operation::Tag::kInstanceNormalization:
     case webnn::mojom::blink::Operation::Tag::kLinear:
+    case webnn::mojom::blink::Operation::Tag::kLstm:
     case webnn::mojom::blink::Operation::Tag::kSoftplus:
     case webnn::mojom::blink::Operation::Tag::kSoftsign:
     case webnn::mojom::blink::Operation::Tag::kWhere:

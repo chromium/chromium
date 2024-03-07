@@ -1413,6 +1413,7 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     case webnn::mojom::blink::Operation::Tag::kLayerNormalization:
     case webnn::mojom::blink::Operation::Tag::kInstanceNormalization:
     case webnn::mojom::blink::Operation::Tag::kLinear:
+    case webnn::mojom::blink::Operation::Tag::kLstm:
     case webnn::mojom::blink::Operation::Tag::kMatmul:
     case webnn::mojom::blink::Operation::Tag::kPrelu:
     case webnn::mojom::blink::Operation::Tag::kReduce:
