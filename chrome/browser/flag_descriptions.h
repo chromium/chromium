@@ -4022,9 +4022,6 @@ extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[];
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];
 
-extern const char kPrinterSettingsPrinterStatusName[];
-extern const char kPrinterSettingsPrinterStatusDescription[];
-
 extern const char kPrintPreviewDiscoveredPrintersName[];
 extern const char kPrintPreviewDiscoveredPrintersDescription[];
 

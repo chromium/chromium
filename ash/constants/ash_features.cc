@@ -2300,11 +2300,6 @@ BASE_FEATURE(kPrintPreviewDiscoveredPrinters,
              "PrintPreviewDiscoveredPrinters",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables showing printer status on the OS Printer Settings UI.
-BASE_FEATURE(kPrinterSettingsPrinterStatus,
-             "PrinterSettingsPrinterStatus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables showing notification and status area indicators when an app is
 // using camera/microphone.
 BASE_FEATURE(kPrivacyIndicators,
@@ -4116,7 +4111,7 @@ bool IsPipTuckEnabled() {
 }
 
 bool IsPrinterSettingsPrinterStatusEnabled() {
-  return base::FeatureList::IsEnabled(kPrinterSettingsPrinterStatus);
+  return true;
 }
 
 bool IsPrinterPreviewCrosAppEnabled() {

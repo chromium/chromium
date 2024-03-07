@@ -6979,12 +6979,6 @@ const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";
 
-const char kPrinterSettingsPrinterStatusName[] =
-    "Enable Printer Settings printer statuses";
-const char kPrinterSettingsPrinterStatusDescription[] =
-    "Enables printer status querying and displaying from the OS Printer "
-    "settings page.";
-
 const char kPrintPreviewDiscoveredPrintersName[] =
     "Enables showing discovered printers in the Print Preview dialog.";
 const char kPrintPreviewDiscoveredPrintersDescription[] =

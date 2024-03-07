@@ -1403,26 +1403,12 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrinterDialog) {
   RunSettingsTest("os_printing_page/cups_printer_dialog_test.js");
 }
 
-class OSSettingsPrintingTestSettingsStatusEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsPrintingTestSettingsStatusEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {ash::features::kPrinterSettingsPrinterStatus},
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsStatusEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsPrintingPageCupsPrinterLandingPage) {
   RunSettingsTest("os_printing_page/cups_printer_landing_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsPrintingTestSettingsStatusEnabled,
-                       OsPrintingPageCupsPrintersEntry) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrintersEntry) {
   RunSettingsTest("os_printing_page/cups_printers_entry_test.js");
 }
 
