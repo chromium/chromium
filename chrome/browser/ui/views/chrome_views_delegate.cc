@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/ash/touch_selection_menu_runner_chromeos.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/widget/widget_delegate.h"
 #endif
 
 // Helpers --------------------------------------------------------------------
@@ -180,7 +181,10 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
   // Only for dialog widgets, if this is not going to be a transient child,
   // then we mark it as an OS system app, otherwise its transient root's app
   // type should be used.
-  if (delegate->IsDialogBox() && !params->parent) {
+  // `delegate->IsDialogBox()` does not work because the underlying Widget
+  // does not have its widget delegate set before `OnBeforeWidgetInit`.
+  if (params->delegate && params->delegate->AsDialogDelegate() &&
+      !params->parent) {
     params->init_properties_container.SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::SYSTEM_APP));
   }

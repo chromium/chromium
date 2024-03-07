@@ -45,6 +45,12 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/widget_test.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/app_types.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace task_manager {
 
 using browsertest_util::WaitForTaskManagerRows;
@@ -449,4 +455,15 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAccelerator) {
 
   EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AppType) {
+  chrome::ShowTaskManager(browser());
+
+  EXPECT_EQ(static_cast<int>(ash::AppType::SYSTEM_APP),
+            GetView()->GetWidget()->GetNativeWindow()->GetProperty(
+                aura::client::kAppType));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace task_manager
