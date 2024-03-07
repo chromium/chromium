@@ -23,7 +23,7 @@ extern const char kSaveToPhotosUploadFailureTypeHistogram[];
 enum class SaveToPhotosActions {
   kFailureWebStateDestroyed = 0,
   kFailureUserSignedOut = 1,
-  kFailureUserCancelledWithAlert =
+  kFailureUserCancelledWithTryAgainAlert =
       2,  // User cancelled using the "Cancel" option in the "This File Could
           // not be Uploaded" alert
   kFailureUserCancelledWithAccountPicker = 3,
@@ -32,7 +32,9 @@ enum class SaveToPhotosActions {
   kSuccessAndOpenPhotosApp = 6,
   kSuccessAndOpenStoreKitAndAppNotInstalled = 7,
   kSuccessAndOpenStoreKitAndAppInstalled = 8,
-  kMaxValue = kSuccessAndOpenStoreKitAndAppInstalled,
+  kFailureOutOfStorageDidManageStorage = 9,
+  kFailureOutOfStorageDidNotManageStorage = 10,
+  kMaxValue = kFailureOutOfStorageDidNotManageStorage,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
