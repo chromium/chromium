@@ -355,7 +355,7 @@ void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
   }
 
   if (!AppWasUsedRecently(&app->sync_data())) {
-    DeleteAppsFromSync(std::vector<const webapps::AppId>{app_id});
+    DeleteAppsFromSync(std::vector<webapps::AppId>{app_id});
     return;
   }
 
@@ -427,7 +427,7 @@ void WebApkSyncBridge::ApplyDisableSyncChanges(
 
 void WebApkSyncBridge::RemoveOldWebAPKsFromSync(
     int64_t current_time_ms_since_unix_epoch) {
-  std::vector<const webapps::AppId> app_ids;
+  std::vector<webapps::AppId> app_ids;
   for (const auto& appListing : registry_) {
     const webapps::AppId app_id = appListing.first;
     const WebApkProto& app = *appListing.second;
@@ -463,7 +463,7 @@ void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app) {
 }
 
 void WebApkSyncBridge::DeleteAppsFromSync(
-    const std::vector<const webapps::AppId>& app_ids) {
+    const std::vector<webapps::AppId>& app_ids) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
   std::unique_ptr<RegistryUpdateData> registry_update =

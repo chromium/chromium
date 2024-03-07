@@ -788,9 +788,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
                        ControlledFrameClearSiteDataHeader) {
-  std::vector<const bool> in_memory_test_cases{true, false};
   const std::string partition_name("test_partition");
-  for (const bool& in_memory : in_memory_test_cases) {
+  for (const bool in_memory : {true, false}) {
     SCOPED_TRACE(base::StrCat({"Controlled Frame partition is in-memory: ",
                                (in_memory ? "true" : "false")}));
     IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
