@@ -7,6 +7,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/display/screen_ash.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -15,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ui/base/display_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -39,6 +41,26 @@ void RecordPineScreenshotMetrics(PrefService* local_state) {
              prefs::kPineScreenshotTakenDuration);
   record_uma(local_state, "Ash.Pine.ScreenshotEncodeAndSaveDuration",
              prefs::kPineScreenshotEncodeAndSaveDuration);
+}
+
+bool ShouldShowPineImage(const gfx::ImageSkia& pine_image) {
+  if (pine_image.isNull()) {
+    return false;
+  }
+
+  const gfx::Size image_size = pine_image.size();
+  const bool is_image_landscape = image_size.width() > image_size.height();
+
+  // TODO(minch|sammiequon): The pine dialog will only be shown inside the
+  // primary display for now. Change the logic here if it changes.
+  const display::Display display_with_pine =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const bool is_display_landscape = chromeos::IsLandscapeOrientation(
+      chromeos::GetDisplayCurrentOrientation(display_with_pine));
+
+  // Show the image only if the pine image and the display showing it both have
+  // the same orientation.
+  return is_image_landscape == is_display_landscape;
 }
 
 }  // namespace
@@ -100,8 +122,6 @@ void PineController::MaybeStartPineOverviewSession(
 
   pine_contents_data_ = std::move(pine_contents_data);
 
-  // TODO(minch|sammiequon): Record the metrics on start up when determining
-  // whether to show the pine dialog.
   RecordPineScreenshotMetrics(Shell::Get()->local_state());
   image_util::DecodeImageFile(
       base::BindOnce(&PineController::OnPineImageDecoded,
@@ -117,7 +137,10 @@ void PineController::MaybeEndPineOverviewSession() {
 
 void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {
   CHECK(pine_contents_data_);
-  pine_contents_data_->image = pine_image;
+
+  if (ShouldShowPineImage(pine_image)) {
+    pine_contents_data_->image = pine_image;
+  }
 
   StartPineOverviewSession();
 }

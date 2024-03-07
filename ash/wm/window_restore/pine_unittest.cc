@@ -5,10 +5,12 @@
 #include "ash/wm/window_restore/pine_contents_view.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
@@ -22,9 +24,13 @@
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
+#include "ash/wm/window_restore/window_restore_util.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_utils.h"
 
@@ -81,6 +87,7 @@ class PineTest : public AshTestBase {
   }
 
  private:
+  InProcessDataDecoder decoder_;
   base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
@@ -179,6 +186,51 @@ TEST_F(PineTest, FivePlusWindowOverflow) {
   EXPECT_EQ(2u, overflow_view->top_row_view_for_testing()->children().size());
   EXPECT_EQ(2u,
             overflow_view->bottom_row_view_for_testing()->children().size());
+}
+
+// Tests that the pine screenshot should not be shown if it has different
+// orientation as the display will show it.
+TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
+  UpdateDisplay("800x600");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+
+  base::ScopedTempDir temp_dir;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath& file_path =
+      temp_dir.GetPath().AppendASCII("test_pine.png");
+  SetPineImagePathForTest(file_path);
+
+  // Take a screenshot of the display that in landscape orientation and save it
+  // to the pine image path.
+  TakePrimaryDisplayScreenshotAndSave(file_path);
+  int64_t file_size = 0;
+  ASSERT_TRUE(base::GetFileSize(file_path, &file_size));
+  EXPECT_GT(file_size, 0);
+
+  // Rotate the display and trigger the accelerator to show the pine dialog.
+  test_api.SetDisplayRotation(display::Display::ROTATE_270,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kPortraitPrimary);
+
+  auto* pine_controller = Shell::Get()->pine_controller();
+  pine_controller->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+  const PineContentsData* pine_contents_data =
+      pine_controller->pine_contents_data();
+  ASSERT_TRUE(pine_contents_data);
+  // The image inside `PineContentsData` should be null when the landscape image
+  // is going to be shown inside a display in the portrait orientation.
+  EXPECT_TRUE(pine_contents_data->image.isNull());
 }
 
 }  // namespace ash
