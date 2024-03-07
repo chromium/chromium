@@ -55,7 +55,9 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat y_offset,
                            jint background_color,
                            jint scrim_color,
-                           jfloat scrim_opacity);
+                           jfloat scrim_opacity,
+                           jfloat left_padding,
+                           jfloat right_padding);
 
   void UpdateNewTabButton(
       JNIEnv* env,

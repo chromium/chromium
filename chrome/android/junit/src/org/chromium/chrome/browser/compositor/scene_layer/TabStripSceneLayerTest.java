@@ -4,6 +4,7 @@
 
 package chrome.android.junit.src.org.chromium.chrome.browser.compositor.scene_layer;
 
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -177,6 +178,8 @@ public class TabStripSceneLayerTest {
                         /* yOffset= */ eq(1.f),
                         anyInt(),
                         /* scrimColor= */ eq(Color.YELLOW),
-                        /* scrimOpacity= */ eq(0.3f));
+                        /* scrimOpacity= */ eq(0.3f),
+                        anyFloat(),
+                        anyFloat());
     }
 }

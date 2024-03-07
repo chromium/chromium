@@ -128,7 +128,9 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jfloat y_offset,
                                              jint background_color,
                                              jint scrim_color,
-                                             jfloat scrim_opacity) {
+                                             jfloat scrim_opacity,
+                                             jfloat left_padding,
+                                             jfloat right_padding) {
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
   tab_strip_layer_->SetBounds(gfx::Size(width, height));
@@ -138,6 +140,26 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
   // Content tree should not be affected by tab strip scene layer visibility.
   if (content_tree_)
     content_tree_->layer()->SetPosition(gfx::PointF(0, -y_offset));
+
+  // Update left and right padding layers as required.
+  if (left_padding == 0) {
+    left_padding_layer_->SetHideLayerAndSubtree(true);
+  } else {
+    left_padding_layer_->SetHideLayerAndSubtree(false);
+    left_padding_layer_->SetBounds(gfx::Size(left_padding, height));
+    left_padding_layer_->SetBackgroundColor(
+        SkColor4f::FromColor(background_color));
+  }
+
+  if (right_padding == 0) {
+    right_padding_layer_->SetHideLayerAndSubtree(true);
+  } else {
+    right_padding_layer_->SetHideLayerAndSubtree(false);
+    right_padding_layer_->SetBounds(gfx::Size(right_padding, height));
+    right_padding_layer_->SetPosition(gfx::PointF(width - right_padding, 0));
+    right_padding_layer_->SetBackgroundColor(
+        SkColor4f::FromColor(background_color));
+  }
 
   // Hide scrim layer if it's not visible.
   if (scrim_opacity == 0.f) {
@@ -347,16 +369,6 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
 
   // Ensure layer is visible.
   left_fade_->SetHideLayerAndSubtree(false);
-
-  // Update the padding layer accordingly.
-  if (left_padding == 0) {
-    left_padding_layer_->SetHideLayerAndSubtree(true);
-  } else {
-    left_padding_layer_->SetHideLayerAndSubtree(false);
-    left_padding_layer_->SetBounds(gfx::Size(left_padding, height));
-    left_padding_layer_->SetBackgroundColor(
-        SkColor4f::FromColor(left_fade_color));
-  }
 }
 
 void TabStripSceneLayer::UpdateTabStripRightFade(
@@ -395,18 +407,6 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
 
   // Ensure layer is visible.
   right_fade_->SetHideLayerAndSubtree(false);
-
-  // Update the padding layer accordingly.
-  if (right_padding == 0) {
-    right_padding_layer_->SetHideLayerAndSubtree(true);
-  } else {
-    right_padding_layer_->SetHideLayerAndSubtree(false);
-    right_padding_layer_->SetBounds(gfx::Size(right_padding, height));
-    right_padding_layer_->SetPosition(gfx::PointF(
-        scrollable_strip_layer_->bounds().width() - right_padding, 0));
-    right_padding_layer_->SetBackgroundColor(
-        SkColor4f::FromColor(right_fade_color));
-  }
 }
 
 void TabStripSceneLayer::PutStripTabLayer(
