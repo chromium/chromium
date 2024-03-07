@@ -6,12 +6,19 @@
 
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace mahi {
 
 FakeMahiWebContentsManager::FakeMahiWebContentsManager() = default;
 
 FakeMahiWebContentsManager::~FakeMahiWebContentsManager() = default;
+
+gfx::ImageSkia FakeMahiWebContentsManager::GetFavicon(
+    content::WebContents* web_contents) const {
+  return gfx::test::CreateImage(27, 27).AsImageSkia();
+}
 
 void FakeMahiWebContentsManager::RequestContentFromPage(
     const base::UnguessableToken& page_id,

@@ -27,4 +27,6 @@ WebContentState::WebContentState(const WebContentState& state) = default;
 WebContentState::WebContentState(const GURL& url, const std::u16string& title)
     : url(url), title(title) {}
 
+WebContentState::~WebContentState() = default;
+
 }  // namespace mahi

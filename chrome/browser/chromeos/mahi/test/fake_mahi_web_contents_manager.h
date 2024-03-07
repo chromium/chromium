@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace mahi {
 
@@ -26,6 +27,8 @@ class FakeMahiWebContentsManager : public MahiWebContentsManager {
       delete;
 
   ~FakeMahiWebContentsManager() override;
+
+  gfx::ImageSkia GetFavicon(content::WebContents* web_contents) const override;
 
   WebContentState focused_web_content_state() {
     return focused_web_content_state_;

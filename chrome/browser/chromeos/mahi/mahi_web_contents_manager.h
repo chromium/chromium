@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -91,6 +92,11 @@ class MahiWebContentsManager {
   // the focused page state to the requested page state and reset the focused
   // page state.
   void FocusedPageGotRequest();
+
+  // Gets the favicon from the given web contents. Returns an empty imageskia if
+  // there is no valid one.
+  // Virtual so we can override in tests.
+  virtual gfx::ImageSkia GetFavicon(content::WebContents* web_contents) const;
 
   std::unique_ptr<MahiContentExtractionDelegate> content_extraction_delegate_;
   std::unique_ptr<MahiBrowserClientImpl> client_;

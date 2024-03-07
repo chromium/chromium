@@ -14,11 +14,14 @@
 #include "chrome/browser/chromeos/mahi/mahi_browser_client_impl.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace mahi {
 
@@ -60,6 +63,7 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
   // event immediately so that `MahiManager` knows the focused page has changed.
   focused_web_content_state_ = WebContentState(
       web_contents->GetLastCommittedURL(), web_contents->GetTitle());
+  focused_web_content_state_.favicon = GetFavicon(web_contents);
   client_->OnFocusedPageChanged(focused_web_content_state_);
 
   // Requests the a11y tree snapshot.
@@ -161,6 +165,11 @@ void MahiWebContentsManager::RequestContent(
 void MahiWebContentsManager::FocusedPageGotRequest() {
   requested_web_content_state_ = std::move(focused_web_content_state_);
   focused_web_content_state_ = WebContentState(/*url=*/GURL(), /*title=*/u"");
+}
+
+gfx::ImageSkia MahiWebContentsManager::GetFavicon(
+    content::WebContents* web_contents) const {
+  return favicon::TabFaviconFromWebContents(web_contents).AsImageSkia();
 }
 
 }  // namespace mahi

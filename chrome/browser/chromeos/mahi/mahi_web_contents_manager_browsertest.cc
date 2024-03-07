@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace mahi {
@@ -170,6 +171,9 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   EXPECT_NE(
       fake_mahi_web_contents_manager_.focused_web_content_state().page_id,
       fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
+  // Initially, the focused state's favicon is empty.
+  EXPECT_TRUE(fake_mahi_web_contents_manager_.focused_web_content_state()
+                  .favicon.isNull());
 
   base::RunLoop run_loop;
   // Expects that `MahiBrowserDelegate` should receive the focused page change.
@@ -189,6 +193,9 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
         EXPECT_EQ(GURL(kUrl), page_info->url);
         EXPECT_TRUE(page_info->IsDistillable.has_value());
         EXPECT_FALSE(page_info->IsDistillable.value());
+        // The favicon is not empty.
+        EXPECT_FALSE(page_info->favicon_image.isNull());
+
         std::move(callback).Run(/*success=*/true);
         run_loop.Quit();
       });

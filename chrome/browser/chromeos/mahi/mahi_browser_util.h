@@ -11,6 +11,7 @@
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace mahi {
@@ -33,6 +34,7 @@ struct WebContentState {
   base::UnguessableToken page_id = base::UnguessableToken::Create();
   GURL url;
   std::u16string title;
+  gfx::ImageSkia favicon = gfx::ImageSkia();
   std::optional<bool> is_distillable = std::nullopt;
 
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
@@ -42,6 +44,7 @@ struct WebContentState {
   WebContentState& operator=(const WebContentState& state) = default;
 
   WebContentState(const GURL& url, const std::u16string& title);
+  ~WebContentState();
 };
 
 }  // namespace mahi

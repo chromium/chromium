@@ -92,13 +92,11 @@ MahiBrowserClientImpl::~MahiBrowserClientImpl() {
 void MahiBrowserClientImpl::OnFocusedPageChanged(
     const WebContentState& web_content_state) {
   // Generates `page_info` from `web_content_state`.
-  // TODO(b/318565573): favicon image fetch has not been implemented yet, an
-  // empty ImageSkia with no bitmaps is sent instead currently.
   crosapi::mojom::MahiPageInfoPtr page_info = crosapi::mojom::MahiPageInfo::New(
       /*client_id=*/client_id(),
       /*page_id=*/web_content_state.page_id,
       /*url=*/web_content_state.url, /*title=*/web_content_state.title,
-      /*favicon_image=*/gfx::ImageSkia(),
+      /*favicon_image=*/web_content_state.favicon.DeepCopy(),
       /*is_distillable=*/std::nullopt);
   if (web_content_state.is_distillable.has_value()) {
     page_info->IsDistillable = web_content_state.is_distillable.value();
