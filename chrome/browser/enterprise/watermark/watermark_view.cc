@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 
 #include <algorithm>
+
 #include "cc/paint/paint_canvas.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -48,18 +49,21 @@ WatermarkView::WatermarkView(std::string text)
 WatermarkView::~WatermarkView() = default;
 
 void WatermarkView::SetString(const std::string& text) {
-  text_lines_ = base::SplitString(text, "\n", base::TRIM_WHITESPACE,
-                                  base::SPLIT_WANT_NONEMPTY);
+  text_blocks_.clear();
+  std::vector<std::string> text_lines = base::SplitString(
+      text, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Block size calculation is only required when text is changed.
   block_width_ = 0;
-  for (const auto& line : text_lines_) {
+  for (const auto& line : text_lines) {
     block_width_ =
         std::max(SkScalar(block_width_),
                  WatermarkFont().measureText(line.c_str(), line.size(),
                                              SkTextEncoding::kUTF8));
+    text_blocks_.push_back(
+        SkTextBlob::MakeFromString(line.c_str(), WatermarkFont()));
   }
-  block_height_ = kTextSize * text_lines_.size();
+  block_height_ = kTextSize * text_lines.size();
 
   // Invalidate the state of the view.
   SchedulePaint();
@@ -68,7 +72,7 @@ void WatermarkView::SetString(const std::string& text) {
 void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   // Trying to render an empty string in Skia will fail. A string is required
   // to create the command buffer for the renderer.
-  if (text_lines_.empty()) {
+  if (text_blocks_.empty()) {
     return;
   }
 
@@ -111,28 +115,18 @@ void WatermarkView::DrawTextBlock(cc::PaintCanvas* canvas, int x, int y) {
   static float kOutlineThickness = 1.0f;
   static SkColor kFillColor = SkColorSetARGB(0x20, 0x00, 0x00, 0x00);
 
-  for (const std::string& line : text_lines_) {
-    if (line.empty()) {
-      // This condition should not happen since the SplitString() call to create
-      // the string vector trims whitespace.
-      NOTREACHED();
-      continue;
-    }
-
-    sk_sp<SkTextBlob> blob =
-        SkTextBlob::MakeFromString(line.c_str(), WatermarkFont());
-
+  for (const sk_sp<SkTextBlob>& text_block : text_blocks_) {
     // Draw a stroke for the light-colored outline of the text.
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setColor(kOutlineColor);
     flags.setStrokeWidth(kOutlineThickness);
-    canvas->drawTextBlob(blob, x, y, flags);
+    canvas->drawTextBlob(text_block, x, y, flags);
 
     // Draw the dark-colored fill of the text.
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(kFillColor);
-    canvas->drawTextBlob(blob, x, y, flags);
+    canvas->drawTextBlob(text_block, x, y, flags);
 
     // Re-calculate `y` every loop so the next line is below the previous one.
     y += kTextSize;

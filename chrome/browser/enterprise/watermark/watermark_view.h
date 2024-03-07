@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_
 #define CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_
 
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -40,10 +41,10 @@ class WatermarkView : public views::View {
 
  private:
   // Helper function to draw a single block of text with the data in
-  // `text_lines_` at the provided coordinates.
+  // `text_blocks_` at the provided coordinates.
   void DrawTextBlock(cc::PaintCanvas* canvas, int x, int y);
 
-  std::vector<std::string> text_lines_;
+  std::vector<sk_sp<SkTextBlob>> text_blocks_;
   SkColor background_color_;
   int block_width_;
   int block_height_;
