@@ -36,8 +36,7 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   void SetCurrentFocusedPageInfo(
       crosapi::mojom::MahiPageInfoPtr info) override {}
   void OnContextMenuClicked(
-      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override {
-  }
+      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override;
 
   void set_content_title(const std::u16string& content_title) {

@@ -8,6 +8,7 @@
 
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -36,6 +37,11 @@ gfx::ImageSkia FakeMahiManager::GetContentIcon() {
 void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
   std::move(callback).Run(summary_text_,
                           chromeos::MahiResponseStatus::kSuccess);
+}
+
+void FakeMahiManager::OnContextMenuClicked(
+    crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
+  OpenMahiPanel(display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 
 void FakeMahiManager::OpenFeedbackDialog() {
