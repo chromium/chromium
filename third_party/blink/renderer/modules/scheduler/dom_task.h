@@ -31,7 +31,7 @@ class TaskAttributionInfo;
 // callback's v8 context is invalid, in which case, the task will not be run.
 class DOMTask final : public GarbageCollected<DOMTask> {
  public:
-  DOMTask(ScriptPromiseResolver*,
+  DOMTask(ScriptPromiseResolverTyped<IDLAny>*,
           V8SchedulerPostTaskCallback*,
           AbortSignal* abort_source,
           DOMTaskSignal* priority_source,
@@ -56,7 +56,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
 
   TaskHandle task_handle_;
   Member<V8SchedulerPostTaskCallback> callback_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLAny>> resolver_;
   probe::AsyncTaskContext async_task_context_;
   Member<AbortSignal> abort_source_;
   Member<DOMTaskSignal> priority_source_;

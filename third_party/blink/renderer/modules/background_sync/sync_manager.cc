@@ -31,14 +31,15 @@ SyncManager::SyncManager(ServiceWorkerRegistration* registration,
       background_sync_service_.BindNewPipeAndPassReceiver(task_runner));
 }
 
-ScriptPromise SyncManager::registerFunction(ScriptState* script_state,
-                                            const String& tag,
-                                            ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> SyncManager::registerFunction(
+    ScriptState* script_state,
+    const String& tag,
+    ExceptionState& exception_state) {
   if (!registration_->active()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Registration failed - no active Service Worker");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -46,12 +47,13 @@ ScriptPromise SyncManager::registerFunction(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Background Sync is not allowed in fenced frames.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   mojom::blink::SyncRegistrationOptionsPtr sync_registration =
       mojom::blink::SyncRegistrationOptions::New();
@@ -89,18 +91,17 @@ ScriptPromiseTyped<IDLSequence<IDLString>> SyncManager::getTags(
 }
 
 void SyncManager::RegisterCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     mojom::blink::BackgroundSyncError error,
     mojom::blink::SyncRegistrationOptionsPtr options) {
   DCHECK(resolver);
   // TODO(iclelland): Determine the correct error message to return in each case
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE:
+      resolver->Resolve();
       if (!options) {
-        resolver->Resolve(v8::Null(resolver->GetScriptState()->GetIsolate()));
         break;
       }
-      resolver->Resolve();
       // Let the service know that the registration promise is resolved so that
       // it can fire the event.
 

@@ -29,7 +29,7 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
  public:
   DynamicImportTreeClient(const KURL& url,
                           Modulator* modulator,
-                          ScriptPromiseResolver* promise_resolver)
+                          ScriptPromiseResolverTyped<IDLAny>* promise_resolver)
       : url_(url), modulator_(modulator), promise_resolver_(promise_resolver) {}
 
   void Trace(Visitor*) const override;
@@ -40,13 +40,14 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
 
   const KURL url_;
   const Member<Modulator> modulator_;
-  const Member<ScriptPromiseResolver> promise_resolver_;
+  const Member<ScriptPromiseResolverTyped<IDLAny>> promise_resolver_;
 };
 
 // Abstract callback for modules resolution.
 class ModuleResolutionCallback : public ScriptFunction::Callable {
  public:
-  explicit ModuleResolutionCallback(ScriptPromiseResolver* promise_resolver)
+  explicit ModuleResolutionCallback(
+      ScriptPromiseResolverTyped<IDLAny>* promise_resolver)
       : promise_resolver_(promise_resolver) {}
 
   void Trace(Visitor* visitor) const override {
@@ -55,15 +56,16 @@ class ModuleResolutionCallback : public ScriptFunction::Callable {
   }
 
  protected:
-  Member<ScriptPromiseResolver> promise_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLAny>> promise_resolver_;
 };
 
 // Callback for modules with top-level await.
 // Called on successful resolution.
 class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
  public:
-  ModuleResolutionSuccessCallback(ScriptPromiseResolver* promise_resolver,
-                                  ModuleScript* module_script)
+  ModuleResolutionSuccessCallback(
+      ScriptPromiseResolverTyped<IDLAny>* promise_resolver,
+      ModuleScript* module_script)
       : ModuleResolutionCallback(promise_resolver),
         module_script_(module_script) {}
 
@@ -89,7 +91,7 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
 class ModuleResolutionFailureCallback final : public ModuleResolutionCallback {
  public:
   explicit ModuleResolutionFailureCallback(
-      ScriptPromiseResolver* promise_resolver)
+      ScriptPromiseResolverTyped<IDLAny>* promise_resolver)
       : ModuleResolutionCallback(promise_resolver) {}
 
  private:
@@ -187,7 +189,7 @@ void DynamicModuleResolver::Trace(Visitor* visitor) const {
 void DynamicModuleResolver::ResolveDynamically(
     const ModuleRequest& module_request,
     const ReferrerScriptInfo& referrer_info,
-    ScriptPromiseResolver* promise_resolver) {
+    ScriptPromiseResolverTyped<IDLAny>* promise_resolver) {
   DCHECK(modulator_->GetScriptState()->GetIsolate()->InContext())
       << "ResolveDynamically should be called from V8 callback, within a valid "
          "context.";
