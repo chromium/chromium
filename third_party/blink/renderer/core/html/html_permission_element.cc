@@ -236,15 +236,28 @@ void HTMLPermissionElement::AttributeChanged(
 
     type_ = params.new_value;
 
-    DCHECK(permission_descriptors_.empty());
+    CHECK(permission_descriptors_.empty());
 
     permission_descriptors_ = ParsePermissionDescriptorsFromString(GetType());
-    if (permission_descriptors_.empty()) {
-      AddConsoleError(
-          String::Format("The permission type '%s' is not supported by the "
-                         "permission element.",
-                         GetType().Utf8().c_str()));
-      return;
+    switch (permission_descriptors_.size()) {
+      case 0:
+        AddConsoleError(
+            String::Format("The permission type '%s' is not supported by the "
+                           "permission element.",
+                           GetType().Utf8().c_str()));
+        return;
+      case 1:
+        permission_text_span_->setInnerText(
+            GetLocale().QueryString(GetMessageIDSinglePermission(
+                permission_descriptors_[0]->name, PermissionStatus::ASK)));
+        break;
+      case 2:
+        permission_text_span_->setInnerText(
+            GetLocale().QueryString(IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE));
+        break;
+      default:
+        NOTREACHED() << "Unexpected permissions size "
+                     << permission_descriptors_.size();
     }
 
     if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
