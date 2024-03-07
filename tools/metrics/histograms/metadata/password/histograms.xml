@@ -3837,6 +3837,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.AddLoginCount"
+    units="passwords" expires_after="2024-08-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the number of credentials successfully added to GMS Core during
+    {UPMMigrationType}. Recorded when the migration is finished, irrespective of
+    the overall migration success.
+  </summary>
+  <token key="UPMMigrationType" variants="UPMMigrationType"/>
+</histogram>
+
+<histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Latency"
     units="ms" expires_after="2024-07-07">
   <owner>vsemeniuk@google.com</owner>
@@ -3849,6 +3863,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.MigratedLoginsTotalCount"
+    units="passwords" expires_after="2024-08-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the number of credential successfully migrated to GMS Core during
+    {UPMMigrationType}. Recorded when the migration is finished. If the
+    migration fails in the middle after writting only part of credentials to GMS
+    core, the metric will report only those that were actually written before
+    the failure.
+  </summary>
+  <token key="UPMMigrationType" variants="UPMMigrationType"/>
+</histogram>
+
+<histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Success"
     enum="BooleanSuccess" expires_after="2024-07-07">
   <owner>vsemeniuk@google.com</owner>
@@ -3856,6 +3886,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records success of {UPMMigrationType}. Recorded when the migration is
     finished.
+  </summary>
+  <token key="UPMMigrationType" variants="UPMMigrationType"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.UpdateLoginCount"
+    units="passwords" expires_after="2024-08-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the number of credentials successfully updated in GMS Core during
+    {UPMMigrationType}. Recorded when the migration is finished, irrespective of
+    the overall migration success.
   </summary>
   <token key="UPMMigrationType" variants="UPMMigrationType"/>
 </histogram>

@@ -51,6 +51,14 @@ class BuiltInBackendToAndroidBackendMigrator {
     kReenrollmentAttempt,
   };
 
+  // The type of operation triggered on backend during the migration. Used for
+  // the metrics reporting.
+  enum class BackendOperation {
+    kAddLogin,
+    kUpdateLogin,
+    kRemoveLogin,
+  };
+
   // |built_in_backend| and |android_backend| must not be null and must outlive
   // the migrator.
   BuiltInBackendToAndroidBackendMigrator(PasswordStoreBackend* built_in_backend,
@@ -139,6 +147,7 @@ class BuiltInBackendToAndroidBackendMigrator {
   // MigrationFinished() indicating the migration is *not* successful.
   // Otherwise, |callback| is invoked.
   void RunCallbackOrAbortMigration(base::OnceClosure callback,
+                                   BackendOperation backend_operation,
                                    PasswordChangesOrError changelist);
 
   // Reports metrics and deletes |metrics_reporter_|

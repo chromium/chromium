@@ -113,23 +113,41 @@ struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
 
 class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
  public:
-  explicit MigrationMetricsReporter(base::StringPiece metric_infix)
-      : metric_infix_(metric_infix) {}
+  explicit MigrationMetricsReporter(MigrationType migration_type)
+      : migration_type_(migration_type),
+        metric_infix_(
+            base::StrCat({"PasswordManager.UnifiedPasswordManager.",
+                          MigrationTypeToString(migration_type), "."})) {}
   ~MigrationMetricsReporter() = default;
 
   void ReportMetrics(bool migration_succeeded) {
-    auto BuildMetricName = [this](base::StringPiece suffix) {
-      return base::StrCat({"PasswordManager.UnifiedPasswordManager.",
-                           metric_infix_, ".", suffix});
-    };
     base::TimeDelta duration = base::Time::Now() - start_;
-    base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
-    base::UmaHistogramBoolean(BuildMetricName("Success"), migration_succeeded);
+    base::UmaHistogramMediumTimes(metric_infix_ + "Latency", duration);
+    base::UmaHistogramBoolean(metric_infix_ + "Success", migration_succeeded);
+    base::UmaHistogramCounts1000(metric_infix_ + "UpdateLoginCount",
+                                 update_logins_count_);
+    if (migration_type_ == MigrationType::kForLocalUsers) {
+      ReportAdditionalMetricsForLocalPasswordsMigration();
+    }
   }
+
+  void ReportAdditionalMetricsForLocalPasswordsMigration() {
+    base::UmaHistogramCounts1000(metric_infix_ + "AddLoginCount",
+                                 added_logins_count_);
+    base::UmaHistogramCounts1000(metric_infix_ + "MigratedLoginsTotalCount",
+                                 added_logins_count_ + update_logins_count_);
+  }
+
+  void AddUpdatedCredential() { update_logins_count_++; }
+
+  void AddAddedCredential() { added_logins_count_++; }
 
  private:
   base::Time start_ = base::Time::Now();
+  MigrationType migration_type_;
   const std::string metric_infix_;
+  int added_logins_count_ = 0;
+  int update_logins_count_ = 0;
 };
 
 BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
@@ -239,8 +257,8 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
                     base::Time::Now().InSecondsFSinceUnixEpoch());
   migration_in_progress_type_ = migration_type;
 
-  metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
-      MigrationTypeToString(migration_type));
+  metrics_reporter_ =
+      std::make_unique<MigrationMetricsReporter>(migration_type);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords",
                                     "UnifiedPasswordManagerMigration", this);
 
@@ -438,7 +456,8 @@ void BuiltInBackendToAndroidBackendMigrator::AddLoginToBackend(
       form,
       base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          BackendOperation::kAddLogin));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend(
@@ -449,7 +468,8 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend(
       form,
       base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          BackendOperation::kUpdateLogin));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
@@ -460,27 +480,41 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
       form,
       base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          BackendOperation::kRemoveLogin));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration(
     base::OnceClosure callback,
+    BackendOperation backend_operation,
     PasswordChangesOrError changes_or_error) {
-  PasswordChanges* changes = absl::get_if<PasswordChanges>(&changes_or_error);
   if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
     MigrationFinished(/*is_success=*/false);
     return;
   }
 
+  const PasswordChanges& changes = absl::get<PasswordChanges>(changes_or_error);
   // Nullopt changelist is returned on success by the backends that do not
   // provide exact changelist (e.g. Android). This indicates success operation
   // as well as non-empty changelist.
-  if (!changes->has_value() || !changes->value().empty()) {
+  if (!changes.has_value() || !changes.value().empty()) {
     // The step was successful, continue the migration.
+    switch (backend_operation) {
+      case BackendOperation::kAddLogin:
+        metrics_reporter_->AddAddedCredential();
+        break;
+      case BackendOperation::kUpdateLogin:
+        metrics_reporter_->AddUpdatedCredential();
+        break;
+      case BackendOperation::kRemoveLogin:
+        // No metric for removal operation.
+        break;
+    }
     std::move(callback).Run();
     return;
   }
-  // Migration failed (changelist is present but empty).
+
+  // Migration failed.
   MigrationFinished(/*is_success=*/false);
 }
 
