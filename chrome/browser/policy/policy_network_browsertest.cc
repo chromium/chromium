@@ -36,6 +36,10 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/net/secure_dns_manager.h"
+#endif
+
 namespace policy {
 
 class SSLPolicyTest : public PolicyTest {
@@ -203,6 +207,14 @@ class ECHPolicyTest : public SSLPolicyTest {
     SetPolicy(&policies, key::kDnsOverHttpsMode, base::Value("secure"));
     SetPolicy(&policies, key::kDnsOverHttpsTemplates,
               base::Value(doh_server_.GetTemplate()));
+
+// On Lacros, the DnsOverHttpsTemplates policy gets mapped to the
+// kDnsOverHttpsEffectiveTemplatesChromeOS pref which is set in Ash.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    g_browser_process->local_state()->SetString(
+        prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
+        doh_server_.GetTemplate());
+#endif
     return policies;
   }
 
@@ -231,6 +243,13 @@ class ECHPolicyTest : public SSLPolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // SecureDnsManager does the identifier placeholder replacement for the
+  // template URI and maps the final value to the
+  // prefs::kDnsOverHttpsEffectiveTemplatesChromeOS local state pref.
+  std::unique_ptr<ash::SecureDnsManager> secure_dns_manager =
+      std::make_unique<ash::SecureDnsManager>(g_browser_process->local_state());
+#endif
   // By default, the policy does not inhibit ECH.
   EXPECT_TRUE(GetBooleanPref(prefs::kEncryptedClientHelloEnabled));
   LoadResult result = LoadPage(GetURL("/a"));

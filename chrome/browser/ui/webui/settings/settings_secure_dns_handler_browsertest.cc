@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -376,6 +377,14 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
+#if BUILDFLAG(IS_CHROMEOS)
+  const std::string kDnsOverHttpsTemplatesPrefName =
+      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
+#else
+  const std::string kDnsOverHttpsTemplatesPrefName =
+      prefs::kDnsOverHttpsTemplates;
+#endif
+
   std::string good_post_template = "https://foo.test/";
   std::string good_get_template = "https://bar.test/dns-query{?dns}";
   std::string bad_template = "dns-query{?dns}";
@@ -386,23 +395,22 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeAutomatic);
-  local_state->SetString(prefs::kDnsOverHttpsTemplates, good_post_template);
+  local_state->SetString(kDnsOverHttpsTemplatesPrefName, good_post_template);
   EXPECT_TRUE(GetLastSettingsChangedMessage(&secure_dns_mode, &doh_config,
                                             &management_mode));
   EXPECT_EQ(good_post_template, doh_config);
-
   std::string two_templates = good_post_template + "\n" + good_get_template;
-  local_state->SetString(prefs::kDnsOverHttpsTemplates, two_templates);
+  local_state->SetString(kDnsOverHttpsTemplatesPrefName, two_templates);
   EXPECT_TRUE(GetLastSettingsChangedMessage(&secure_dns_mode, &doh_config,
                                             &management_mode));
   EXPECT_EQ(two_templates, doh_config);
 
-  local_state->SetString(prefs::kDnsOverHttpsTemplates, bad_template);
+  local_state->SetString(kDnsOverHttpsTemplatesPrefName, bad_template);
   EXPECT_TRUE(GetLastSettingsChangedMessage(&secure_dns_mode, &doh_config,
                                             &management_mode));
   EXPECT_THAT(doh_config, IsEmpty());
 
-  local_state->SetString(prefs::kDnsOverHttpsTemplates,
+  local_state->SetString(kDnsOverHttpsTemplatesPrefName,
                          bad_template + " " + good_post_template);
   EXPECT_TRUE(GetLastSettingsChangedMessage(&secure_dns_mode, &doh_config,
                                             &management_mode));
@@ -423,6 +431,13 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
       "dns-query{?dns}";
   std::string templates = "https://bar.test/dns-query{?dns}";
 
+  PrefService* local_state = g_browser_process->local_state();
+  // SecureDnsManager does the identifier placeholder replacement for the
+  // template URI and maps the final value to the
+  // prefs::kDnsOverHttpsEffectiveTemplatesChromeOS local state pref.
+  std::unique_ptr<ash::SecureDnsManager> secure_dns_manager =
+      std::make_unique<ash::SecureDnsManager>(local_state);
+
   // Create an affiliated user.
   auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   const AccountId account_id0(AccountId::FromUserEmail("testuser@managed.com"));
@@ -435,7 +450,6 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
   std::string doh_config, doh_config_for_display;
   bool doh_with_identifiers_active;
   int management_mode;
-  PrefService* local_state = g_browser_process->local_state();
 
   local_state->SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeSecure);

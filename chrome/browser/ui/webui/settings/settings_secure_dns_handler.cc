@@ -104,12 +104,7 @@ void SecureDnsHandler::OnJavascriptAllowed() {
           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS)
   pref_registrar_.Add(
-      prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-      base::BindRepeating(
-          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
-          base::Unretained(this)));
-  pref_registrar_.Add(
-      prefs::kDnsOverHttpsSalt,
+      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
       base::BindRepeating(
           &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
           base::Unretained(this)));

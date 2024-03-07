@@ -165,13 +165,13 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
 
   pref_change_registrar_.Add(prefs::kBuiltInDnsClientEnabled, pref_callback);
   pref_change_registrar_.Add(prefs::kDnsOverHttpsMode, pref_callback);
-  pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplates, pref_callback);
   pref_change_registrar_.Add(prefs::kAdditionalDnsQueryTypesEnabled,
                              pref_callback);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+#if BUILDFLAG(IS_CHROMEOS)
+  pref_change_registrar_.Add(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
                              pref_callback);
-  pref_change_registrar_.Add(prefs::kDnsOverHttpsSalt, pref_callback);
+#else
+  pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplates, pref_callback);
 #endif
 
   parental_controls_delay_timer_.Start(
@@ -203,6 +203,8 @@ void StubResolverConfigReader::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kAdditionalDnsQueryTypesEnabled, true);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterStringPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                               std::string());
+  registry->RegisterStringPref(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
                                std::string());
   registry->RegisterStringPref(prefs::kDnsOverHttpsSalt, std::string());
 #endif
@@ -378,11 +380,9 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
 
   net::DnsOverHttpsConfig doh_config;
   if (secure_dns_mode != net::SecureDnsMode::kOff) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::dns_over_https::TemplatesUriResolverImpl doh_template_uri_resolver;
-    doh_template_uri_resolver.UpdateFromPrefs(local_state_);
-    doh_config = net::DnsOverHttpsConfig::FromStringLax(
-        doh_template_uri_resolver.GetEffectiveTemplates());
+#if BUILDFLAG(IS_CHROMEOS)
+    doh_config = net::DnsOverHttpsConfig::FromStringLax(local_state_->GetString(
+        prefs::kDnsOverHttpsEffectiveTemplatesChromeOS));
 #else
     doh_config = net::DnsOverHttpsConfig::FromStringLax(
         local_state_->GetString(prefs::kDnsOverHttpsTemplates));

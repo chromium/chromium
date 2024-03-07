@@ -118,9 +118,19 @@ base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
 void SecureDnsManager::OnPrefChanged() {
   doh_templates_uri_resolver_->UpdateFromPrefs(pref_service_);
 
+  const std::string effective_uri_templates =
+      doh_templates_uri_resolver_->GetEffectiveTemplates();
+
+  // Set the DoH URI template pref which is synced with Lacros and the
+  // NetworkService.
+  pref_service_->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
+                           effective_uri_templates);
+
+  // Set the DoH URI template shill property which is synced with platform
+  // daemons (shill, dns-proxy etc).
   base::Value::Dict doh_providers =
       GetProviders(registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
-                   doh_templates_uri_resolver_->GetEffectiveTemplates());
+                   effective_uri_templates);
 
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDNSProxyDOHProvidersProperty,
