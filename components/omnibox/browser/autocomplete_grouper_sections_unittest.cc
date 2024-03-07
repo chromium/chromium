@@ -1517,3 +1517,68 @@ TEST(AutocompleteGrouperSectionsTest,
         {100, 99, 98, 97, 96, 95, 94, 93}, false);
   }
 }
+
+// Test that (on Android) sections are grouped by Search vs URL.
+#if BUILDFLAG(IS_ANDROID)
+TEST(AutocompleteGrouperSectionsTest, AndroidTypedSection_groupsBySearchVsUrl) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<AndroidTypedSection>(group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+
+  {
+    SCOPED_TRACE("No matches = no crashes.");
+    test({}, {});
+  }
+  {
+    SCOPED_TRACE("Grouping top section only.");
+    test({CreateMatch(100, omnibox::GROUP_SEARCH)}, {100});
+  }
+  {
+    SCOPED_TRACE("Grouping top two sections.");
+    test(
+        {
+            CreateMatch(20, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(19, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(18, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(10, omnibox::GROUP_SEARCH),
+            CreateMatch(9, omnibox::GROUP_SEARCH),
+        },
+        // 20     -- default match.
+        // 10, 9  -- top searches.
+        // 19, 18 -- top URLs.
+        {20, 10, 9, 19, 18});
+  }
+  {
+    SCOPED_TRACE("Grouping all sections.");
+    test(
+        {
+            CreateMatch(20, omnibox::GROUP_OTHER_NAVS),
+            // top adaptive group
+            CreateMatch(19, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(18, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(10, omnibox::GROUP_SEARCH),
+            CreateMatch(9, omnibox::GROUP_SEARCH),
+            CreateMatch(17, omnibox::GROUP_OTHER_NAVS),
+            // bottom adaptive group
+            CreateMatch(16, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(8, omnibox::GROUP_SEARCH),
+            CreateMatch(7, omnibox::GROUP_SEARCH),
+            CreateMatch(15, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(14, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(6, omnibox::GROUP_SEARCH),
+            CreateMatch(5, omnibox::GROUP_SEARCH),
+            CreateMatch(13, omnibox::GROUP_OTHER_NAVS),
+            CreateMatch(12, omnibox::GROUP_OTHER_NAVS),
+        },
+        {
+            20,                             // the default match
+            10, 9, 19, 18, 17,              // the top adaptive group
+            8, 7, 6, 5, 16, 15, 14, 13, 12  // the bottom adaptive group.
+        });
+  }
+}
+#endif

@@ -19,6 +19,7 @@
 
 namespace {
 constexpr size_t kMobileMostVisitedTilesLimit = 10;
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 }
 
 Section::Section(size_t limit,
@@ -61,8 +62,12 @@ ACMatches Section::GroupMatches(PSections sections, ACMatches& matches) {
   }
 
   ACMatches grouped_matches = {};
-  for (const auto& section : sections) {
-    for (const auto& group : section->groups_) {
+  for (auto& section : sections) {
+    for (auto& group : section->groups_) {
+      if constexpr (is_android) {
+        group.GroupMatchesBySearchVsUrl();
+      }
+
       for (AutocompleteMatch* match : group.matches()) {
         grouped_matches.push_back(std::move(*match));
       }
