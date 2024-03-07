@@ -10232,6 +10232,10 @@ const FeatureEntry kFeatureEntries[] = {
                             "")},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"enable-direct-sockets-web-api",
+     flag_descriptions::kDirectSocketsWebApiName,
+     flag_descriptions::kDirectSocketsWebApiDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kDirectSockets)},
     {"enable-smart-card-web-api", flag_descriptions::kSmartCardWebApiName,
      flag_descriptions::kSmartCardWebApiDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kSmartCard)},

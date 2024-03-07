@@ -275,6 +275,13 @@ const char kDIPSName[] = "Bounce Tracking Mitigations";
 const char kDIPSDescription[] =
     "This flag controls bounce tracking mitigations.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kDirectSocketsWebApiName[] = "Direct Sockets API";
+const char kDirectSocketsWebApiDescription[] =
+    "Enable access to the Direct Sockets API. See "
+    "https://github.com/WICG/direct-sockets for details.";
+#endif
+
 const char kDownloadWarningImprovementsName[] = "Download Warning Improvements";
 const char kDownloadWarningImprovementsDescription[] =
     "Enable UI improvements for downloads, download scanning, and download "

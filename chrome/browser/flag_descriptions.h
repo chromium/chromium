@@ -173,6 +173,11 @@ extern const char kDeprecateUnloadDescription[];
 extern const char kDIPSName[];
 extern const char kDIPSDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kDirectSocketsWebApiName[];
+extern const char kDirectSocketsWebApiDescription[];
+#endif
+
 extern const char kDownloadWarningImprovementsName[];
 extern const char kDownloadWarningImprovementsDescription[];
 
