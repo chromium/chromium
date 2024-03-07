@@ -207,6 +207,9 @@ std::unique_ptr<IconButton> IconButton::Builder::Build() {
   if (enabled_.has_value()) {
     button->SetEnabled(*enabled_);
   }
+  if (visible_.has_value()) {
+    button->SetVisible(*visible_);
+  }
   if (background_image_.has_value()) {
     button->SetBackgroundImage(*background_image_);
   }
@@ -256,6 +259,10 @@ IconButton::Builder& IconButton::Builder::SetViewId(int view_id) {
 }
 IconButton::Builder& IconButton::Builder::SetEnabled(bool enabled) {
   enabled_ = enabled;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetVisible(bool visible) {
+  visible_ = visible;
   return *this;
 }
 IconButton::Builder& IconButton::Builder::SetBackgroundImage(

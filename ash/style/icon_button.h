@@ -93,6 +93,7 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     Builder& SetBorder(bool has_border);
     Builder& SetViewId(int view_id);
     Builder& SetEnabled(bool enabled);
+    Builder& SetVisible(bool visible);
     Builder& SetBackgroundImage(const gfx::ImageSkia& background_image);
     Builder& SetBackgroundColor(ui::ColorId color_id);
 
@@ -105,6 +106,7 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     bool has_border_;
     std::optional<int> view_id_;
     std::optional<bool> enabled_;
+    std::optional<bool> visible_;
     std::optional<gfx::ImageSkia> background_image_;
     std::optional<ui::ColorId> background_color_;
   };
