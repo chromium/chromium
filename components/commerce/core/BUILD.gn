@@ -42,6 +42,8 @@ source_set("feature_utils") {
   deps = [
     ":account_checker",
     ":feature_list",
+    ":pref_names",
+    "//components/prefs",
   ]
 }
 

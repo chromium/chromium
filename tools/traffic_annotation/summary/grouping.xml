@@ -382,6 +382,9 @@ after discussions on the right group.
     </sender>
   </group>
   <group name="Chrome Commerce" hidden="true">
+    <sender name="Compare">
+      <annotation id="product_specifications_fetcher"/>
+    </sender>
     <sender name="Parcel Tracking">
       <annotation id="chrome_commerce_parcels_status"/>
       <annotation id="chrome_commerce_start_tracking_parcel"/>

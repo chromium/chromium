@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMMERCE_CORE_FEATURE_UTILS_H_
 #define COMPONENTS_COMMERCE_CORE_FEATURE_UTILS_H_
 
+class PrefService;
+
 namespace commerce {
 
 class AccountChecker;
@@ -16,6 +18,13 @@ class AccountChecker;
 // method can change at runtime, so it should not be used when deciding
 // whether to create critical, feature-related infrastructure.
 bool IsShoppingListEligible(AccountChecker* account_checker);
+
+// Check if the product specifications feature is allowed for enterprise.
+bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs);
+
+// Returns whether the product specifications feature is enabled. This checks
+// the enterprise setting as well as the feature flag.
+bool IsProductSpecificationsEnabled(AccountChecker* account_checker);
 
 }  // namespace commerce
 

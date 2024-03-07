@@ -6,19 +6,34 @@
 #define COMPONENTS_COMMERCE_CORE_COMPARE_PRODUCT_SPECIFICATIONS_SERVER_PROXY_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/commerce/core/commerce_types.h"
 #include "url/gurl.h"
+
+class EndpointFetcher;
+struct EndpointResponse;
 
 namespace base {
 class Value;
 }  // namespace base
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace commerce {
+
+class AccountChecker;
 
 struct ProductSpecifications {
  public:
@@ -51,19 +66,29 @@ struct ProductSpecifications {
 
 class ProductSpecificationsServerProxy {
  public:
-  ProductSpecificationsServerProxy();
+  ProductSpecificationsServerProxy(
+      AccountChecker* account_checker,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ProductSpecificationsServerProxy(const ProductSpecificationsServerProxy&) =
       delete;
   ProductSpecificationsServerProxy operator=(
       const ProductSpecificationsServerProxy&) = delete;
-  ~ProductSpecificationsServerProxy();
+  virtual ~ProductSpecificationsServerProxy();
 
   // Gets the specifications data for the provided cluster IDs. The callback
   // will provide both the list of product cluster IDs for the products being
   // compared and the specifications data.
   void GetProductSpecificationsForClusterIds(
       std::vector<uint64_t> cluster_ids,
-      base::OnceCallback<void(std::vector<uint64_t>, ProductSpecifications)>);
+      base::OnceCallback<void(std::vector<uint64_t>,
+                              std::optional<ProductSpecifications>)> callback);
+
+ protected:
+  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+      const GURL& url,
+      const std::string& http_method,
+      const std::string& post_data);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ProductSpecificationsServerProxyTest,
@@ -74,6 +99,16 @@ class ProductSpecificationsServerProxy {
   static std::optional<ProductSpecifications>
   ProductSpecificationsFromJsonResponse(const base::Value& compareJson);
 
+  void HandleSpecificationsResponse(
+      std::vector<uint64_t> cluster_ids,
+      base::OnceCallback<void(std::vector<uint64_t>,
+                              std::optional<ProductSpecifications>)> callback,
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<EndpointResponse> responses);
+
+  raw_ptr<AccountChecker> account_checker_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::WeakPtrFactory<ProductSpecificationsServerProxy> weak_factory_{this};
 };
 

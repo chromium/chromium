@@ -6,6 +6,8 @@
 
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 namespace commerce {
 
@@ -31,6 +33,23 @@ bool IsShoppingListEligible(AccountChecker* account_checker) {
   }
 
   return true;
+}
+
+bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
+  const base::Value* pref =
+      prefs->GetUserPrefValue(kProductSpecificationsEnabledPrefName);
+
+  // Default to true if there is no value set.
+  return !pref || pref->GetBool();
+}
+
+bool IsProductSpecificationsEnabled(AccountChecker* account_checker) {
+  return IsRegionLockedFeatureEnabled(
+             kProductSpecifications, kProductSpecificationsRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale()) &&
+         IsProductSpecificationsAllowedForEnterprise(
+             account_checker->GetPrefs()) &&
+         account_checker->IsSignedIn();
 }
 
 }  // namespace commerce

@@ -10,8 +10,15 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/commerce/core/mock_account_checker.h"
+#include "components/commerce/core/pref_names.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
+#include "components/prefs/testing_pref_service.h"
+#include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -51,9 +58,41 @@ const std::string kSimpleResponse = R"(
 
 }  // namespace
 
+class MockProductSpecificationsServerProxy
+    : public ProductSpecificationsServerProxy {
+ public:
+  explicit MockProductSpecificationsServerProxy(AccountChecker* account_checker)
+      : ProductSpecificationsServerProxy(account_checker, nullptr, nullptr) {}
+  MockProductSpecificationsServerProxy(
+      const MockProductSpecificationsServerProxy&) = delete;
+  MockProductSpecificationsServerProxy operator=(
+      const MockProductSpecificationsServerProxy&) = delete;
+  ~MockProductSpecificationsServerProxy() override = default;
+  MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
+              CreateEndpointFetcher,
+              (const GURL& url,
+               const std::string& http_method,
+               const std::string& post_data),
+              (override));
+};
+
 class ProductSpecificationsServerProxyTest : public testing::Test {
  protected:
-  void SetUp() override {}
+  void SetUp() override {
+    account_checker_ = std::make_unique<MockAccountChecker>();
+    account_checker_->SetCountry("us");
+    account_checker_->SetLocale("en-us");
+
+    RegisterPrefs(prefs_.registry());
+    account_checker_->SetPrefs(&prefs_);
+
+    server_proxy_ = std::make_unique<MockProductSpecificationsServerProxy>(
+        account_checker_.get());
+  }
+
+  std::unique_ptr<MockAccountChecker> account_checker_;
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<MockProductSpecificationsServerProxy> server_proxy_;
 
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -89,6 +128,93 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
             looper->Quit();
           },
           &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsServerProxyTest,
+       GetProductSpecificationsForClusterIds) {
+  base::RunLoop run_loop;
+
+  ON_CALL(*server_proxy_, CreateEndpointFetcher).WillByDefault([]() {
+    std::unique_ptr<MockEndpointFetcher> fetcher =
+        std::make_unique<MockEndpointFetcher>();
+    fetcher->SetFetchResponse(kSimpleResponse);
+    return fetcher;
+  });
+
+  server_proxy_->GetProductSpecificationsForClusterIds(
+      {12345}, base::BindOnce(
+                   [](base::RunLoop* looper, std::vector<uint64_t> ids,
+                      std::optional<ProductSpecifications> spec) {
+                     ASSERT_TRUE(spec.has_value());
+
+                     ASSERT_EQ(12345u, ids[0]);
+
+                     ASSERT_EQ(1u, spec->product_dimension_map.size());
+                     ASSERT_EQ("Color", spec->product_dimension_map[100000]);
+
+                     ASSERT_EQ(1u, spec->products.size());
+                     ASSERT_EQ(12345u, spec->products[0].product_cluster_id);
+                     ASSERT_EQ("/g/abcd", spec->products[0].mid);
+                     ASSERT_EQ("Circle", spec->products[0].title);
+                     ASSERT_EQ("http://example.com/image.png",
+                               spec->products[0].image_url.spec());
+                     ASSERT_EQ(
+                         "Red",
+                         spec->products[0].product_dimension_values[100000][0]);
+
+                     looper->Quit();
+                   },
+                   &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsServerProxyTest,
+       GetProductSpecificationsForClusterIds_BadJson) {
+  base::RunLoop run_loop;
+
+  ON_CALL(*server_proxy_, CreateEndpointFetcher).WillByDefault([]() {
+    std::unique_ptr<MockEndpointFetcher> fetcher =
+        std::make_unique<MockEndpointFetcher>();
+    fetcher->SetFetchResponse("_Malformed JSON_");
+    return fetcher;
+  });
+
+  server_proxy_->GetProductSpecificationsForClusterIds(
+      {12345}, base::BindOnce(
+                   [](base::RunLoop* looper, std::vector<uint64_t> ids,
+                      std::optional<ProductSpecifications> spec) {
+                     ASSERT_FALSE(spec.has_value());
+
+                     looper->Quit();
+                   },
+                   &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsServerProxyTest,
+       GetProductSpecificationsForClusterIds_BadNetwork) {
+  base::RunLoop run_loop;
+
+  ON_CALL(*server_proxy_, CreateEndpointFetcher).WillByDefault([]() {
+    std::unique_ptr<MockEndpointFetcher> fetcher =
+        std::make_unique<MockEndpointFetcher>();
+    fetcher->SetFetchResponse(kSimpleResponse, net::ERR_ACCESS_DENIED);
+    return fetcher;
+  });
+
+  server_proxy_->GetProductSpecificationsForClusterIds(
+      {12345}, base::BindOnce(
+                   [](base::RunLoop* looper, std::vector<uint64_t> ids,
+                      std::optional<ProductSpecifications> spec) {
+                     ASSERT_FALSE(spec.has_value());
+
+                     looper->Quit();
+                   },
+                   &run_loop));
+
   run_loop.Run();
 }
 
