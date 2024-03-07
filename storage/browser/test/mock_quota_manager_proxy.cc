@@ -100,6 +100,7 @@ void MockQuotaManagerProxy::GetUsageAndQuota(
 
 void MockQuotaManagerProxy::NotifyBucketAccessed(const BucketLocator& bucket,
                                                  base::Time access_time) {
+  base::AutoLock locked(lock_);
   ++bucket_accessed_count_;
   last_notified_bucket_id_ = bucket.id;
   last_notified_storage_key_ = bucket.storage_key;
@@ -113,6 +114,7 @@ void MockQuotaManagerProxy::NotifyBucketModified(
     base::Time modification_time,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
+  base::AutoLock locked(lock_);
   ++bucket_modified_count_;
   last_notified_bucket_id_ = bucket.id;
   last_notified_bucket_delta_ = delta;

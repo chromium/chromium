@@ -309,10 +309,13 @@ class CONTENT_EXPORT IndexedDBBucketContext
       storage::mojom::IdbBucketMetadataPtr info,
       base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
 
+  // This exists to facilitate unit tests. Since `this` is owned via a
+  // `SequenceBound`, it's not possible to directly grab pointer to `this`.
+  IndexedDBBucketContext* GetReferenceForTesting();
+
   void CompactBackingStoreForTesting();
   void WriteToIndexedDBForTesting(const std::string& key,
-                                  const std::string& value,
-                                  base::OnceClosure callback);
+                                  const std::string& value);
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver);
 

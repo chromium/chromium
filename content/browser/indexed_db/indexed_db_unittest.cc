@@ -381,13 +381,14 @@ class IndexedDBTest
         context_->DeleteBucketData(bucket_locator, base::DoNothing());
       }
 
-      while (!context_->bucket_contexts_.empty()) {
+      while (!context_->GetOpenBucketIdsForTesting().empty()) {
         RunPostedTasks();
       }
     }
 
-    if (temp_dir_.IsValid())
+    if (temp_dir_.IsValid()) {
       ASSERT_TRUE(temp_dir_.Delete());
+    }
   }
 
   base::FilePath GetFilePathForTesting(const BucketLocator& bucket_locator) {
@@ -478,7 +479,24 @@ class IndexedDBTest
   IndexedDBBucketContext& GetOrCreateBucketContext(
       const storage::BucketInfo& bucket,
       const base::FilePath& data_directory) {
-    return context_->GetOrCreateBucketContext(bucket, data_directory);
+    context_->EnsureBucketContext(bucket, data_directory);
+    return *GetBucketContext(bucket.id);
+  }
+
+  // This will assert if `ForceSingleThreadForTesting()` has not been called.
+  IndexedDBBucketContext* GetBucketContext(storage::BucketId id) {
+    if (BackingStoresSharded()) {
+      auto* sequence_bound = context_->GetShardedBucketContextForTesting(id);
+      if (!sequence_bound) {
+        return nullptr;
+      }
+      base::test::TestFuture<IndexedDBBucketContext*> future;
+      sequence_bound->AsyncCall(&IndexedDBBucketContext::GetReferenceForTesting)
+          .Then(future.GetCallback());
+      return future.Get();
+    }
+
+    return context_->GetBucketContextForTesting(id);
   }
 
   storage::BucketInfo GetOrCreateBucket(
@@ -492,24 +510,25 @@ class IndexedDBTest
 
   IndexedDBBucketContextHandle CreateBucketHandle(
       std::optional<storage::BucketLocator> bucket_locator = std::nullopt) {
+    context_->ForceSingleThreadForTesting();
     if (!bucket_locator) {
       const blink::StorageKey storage_key =
           blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
       bucket_locator = BucketLocator();
       bucket_locator->storage_key = storage_key;
     }
+    context_->EnsureBucketContext(ToBucketInfo(*bucket_locator),
+                                  context()->GetDataPath(*bucket_locator));
     IndexedDBBucketContextHandle bucket_context_handle(
-        context_->GetOrCreateBucketContext(
-            ToBucketInfo(*bucket_locator),
-            context()->GetDataPath(*bucket_locator)));
-    bucket_context_handle->InitBackingStoreIfNeeded(/*create_if_missing=*/true);
+        *GetBucketContext(bucket_locator->id));
+    bucket_context_handle->InitBackingStoreIfNeeded(
+        /*create_if_missing=*/true);
     return bucket_context_handle;
   }
 
   void VerifyBucketContextWaitIfNeeded(const storage::BucketId& id,
                                        bool expected_context_exists) {
-    while (expected_context_exists !=
-           !!context_->GetBucketContextForTesting(id)) {
+    while (expected_context_exists != context_->BucketContextExists(id)) {
       RunPostedTasks();
     }
     VerifyBucketContext(id, expected_context_exists);
@@ -519,7 +538,7 @@ class IndexedDBTest
       const storage::BucketId& id,
       bool expected_context_exists,
       std::optional<bool> expected_backing_store_exists = std::nullopt) {
-    IndexedDBBucketContext* context = context_->GetBucketContextForTesting(id);
+    IndexedDBBucketContext* context = GetBucketContext(id);
     if (!expected_context_exists) {
       EXPECT_FALSE(context);
       EXPECT_FALSE(expected_backing_store_exists.has_value());
@@ -1508,14 +1527,26 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnDelete) {
 TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
   storage::BucketInfo bucket_info;
   VerifyForcedClosedCalled(
-      base::BindOnce(
-          [](IndexedDBContextImpl* context, storage::BucketInfo* bucket_info) {
-            context->GetBucketContextForTesting(bucket_info->id)
-                ->OnDatabaseError(
-                    leveldb::Status::NotSupported("operation not supported"),
-                    {});
-          },
-          context(), &bucket_info),
+      BackingStoresSharded()
+          ? base::BindOnce(
+                [](IndexedDBContextImpl* context,
+                   storage::BucketInfo* bucket_info) {
+                  context->GetShardedBucketContextForTesting(bucket_info->id)
+                      ->AsyncCall(&IndexedDBBucketContext::OnDatabaseError)
+                      .WithArgs(leveldb::Status::NotSupported(
+                                    "operation not supported"),
+                                std::string());
+                },
+                context(), &bucket_info)
+          : base::BindOnce(
+                [](IndexedDBContextImpl* context,
+                   storage::BucketInfo* bucket_info) {
+                  context->GetBucketContextForTesting(bucket_info->id)
+                      ->OnDatabaseError(leveldb::Status::NotSupported(
+                                            "operation not supported"),
+                                        {});
+                },
+                context(), &bucket_info),
       &bucket_info);
 }
 
@@ -1562,6 +1593,7 @@ TEST(PartitionedLockManager, TestRangeDifferences) {
 }
 
 TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
+  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key_1 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   storage::BucketInfo bucket_1 = GetOrCreateBucket(
@@ -1647,6 +1679,7 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
 }
 
 TEST_P(IndexedDBTest, CloseSequenceStarts) {
+  context_->ForceSingleThreadForTesting();
   IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
   const storage::BucketId bucket_id =
       bucket_context_handle->bucket_locator().id;
@@ -1654,7 +1687,7 @@ TEST_P(IndexedDBTest, CloseSequenceStarts) {
 
   VerifyBucketContext(bucket_id, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/true);
-  EXPECT_TRUE(context_->GetBucketContextForTesting(bucket_id)->IsClosing());
+  EXPECT_TRUE(GetBucketContext(bucket_id)->IsClosing());
 
   context_->ForceClose(bucket_id, {}, base::DoNothing());
   VerifyBucketContextWaitIfNeeded(bucket_id, /*expected_context_exists=*/false);
@@ -1749,10 +1782,10 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
 
     VerifyBucketContext(bucket_id, /*expected_context_exists=*/true,
                         /*expected_backing_store_exists=*/true);
-    EXPECT_TRUE(context_->GetBucketContextForTesting(bucket_id)->IsClosing());
+    EXPECT_TRUE(GetBucketContext(bucket_id)->IsClosing());
 
     EXPECT_EQ(IndexedDBBucketContext::ClosingState::kPreCloseGracePeriod,
-              context_->GetBucketContextForTesting(bucket_id)->closing_stage());
+              GetBucketContext(bucket_id)->closing_stage());
 
     task_environment_.FastForwardBy(base::Seconds(2));
 
@@ -1767,31 +1800,34 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
   task_environment_.FastForwardBy(
       IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
+  // Note that once the closing sequence has started, as is the case in the next
+  // block, and if the test does anything to spin the message loop, such as
+  // using a future to get the bucket context, the bucket context will be
+  // destroyed. For that reason, the bucket context pointer is stored in
+  // `bucket_context`.
+  IndexedDBBucketContext* bucket_context = nullptr;
+
   {
     // Open a connection & immediately release it to cause the closing sequence
     // to start again.
     IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
-    storage::BucketId bucket_id = bucket_context_handle->bucket_locator().id;
+    bucket_context = bucket_context_handle.bucket_context();
     bucket_context_handle.Release();
 
     // Manually execute the timer so that the PreCloseTaskList task doesn't also
     // run.
-    context_->GetBucketContextForTesting(bucket_id)->close_timer()->FireNow();
+    bucket_context->close_timer()->FireNow();
 
     // The pre-close tasks should be running now.
-    ASSERT_TRUE(context_->GetBucketContextForTesting(bucket_id));
     EXPECT_EQ(IndexedDBBucketContext::ClosingState::kRunningPreCloseTasks,
-              context_->GetBucketContextForTesting(bucket_id)->closing_stage());
-    ASSERT_TRUE(context_->GetBucketContextForTesting(bucket_id)
-                    ->pre_close_task_queue());
-    EXPECT_TRUE(context_->GetBucketContextForTesting(bucket_id)
-                    ->pre_close_task_queue()
-                    ->started());
+              bucket_context->closing_stage());
+    ASSERT_TRUE(bucket_context->pre_close_task_queue());
+    EXPECT_TRUE(bucket_context->pre_close_task_queue()->started());
   }
 
   {
     // Stop sweep by opening a connection.
-    IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
+    IndexedDBBucketContextHandle bucket_context_handle(*bucket_context);
     storage::BucketId bucket_id = bucket_context_handle->bucket_locator().id;
     EXPECT_FALSE(bucket_context_handle->pre_close_task_queue());
 
@@ -1801,15 +1837,14 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
         IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
     bucket_context_handle.Release();
-    ASSERT_TRUE(context_->GetBucketContextForTesting(bucket_id));
     EXPECT_EQ(IndexedDBBucketContext::ClosingState::kPreCloseGracePeriod,
-              context_->GetBucketContextForTesting(bucket_id)->closing_stage());
+              bucket_context->closing_stage());
 
     // Manually execute the timer so that the PreCloseTaskList task doesn't also
     // run.
-    context_->GetBucketContextForTesting(bucket_id)->close_timer()->FireNow();
-    VerifyBucketContext(bucket_id, /*expected_context_exists=*/true,
-                        /*expected_backing_store_exists=*/true);
+    bucket_context->close_timer()->FireNow();
+    ASSERT_TRUE(context_->BucketContextExists(bucket_id));
+    EXPECT_TRUE(!!bucket_context->backing_store());
 
     VerifyBucketContextWaitIfNeeded(bucket_id,
                                     /*expected_context_exists=*/false);
@@ -1820,18 +1855,16 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     task_environment_.FastForwardBy(
         IndexedDBBucketContext::kMaxEarliestBucketSweepFromNow);
     IndexedDBBucketContextHandle bucket_context_handle = CreateBucketHandle();
+    bucket_context = bucket_context_handle.bucket_context();
     storage::BucketId bucket_id = bucket_context_handle->bucket_locator().id;
     bucket_context_handle.Release();
-    context_->GetBucketContextForTesting(bucket_id)->close_timer()->FireNow();
+    bucket_context->close_timer()->FireNow();
 
-    ASSERT_TRUE(context_->GetBucketContextForTesting(bucket_id));
+    ASSERT_TRUE(context_->BucketContextExists(bucket_id));
     EXPECT_EQ(IndexedDBBucketContext::ClosingState::kRunningPreCloseTasks,
-              context_->GetBucketContextForTesting(bucket_id)->closing_stage());
-    ASSERT_TRUE(context_->GetBucketContextForTesting(bucket_id)
-                    ->pre_close_task_queue());
-    EXPECT_TRUE(context_->GetBucketContextForTesting(bucket_id)
-                    ->pre_close_task_queue()
-                    ->started());
+              bucket_context->closing_stage());
+    ASSERT_TRUE(bucket_context->pre_close_task_queue());
+    EXPECT_TRUE(bucket_context->pre_close_task_queue()->started());
   }
 }
 
@@ -1894,11 +1927,13 @@ TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
   BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
   EXPECT_TRUE(bucket_context_handle->backing_store()->in_memory());
+  IndexedDBBucketContext* bucket_context =
+      bucket_context_handle.bucket_context();
   bucket_context_handle.Release();
+  RunPostedTasks();
 
-  EXPECT_TRUE(context_->GetBucketContextForTesting(bucket_locator.id));
-  EXPECT_FALSE(
-      context_->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(context_->BucketContextExists(bucket_locator.id));
+  EXPECT_FALSE(bucket_context->IsClosing());
 
   context_->ForceClose(
       bucket_locator.id,
@@ -1924,6 +1959,7 @@ TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
 }
 
 TEST_P(IndexedDBTest, TooLongOrigin) {
+  context_->ForceSingleThreadForTesting();
   base::FilePath temp_dir =
       context()->GetFirstPartyDataPathForTesting().DirName();
   int limit = base::GetMaximumPathComponentLength(temp_dir);
@@ -1952,10 +1988,12 @@ TEST_P(IndexedDBTest, FactoryForceClose) {
   BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
   bucket_context_handle->ForceClose(/*doom=*/false);
+  IndexedDBBucketContext* bucket_context =
+      bucket_context_handle.bucket_context();
   bucket_context_handle.Release();
 
-  VerifyBucketContext(bucket_locator.id, /*expected_context_exists=*/true,
-                      /*expected_backing_store_exists=*/true);
+  ASSERT_TRUE(context_->BucketContextExists(bucket_locator.id));
+  EXPECT_TRUE(!!bucket_context->backing_store());
   VerifyBucketContextWaitIfNeeded(bucket_locator.id,
                                   /*expected_context_exists=*/false);
 }
@@ -1975,7 +2013,7 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
       factory_remote1.BindNewPipeAndPassReceiver(),
       ToBucketInfo(bucket_locator));
 
-  ASSERT_TRUE(context()->GetBucketContextForTesting(bucket_locator.id));
+  ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
 
   // Remove the connection, then force close. This should trigger destruction of
   // the bucket context.
@@ -1989,7 +2027,7 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
   if (BackingStoresSharded()) {
     // However, the bucket context still exists for now because shutdown is not
     // synchronous.
-    ASSERT_TRUE(context()->GetBucketContextForTesting(bucket_locator.id));
+    ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
 
     // Bind another IDB factory. It's important that this is called
     // synchronously because it will initially attempt to bind to the existing
@@ -2009,13 +2047,14 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
     // as the old one, but there's no good way to identify them through mojo and
     // no guarantee their memory addresses are different either.
   } else {
-    ASSERT_FALSE(context()->GetBucketContextForTesting(bucket_locator.id));
+    ASSERT_FALSE(context()->BucketContextExists(bucket_locator.id));
   }
 }
 
 // Tests that the backing store is closed when the connection is closed during
 // upgrade.
 TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
+  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
@@ -2046,18 +2085,17 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
                        /*transaction_id=*/1);
   run_loop.Run();
 
-  EXPECT_TRUE(context_->GetBucketContextForTesting(bucket_locator.id));
-  EXPECT_FALSE(
-      context_->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
+  ASSERT_TRUE(context_->BucketContextExists(bucket_locator.id));
+  EXPECT_FALSE(GetBucketContext(bucket_locator.id)->IsClosing());
 
   // Drop the connection.
   pending_database.reset();
   factory_remote.FlushForTesting();
-  EXPECT_TRUE(
-      context_->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(GetBucketContext(bucket_locator.id)->IsClosing());
 }
 
 TEST_P(IndexedDBTest, DeleteDatabase) {
+  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
@@ -2086,8 +2124,8 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
     run_loop.Run();
 
     // Backing store shouldn't exist.
-    EXPECT_FALSE(context_->GetBucketContextForTesting(bucket_locator.id)
-                     ->backing_store());
+    ASSERT_TRUE(context_->BucketContextExists(bucket_locator.id));
+    EXPECT_FALSE(GetBucketContext(bucket_locator.id)->backing_store());
   }
 
   // Now create a database and thus the backing store.
@@ -2120,13 +2158,13 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
     run_loop.Run();
 
     // Since there are no more references the factory should be closing.
-    ASSERT_TRUE(context_->GetBucketContextForTesting(bucket_locator.id));
-    EXPECT_TRUE(
-        context_->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
+    ASSERT_TRUE(context_->BucketContextExists(bucket_locator.id));
+    EXPECT_TRUE(GetBucketContext(bucket_locator.id)->IsClosing());
   }
 }
 
 TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
+  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
@@ -2147,8 +2185,7 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
         info_future;
     factory_remote->GetDatabaseInfo(info_future.GetCallback());
     ASSERT_TRUE(info_future.Wait());
-    EXPECT_FALSE(context_->GetBucketContextForTesting(bucket_locator.id)
-                     ->backing_store());
+    EXPECT_FALSE(GetBucketContext(bucket_locator.id)->backing_store());
   }
 
   // Now create a database and thus the backing store.
@@ -2177,9 +2214,8 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
     factory_remote->GetDatabaseInfo(info_future.GetCallback());
     ASSERT_TRUE(info_future.Wait());
 
-    EXPECT_TRUE(context_->GetBucketContextForTesting(bucket_locator.id));
-    EXPECT_FALSE(
-        context_->GetBucketContextForTesting(bucket_locator.id)->IsClosing());
+    ASSERT_TRUE(context_->BucketContextExists(bucket_locator.id));
+    EXPECT_FALSE(GetBucketContext(bucket_locator.id)->IsClosing());
   }
 }
 
@@ -2228,6 +2264,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
 }
 
 TEST_P(IndexedDBTest, DatabaseFailedOpen) {
+  context_->ForceSingleThreadForTesting();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = BucketLocator();
@@ -2276,7 +2313,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
                          /*transaction_id=*/2);
     run_loop.Run();
     IndexedDBBucketContext* bucket_context =
-        context_->GetBucketContextForTesting(bucket_locator.id);
+        GetBucketContext(bucket_locator.id);
     ASSERT_TRUE(bucket_context);
     EXPECT_FALSE(
         base::Contains(bucket_context->GetDatabasesForTesting(), db_name));

@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
@@ -143,13 +144,21 @@ class CONTENT_EXPORT IndexedDBContextImpl
                              PerformStorageCleanupCallback callback) override;
 
   // Exposed for testing.
+  bool BucketContextExists(storage::BucketId bucket_id);
+
+  // Exposed for testing.
   const scoped_refptr<base::SequencedTaskRunner>& IDBTaskRunner() const {
     return idb_task_runner_;
   }
 
+  // Runs backing stores (and bucket contexts) on `idb_task_runner_` to simplify
+  // unit tests.
+  void ForceSingleThreadForTesting() { force_single_thread_ = true; }
   const base::FilePath GetFirstPartyDataPathForTesting() const;
   IndexedDBBucketContext* GetBucketContextForTesting(
-      const storage::BucketId& id) const;
+      const storage::BucketId& id);
+  base::SequenceBound<IndexedDBBucketContext>*
+  GetShardedBucketContextForTesting(const storage::BucketId& id);
 
  private:
   friend class IndexedDBTest;
@@ -243,9 +252,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
       storage::mojom::IdbBucketMetadataPtr info,
       base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
 
-  IndexedDBBucketContext& GetOrCreateBucketContext(
-      const storage::BucketInfo& bucket,
-      const base::FilePath& data_directory);
+  void EnsureBucketContext(const storage::BucketInfo& bucket,
+                           const base::FilePath& data_directory);
 
   void CompactBackingStoreForTesting(
       const storage::BucketLocator& bucket_locator);
@@ -349,11 +357,15 @@ class CONTENT_EXPORT IndexedDBContextImpl
   mojo::PendingReceiver<storage::mojom::MockFailureInjector>
       pending_failure_injector_;
 
-  // TODO(crbug.com/1474996): these bucket contexts need to be `SequenceBound`.
+  // Only one of these two maps should be non-empty.
   std::map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
       bucket_contexts_;
+  std::map<storage::BucketId, base::SequenceBound<IndexedDBBucketContext>>
+      bucket_contexts_sharded_;
 
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
+
+  bool force_single_thread_ = false;
 
   // weak_factory_->GetWeakPtr() may be used on any thread, but the resulting
   // pointer must only be checked/used on idb_task_runner_.

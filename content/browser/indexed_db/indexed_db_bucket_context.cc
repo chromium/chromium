@@ -1032,6 +1032,11 @@ void IndexedDBBucketContext::FillInMetadata(
   std::move(result).Run(std::move(info));
 }
 
+IndexedDBBucketContext* IndexedDBBucketContext::GetReferenceForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return this;
+}
+
 void IndexedDBBucketContext::CompactBackingStoreForTesting() {
   // Compact the first db's backing store since all the db's are in the same
   // backing store.
@@ -1047,14 +1052,12 @@ void IndexedDBBucketContext::CompactBackingStoreForTesting() {
 
 void IndexedDBBucketContext::WriteToIndexedDBForTesting(
     const std::string& key,
-    const std::string& value,
-    base::OnceClosure callback) {
+    const std::string& value) {
   TransactionalLevelDBDatabase* db = backing_store_->db();
   std::string value_copy = value;
   leveldb::Status s = db->Put(key, &value_copy);
   CHECK(s.ok()) << s.ToString();
   ForceClose(true);
-  std::move(callback).Run();
 }
 
 void IndexedDBBucketContext::BindMockFailureSingletonForTesting(
