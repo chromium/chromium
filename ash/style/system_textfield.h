@@ -53,9 +53,6 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void SetShowBackground(bool show);
   // Restores to previous text when the changes are discarded.
   void RestoreText();
-  // Enables/disables background color.
-  // With disabled state the background will be transparent.
-  void SetBackgroundColorEnabled(bool enabled);
   // Creates themed or transparent background according to the textfield states.
   void UpdateBackground();
 
@@ -91,8 +88,6 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   bool show_focus_ring_ = false;
   // Indicates if the textfield should show background.
   bool show_background_ = false;
-  // Indicates if the textfield background coloring is enabled.
-  bool is_background_color_enabled_ = true;
 
   // custom color IDs for text, selected text, selection background, and
   // textfield background.

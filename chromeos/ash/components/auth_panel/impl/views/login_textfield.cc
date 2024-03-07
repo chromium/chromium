@@ -30,7 +30,7 @@ LoginTextfield::LoginTextfield(AuthPanelEventDispatcher* dispatcher)
   // login input fields.
   views::FocusRing::Remove(this);
   SetShowBackground(false);
-  SetBackgroundColorEnabled(false);
+  SetBackgroundEnabled(false);
   ConfigureAuthTextField(this);
 }
 

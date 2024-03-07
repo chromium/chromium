@@ -439,6 +439,14 @@ void Textfield::SetBackgroundColor(SkColor color) {
     UpdateBackgroundColor();
 }
 
+bool Textfield::GetBackgroundEnabled() const {
+  return is_background_enabled_;
+}
+
+void Textfield::SetBackgroundEnabled(bool enabled) {
+  is_background_enabled_ = enabled;
+}
+
 SkColor Textfield::GetSelectionTextColor() const {
   return selection_text_color_.value_or(
       GetColorProvider()->GetColor(ui::kColorTextfieldSelectionForeground));
@@ -2603,6 +2611,16 @@ void Textfield::UpdateSelectionClipboard() {
 }
 
 void Textfield::UpdateBackgroundColor() {
+  if (!is_background_enabled_) {
+    if (GetBackground()) {
+      SetBackground(nullptr);
+      // If the parent for this textfield creates a non-opaque background they
+      // are responsible for disabling subpixel rendering.
+      GetRenderText()->set_subpixel_rendering_suppressed(false);
+    }
+    return;
+  }
+
   const SkColor color = GetBackgroundColor();
   SetBackground(CreateBackgroundFromPainter(
       Painter::CreateSolidRoundRectPainter(color, GetCornerRadius())));
@@ -3187,6 +3205,7 @@ ADD_PROPERTY_METADATA(SkColor,
                       SelectionTextColor,
                       ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(bool, BackgroundEnabled)
 ADD_PROPERTY_METADATA(SkColor,
                       SelectionBackgroundColor,
                       ui::metadata::SkColorConverter)

@@ -260,14 +260,9 @@ void SystemTextfield::RestoreText() {
   SetText(restored_text_content_);
 }
 
-void SystemTextfield::SetBackgroundColorEnabled(bool enabled) {
-  is_background_color_enabled_ = enabled;
-  UpdateBackground();
-}
-
 void SystemTextfield::UpdateBackground() {
   const bool has_background =
-      is_background_color_enabled_ &&
+      GetBackgroundEnabled() &&
       (IsMouseHovered() || HasFocus() || show_background_);
   if (!has_background) {
     SetBackground(nullptr);
