@@ -10,6 +10,7 @@ import android.view.View;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.PageInfoContents;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetProperties.PageInfoState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,6 +50,7 @@ class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
                         .with(PageInfoBottomSheetProperties.STATE, PageInfoState.INITIALIZING)
                         .build();
 
+        mBottomSheetController.addObserver(this);
         mPageInfoDelegate.getContentSupplier().addObserver(this::onContentsChanged);
     }
 
@@ -77,18 +79,21 @@ class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
         switch (reason) {
             case StateChangeReason.BACK_PRESS,
                     StateChangeReason.SWIPE,
-                    StateChangeReason.TAP_SCRIM -> destroySheet();
+                    StateChangeReason.TAP_SCRIM -> {
+                mPageInfoDelegate.onCancel();
+                destroySheet();
+            }
         }
     }
 
     private void onAcceptClicked(View view) {
         mPageInfoDelegate.onAccept();
-        mBottomSheetController.hideContent(mPageInfoBottomSheetContent, true);
+        destroySheet();
     }
 
     private void onCancelClicked(View view) {
         mPageInfoDelegate.onCancel();
-        mBottomSheetController.hideContent(mPageInfoBottomSheetContent, true);
+        destroySheet();
     }
 
     private void onRefreshClicked(View view) {
@@ -96,9 +101,21 @@ class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
     }
 
     @Override
-    public void onSheetOpened(int reason) {}
+    public void onSheetStateChanged(int newState, int reason) {
+        // If we update the sheet contents while its animation is running it won't update its height
+        // to the updated text size. Request expansion again to fix this.
+        if (newState == SheetState.FULL
+                && mBottomSheetController.getCurrentSheetContent() == mPageInfoBottomSheetContent
+                && mPageInfoDelegate.getContentSupplier().hasValue()
+                && mBottomSheetController.getCurrentOffset()
+                        != mPageInfoBottomSheetContent.getContentView().getHeight()) {
+            mBottomSheetController.expandSheet();
+        }
+    }
 
     void destroySheet() {
-        mPageInfoDelegate.onCancel();
+        mBottomSheetController.hideContent(mPageInfoBottomSheetContent, true);
+        mPageInfoDelegate.getContentSupplier().removeObserver(this::onContentsChanged);
+        mBottomSheetController.removeObserver(this);
     }
 }

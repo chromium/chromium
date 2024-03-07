@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingController;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,10 +54,15 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             "SharingHubAndroid.LongScreenshotSelected.NoEditor";
     private static final String USER_ACTION_SHARE_COPY_IMAGE_WITH_LINK_SELECTED =
             "SharingHubAndroid.CopyImageWithLinkSelected";
+
+    private static final String USER_ACTION_PAGE_INFO_SELECTED =
+            "SharingHubAndroid.PageInfoSelected";
     private static final Integer MAX_ACTION_SUPPORTED = 5;
 
     private final ChromeShareExtras mChromeShareExtras;
     @Nullable private final LinkToTextCoordinator mLinkToTextCoordinator;
+    private final PageInfoSharingController mPageInfoSharingController;
+
     private final List<ChromeCustomShareAction> mCustomActions = new ArrayList<>();
 
     /**
@@ -109,6 +116,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 deviceLockActivityLauncher);
         mChromeShareExtras = chromeShareExtras;
         mLinkToTextCoordinator = linkToTextCoordinator;
+        mPageInfoSharingController = PageInfoSharingControllerImpl.getInstance();
 
         initializeFirstPartyOptionsInOrder();
         initCustomActions(shareParams, chromeShareExtras, isMultiWindow);
@@ -239,6 +247,27 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                                 Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT)
                                         .show();
                             }
+                        })
+                .build();
+    }
+
+    @Override
+    protected FirstPartyOption createPageInfoFirstPartyOption() {
+        if (!mTabProvider.hasValue()
+                || !mPageInfoSharingController.isAvailableForTab(mTabProvider.get())) {
+            return null;
+        }
+
+        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
+                .setIcon(R.drawable.ic_content_copy_black, R.string.share)
+                .setFeatureNameForMetrics(USER_ACTION_PAGE_INFO_SELECTED)
+                .setOnClickCallback(
+                        (view) -> {
+                            mPageInfoSharingController.sharePageInfo(
+                                    mActivity,
+                                    mBottomSheetController,
+                                    mChromeOptionShareCallback,
+                                    mTabProvider.get());
                         })
                 .build();
     }

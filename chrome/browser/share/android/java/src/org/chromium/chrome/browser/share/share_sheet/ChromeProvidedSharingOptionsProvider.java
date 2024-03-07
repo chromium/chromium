@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.share_sheet;
 import android.app.Activity;
 import android.content.ComponentName;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -180,6 +181,12 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                             mBottomSheetController.hideContent(mBottomSheetContent, true);
                         })
                 .build();
+    }
+
+    @Nullable
+    @Override
+    protected FirstPartyOption createPageInfoFirstPartyOption() {
+        return null;
     }
 
     private void callTargetChosenCallback() {
