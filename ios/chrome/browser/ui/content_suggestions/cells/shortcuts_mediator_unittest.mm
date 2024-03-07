@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -98,7 +97,8 @@ TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
 
   // Action.
   ContentSuggestionsMostVisitedActionItem* readingList =
-      ReadingListActionItem();
+      [[ContentSuggestionsMostVisitedActionItem alloc]
+          initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
   ContentSuggestionsShortcutTileView* shortcutView =
       [[ContentSuggestionsShortcutTileView alloc]
           initWithConfiguration:readingList];
@@ -119,7 +119,9 @@ TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
-  ContentSuggestionsMostVisitedActionItem* whatsNew = WhatsNewActionItem();
+  ContentSuggestionsMostVisitedActionItem* whatsNew =
+      [[ContentSuggestionsMostVisitedActionItem alloc]
+          initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew];
   ContentSuggestionsShortcutTileView* shortcutView =
       [[ContentSuggestionsShortcutTileView alloc]
           initWithConfiguration:whatsNew];

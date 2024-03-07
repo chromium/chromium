@@ -57,6 +57,14 @@ const CGFloat kIconSize = 56;
   return self;
 }
 
+- (void)shortcutsItemConfigDidChange:
+    (ContentSuggestionsMostVisitedActionItem*)config {
+  if (config.index != _config.index) {
+    return;
+  }
+  [self updateConfiguration:config];
+}
+
 - (void)updateConfiguration:(ContentSuggestionsMostVisitedActionItem*)config {
   _config = config;
   self.titleLabel.text = config.title;

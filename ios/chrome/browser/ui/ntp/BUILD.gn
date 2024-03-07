@@ -344,6 +344,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/ntp/metrics:constants",

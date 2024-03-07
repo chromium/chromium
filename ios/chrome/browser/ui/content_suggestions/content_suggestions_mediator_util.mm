@@ -7,7 +7,6 @@
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
@@ -47,29 +46,4 @@ ContentSuggestionsMostVisitedItem* ConvertNTPTile(
   suggestion.titleSource = tile.title_source;
 
   return suggestion;
-}
-
-ContentSuggestionsMostVisitedActionItem* BookmarkActionItem() {
-  return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithCollectionShortcutType:NTPCollectionShortcutTypeBookmark];
-}
-
-ContentSuggestionsMostVisitedActionItem* ReadingListActionItem() {
-  return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
-}
-
-ContentSuggestionsMostVisitedActionItem* RecentTabsActionItem() {
-  return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithCollectionShortcutType:NTPCollectionShortcutTypeRecentTabs];
-}
-
-ContentSuggestionsMostVisitedActionItem* HistoryActionItem() {
-  return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithCollectionShortcutType:NTPCollectionShortcutTypeHistory];
-}
-
-ContentSuggestionsMostVisitedActionItem* WhatsNewActionItem() {
-  return [[ContentSuggestionsMostVisitedActionItem alloc]
-      initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew];
 }

@@ -8,7 +8,6 @@
 #include "components/ntp_tiles/ntp_tile.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 
-@class ContentSuggestionsMostVisitedActionItem;
 @class ContentSuggestionsMostVisitedItem;
 
 // Creates and returns a SectionInfo for the section containing the "Return to
@@ -22,20 +21,5 @@ ContentSuggestionsSectionInformation* SingleCellSectionInformation();
 // with a `sectionInfo`.
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
     const ntp_tiles::NTPTile& tile);
-
-// Creates and returns a Bookmarks action item.
-ContentSuggestionsMostVisitedActionItem* BookmarkActionItem();
-
-// Creates and returns a Reading List action item.
-ContentSuggestionsMostVisitedActionItem* ReadingListActionItem();
-
-// Creates and returns a Recent Tabs action item.
-ContentSuggestionsMostVisitedActionItem* RecentTabsActionItem();
-
-// Creates and returns a History action item.
-ContentSuggestionsMostVisitedActionItem* HistoryActionItem();
-
-// Creates and returns a Whats New action item.
-ContentSuggestionsMostVisitedActionItem* WhatsNewActionItem();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_

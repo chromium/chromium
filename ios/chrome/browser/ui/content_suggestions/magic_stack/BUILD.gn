@@ -68,8 +68,6 @@ source_set("cells") {
     "magic_stack_module_contents_factory.mm",
     "most_visited_tiles_config.h",
     "most_visited_tiles_config.mm",
-    "shortcuts_config.h",
-    "shortcuts_config.mm",
   ]
   deps = [
     ":constants",
@@ -84,6 +82,8 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/cells:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
     "//ios/chrome/browser/ui/content_suggestions/resources:magic_stack_edit_button_background_color",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",

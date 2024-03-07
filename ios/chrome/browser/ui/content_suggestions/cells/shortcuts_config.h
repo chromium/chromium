@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_SHORTCUTS_CONFIG_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_SHORTCUTS_CONFIG_H_
+#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_SHORTCUTS_CONFIG_H_
+#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_SHORTCUTS_CONFIG_H_
 
 #import <UIKit/UIKit.h>
 
 @protocol ShortcutsCommands;
+@protocol ShortcutsConsumerSource;
 @class ContentSuggestionsMostVisitedActionItem;
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
@@ -18,6 +19,9 @@
 // List of Shortcuts to show in module.
 @property(nonatomic, strong)
     NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcutItems;
+
+// Shortcuts model.
+@property(nonatomic, weak) id<ShortcutsConsumerSource> consumerSource;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<ShortcutsCommands> commandHandler;
