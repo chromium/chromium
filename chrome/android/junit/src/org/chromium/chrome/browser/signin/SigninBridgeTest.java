@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.signin;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -125,7 +126,7 @@ public class SigninBridgeTest {
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any());
+                .create(any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -139,7 +140,7 @@ public class SigninBridgeTest {
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any());
+                .create(any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -154,7 +155,7 @@ public class SigninBridgeTest {
                         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any());
+                .create(any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -169,7 +170,7 @@ public class SigninBridgeTest {
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any());
+                .create(any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -189,7 +190,7 @@ public class SigninBridgeTest {
                         AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any());
+                .create(any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -206,6 +207,7 @@ public class SigninBridgeTest {
                         eq(mBottomSheetControllerMock),
                         any(),
                         any(),
-                        any());
+                        any(),
+                        anyInt());
     }
 }

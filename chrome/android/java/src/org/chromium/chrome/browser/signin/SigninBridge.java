@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -40,19 +41,22 @@ import java.util.List;
 /** The bridge regroups methods invoked by native code to interact with Android Signin UI. */
 final class SigninBridge {
     /** Used for dependency injection in unit tests. */
+    @VisibleForTesting
     static class AccountPickerBottomSheetCoordinatorFactory {
         AccountPickerBottomSheetCoordinator create(
                 WindowAndroid windowAndroid,
                 BottomSheetController bottomSheetController,
                 AccountPickerDelegate accountPickerDelegate,
                 AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
-                DeviceLockActivityLauncher deviceLockActivityLauncher) {
+                DeviceLockActivityLauncher deviceLockActivityLauncher,
+                @AccountPickerLaunchMode int accountPickerLaunchMode) {
             return new AccountPickerBottomSheetCoordinator(
                     windowAndroid,
                     bottomSheetController,
                     accountPickerDelegate,
                     accountPickerBottomSheetStrings,
-                    deviceLockActivityLauncher);
+                    deviceLockActivityLauncher,
+                    accountPickerLaunchMode);
         }
     }
 
@@ -140,7 +144,8 @@ final class SigninBridge {
                 bottomSheetController,
                 new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
                 new AccountPickerBottomSheetStrings() {},
-                DeviceLockActivityLauncherImpl.get());
+                DeviceLockActivityLauncherImpl.get(),
+                AccountPickerLaunchMode.DEFAULT);
     }
 
     private SigninBridge() {}

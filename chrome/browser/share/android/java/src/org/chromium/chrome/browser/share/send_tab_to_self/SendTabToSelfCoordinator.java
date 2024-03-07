@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -206,7 +207,8 @@ public class SendTabToSelfCoordinator {
                                     this::onSignInComplete,
                                     IdentityServicesProvider.get().getSigninManager(mProfile)),
                             new BottomSheetStrings(),
-                            mDeviceLockActivityLauncher);
+                            mDeviceLockActivityLauncher,
+                            AccountPickerLaunchMode.DEFAULT);
                     return;
                 }
         }

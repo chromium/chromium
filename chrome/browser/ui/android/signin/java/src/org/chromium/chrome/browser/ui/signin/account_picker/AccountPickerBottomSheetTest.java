@@ -210,7 +210,8 @@ public class AccountPickerBottomSheetTest {
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     new AccountPickerBottomSheetStrings() {},
-                                    new CustomDeviceLockActivityLauncher());
+                                    new CustomDeviceLockActivityLauncher(),
+                                    AccountPickerLaunchMode.DEFAULT);
                 });
 
         checkZeroAccountBottomSheet();
@@ -397,7 +398,8 @@ public class AccountPickerBottomSheetTest {
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     new AccountPickerBottomSheetStrings() {},
-                                    null);
+                                    null,
+                                    AccountPickerLaunchMode.DEFAULT);
                 });
         checkZeroAccountBottomSheet();
 
@@ -1108,7 +1110,8 @@ public class AccountPickerBottomSheetTest {
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     accountPickerBottomSheetStrings,
-                                    mDeviceLockActivityLauncher);
+                                    mDeviceLockActivityLauncher,
+                                    AccountPickerLaunchMode.DEFAULT);
                 });
         CriteriaHelper.pollUiThread(
                 mCoordinator

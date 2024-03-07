@@ -74,8 +74,7 @@ public class AccountPickerBottomSheetCoordinator {
             };
 
     /**
-     * Constructs the AccountPickerBottomSheetCoordinator and shows the
-     * bottom sheet on the screen.
+     * Constructs the AccountPickerBottomSheetCoordinator and shows the bottom sheet on the screen.
      */
     @MainThread
     public AccountPickerBottomSheetCoordinator(
@@ -83,7 +82,8 @@ public class AccountPickerBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
-            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            @AccountPickerLaunchMode int launchMode) {
         switch (accountPickerDelegate.getEntryPoint()) {
             case EntryPoint.WEB_SIGNIN:
                 mAccessPoint = SigninAccessPoint.WEB_SIGNIN;
@@ -108,7 +108,8 @@ public class AccountPickerBottomSheetCoordinator {
                         accountPickerDelegate,
                         this::dismiss,
                         accountPickerBottomSheetStrings,
-                        deviceLockActivityLauncher);
+                        deviceLockActivityLauncher,
+                        launchMode);
         mView =
                 new AccountPickerBottomSheetView(
                         windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);

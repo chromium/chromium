@@ -50,6 +50,7 @@ public class AccountPickerBottomSheetMediator
     private final PropertyModel mModel;
     private final AccountManagerFacade mAccountManagerFacade;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final @ViewState int mInitialViewState;
 
     // TODO(crbug.com/1515277): Use CoreAccountInfo here instead.
     private @Nullable String mSelectedAccountEmail;
@@ -66,13 +67,25 @@ public class AccountPickerBottomSheetMediator
             AccountPickerDelegate accountPickerDelegate,
             Runnable onDismissButtonClicked,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
-            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            @AccountPickerLaunchMode int launchMode) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
 
+        switch (launchMode) {
+            case AccountPickerLaunchMode.CHOOSE_ACCOUNT:
+                mInitialViewState = ViewState.EXPANDED_ACCOUNT_LIST;
+                break;
+            case AccountPickerLaunchMode.DEFAULT:
+                mInitialViewState = ViewState.COLLAPSED_ACCOUNT_LIST;
+                break;
+            default:
+                throw new IllegalStateException(
+                        "All values of AccountPickerLaunchMode should be handled.");
+        }
         mModel =
                 AccountPickerBottomSheetProperties.createModel(
                         this::onSelectedAccountClicked,
@@ -83,20 +96,18 @@ public class AccountPickerBottomSheetMediator
         mModelPropertyChangedObserver =
                 (source, propertyKey) -> {
                     if (AccountPickerBottomSheetProperties.VIEW_STATE == propertyKey) {
-                        mBackPressStateChangedSupplier.set(
-                                mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
-                                        == ViewState.EXPANDED_ACCOUNT_LIST);
+                        mBackPressStateChangedSupplier.set(shouldHandleBackPress());
                     }
                 };
         mModel.addObserver(mModelPropertyChangedObserver);
         mProfileDataCache.addObserver(this);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        mAccountManagerFacade.addObserver(this);
         mAddedAccountEmail = null;
-        updateAccounts(
+        initializeViewState(
                 AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
                         mAccountManagerFacade.getCoreAccountInfos()));
+        mAccountManagerFacade.addObserver(this);
     }
 
     /**
@@ -149,8 +160,7 @@ public class AccountPickerBottomSheetMediator
      */
     @Override
     public boolean onBackPressed() {
-        @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
-        if (viewState == ViewState.EXPANDED_ACCOUNT_LIST) {
+        if (shouldHandleBackPress()) {
             mModel.set(
                     AccountPickerBottomSheetProperties.VIEW_STATE,
                     ViewState.COLLAPSED_ACCOUNT_LIST);
@@ -211,14 +221,30 @@ public class AccountPickerBottomSheetMediator
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_AUTH_ERROR);
     }
 
+    private boolean shouldHandleBackPress() {
+        return mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
+                        == ViewState.EXPANDED_ACCOUNT_LIST
+                && mInitialViewState != ViewState.EXPANDED_ACCOUNT_LIST;
+    }
+
+    private void initializeViewState(List<CoreAccountInfo> coreAccountInfos) {
+        if (coreAccountInfos.isEmpty()) {
+            // If all accounts disappeared, no matter if the account list initial state, we will go
+            // to the zero account screen.
+            setNoAccountState();
+            return;
+        }
+
+        mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
+        setSelectedAccountName(mDefaultAccountEmail);
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
+    }
+
     private void updateAccounts(List<CoreAccountInfo> coreAccountInfos) {
         if (coreAccountInfos.isEmpty()) {
             // If all accounts disappeared, no matter if the account list is collapsed or expanded,
             // we will go to the zero account screen.
-            mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.NO_ACCOUNTS);
-            mSelectedAccountEmail = null;
-            mDefaultAccountEmail = null;
-            mModel.set(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA, null);
+            setNoAccountState();
             return;
         }
 
@@ -239,6 +265,13 @@ public class AccountPickerBottomSheetMediator
             // when the current selected account name is no longer in the new account list
             setSelectedAccountName(mDefaultAccountEmail);
         }
+    }
+
+    private void setNoAccountState() {
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.NO_ACCOUNTS);
+        mSelectedAccountEmail = null;
+        mDefaultAccountEmail = null;
+        mModel.set(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA, null);
     }
 
     private void setSelectedAccountName(String accountName) {

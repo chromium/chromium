@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -59,16 +61,13 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         Intent intent = getIntent();
         int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
-        @SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+        @NoAccountSigninMode
         int noAccountSigninMode =
                 intent.getIntExtra(
-                        ARGUMENT_NO_ACCOUNT_SIGNIN_MODE,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT);
-        @SigninAndHistoryOptInCoordinator.HistoryOptInMode
+                        ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, NoAccountSigninMode.ADD_ACCOUNT);
+        @HistoryOptInMode
         int historyOptInMode =
-                intent.getIntExtra(
-                        ARGUMENT_HISTORY_OPT_IN_MODE,
-                        SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL);
+                intent.getIntExtra(ARGUMENT_HISTORY_OPT_IN_MODE, HistoryOptInMode.OPTIONAL);
 
         mCoordinator =
                 new SigninAndHistoryOptInCoordinator(
@@ -140,8 +139,8 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
 
     public static @NonNull Intent createIntent(
             Context context,
-            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
+            @NoAccountSigninMode int noAccountSigninMode,
+            @HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
         intent.putExtra(ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, noAccountSigninMode);

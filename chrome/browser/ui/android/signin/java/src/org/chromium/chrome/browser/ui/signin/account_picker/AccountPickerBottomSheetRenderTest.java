@@ -360,7 +360,8 @@ public class AccountPickerBottomSheetRenderTest {
                                     getBottomSheetController(),
                                     mAccountPickerDelegate,
                                     accountPickerBottomSheetStrings,
-                                    null);
+                                    null,
+                                    AccountPickerLaunchMode.DEFAULT);
                 });
         ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
     }
