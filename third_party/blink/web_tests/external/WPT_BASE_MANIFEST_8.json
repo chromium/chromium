@@ -354265,6 +354265,18 @@
         []
        ],
        "resources": {
+        "iframe-contents.sub.html": [
+         "8ac0a264dbc1d2b2d9a45ad8e51e3bfbc064254d",
+         []
+        ],
+        "iframe-postmessage-to-parent-parent.sub.html": [
+         "25c4af19a3e2296cbbbcb31755e5f4ce0c3ea510",
+         []
+        ],
+        "iframe-with-iframe.html": [
+         "675f293ffa3b57f39807bcc6fb86e0f8a748b421",
+         []
+        ],
         "post-your-origin.html": [
          "a8a614c182b19cf38af90030a17ef20b1f8dfc09",
          []
@@ -354275,6 +354287,10 @@
         ],
         "reload_post_1-1.py": [
          "56397f07b44028a0f1e572484480d6fa522c5816",
+         []
+        ],
+        "replace-or-assign-call-on-iframe.html": [
+         "bdad8334a5e65d556d35474c051bdb9e1bcad4e9",
          []
         ]
        },
@@ -393467,11 +393483,11 @@
       []
      ],
      "triangular.https.any-expected.txt": [
-      "d1b95c65a9d3858125789c418cd56f60910e2058",
+      "1db94301d547c954adaf8678e9c3a200deb5e79b",
       []
      ],
      "triangular.https.any.worker-expected.txt": [
-      "d1b95c65a9d3858125789c418cd56f60910e2058",
+      "1db94301d547c954adaf8678e9c3a200deb5e79b",
       []
      ],
      "where.https.any-expected.txt": [
@@ -393484,11 +393500,11 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "d8b5b08dc9774fa2bd1e2ce6bcad121e3f02d7d9",
+     "31d3673739bcf35dd81e5b1114075d9338e4e08e",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "05cd225c9302239f0dc71884c9ba48857a8a5d5f",
+     "4064476f0a2d9739ce07e3fabcb795c065f73326",
      []
     ],
     "resources": {
@@ -502457,7 +502473,7 @@
      },
      "body": {
       "formdata.any.js": [
-       "e25035923c1f9e93042889a914f0253a01eb4a15",
+       "6733fa0ed70afe5b20935c6b5cd3050ca28787b7",
        [
         "fetch/api/body/formdata.any.html",
         {}
@@ -531443,6 +531459,27 @@
          {}
         ]
        ],
+       "assign-replace-from-iframe.html": [
+        "a0cd9f25ef9def35917f1817eb841cf811652c5e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "assign-replace-from-top-to-nested-iframe.html": [
+        "eb6e4960dc2c8ebce37a1f32e3b4237224b50dd3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "assign-with-nested-iframe.html": [
+        "e043623c08292cb284c77790ad4e67752828abda",
+        [
+         null,
+         {}
+        ]
+       ],
        "assign_after_load.html": [
         "00dc931d4e7204ef302c7ab8d7340ec19feee61d",
         [
@@ -531732,6 +531769,13 @@
        ],
        "reload_document_write_onload.html": [
         "b2cf31147a1280b1963a580e2b24ad2c3c23fe51",
+        [
+         null,
+         {}
+        ]
+       ],
+       "replace-with-nested-iframe.html": [
+        "e6620bd29c7537af74b4b8e55e1c5aafb319ca50",
         [
          null,
          {}
@@ -573082,6 +573126,15 @@
        ],
        "click-behavior-optional.tentative.html": [
         "4418413fefe1363d1648fa1088dbc84dd8511649",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "interactive-content.html": [
+        "94869dc9b69b86d3a3eab1b756caafe3f6cbc438",
         [
          null,
          {
@@ -668611,6 +668664,57 @@
          [
           "title",
           "validation tests for WebNN API resample2d operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "triangular.https.any.js": [
+      "4e4c368f82bdf2692a8870f147abd1d559a5d923",
+      [
+       "webnn/validation_tests/triangular.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API triangular operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/triangular.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API triangular operation"
          ],
          [
           "global",
