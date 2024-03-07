@@ -21,7 +21,6 @@ import {
   Exception,
   UnknownCommandException,
   UnknownErrorException,
-  UnsupportedOperationException,
   type ChromiumBidi,
   type Browser,
   type Script,
@@ -195,8 +194,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseHandleUserPromptParams(command.params)
         );
       case 'browsingContext.locateNodes':
-        throw new UnsupportedOperationException(
-          `Command '${command.method}' not yet implemented.`
+        return await this.#browsingContextProcessor.locateNodes(
+          this.#parser.parseLocateNodesParams(command.params)
         );
       case 'browsingContext.navigate':
         return await this.#browsingContextProcessor.navigate(

@@ -62,6 +62,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): BrowsingContext.HandleUserPromptParameters {
     return Parser.BrowsingContext.parseHandleUserPromptParameters(params);
   }
+  parseLocateNodesParams(
+    params: unknown
+  ): BrowsingContext.LocateNodesParameters {
+    return Parser.BrowsingContext.parseLocateNodesParams(params);
+  }
   parseNavigateParams(params: unknown): BrowsingContext.NavigateParameters {
     return Parser.BrowsingContext.parseNavigateParams(params);
   }

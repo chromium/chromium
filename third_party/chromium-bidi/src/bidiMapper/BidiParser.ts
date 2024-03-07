@@ -47,6 +47,9 @@ export interface BidiCommandParameterParser {
   parseHandleUserPromptParams(
     params: unknown
   ): BrowsingContext.HandleUserPromptParameters;
+  parseLocateNodesParams(
+    params: unknown
+  ): BrowsingContext.LocateNodesParameters;
   parseNavigateParams(params: unknown): BrowsingContext.NavigateParameters;
   parsePrintParams(params: unknown): BrowsingContext.PrintParameters;
   parseReloadParams(params: unknown): BrowsingContext.ReloadParameters;

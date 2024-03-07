@@ -76,10 +76,6 @@ export namespace Network {
   }
 
   export function parseContinueResponseParameters(params: unknown) {
-    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
-    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
-    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
-    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
@@ -102,10 +98,6 @@ export namespace Network {
   }
 
   export function parseProvideResponseParameters(params: unknown) {
-    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
-    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
-    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
-    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
     // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
@@ -255,6 +247,16 @@ export namespace BrowsingContext {
       params,
       WebDriverBidi.BrowsingContext.HandleUserPromptParametersSchema
     );
+  }
+
+  export function parseLocateNodesParams(
+    params: unknown
+  ): Protocol.BrowsingContext.LocateNodesParameters {
+    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+    return parseObject(
+      params,
+      WebDriverBidi.BrowsingContext.LocateNodesParametersSchema
+    ) as Protocol.BrowsingContext.LocateNodesParameters;
   }
 }
 
