@@ -2197,6 +2197,7 @@ def make_constructor_function_def(cg_context, function_name):
         # installation context-by-context. So, we check the exposure and may
         # throw a TypeError if not exposed. For the case of multiple overloads,
         # the overload resolution is already exposure sensitive.
+        body.append(make_constructor_entry(cg_context))
         if cg_context.constructor.exposure.is_context_dependent():
             body.append(
                 CxxUnlikelyIfNode(cond=expr_not(
@@ -2206,7 +2207,6 @@ def make_constructor_function_def(cg_context, function_name):
                                         "\"Illegal constructor\");"),
                                       T("return;"),
                                   ]))
-        body.append(make_constructor_entry(cg_context))
         body.append(EmptyNode())
 
     body.extend([

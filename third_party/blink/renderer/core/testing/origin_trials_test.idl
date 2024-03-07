@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 interface OriginTrialsTest {
+    [RuntimeEnabled=OriginTrialsSampleAPI, Exposed=Window] constructor();
+
     [RuntimeEnabled=OriginTrialsSampleAPI] readonly attribute boolean normalAttribute;
     [RuntimeEnabled=OriginTrialsSampleAPI] static readonly attribute boolean staticAttribute;
     [RuntimeEnabled=OriginTrialsSampleAPI] boolean normalMethod();
