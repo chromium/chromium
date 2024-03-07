@@ -6,12 +6,14 @@
 
 #include <cmath>
 
+#include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -216,8 +218,23 @@ CapturedSurfaceControlResult DoSetZoomLevel(
     return CapturedSurfaceControlResult::kCapturerNotFocusedError;
   }
 
-  HostZoomMap::SetZoomLevel(
-      captured_wc.get(),
+  // TODO(crbug.com/328589994): Hard-code kCapturedSurfaceControlTemporaryZoom.
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlTemporaryZoom)) {
+    HostZoomMap::SetZoomLevel(captured_wc.get(),
+                              blink::PageZoomFactorToZoomLevel(
+                                  static_cast<double>(zoom_level) / 100));
+    return CapturedSurfaceControlResult::kSuccess;
+  }
+
+  HostZoomMap* const zoom_map =
+      HostZoomMap::GetForWebContents(captured_wc.get());
+  if (!zoom_map) {
+    return CapturedSurfaceControlResult::kUnknownError;
+  }
+
+  zoom_map->SetTemporaryZoomLevel(
+      captured_wc->GetPrimaryMainFrame()->GetGlobalId(),
       blink::PageZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
   return CapturedSurfaceControlResult::kSuccess;
 }

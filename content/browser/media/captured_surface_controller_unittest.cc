@@ -10,14 +10,17 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/media/captured_surface_control_permission_manager.h"
+#include "content/common/features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 namespace {
@@ -27,6 +30,8 @@ using CapturedWheelActionPtr = ::blink::mojom::CapturedWheelActionPtr;
 using CSCResult = ::blink::mojom::CapturedSurfaceControlResult;
 using CSCPermissionResult =
     CapturedSurfaceControlPermissionManager::PermissionResult;
+
+const char* const kUrlString = "http://www.example.com/";
 
 enum class Boundary {
   kMin,
@@ -111,7 +116,8 @@ class TestTab {
  public:
   static constexpr gfx::Size kDefaultViewportSize = gfx::Size(100, 400);
 
-  explicit TestTab(BrowserContext* browser_context)
+  explicit TestTab(BrowserContext* browser_context,
+                   std::optional<GURL> gurl = std::nullopt)
       : web_contents_(MakeTestWebContents(browser_context)) {
     // Store the original RenderWidgetHost, allowing it to be injected back from
     // the destructor.
@@ -121,6 +127,10 @@ class TestTab {
     rwhv_ = std::make_unique<TestView>(GetRenderWidgetHostImpl());
     SetView(rwhv_.get());
     SetSize(kDefaultViewportSize);
+
+    if (gurl.has_value()) {
+      web_contents_->NavigateAndCommit(gurl.value());
+    }
   }
 
   virtual ~TestTab() {
@@ -149,6 +159,13 @@ class TestTab {
     FrameTreeNode* const root = frame_tree.root();
     frame_tree.SetFocusedFrame(
         root, root->current_frame_host()->GetSiteInstance()->group());
+  }
+
+  int GetZoomLevel() {
+    CHECK(web_contents_);
+    return std::round(100 *
+                      blink::PageZoomLevelToZoomFactor(
+                          HostZoomMap::GetZoomLevel(web_contents_.get())));
   }
 
  protected:
@@ -222,7 +239,8 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
 
   void SetUpTestTabs(bool focus_capturer = true) {
     capturer_ = std::make_unique<TestTab>(GetBrowserContext());
-    capturee_ = std::make_unique<TestTab>(GetBrowserContext());
+    capturee_ =
+        std::make_unique<TestTab>(GetBrowserContext(), GURL(kUrlString));
     if (focus_capturer) {
       capturer_->Focus();
     }
@@ -419,7 +437,7 @@ class CapturedSurfaceControllerZoomEventTest
   std::unique_ptr<TestTab> new_capturee_;
 };
 
-TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventTest) {
+TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEvent) {
   HostZoomMap::SetZoomLevel(capturee_->web_contents(),
                             blink::PageZoomFactorToZoomLevel(0.9));
   AwaitOnZoomLevelChange();
@@ -427,7 +445,7 @@ TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventTest) {
   EXPECT_EQ(zoom_level_, 90);
 }
 
-TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventUpdateTargetTest) {
+TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventUpdateTarget) {
   const RenderFrameHost* const new_main_rfh =
       new_capturee_->web_contents()->GetPrimaryMainFrame();
   const WebContentsMediaCaptureId new_wc_id(new_main_rfh->GetProcess()->GetID(),
@@ -452,6 +470,9 @@ class CapturedSurfaceControllerSetZoomLevelTest
       public ::testing::WithParamInterface<int> {
  public:
   CapturedSurfaceControllerSetZoomLevelTest() : zoom_level_(GetParam()) {}
+  ~CapturedSurfaceControllerSetZoomLevelTest() override = default;
+
+ protected:
   const int zoom_level_;
 };
 
@@ -469,9 +490,52 @@ TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
       zoom_level_, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
   run_loop.Run();
 
-  EXPECT_EQ(zoom_level_, std::round(100 * blink::PageZoomLevelToZoomFactor(
-                                              HostZoomMap::GetZoomLevel(
-                                                  capturee_->web_contents()))));
+  EXPECT_EQ(zoom_level_, capturee_->GetZoomLevel());
+}
+
+class CapturedSurfaceControllerSetZoomTemporarinessTest
+    : public CapturedSurfaceControllerTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CapturedSurfaceControllerSetZoomTemporarinessTest()
+      : is_temporary_(GetParam()) {
+    features_.InitWithFeatureStates(
+        {{features::kCapturedSurfaceControlTemporaryZoom, is_temporary_}});
+  }
+  ~CapturedSurfaceControllerSetZoomTemporarinessTest() override = default;
+
+ protected:
+  const bool is_temporary_;
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CapturedSurfaceControllerSetZoomTemporarinessTest,
+                         ::testing::Bool());
+
+TEST_P(CapturedSurfaceControllerSetZoomTemporarinessTest,
+       TemporarinessDependsOnConfiguration) {
+  ASSERT_EQ(capturee_->GetZoomLevel(), 100);
+
+  // Create another tab and navigate it to the same URL as the captured tab.
+  auto duplicate_tab =
+      std::make_unique<TestTab>(GetBrowserContext(), GURL(kUrlString));
+  ASSERT_EQ(duplicate_tab->GetZoomLevel(), 100);
+
+  // Change the zoom-level on the captured tab.
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  controller_->SetZoomLevel(
+      200, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+  ASSERT_EQ(capturee_->GetZoomLevel(), 200);
+
+  // In temporary zoom mode, setting the zoom level only affects the
+  // current tab.
+  // In persistent zoom mode, setting the zoom is equivalent to
+  // the user changing it through their interaction with the
+  // browser's UX.
+  EXPECT_EQ(duplicate_tab->GetZoomLevel(), is_temporary_ ? 100 : 200);
 }
 
 enum class CapturedSurfaceControlAPI {
