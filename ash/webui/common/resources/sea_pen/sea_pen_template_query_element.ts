@@ -14,6 +14,7 @@ import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
@@ -75,6 +76,20 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
       thumbnails_: Object,
 
       thumbnailsLoading_: Boolean,
+
+      searchButtonText_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('seaPenCreateButton');
+        },
+      },
+
+      searchButtonIcon_: {
+        type: String,
+        value() {
+          return 'sea-pen:photo-spark';
+        },
+      },
     };
   }
 
@@ -88,6 +103,12 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private selectedChip_: ChipToken|null;
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
+  private searchButtonText_: string;
+  private searchButtonIcon_: string;
+
+  static get observers() {
+    return ['updateSearchButton_(path, thumbnails_)'];
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -143,6 +164,8 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private onSelectedOptionsChanged_() {
+    this.searchButtonText_ = this.i18n('seaPenCreateButton');
+    this.searchButtonIcon_ = 'sea-pen:photo-spark';
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
   }
@@ -212,35 +235,25 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         SeaPenPaths.RESULTS, {seaPenTemplateId: this.templateId!.toString()});
   }
 
-  private getSearchButtonText_(
-      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
+  private updateSearchButton_(
+      path: string|null, thumbnails: SeaPenThumbnail[]|null) {
     if (!thumbnails) {
       // The thumbnails are not loaded yet.
-      return this.i18n('seaPenCreateButton');
+      this.searchButtonText_ = this.i18n('seaPenCreateButton');
+      this.searchButtonIcon_ = 'sea-pen:photo-spark';
+      return;
     }
 
     switch (path) {
       case SeaPenPaths.RESULTS:
-        return this.i18n('seaPenRecreateButton');
+        this.searchButtonText_ = this.i18n('seaPenRecreateButton');
+        this.searchButtonIcon_ = 'personalization-shared:refresh';
+        break;
       case SeaPenPaths.ROOT:
       default:
-        return this.i18n('seaPenCreateButton');
-    }
-  }
-
-  private getSearchButtonIcon_(
-      path: string|null, thumbnails: SeaPenThumbnail[]|null): string {
-    if (!thumbnails) {
-      // The thumbnails are not loaded yet.
-      return 'sea-pen:photo-spark';
-    }
-
-    switch (path) {
-      case SeaPenPaths.RESULTS:
-        return 'personalization-shared:refresh';
-      case SeaPenPaths.ROOT:
-      default:
-        return 'sea-pen:photo-spark';
+        this.searchButtonText_ = this.i18n('seaPenCreateButton');
+        this.searchButtonIcon_ = 'sea-pen:photo-spark';
+        break;
     }
   }
 }

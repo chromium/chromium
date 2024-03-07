@@ -112,6 +112,53 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
   });
 
+  test('displays create button when selected option changes', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.images;
+    seaPenTemplateQueryElement = initElement(SeaPenTemplateQueryElement, {
+      path: SeaPenPaths.RESULTS,
+      templateId: SeaPenTemplateId.kFlower.toString(),
+    });
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const searchButton =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+    const icon = searchButton!.querySelector<HTMLElement>('iron-icon');
+    assertEquals(
+        seaPenTemplateQueryElement.i18n('seaPenRecreateButton'),
+        searchButton!.innerText);
+    assertEquals('personalization-shared:refresh', icon!.getAttribute('icon'));
+
+    const chips =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
+    const chip = chips[0] as HTMLElement;
+    chip!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const seaPenOptionsElement =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            SeaPenOptionsElement.is);
+    assertTrue(
+        !!seaPenOptionsElement,
+        'the options chips should show after clicking a chip');
+    const optionToSelect =
+        seaPenOptionsElement.shadowRoot!.querySelector(
+            '#options cr-button:not([aria-selected])') as HTMLElement;
+    const optionText = optionToSelect!.innerText;
+    assertTrue(
+        optionText !== chip.innerText,
+        'unselected option should not match text');
+
+    optionToSelect!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertEquals(
+        seaPenTemplateQueryElement.i18n('seaPenCreateButton'),
+        searchButton!.innerText);
+    assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
+  });
+
   test('selects chip', async () => {
     seaPenTemplateQueryElement = initElement(
         SeaPenTemplateQueryElement,
