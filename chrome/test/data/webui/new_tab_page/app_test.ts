@@ -1372,7 +1372,8 @@ suite('NewTabPageAppTest', () => {
           });
 
       test(
-          'button hides/shows in accordance with callback router', async () => {
+          'button hides in accordance with callback router', async () => {
+            // Both buttons shown.
             assertNotStyle(
                 $$(app, '#customizeButtonContainer')!, 'display', 'none');
             assertNotStyle(
@@ -1381,6 +1382,7 @@ suite('NewTabPageAppTest', () => {
             callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
             await callbackRouterRemote.$.flushForTesting();
 
+            // Wallpaper search button hides.
             assertNotStyle(
                 $$(app, '#customizeButtonContainer')!, 'display', 'none');
             assertStyle(
@@ -1389,9 +1391,10 @@ suite('NewTabPageAppTest', () => {
             callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
             await callbackRouterRemote.$.flushForTesting();
 
+            // Wallpaper search button remains hidden.
             assertNotStyle(
                 $$(app, '#customizeButtonContainer')!, 'display', 'none');
-            assertNotStyle(
+            assertStyle(
                 $$(app, '#wallpaperSearchButtonContainer')!, 'display', 'none');
           });
     });

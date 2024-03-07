@@ -473,7 +473,12 @@ export class AppElement extends AppElementBase {
     this.setWallpaperSearchButtonVisibilityListener_ =
         this.callbackRouter_.setWallpaperSearchButtonVisibility.addListener(
             (visible: boolean) => {
-              this.wallpaperSearchButtonEnabled_ = visible;
+              // We only show the button if wallpaper search is enabled when the
+              // NTP loads. This prevents the button from showing if Customize
+              // Chrome doesn't have the wallpaper search element yet.
+              if (!visible) {
+                this.wallpaperSearchButtonEnabled_ = visible;
+              }
             });
 
     // Open Customize Chrome if there are Customize Chrome URL params.
