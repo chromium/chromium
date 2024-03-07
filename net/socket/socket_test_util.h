@@ -532,7 +532,6 @@ struct SSLSocketDataProvider {
   std::optional<HostPortPair> expected_host_and_port;
   std::optional<bool> expected_ignore_certificate_errors;
   std::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
-  std::optional<bool> expected_disable_sha1_server_signatures;
   std::optional<std::vector<uint8_t>> expected_ech_config_list;
 
   bool is_connect_data_consumed = false;

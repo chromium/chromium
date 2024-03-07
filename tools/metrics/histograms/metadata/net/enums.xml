@@ -2600,22 +2600,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="SSLKEYLOGFILE environment variable set"/>
 </enum>
 
-<enum name="SSLLegacyCryptoFallback">
-  <int value="0" label="No fallback used"/>
-  <int value="1" label="Used fallback and negotiated 3DES"/>
-  <int value="2" label="Used fallback and negotiated SHA-1"/>
-  <int value="3"
-      label="Used fallback and sent a certificate signed with
-             RSASSA-PKCS1-v1_5-SHA-1"/>
-  <int value="4"
-      label="Used fallback, negotiated 3DES, and sent a certificate signed
-             with RSASSA-PKCS1-v1_5-SHA-1"/>
-  <int value="5"
-      label="Used fallback, negotiated SHA-1, and sent a certificate signed
-             with RSASSA-PKCS1-v1_5-SHA-1"/>
-  <int value="6" label="Used fallback for unknown reason"/>
-</enum>
-
 <enum name="SSLNegotiatedAlpnProtocol">
   <int value="0" label="ALPN not used"/>
   <int value="1" label="HTTP/1.1 negotiated via ALPN"/>

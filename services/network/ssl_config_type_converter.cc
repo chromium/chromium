@@ -50,8 +50,6 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   net_config.post_quantum_override =
       OptionalBoolFromMojo(mojo_config->post_quantum_override);
   net_config.ech_enabled = mojo_config->ech_enabled;
-  net_config.insecure_hash_override =
-      OptionalBoolFromMojo(mojo_config->insecure_hash_override);
   return net_config;
 }
 

@@ -2584,10 +2584,6 @@ inline constexpr char kPostQuantumKeyAgreementEnabled[] =
 // If false, disable Encrypted ClientHello (ECH) in TLS connections.
 inline constexpr char kEncryptedClientHelloEnabled[] = "ssl.ech_enabled";
 
-// If false, disallow insecure hashes for use in  TLS Handshakes.
-inline constexpr char kInsecureHashesInTLSHandshakesEnabled[] =
-    "ssl.insecure_hash_enabled";
-
 // Boolean that specifies whether the built-in asynchronous DNS client is used.
 inline constexpr char kBuiltInDnsClientEnabled[] = "async_dns.enabled";
 

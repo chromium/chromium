@@ -269,47 +269,4 @@ IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
   EXPECT_EQ(base::ASCIIToUTF16(kECHFailureTitle), result.title);
 }
 
-IN_PROC_BROWSER_TEST_F(SSLPolicyTest, InsecureHashPolicy) {
-  net::SSLServerConfig ssl_config;
-  // Configure the server at TLS 1.2 and only signing SHA-1. Additionally
-  // require ECDHE to prevent the server from falling back to a non-signing
-  // cipher suite.
-  ssl_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
-  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
-  ssl_config.require_ecdhe = true;
-  ssl_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PKCS1_SHA1;
-  ASSERT_TRUE(StartTestServer(ssl_config));
-
-  // Should be unable to load a page from the test server because the
-  // policy is unset, and SHA1 is disabled.
-  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
-  LoadResult result = LoadPage("/title2.html");
-  EXPECT_FALSE(result.success);
-
-  PolicyMap policies;
-  // Enable Insecure Handshake Hashes.
-  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
-            base::Value(true));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // Should be able to load a page from the test server because policy has
-  // overridden the disabled feature flag.
-  EXPECT_TRUE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
-  result = LoadPage("/title2.html");
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(u"Title Of Awesomeness", result.title);
-
-  // Disable the policy.
-  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
-            base::Value(false));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // Page loads should now fail as the policy has disabled SHA1.
-  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
-  result = LoadPage("/title3.html");
-  EXPECT_FALSE(result.success);
-}
-
 }  // namespace policy

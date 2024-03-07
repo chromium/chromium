@@ -33,7 +33,6 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
-#include "net/ssl/ssl_legacy_crypto_fallback.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -390,12 +389,6 @@ int SSLConnectJob::DoSSLConnect() {
       *common_connect_job_params()->ignore_certificate_errors;
   ssl_config.network_anonymization_key = params_->network_anonymization_key();
   ssl_config.privacy_mode = params_->privacy_mode();
-  // We do the fallback in both cases here to ensure we separate the effect of
-  // disabling sha1 from the effect of having a single automatic retry
-  // on a potentially unreliably network connection.
-  ssl_config.disable_sha1_server_signatures =
-      disable_legacy_crypto_with_fallback_ ||
-      !ssl_client_context()->config().InsecureHashesInTLSHandshakesEnabled();
 
   if (ssl_client_context()->config().ech_enabled) {
     if (ech_retry_configs_) {
@@ -425,15 +418,16 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     server_address_ = IPEndPoint();
   }
 
-  // Many servers which negotiate SHA-1 server signatures in TLS 1.2 actually
-  // support SHA-2 but preferentially sign SHA-1 if available.
+  // Historically, many servers which negotiated SHA-1 server signatures in
+  // TLS 1.2 actually support SHA-2 but preferentially sign SHA-1 if available.
+  // In order to get accurate metrics while deprecating SHA-1, we initially
+  // connected with SHA-1 disabled and then retried with enabled.
   //
-  // To get more accurate metrics, initially connect with SHA-1 disabled. If
-  // this fails, retry with them enabled. This keeps the legacy algorithms
-  // working for now, but they will only appear in metrics and DevTools if the
-  // site relies on them.
+  // SHA-1 is now always disabled, but we retained the fallback to separate the
+  // effect of disabling SHA-1 from the effect of having a single automatic
+  // retry on a potentially unreliably network connection.
   //
-  // See https://crbug.com/658905.
+  // TODO(https://crbug.com/658905): Remove this now redundant retry.
   if (disable_legacy_crypto_with_fallback_ &&
       (result == ERR_CONNECTION_CLOSED || result == ERR_CONNECTION_RESET ||
        result == ERR_SSL_PROTOCOL_ERROR ||
@@ -535,42 +529,6 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
       base::UmaHistogramSparse("Net.SSL_KeyExchange.ECDHE",
                                ssl_info.key_exchange_group);
     }
-
-    // Classify whether the connection required the legacy crypto fallback.
-    SSLLegacyCryptoFallback fallback = SSLLegacyCryptoFallback::kNoFallback;
-    if (!disable_legacy_crypto_with_fallback_) {
-      // Some servers, though they do not negotiate SHA-1, still fail the
-      // connection when SHA-1 is not offered. We believe these are servers
-      // which match the sent certificates against the ClientHello and then
-      // are configured with a SHA-1 certificate.
-      //
-      // SHA-1 certificate chains are no longer accepted, however servers may
-      // send extra unused certificates, most commonly a copy of the trust
-      // anchor. We only need to check for RSASSA-PKCS1-v1_5 signatures, because
-      // other SHA-1 signature types have already been removed from the
-      // ClientHello.
-      bool sent_sha1_cert = ssl_info.unverified_cert &&
-                            x509_util::HasRsaPkcs1Sha1Signature(
-                                ssl_info.unverified_cert->cert_buffer());
-      if (!sent_sha1_cert && ssl_info.unverified_cert) {
-        for (const auto& cert :
-             ssl_info.unverified_cert->intermediate_buffers()) {
-          if (x509_util::HasRsaPkcs1Sha1Signature(cert.get())) {
-            sent_sha1_cert = true;
-            break;
-          }
-        }
-      }
-      if (ssl_info.peer_signature_algorithm == SSL_SIGN_RSA_PKCS1_SHA1) {
-        fallback = sent_sha1_cert
-                       ? SSLLegacyCryptoFallback::kSentSHA1CertAndUsedSHA1
-                       : SSLLegacyCryptoFallback::kUsedSHA1;
-      } else {
-        fallback = sent_sha1_cert ? SSLLegacyCryptoFallback::kSentSHA1Cert
-                                  : SSLLegacyCryptoFallback::kUnknownReason;
-      }
-    }
-    UMA_HISTOGRAM_ENUMERATION("Net.SSLLegacyCryptoFallback2", fallback);
   }
 
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));

@@ -25,9 +25,6 @@ struct NET_EXPORT SSLContextConfig {
 
   bool operator==(const SSLContextConfig&) const;
 
-  // Returns whether insecure hashes are allowed in TLS handshakes.
-  bool InsecureHashesInTLSHandshakesEnabled() const;
-
   // Returns whether post-quantum key agreement is enabled in TLS handshakes.
   bool PostQuantumKeyAgreementEnabled() const;
 
@@ -55,10 +52,6 @@ struct NET_EXPORT SSLContextConfig {
 
   // Controls whether ECH is enabled.
   bool ech_enabled = true;
-
-  // If specified, controls whether insecure hashes are allowed in TLS
-  // handshakes. If `std::nullopt`, this is determined by feature flags.
-  std::optional<bool> insecure_hash_override;
 };
 
 // The interface for retrieving global SSL configuration.  This interface

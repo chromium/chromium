@@ -130,8 +130,6 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
                              local_state, local_state_callback);
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
-  insecure_hash_enabled_.Init(prefs::kInsecureHashesInTLSHandshakesEnabled,
-                              local_state, local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -161,8 +159,6 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   // Default value for these prefs don't matter since they are only used when
   // managed.
-  registry->RegisterBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled,
-                                false);
   registry->RegisterBooleanPref(prefs::kPostQuantumKeyAgreementEnabled, false);
 }
 
@@ -233,14 +229,6 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
                                         : network::mojom::OptionalBool::kFalse;
   } else {
     config->post_quantum_override = network::mojom::OptionalBool::kUnset;
-  }
-
-  if (insecure_hash_enabled_.IsManaged()) {
-    config->insecure_hash_override = insecure_hash_enabled_.GetValue()
-                                         ? network::mojom::OptionalBool::kTrue
-                                         : network::mojom::OptionalBool::kFalse;
-  } else {
-    config->insecure_hash_override = network::mojom::OptionalBool::kUnset;
   }
 
   return config;

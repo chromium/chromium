@@ -1,9 +1,10 @@
 caption: Insecure Hashes in TLS Handshakes Enabled
 default: null
+deprecated: true
 desc: |-
-  This policy allows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to use legacy insecure hashes during the TLS handshake process.
+  This policy was removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 124. Starting that version, insecure hashes always disallowed. In prior versions, this policy controlled whether the browser allowed legacy insecure hashes during the TLS handshake process.
 
-        If this policy is not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will follow the default rollout process for disallowing insecure hashes. If it is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will allow insecure hashes to be used by a server when negotiating a TLS handshake. If it is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will disallow insecure hashes to be used by a server when negotiating a TLS handshake. This policy will be removed in 123.
+        If this policy is not configured, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> would follow the default rollout process for disallowing insecure hashes. If it is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> would allow insecure hashes to be used by a server when negotiating a TLS handshake. If it is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> would disallow insecure hashes to be used by a server when negotiating a TLS handshake.
 
 example_value: false
 features:
@@ -22,10 +23,10 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:114-
-- chrome_os:114-
-- android:114-
-- fuchsia:114-
+- chrome.*:114-123
+- chrome_os:114-123
+- android:114-123
+- fuchsia:114-123
 tags:
 - system-security
 type: main

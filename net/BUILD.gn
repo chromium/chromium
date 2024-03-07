@@ -967,7 +967,6 @@ component("net") {
     "ssl/ssl_key_logger.h",
     "ssl/ssl_key_logger_impl.cc",
     "ssl/ssl_key_logger_impl.h",
-    "ssl/ssl_legacy_crypto_fallback.h",
     "ssl/ssl_platform_key_util.cc",
     "ssl/ssl_platform_key_util.h",
     "ssl/ssl_private_key.cc",

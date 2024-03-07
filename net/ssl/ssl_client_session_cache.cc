@@ -19,7 +19,7 @@ namespace {
 // Returns a tuple of references to fields of |key|, for comparison purposes.
 auto TieKeyFields(const SSLClientSessionCache::Key& key) {
   return std::tie(key.server, key.dest_ip_addr, key.network_anonymization_key,
-                  key.privacy_mode, key.disable_legacy_crypto);
+                  key.privacy_mode);
 }
 
 }  // namespace

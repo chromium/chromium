@@ -847,10 +847,6 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
     EXPECT_EQ(*next_ssl_data->expected_network_anonymization_key,
               ssl_config.network_anonymization_key);
   }
-  if (next_ssl_data->expected_disable_sha1_server_signatures) {
-    EXPECT_EQ(*next_ssl_data->expected_disable_sha1_server_signatures,
-              ssl_config.disable_sha1_server_signatures);
-  }
   if (next_ssl_data->expected_ech_config_list) {
     EXPECT_EQ(*next_ssl_data->expected_ech_config_list,
               ssl_config.ech_config_list);

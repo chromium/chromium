@@ -74,10 +74,6 @@ struct NET_EXPORT SSLConfig {
   // If true, causes only ECDHE cipher suites to be enabled.
   bool require_ecdhe = false;
 
-  // If true, causes SHA-1 signatures to be rejected from servers during
-  // a TLS handshake.
-  bool disable_sha1_server_signatures = false;
-
   // TODO(wtc): move the following members to a new SSLParams structure.  They
   // are not SSL configuration settings.
 
