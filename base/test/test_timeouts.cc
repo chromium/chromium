@@ -20,6 +20,17 @@
 
 namespace {
 
+#if (!defined(NDEBUG) || defined(MEMORY_SANITIZER) || \
+     defined(ADDRESS_SANITIZER)) &&                   \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+// History of this value:
+// 1) TODO(crbug.com/1058022): reduce the multiplier back to 2x.
+// 2) A number of tests on ChromeOS run very close to the base limit, so
+// ChromeOS gets 3x. TODO(b:318608561) Reduce back to 3x once OOBE load time is
+// lower.
+constexpr int kAshBaseMultiplier = 4;
+#endif
+
 // Sets value to the greatest of:
 // 1) value's current value multiplied by kTimeoutMultiplier (assuming
 // InitializeTimeout is called only once per value).
@@ -48,9 +59,8 @@ void InitializeTimeout(const char* switch_name,
   // For MSan the slowdown depends heavily on the value of msan_track_origins
   // build flag. The multiplier below corresponds to msan_track_origins = 1.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // A handful of tests on ChromeOS time out when using the 6x limit used
-  // elsewhere, so it's bumped to 10x.
-  constexpr int kTimeoutMultiplier = 10;
+  // Typical slowdown for memory sanitizer is 3x.
+  constexpr int kTimeoutMultiplier = 3 * kAshBaseMultiplier;
 #else
   constexpr int kTimeoutMultiplier = 6;
 #endif
@@ -61,21 +71,15 @@ void InitializeTimeout(const char* switch_name,
   // timeout multiplier. See http://crbug.com/412471
   constexpr int kTimeoutMultiplier = 3;
 #elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS_ASH)
-  // A number of tests on ChromeOS run very close to the 2x limit, so ChromeOS
-  // gets 3x.
-  // TODO(b:318608561) Reduce back to 3x once OOBE load time is lower.
-  constexpr int kTimeoutMultiplier = 4;
+  // Typical slowdown for memory sanitizer is 2x.
+  constexpr int kTimeoutMultiplier = 2 * kAshBaseMultiplier;
 #elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
   constexpr int kTimeoutMultiplier = 2;
 #elif BUILDFLAG(CLANG_PROFILING)
   // On coverage build, tests run 3x slower.
   constexpr int kTimeoutMultiplier = 3;
 #elif !defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1058022): reduce the multiplier back to 2x.
-  // A number of tests on ChromeOS run very close to the base limit, so ChromeOS
-  // gets 3x.
-  // TODO(b:318608561) Reduce back to 3x once OOBE load time is lower.
-  constexpr int kTimeoutMultiplier = 4;
+  constexpr int kTimeoutMultiplier = kAshBaseMultiplier;
 #elif !defined(NDEBUG) && BUILDFLAG(IS_MAC)
   // A lot of browser_tests on Mac debug time out.
   constexpr int kTimeoutMultiplier = 2;
