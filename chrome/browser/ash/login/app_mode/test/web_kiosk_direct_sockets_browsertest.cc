@@ -6,11 +6,11 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace {
 
@@ -56,10 +56,6 @@ namespace ash {
 // TODO(b/326181857): Impl a common parent fixture for api availability tests.
 class WebKioskDirectSocketsTest : public WebKioskBaseTest {
  public:
-  WebKioskDirectSocketsTest() {
-    feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
-  }
-
   void SetUpOnMainThread() override {
     InitAppServer();
     SetAppInstallUrl(web_app_server_.base_url().spec());
@@ -83,7 +79,7 @@ class WebKioskDirectSocketsTest : public WebKioskBaseTest {
   net::test_server::EmbeddedTestServer web_app_server_;
   net::test_server::EmbeddedTestServerHandle web_app_handle_;
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskDirectSocketsTest, ApiAvailability) {
