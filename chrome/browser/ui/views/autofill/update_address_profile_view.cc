@@ -9,7 +9,6 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
@@ -162,25 +161,21 @@ bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
 }  // namespace
 
 UpdateAddressProfileView::UpdateAddressProfileView(
+    std::unique_ptr<UpdateAddressBubbleController> controller,
     views::View* anchor_view,
-    content::WebContents* web_contents,
-    SaveUpdateAddressProfileBubbleController* controller)
+    content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
-      controller_(controller) {
-  // Since this is an update prompt, original profile must be set. Otherwise, it
-  // would have been a save prompt.
-  DCHECK(controller_->GetOriginalProfile());
-
+      controller_(std::move(controller)) {
   auto* layout_provider = views::LayoutProvider::Get();
 
   SetAcceptCallback(base::BindOnce(
-      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      &UpdateAddressBubbleController::OnUserDecision,
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
       std::nullopt));
   SetCancelCallback(base::BindOnce(
-      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      &UpdateAddressBubbleController::OnUserDecision,
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
       std::nullopt));
 
@@ -204,11 +199,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
                                   0));
 
   std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(
-      controller_->GetProfileToSave(), *controller_->GetOriginalProfile(),
+      controller_->GetProfileToSave(), controller_->GetOriginalProfile(),
       g_browser_process->GetApplicationLocale());
 
   std::u16string subtitle = GetProfileDescription(
-      *controller_->GetOriginalProfile(),
+      controller_->GetOriginalProfile(),
       g_browser_process->GetApplicationLocale(),
       /*include_address_and_contacts=*/!HasAddressEntry(profile_diff));
   if (!subtitle.empty()) {
@@ -255,13 +250,8 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       main_content_view, profile_diff,
       /*show_row_label=*/has_non_empty_original_values,
       /*edit_button_callback=*/
-      base::BindRepeating(
-          &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-          base::Unretained(controller_),
-          // TODO(b/325440757): `SaveUpdateAddressProfileBubbleController`
-          // ignores this param for the update bubble, create the update
-          // controller and use a real value from it.
-          u""));
+      base::BindRepeating(&UpdateAddressBubbleController::OnEditButtonClicked,
+                          base::Unretained(controller_.get())));
 
   if (has_non_empty_original_values) {
     main_content_view->AddPaddingRow(
@@ -289,6 +279,8 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       layout_provider->GetDistanceMetric(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH)));
 }
+
+UpdateAddressProfileView::~UpdateAddressProfileView() = default;
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {
   return true;

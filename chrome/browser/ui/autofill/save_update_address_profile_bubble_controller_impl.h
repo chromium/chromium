@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -30,7 +29,6 @@ class AutofillBubbleBase;
 // the `OfferSave()` method.
 class SaveUpdateAddressProfileBubbleControllerImpl
     : public AutofillBubbleControllerBase,
-      public SaveUpdateAddressProfileBubbleController,
       public SaveUpdateAddressProfileIconController,
       public content::WebContentsUserData<
           SaveUpdateAddressProfileBubbleControllerImpl>,
@@ -53,18 +51,13 @@ class SaveUpdateAddressProfileBubbleControllerImpl
                  AutofillClient::AddressProfileSavePromptCallback
                      address_profile_save_prompt_callback);
 
-  // SaveUpdateAddressProfileBubbleController:
-  std::u16string GetWindowTitle() const override;
-  std::u16string GetFooterMessage() const override;
-  const AutofillProfile& GetProfileToSave() const override;
-  const AutofillProfile* GetOriginalProfile() const override;
+  // AddressBubbleControllerDelegate:
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       base::optional_ref<const AutofillProfile> profile) override;
   void OnEditButtonClicked(
       const std::u16string& editor_footer_message) override;
   void OnBubbleClosed() override;
-  bool IsSaveBubble() const override;
 
   // SaveAddressProfileIconController:
   void OnPageActionIconClicked() override;
@@ -86,7 +79,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   friend class content::WebContentsUserData<
       SaveUpdateAddressProfileBubbleControllerImpl>;
 
-  std::u16string GetEditorFooterMessage() const;
+  bool IsSaveBubble() const;
 
   // Callback to run once the user makes a decision with respect to the saving
   // the address profile.

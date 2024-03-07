@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
+#include "chrome/browser/ui/autofill/update_address_bubble_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -92,46 +93,6 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
     Show();
 }
 
-std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
-    const {
-  // TODO(b/325440757): The window title is used for the icon tooltip yet,
-  // separate the tooltip definition from this method and remove it.
-  if (IsSaveBubble()) {
-    return l10n_util::GetStringUTF16(
-        is_migration_to_account_
-            ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
-            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
-  }
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
-}
-
-std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetFooterMessage()
-    const {
-  CHECK(!IsSaveBubble());
-  if (address_profile_->source() == AutofillProfile::Source::kAccount) {
-    std::optional<AccountInfo> account =
-        GetPrimaryAccountInfoFromBrowserContext(
-            web_contents()->GetBrowserContext());
-    return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-        base::UTF8ToUTF16(account->email));
-  }
-
-  return {};
-}
-
-const AutofillProfile&
-SaveUpdateAddressProfileBubbleControllerImpl::GetProfileToSave() const {
-  CHECK(!IsSaveBubble());
-  DCHECK(address_profile_);
-  return *address_profile_;
-}
-
-const AutofillProfile*
-SaveUpdateAddressProfileBubbleControllerImpl::GetOriginalProfile() const {
-  return base::OptionalToPtr(original_profile_);
-}
-
 void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
@@ -153,10 +114,8 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked(
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(
-      *address_profile_, GetOriginalProfile(),
-      // TODO(b/325440757): Remove `GetEditorFooterMessage()` and use
-      // `editor_footer_message` only.
-      IsSaveBubble() ? editor_footer_message : GetEditorFooterMessage(),
+      *address_profile_, base::OptionalToPtr(original_profile_),
+      editor_footer_message,
       base::BindOnce(
           &SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision,
           weak_ptr_factory_.GetWeakPtr()),
@@ -167,10 +126,6 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked(
 void SaveUpdateAddressProfileBubbleControllerImpl::OnBubbleClosed() {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
-}
-
-bool SaveUpdateAddressProfileBubbleControllerImpl::IsSaveBubble() const {
-  return !original_profile_;
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {
@@ -187,7 +142,15 @@ bool SaveUpdateAddressProfileBubbleControllerImpl::IsBubbleActive() const {
 
 std::u16string
 SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconTootip() const {
-  return GetWindowTitle();
+  // TODO(b/325440757): Move tooltip defining outside this class.
+  if (IsSaveBubble()) {
+    return l10n_util::GetStringUTF16(
+        is_migration_to_account_
+            ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
+            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 }
 
 AutofillBubbleBase*
@@ -215,6 +178,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconType() {
 void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
   DCHECK(!bubble_view());
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  // TODO(b/325440757): Move the view factory defining outside this class.
   if (IsSaveBubble()) {
     auto save_controller = std::make_unique<SaveAddressBubbleController>(
         GetWeakPtr(), web_contents(), address_profile_.value(),
@@ -226,18 +190,20 @@ void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
                             shown_by_user_gesture_));
   } else {
     // This is an update prompt.
+    auto update_controller = std::make_unique<UpdateAddressBubbleController>(
+        GetWeakPtr(), web_contents(), address_profile_.value(),
+        original_profile_.value());
     set_bubble_view(browser->window()
                         ->GetAutofillBubbleHandler()
                         ->ShowUpdateAddressProfileBubble(
-                            web_contents(), this, shown_by_user_gesture_));
+                            web_contents(), std::move(update_controller),
+                            shown_by_user_gesture_));
   }
   DCHECK(bubble_view());
 }
 
-std::u16string
-SaveUpdateAddressProfileBubbleControllerImpl::GetEditorFooterMessage() const {
-  CHECK(!IsSaveBubble());
-  return GetFooterMessage();
+bool SaveUpdateAddressProfileBubbleControllerImpl::IsSaveBubble() const {
+  return !original_profile_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUpdateAddressProfileBubbleControllerImpl);

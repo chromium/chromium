@@ -205,12 +205,12 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
     content::WebContents* web_contents,
-    SaveUpdateAddressProfileBubbleController* controller,
+    std::unique_ptr<UpdateAddressBubbleController> controller,
     bool is_user_gesture) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
       PageActionIconType::kSaveAutofillAddress);
-  UpdateAddressProfileView* bubble =
-      new UpdateAddressProfileView(anchor_view, web_contents, controller);
+  UpdateAddressProfileView* bubble = new UpdateAddressProfileView(
+      std::move(controller), anchor_view, web_contents);
   DCHECK(bubble);
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(

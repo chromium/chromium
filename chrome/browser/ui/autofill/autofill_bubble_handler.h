@@ -15,8 +15,8 @@ namespace autofill {
 class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
-class SaveUpdateAddressProfileBubbleController;
 class SaveAddressBubbleController;
+class UpdateAddressBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
 class VirtualCardManualFallbackBubbleController;
@@ -69,9 +69,14 @@ class AutofillBubbleHandler {
       std::unique_ptr<SaveAddressBubbleController> controller,
       bool is_user_gesture) = 0;
 
+  // Opens an update address bubble. The bubble's lifecycle is controlled by its
+  // widget, and the controller must handle the widget closing to invalidate
+  // the returned pointer, see
+  // `UpdateAddressBubbleController::OnBubbleClosed()`. The bubble view takes
+  // ownership of the `controller`.
   virtual AutofillBubbleBase* ShowUpdateAddressProfileBubble(
       content::WebContents* web_contents,
-      SaveUpdateAddressProfileBubbleController* controller,
+      std::unique_ptr<UpdateAddressBubbleController> controller,
       bool is_user_gesture) = 0;
 
   virtual AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(

@@ -202,37 +202,4 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 }
 
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
-       UpdatingNonAccountAddress) {
-  AutofillProfile profile = test::GetFullProfile();
-  AutofillProfile original_profile = test::GetFullProfile();
-  controller()->OfferSave(profile, &original_profile, {}, base::DoNothing());
-
-  EXPECT_EQ(
-      controller()->GetWindowTitle(),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_TRUE(controller()->GetFooterMessage().empty());
-}
-
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
-       UpdatingAccountAddress) {
-  AutofillProfile profile = test::GetFullProfile();
-  profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  AutofillProfile original_profile = test::GetFullProfile();
-  original_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  controller()->OfferSave(profile, &original_profile, {}, base::DoNothing());
-  std::u16string email =
-      base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
-                            web_contents()->GetBrowserContext())
-                            ->email);
-
-  EXPECT_EQ(
-      controller()->GetWindowTitle(),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_EQ(
-      controller()->GetFooterMessage(),
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE, email));
-}
-
 }  // namespace autofill
