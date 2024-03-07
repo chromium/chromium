@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/url_data_source.h"
@@ -63,6 +64,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -1134,11 +1136,8 @@ void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
 
   std::vector<std::string> attribution;
   attribution.push_back(sea_pen_image_info->user_visible_query->text);
-  std::string template_title =
-      sea_pen_image_info->user_visible_query->template_title;
-  if (!template_title.empty()) {
-    attribution.push_back(template_title);
-  }
+  attribution.push_back(
+      l10n_util::GetStringUTF8(IDS_SEA_PEN_POWERED_BY_GOOGLE_AI));
   NotifyAttributionChanged(
       ash::personalization_app::mojom::CurrentAttribution::New(
           attribution, base::NumberToString(id)));

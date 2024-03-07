@@ -41,6 +41,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -56,6 +57,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -438,8 +440,9 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
   ash::personalization_app::mojom::CurrentAttribution* current_attr =
       current_attribution();
   EXPECT_EQ("111", current_attr->key);
-  std::vector<std::string> expected_attr{"test template query",
-                                         "test template title"};
+  std::vector<std::string> expected_attr{
+      "test template query",
+      l10n_util::GetStringUTF8(IDS_SEA_PEN_POWERED_BY_GOOGLE_AI)};
   EXPECT_EQ(expected_attr, current_attr->attribution);
 }
 

@@ -3089,8 +3089,8 @@
         <message name="IDS_SEA_PEN_LABEL" desc="Label for the Create with AI feature.">
           Create with AI
         </message>
-        <message name="IDS_SEA_PEN_POWERED_BY_GOOGLE" desc="Subheading describing that Google made these wallpapers.">
-          Powered by Google
+        <message name="IDS_SEA_PEN_POWERED_BY_GOOGLE_AI" desc="Subheading describing that Google made these wallpapers.">
+          Powered by Google AI
         </message>
         <message name="IDS_SEA_PEN_TEMPLATE_HEADING" desc="Section heading for wallpaper templates.">
           Use a template
