@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
-// Flaky, see crbug.com/1477361
+// Fails; see https://crbug.com/327458821.
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ASSERT_TRUE(found);
 }
 
-// Flaky, see crbug.com/1477361
+// Fails; see https://crbug.com/327458821.
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilitySelection) {
   // TODO(crbug.com/324636880): Remove this once the test passes for OOPIF PDF.
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   EXPECT_EQ(ax::mojom::Role::kRegion, region->GetRole());
 }
 
-// Flaky, see crbug.com/1477361
+// Fails; see https://crbug.com/327458821.
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilityContextMenuAction) {
   // TODO(crbug.com/324636880): Remove this once the test passes for OOPIF PDF.
