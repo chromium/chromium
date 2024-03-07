@@ -28,6 +28,7 @@ namespace blink {
 class Blob;
 class BroadcastChannel;
 class ExceptionState;
+class FileSystemDirectoryHandle;
 class SharedWorker;
 class StorageEstimate;
 class V8UnionSharedWorkerOptionsOrString;
@@ -60,8 +61,9 @@ class MODULES_EXPORT StorageAccessHandle final
   IDBFactory* indexedDB(ExceptionState& exception_state) const;
   LockManager* locks(ExceptionState& exception_state) const;
   CacheStorage* caches(ExceptionState& exception_state) const;
-  ScriptPromise getDirectory(ScriptState* script_state,
-                             ExceptionState& exception_state) const;
+  ScriptPromiseTyped<FileSystemDirectoryHandle> getDirectory(
+      ScriptState* script_state,
+      ExceptionState& exception_state) const;
   ScriptPromiseTyped<StorageEstimate> estimate(
       ScriptState* script_state,
       ExceptionState& exception_state) const;
@@ -91,7 +93,8 @@ class MODULES_EXPORT StorageAccessHandle final
   void InitBroadcastChannel();
   void InitSharedWorker();
 
-  void GetDirectoryImpl(ScriptPromiseResolver* resolver) const;
+  void GetDirectoryImpl(
+      ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver) const;
 
   Member<const StorageAccessTypes> storage_access_types_;
   Member<StorageArea> session_storage_;

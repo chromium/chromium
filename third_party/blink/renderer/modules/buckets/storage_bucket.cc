@@ -196,8 +196,9 @@ CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
   return caches_.Get();
 }
 
-ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<FileSystemDirectoryHandle> StorageBucket::getDirectory(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
       script_state, exception_state,
       WTF::BindOnce(&StorageBucket::GetSandboxedFileSystem,
@@ -347,7 +348,8 @@ void StorageBucket::DidGetExpires(
   }
 }
 
-void StorageBucket::GetSandboxedFileSystem(ScriptPromiseResolver* resolver) {
+void StorageBucket::GetSandboxedFileSystem(
+    ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver) {
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
   if (!remote_.is_bound()) {

@@ -37,18 +37,20 @@ FileSystemFileHandle::FileSystemFileHandle(
   DCHECK(mojo_ptr_.is_bound());
 }
 
-ScriptPromise FileSystemFileHandle::createWritable(
+ScriptPromiseTyped<FileSystemWritableFileStream>
+FileSystemFileHandle::createWritable(
     ScriptState* script_state,
     const FileSystemCreateWritableOptions* options,
     ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise();
+    return ScriptPromiseTyped<FileSystemWritableFileStream>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<FileSystemWritableFileStream>>(
       script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   mojom::blink::FileSystemAccessWritableFileStreamLockMode lock_mode;
 
@@ -66,7 +68,8 @@ ScriptPromise FileSystemFileHandle::createWritable(
   mojo_ptr_->CreateFileWriter(
       options->keepExistingData(), options->autoClose(), lock_mode,
       WTF::BindOnce(
-          [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemFileHandle*,
+             ScriptPromiseResolverTyped<FileSystemWritableFileStream>* resolver,
              V8FileSystemWritableFileStreamMode lock_mode,
              mojom::blink::FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
@@ -90,19 +93,20 @@ ScriptPromise FileSystemFileHandle::createWritable(
   return result;
 }
 
-ScriptPromise FileSystemFileHandle::getFile(ScriptState* script_state,
-                                            ExceptionState& exception_state) {
+ScriptPromiseTyped<File> FileSystemFileHandle::getFile(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!mojo_ptr_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise();
+    return ScriptPromiseTyped<File>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<File>>(
       script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   mojo_ptr_->AsBlob(WTF::BindOnce(
-      [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
+      [](FileSystemFileHandle*, ScriptPromiseResolverTyped<File>* resolver,
          const String& name, FileSystemAccessErrorPtr result,
          const base::File::Info& info,
          const scoped_refptr<BlobDataHandle>& blob) {
@@ -120,27 +124,29 @@ ScriptPromise FileSystemFileHandle::getFile(ScriptState* script_state,
   return result;
 }
 
-ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromiseTyped<FileSystemSyncAccessHandle>
+FileSystemFileHandle::createSyncAccessHandle(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
   return createSyncAccessHandle(
       script_state, FileSystemCreateSyncAccessHandleOptions::Create(),
       exception_state);
 }
 
-ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
+ScriptPromiseTyped<FileSystemSyncAccessHandle>
+FileSystemFileHandle::createSyncAccessHandle(
     ScriptState* script_state,
     const FileSystemCreateSyncAccessHandleOptions* options,
     ExceptionState& exception_state) {
   // TODO(fivedots): Check if storage access is allowed.
   if (!mojo_ptr_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise();
+    return ScriptPromiseTyped<FileSystemSyncAccessHandle>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<FileSystemSyncAccessHandle>>(
       script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   mojom::blink::FileSystemAccessAccessHandleLockMode lock_mode;
 
@@ -181,7 +187,8 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
   mojo_ptr_->OpenAccessHandle(
       lock_mode,
       WTF::BindOnce(
-          [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemFileHandle*,
+             ScriptPromiseResolverTyped<FileSystemSyncAccessHandle>* resolver,
              V8FileSystemSyncAccessHandleMode lock_mode,
              FileSystemAccessErrorPtr result,
              mojom::blink::FileSystemAccessAccessHandleFilePtr file,

@@ -6,15 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FONT_ACCESS_FONT_METADATA_H_
 
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
+class Blob;
 class ScriptState;
-class ScriptPromise;
-class ScriptPromiseResolver;
 
 struct FontEnumerationEntry {
   String postscript_name;
@@ -56,12 +56,12 @@ class BLINK_EXPORT FontMetadata final : public ScriptWrappable {
   String family() const { return family_; }
   String style() const { return style_; }
 
-  ScriptPromise blob(ScriptState*);
+  ScriptPromiseTyped<Blob> blob(ScriptState*);
 
   void Trace(Visitor*) const override;
 
  private:
-  static void BlobImpl(ScriptPromiseResolver* resolver,
+  static void BlobImpl(ScriptPromiseResolverTyped<Blob>* resolver,
                        const String& postscriptName);
   String postscriptName_;
   String fullName_;

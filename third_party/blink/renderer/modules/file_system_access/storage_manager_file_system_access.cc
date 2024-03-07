@@ -31,8 +31,9 @@ constexpr const char kSandboxRootDirectoryName[] = "";
 
 // Called with the result of browser-side permissions checks.
 void OnGotAccessAllowed(
-    ScriptPromiseResolver* resolver,
-    base::OnceCallback<void(ScriptPromiseResolver*)> on_allowed,
+    ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver,
+    base::OnceCallback<void(
+        ScriptPromiseResolverTyped<FileSystemDirectoryHandle>*)> on_allowed,
     const mojom::blink::FileSystemAccessErrorPtr result) {
   if (!resolver->GetExecutionContext() ||
       !resolver->GetScriptState()->ContextIsValid()) {
@@ -53,13 +54,14 @@ void OnGotAccessAllowed(
 }  // namespace
 
 // static
-ScriptPromise StorageManagerFileSystemAccess::getDirectory(
-    ScriptState* script_state,
-    const StorageManager& storage,
-    ExceptionState& exception_state) {
+ScriptPromiseTyped<FileSystemDirectoryHandle>
+StorageManagerFileSystemAccess::getDirectory(ScriptState* script_state,
+                                             const StorageManager& storage,
+                                             ExceptionState& exception_state) {
   return CheckGetDirectoryIsAllowed(
       script_state, exception_state,
-      WTF::BindOnce([](ScriptPromiseResolver* resolver) {
+      WTF::BindOnce([](ScriptPromiseResolverTyped<FileSystemDirectoryHandle>*
+                           resolver) {
         FileSystemAccessManager::From(resolver->GetExecutionContext())
             ->GetSandboxedFileSystem(WTF::BindOnce(
                 &StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
@@ -68,14 +70,16 @@ ScriptPromise StorageManagerFileSystemAccess::getDirectory(
 }
 
 // static
-ScriptPromise StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+ScriptPromiseTyped<FileSystemDirectoryHandle>
+StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
     ScriptState* script_state,
     ExceptionState& exception_state,
-    base::OnceCallback<void(ScriptPromiseResolver*)> on_allowed) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+    base::OnceCallback<void(
+        ScriptPromiseResolverTyped<FileSystemDirectoryHandle>*)> on_allowed) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<FileSystemDirectoryHandle>>(
       script_state, exception_state.GetContext());
-
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   CheckGetDirectoryIsAllowed(
       ExecutionContext::From(script_state),
@@ -149,7 +153,7 @@ void StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
 
 // static
 void StorageManagerFileSystemAccess::DidGetSandboxedFileSystem(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver,
     mojom::blink::FileSystemAccessErrorPtr result,
     mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle> handle) {
   ExecutionContext* context = resolver->GetExecutionContext();

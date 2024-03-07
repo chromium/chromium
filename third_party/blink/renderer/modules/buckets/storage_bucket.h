@@ -22,6 +22,7 @@
 namespace blink {
 
 class CacheStorage;
+class FileSystemDirectoryHandle;
 class IDBFactory;
 class LockManager;
 class ScriptState;
@@ -49,7 +50,8 @@ class StorageBucket final : public ScriptWrappable,
   IDBFactory* indexedDB();
   LockManager* locks();
   CacheStorage* caches(ExceptionState&);
-  ScriptPromise getDirectory(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<FileSystemDirectoryHandle> getDirectory(ScriptState*,
+                                                             ExceptionState&);
 
   void GetDirectoryForDevTools(
       ExecutionContext* context,
@@ -79,7 +81,8 @@ class StorageBucket final : public ScriptWrappable,
       ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
       const std::optional<base::Time> expires,
       bool success);
-  void GetSandboxedFileSystem(ScriptPromiseResolver* resolver);
+  void GetSandboxedFileSystem(
+      ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver);
   void GetSandboxedFileSystemForDevtools(
       ExecutionContext* context,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,

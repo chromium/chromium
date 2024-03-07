@@ -125,7 +125,8 @@ FileSystemDirectoryHandle::FileSystemDirectoryHandle(
   DCHECK(mojo_ptr_.is_bound());
 }
 
-ScriptPromise FileSystemDirectoryHandle::getFileHandle(
+ScriptPromiseTyped<FileSystemFileHandle>
+FileSystemDirectoryHandle::getFileHandle(
     ScriptState* script_state,
     const String& name,
     const FileSystemGetFileOptions* options,
@@ -133,17 +134,19 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise();
+    return ScriptPromiseTyped<FileSystemFileHandle>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<FileSystemFileHandle>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   mojo_ptr_->GetFile(
       name, options->create(),
       WTF::BindOnce(
-          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemDirectoryHandle*,
+             ScriptPromiseResolverTyped<FileSystemFileHandle>* resolver,
              const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle>
                  handle) {
@@ -165,7 +168,8 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
   return result;
 }
 
-ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
+ScriptPromiseTyped<FileSystemDirectoryHandle>
+FileSystemDirectoryHandle::getDirectoryHandle(
     ScriptState* script_state,
     const String& name,
     const FileSystemGetDirectoryOptions* options,
@@ -173,17 +177,19 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise();
+    return ScriptPromiseTyped<FileSystemDirectoryHandle>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<FileSystemDirectoryHandle>>(
       script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   mojo_ptr_->GetDirectory(
       name, options->create(),
       WTF::BindOnce(
-          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemDirectoryHandle*,
+             ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver,
              const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
                  handle) {

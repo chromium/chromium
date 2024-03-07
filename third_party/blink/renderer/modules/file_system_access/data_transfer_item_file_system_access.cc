@@ -23,18 +23,26 @@
 namespace blink {
 
 // static
-ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
+ScriptPromiseTyped<IDLNullable<FileSystemHandle>>
+DataTransferItemFileSystemAccess::getAsFileSystemHandle(
     ScriptState* script_state,
     DataTransferItem& data_transfer_item,
     ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<FileSystemHandle>>>(
+      script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
+
   if (!data_transfer_item.GetDataTransfer()->CanReadData()) {
-    return ScriptPromise::CastUndefined(script_state);
+    resolver->Resolve();
+    return result;
   }
 
   // If the DataObjectItem doesn't have an associated FileSystemAccessEntry,
   // return nullptr.
   if (!data_transfer_item.GetDataObjectItem()->HasFileSystemAccessEntry()) {
-    return ScriptPromise::CastUndefined(script_state);
+    resolver->Resolve();
+    return result;
   }
 
   const DataObjectItem& data_object_item =
@@ -45,16 +53,13 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
   mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
       token_remote = data_object_item.CloneFileSystemAccessEntryToken();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
-
   auto* execution_context = ExecutionContext::From(script_state);
   FileSystemAccessManager::From(execution_context)
       ->GetEntryFromDataTransferToken(
           std::move(token_remote),
           WTF::BindOnce(
-              [](ScriptPromiseResolver* resolver,
+              [](ScriptPromiseResolverTyped<IDLNullable<FileSystemHandle>>*
+                     resolver,
                  mojom::blink::FileSystemAccessErrorPtr result,
                  mojom::blink::FileSystemAccessEntryPtr entry) {
                 ScriptState* script_state = resolver->GetScriptState();

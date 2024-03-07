@@ -309,14 +309,14 @@ CacheStorage* StorageAccessHandle::caches(
   return caches_;
 }
 
-ScriptPromise StorageAccessHandle::getDirectory(
+ScriptPromiseTyped<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
     ScriptState* script_state,
     ExceptionState& exception_state) const {
   if (!storage_access_types_->all() && !storage_access_types_->getDirectory()) {
-    ScriptPromiseResolver* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver>(
-            script_state, exception_state.GetContext());
-    ScriptPromise promise = resolver->Promise();
+    auto* resolver = MakeGarbageCollected<
+        ScriptPromiseResolverTyped<FileSystemDirectoryHandle>>(
+        script_state, exception_state.GetContext());
+    auto promise = resolver->Promise();
     resolver->RejectWithSecurityError(kGetDirectoryNotRequested,
                                       kGetDirectoryNotRequested);
     return promise;
@@ -331,7 +331,7 @@ ScriptPromise StorageAccessHandle::getDirectory(
 }
 
 void StorageAccessHandle::GetDirectoryImpl(
-    ScriptPromiseResolver* resolver) const {
+    ScriptPromiseResolverTyped<FileSystemDirectoryHandle>* resolver) const {
   if (!remote_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError));

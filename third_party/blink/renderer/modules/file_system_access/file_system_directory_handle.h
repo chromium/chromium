@@ -15,7 +15,8 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-
+class FileSystemDirectoryHandle;
+class FileSystemFileHandle;
 class FileSystemGetDirectoryOptions;
 class FileSystemGetFileOptions;
 class FileSystemRemoveOptions;
@@ -33,14 +34,16 @@ class FileSystemDirectoryHandle final
 
   bool isDirectory() const override { return true; }
 
-  ScriptPromise getFileHandle(ScriptState*,
-                              const String& name,
-                              const FileSystemGetFileOptions*,
-                              ExceptionState&);
-  ScriptPromise getDirectoryHandle(ScriptState*,
-                                   const String& name,
-                                   const FileSystemGetDirectoryOptions*,
-                                   ExceptionState&);
+  ScriptPromiseTyped<FileSystemFileHandle> getFileHandle(
+      ScriptState*,
+      const String& name,
+      const FileSystemGetFileOptions*,
+      ExceptionState&);
+  ScriptPromiseTyped<FileSystemDirectoryHandle> getDirectoryHandle(
+      ScriptState*,
+      const String& name,
+      const FileSystemGetDirectoryOptions*,
+      ExceptionState&);
   ScriptPromise removeEntry(ScriptState*,
                             const String& name,
                             const FileSystemRemoveOptions*,

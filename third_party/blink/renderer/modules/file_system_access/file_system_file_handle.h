@@ -11,8 +11,11 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
+class File;
 class FileSystemCreateWritableOptions;
 class FileSystemCreateSyncAccessHandleOptions;
+class FileSystemSyncAccessHandle;
+class FileSystemWritableFileStream;
 
 class FileSystemFileHandle final : public FileSystemHandle {
   DEFINE_WRAPPERTYPEINFO();
@@ -25,15 +28,18 @@ class FileSystemFileHandle final : public FileSystemHandle {
 
   bool isFile() const override { return true; }
 
-  ScriptPromise createWritable(ScriptState*,
-                               const FileSystemCreateWritableOptions* options,
-                               ExceptionState&);
-  ScriptPromise getFile(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<FileSystemWritableFileStream> createWritable(
+      ScriptState*,
+      const FileSystemCreateWritableOptions* options,
+      ExceptionState&);
+  ScriptPromiseTyped<File> getFile(ScriptState*, ExceptionState&);
 
   // TODO(fivedots): Define if this method should be generally exposed or only
   // on files backed by the Origin Private File System.
-  ScriptPromise createSyncAccessHandle(ScriptState*, ExceptionState&);
-  ScriptPromise createSyncAccessHandle(
+  ScriptPromiseTyped<FileSystemSyncAccessHandle> createSyncAccessHandle(
+      ScriptState*,
+      ExceptionState&);
+  ScriptPromiseTyped<FileSystemSyncAccessHandle> createSyncAccessHandle(
       ScriptState*,
       const FileSystemCreateSyncAccessHandleOptions* options,
       ExceptionState&);
