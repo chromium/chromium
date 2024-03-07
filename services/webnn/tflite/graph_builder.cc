@@ -197,6 +197,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = elementwise_result.value();
       break;
     }
+    case mojom::Operation::Tag::kLeakyRelu:
+      operator_offset = SerializeLeakyRelu(*op.get_leaky_relu());
+      break;
     case mojom::Operation::Tag::kPad: {
       const auto pad_result = SerializePad(*op.get_pad());
       RETURN_IF_ERROR(pad_result);
@@ -245,8 +248,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("layerNormalization is not implemented");
     case mojom::Operation::Tag::kInstanceNormalization:
       return base::unexpected("instanceNormalization is not implemented");
-    case mojom::Operation::Tag::kLeakyRelu:
-      return base::unexpected("leakyRelu is not implemented");
     case mojom::Operation::Tag::kLinear:
       return base::unexpected("linear is not implemented");
     case mojom::Operation::Tag::kLstm:
@@ -524,6 +525,23 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
+}
+
+auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
+    -> OperatorOffset {
+  const auto leaky_rely_options =
+      ::tflite::CreateLeakyReluOptions(builder_, leaky_relu.alpha);
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_LEAKY_RELU);
+  const std::array<int32_t, 1> op_inputs = {
+      operand_to_index_map_.at(leaky_relu.input_operand_id)};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(leaky_relu.output_operand_id)};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_LeakyReluOptions, leaky_rely_options.Union());
 }
 
 auto GraphBuilder::SerializePad(const mojom::Pad& pad)

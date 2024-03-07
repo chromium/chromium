@@ -113,6 +113,7 @@ class GraphBuilder final {
       const mojom::ElementWiseBinary& op);
   base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
       const mojom::ElementWiseUnary& op);
+  OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
   base::expected<OperatorOffset, std::string> SerializePad(
       const mojom::Pad& pad);
   OperatorOffset SerializeRelu(const mojom::Relu& relu);
