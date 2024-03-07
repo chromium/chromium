@@ -1,12 +1,11 @@
 <div id="background"></div>
 <div id="stateBackground"></div>
 <div id="content">
-  ${this.isSpinnerShown_ ? html`
+  ${this.shouldShowSpinner_() ? html`
     <paper-spinner-lite active></paper-spinner-lite>` : ''}
     <cr-icon-button id="icon" iron-icon="${this.iconOverride || 'cr:search'}"
-        title="${this.label}"
-        dir="ltr" tabindex="${this.iconTabIndex_}"
-        aria-hidden="${this.iconAriaHidden_}"
+        title="${this.label}" dir="ltr" tabindex="${this.getIconTabIndex_()}"
+        aria-hidden="${this.getIconAriaHidden_()}"
         @click="${this.onSearchIconClicked_}" ?disabled="${this.disabled}">
   </cr-icon-button>
   <div id="searchTerm">

@@ -3,8 +3,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
 #html_wrapper_imports_end -->
 <div id="checkbox" tabindex="${this.tabIndex}" role="checkbox"
     @keydown="${this.onKeyDown_}" @keyup="${this.onKeyUp_}"
-    aria-disabled="${this.checkboxAriaDisabled_}"
-    aria-checked="${this.checkboxAriaChecked_}"
+    aria-disabled="${this.getAriaDisabled_()}"
+    aria-checked="${this.getAriaChecked_()}"
     aria-labelledby="label-container"
     aria-describedby="ariaDescription">
   <!-- Inline SVG paints faster than loading it from a separate file. -->

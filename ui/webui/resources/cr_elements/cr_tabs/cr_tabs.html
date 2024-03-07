@@ -1,8 +1,8 @@
 ${this.tabNames.map((item, index) => html`
   <div role="tab"
-      class="tab ${this.getSelectedClass_(index, this.selected)}"
-      aria-selected="${this.getAriaSelected_(index, this.selected)}"
-      tabindex="${this.getTabindex_(index, this.selected)}"
+      class="tab ${this.getSelectedClass_(index)}"
+      aria-selected="${this.getAriaSelected_(index)}"
+      tabindex="${this.getTabindex_(index)}"
       data-index="${index}" @click="${this.onTabClick_}">
     <div class="tab-icon" .style="${this.getIconStyle_(index)}"></div>
     ${item}

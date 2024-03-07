@@ -85,7 +85,7 @@ export class CrTabsElement extends CrLitElement {
     }
   }
 
-  protected getAriaSelected_(index: number, _selected: number): string {
+  protected getAriaSelected_(index: number): string {
     return index === this.selected ? 'true' : 'false';
   }
 
@@ -94,11 +94,11 @@ export class CrTabsElement extends CrLitElement {
     return icon ? `-webkit-mask-image: url(${icon}); display: block;` : '';
   }
 
-  protected getTabindex_(index: number, _selected: number): string {
+  protected getTabindex_(index: number): string {
     return index === this.selected ? '0' : '-1';
   }
 
-  protected getSelectedClass_(index: number, _selected: number): string {
+  protected getSelectedClass_(index: number): string {
     return index === this.selected ? 'selected' : '';
   }
 

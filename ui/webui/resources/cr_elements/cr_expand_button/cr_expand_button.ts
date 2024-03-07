@@ -61,25 +61,21 @@ export class CrExpandButtonElement extends CrLitElement {
       /** A11y text descriptor for this control. */
       ariaLabel: {type: String},
 
-      ariaExpanded_: {type: String},
       tabIndex: {type: Number},
       expandIcon: {type: String},
       collapseIcon: {type: String},
       expandTitle: {type: String},
       collapseTitle: {type: String},
-      icon_: {type: String},
     };
   }
 
   expanded: boolean = false;
   disabled: boolean = false;
-  protected ariaExpanded_: string = 'false';
   expandIcon: string = 'cr:expand-more';
   collapseIcon: string = 'cr:expand-less';
   expandTitle?: string;
   collapseTitle?: string;
   override tabIndex: number = 0;
-  protected icon_: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', this.toggleExpand_);
@@ -89,20 +85,10 @@ export class CrExpandButtonElement extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('expanded') ||
-        changedProperties.has('expandIcon') ||
-        changedProperties.has('collapseIcon')) {
-      this.icon_ = this.expanded ? this.collapseIcon : this.expandIcon;
-    }
-
-    if (changedProperties.has('expanded') ||
         changedProperties.has('collapseTitle') ||
         changedProperties.has('expandTitle')) {
       this.title =
           (this.expanded ? this.collapseTitle : this.expandTitle) || '';
-    }
-
-    if (changedProperties.has('expanded')) {
-      this.ariaExpanded_ = this.expanded ? 'true' : 'false';
     }
   }
 
@@ -116,6 +102,14 @@ export class CrExpandButtonElement extends CrLitElement {
 
   override focus() {
     this.$.icon.focus();
+  }
+
+  protected getIcon_(): string {
+    return this.expanded ? this.collapseIcon : this.expandIcon;
+  }
+
+  protected getAriaExpanded_(): string {
+    return this.expanded ? 'true' : 'false';
   }
 
   private onAriaLabelChange_() {

@@ -6,7 +6,6 @@ import '../cr_icon_button/cr_icon_button.js';
 import '../icons.html.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
@@ -69,16 +68,12 @@ export class CrToolbarSearchFieldElement extends
         reflect: true,
       },
 
-      isSpinnerShown_: {type: Boolean},
-
       searchFocused_: {
         type: Boolean,
         reflect: true,
       },
 
       iconOverride: {type: String},
-      iconAriaHidden_: {type: String},
-      iconTabIndex_: {type: Number},
     };
   }
 
@@ -87,30 +82,11 @@ export class CrToolbarSearchFieldElement extends
   disabled: boolean = false;
   override autofocus: boolean = false;
   spinnerActive: boolean;
-  protected isSpinnerShown_: boolean;
   private searchFocused_: boolean = false;
   iconOverride?: string;
-  protected iconAriaHidden_: string;
-  protected iconTabIndex_: number;
 
   override firstUpdated() {
     this.addEventListener('click', e => this.showSearch_(e));
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has('hasSearchText') ||
-        changedProperties.has('narrow')) {
-      this.iconAriaHidden_ =
-          Boolean(!this.narrow || this.hasSearchText).toString();
-      this.iconTabIndex_ = this.narrow && !this.hasSearchText ? 0 : -1;
-    }
-
-    if (changedProperties.has('spinnerActive') ||
-        changedProperties.has('showingSearch')) {
-      this.isSpinnerShown_ = this.spinnerActive && this.showingSearch;
-    }
   }
 
   override getSearchInput(): HTMLInputElement {
@@ -130,6 +106,18 @@ export class CrToolbarSearchFieldElement extends
   override onSearchTermInput() {
     super.onSearchTermInput();
     this.showingSearch = this.hasSearchText || this.isSearchFocused();
+  }
+
+  protected getIconTabIndex_(): number {
+    return this.narrow && !this.hasSearchText ? 0 : -1;
+  }
+
+  protected getIconAriaHidden_(): string {
+    return Boolean(!this.narrow || this.hasSearchText).toString();
+  }
+
+  protected shouldShowSpinner_(): boolean {
+    return this.spinnerActive && this.showingSearch;
   }
 
   protected onSearchIconClicked_() {

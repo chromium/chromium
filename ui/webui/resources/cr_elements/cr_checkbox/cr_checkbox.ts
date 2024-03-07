@@ -69,8 +69,6 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
 
       ariaDescription: {type: String},
       ariaLabelOverride: {type: String},
-      checkboxAriaDisabled_: {type: String},
-      checkboxAriaChecked_: {type: String},
       tabIndex: {type: Number},
     };
   }
@@ -80,9 +78,6 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   ariaDescription?: string;
   ariaLabelOverride?: string;
   override tabIndex: number = 0;
-
-  protected checkboxAriaDisabled_: string = '';
-  protected checkboxAriaChecked_: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_.bind(this));
@@ -99,13 +94,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('checked')) {
-      this.checkboxAriaChecked_ = this.checked ? 'true' : 'false';
-    }
-
     if (changedProperties.has('disabled')) {
-      this.checkboxAriaDisabled_ = this.disabled ? 'true' : 'false';
-
       const previousTabIndex = changedProperties.get('disabled');
       // During initialization, don't alter tabIndex if not disabled. During
       // subsequent 'disabled' changes, always update tabIndex.
@@ -130,6 +119,14 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
 
   getFocusableElement(): HTMLElement {
     return this.$.checkbox;
+  }
+
+  protected getAriaDisabled_(): string {
+    return this.disabled ? 'true' : 'false';
+  }
+
+  protected getAriaChecked_(): string {
+    return this.checked ? 'true' : 'false';
   }
 
   private showRipple_() {
