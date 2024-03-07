@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/popup_bg" />
+    <item>
+        <shape
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:shape="rectangle">
+            <corners android:radius="@dimen/popup_bg_corner_radius" />
+            <solid android:color="@color/dialog_bg_color_dark_baseline"/>
+        </shape>
+    </item>
+</layer-list>

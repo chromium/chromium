@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -96,20 +97,137 @@ public class TabGroupColorPickerTest {
                                     colors,
                                     R.layout.tab_group_color_picker_container,
                                     ColorPickerType.TAB_GROUP,
-                                    false);
+                                    false,
+                                    ColorPickerLayoutType.DYNAMIC,
+                                    null);
                     mCoordinator.setSelectedColorItem(colors.get(selectedIndex));
                     mContainerView = (ColorPickerContainer) mCoordinator.getContainerView();
                     mColorList = colors;
 
                     mRootView = new FrameLayout(activity);
                     activity.setContentView(mRootView);
-                    mRootView.addView(mContainerView);
                 });
     }
 
     @Test
     @MediumTest
-    public void testColorPicker_singleRow() {
+    public void testColorPicker_forceSingleRow() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.SINGLE_ROW);
+                    mRootView.addView(mContainerView);
+                });
+
+        // Change the width of the parent view to restrict for a double row
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * (mColorList.size() - 1);
+
+                    ViewGroup.LayoutParams params = mRootView.getLayoutParams();
+                    params.width = containerWidthPx;
+                    mRootView.setLayoutParams(params);
+                });
+
+        // Enforce that the change was made to the parent view of the container
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * (mColorList.size() - 1);
+
+                    // Refresh the layout and re-measure the widths
+                    ViewUtils.requestLayout(
+                            mContainerView, "TabGroupColorPicker.TestForceSingleRow");
+                    Criteria.checkThat(
+                            "Width was not set properly",
+                            mRootView.getMeasuredWidth(),
+                            Matchers.is(containerWidthPx));
+                });
+
+        // Validate that a row split was not performed
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+
+                    Assert.assertEquals(mColorList.size(), firstRow.getChildCount());
+                });
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.DYNAMIC);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testColorPicker_forceDoubleRow() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.DOUBLE_ROW);
+                    mRootView.addView(mContainerView);
+                });
+
+        // Change the width of the parent view to allow for a single row
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * mColorList.size();
+
+                    ViewGroup.LayoutParams params = mRootView.getLayoutParams();
+                    params.width = containerWidthPx;
+                    mRootView.setLayoutParams(params);
+                });
+
+        // Enforce that the change was made to the parent view of the container
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * mColorList.size();
+
+                    // Refresh the layout and re-measure the widths
+                    ViewUtils.requestLayout(
+                            mContainerView, "TabGroupColorPicker.TestForceDoubleRow");
+                    Criteria.checkThat(
+                            "Width was not set properly",
+                            mRootView.getMeasuredWidth(),
+                            Matchers.is(containerWidthPx));
+                });
+
+        // Validate that a row split was performed
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    LinearLayout secondRow =
+                            mContainerView.findViewById(R.id.color_picker_second_row);
+
+                    Assert.assertEquals((mColorList.size() + 1) / 2, firstRow.getChildCount());
+                    Assert.assertEquals(mColorList.size() / 2, secondRow.getChildCount());
+                });
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContainerView.setColorPickerLayoutType(ColorPickerLayoutType.DYNAMIC);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testColorPicker_dynamicSingleRow() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView.addView(mContainerView);
+                });
+
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int selectedIndex = 1;
@@ -136,7 +254,12 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
-    public void testColorPicker_alternateSelection() {
+    public void testColorPicker_dynamicAlternateSelection() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView.addView(mContainerView);
+                });
+
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int selectedIndex = 0;
@@ -165,7 +288,12 @@ public class TabGroupColorPickerTest {
 
     @Test
     @MediumTest
-    public void testColorPicker_doubleRow() {
+    public void testColorPicker_dynamicDoubleRow() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView.addView(mContainerView);
+                });
+
         // Change the width of the parent view to enact a row split on the colors
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -250,6 +378,11 @@ public class TabGroupColorPickerTest {
     @MediumTest
     @Feature("RenderTest")
     public void testColorPicker_singleRowRender() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView.addView(mContainerView);
+                });
+
         mRenderTestRule.render(mRootView, "tab_group_color_picker_single_row");
     }
 
@@ -257,6 +390,11 @@ public class TabGroupColorPickerTest {
     @MediumTest
     @Feature("RenderTest")
     public void testColorPicker_doubleRowRender() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView.addView(mContainerView);
+                });
+
         // Change the width of the parent view to enact a row split on the colors
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

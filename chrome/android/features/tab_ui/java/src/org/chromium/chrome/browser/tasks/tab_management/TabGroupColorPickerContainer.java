@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
     private List<FrameLayout> mColorViews;
     private LinearLayout mFirstRow;
     private LinearLayout mSecondRow;
+    private @ColorPickerLayoutType int mLayoutType;
 
     /** Constructs a new tab group color picker. */
     public TabGroupColorPickerContainer(Context context, AttributeSet attrs) {
@@ -53,20 +55,26 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
         mSkipOnMeasure = true;
 
         assert mColorViews != null;
-        // If the color items exceed the width of the container, split into two rows.
-        if (mColorViews.get(0).getMeasuredWidth() * mColorViews.size()
-                > (((View) getParent()).getMeasuredWidth())) {
-            // If the current setup is a single row, perform a re-layout to a double row.
-            if (Boolean.FALSE.equals(mIsDoubleRow)) {
-                addColorsToDoubleRow();
+        if (mLayoutType == ColorPickerLayoutType.DYNAMIC) {
+            // If the color items exceed the width of the container, split into two rows.
+            if (mColorViews.get(0).getMeasuredWidth() * mColorViews.size()
+                    > (((View) getParent()).getMeasuredWidth())) {
+                // If the current setup is a single row, perform a re-layout to a double row.
+                if (Boolean.FALSE.equals(mIsDoubleRow)) {
+                    addColorsToDoubleRow();
+                }
+            } else {
+                // If the current setup is a double row or the boolean value is null (initial pass)
+                // then perform a re-layout to a single row.
+                boolean isDoubleRowOrInitialPass = !Boolean.FALSE.equals(mIsDoubleRow);
+                if (isDoubleRowOrInitialPass) {
+                    addColorsToSingleRow();
+                }
             }
+        } else if (mLayoutType == ColorPickerLayoutType.DOUBLE_ROW) {
+            addColorsToDoubleRow();
         } else {
-            // If the current setup is a double row or the boolean value is null (initial pass)
-            // then perform a re-layout to a single row.
-            boolean isDoubleRowOrInitialPass = !Boolean.FALSE.equals(mIsDoubleRow);
-            if (isDoubleRowOrInitialPass) {
-                addColorsToSingleRow();
-            }
+            addColorsToSingleRow();
         }
 
         // Re-measure the color items in the color palette and reset the skip boolean.
@@ -77,6 +85,11 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
     @Override
     public void setColorViews(List<FrameLayout> colorViews) {
         mColorViews = colorViews;
+    }
+
+    @Override
+    public void setColorPickerLayoutType(@ColorPickerLayoutType int layoutType) {
+        mLayoutType = layoutType;
     }
 
     private void addColorsToSingleRow() {

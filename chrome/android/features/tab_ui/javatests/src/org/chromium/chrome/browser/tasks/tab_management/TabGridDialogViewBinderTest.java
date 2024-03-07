@@ -580,6 +580,24 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                 drawable.getColor());
     }
 
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testSetColorIconClickListener() {
+        AtomicBoolean colorIconClicked = new AtomicBoolean();
+        colorIconClicked.set(false);
+        mColorIcon.performClick();
+        Assert.assertFalse(colorIconClicked.get());
+
+        mModel.set(
+                TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER,
+                (View view) -> colorIconClicked.set(true));
+
+        mColorIcon.performClick();
+        Assert.assertTrue(colorIconClicked.get());
+    }
+
     @Override
     public void tearDownTest() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);

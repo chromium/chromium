@@ -95,7 +95,9 @@ public class TabGridDialogMediatorUnitTest {
     private static final String DIALOG_TITLE2 = "2 tabs";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
+    private static final int INVALID_COLOR_ID = -1;
     private static final int COLOR_2 = 1;
+    private static final int COLOR_3 = 2;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
@@ -1035,6 +1037,31 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mDialogController).postHiding();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void showDialog_FromGTS_setSelectedColor() {
+        // Mock that tab1 and tab2 are in a group.
+        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabgroup, TAB1_ID, TAB_GROUP_ID);
+
+        // Mock that we have a stored color stored with reference to root ID of tab1.
+        getGroupColorSharedPreferences()
+                .edit()
+                .putInt(String.valueOf(mTab1.getRootId()), COLOR_2)
+                .apply();
+        mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, COLOR_2);
+
+        mMediator.onReset(tabgroup);
+        mMediator.setSelectedTabGroupColor(COLOR_3);
+
+        // Assert that the color has changed both in the model and in the shared prefs store.
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
+        assertThat(
+                getGroupColorSharedPreferences()
+                        .getInt(String.valueOf(mTab1.getRootId()), INVALID_COLOR_ID),
+                equalTo(COLOR_3));
     }
 
     @Test

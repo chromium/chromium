@@ -93,6 +93,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
+            COLOR_ICON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BINDING_TOKEN,
@@ -128,6 +130,7 @@ class TabGridDialogProperties {
                 IS_MAIN_CONTENT_VISIBLE,
                 INITIAL_SCROLL_INDEX,
                 TAB_GROUP_COLOR_ID,
-                IS_INCOGNITO
+                IS_INCOGNITO,
+                COLOR_ICON_CLICK_LISTENER
             };
 }

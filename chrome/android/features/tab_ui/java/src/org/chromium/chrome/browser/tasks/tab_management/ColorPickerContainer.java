@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
+
 import java.util.List;
 
 /** LinearLayout for the {@link ColorPickerCoordinator} component. */
@@ -24,4 +26,11 @@ public abstract class ColorPickerContainer extends LinearLayout {
      * @param colorViews The color views to be arranged.
      */
     public abstract void setColorViews(List<FrameLayout> colorViews);
+
+    /**
+     * Stores the requested layout type to be arranged in this component.
+     *
+     * @param layoutType The {@link ColorPickerLayoutType} to be used.
+     */
+    public abstract void setColorPickerLayoutType(@ColorPickerLayoutType int layoutType);
 }

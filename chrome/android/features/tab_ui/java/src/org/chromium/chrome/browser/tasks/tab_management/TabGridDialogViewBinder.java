@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLLAPSE_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.CONTENT_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR;
@@ -233,6 +234,9 @@ class TabGridDialogViewBinder {
         } else if (TAB_GROUP_COLOR_ID == propertyKey) {
             viewHolder.toolbarView.setColorIconColor(
                     model.get(TAB_GROUP_COLOR_ID), model.get(IS_INCOGNITO));
+        } else if (COLOR_ICON_CLICK_LISTENER == propertyKey) {
+            viewHolder.toolbarView.setColorIconOnClickListener(
+                    model.get(COLOR_ICON_CLICK_LISTENER));
         }
     }
 

@@ -245,4 +245,8 @@ public class TabGroupUiToolbarView extends FrameLayout {
             mColorIcon.setVisibility(View.GONE);
         }
     }
+
+    void setColorIconOnClickListener(OnClickListener listener) {
+        mColorIcon.setOnClickListener(listener);
+    }
 }

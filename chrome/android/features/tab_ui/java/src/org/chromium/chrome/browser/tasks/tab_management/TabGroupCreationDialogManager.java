@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -55,7 +56,9 @@ public class TabGroupCreationDialogManager implements Destroyable {
                             colors,
                             R.layout.tab_group_color_picker_container,
                             ColorPickerType.TAB_GROUP,
-                            isIncognito);
+                            isIncognito,
+                            ColorPickerLayoutType.DYNAMIC,
+                            null);
             colorPickerCoordinator.setSelectedColorItem(colors.get(1));
 
             TabGroupCreationTextInputLayout groupTitle =

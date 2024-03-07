@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -237,8 +238,16 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull List<Integer> colors,
             @NonNull @LayoutRes int colorPickerLayout,
             @NonNull @ColorPickerType int colorPickerType,
-            @NonNull boolean isIncognito) {
+            @NonNull boolean isIncognito,
+            @NonNull @ColorPickerLayoutType int layoutType,
+            @Nullable Runnable onColorItemClicked) {
         return new ColorPickerCoordinator(
-                context, colors, colorPickerLayout, colorPickerType, isIncognito);
+                context,
+                colors,
+                colorPickerLayout,
+                colorPickerType,
+                isIncognito,
+                layoutType,
+                onColorItemClicked);
     }
 }

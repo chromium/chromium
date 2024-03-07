@@ -455,6 +455,17 @@ public class TabGridDialogMediator
         return mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE);
     }
 
+    void setSelectedTabGroupColor(int selectedColor) {
+        mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, selectedColor);
+
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+
+        if (currentTab != null) {
+            TabGroupColorUtils.storeTabGroupColor(currentTab.getRootId(), selectedColor);
+        }
+    }
+
     private void updateGridTabSwitcher() {
         if (!isVisible() || mTabSwitcherResetHandler == null) return;
         mTabSwitcherResetHandler.resetWithTabList(mCurrentTabModelFilterSupplier.get(), false);

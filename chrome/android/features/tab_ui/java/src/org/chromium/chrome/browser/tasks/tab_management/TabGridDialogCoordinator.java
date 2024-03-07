@@ -10,9 +10,12 @@ import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -26,12 +29,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 
@@ -56,8 +63,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private TabContentManager mTabContentManager;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private TabGridDialogView mDialogView;
+    private ColorPickerCoordinator mColorPickerCoordinator;
     private @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
 
     TabGridDialogCoordinator(
             Activity activity,
@@ -89,6 +98,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             .with(
                                     TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER,
                                     mBrowserControlsStateProvider)
+                            .with(
+                                    TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER,
+                                    getColorIconClickListener(resetHandler))
                             .build();
             mRootView = rootView;
 
@@ -227,6 +239,75 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         return mTabListEditorCoordinator.getController();
     }
 
+    private View.OnClickListener getColorIconClickListener(TabSwitcherResetHandler resetHandler) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            return (view) -> {
+                PopupWindow.OnDismissListener onDismissListener =
+                        new PopupWindow.OnDismissListener() {
+                            @Override
+                            public void onDismiss() {
+                                mColorIconPopupWindow.dismiss();
+                                mColorIconPopupWindow = null;
+
+                                mMediator.setSelectedTabGroupColor(
+                                        mColorPickerCoordinator.getSelectedColorSupplier().get());
+
+                                // Refresh the TabSwitcher's tab list to reflect the last selected
+                                // color in the color picker when it is dismissed.
+                                resetHandler.resetWithTabList(
+                                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                                        false);
+                            }
+                        };
+
+                List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+                mColorPickerCoordinator =
+                        new ColorPickerCoordinator(
+                                mActivity,
+                                colors,
+                                R.layout.tab_group_color_picker_container,
+                                ColorPickerType.TAB_GROUP,
+                                mCurrentTabModelFilterSupplier.get().isIncognito(),
+                                ColorPickerLayoutType.DOUBLE_ROW,
+                                () -> onDismissListener.onDismiss());
+                mColorPickerCoordinator.setSelectedColorItem(
+                        mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID));
+
+                int popupMargin =
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.tab_group_color_picker_popup_padding);
+
+                View contentView = mColorPickerCoordinator.getContainerView();
+                contentView.setPadding(popupMargin, popupMargin, popupMargin, popupMargin);
+                View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
+
+                // If the filter is in incognito mode, apply the incognito background drawable.
+                @DrawableRes
+                int bgDrawableId =
+                        mModel.get(TabGridDialogProperties.IS_INCOGNITO)
+                                ? R.drawable.menu_bg_tinted_on_dark_bg
+                                : R.drawable.menu_bg_tinted;
+
+                mColorIconPopupWindow =
+                        new AnchoredPopupWindow(
+                                mActivity,
+                                decorView,
+                                AppCompatResources.getDrawable(mActivity, bgDrawableId),
+                                contentView,
+                                new ViewRectProvider(view));
+                mColorIconPopupWindow.addOnDismissListener(onDismissListener);
+                mColorIconPopupWindow.setFocusable(true);
+                mColorIconPopupWindow.setHorizontalOverlapAnchor(true);
+                mColorIconPopupWindow.setVerticalOverlapAnchor(true);
+                mColorIconPopupWindow.show();
+            };
+        }
+
+        return null;
+    }
+
     /** Destroy any members that needs clean up. */
     public void destroy() {
         mTabListCoordinator.onDestroy();
@@ -234,6 +315,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         mModelChangeProcessor.destroy();
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
+        }
+
+        if (mColorIconPopupWindow != null) {
+            mColorIconPopupWindow.dismiss();
+            mColorIconPopupWindow = null;
         }
     }
 
