@@ -773,9 +773,12 @@
 <translation id="2438874542388153331">Чатыры дзіркі справа</translation>
 <translation id="2441854154602066476">Спіс даступных спосабаў аплаты, даныя якіх можна ўвесці націсканнем. Клавіятура схавана.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" />:
-<ph name="BEGIN_LIST" /><ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
 <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў;
-<ph name="LIST_ITEM" />звесткі, уведзеныя ў формах.<ph name="END_LIST" /></translation>
+<ph name="LIST_ITEM" />звесткі, уведзеныя ў формах.
+<ph name="END_LIST" />
+</translation>
 <translation id="2448295565072560657">Перыферыйныя прылады, падключаныя да прылады пры выкананым уваходзе ва ўліковы запіс</translation>
 <translation id="2450021089947420533">Шляхі карыстальніка</translation>
 <translation id="2452098632681057184">Экалогія і навакольнае асяроддзе</translation>
@@ -2271,9 +2274,11 @@
 <translation id="5426179911063097041"><ph name="SITE" /> запытвае дазвол адпраўляць вам апавяшчэнні</translation>
 <translation id="5430298929874300616">Выдаліць закладку</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" />:
-<ph name="BEGIN_LIST" /><ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
 <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў;
-<ph name="LIST_ITEM" />звесткі, уведзеныя ў формах.<ph name="END_LIST" /></translation>
+<ph name="LIST_ITEM" />звесткі, уведзеныя ў формах.
+<ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">У адваротным парадку, рабочым бокам уверх</translation>
 <translation id="5447235695608032700">Дазволіць сайту "<ph name="SITE" />" выкарыстоўваць інфармацыю, якую ён пра вас захаваў</translation>
 <translation id="5447765697759493033">Гэты сайт не будзе перакладацца</translation>

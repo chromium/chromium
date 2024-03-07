@@ -18,6 +18,7 @@
 <translation id="1056775291175587022">नेटवर्क नहीं है</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1058009965971887428">सुझाव, शिकायत या राय दें</translation>
+<translation id="1059120031266247284">आपके साथ शेयर की गई</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">प्रतिस्थापित करें</translation>
 <translation id="1073899992769346247">बैटरी बदलें या उसे रीचार्ज करें</translation>
@@ -627,6 +628,7 @@
 <translation id="3577473026931028326">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="3580650856351781466">आवाज़ वाली फ़ाइलें डाउनलोड की जा रही हैं</translation>
 <translation id="3585296979871889131">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, सूचनाएं, और ऐप्लिकेशन देखें</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">साइड बटन</translation>
 <translation id="3593039967545720377">अपना क्लिपबोर्ड इतिहास देखने के लिए, <ph name="SHORTCUT_KEY_NAME" /> + V दबाएं. इसका इस्तेमाल शुरू करने के लिए, किसी आइटम को कॉपी करें.</translation>
 <translation id="3593646411856133110">खुले हुए ऐप्लिकेशन देखने के लिए, ऊपर की ओर स्वाइप करके रखें</translation>
@@ -643,6 +645,7 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621712662352432595">ऑडियो सेटिंग</translation>
 <translation id="3626281679859535460">स्क्रीन की रोशनी</translation>
+<translation id="3628323833346754646">फ़्रंट बटन</translation>
 <translation id="3630697955794050612">बंद</translation>
 <translation id="3631369015426612114">इनसे आने वाली सूचनाओं की अनुमति दें</translation>
 <translation id="3633097874324966332">अपना डिवाइस जोड़ने के लिए, ब्लूटूथ सेटिंग खोलें</translation>
@@ -1285,6 +1288,7 @@
 <translation id="6052614013050385269">लिंक पर राइट-क्‍लिक करें</translation>
 <translation id="6054305421211936131">स्मार्ट कार्ड से साइन इन करें</translation>
 <translation id="6059276912018042191">Chrome पर हाल ही में खोले गए टैब</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">आप <ph name="LOGOUT_TIME_LEFT" /> में अपने आप प्रस्थान कर जाएंगे.</translation>
 <translation id="6064463340679478396">अब फ़ाइल को इस्तेमाल नहीं करना है</translation>
 <translation id="6068258534237496331">वीडियो कॉल से जुड़े कंट्रोल</translation>
@@ -1346,6 +1350,7 @@
 <translation id="6309219492973062892">शेल्फ़ आइकॉन 1-8 पर क्लिक या टैप करने के लिए</translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6319058840130157106">स्क्रीन पर सबसे नीचे दाएं कोने, लॉन्चर, पता बार, बुकमार्क बार, खुली हुई वेबसाइट, और डाउनलोड के बीच स्विच करने के लिए, पीछे की ओर जाएं</translation>
+<translation id="6319503618073410818">ब्राउज़र में डाउनलोड की गई फ़ाइल की जानकारी देखें</translation>
 <translation id="6324916366299863871">शॉर्टकट में बदलाव करें</translation>
 <translation id="6330012934079202188">सभी डेस्क की विंडो दिखाई जा रही हैं, मौजूदा डेस्क की विंडो दिखाने के लिए, अप ऐरो बटन को दबाएं</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> एक प्रबंधित सत्र है. इसे <ph name="MANAGER" /> प्रबंधित करता है</translation>
@@ -1566,6 +1571,7 @@
 <translation id="7229029500464092426">मेमोरी उपलब्ध <ph name="AVAILABLE_MEMORY" /> | कुल मेमोरी <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">बैटरी <ph name="PERCENTAGE" />% बची है. अपने डिवाइस को चार्ज करें.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. किसी अपडेट को लागू करने के लिए इस Chromebook को रीस्टार्ट करना ज़रूरी है. इसमें एक मिनट तक लग सकता है.</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">पीछे वाला माइक्रोफ़ोन</translation>
 <translation id="7258828758145722155">इसमें, कल बदलाव किया गया था</translation>
 <translation id="726276584504105859">दो स्क्रीन का इस्तेमाल करने के लिए यहां खींचें और छोड़ें</translation>
@@ -1693,6 +1699,7 @@
 <translation id="7742327441377685481">कोई सूचना नहीं है</translation>
 <translation id="7748275671948949022">शेल्फ़ पर लॉन्चर बटन हाइलाइट करें</translation>
 <translation id="7749443890790263709">ज़्यादा से ज़्यादा इतने ही डेस्क जोड़े जा सकते हैं.</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="776344839111254542">अपडेट के विवरण देखने के लिए क्लिक करें</translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>
 <translation id="7769299611924763557">आपका GIF जल्द ही तैयार हो जाएगा</translation>
@@ -2020,6 +2027,7 @@
 <translation id="9098969848082897657">फ़ोन को साइलेंट करें</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> या <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">पिछली कार्रवाई को पहले जैसा करें</translation>
+<translation id="9129245940793250979">रीयर बटन</translation>
 <translation id="9133335900048457298">सुरक्षित कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
 <translation id="9139720510312328767">अगला अक्षर मिटाएं</translation>
 <translation id="9151906066336345901">end</translation>
