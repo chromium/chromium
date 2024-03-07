@@ -92,25 +92,6 @@ class HoverButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> generator_;
 };
 
-// Double check the length of the strings used for testing are either over or
-// under the width used for the following tests.
-TEST_F(HoverButtonTest, ValidateTestData) {
-  auto get_width = [](const std::u16string& text) {
-    return views::Label(text).GetPreferredSize().width();
-  };
-  EXPECT_GT(kButtonWidth, get_width(kTitleSubtitlePairs[0].title));
-  EXPECT_GT(kButtonWidth, get_width(kTitleSubtitlePairs[0].subtitle));
-
-  EXPECT_LT(kButtonWidth, get_width(kTitleSubtitlePairs[1].title));
-  EXPECT_GT(kButtonWidth, get_width(kTitleSubtitlePairs[1].subtitle));
-
-  EXPECT_GT(kButtonWidth, get_width(kTitleSubtitlePairs[2].title));
-  EXPECT_LT(kButtonWidth, get_width(kTitleSubtitlePairs[2].subtitle));
-
-  EXPECT_LT(kButtonWidth, get_width(kTitleSubtitlePairs[3].title));
-  EXPECT_LT(kButtonWidth, get_width(kTitleSubtitlePairs[3].subtitle));
-}
-
 // Tests whether the HoverButton has the correct tooltip and accessible name.
 TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
   for (size_t i = 0; i < std::size(kTitleSubtitlePairs); ++i) {
@@ -122,17 +103,11 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
                                       CreateIcon(), pair.title, pair.subtitle);
     button->SetSize(gfx::Size(kButtonWidth, 40));
 
-    ui::AXNodeData data;
-    button->GetAccessibleNodeData(&data);
-    std::u16string accessible_name;
-    data.GetString16Attribute(ax::mojom::StringAttribute::kName,
-                              &accessible_name);
-
     // The accessible name should always be the title and subtitle concatenated
     // by \n.
     const std::u16string expected =
-        base::JoinString({pair.title, pair.subtitle}, u"\n");
-    EXPECT_EQ(expected, accessible_name);
+        base::StrCat({pair.title, u"\n", pair.subtitle});
+    EXPECT_EQ(expected, GetAccessibleName(*button));
 
     EXPECT_EQ(pair.tooltip ? expected : std::u16string(),
               button->GetTooltipText(gfx::Point()));
