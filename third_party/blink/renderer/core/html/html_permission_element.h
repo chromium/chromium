@@ -63,6 +63,9 @@ class CORE_EXPORT HTMLPermissionElement final
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
+                           NotAllowedInFencedFrame);
+
   enum class DisableReason {
     kRecentlyAttachedToDOM,
   };

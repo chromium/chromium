@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -68,6 +69,12 @@ class LocalePlatformSupport : public TestingPlatformSupport {
     return TestingPlatformSupport::QueryLocalizedString(resource_id);
   }
 };
+
+void NotReachedForPEPCRegistered() {
+  EXPECT_TRUE(false)
+      << "The RegisterPageEmbeddedPermissionControl was called despite the "
+         "test expecting it not to.";
+}
 
 }  // namespace
 
@@ -176,6 +183,9 @@ class TestPermissionService : public PermissionService {
         std::move(pending_client));
     client->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
                                                   std::move(statuses));
+    if (pepc_registered_callback_) {
+      std::move(pepc_registered_callback_).Run();
+    }
   }
   void RequestPageEmbeddedPermission(
       EmbeddedPermissionRequestDescriptorPtr permissions,
@@ -231,11 +241,16 @@ class TestPermissionService : public PermissionService {
     initial_statuses_ = statuses;
   }
 
+  void set_pepc_registered_callback(base::OnceClosure callback) {
+    pepc_registered_callback_ = std::move(callback);
+  }
+
  private:
   mojo::Receiver<PermissionService> receiver_;
   HashMap<PermissionName, mojo::Remote<PermissionObserver>> observers_;
   std::unique_ptr<base::RunLoop> run_loop_;
   Vector<MojoPermissionStatus> initial_statuses_;
+  base::OnceClosure pepc_registered_callback_;
 };
 
 class InnerTextChangeWaiter {
@@ -456,7 +471,41 @@ TEST_F(HTMLPemissionElementTest,
   }
 }
 
-using HTMLPemissionElementSimTest = SimTest;
+class HTMLPemissionElementSimTest : public SimTest {
+ public:
+  HTMLPemissionElementSimTest() = default;
+
+  ~HTMLPemissionElementSimTest() override = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+    MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+        PermissionService::Name_,
+        WTF::BindRepeating(&HTMLPemissionElementSimTest::Bind,
+                           WTF::Unretained(this)));
+  }
+
+  void TearDown() override {
+    MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+        PermissionService::Name_, {});
+    permission_service_.reset();
+    SimTest::TearDown();
+  }
+
+  void Bind(mojo::ScopedMessagePipeHandle message_pipe_handle) {
+    permission_service_ = std::make_unique<TestPermissionService>(
+        mojo::PendingReceiver<PermissionService>(
+            std::move(message_pipe_handle)));
+  }
+
+  TestPermissionService* permission_service() {
+    return permission_service_.get();
+  }
+
+ private:
+  std::unique_ptr<TestPermissionService> permission_service_;
+};
+
 TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
@@ -480,30 +529,68 @@ TEST_F(HTMLPemissionElementSimTest, BlockedByPermissionsPolicy) {
   auto* last_child_frame = To<WebLocalFrameImpl>(MainFrame().LastChild());
   for (const char* permission : {"camera", "microphone", "geolocation"}) {
     auto* permission_element = MakeGarbageCollected<HTMLPermissionElement>(
-        *first_child_frame->GetFrame()->GetDocument());
-    permission_element->setAttribute(html_names::kTypeAttr,
-                                     AtomicString(permission));
-    // Should console log a error message due to PermissionsPolicy
-    auto& console_messages =
-        static_cast<frame_test_helpers::TestWebFrameClient*>(
-            first_child_frame->Client())
-            ->ConsoleMessages();
-    EXPECT_EQ(console_messages.size(), 1u);
-    for (const auto& message : console_messages) {
-      EXPECT_TRUE(message.Contains(
-          "is not allowed in the current context due to PermissionsPolicy"));
-    }
-    console_messages.clear();
-
-    permission_element = MakeGarbageCollected<HTMLPermissionElement>(
         *last_child_frame->GetFrame()->GetDocument());
     permission_element->setAttribute(html_names::kTypeAttr,
                                      AtomicString(permission));
     // PermissionsPolicy passed with no console log.
-    console_messages = static_cast<frame_test_helpers::TestWebFrameClient*>(
-                           last_child_frame->Client())
-                           ->ConsoleMessages();
-    EXPECT_EQ(console_messages.size(), 0u);
+    auto& last_console_messages =
+        static_cast<frame_test_helpers::TestWebFrameClient*>(
+            last_child_frame->Client())
+            ->ConsoleMessages();
+    EXPECT_EQ(last_console_messages.size(), 0u);
+
+    permission_element = MakeGarbageCollected<HTMLPermissionElement>(
+        *first_child_frame->GetFrame()->GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(permission));
+    permission_service()->set_pepc_registered_callback(
+        base::BindOnce(&NotReachedForPEPCRegistered));
+    // Should console log a error message due to PermissionsPolicy
+    auto& first_console_messages =
+        static_cast<frame_test_helpers::TestWebFrameClient*>(
+            first_child_frame->Client())
+            ->ConsoleMessages();
+    EXPECT_EQ(first_console_messages.size(), 1u);
+    EXPECT_TRUE(first_console_messages.front().Contains(
+        "is not allowed in the current context due to PermissionsPolicy"));
+    first_console_messages.clear();
+    permission_service()->set_pepc_registered_callback(base::NullCallback());
+  }
+}
+
+class HTMLPemissionElementFencedFrameTest : public HTMLPemissionElementSimTest {
+ public:
+  HTMLPemissionElementFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+  ~HTMLPemissionElementFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HTMLPemissionElementFencedFrameTest, NotAllowedInFencedFrame) {
+  InitializeFencedFrameRoot(
+      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
+  SimRequest resource("https://example.com", "text/html");
+  LoadURL("https://example.com");
+  resource.Complete(R"(
+    <body>
+    </body>
+  )");
+
+  for (const char* permission : {"camera", "microphone", "geolocation"}) {
+    auto* permission_element = MakeGarbageCollected<HTMLPermissionElement>(
+        *MainFrame().GetFrame()->GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(permission));
+    // We need this call to establish binding to the remote permission service,
+    // otherwise the next testing binder will fail.
+    permission_element->GetPermissionService();
+    permission_service()->set_pepc_registered_callback(
+        base::BindOnce(&NotReachedForPEPCRegistered));
   }
 }
 

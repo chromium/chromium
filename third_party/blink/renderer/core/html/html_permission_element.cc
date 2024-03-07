@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -242,6 +243,13 @@ void HTMLPermissionElement::AttributeChanged(
       AddConsoleError(
           String::Format("The permission type '%s' is not supported by the "
                          "permission element.",
+                         GetType().Utf8().c_str()));
+      return;
+    }
+
+    if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
+      AddConsoleError(
+          String::Format("The permission '%s' is not allowed in fenced frame",
                          GetType().Utf8().c_str()));
       return;
     }
