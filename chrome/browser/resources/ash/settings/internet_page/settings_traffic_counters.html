@@ -5,6 +5,9 @@
   }
 </style>
 <template is="dom-if" if="[[trafficCountersAvailable_]]">
+  <div class="settings-box single-column stretch first">
+    [[i18n('TrafficCountersDataUsageDifferentFromProviderLabel')]]
+  </div>
   <div class="settings-box single-column stretch indented first">
     <div id="data-usage-wrapper">
       <div class="start settings-box-text" aria-hidden="true">
