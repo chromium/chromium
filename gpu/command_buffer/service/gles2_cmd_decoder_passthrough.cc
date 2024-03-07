@@ -1413,8 +1413,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
 
   caps.gpu_memory_buffer_formats =
       feature_info_->feature_flags().gpu_memory_buffer_formats;
-  caps.texture_target_exception_list =
-      group_->gpu_preferences().texture_target_exception_list;
   caps.disable_legacy_mailbox =
       group_->shared_image_manager() &&
       group_->shared_image_manager()->display_context_on_another_thread();

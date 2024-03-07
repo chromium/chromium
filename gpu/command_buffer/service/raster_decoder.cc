@@ -1230,8 +1230,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.gpu_rasterization = use_gpu_raster_;
   caps.gpu_memory_buffer_formats =
       feature_info()->feature_flags().gpu_memory_buffer_formats;
-  caps.texture_target_exception_list =
-      gpu_preferences_.texture_target_exception_list;
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
   caps.texture_rg = feature_info()->feature_flags().ext_texture_rg;

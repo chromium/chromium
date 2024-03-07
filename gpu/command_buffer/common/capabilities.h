@@ -84,9 +84,6 @@ struct GPU_EXPORT Capabilities {
       gfx::BufferFormat::RGBA_8888, gfx::BufferFormat::RGBX_8888,
       gfx::BufferFormat::YVU_420,
   };
-  // TODO(crbug.com/41494843): Remove this field once all clients go through
-  // ClientSharedImage to obtain the texture target to use.
-  std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list;
 
   base::flat_map<uint32_t, std::vector<uint64_t>> drm_formats_and_modifiers;
   uint64_t drm_device_id = 0;
