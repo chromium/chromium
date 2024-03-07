@@ -81,6 +81,7 @@ const CGFloat kSeparatorHeight = 0.5;
     self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.contentView.layer.cornerRadius = kCornerRadius;
     self.contentView.clipsToBounds = YES;
+    self.layer.cornerRadius = kCornerRadius;
 
     _titleStackView = [[UIStackView alloc] init];
     _titleStackView.alignment = UIStackViewAlignmentTop;
