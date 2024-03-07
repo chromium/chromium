@@ -197,7 +197,7 @@ WebRequestEventRouter::EventTypes GetEventTypeFromEventName(
     return WebRequestEventRouter::kInvalidEvent;
   }
 
-  const auto* it = kRequestStageMap.find(event_name);
+  const auto it = kRequestStageMap.find(event_name);
   return it == kRequestStageMap.end() ? WebRequestEventRouter::kInvalidEvent
                                       : it->second;
 }

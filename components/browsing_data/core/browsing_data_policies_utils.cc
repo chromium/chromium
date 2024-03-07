@@ -76,7 +76,7 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
       "added or removed. Please update `kDataToSyncTypesMap` above to include "
       "the new type and the sync types it maps to if this data is synced.");
 
-  const auto* it = kDataToSyncTypesMap.find(browsing_data_type.GetString());
+  const auto it = kDataToSyncTypesMap.find(browsing_data_type.GetString());
   if (it == kDataToSyncTypesMap.end()) {
     return;
   }
@@ -147,7 +147,7 @@ std::optional<PolicyDataType> NameToPolicyDataType(
            PolicyDataType::kCachedImagesAndFiles},
       });
 
-  const auto* it = kNameToDataType.find(type_name);
+  const auto it = kNameToDataType.find(type_name);
   if (it == kNameToDataType.end()) {
     return std::nullopt;
   }

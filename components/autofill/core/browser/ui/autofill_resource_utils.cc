@@ -99,7 +99,7 @@ int GetIconResourceID(Suggestion::Icon resource_name) {
           autofill::features::kAutofillEnableNewCardArtAndNetworkImages)
           ? kNewCardArtAndNetworkDataResources
           : kDataResources;
-  auto* it = kDataResource.find(resource_name);
+  auto it = kDataResource.find(resource_name);
   return it == kDataResource.end() ? kResourceNotFoundId : it->second;
 }
 

@@ -329,7 +329,7 @@ int TypographyProvider::GetLineHeightImpl(int context, int style) const {
       {style::STYLE_BODY_5_MEDIUM, 16}, {style::STYLE_BODY_5_BOLD, 16},
       {style::STYLE_CAPTION, 12},
   });
-  const auto* const it = kLineHeights.find(style);
+  const auto it = kLineHeights.find(style);
   return (it == kLineHeights.end())
              ? GetFontForDetails(GetFontDetailsImpl(context, style)).GetHeight()
              : it->second;

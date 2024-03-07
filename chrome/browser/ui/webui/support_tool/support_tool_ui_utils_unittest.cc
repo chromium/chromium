@@ -103,10 +103,7 @@ class SupportToolUiUtilsTest : public ::testing::Test {
              {redaction::PIIType::kURL, IDS_SUPPORT_TOOL_URLS},
              {redaction::PIIType::kStableIdentifier,
               IDS_SUPPORT_TOOL_STABLE_IDENTIDIERS}});
-    // fixed_flat_map uses std::array<T> as the backing container, which has
-    // std::array::iterator<T> = T*, thus the iterator of the
-    // `kExpectedPiiTypeDefinitions` is a pointer.
-    auto* it = kExpectedPiiTypeDefinitions.find(pii_type);
+    auto it = kExpectedPiiTypeDefinitions.find(pii_type);
     EXPECT_NE(kExpectedPiiTypeDefinitions.end(), it);
     std::string definition = l10n_util::GetStringUTF8(it->second);
     return definition;

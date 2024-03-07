@@ -280,7 +280,7 @@ std::string FieldTypeToString(FieldType type) {
 }
 
 FieldType TypeNameToFieldType(std::string_view type_name) {
-  auto* it = kTypeNameToFieldType.find(type_name);
+  auto it = kTypeNameToFieldType.find(type_name);
   return it != kTypeNameToFieldType.end() ? it->second : UNKNOWN_TYPE;
 }
 

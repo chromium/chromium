@@ -775,7 +775,7 @@ bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
   if (operation->kind == mojom::ElementWiseUnary::Kind::kCast) {
     return ValidateCastOperation(id_to_operand_map, operation);
   }
-  const auto* constraints_iterator =
+  const auto constraints_iterator =
       kUnaryOperatorConstraints.find(operation->kind);
   CHECK_NE(constraints_iterator, kUnaryOperatorConstraints.end());
   return ValidateUnaryOperation(id_to_operand_map, operation,

@@ -809,7 +809,7 @@ class NetworkAwareHostResolverProc : public HostResolverProc {
               handles::NetworkHandle network) override {
     // Presume failure
     *os_error = 1;
-    const auto* iter = kResults.find(network);
+    const auto iter = kResults.find(network);
     if (iter == kResults.end())
       return ERR_NETWORK_CHANGED;
 

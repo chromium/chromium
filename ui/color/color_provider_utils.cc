@@ -205,7 +205,7 @@ base::StringPiece SystemThemeName(ui::SystemTheme system_theme) {
 std::string ColorIdName(ColorId color_id) {
   static constexpr const auto color_id_map =
       base::MakeFixedFlatMap<ColorId, const char*>({COLOR_IDS});
-  auto* i = color_id_map.find(color_id);
+  auto i = color_id_map.find(color_id);
   if (i != color_id_map.cend())
     return {i->second};
   base::StringPiece color_name;
@@ -328,7 +328,7 @@ std::string SkColorName(SkColor color) {
   auto color_with_alpha = color;
   SkAlpha color_alpha = SkColorGetA(color_with_alpha);
   color = SkColorSetA(color, color_alpha != 0 ? SK_AlphaOPAQUE : color_alpha);
-  auto* i = color_name_map.find(color);
+  auto i = color_name_map.find(color);
   if (i != color_name_map.cend()) {
     if (SkColorGetA(color_with_alpha) == SkColorGetA(color))
       return i->second;

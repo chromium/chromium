@@ -115,7 +115,7 @@ TagKind GetTagKind(TagName name) {
 
 std::optional<TagName> ParseTagName(std::string_view name) {
   // Search for the tag name
-  const auto* match = kTagNames.find(name);
+  const auto match = kTagNames.find(name);
   if (match == kTagNames.end()) {
     return std::nullopt;
   }

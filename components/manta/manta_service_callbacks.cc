@@ -36,7 +36,7 @@ std::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
           {"RESOURCE_EXHAUSTED", MantaStatusCode::kResourceExhausted},
           {"PER_USER_QUOTA_EXCEEDED", MantaStatusCode::kPerUserQuotaExceeded},
       });
-  const auto* iter = reason_map.find(reason);
+  const auto iter = reason_map.find(reason);
 
   return iter != reason_map.end() ? std::optional<MantaStatusCode>(iter->second)
                                   : std::nullopt;
@@ -52,7 +52,7 @@ std::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
           {3 /*INVALID_ARGUMENT*/, MantaStatusCode::kInvalidInput},
           {8 /*RESOURCE_EXHAUSTED*/, MantaStatusCode::kResourceExhausted},
       });
-  const auto* iter = code_map.find(server_status_code);
+  const auto iter = code_map.find(server_status_code);
 
   return iter != code_map.end() ? std::optional<MantaStatusCode>(iter->second)
                                 : std::nullopt;

@@ -97,7 +97,7 @@ FilterSourceStream::SourceType FilterSourceStream::ParseEncodingType(
           {kXGZip, TYPE_GZIP},
           {kZstd, TYPE_ZSTD},
       });
-  auto* encoding_type = kEncodingMap.find(lower_encoding);
+  auto encoding_type = kEncodingMap.find(lower_encoding);
   if (encoding_type == kEncodingMap.end()) {
     return TYPE_UNKNOWN;
   }

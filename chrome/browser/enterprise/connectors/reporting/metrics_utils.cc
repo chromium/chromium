@@ -8,7 +8,7 @@ namespace enterprise_connectors {
 
 EnterpriseReportingEventType GetUmaEnumFromEventName(
     const base::StringPiece& eventName) {
-  auto* it = kEventNameToUmaEnumMap.find(eventName);
+  auto it = kEventNameToUmaEnumMap.find(eventName);
   return it != kEventNameToUmaEnumMap.end()
              ? it->second
              : EnterpriseReportingEventType::kUnknownEvent;

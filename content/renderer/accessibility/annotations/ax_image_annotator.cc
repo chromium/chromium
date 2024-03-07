@@ -138,7 +138,7 @@ int GetMessageIdForIconEnum(const std::string& icon_type) {
           {"ICON_SUN", IDS_AX_IMAGE_ANNOTATION_ICON_SUN},
       });
 
-  auto* iter = kIconTypeToMessageIdMap.find(icon_type);
+  auto iter = kIconTypeToMessageIdMap.find(icon_type);
   if (iter == kIconTypeToMessageIdMap.end())
     return 0;
 

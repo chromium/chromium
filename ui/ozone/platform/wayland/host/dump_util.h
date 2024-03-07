@@ -50,7 +50,7 @@ template <typename M, typename K>
 const char* GetMapValueOrDefault(const M& map,
                                  const K& key,
                                  const char* default_value = "unknown") {
-  auto* pair = map.find(key);
+  auto pair = map.find(key);
   return pair == map.end() ? default_value : pair->second;
 }
 

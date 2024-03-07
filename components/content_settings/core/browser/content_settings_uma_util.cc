@@ -192,7 +192,7 @@ int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting) {
                     static_cast<size_t>(ContentSettingsType::NUM_TYPES),
                 "Update content settings histogram lookup");
 
-  auto* found = kHistogramValue.find(content_setting);
+  auto found = kHistogramValue.find(content_setting);
   if (found != kHistogramValue.end()) {
     DCHECK_NE(found->second, -1)
         << "Used for deprecated settings: " << static_cast<int>(found->first);

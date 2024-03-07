@@ -7957,7 +7957,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
          {CREDIT_CARD_VERIFICATION_CODE, 3}});
 
     for (FieldType fill_type : fill_field_types) {
-      auto* index_it = type_to_index.find(fill_type);
+      auto index_it = type_to_index.find(fill_type);
       ASSERT_NE(index_it, type_to_index.end());
       FormFieldData& field = form_.fields[index_it->second];
       field.value = fill_type != CREDIT_CARD_VERIFICATION_CODE

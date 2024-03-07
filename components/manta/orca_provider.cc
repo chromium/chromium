@@ -50,7 +50,7 @@ std::optional<Tone> GetTone(const std::string& tone) {
           {"FREEFORM_WRITE", proto::RequestConfig::FREEFORM_WRITE},
 
       });
-  const auto* iter = tone_map.find(tone);
+  const auto iter = tone_map.find(tone);
 
   return iter != tone_map.end() ? std::optional<Tone>(iter->second)
                                 : std::nullopt;

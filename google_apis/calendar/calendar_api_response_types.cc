@@ -97,7 +97,7 @@ bool ConvertEventStatus(const base::Value* value,
     return false;
   }
 
-  const auto* it = kEventStatuses.find(*status);
+  const auto it = kEventStatuses.find(*status);
   if (it != kEventStatuses.end()) {
     *result = it->second;
   } else {
@@ -163,7 +163,7 @@ std::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
       return std::nullopt;
     }
 
-    const auto* it = kAttendeesResponseStatuses.find(*responseStatus);
+    const auto it = kAttendeesResponseStatuses.find(*responseStatus);
     if (it != kAttendeesResponseStatuses.end()) {
       return it->second;
     }

@@ -33,7 +33,7 @@ constexpr auto kSharedStorageHeaderParamTypeMap =
 
 std::optional<mojom::SharedStorageOperationType>
 StringToSharedStorageOperationType(std::string_view operation_str) {
-  auto* operation_it =
+  auto operation_it =
       kSharedStorageOperationTypeMap.find(base::ToLowerASCII(operation_str));
   if (operation_it == kSharedStorageOperationTypeMap.end()) {
     return std::nullopt;
@@ -44,7 +44,7 @@ StringToSharedStorageOperationType(std::string_view operation_str) {
 
 std::optional<SharedStorageHeaderParamType>
 StringToSharedStorageHeaderParamType(std::string_view param_str) {
-  auto* param_it =
+  auto param_it =
       kSharedStorageHeaderParamTypeMap.find(base::ToLowerASCII(param_str));
   if (param_it == kSharedStorageHeaderParamTypeMap.end()) {
     return std::nullopt;

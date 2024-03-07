@@ -146,7 +146,7 @@ std::optional<network::mojom::RequestDestination> RequestDestinationFromString(
       return std::nullopt;
     }
   }
-  auto* it = kRequestDestinationFromStringMap.find(dest_str);
+  auto it = kRequestDestinationFromStringMap.find(dest_str);
   if (it == kRequestDestinationFromStringMap.end()) {
     return std::nullopt;
   }

@@ -153,7 +153,7 @@ TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
 
 TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
   std::string apt_str = "sala 10";
-  auto* it = kAutofillParsingRulesMap.find({"BR", ADDRESS_HOME_APT});
+  auto it = kAutofillParsingRulesMap.find({"BR", ADDRESS_HOME_APT});
 
   ASSERT_TRUE(it != kAutofillParsingRulesMap.end());
   EXPECT_EQ(ParseValueByI18nRegularExpression(apt_str, ADDRESS_HOME_APT,

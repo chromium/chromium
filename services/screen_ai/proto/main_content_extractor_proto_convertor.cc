@@ -147,7 +147,7 @@ std::string GetMainContentExtractorRoleFromChromeRole(ax::mojom::Role role) {
            {ax::mojom::Role::kComboBoxMenuButton, "combobox"},
            {ax::mojom::Role::kTextFieldWithComboBox, "combobox"}});
 
-  const auto* it = kRolesWithDifferentName.find(role);
+  const auto it = kRolesWithDifferentName.find(role);
   if (it != kRolesWithDifferentName.end()) {
     return std::string(it->second);
   }

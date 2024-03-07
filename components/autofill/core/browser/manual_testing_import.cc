@@ -71,7 +71,7 @@ std::optional<AutofillProfile::Source> GetProfileSourceFromDict(
     return AutofillProfile::Source::kLocalOrSyncable;
   }
   if (const std::string* source_value = dict.FindString(kKeySource)) {
-    if (auto* it = kSourceMapping.find(*source_value);
+    if (auto it = kSourceMapping.find(*source_value);
         it != kSourceMapping.end()) {
       return it->second;
     }

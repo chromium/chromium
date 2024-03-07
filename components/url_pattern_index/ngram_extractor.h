@@ -51,8 +51,8 @@ class NGramExtractor {
     Iterator(const NGramExtractor& extractor,
              base::StringPiece::const_iterator head)
         : extractor_(extractor), head_(head), end_(extractor.string_.end()) {
-      DCHECK_GE(head, extractor_->string_.begin());
-      DCHECK_LE(head, end_);
+      DCHECK(head >= extractor_->string_.begin());
+      DCHECK(head <= end_);
 
       CompleteNGramFrom(0);
     }

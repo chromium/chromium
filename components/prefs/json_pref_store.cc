@@ -120,7 +120,7 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
                      &spaceless_basename);
   static constexpr std::array<const char*, 3> kAllowList{
       "Secure_Preferences", "Preferences", "Local_State"};
-  const char* const* it = base::ranges::find(kAllowList, spaceless_basename);
+  auto it = base::ranges::find(kAllowList, spaceless_basename);
   return it != kAllowList.end() ? *it : "";
 }
 

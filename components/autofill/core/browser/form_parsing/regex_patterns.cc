@@ -26,7 +26,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
     std::string_view name,
     std::string_view language_code,
     PatternSource pattern_source) {
-  auto* it = kPatternMap.find(std::make_pair(name, language_code));
+  auto it = kPatternMap.find(std::make_pair(name, language_code));
   if (!language_code.empty() && it == kPatternMap.end())
     it = kPatternMap.find(std::make_pair(name, ""));
   CHECK(it != kPatternMap.end());

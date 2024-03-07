@@ -558,7 +558,7 @@ CWSInfoService::CWSViolationType CWSInfoService::GetViolationTypeFromString(
            {"minor-policy-violation",
             CWSInfoService::CWSViolationType::kMinorPolicy}});
 
-  const auto* it = violation_type_str_map.find(violation_type_str);
+  const auto it = violation_type_str_map.find(violation_type_str);
   return it != violation_type_str_map.end() ? it->second
                                             : CWSViolationType::kUnknown;
 }

@@ -143,7 +143,7 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
        SystemProfileProto_ComponentId_SODA_JA_JP},
   });
 
-  const auto* result = kComponentMap.find(app_id);
+  const auto result = kComponentMap.find(app_id);
   if (result == kComponentMap.end()) {
     return SystemProfileProto_ComponentId_UNKNOWN;
   }

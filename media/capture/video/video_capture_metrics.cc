@@ -141,7 +141,7 @@ VideoResolutionDesignation ResolutionNameFromSize(gfx::Size frame_size) {
     frame_size.set_width(frame_size.height());
     frame_size.set_width(tmp);
   }
-  auto* it = kResolutions.find(frame_size);
+  auto it = kResolutions.find(frame_size);
   return it != kResolutions.end() ? it->second
                                   : VideoResolutionDesignation::kUnknown;
 }

@@ -20,7 +20,7 @@ constexpr auto kPolicyMap =
 
 std::string_view MultiUserSignInPolicyToPrefValue(
     MultiUserSignInPolicy policy) {
-  auto* it = kPolicyMap.find(policy);
+  auto it = kPolicyMap.find(policy);
   CHECK_NE(it, kPolicyMap.end());
   return it->second;
 }

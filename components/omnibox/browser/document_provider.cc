@@ -144,7 +144,7 @@ AutocompleteMatch::DocumentType GetIconForMIMEType(
        AutocompleteMatch::DocumentType::DRIVE_FOLDER},
   });
 
-  const auto* it = kIconMap.find(mimetype);
+  const auto it = kIconMap.find(mimetype);
   return it != kIconMap.end() ? it->second
                               : AutocompleteMatch::DocumentType::DRIVE_OTHER;
 }

@@ -57,7 +57,7 @@ bool ShouldOfferLinkToText(const GURL& url) {
     return true;
   }
 
-  auto* block_list_it = kBlocklist.find(domain);
+  auto block_list_it = kBlocklist.find(domain);
   if (block_list_it != kBlocklist.end()) {
     if (re2::RE2::FullMatch(url.path(), block_list_it->second.data())) {
       return false;

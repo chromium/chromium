@@ -185,10 +185,7 @@ class AutocompleteResultTest : public testing::Test {
 
   // Asserts that |result| has |expected_count| matches matching |expected|.
   void AssertResultMatches(const AutocompleteResult& result,
-                           const TestData* expected,
-                           size_t expected_count);
-  void AssertResultMatches(const AutocompleteResult& result,
-                           const std::vector<TestData>& expected);
+                           base::span<const TestData> expected);
 
   void AssertMatch(AutocompleteMatch match,
                    const TestData& expected_match_data,
@@ -273,17 +270,8 @@ ACMatches AutocompleteResultTest::PopulateAutocompleteMatches(
 
 void AutocompleteResultTest::AssertResultMatches(
     const AutocompleteResult& result,
-    const TestData* expected,
-    size_t expected_count) {
-  ASSERT_EQ(expected_count, result.size());
-  for (size_t i = 0; i < expected_count; ++i)
-    AssertMatch(*(result.begin() + i), expected[i], i);
-}
-
-void AutocompleteResultTest::AssertResultMatches(
-    const AutocompleteResult& result,
-    const std::vector<TestData>& expected) {
-  ASSERT_EQ(result.size(), expected.size());
+    base::span<const TestData> expected) {
+  ASSERT_EQ(expected.size(), result.size());
   for (size_t i = 0; i < expected.size(); ++i)
     AssertMatch(*(result.begin() + i), expected[i], i);
 }
@@ -342,7 +330,7 @@ void AutocompleteResultTest::RunTransferOldMatchesTest(
   current_result.SortAndCull(input, template_url_service_.get(),
                              triggered_feature_service());
 
-  AssertResultMatches(current_result, expected, expected_size);
+  AssertResultMatches(current_result, {expected, expected_size});
 }
 
 void AutocompleteResultTest::SortMatchesAndVerifyOrder(
@@ -1434,7 +1422,7 @@ TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {
     result.AppendMatches(matches);
     result.SortAndCull(input, template_url_service_.get(),
                        triggered_feature_service());
-    AssertResultMatches(result, data, 4);
+    AssertResultMatches(result, data);
   }
 
   {
@@ -1987,7 +1975,7 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
       {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
       {5, 2, 1000, false, {}, AutocompleteMatchType::HISTORY_BODY},
   }};
-  AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  AssertResultMatches(result, expected_data);
 }
 #endif
 
@@ -2043,7 +2031,7 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
         // Group two is scored lower
         {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
   }
   {
     SCOPED_TRACE("Zero input");
@@ -2069,7 +2057,7 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
         {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
         {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
   }
 
   // Set sections that contradict the scores of the matches in groups.
@@ -2101,7 +2089,7 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
         {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
         {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
   }
   {
     SCOPED_TRACE("Zero input, with explicit sections");
@@ -2128,7 +2116,7 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
         {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
         {0, 4, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
   }
 }
 
@@ -2168,8 +2156,9 @@ TEST_F(AutocompleteResultTest,
       {4, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL},
   };
 
-  AssertResultMatches(result, expected_data,
-                      AutocompleteResult::GetMaxMatches());
+  AssertResultMatches(
+      result,
+      {expected_data, expected_data + AutocompleteResult::GetMaxMatches()});
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
@@ -2715,7 +2704,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
         {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
         {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
 
     // Verify that the secondary zero-prefix suggestions were not triggered.
     VerifyTriggeredFeatures(triggered_feature_service(), {});
@@ -2745,7 +2734,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
         {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
         {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
 
     // Verify that the secondary zero-prefix suggestions were triggered.
     VerifyTriggeredFeatures(triggered_feature_service(),
@@ -2780,7 +2769,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
         {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
         {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
 
     // Verify that the secondary zero-prefix suggestions were triggered.
     VerifyTriggeredFeatures(triggered_feature_service(),
@@ -2809,7 +2798,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
         {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
         {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
 
     // Verify that the secondary zero-prefix suggestions were not triggered.
     VerifyTriggeredFeatures(triggered_feature_service(), {});
@@ -2953,7 +2942,7 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
         {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
         {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
     }};
-    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    AssertResultMatches(result, expected_data);
   }
 }
 
@@ -3291,13 +3280,13 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
           {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
           {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
       }};
-      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+      AssertResultMatches(result, expected_data);
     } else {
       const std::array<TestData, 2> expected_data{{
           {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
           {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
       }};
-      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+      AssertResultMatches(result, expected_data);
     }
   }
 
@@ -3324,7 +3313,7 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
           {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
           {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
       }};
-      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+      AssertResultMatches(result, expected_data);
     } else {
       const std::array<TestData, 4> expected_data{{
           {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
@@ -3332,7 +3321,7 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
           {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
           {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
       }};
-      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+      AssertResultMatches(result, expected_data);
     }
   }
 
@@ -3359,7 +3348,7 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
           {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
           {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
       }};
-      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+      AssertResultMatches(result, expected_data);
     } else {
       const std::array<TestData, 5> expected_data{{
           {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
@@ -3368,7 +3357,7 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
           {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
           {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
       }};
-      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+      AssertResultMatches(result, expected_data);
     }
   }
 }

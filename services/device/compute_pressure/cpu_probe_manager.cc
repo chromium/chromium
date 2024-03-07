@@ -172,8 +172,7 @@ mojom::PressureState CpuProbeManager::CalculateState(
                                      ? kStateRandomizedThresholds
                                      : kStateBaseThresholds;
 
-  auto* it =
-      base::ranges::lower_bound(kStateThresholds, sample.cpu_utilization);
+  auto it = base::ranges::lower_bound(kStateThresholds, sample.cpu_utilization);
   if (it == kStateThresholds.end()) {
     NOTREACHED_NORETURN() << "unexpected value: " << sample.cpu_utilization;
   }

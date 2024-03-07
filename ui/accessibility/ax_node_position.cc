@@ -39,7 +39,7 @@ std::string ToString(const AXPositionKind kind) {
            {AXPositionKind::TREE_POSITION, "TreePosition"},
            {AXPositionKind::TEXT_POSITION, "TextPosition"}});
 
-  const auto* iter = kKindToString.find(kind);
+  const auto iter = kKindToString.find(kind);
   if (iter == std::end(kKindToString))
     return std::string();
   return iter->second;

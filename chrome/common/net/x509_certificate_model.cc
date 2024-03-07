@@ -523,10 +523,7 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
 });
 
 std::optional<std::string> GetOidText(bssl::der::Input oid) {
-  // TODO(crbug.com/1311404): this should be "const auto i" since it's an
-  // iterator, but fixed_flat_map iterators are raw pointers and the
-  // chromium-style plugin complains.
-  const auto* i = kOidStringMap.find(oid);
+  const auto i = kOidStringMap.find(oid);
   if (i != kOidStringMap.end())
     return l10n_util::GetStringUTF8(i->second);
   return std::nullopt;

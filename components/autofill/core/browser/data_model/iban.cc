@@ -110,7 +110,7 @@ static constexpr int kPrefixLength = 4;
 static constexpr int kSuffixLength = 4;
 
 int GetIbanCountryToLength(std::string_view country_code) {
-  auto* it = kCountryToIbanLength.find(country_code);
+  auto it = kCountryToIbanLength.find(country_code);
   if (it == kCountryToIbanLength.end()) {
     return 0;
   }
@@ -236,7 +236,7 @@ bool Iban::IsValid(const std::u16string& value) {
 
 // static
 bool Iban::IsIbanApplicableInCountry(const std::string& country_code) {
-  auto* it = kCountryToIbanLength.find(country_code);
+  auto it = kCountryToIbanLength.find(country_code);
   return it != kCountryToIbanLength.end();
 }
 

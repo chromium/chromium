@@ -188,7 +188,7 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
             {FILE_PATH_LITERAL(".webp"), "webp"},
         });
 
-    auto* it = kImageFileTypes.find(extension);
+    auto it = kImageFileTypes.find(extension);
     if (it == kImageFileTypes.cend()) {
       LOG(ERROR) << "Unsupported screenshot image file type: "
                  << path.FinalExtension();

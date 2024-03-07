@@ -646,7 +646,7 @@ GamepadIdList& GamepadIdList::Get() {
 
 XInputType GamepadIdList::GetXInputType(uint16_t vendor_id,
                                         uint16_t product_id) const {
-  const auto* find_it = kGamepadInfo.find({vendor_id, product_id});
+  const auto find_it = kGamepadInfo.find({vendor_id, product_id});
   return find_it == kGamepadInfo.end() ? kXInputTypeNone : find_it->second;
 }
 

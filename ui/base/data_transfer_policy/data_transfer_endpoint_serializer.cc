@@ -81,7 +81,7 @@ std::optional<EndpointType> EndpointStringToType(
         {kClipboardHistoryString, EndpointType::kClipboardHistory},
       });
 
-  auto* it = kEndpointStringToTypeMap.find(endpoint_string);
+  auto it = kEndpointStringToTypeMap.find(endpoint_string);
   if (it != kEndpointStringToTypeMap.end())
     return it->second;
 

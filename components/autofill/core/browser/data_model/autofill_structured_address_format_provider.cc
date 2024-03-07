@@ -30,7 +30,7 @@ std::u16string GetHomeStreetAddressPattern(std::string_view country_code) {
         u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
         u"${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}"}});
 
-  if (auto* it = kHomeStreetAddressCountryMap.find(country_code);
+  if (auto it = kHomeStreetAddressCountryMap.find(country_code);
       it != kHomeStreetAddressCountryMap.end()) {
     return std::u16string(it->second);
   }

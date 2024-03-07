@@ -26,11 +26,11 @@ enum class ChromeColorType {
 
 int GetDynamicColorId(const SkColor color,
                       ui::mojom::BrowserColorVariant variant) {
-  auto* it = base::ranges::find_if(kDynamicCustomizeChromeColors,
-                                   [&](const DynamicColorInfo& dynamic_color) {
-                                     return dynamic_color.color == color &&
-                                            dynamic_color.variant == variant;
-                                   });
+  auto it = base::ranges::find_if(kDynamicCustomizeChromeColors,
+                                  [&](const DynamicColorInfo& dynamic_color) {
+                                    return dynamic_color.color == color &&
+                                           dynamic_color.variant == variant;
+                                  });
   return it == kDynamicCustomizeChromeColors.end() ? kOtherDynamicColorId
                                                    : it->id;
 }
