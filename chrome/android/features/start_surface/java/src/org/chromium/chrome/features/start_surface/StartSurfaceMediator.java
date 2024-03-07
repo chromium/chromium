@@ -389,10 +389,6 @@ class StartSurfaceMediator
                         new TabModelObserver() {
                             @Override
                             public void didSelectTab(Tab tab, int type, int lastId) {
-                                if (mTabModelSelector.isIncognitoSelected()) {
-                                    return;
-                                }
-
                                 assert mUseMagicStack;
                                 if (type == TabSelectionType.FROM_CLOSE
                                         || type == TabSelectionType.FROM_UNDO) {
