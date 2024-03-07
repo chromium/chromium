@@ -215,18 +215,13 @@ class DisplayOverlayController : public ui::EventHandler,
   views::Widget* GetOverlayWidget();
   views::View* GetOverlayWidgetContentsView();
   bool HasMenuView() const;
-  // Used for edit mode, in which the input mapping must be temporarily visible
-  // regardless of user setting, until it is overridden when the user presses
-  // save or cancel.
-  void SetInputMappingVisibleTemporary();
-  // Used for the mapping hint toggle, to save user settings regarding
-  // mapping hint visibility.
-  void SetInputMappingVisible(bool visible);
+  // Sets input mapping visibility according to `visible` and stores the setting
+  // if `store_visible_state` is true.
+  void SetInputMappingVisible(bool visible, bool store_visible_state = false);
   bool GetInputMappingViewVisible() const;
 
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
-  // Used for the magnetic function of the editing list.
 
   // Close `MessageView` if `LocatedEvent` happens outside
   // of their view bounds.

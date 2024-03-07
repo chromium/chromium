@@ -404,7 +404,8 @@ void InputMenuView::OnToggleGameControlPressed() {
   display_overlay_controller_->SetTouchInjectorEnable(enabled);
   // Adjust `enabled_` and `visible_` properties to match `Game controls`.
   show_mapping_toggle_->SetIsOn(enabled);
-  display_overlay_controller_->SetInputMappingVisible(enabled);
+  display_overlay_controller_->SetInputMappingVisible(
+      /*visible=*/enabled, /*store_visible_state=*/true);
   show_mapping_toggle_->SetEnabled(enabled);
   edit_button_->SetEnabled(enabled);
 }
@@ -412,7 +413,8 @@ void InputMenuView::OnToggleGameControlPressed() {
 void InputMenuView::OnToggleShowHintPressed() {
   DCHECK(display_overlay_controller_);
   display_overlay_controller_->SetInputMappingVisible(
-      show_mapping_toggle_->GetIsOn());
+      /*visible=*/show_mapping_toggle_->GetIsOn(),
+      /*store_visible_state=*/true);
 }
 
 void InputMenuView::OnEditButtonPressed() {
@@ -423,7 +425,7 @@ void InputMenuView::OnEditButtonPressed() {
   // Force key-binding labels ON before entering edit mode.
   if (!show_mapping_toggle_->GetIsOn()) {
     show_mapping_toggle_->SetIsOn(true);
-    display_overlay_controller_->SetInputMappingVisibleTemporary();
+    display_overlay_controller_->SetInputMappingVisible(/*visible=*/true);
   }
   RecordInputOverlayCustomizedUsage();
   InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(

@@ -437,7 +437,7 @@ void DisplayOverlayController::AddInputMappingView(
   }
   // Set input mapping view visibility according to the saved status.
   DCHECK(touch_injector_);
-  SetInputMappingVisible(touch_injector_->input_mapping_visible());
+  SetInputMappingVisible(/*visible=*/touch_injector_->input_mapping_visible());
 }
 
 void DisplayOverlayController::RemoveInputMappingView() {
@@ -603,15 +603,13 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveFocusCycler();
       if (GetActiveActionsSize() == 0u) {
         // If there is no active action in `kView` mode, it doesn't create
-        // `input_mapping_widget_` to save resources. When
-        // switching from `kEdit` mode, destroy `input_mapping_widget_` for no
-        // active actions.
+        // `input_mapping_widget_` to save resources. When switching from
+        // `kEdit` mode, destroy `input_mapping_widget_` for no active actions.
         RemoveInputMappingWidget();
       } else {
         AddInputMappingWidget();
-        if (touch_injector_->input_mapping_visible()) {
-          input_mapping_widget_->ShowInactive();
-        }
+        SetInputMappingVisible(
+            /*visible=*/touch_injector_->input_mapping_visible());
 
         if (auto* input_mapping = GetInputMapping()) {
           input_mapping->SetDisplayMode(mode);
@@ -634,7 +632,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
 
       // No matter if the mapping hint is hidden, `input_mapping_widget_` needs
       // to show up in `kEdit` mode.
-      input_mapping_widget_->ShowInactive();
+      SetInputMappingVisible(/*visible=*/true);
 
       // Since `focus_cycler_` was added in `kEdit` mode after
       // `input_mapping_widget_` in general. Refresh `input_mapping_widget_` to
@@ -731,8 +729,9 @@ void DisplayOverlayController::OnApplyMenuState() {
     return;
   }
 
-  SetInputMappingVisible(GetTouchInjectorEnable() &&
-                         GetInputMappingViewVisible());
+  SetInputMappingVisible(
+      /*visible=*/GetTouchInjectorEnable() && GetInputMappingViewVisible(),
+      /*store_visible_state=*/true);
 }
 
 InputOverlayWindowStateType DisplayOverlayController::GetWindowStateType()
@@ -1039,10 +1038,12 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
           IsFlagSet(flags, ash::ArcGameControlsFlag::kEnabled));
 
       // `input_mapping_widget_` is always visible in edit mode.
-      SetInputMappingVisible(
-          IsFlagSet(flags, ash::ArcGameControlsFlag::kEdit)
-              ? true
-              : IsFlagSet(flags, ash::ArcGameControlsFlag::kHint));
+      SetInputMappingVisible(/*visible=*/
+                             IsFlagSet(flags, ash::ArcGameControlsFlag::kEdit)
+                                 ? true
+                                 : IsFlagSet(flags,
+                                             ash::ArcGameControlsFlag::kHint),
+                             /*store_visible_state=*/true);
 
       // Save the menu states upon menu closing.
       if (IsFlagChanged(flags, old_flags, ash::ArcGameControlsFlag::kMenu) &&
@@ -1070,34 +1071,25 @@ bool DisplayOverlayController::HasMenuView() const {
   return input_menu_view_ != nullptr;
 }
 
-void DisplayOverlayController::SetInputMappingVisible(bool visible) {
-  if (IsBeta()) {
-    // There is no `input_mapping_widget_` if there is no active action or gio
-    // is disabled.
-    if (!input_mapping_widget_) {
-      return;
-    }
+void DisplayOverlayController::SetInputMappingVisible(
+    bool visible,
+    bool store_visible_state) {
+  // There is no `input_mapping_widget_` or `input_mapping_view_` if there is no
+  // active action or the feature is disabled.
+  if (IsBeta() && input_mapping_widget_) {
     if (visible) {
       input_mapping_widget_->ShowInactive();
     } else {
       input_mapping_widget_->Hide();
     }
-  } else {
-    if (!input_mapping_view_) {
-      return;
-    }
+  } else if (!IsBeta() && input_mapping_view_) {
     input_mapping_view_->SetVisible(visible);
   }
 
-  DCHECK(touch_injector_);
-  touch_injector_->store_input_mapping_visible(visible);
-}
-
-void DisplayOverlayController::SetInputMappingVisibleTemporary() {
-  if (!input_mapping_view_) {
-    return;
+  if (store_visible_state) {
+    CHECK(touch_injector_);
+    touch_injector_->store_input_mapping_visible(visible);
   }
-  input_mapping_view_->SetVisible(true);
 }
 
 bool DisplayOverlayController::GetInputMappingViewVisible() const {
