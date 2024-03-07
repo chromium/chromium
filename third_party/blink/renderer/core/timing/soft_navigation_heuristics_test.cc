@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,7 +146,7 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
         heuristics->CreateEventScope(
             SoftNavigationHeuristics::EventScope::Type::kClick,
             /*is_new_interaction=*/true));
-    std::unique_ptr<TaskScope> task_scope = tracker->CreateTaskScope(
+    TaskScope task_scope = tracker->CreateTaskScope(
         script_state, /*parent_task=*/nullptr, TaskScopeType::kCallback);
     root_task = tracker->RunningTask();
   }
@@ -154,8 +156,8 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   // Simulate a descendant task.
   Persistent<scheduler::TaskAttributionInfo> descendant_task = nullptr;
   {
-    std::unique_ptr<TaskScope> task_scope = tracker->CreateTaskScope(
-        script_state, root_task, TaskScopeType::kCallback);
+    TaskScope task_scope = tracker->CreateTaskScope(script_state, root_task,
+                                                    TaskScopeType::kCallback);
     descendant_task = tracker->RunningTask();
   }
   EXPECT_TRUE(descendant_task);

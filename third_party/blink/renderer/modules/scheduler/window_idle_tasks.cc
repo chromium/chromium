@@ -46,7 +46,7 @@ class V8IdleTask : public IdleTask {
 
   void invoke(IdleDeadline* deadline) override {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
-    std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+    std::optional<scheduler::TaskAttributionTracker::TaskScope>
         task_attribution_scope;
     if (auto* tracker = scheduler::TaskAttributionTracker::From(
             script_state->GetIsolate())) {

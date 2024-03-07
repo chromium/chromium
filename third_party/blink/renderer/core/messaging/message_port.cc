@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -350,9 +351,7 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
   }
 
   Event* evt = CreateMessageEvent(message);
-  // This unique_ptr is here to ensure that the TaskScope remains alive for the
-  // lifetime of this function.
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   // Using a variable here places the WeakMember pointer on the stack, ensuring
   // it doesn't get GCed while it's being used.

@@ -18,7 +18,6 @@
 namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
-class ScriptWrappableTaskState;
 }  // namespace blink
 
 namespace v8 {
@@ -47,16 +46,15 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
       base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
           visitor) override;
 
-  std::unique_ptr<TaskScope> CreateTaskScope(ScriptState* script_state,
-                                             TaskAttributionInfo* parent_task,
-                                             TaskScopeType type) override;
+  TaskScope CreateTaskScope(ScriptState* script_state,
+                            TaskAttributionInfo* parent_task,
+                            TaskScopeType type) override;
 
-  std::unique_ptr<TaskScope> CreateTaskScope(
-      ScriptState* script_state,
-      TaskAttributionInfo* parent_task,
-      TaskScopeType type,
-      AbortSignal* abort_source,
-      DOMTaskSignal* priority_source) override;
+  TaskScope CreateTaskScope(ScriptState* script_state,
+                            TaskAttributionInfo* parent_task,
+                            TaskScopeType type,
+                            AbortSignal* abort_source,
+                            DOMTaskSignal* priority_source) override;
 
   ObserverScope RegisterObserver(Observer* observer) override;
   void AddSameDocumentNavigationTask(TaskAttributionInfo* task) override;
@@ -64,58 +62,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   TaskAttributionInfo* CommitSameDocumentNavigation(TaskAttributionId) override;
 
  private:
-  struct TaskAttributionIdPair {
-    TaskAttributionIdPair() = default;
-    TaskAttributionIdPair(std::optional<TaskAttributionId> parent_id,
-                          std::optional<TaskAttributionId> current_id)
-        : parent(parent_id), current(current_id) {}
-
-    explicit operator bool() const { return parent.has_value(); }
-    std::optional<TaskAttributionId> parent;
-    std::optional<TaskAttributionId> current;
-  };
-
-  // The TaskScope class maintains information about a task. The task's lifetime
-  // match those of TaskScope, and the task is considered terminated when
-  // TaskScope is destructed. TaskScope takes in the Task's ID, ScriptState, the
-  // ID of the running task (to restore as the running task once this task is
-  // done), and a continuation task ID (to restore in V8 once the current task
-  // is done).
-  class TaskScopeImpl : public TaskScope {
-   public:
-    TaskScopeImpl(ScriptState*,
-                  TaskAttributionTrackerImpl*,
-                  TaskAttributionId scope_task_id,
-                  TaskAttributionInfo* running_task,
-                  ScriptWrappableTaskState* continuation_task_state,
-                  TaskScopeType,
-                  std::optional<TaskAttributionId> parent_task_id);
-    ~TaskScopeImpl() override;
-    TaskScopeImpl(const TaskScopeImpl&) = delete;
-    TaskScopeImpl& operator=(const TaskScopeImpl&) = delete;
-
-    TaskAttributionId GetTaskId() const { return scope_task_id_; }
-    TaskAttributionInfo* RunningTaskToBeRestored() const {
-      return running_task_to_be_restored_.Get();
-    }
-
-    ScriptWrappableTaskState* ContinuationTaskStateToBeRestored() const {
-      return continuation_state_to_be_restored_;
-    }
-
-    ScriptState* GetScriptState() const { return script_state_; }
-
-   private:
-    raw_ptr<TaskAttributionTrackerImpl> task_tracker_;
-    TaskAttributionId scope_task_id_;
-    Persistent<TaskAttributionInfo> running_task_to_be_restored_;
-    Persistent<ScriptWrappableTaskState> continuation_state_to_be_restored_;
-    Persistent<ScriptState> script_state_;
-  };
-
   explicit TaskAttributionTrackerImpl(v8::Isolate*);
 
-  void TaskScopeCompleted(const TaskScopeImpl&);
+  void OnTaskScopeDestroyed(const TaskScope&) override;
   void OnObserverScopeDestroyed(const ObserverScope&) override;
 
   TaskAttributionId next_task_id_;

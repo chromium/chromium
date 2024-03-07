@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h"
 
 #include <memory>
-#include <utility>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
@@ -98,20 +98,20 @@ void TaskAttributionTrackerImpl::ForEachAncestor(
   }
 }
 
-std::unique_ptr<TaskAttributionTracker::TaskScope>
-TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
-                                            TaskAttributionInfo* parent_task,
-                                            TaskScopeType type) {
+TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
+    ScriptState* script_state,
+    TaskAttributionInfo* parent_task,
+    TaskScopeType type) {
   return CreateTaskScope(script_state, parent_task, type,
                          /*abort_source=*/nullptr, /*priority_source=*/nullptr);
 }
 
-std::unique_ptr<TaskAttributionTracker::TaskScope>
-TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
-                                            TaskAttributionInfo* parent_task,
-                                            TaskScopeType type,
-                                            AbortSignal* abort_source,
-                                            DOMTaskSignal* priority_source) {
+TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
+    ScriptState* script_state,
+    TaskAttributionInfo* parent_task,
+    TaskScopeType type,
+    AbortSignal* abort_source,
+    DOMTaskSignal* priority_source) {
   CHECK(script_state);
   CHECK_EQ(script_state->GetIsolate(), isolate_);
   TaskAttributionInfo* running_task_to_be_restored = running_task_;
@@ -136,22 +136,39 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
       script_state, MakeGarbageCollected<ScriptWrappableTaskState>(
                         running_task_.Get(), abort_source, priority_source));
 
-  return std::make_unique<TaskScopeImpl>(
-      script_state, this, running_task_->Id(), running_task_to_be_restored,
-      continuation_task_state_to_be_restored, type,
+  std::optional<TaskAttributionId> parent_task_id =
       running_task_->Parent()
           ? std::optional<TaskAttributionId>(running_task_->Parent()->Id())
-          : std::nullopt);
+          : std::nullopt;
+  TRACE_EVENT_BEGIN(
+      "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_blink_task_scope();
+        data->set_type(ToProtoEnum(type));
+        data->set_scope_task_id(running_task_->Id().value());
+        data->set_running_task_id_to_be_restored(TaskAttributionIdToInt(
+            running_task_to_be_restored ? running_task_to_be_restored->Id()
+                                        : TaskAttributionId()));
+        data->set_continuation_task_id_to_be_restored(TaskAttributionIdToInt(
+            continuation_task_state_to_be_restored &&
+                    continuation_task_state_to_be_restored->GetTask()
+                ? std::optional<TaskAttributionId>(
+                      continuation_task_state_to_be_restored->GetTask()->Id())
+                : std::nullopt));
+        data->set_parent_task_id(TaskAttributionIdToInt(parent_task_id));
+      });
+
+  return TaskScope(this, script_state, running_task_to_be_restored,
+                   continuation_task_state_to_be_restored);
 }
 
-void TaskAttributionTrackerImpl::TaskScopeCompleted(
-    const TaskScopeImpl& task_scope) {
+void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
+    const TaskScope& task_scope) {
   DCHECK(running_task_);
-  DCHECK(running_task_->Id() == task_scope.GetTaskId());
-  running_task_ = task_scope.RunningTaskToBeRestored();
+  running_task_ = task_scope.previous_running_task_;
   ScriptWrappableTaskState::SetCurrent(
-      task_scope.GetScriptState(),
-      task_scope.ContinuationTaskStateToBeRestored());
+      task_scope.script_state_, task_scope.previous_continuation_task_state_);
+  TRACE_EVENT_END("scheduler");
 }
 
 TaskAttributionTracker::ObserverScope
@@ -193,45 +210,6 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
     }
   }
   return nullptr;
-}
-
-// TaskScope's implementation
-//////////////////////////////////////
-TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
-    ScriptState* script_state,
-    TaskAttributionTrackerImpl* task_tracker,
-    TaskAttributionId scope_task_id,
-    TaskAttributionInfo* running_task,
-    ScriptWrappableTaskState* continuation_task_state,
-    TaskScopeType type,
-    std::optional<TaskAttributionId> parent_task_id)
-    : task_tracker_(task_tracker),
-      scope_task_id_(scope_task_id),
-      running_task_to_be_restored_(running_task),
-      continuation_state_to_be_restored_(continuation_task_state),
-      script_state_(script_state) {
-  TRACE_EVENT_BEGIN(
-      "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_blink_task_scope();
-        data->set_type(ToProtoEnum(type));
-        data->set_scope_task_id(scope_task_id_.value());
-        data->set_running_task_id_to_be_restored(TaskAttributionIdToInt(
-            running_task_to_be_restored_ ? running_task_to_be_restored_->Id()
-                                         : TaskAttributionId()));
-        data->set_continuation_task_id_to_be_restored(TaskAttributionIdToInt(
-            continuation_state_to_be_restored_ &&
-                    continuation_state_to_be_restored_->GetTask()
-                ? std::optional<TaskAttributionId>(
-                      continuation_state_to_be_restored_->GetTask()->Id())
-                : std::nullopt));
-        data->set_parent_task_id(TaskAttributionIdToInt(parent_task_id));
-      });
-}
-
-TaskAttributionTrackerImpl::TaskScopeImpl::~TaskScopeImpl() {
-  task_tracker_->TaskScopeCompleted(*this);
-  TRACE_EVENT_END("scheduler");
 }
 
 }  // namespace blink::scheduler

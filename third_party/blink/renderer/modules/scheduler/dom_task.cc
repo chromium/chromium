@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/scheduler/dom_task.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -184,7 +185,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
       delay_.InMillisecondsF());
   probe::AsyncTask async_task(context, &async_task_context_);
 
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   // For the main thread (tracker exists), create the task scope with the signal
   // to set up propagation. On workers, set the current context here since there

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -926,9 +927,7 @@ void LocalDOMWindow::DispatchPopstateEvent(
     scoped_refptr<SerializedScriptValue> state_object,
     scheduler::TaskAttributionInfo* parent_task) {
   DCHECK(GetFrame());
-  // This unique_ptr maintains the TaskScope alive for the lifetime of the
-  // method.
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   if (parent_task) {
     auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());

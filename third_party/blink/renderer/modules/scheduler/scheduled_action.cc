@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/scheduler/scheduled_action.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/trace_event/trace_event.h"
@@ -156,7 +157,7 @@ void ScheduledAction::Execute(ExecutionContext* context) {
 
   // We create a TaskScope, to ensure code strings passed to ScheduledAction
   // APIs properly track their ancestor as the registering task.
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   auto* tracker =
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());

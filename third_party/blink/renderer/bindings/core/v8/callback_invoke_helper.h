@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_CALLBACK_INVOKE_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_CALLBACK_INVOKE_HELPER_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -102,7 +104,7 @@ class CallbackInvokeHelper final {
 
   ScriptState::Scope callback_relevant_context_scope_;
   v8::Context::BackupIncumbentScope backup_incumbent_scope_;
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope_;
 };
 

@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XMLHTTPREQUEST_XML_HTTP_REQUEST_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -299,7 +300,7 @@ class CORE_EXPORT XMLHttpRequest final
 
   // Creates a task scope used for firing events if the `parent_task_` is set
   // and different from the current task.
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
   MaybeCreateTaskAttributionScope();
 
   Member<XMLHttpRequestUpload> upload_;

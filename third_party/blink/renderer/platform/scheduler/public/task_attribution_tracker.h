@@ -20,6 +20,7 @@ namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
 class ScriptState;
+class ScriptWrappableTaskState;
 }  // namespace blink
 
 namespace v8 {
@@ -47,16 +48,59 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kXMLHttpRequest,
   };
 
-  // A class maintaining the scope of the current task. Keeping it alive ensures
-  // that the current task is counted as a continuous one.
-  class TaskScope {
-   public:
-    virtual ~TaskScope() = default;
-    TaskScope(const TaskScope&) = delete;
-    TaskScope& operator=(const TaskScope&) = delete;
+  // `TaskScope` stores state for the current task, which is propagated to tasks
+  // and promise reactions created with in the scope. `TaskScope`s are meant
+  // to be only used for JavaScript execution, and "task" here approximately
+  // means "the current JavaScript execution, excluding microtasks", which
+  // roughly aligns with a top-level JS callback.
+  class TaskScope final {
+    STACK_ALLOCATED();
 
-   protected:
-    TaskScope() = default;
+   public:
+    ~TaskScope() {
+      if (task_tracker_) {
+        task_tracker_->OnTaskScopeDestroyed(*this);
+      }
+    }
+
+    TaskScope(TaskScope&& other)
+        : task_tracker_(std::exchange(other.task_tracker_, nullptr)),
+          script_state_(other.script_state_),
+          previous_running_task_(other.previous_running_task_),
+          previous_continuation_task_state_(
+              other.previous_continuation_task_state_) {}
+
+    TaskScope& operator=(TaskScope&& other) {
+      task_tracker_ = std::exchange(other.task_tracker_, nullptr);
+      script_state_ = other.script_state_;
+      previous_running_task_ = other.previous_running_task_;
+      previous_continuation_task_state_ =
+          other.previous_continuation_task_state_;
+      return *this;
+    }
+
+   private:
+    // Only `TaskAttributionTrackerImpl` can create `TaskScope`s.
+    friend class TaskAttributionTrackerImpl;
+
+    TaskScope(TaskAttributionTracker* tracker,
+              ScriptState* script_state,
+              TaskAttributionInfo* previous_running_task,
+              ScriptWrappableTaskState* previous_continuation_task_state)
+        : task_tracker_(tracker),
+          script_state_(script_state),
+          previous_running_task_(previous_running_task),
+          previous_continuation_task_state_(previous_continuation_task_state) {}
+
+    // `task_tracker_` is tied to the lifetime of the isolate, which will
+    // outlive the current task.
+    TaskAttributionTracker* task_tracker_;
+
+    // The rest are on the Oilpan heap, so these are stored as raw pointers
+    // since the class is stack allocated.
+    ScriptState* script_state_;
+    TaskAttributionInfo* previous_running_task_;
+    ScriptWrappableTaskState* previous_continuation_task_state_;
   };
 
   class Observer : public GarbageCollectedMixin {
@@ -106,17 +150,15 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   virtual ~TaskAttributionTracker() = default;
 
   // Create a new task scope.
-  virtual std::unique_ptr<TaskScope> CreateTaskScope(
-      ScriptState*,
-      TaskAttributionInfo* parent_task,
-      TaskScopeType type) = 0;
+  virtual TaskScope CreateTaskScope(ScriptState*,
+                                    TaskAttributionInfo* parent_task,
+                                    TaskScopeType type) = 0;
   // Create a new task scope with web scheduling context.
-  virtual std::unique_ptr<TaskScope> CreateTaskScope(
-      ScriptState*,
-      TaskAttributionInfo* parent_task,
-      TaskScopeType type,
-      AbortSignal* abort_source,
-      DOMTaskSignal* priority_source) = 0;
+  virtual TaskScope CreateTaskScope(ScriptState*,
+                                    TaskAttributionInfo* parent_task,
+                                    TaskScopeType type,
+                                    AbortSignal* abort_source,
+                                    DOMTaskSignal* priority_source) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* RunningTask() const = 0;
@@ -146,6 +188,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
       TaskAttributionId) = 0;
 
  protected:
+  virtual void OnTaskScopeDestroyed(const TaskScope&) = 0;
   virtual void OnObserverScopeDestroyed(const ObserverScope&) = 0;
 };
 

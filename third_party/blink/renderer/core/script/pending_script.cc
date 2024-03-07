@@ -163,7 +163,7 @@ void PendingScript::ExecuteScriptBlock() {
     return;
   }
 
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   if (ScriptState* script_state = ToScriptStateForMainWorld(frame)) {
     if (auto* tracker = scheduler::TaskAttributionTracker::From(

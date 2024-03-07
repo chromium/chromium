@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -615,7 +616,7 @@ void XMLHttpRequest::DispatchReadyStateChangeEvent() {
       else
         action = XMLHttpRequestProgressEventThrottle::kFlush;
     }
-    std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+    std::optional<scheduler::TaskAttributionTracker::TaskScope>
         task_attribution_scope = MaybeCreateTaskAttributionScope();
     progress_event_throttle_->DispatchReadyStateChangeEvent(
         Event::Create(event_type_names::kReadystatechange), action);
@@ -1330,7 +1331,7 @@ void XMLHttpRequest::DispatchProgressEvent(const AtomicString& type,
   uint64_t total =
       length_computable ? static_cast<uint64_t>(expected_length) : 0;
 
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope = MaybeCreateTaskAttributionScope();
   ExecutionContext* context = GetExecutionContext();
   probe::AsyncTask async_task(
@@ -2130,11 +2131,11 @@ bool XMLHttpRequest::HasRequestHeaderForTesting(AtomicString name) const {
   return request_headers_.Contains(name);
 }
 
-std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+std::optional<scheduler::TaskAttributionTracker::TaskScope>
 XMLHttpRequest::MaybeCreateTaskAttributionScope() {
   if (!parent_task_ || !GetExecutionContext() ||
       GetExecutionContext()->IsContextDestroyed()) {
-    return nullptr;
+    return std::nullopt;
   }
   // `parent_task_` being non-null implies that task tracking is enabled and
   // this object is associated with the main world.
@@ -2150,7 +2151,7 @@ XMLHttpRequest::MaybeCreateTaskAttributionScope() {
   // TODO(crbug.com/1439971): Make this safe to do or move the logic into the
   // task attribution implementation.
   if (tracker->RunningTask() == parent_task_.Get()) {
-    return nullptr;
+    return std::nullopt;
   }
   return tracker->CreateTaskScope(
       script_state, parent_task_,
