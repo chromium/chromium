@@ -51,6 +51,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_util.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/wm/core/compound_event_filter.h"
@@ -94,6 +95,14 @@ constexpr base::TimeDelta kPostLockFailTimeout =
 // before actually requesting shutdown, to give the animation time to finish.
 constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
 
+// The resized width of the pine image in landscape or portrait orientation. The
+// width will be fixed and then the height of the resized image will be
+// calculated based on the aspect ratio of the original pine image. The resized
+// pine image will be saved to disk, decoded and shown with this size directly
+// inside the pine dialog later as well.
+constexpr int kResizedPineImageWidthInLandscape = 344;
+constexpr int kResizedPineImageWidthInPortrait = 384;
+
 // Records the given `duration` to the given `pref_name` so it can be recorded
 // as an UMA metric on the next startup.
 void SavePineScreenshotDuration(PrefService* local_state,
@@ -113,7 +122,17 @@ void EncodeAndSavePineImage(const base::FilePath& file_path, gfx::Image image) {
     base::DeleteFile(file_path);
     return;
   }
-  auto png_bytes = image.As1xPNGBytes();
+
+  const int image_width = image.Width();
+  const int image_height = image.Height();
+  const float aspect_ratio = static_cast<float>(image_height) / image_width;
+  const int resized_image_width = image_width > image_height
+                                      ? kResizedPineImageWidthInLandscape
+                                      : kResizedPineImageWidthInPortrait;
+  const int resized_image_height = aspect_ratio * resized_image_width;
+  const auto resized_image = gfx::ResizedImage(
+      image, gfx::Size(resized_image_width, resized_image_height));
+  auto png_bytes = resized_image.As1xPNGBytes();
   auto raw_data = base::make_span(png_bytes->data(), png_bytes->size());
   if (!base::WriteFile(file_path, raw_data)) {
     LOG(ERROR) << "Failed to write pine image to " << file_path.MaybeAsASCII();
