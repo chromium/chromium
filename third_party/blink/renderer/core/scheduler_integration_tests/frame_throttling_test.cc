@@ -916,7 +916,7 @@ TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledFrame) {
   // The fixed background in the throttled sub frame should not cause main
   // thread scrolling.
   EXPECT_FALSE(
-      GetDocument().View()->LayoutViewport()->ShouldScrollOnMainThread());
+      GetDocument().View()->LayoutViewport()->SmoothScrollMustTickOnMain());
 
   // Make the frame visible by changing its transform. This doesn't cause a
   // layout, but should still unthrottle the frame.
@@ -932,9 +932,9 @@ TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledFrame) {
   EXPECT_TRUE(frame_element->contentDocument()
                   ->View()
                   ->LayoutViewport()
-                  ->ShouldScrollOnMainThread());
+                  ->SmoothScrollMustTickOnMain());
   EXPECT_FALSE(
-      GetDocument().View()->LayoutViewport()->ShouldScrollOnMainThread());
+      GetDocument().View()->LayoutViewport()->SmoothScrollMustTickOnMain());
 }
 
 TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledLayer) {

@@ -3778,12 +3778,6 @@ String Internals::getScrollAnimationState(Node* node) const {
   return String();
 }
 
-String Internals::getProgrammaticScrollAnimationState(Node* node) const {
-  if (ScrollableArea* scrollable_area = ScrollableAreaForNode(node))
-    return scrollable_area->GetProgrammaticScrollAnimator().RunStateAsText();
-  return String();
-}
-
 void Internals::crash() {
   CHECK(false) << "Intentional crash";
 }

@@ -423,7 +423,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void DeregisterForAnimation() {}
 
   virtual bool UsesCompositedScrolling() const = 0;
-  virtual bool ShouldScrollOnMainThread() const { return false; }
+  virtual bool SmoothScrollMustTickOnMain() const { return false; }
 
   // Overlay scrollbars can "fade-out" when inactive. This value should only be
   // updated if BlinkControlsOverlayVisibility is true in the

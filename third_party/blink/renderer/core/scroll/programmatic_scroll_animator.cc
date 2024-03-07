@@ -141,7 +141,7 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
     // scroll on the compositor thread. We should send the ScrollType
     // information to the compositor thread.
     // crbug.com/730705
-    if (!scrollable_area_->ShouldScrollOnMainThread() &&
+    if (!scrollable_area_->SmoothScrollMustTickOnMain() &&
         !is_sequenced_scroll_) {
       auto animation = cc::KeyframeModel::Create(
           animation_curve_->Clone(),
@@ -167,20 +167,8 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
     }
   }
 
-  // If the scrollable area switched to require main thread scrolling during a
-  // composited animation, continue the animation on the main thread.
-  if (run_state_ == RunState::kRunningOnCompositor &&
-      scrollable_area_->ShouldScrollOnMainThread()) {
-    RemoveAnimation();
-    run_state_ = RunState::kRunningOnMainThread;
-    animation_curve_->SetInitialValue(
-        CompositorOffsetFromBlinkOffset(scrollable_area_->GetScrollOffset()));
-    scrollable_area_->RegisterForAnimation();
-    if (!scrollable_area_->ScheduleAnimation()) {
-      ResetAnimationState();
-      ScrollOffsetChanged(target_offset_, GetScrollType());
-    }
-  }
+  DCHECK(!(run_state_ == RunState::kRunningOnCompositor &&
+           scrollable_area_->SmoothScrollMustTickOnMain()));
 }
 
 void ProgrammaticScrollAnimator::NotifyCompositorAnimationFinished(

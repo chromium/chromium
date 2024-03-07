@@ -1945,18 +1945,18 @@ TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
   auto* box = scroller->GetLayoutBox();
   auto* scrollable_area = box->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
-  EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
+  EXPECT_TRUE(scrollable_area->SmoothScrollMustTickOnMain());
   EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
 
   scroller->SetInlineStyleProperty(CSSPropertyID::kOverflow, CSSValueID::kAuto);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(scrollable_area->ShouldScrollOnMainThread());
+  EXPECT_FALSE(scrollable_area->SmoothScrollMustTickOnMain());
   EXPECT_TRUE(box->FirstFragment().PaintProperties()->Scroll());
 
   scroller->SetInlineStyleProperty(CSSPropertyID::kOverflow,
                                    CSSValueID::kHidden);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
+  EXPECT_TRUE(scrollable_area->SmoothScrollMustTickOnMain());
   EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
 }
 

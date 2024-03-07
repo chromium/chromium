@@ -575,11 +575,6 @@ class Internals final : public ScriptWrappable {
   // have a scrollable area.
   String getScrollAnimationState(Node*) const;
 
-  // Returns the run state of the node's programmatic scroll animator (see
-  // ScrollAnimatorCompositorCoordinater::RunState), or -1 if the node does not
-  // have a scrollable area.
-  String getProgrammaticScrollAnimationState(Node*) const;
-
   // Intentional crash.
   void crash();
 

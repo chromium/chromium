@@ -274,7 +274,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void DidCompositorScroll(const gfx::PointF&) override;
 
-  bool ShouldScrollOnMainThread() const override;
+  bool SmoothScrollMustTickOnMain() const override;
 
   bool IsActive() const override;
   bool IsScrollCornerVisible() const override;

@@ -89,7 +89,7 @@ class CORE_EXPORT RootFrameViewport final
   ScrollOffset MaximumScrollOffset() const override;
   gfx::Size ContentsSize() const override;
   bool UsesCompositedScrolling() const override;
-  bool ShouldScrollOnMainThread() const override;
+  bool SmoothScrollMustTickOnMain() const override;
   bool ScrollbarsCanBeActive() const override;
   bool UserInputScrollable(ScrollbarOrientation) const override;
   bool ShouldPlaceVerticalScrollbarOnLeft() const override;
