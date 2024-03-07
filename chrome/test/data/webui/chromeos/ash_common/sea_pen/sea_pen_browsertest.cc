@@ -10,3 +10,8 @@ using SeaPenBrowserTest = WebUIMochaBrowserTest;
 IN_PROC_BROWSER_TEST_F(SeaPenBrowserTest, SeaPenUtils) {
   RunTest("chromeos/ash_common/sea_pen/sea_pen_utils_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(SeaPenBrowserTest, SeaPenConstants) {
+  RunTest("chromeos/ash_common/sea_pen/sea_pen_constants_test.js",
+          "mocha.run()");
+}

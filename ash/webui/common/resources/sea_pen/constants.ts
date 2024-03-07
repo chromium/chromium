@@ -56,9 +56,13 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
  * Split the template string into an array of strings, where each string is
  * either a literal string or a placeholder for a chip.
  * @example
- * // returns ['A park in ', '<city>', ' in the style of ', '<style>']
+ * // returns ['A park in', '<city>', 'in the style of', '<style>']
  * parseTemplateText('A park in <city> in the style of <style>');
  */
 export function parseTemplateText(template: string): string[] {
-  return template.split(/(<\w+>)/g);
+  return template.split(/(<\w+>)/g)
+      .filter(function(entry) {
+        return entry.trim() != '';
+      })
+      .map(entry => entry.trim());
 }
