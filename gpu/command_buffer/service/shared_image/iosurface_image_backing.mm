@@ -661,6 +661,13 @@ bool IOSurfaceImageBacking::OverlayRepresentation::BeginReadAccess(
     eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
   }
 
+#if BUILDFLAG(USE_DAWN)
+  // This will transition the image to be accessed by CoreAnimation. So
+  // WaitForDawnCommandsToBeScheduled() call is required. This is similar
+  // to ANGLE's requirement for eglWaitUntilWorkScheduledANGLE() above.
+  iosurface_backing->WaitForDawnCommandsToBeScheduled();
+#endif
+
   gl::GLContext* context = gl::GLContext::GetCurrent();
   if (context) {
     const auto& signals = static_cast<IOSurfaceImageBacking*>(backing())
@@ -907,21 +914,14 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
 
   iosurface_backing->DestroyWGPUTextureIfNotCached(device_, texture_);
 
-  // TODO(b/252731382): the following WaitForCommandsToBeScheduled call should
-  // no longer be necessary, but for some reason it is. Removing it
-  // reintroduces intermittent renders of black frames to the WebGPU canvas.
-  // This points to another synchronization bug not resolved by the use of
-  // MTLSharedEvent between Dawn and ANGLE's Metal backend.
-  //
-  // macOS has a global GPU command queue so synchronization between APIs and
-  // devices is automatic. However on Metal, wgpuQueueSubmit "commits" the
-  // Metal command buffers but they aren't "scheduled" in the global queue
-  // immediately. (that work seems offloaded to a different thread?)
-  // Wait for all the previous submitted commands to be scheduled to have
-  // scheduling races between commands using the IOSurface on different APIs.
-  // This is a blocking call but should be almost instant.
-  TRACE_EVENT0("gpu", "DawnRepresentation::EndAccess");
-  dawn::native::metal::WaitForCommandsToBeScheduled(device_.Get());
+  if (!readonly && end_access_desc.fenceCount > 0) {
+    // For write access, we would need to WaitForCommandsToBeScheduled
+    // before the image is used by CoreAnimation or WebGL later.
+    // However, we defer the wait on this device until CoreAnimation
+    // or WebGL actually needs to access the image. This could avoid repeated
+    // and unnecessary waits.
+    iosurface_backing->AddWGPUDeviceWithPendingCommands(device_);
+  }
 
   texture_ = nullptr;
   usage_ = wgpu::TextureUsage::None;
@@ -1330,6 +1330,19 @@ void IOSurfaceImageBacking::DestroyWGPUTextureIfNotCached(
 
   texture.Destroy();
 }
+
+void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
+    wgpu::Device device) {
+  wgpu_devices_pending_flush_.insert(std::move(device));
+}
+
+void IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled() {
+  for (const auto& device : wgpu_devices_pending_flush_) {
+    dawn::native::metal::WaitForCommandsToBeScheduled(device.Get());
+  }
+
+  wgpu_devices_pending_flush_.clear();
+}
 #endif
 
 std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
@@ -1634,6 +1647,14 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   if (!HandleBeginAccessSync(readonly)) {
     return false;
   }
+
+#if BUILDFLAG(USE_DAWN)
+  // WebGL might use different GPU from what Dawn uses, in that case we need to
+  // wait until Dawn's commands are scheduled before proceeding to access the
+  // image in WebGL.
+  // TODO(b/328411251): Investigate why this is needed.
+  WaitForDawnCommandsToBeScheduled();
+#endif
 
   // If the GL texture is already bound (the bind is not marked as pending),
   // then early-out.

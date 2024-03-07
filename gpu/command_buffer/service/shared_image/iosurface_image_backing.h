@@ -136,6 +136,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void RemoveWGPUTextureFromCache(wgpu::Device device, wgpu::Texture texture);
   void DestroyWGPUTextureIfNotCached(wgpu::Device device,
                                      wgpu::Texture texture);
+
+  void AddWGPUDeviceWithPendingCommands(wgpu::Device device);
+  void WaitForDawnCommandsToBeScheduled();
 #endif
 
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
@@ -247,6 +250,16 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   // Tracks the number of currently-ongoing accesses to a given WGPU texture.
   base::flat_map<WGPUTexture, int> wgpu_texture_ongoing_accesses_;
+
+  // Tracks the devices to invoke waitUntilScheduled.
+  // TODO(dawn:2453): The below comparator should be implemented in
+  // wgpu::Device itself.
+  struct WGPUDeviceCompare {
+    bool operator()(const wgpu::Device& lhs, const wgpu::Device& rhs) const {
+      return lhs.Get() < rhs.Get();
+    }
+  };
+  base::flat_set<wgpu::Device, WGPUDeviceCompare> wgpu_devices_pending_flush_;
 
   bool WGPUTextureHasOngoingAccess(wgpu::Texture texture);
   void IncrementNumberOfOngoingWGPUTextureAccesses(wgpu::Texture texture);
