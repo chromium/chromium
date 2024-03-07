@@ -375,7 +375,10 @@ void CloudFileSystem::OnTimer() {
   // Request that the file system syncs with the Cloud. The entry path is
   // insignficant, just pass it root.
   ExecuteAction({base::FilePath("/")}, kODFSSyncWithCloudAction,
-                base::DoNothing());
+                base::BindOnce([](base::File::Error result) {
+                  VLOG(1) << "Action " << kODFSSyncWithCloudAction
+                          << " completed: " << result;
+                }));
 }
 
 }  // namespace ash::file_system_provider
