@@ -47,7 +47,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -180,8 +179,6 @@ public class SyncConsentFragmentTest {
                     .setDescription(RENDER_DESCRIPTION)
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
-
-    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
@@ -334,7 +331,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void
             testSyncConsentFragmentNotDefaultAccountWithPrimaryAccountWithMinorModeRestrictionsEnabled()
                     throws IOException {
@@ -1102,7 +1098,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedInWithMinorModeRequiredHasEqualButtons() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -1121,7 +1116,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedInWithMinorModeNotRequiredHasWeightedButtons() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -1140,29 +1134,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325929365")
-    public void testSignedInWithMinorModeUnknownWaitsForButtons() throws IOException {
-        mChromeActivityTestRule.startMainActivityOnBlankPage();
-        // Account Capabilities are intentionally empty.
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(
-                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_UNKNOWN);
-
-        mSigninTestRule.waitForSeeding();
-        SigninTestUtil.signin(accountInfo);
-
-        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
-        mRenderTestRule.render(
-                mSyncConsentActivity.findViewById(R.id.fragment_container),
-                "signed_in_with_minor_mode_unknown_waits_for_buttons");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325929365")
     public void testSignedInWithMinorModeUnknownHasEqualButtonsOnDeadline() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
@@ -1175,8 +1146,9 @@ public class SyncConsentFragmentTest {
 
         mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
 
-        // Signed out account with no capabilities must wait to be deadlined to show buttons.
-        mFakeTimeTestRule.advanceMillis(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+        // Account with no capabilities must wait to be deadlined to show buttons.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signed_in_with_minor_mode_unknown_has_equal_buttons_on_deadline");
@@ -1185,7 +1157,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedOutWithMinorModeRequiredHasEqualButtons() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -1200,7 +1171,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSignedOutWithMinorModeNotRequiredHasWeightedButtons() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -1215,24 +1185,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325929365")
-    public void testSignedOutWithMinorModeUnknownWaitsForButtons() throws IOException {
-        mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(
-                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_UNKNOWN);
-        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
-        mRenderTestRule.render(
-                mSyncConsentActivity.findViewById(R.id.fragment_container),
-                "signed_out_with_minor_mode_unknown_waits_for_buttons");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-    @DisabledTest(message = "b/325929365")
     public void testSignedOutWithMinorModeUnknownHasEqualButtonsOnDeadline() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -1241,7 +1193,8 @@ public class SyncConsentFragmentTest {
         mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
 
         // Signed out account with no capabilities must wait to be deadlined to show buttons.
-        mFakeTimeTestRule.advanceMillis(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "signed_out_with_minor_mode_unknown_has_equal_buttons_on_deadline");
@@ -1250,7 +1203,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testSyncConsentFragmentNoAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mSyncConsentActivity =
