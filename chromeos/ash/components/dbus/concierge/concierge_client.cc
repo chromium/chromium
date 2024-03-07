@@ -139,8 +139,7 @@ class ConciergeClientImpl : public ConciergeClient {
   void StartVm(const concierge::StartVmRequest& request,
                chromeos::DBusMethodCallback<concierge::StartVmResponse>
                    callback) override {
-    CallMethodWithFds(concierge::kStartVm2Method, request, {},
-                      std::move(callback));
+    CallMethod(concierge::kStartVmMethod, request, std::move(callback));
   }
 
   void StartVmWithFd(
@@ -148,10 +147,8 @@ class ConciergeClientImpl : public ConciergeClient {
       const vm_tools::concierge::StartVmRequest& request,
       chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
           callback) override {
-    std::vector<base::ScopedFD> fds;
-    fds.emplace_back(std::move(fd));
-    CallMethodWithFds(concierge::kStartVm2Method, request, std::move(fds),
-                      std::move(callback));
+    CallMethodWithFd(concierge::kStartVmMethod, request, std::move(fd),
+                     std::move(callback));
   }
 
   void StartVmWithFds(
@@ -159,7 +156,7 @@ class ConciergeClientImpl : public ConciergeClient {
       const vm_tools::concierge::StartVmRequest& request,
       chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
           callback) override {
-    CallMethodWithFds(concierge::kStartVm2Method, request, std::move(fds),
+    CallMethodWithFds(concierge::kStartVmMethod, request, std::move(fds),
                       std::move(callback));
   }
 
@@ -365,14 +362,9 @@ class ConciergeClientImpl : public ConciergeClient {
       return;
     }
 
-    {
-      dbus::MessageWriter array_writer(nullptr);
-
-      writer.OpenArray("h", &array_writer);
-      for (const auto& fd : fds) {
-        array_writer.AppendFileDescriptor(fd.get());
-      }
-      writer.CloseContainer(&array_writer);
+    for (auto& fd : fds) {
+      if (fd.is_valid())
+        writer.AppendFileDescriptor(fd.get());
     }
 
     concierge_proxy_->CallMethod(
@@ -386,26 +378,10 @@ class ConciergeClientImpl : public ConciergeClient {
                         const RequestProto& request,
                         base::ScopedFD fd,
                         chromeos::DBusMethodCallback<ResponseProto> callback) {
-    dbus::MethodCall method_call(concierge::kVmConciergeInterface, method_name);
-    dbus::MessageWriter writer(&method_call);
-
-    if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR) << "Failed to encode protobuf for " << method_name;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
-      return;
-    }
-
-    // TODO(b/324960184): Keep this check for compatibility until we update
-    // CreateDiskImage and ExportDiskImage
-    if (fd.is_valid()) {
-      writer.AppendFileDescriptor(fd.get());
-    }
-
-    concierge_proxy_->CallMethod(
-        &method_call, kConciergeDBusTimeoutMs,
-        base::BindOnce(&ConciergeClientImpl::OnDBusProtoResponse<ResponseProto>,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    std::vector<base::ScopedFD> fds;
+    fds.push_back(std::move(fd));
+    CallMethodWithFds(method_name, request, std::move(fds),
+                      std::move(callback));
   }
 
   template <typename RequestProto, typename ResponseProto>
@@ -458,9 +434,8 @@ class ConciergeClientImpl : public ConciergeClient {
       return;
     }
 
-    for (auto& observer : vm_observer_list_) {
+    for (auto& observer : vm_observer_list_)
       observer.OnVmStarted(vm_started_signal);
-    }
   }
 
   void OnVmStoppedSignal(dbus::Signal* signal) {
@@ -474,9 +449,8 @@ class ConciergeClientImpl : public ConciergeClient {
       return;
     }
 
-    for (auto& observer : vm_observer_list_) {
+    for (auto& observer : vm_observer_list_)
       observer.OnVmStopped(vm_stopped_signal);
-    }
   }
 
   void OnVmStoppingSignal(dbus::Signal* signal) {
@@ -531,9 +505,8 @@ class ConciergeClientImpl : public ConciergeClient {
                          const std::string& signal_name,
                          bool is_connected) {
     DCHECK_EQ(interface_name, concierge::kVmConciergeInterface);
-    if (!is_connected) {
+    if (!is_connected)
       LOG(ERROR) << "Failed to connect to signal: " << signal_name;
-    }
 
     if (signal_name == concierge::kVmStartedSignal) {
       is_vm_started_signal_connected_ = is_connected;
@@ -594,9 +567,8 @@ void ConciergeClient::InitializeFake() {
 void ConciergeClient::InitializeFake(FakeCiceroneClient* fake_cicerone_client) {
   // Do not create a new fake if it was initialized early in a browser test to
   // allow the test to set its own client.
-  if (!FakeConciergeClient::Get()) {
+  if (!FakeConciergeClient::Get())
     new FakeConciergeClient(fake_cicerone_client);
-  }
 }
 
 // static
