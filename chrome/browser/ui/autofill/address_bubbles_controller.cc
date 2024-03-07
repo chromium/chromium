@@ -167,7 +167,7 @@ void AddressBubblesController::WebContentsDestroyed() {
 }
 
 PageActionIconType AddressBubblesController::GetPageActionIconType() {
-  return PageActionIconType::kSaveAutofillAddress;
+  return PageActionIconType::kAutofillAddress;
 }
 
 void AddressBubblesController::DoShowBubble() {

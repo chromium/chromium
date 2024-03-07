@@ -188,13 +188,13 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
     std::unique_ptr<SaveAddressBubbleController> controller,
     bool is_user_gesture) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kSaveAutofillAddress);
+      PageActionIconType::kAutofillAddress);
   SaveAddressProfileView* bubble = new SaveAddressProfileView(
       std::move(controller), anchor_view, web_contents);
   DCHECK(bubble);
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kSaveAutofillAddress);
+          PageActionIconType::kAutofillAddress);
   DCHECK(icon_view);
   bubble->SetHighlightedButton(icon_view);
   views::BubbleDialogDelegateView::CreateBubble(bubble);
@@ -208,13 +208,13 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
     std::unique_ptr<UpdateAddressBubbleController> controller,
     bool is_user_gesture) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kSaveAutofillAddress);
+      PageActionIconType::kAutofillAddress);
   UpdateAddressProfileView* bubble = new UpdateAddressProfileView(
       std::move(controller), anchor_view, web_contents);
   DCHECK(bubble);
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kSaveAutofillAddress);
+          PageActionIconType::kAutofillAddress);
   DCHECK(icon_view);
   bubble->SetHighlightedButton(icon_view);
   views::BubbleDialogDelegateView::CreateBubble(bubble);

@@ -202,7 +202,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                                        params.icon_label_bubble_delegate,
                                        params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kSaveAutofillAddress:
+      case PageActionIconType::kAutofillAddress:
         add_page_action_icon(
             type, std::make_unique<autofill::AddressBubblesIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,

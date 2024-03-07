@@ -25,7 +25,7 @@ enum class PageActionIconType {
   kPwaInstall = 11,
   kQRCodeGenerator = 12,
   // DEPRECATED: kReaderMode = 13,
-  kSaveAutofillAddress = 14,
+  kAutofillAddress = 14,
   kSaveCard = 15,
   kSendTabToSelf = 16,
   kSharingHub = 17,
@@ -56,7 +56,7 @@ static_assert(
 static_assert(static_cast<int>(PageActionIconType::kPriceTracking) == 10);
 static_assert(static_cast<int>(PageActionIconType::kPwaInstall) == 11);
 static_assert(static_cast<int>(PageActionIconType::kQRCodeGenerator) == 12);
-static_assert(static_cast<int>(PageActionIconType::kSaveAutofillAddress) == 14);
+static_assert(static_cast<int>(PageActionIconType::kAutofillAddress) == 14);
 static_assert(static_cast<int>(PageActionIconType::kSaveCard) == 15);
 static_assert(static_cast<int>(PageActionIconType::kSendTabToSelf) == 16);
 static_assert(static_cast<int>(PageActionIconType::kSharingHub) == 17);
