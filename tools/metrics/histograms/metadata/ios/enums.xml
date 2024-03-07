@@ -392,6 +392,12 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Compact beside Compact with Slideover"/>
 </enum>
 
+<enum name="IOSNotificationsOptInActionOnPrompt">
+  <int value="0" label="Swiped to dismiss"/>
+  <int value="1" label="No thanks tapped"/>
+  <int value="2" label="Enable notifications tapped"/>
+</enum>
+
 <enum name="IOSNTPImpressionType">
   <int value="0" label="Feed disabled"/>
   <int value="1" label="Feed visible"/>
@@ -813,6 +819,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Page Control Drag"/>
   <int value="4" label="Item Drag"/>
   <int value="5" label="Voice Over Swipe"/>
+</enum>
+
+<enum name="IOSTipsNotificationType">
+  <int value="0" label="Default Browser"/>
+  <int value="1" label="What's New"/>
+  <int value="2" label="Sign In"/>
+  <int value="3" label="Error"/>
 </enum>
 
 <enum name="IOSWebFileInputAttributes">

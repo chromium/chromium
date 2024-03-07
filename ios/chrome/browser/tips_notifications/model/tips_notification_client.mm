@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/task/bind_post_task.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -85,9 +88,12 @@ void TipsNotificationClient::HandleNotificationInteraction(
 
   interacted_type_ = ParseTipsNotificationType(response.notification.request);
   if (!interacted_type_.has_value()) {
-    // TODO(crbug.com/1519157): Add logging for this error condition.
+    base::UmaHistogramEnumeration("IOS.Notifications.Tips.Interaction",
+                                  TipsNotificationType::kError);
     return;
   }
+  base::UmaHistogramEnumeration("IOS.Notifications.Tips.Interaction",
+                                interacted_type_.value());
 
   // If the app is not yet foreground active, store the notification type and
   // handle it later when the app becomes foreground active.
@@ -110,6 +116,9 @@ void TipsNotificationClient::HandleNotificationInteraction(
       break;
     case TipsNotificationType::kSignin:
       ShowSignin();
+      break;
+    case TipsNotificationType::kError:
+      NOTREACHED();
       break;
   }
 }
@@ -186,6 +195,8 @@ void TipsNotificationClient::OnNotificationCleared(
   std::optional<TipsNotificationType> type = ParseTipsNotificationType(request);
   if (type.has_value()) {
     MarkNotificationTypeNotSent(type.value());
+    base::UmaHistogramEnumeration("IOS.Notifications.Tips.Cleared",
+                                  type.value());
   }
   [UNUserNotificationCenter.currentNotificationCenter
       removePendingNotificationRequestsWithIdentifiers:@[
@@ -247,9 +258,10 @@ void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!error) {
     MarkNotificationTypeSent(type);
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("IOS.Notifications.Tips.NotSentError"));
   }
-  // TODO(crbug.com/1519157): Add logging if there is an
-  // error.
 }
 
 bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
@@ -261,6 +273,8 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
       return ShouldSendWhatsNew();
     case TipsNotificationType::kSignin:
       return ShouldSendSignin();
+    case TipsNotificationType::kError:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -354,6 +368,7 @@ void TipsNotificationClient::MarkNotificationTypeSent(
   int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
   sent_bitfield |= 1 << int(type);
   local_state->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
+  base::UmaHistogramEnumeration("IOS.Notifications.Tips.Sent", type);
 }
 
 void TipsNotificationClient::MarkNotificationTypeNotSent(

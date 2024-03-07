@@ -23,11 +23,17 @@ extern NSString* const kNotificationTypeKey;
 extern const char kTipsNotificationsSentPref[];
 
 // The type of Tips Notification, for an individual notification.
+// Always keep this enum in sync with
+// the corresponding IOSTipsNotificationType in enums.xml.
+// LINT.IfChange
 enum class TipsNotificationType {
   kDefaultBrowser = 0,
   kWhatsNew = 1,
   kSignin = 2,
+  kError = 3,
+  kMaxValue = kError,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 // The default amount of time after which a Tips notification is triggered.
 extern const base::TimeDelta kTipsNotificationDefaultTriggerDelta;

@@ -5,6 +5,10 @@
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -15,6 +19,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/ui/push_notification/metrics.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_consumer.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_item_identifier.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_presenter.h"
@@ -57,7 +62,6 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  // TODO(crbug.com/41492138): record metrics.
   std::vector<PushNotificationClientId> selectedClientIds;
   std::vector<PushNotificationClientId> deselectedClientIds;
   std::string gaiaID = base::SysNSStringToUTF8([self primaryIdentity].gaiaID);
@@ -81,13 +85,18 @@
 
   [self disableNotifications:deselectedClientIds];
   [self.presenter presentNotificationsAlertForClientIds:selectedClientIds];
+  base::UmaHistogramEnumeration(
+      kNotificationsOptInPromptActionHistogram,
+      NotificationsOptInPromptActionType::kEnableNotificationsTapped);
 }
 
 - (void)didTapSecondaryActionButton {
-  // TODO(crbug.com/41492138): record metrics.
   PrefService* localState = GetApplicationContext()->GetLocalState();
   set_up_list_prefs::MarkItemComplete(localState,
                                       SetUpListItemType::kNotifications);
+  base::UmaHistogramEnumeration(
+      kNotificationsOptInPromptActionHistogram,
+      NotificationsOptInPromptActionType::kNoThanksTapped);
   [self.presenter dismiss];
 }
 

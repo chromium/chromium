@@ -13414,6 +13414,93 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.Notifications.OptInAlert.Cancelled">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    Recorded after the iOS notifications alert is requested and the user cancels
+    the alert.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInAlert.Error" not_user_triggered="true">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    Recorded after the iOS notifications alert is requested and an error occurs.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInAlert.OpenedSettings">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    Recorded after the iOS notifications alert is requested and the user taps on
+    the Open Settings option.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInAlert.PermissionDenied">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    Recorded after the iOS notifications alert is requested and permission to
+    enabled notifications is denied.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInAlert.PermissionGranted">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    Recorded after permission is granted to enable notifications.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInPrompt.ContentEnabled">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded when the user opts in to Content notifications through the
+    Notifications Opt-In prompt.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInPrompt.NotificationsEnabled">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded when the user's notification opt-in preferances are successfully
+    enabled.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInPrompt.PriceTrackingEnabled">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded when the user opts in to Tips notifications through the
+    Notifications Opt-In prompt.
+  </description>
+</action>
+
+<action name="IOS.Notifications.OptInPrompt.TipsEnabled">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded when the user opts in to Price Tracking notifications through the
+    Notifications Opt-In prompt.
+  </description>
+</action>
+
+<action name="IOS.Notifications.Tips.NotSentError" not_user_triggered="true">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <description>
+    Recorded when there is an error sending a notification to the user.
+  </description>
+</action>
+
 <action name="IOS.NTP.Doodle.Tapped">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>

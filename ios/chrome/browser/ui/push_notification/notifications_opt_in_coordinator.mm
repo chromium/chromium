@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -15,6 +18,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/ui/push_notification/metrics.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_item_identifier.h"
@@ -51,6 +55,7 @@
   mediator.presenter = self;
   _viewController.delegate = mediator;
   _viewController.notificationsDelegate = mediator;
+  _viewController.presentationController.delegate = self;
   [mediator configureConsumer];
   self.mediator = mediator;
   [self.baseViewController presentViewController:_viewController
@@ -125,13 +130,14 @@
             (NotificationsOptInAlertCoordinator*)alertCoordinator
                                     result:
                                         (NotificationsOptInAlertResult)result {
-  // TODO(crbug.com/41492138): record metrics.
   CHECK_EQ(_optInAlertCoordinator, alertCoordinator);
   [_optInAlertCoordinator stop];
   _optInAlertCoordinator = nil;
   switch (result) {
     case NotificationsOptInAlertResult::kPermissionGranted:
       [self dismissViewController];
+      [self recordNotificationsEnabledForClients:alertCoordinator.clientIds
+                                                     .value()];
       break;
     case NotificationsOptInAlertResult::kPermissionDenied:
     case NotificationsOptInAlertResult::kOpenedSettings:
@@ -146,6 +152,9 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.delegate notificationsOptInScreenDidFinish:self];
+  base::UmaHistogramEnumeration(
+      kNotificationsOptInPromptActionHistogram,
+      NotificationsOptInPromptActionType::kSwipedToDismiss);
 }
 
 #pragma mark - Private
@@ -159,6 +168,30 @@
                            [weakSelf.delegate
                                notificationsOptInScreenDidFinish:weakSelf];
                          }];
+}
+
+// Records notifications that are enabled through the prompt.
+- (void)recordNotificationsEnabledForClients:
+    (std::vector<PushNotificationClientId>)clientIds {
+  for (PushNotificationClientId clientId : clientIds) {
+    switch (clientId) {
+      case PushNotificationClientId::kCommerce:
+        base::RecordAction(base::UserMetricsAction(
+            kNotificationsOptInPromptPriceTrackingEnabled));
+        break;
+      case PushNotificationClientId::kTips:
+        base::RecordAction(
+            base::UserMetricsAction(kNotificationsOptInPromptTipsEnabled));
+        break;
+      case PushNotificationClientId::kContent:
+        base::RecordAction(
+            base::UserMetricsAction(kNotificationsOptInPromptContentEnabled));
+        break;
+      case PushNotificationClientId::kSports:
+        // Content and sports are enabled together.
+        break;
+    }
+  }
 }
 
 @end

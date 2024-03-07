@@ -34,7 +34,13 @@ TEST_F(IOSPushNotificationsMetricsProviderTest, ProvideCurrentSessionData) {
 }
 
 TEST_F(IOSPushNotificationsMetricsProviderTest, TestContentClientPermission) {
-  base::UmaHistogramBoolean(kNotifClientStatusByProviderHistogram, true);
-  histogram_tester_->ExpectBucketCount(kNotifClientStatusByProviderHistogram, 1,
-                                       1);
+  base::UmaHistogramBoolean(kContentNotifClientStatusByProviderHistogram, true);
+  histogram_tester_->ExpectBucketCount(
+      kContentNotifClientStatusByProviderHistogram, 1, 1);
+}
+
+TEST_F(IOSPushNotificationsMetricsProviderTest, TestTipsClientPermission) {
+  base::UmaHistogramBoolean(kTipsNotifClientStatusByProviderHistogram, true);
+  histogram_tester_->ExpectBucketCount(
+      kTipsNotifClientStatusByProviderHistogram, 1, 1);
 }

@@ -16,6 +16,7 @@ source_set("opt_in_alert_coordinator") {
     "notifications_opt_in_alert_coordinator.mm",
   ]
   deps = [
+    ":metrics",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
@@ -38,6 +39,7 @@ source_set("notifications_opt_in") {
     "notifications_opt_in_mediator.mm",
   ]
   deps = [
+    ":metrics",
     ":notifications_opt_in_ui",
     ":opt_in_alert_coordinator",
     "//components/prefs",
@@ -77,6 +79,13 @@ source_set("notifications_opt_in_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
+  ]
+}
+
+source_set("metrics") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
   ]
 }
 

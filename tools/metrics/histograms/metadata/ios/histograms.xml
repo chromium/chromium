@@ -1870,6 +1870,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Notifications.OptInPrompt.Action"
+    enum="IOSNotificationsOptInActionOnPrompt" expires_after="2024-06-26">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@chromium.org</owner>
+  <summary>Logs a user's action on the Notifications Opt-In Prompt.</summary>
+</histogram>
+
+<histogram name="IOS.Notifications.Tips.Cleared" enum="IOSTipsNotificationType"
+    expires_after="2024-06-26">
+  <owner>scottyoder@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>Logs when a tips notification is cleared by the client.</summary>
+</histogram>
+
+<histogram name="IOS.Notifications.Tips.Interaction"
+    enum="IOSTipsNotificationType" expires_after="2024-06-26">
+  <owner>scottyoder@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>Logs when the user interacts with a Tips notification.</summary>
+</histogram>
+
+<histogram name="IOS.Notifications.Tips.Sent" enum="IOSTipsNotificationType"
+    expires_after="2024-06-26">
+  <owner>scottyoder@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>
+    Logs when a Tips notification is sent. Note: this does not indicate that the
+    notification was recieved by the user.
+  </summary>
+</histogram>
+
 <histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
     enum="Boolean" expires_after="2022-12-11">
   <owner>rohitrao@chromium.org</owner>

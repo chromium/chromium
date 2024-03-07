@@ -10,7 +10,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 
@@ -32,13 +31,23 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
   }];
   // Report the enabled client IDs.
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    base::UmaHistogramBoolean(
-        kNotifClientStatusByProviderHistogram,
-        push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kContent,
-                identity_manager_
-                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                    .gaia));
+    IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
+        kContentNotifClientStatusByProviderHistogram,
+        PushNotificationClientId::kContent);
   }
+  IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
+      kTipsNotifClientStatusByProviderHistogram,
+      PushNotificationClientId::kTips);
+}
+
+void IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
+    std::string histogram_name,
+    PushNotificationClientId client_id) {
+  base::UmaHistogramBoolean(
+      histogram_name, push_notification_settings::
+                          GetMobileNotificationPermissionStatusForClient(
+                              client_id, identity_manager_
+                                             ->GetPrimaryAccountInfo(
+                                                 signin::ConsentLevel::kSync)
+                                             .gaia));
 }

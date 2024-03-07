@@ -30,6 +30,8 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kSignin:
       return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY};
+    case TipsNotificationType::kError:
+      NOTREACHED_NORETURN();
   }
 }
 

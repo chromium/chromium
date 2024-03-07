@@ -9,5 +9,7 @@ const char kAllFeedsActivityBucketsByProviderHistogram[] =
     "ContentSuggestions.Feed.AllFeeds.Activity.ByProvider";
 const char kNotifAuthorizationStatusByProviderHistogram[] =
     "IOS.PushNotification.NotificationSettingsAuthorizationStatus.ByProvider";
-const char kNotifClientStatusByProviderHistogram[] =
+const char kContentNotifClientStatusByProviderHistogram[] =
     "ContentNotifications.ClientStatus.Enabled.ByProvider";
+const char kTipsNotifClientStatusByProviderHistogram[] =
+    "IOS.Notifications.Tips.ClientStatus.Enabled.ByProvider";
