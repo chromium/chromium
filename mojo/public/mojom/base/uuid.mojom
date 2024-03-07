@@ -5,6 +5,7 @@
 module mojo_base.mojom;
 
 // Corresponds to |base::Uuid| in base/uuid.h
+[Stable]
 struct Uuid {
   string value;
 };
