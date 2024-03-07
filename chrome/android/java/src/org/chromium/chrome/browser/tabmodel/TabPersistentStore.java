@@ -706,10 +706,9 @@ public class TabPersistentStore {
             @TabRestoreMethod int tabRestoreMethod = TabRestoreMethod.TAB_STATE;
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabRestoreMethod", tabRestoreMethod, TabRestoreMethod.NUM_ENTRIES);
-            Tab tab =
-                    mTabCreatorManager
-                            .getTabCreator(isIncognito)
-                            .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
+            mTabCreatorManager
+                    .getTabCreator(isIncognito)
+                    .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
         } else {
             if (!mSkipSavingNonActiveNtps
                     && UrlUtilities.isNtpUrl(tabToRestore.url)
@@ -1485,7 +1484,7 @@ public class TabPersistentStore {
                                 saveTabListAsynchronously();
                             }
                         });
-                for (String mergedFileName : new HashSet<String>(mMergedFileNames)) {
+                for (String mergedFileName : new HashSet<>(mMergedFileNames)) {
                     deleteFileAsync(mergedFileName, true);
                 }
                 for (TabPersistentStoreObserver observer : mObservers) observer.onStateMerged();
