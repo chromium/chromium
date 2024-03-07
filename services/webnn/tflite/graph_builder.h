@@ -31,7 +31,7 @@ namespace webnn::tflite {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTensorType = IsAnyOf<T, uint32_t>;
+concept IsSupportedTensorType = IsAnyOf<T, float, int32_t, uint32_t>;
 
 // This class converts WebNN graph to tflite model and persist into FlatBuffer.
 // The schema_generated.h file defines the format for each data structure to
@@ -91,8 +91,8 @@ class GraphBuilder final {
   // the flat buffer and returns the index in `tensors_` if it's successful.
   template <typename DataType>
     requires IsSupportedTensorType<DataType>
-  uint32_t SerializeTensorWithBuffer(base::span<const DataType> buffer,
-                                     base::span<const int32_t> dimensions);
+  int32_t SerializeTensorWithBuffer(base::span<const DataType> buffer,
+                                    base::span<const int32_t> dimensions);
 
   uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code);
 
@@ -113,6 +113,8 @@ class GraphBuilder final {
       const mojom::ElementWiseBinary& op);
   base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
       const mojom::ElementWiseUnary& op);
+  base::expected<OperatorOffset, std::string> SerializePad(
+      const mojom::Pad& pad);
   OperatorOffset SerializeRelu(const mojom::Relu& relu);
   base::expected<OperatorOffset, std::string> SerializeReshape(
       const mojom::Reshape& reshape);

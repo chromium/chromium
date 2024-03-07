@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/webnn/tflite/graph_builder.h"
+
 #include <cstdint>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
@@ -32,6 +34,16 @@ template <typename DataType>
   requires IsSupportedTensorType<DataType>
 struct TensorTypeMap;
 
+template <>
+struct TensorTypeMap<float> {
+  static constexpr ::tflite::TensorType value =
+      ::tflite::TensorType::TensorType_FLOAT32;
+};
+template <>
+struct TensorTypeMap<int32_t> {
+  static constexpr ::tflite::TensorType value =
+      ::tflite::TensorType::TensorType_INT32;
+};
 template <>
 struct TensorTypeMap<uint32_t> {
   static constexpr ::tflite::TensorType value =
@@ -185,6 +197,12 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = elementwise_result.value();
       break;
     }
+    case mojom::Operation::Tag::kPad: {
+      const auto pad_result = SerializePad(*op.get_pad());
+      RETURN_IF_ERROR(pad_result);
+      operator_offset = pad_result.value();
+      break;
+    }
     case mojom::Operation::Tag::kRelu:
       operator_offset = SerializeRelu(*op.get_relu());
       break;
@@ -235,8 +253,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("lstm is not implemented");
     case mojom::Operation::Tag::kMatmul:
       return base::unexpected("matmul is not implemented");
-    case mojom::Operation::Tag::kPad:
-      return base::unexpected("pad is not implemented");
     case mojom::Operation::Tag::kPool2d:
       return base::unexpected("pool2d is not implemented");
     case mojom::Operation::Tag::kPrelu:
@@ -325,7 +341,7 @@ uint32_t GraphBuilder::SerializeBuffer(const mojo_base::BigBuffer& constant) {
 
 template <typename DataType>
   requires IsSupportedTensorType<DataType>
-uint32_t GraphBuilder::SerializeTensorWithBuffer(
+int32_t GraphBuilder::SerializeTensorWithBuffer(
     base::span<const DataType> buffer,
     base::span<const int32_t> dimensions) {
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
@@ -510,6 +526,92 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
   }
 }
 
+auto GraphBuilder::SerializePad(const mojom::Pad& pad)
+    -> base::expected<OperatorOffset, std::string> {
+  CHECK_EQ(pad.beginning_padding.size(), pad.ending_padding.size());
+
+  std::vector<int32_t> paddings;
+  paddings.resize(pad.beginning_padding.size() * 2);
+  for (size_t i = 0; i < pad.beginning_padding.size(); ++i) {
+    auto checked_pre_padding =
+        base::MakeCheckedNum<int32_t>(pad.beginning_padding[i]);
+    auto checked_post_padding =
+        base::MakeCheckedNum<int32_t>(pad.ending_padding[i]);
+    if (!checked_pre_padding.IsValid() || !checked_post_padding.IsValid()) {
+      return base::unexpected("The padding is too large.");
+    }
+    paddings[i * 2] = checked_pre_padding.ValueOrDie();
+    paddings[i * 2 + 1] = checked_post_padding.ValueOrDie();
+  }
+
+  // The shape of padding is [n, 2], where n is the rank of input as described
+  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
+  std::array<int32_t, 2> paddings_shape{
+      {base::checked_cast<int32_t>(pad.beginning_padding.size()), 2}};
+  const int32_t paddings_index =
+      SerializeTensorWithBuffer<int32_t>(paddings, paddings_shape);
+
+  std::vector<int32_t> op_inputs = {
+      operand_to_index_map_.at(pad.input_operand_id), paddings_index};
+
+  ::tflite::BuiltinOptions builtin_options_type =
+      ::tflite::BuiltinOptions::BuiltinOptions_NONE;
+  flatbuffers::Offset<void> builtin_options;
+  ::tflite::BuiltinOperator operator_code;
+  switch (pad.mode->which()) {
+    case mojom::PaddingMode::Tag::kConstant: {
+      operator_code = ::tflite::BuiltinOperator::BuiltinOperator_PADV2;
+      builtin_options_type =
+          ::tflite::BuiltinOptions::BuiltinOptions_PadV2Options;
+      builtin_options = ::tflite::CreatePadV2Options(builder_).Union();
+
+      // Add the padding value as an input.
+      //
+      // TODO: crbug.com/328567884 - This is not correct to always use floats,
+      // though for now WebNN only supports passing a float32 constant value.
+      // https://www.tensorflow.org/mlir/tfl_ops#tflpadv2_tflpadv2op specifies
+      // that this constant value should match the type of the input operand.
+      const std::array<float, 1> padding_value_buffer = {
+          pad.mode->get_constant()->value};
+      const std::array<int32_t, 1> padding_value_dimensions = {1};
+      const int32_t padding_value_index = SerializeTensorWithBuffer<float>(
+          padding_value_buffer, padding_value_dimensions);
+      op_inputs.push_back(padding_value_index);
+      break;
+    }
+    case mojom::PaddingMode::Tag::kEdge:
+      // TODO: crbug.com/328547551 - Support the edge padding mode.
+      return base::unexpected(
+          "The edge padding mode is not supported in tflite schema.");
+    case mojom::PaddingMode::Tag::kReflection: {
+      operator_code = ::tflite::BuiltinOperator::BuiltinOperator_MIRROR_PAD;
+      builtin_options_type =
+          ::tflite::BuiltinOptions::BuiltinOptions_MirrorPadOptions;
+      builtin_options = ::tflite::CreateMirrorPadOptions(
+                            builder_, ::tflite::MirrorPadMode_REFLECT)
+                            .Union();
+      break;
+    }
+    case mojom::PaddingMode::Tag::kSymmetric: {
+      operator_code = ::tflite::BuiltinOperator::BuiltinOperator_MIRROR_PAD;
+      builtin_options_type =
+          ::tflite::BuiltinOptions::BuiltinOptions_MirrorPadOptions;
+      builtin_options = ::tflite::CreateMirrorPadOptions(
+                            builder_, ::tflite::MirrorPadMode_SYMMETRIC)
+                            .Union();
+      break;
+    }
+  }
+
+  const uint32_t operator_code_index = GetOperatorCodeIndex(operator_code);
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(pad.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs),
+                                  builtin_options_type, builtin_options);
+}
+
 auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
   return SerializeUnaryOperator(::tflite::BuiltinOperator::BuiltinOperator_RELU,
                                 relu.input_operand_id, relu.output_operand_id);
@@ -568,14 +670,14 @@ auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
     -> OperatorOffset {
   const std::array<int32_t, 1> permutation_shape = {
       base::checked_cast<int32_t>(transpose.permutation.size())};
-  const uint32_t permutation_tensor_index = SerializeTensorWithBuffer<uint32_t>(
+  const int32_t permutation_tensor_index = SerializeTensorWithBuffer<uint32_t>(
       transpose.permutation, permutation_shape);
 
   const uint32_t operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_TRANSPOSE);
   const std::array<int32_t, 2> op_inputs = {
       operand_to_index_map_.at(transpose.input_operand_id),
-      base::checked_cast<int32_t>(permutation_tensor_index)};
+      permutation_tensor_index};
   const std::array<int32_t, 1> op_outputs = {
       operand_to_index_map_.at(transpose.output_operand_id)};
   return ::tflite::CreateOperator(builder_, operator_code_index,
