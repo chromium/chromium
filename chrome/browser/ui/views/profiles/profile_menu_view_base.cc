@@ -16,11 +16,13 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -111,6 +113,9 @@ constexpr int kSyncInfoRefreshInsidePadding = 16;
 // The bottom background edge should match the center of the identity image.
 constexpr auto kBackgroundInsets =
     gfx::Insets::TLBR(0, 0, kHalfOfAvatarImageViewSize, 0);
+
+constexpr char kProfileMenuClickedActionableItemHistogram[] =
+    "Profile.Menu.ClickedActionableItem";
 
 gfx::ImageSkia SizeImage(const gfx::ImageSkia& image, int size) {
   return gfx::ImageSkiaOperations::CreateResizedImage(
@@ -504,7 +509,8 @@ class SyncImageView : public views::ImageView {
 BEGIN_METADATA(SyncImageView)
 END_METADATA
 
-void BuildProfileTitleAndSubtitle(views::View* parent,
+void BuildProfileTitleAndSubtitle(Browser* browser,
+                                  views::View* parent,
                                   const std::u16string& title,
                                   const std::u16string& subtitle,
                                   const std::u16string& management_label) {
@@ -535,10 +541,19 @@ void BuildProfileTitleAndSubtitle(views::View* parent,
 
   if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) &&
       !management_label.empty()) {
-    profile_titles_container->AddChildView(std::make_unique<views::Label>(
+    auto link = std::make_unique<views::Link>(
         management_label, views::style::CONTEXT_LABEL,
         features::IsChromeRefresh2023() ? views::style::STYLE_BODY_5
-                                        : views::style::STYLE_SECONDARY));
+                                        : views::style::STYLE_SECONDARY);
+    link->SetCallback(base::BindRepeating(
+        [](Browser* browser) {
+          base::UmaHistogramEnumeration(
+              kProfileMenuClickedActionableItemHistogram,
+              ProfileMenuViewBase::ActionableItem::kProfileManagementLabel);
+          chrome::ExecuteCommand(browser, IDC_SHOW_MANAGEMENT_PAGE);
+        },
+        browser));
+    profile_titles_container->AddChildView(std::move(link));
   }
 }
 
@@ -771,8 +786,8 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
   BuildProfileBackgroundContainer(
       std::move(heading_label), profile_background_color,
       std::move(avatar_image_view), std::move(edit_button), avatar_header_art);
-  BuildProfileTitleAndSubtitle(/*parent=*/identity_info_container_, title,
-                               subtitle, management_label);
+  BuildProfileTitleAndSubtitle(browser_, /*parent=*/identity_info_container_,
+                               title, subtitle, management_label);
 }
 
 void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
@@ -1147,7 +1162,8 @@ gfx::ImageSkia ProfileMenuViewBase::ColoredImageForMenu(
 
 void ProfileMenuViewBase::RecordClick(ActionableItem item) {
   // TODO(tangltom): Separate metrics for incognito and guest menu.
-  base::UmaHistogramEnumeration("Profile.Menu.ClickedActionableItem", item);
+  base::UmaHistogramEnumeration(kProfileMenuClickedActionableItemHistogram,
+                                item);
 }
 
 int ProfileMenuViewBase::GetMaxHeight() const {
