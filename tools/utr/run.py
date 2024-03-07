@@ -25,6 +25,10 @@ def add_common_args(parser):
                       action='count',
                       help='Enable additional runtime logging. Pass multiple '
                       'times for increased logging.')
+  parser.add_argument('--force',
+                      '-f',
+                      action='store_true',
+                      help='Skip all prompts about config mismatches.')
   parser.add_argument('--test',
                       '-t',
                       nargs='+',
@@ -108,6 +112,7 @@ def main():
       args.test,
       skip_compile,
       skip_test,
+      args.force,
       args.build_dir,
   )
   exit_code, error_msg = recipe_runner.run_recipe(

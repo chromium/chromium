@@ -67,6 +67,7 @@ class LegacyRunner:
                tests,
                skip_compile,
                skip_test,
+               skip_prompts,
                build_dir=None):
     """Constructor for LegacyRunner
 
@@ -79,11 +80,13 @@ class LegacyRunner:
       tests: List of tests to run.
       skip_compile: If True, the UTR will only run the tests.
       skip_test: If True, the UTR will only compile.
+      skip_prompts: If True, skip Y/N prompts for warnings.
       builder_dir: pathlib.Path to the build dir to build in. Will use the UTR's
           default otherwise if needed.
     """
     self._recipes_py = bundle_root_path.joinpath('recipes')
     self._swarming_server = swarming_server
+    self._skip_prompts = skip_prompts
     assert self._recipes_py.exists()
 
     # Add UTR recipe props. Its schema is located at:
@@ -231,7 +234,13 @@ class LegacyRunner:
         logging.warning('')
         logging.warning(error_msg)
         logging.warning('')
-        should_continue = get_yn_resp()
+        if not self._skip_prompts:
+          should_continue = get_yn_resp()
+        else:
+          logging.warning(
+              'Proceeding despite the recipe warning due to the presence of '
+              '"--force".')
+          should_continue = True
         if not should_continue:
-          return exit_code, 'User-aborted due to config mismatch'
+          return exit_code, 'User-aborted due to warning'
     return 1, 'Exceeded too many recipe re-runs'
