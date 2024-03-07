@@ -1780,7 +1780,7 @@
     },
     {
       name: "FledgeTrustedBiddingSignalsSlotSize",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FluentOverlayScrollbars",
