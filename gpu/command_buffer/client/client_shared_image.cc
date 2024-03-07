@@ -136,6 +136,12 @@ void ClientSharedImage::SetColorSpaceOnNativeBuffer(
 }
 #endif
 
+uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferFormat format) {
+  return NativeBufferNeedsPlatformSpecificTextureTarget(format)
+             ? GetPlatformSpecificTextureTarget()
+             : GL_TEXTURE_2D;
+}
+
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
                                              gfx::BufferFormat format) {
   CHECK(HasHolder());

@@ -111,6 +111,14 @@ class GPU_EXPORT ClientSharedImage
   void SetColorSpaceOnNativeBuffer(const gfx::ColorSpace& color_space);
 #endif
 
+  // Returns the texture target to be used for the given |format|. For usage
+  // when this SharedImage was created from a native buffer and the client knows
+  // that the usages of this SI would result in needing the platform-specific
+  // texture target for `format` if one exists on this platform. Returns
+  // GL_TEXTURE_2D if |format| does not require a platform-specific target and
+  // the relevant platform-specific target otherwise.
+  uint32_t GetTextureTarget(gfx::BufferFormat format);
+
   // Returns the texture target to be used for the given |usage| and |format|
   // based on the underlying SharedImageCapabilities. Requires that
   // `HasHolder()` is true. For usage when this SharedImage was created from a
