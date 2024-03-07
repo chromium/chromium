@@ -34,6 +34,7 @@ _proto_files = [
   "ukm/entry.proto",
   "ukm/report.proto",
   "ukm/source.proto",
+  "ukm/web_features.proto",
   "user_action_event.proto",
   "user_demographics.proto",
 ]

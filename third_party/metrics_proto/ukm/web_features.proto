@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+package ukm;
+
+// Tracks what high-level web features are used on a web page.
+// Next tag: 4
+// TODO(crbug.com/328627687): populate this field and add parsing utils.
+message HighLevelWebFeatures {
+  // Encoding of a subset of web features used on a webpage, as a bit
+  // vector to save storage space.
+  optional bytes bit_vector = 1;
+  // The id of the Source that these web feature usage data is associated with.
+  optional int64 source_id = 2;
+  // Version of the encoding used. When WebFeature enum values have changed or
+  // been renumbered, the version number should be incremented. This is for
+  // supporting parsing of different encoding versions server-side.
+  optional uint32 encoding_version = 3 [default = 0];
+}
