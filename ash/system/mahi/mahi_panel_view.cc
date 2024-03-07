@@ -65,6 +65,9 @@ constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
 constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
 constexpr int kSourceRowSpacing = 8;
+// The space between the two feedback buttons is 16, but we subtract 4 for the
+// padding to the left of the thumbs-down button.
+constexpr int kFeedbackButtonSpacing = 12;
 
 // Options for a feedback button.
 enum FeedbackType {
@@ -296,7 +299,7 @@ MahiPanelView::MahiPanelView() {
 
   auto* const mahi_manager = chromeos::MahiManager::Get();
 
-  // Add the content icon and title.
+  // Add a source row containing the content icon and title.
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetBackground(StyleUtil::CreateThemedFullyRoundedRectBackground(
@@ -320,15 +323,26 @@ MahiPanelView::MahiPanelView() {
                   })))
           .Build());
 
-  // Scrollable contents, which should contain the summary and outlines section
-  // and the Q&A section.
-  AddChildView(std::make_unique<ContentScrollView>());
-
-  auto feedback_view = std::make_unique<views::BoxLayoutView>();
-  feedback_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  feedback_view->AddChildView(CreateFeedbackButton(THUMBS_UP));
-  feedback_view->AddChildView(CreateFeedbackButton(THUMBS_DOWN));
-  AddChildView(std::move(feedback_view));
+  // Add a scrollable view of the panel's content, with a feedback section.
+  AddChildView(
+      views::Builder<views::View>()
+          .SetUseDefaultFillLayout(true)
+          .AddChildren(
+              views::Builder<views::View>(
+                  std::make_unique<ContentScrollView>()),
+              // Add buttons for the user to give feedback on the content.
+              views::Builder<views::BoxLayoutView>()
+                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                  .SetMainAxisAlignment(
+                      views::BoxLayout::MainAxisAlignment::kEnd)
+                  .SetCrossAxisAlignment(
+                      views::BoxLayout::CrossAxisAlignment::kEnd)
+                  .SetBetweenChildSpacing(kFeedbackButtonSpacing)
+                  .AddChildren(views::Builder<views::View>(
+                                   CreateFeedbackButton(THUMBS_UP)),
+                               views::Builder<views::View>(
+                                   CreateFeedbackButton(THUMBS_DOWN))))
+          .Build());
 
   auto footer_row = std::make_unique<views::BoxLayoutView>();
   footer_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
