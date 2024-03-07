@@ -57,7 +57,6 @@ class PasswordAuthView : public FactorAuthView,
 
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void RequestFocus() override;
   gfx::Size CalculatePreferredSize() const override;
 
   // ImeControllerImpl::Observer

@@ -206,7 +206,7 @@ void PasswordAuthView::CreateAndConfigureDisplayPasswordButton() {
       IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_SHOW));
   display_password_button_->SetToggledTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
-  SetFocusBehavior(FocusBehavior::ALWAYS);
+  display_password_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   display_password_button_->SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(display_password_button_)
       ->SetColorId(ui::kColorAshFocusRing);
@@ -246,10 +246,6 @@ PasswordAuthView::~PasswordAuthView() = default;
 
 AshAuthFactor PasswordAuthView::GetFactor() {
   return AshAuthFactor::kGaiaPassword;
-}
-
-void PasswordAuthView::RequestFocus() {
-  login_textfield_->RequestFocus();
 }
 
 bool PasswordAuthView::OnKeyPressed(const ui::KeyEvent& event) {
