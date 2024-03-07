@@ -47,7 +47,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -99,7 +98,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private LayoutManagerHost mManagerHost;
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
-    @Mock private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    @Mock private ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private View mToolbarContainerView;

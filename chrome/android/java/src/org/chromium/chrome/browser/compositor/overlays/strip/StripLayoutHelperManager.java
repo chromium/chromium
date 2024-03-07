@@ -24,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -200,7 +199,7 @@ public class StripLayoutHelperManager
     private TabModelObserver mTabModelObserver;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final String mDefaultTitle;
-    private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private final ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     // Drag-Drop
@@ -353,7 +352,7 @@ public class StripLayoutHelperManager
             LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            ObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
             ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MultiInstanceManager multiInstanceManager,

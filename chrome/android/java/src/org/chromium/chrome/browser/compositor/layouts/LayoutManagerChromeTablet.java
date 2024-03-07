@@ -11,6 +11,7 @@ import android.view.ViewStub;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -46,11 +47,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     private StripLayoutHelperManager mTabStripLayoutHelperManager;
 
     // Internal State
-    /** A {@link TitleCache} instance that stores all title/favicon bitmaps as CC resources. */
+    /** A {@link LayerTitleCache} instance that stores all title/favicon bitmaps as CC resources. */
     // This cache should not be cleared in LayoutManagerImpl#emptyCachesExcept(), since that method
     // is currently called when returning to the static layout, which is when these titles will be
     // visible. See https://crbug.com/1329293.
     protected LayerTitleCache mLayerTitleCache;
+
+    protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
+            new ObservableSupplierImpl<>();
 
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
@@ -119,7 +123,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         host,
                         this,
                         mHost.getLayoutRenderHost(),
-                        () -> mLayerTitleCache,
+                        mLayerTitleCacheSupplier,
                         tabModelStartupInfoSupplier,
                         lifecycleDispatcher,
                         multiInstanceManager,
@@ -199,6 +203,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             mLayerTitleCache = new LayerTitleCache(mHost.getContext(), getResourceManager());
             // TODO: TitleCache should be a part of the ResourceManager.
             mLayerTitleCache.setTabModelSelector(selector);
+            mLayerTitleCacheSupplier.set(mLayerTitleCache);
         }
 
         if (mTabStripLayoutHelperManager != null) {
