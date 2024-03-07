@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -1194,6 +1195,15 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
   // The query should happen once the notification is potentially seen.
   EXPECT_CALL(callback, Run()).WillOnce(Return(deadline));
   ASSERT_NO_FATAL_FAILURE(SetVisibility(true));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // We should not depend on BrowserView::Show() (called by SetVisibility(true))
+  // to call BrowserList::SetLastActive() to set the associated browser to be
+  // last active one. We are planning to remove that call for Lacros to make
+  // updating of last active browser completely asynchronous (b/325634285).
+  // Therefore, for the unit test depending on browser() to be set as the last
+  // active one, we need to explicit set it as the last active one.
+  BrowserList::GetInstance()->SetLastActive(browser());
+#endif
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 
   ASSERT_NO_FATAL_FAILURE(SetVisibility(false));
