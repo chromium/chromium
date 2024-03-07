@@ -163,13 +163,14 @@ class RequestImpl : public WebHistoryService::Request {
     signin::ScopeSet oauth_scopes;
     oauth_scopes.insert(kHistoryOAuthScope);
 
+    // TODO(crbug.com/40066882): Simplify this once
+    // kReplaceSyncPromosWithSignInPromos has rolled out on all platforms.
     signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
-#if BUILDFLAG(IS_IOS)
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       consent_level = signin::ConsentLevel::kSignin;
     }
-#endif
+
     access_token_fetcher_ =
         std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
             "web_history", identity_manager_, oauth_scopes,

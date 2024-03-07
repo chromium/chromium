@@ -16,7 +16,7 @@ namespace {
 // and false otherwise.
 bool IsHistorySyncEnabled(Profile* profile) {
   syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
-  return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
+  return sync && !sync->IsLocalSyncEnabled() &&
          sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
 }
 
@@ -43,7 +43,7 @@ WebHistoryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   // Ensure that the service is not instantiated or used if the user is not
-  // signed into sync, or if web history is not enabled.
+  // signed in and has enabled history sync.
   if (!IsHistorySyncEnabled(profile))
     return nullptr;
 
