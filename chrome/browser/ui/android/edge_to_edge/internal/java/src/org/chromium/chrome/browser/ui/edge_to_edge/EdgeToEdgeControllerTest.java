@@ -162,6 +162,7 @@ public class EdgeToEdgeControllerTest {
 
         doNothing().when(mOsWrapper).setDecorFitsSystemWindows(any(), anyBoolean());
         doNothing().when(mOsWrapper).setPadding(any(), anyInt(), anyInt(), anyInt(), anyInt());
+        doNothing().when(mOsWrapper).setNavigationBarColor(any(), anyInt());
         doNothing()
                 .when(mOsWrapper)
                 .setOnApplyWindowInsetsListener(any(), mWindowInsetsListenerCaptor.capture());
@@ -322,6 +323,9 @@ public class EdgeToEdgeControllerTest {
         shadowOf(Looper.getMainLooper()).idle();
         verifyInteractions(mTab);
         assertTrue(liveController.isToEdge());
+        // Check the Navigation Bar color, as an indicator that we really changed the window,
+        // since we didn't use the OS Wrapper mock.
+        assertEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
     }
 
     /** Test the OSWrapper implementation without mocking it. Native ToNormal. */
@@ -356,6 +360,7 @@ public class EdgeToEdgeControllerTest {
         assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
         // Check the Navigation Bar color, as an indicator that we really changed the window.
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
+        verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.BLACK));
         verify(mOsWrapper, times(0)).setDecorFitsSystemWindows(any(), anyBoolean());
         verify(mOsWrapper, times(0)).setOnApplyWindowInsetsListener(any(), any());
         verify(mInsetObserver, times(0)).addInsetsConsumer(any());
@@ -472,10 +477,12 @@ public class EdgeToEdgeControllerTest {
         mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
         // Pad the top only, bottom is ToEdge.
         verify(mOsWrapper).setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0), eq(0));
+        verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.TRANSPARENT));
         verify(mOsWrapper).setDecorFitsSystemWindows(any(), eq(false));
     }
 
     void assertToNormalExpectations() {
+        verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.BLACK));
         verify(mOsWrapper, times(0)).setDecorFitsSystemWindows(any(), anyBoolean());
         verify(mOsWrapper, times(0)).setOnApplyWindowInsetsListener(any(), any());
         verify(mInsetObserver, times(0)).addInsetsConsumer(any());
