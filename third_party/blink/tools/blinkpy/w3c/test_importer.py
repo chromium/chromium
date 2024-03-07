@@ -199,10 +199,8 @@ class TestImporter:
             if self.git_cl.get_cl_status().lower() != 'closed':
                 self.git_cl.close()
 
-        if not self.send_notifications(local_wpt, options.auto_file_bugs,
-                                       options.monorail_auth_json):
+        if not self.send_notifications(local_wpt, options.auto_file_bugs):
             return 1
-
         return 0
 
     def log_try_job_results(self, try_job_results) -> None:
@@ -365,11 +363,6 @@ class TestImporter:
             '--credentials-json',
             help='A JSON file with GitHub credentials, '
             'generally not necessary on developer machines')
-        parser.add_argument(
-            '--monorail-auth-json',
-            help='A JSON file containing the private key of a service account '
-            'to access Monorail (crbug.com), only needed when '
-            '--auto-file-bugs is used')
 
         return parser.parse_args(argv)
 
@@ -685,8 +678,7 @@ class TestImporter:
             _log.error('Cannot find last WPT import.')
             return None
 
-    def send_notifications(self, local_wpt, auto_file_bugs,
-                           monorail_auth_json):
+    def send_notifications(self, local_wpt, auto_file_bugs):
         from blinkpy.w3c.import_notifier import ImportNotifier
         issue = self.git_cl.run(['status', '--field=id']).strip()
         patchset = self.git_cl.run(['status', '--field=patch']).strip()
@@ -698,8 +690,7 @@ class TestImporter:
                       self.new_test_expectations,
                       issue,
                       patchset,
-                      dry_run=not auto_file_bugs,
-                      service_account_key_json=monorail_auth_json)
+                      dry_run=not auto_file_bugs)
         return True
 
     def update_testlist_with_idlharness_changes(self, testlist_path):

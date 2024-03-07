@@ -63,8 +63,7 @@ class ImportNotifier:
              test_expectations,
              issue,
              patchset,
-             dry_run=True,
-             service_account_key_json=None):
+             dry_run=True):
         """Files bug reports for new failures.
 
         Args:
@@ -78,9 +77,6 @@ class ImportNotifier:
             issue: The issue number of the import CL (a string).
             patchset: The patchset number of the import CL (a string).
             dry_run: If True, no bugs will be actually filed to crbug.com.
-            service_account_key_json: The path to a JSON private key of a
-                service account for accessing Monorail. If None, try to get an
-                access token from luci-auth.
 
         Note: "test names" are paths of the tests relative to web_tests.
         """
@@ -95,7 +91,7 @@ class ImportNotifier:
 
         bugs = self.create_bugs_from_new_failures(wpt_revision_start,
                                                   wpt_revision_end, issue)
-        self.file_bugs(bugs, dry_run, service_account_key_json)
+        self.file_bugs(bugs, dry_run)
 
     def find_changed_baselines_of_tests(self, rebaselined_tests):
         """Finds the corresponding changed baselines of each test.
@@ -328,16 +324,12 @@ class ImportNotifier:
             owned_directory, self.finder.web_tests_dir())
         return short_directory
 
-    def file_bugs(self,
-                  bugs: List[BuganizerIssue],
-                  dry_run: bool = False,
-                  service_account_key_json=None):
+    def file_bugs(self, bugs: List[BuganizerIssue], dry_run: bool = False):
         """Files a list of bugs to Buganizer.
 
         Args:
             bugs: A list of bugs to file.
             dry_run: A boolean, whether we are in dry run mode.
-            service_account_key_json: Optional, see docs for main().
         """
         # TODO(robertma): Better error handling in this method.
         if dry_run:
