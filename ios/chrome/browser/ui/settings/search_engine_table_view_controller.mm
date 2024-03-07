@@ -494,31 +494,12 @@ const char kUmaSelectDefaultSearchEngine[] =
   _firstList.reserve(urls.size());
   _secondList.clear();
   _secondList.reserve(urls.size());
-
-  if (_shouldShowEEASettings) {
-    // This method returns all the required prepopulated search engines and
-    // possibly one custom search engine if it's selected as default search
-    // engine.
-    _choiceScreenTemplateURLs =
-        _templateURLService->GetTemplateURLsForChoiceScreen();
-    _firstList.reserve(_choiceScreenTemplateURLs.size());
-    for (auto& url : _choiceScreenTemplateURLs) {
-      _firstList.push_back(url.get());
-    }
-    // Add the custom search egines to the second list.
-    for (TemplateURL* url : urls) {
-      if (![self isPrepopulatedOrDefaultSearchEngine:url]) {
-        _secondList.push_back(url);
-      }
-    }
-  } else {
-    // Classify TemplateURLs.
-    for (TemplateURL* url : urls) {
-      if ([self isPrepopulatedOrDefaultSearchEngine:url]) {
-        _firstList.push_back(url);
-      } else {
-        _secondList.push_back(url);
-      }
+  // Classify TemplateURLs.
+  for (TemplateURL* url : urls) {
+    if ([self isPrepopulatedOrDefaultSearchEngine:url]) {
+      _firstList.push_back(url);
+    } else {
+      _secondList.push_back(url);
     }
   }
 
