@@ -15,15 +15,18 @@ namespace {
 PhysicalRect ComputeReferenceBoxInternal(const PhysicalBoxFragment& fragment,
                                          PhysicalRect border_box_rect) {
   PhysicalRect fragment_reference_box = border_box_rect;
-  switch (fragment.Style().TransformBox()) {
-    case ETransformBox::kFillBox:
+  switch (fragment.Style().UsedTransformBox(
+      ComputedStyle::TransformBoxContext::kLayoutBox)) {
     case ETransformBox::kContentBox:
       fragment_reference_box.Contract(fragment.Borders() + fragment.Padding());
       fragment_reference_box.size.ClampNegativeToZero();
       break;
-    case ETransformBox::kStrokeBox:
     case ETransformBox::kBorderBox:
+      break;
+    case ETransformBox::kFillBox:
+    case ETransformBox::kStrokeBox:
     case ETransformBox::kViewBox:
+      NOTREACHED();
       break;
   }
   return fragment_reference_box;

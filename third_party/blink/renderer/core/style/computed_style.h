@@ -1989,6 +1989,12 @@ class ComputedStyle final : public ComputedStyleBase {
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
 
+  enum class TransformBoxContext {
+    kLayoutBox,  // For elements with an associated CSS layout box.
+    kSvg,        // For SVG elements without an associated CSS layout box.
+  };
+  ETransformBox UsedTransformBox(TransformBoxContext) const;
+
   // Returns |true| if any property that renders using filter operations is
   // used (including, but not limited to, 'filter' and 'box-reflect').
   bool HasFilterInducingProperty() const {
