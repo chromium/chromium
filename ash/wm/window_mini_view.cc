@@ -133,6 +133,8 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
         views::CreateThemedSolidBackground(cros_tokens::kCrosSysScrim));
 
     ui::Layer* layer = backdrop_view_->layer();
+
+    layer->SetName("BackdropView");
     layer->SetFillsBoundsOpaquely(false);
 
     const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
