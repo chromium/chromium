@@ -23,6 +23,7 @@
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/gwp_asan_features.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
@@ -487,6 +488,28 @@ void MaybeEnableLightweightDetector(bool boost_sampling,
   [[maybe_unused]] static bool init_once =
       internal::MaybeEnableLightweightDetectorInternal(boost_sampling,
                                                        process_type);
+}
+
+void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
+                                           const char* process_type) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  [[maybe_unused]] static bool init_once = [&]() -> bool {
+    if (!base::FeatureList::IsEnabled(
+            internal::kExtremeLightweightUAFDetector)) {
+      return false;
+    }
+
+    size_t sampling_frequency = static_cast<size_t>(
+        internal::kExtremeLightweightUAFDetectorSamplingFrequency.Get());
+    size_t quarantine_capacity_in_bytes = static_cast<size_t>(
+        internal::kExtremeLightweightUAFDetectorQuarantineCapacityInBytes
+            .Get());
+    internal::InstallExtremeLightweightDetectorHooks(
+        {.sampling_frequency = sampling_frequency,
+         .quarantine_capacity_in_bytes = quarantine_capacity_in_bytes});
+    return true;
+  }();
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 }  // namespace gwp_asan

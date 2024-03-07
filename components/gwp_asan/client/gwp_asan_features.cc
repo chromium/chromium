@@ -20,4 +20,16 @@ constexpr base::FeatureState kDefaultEnabled =
 BASE_FEATURE(kGwpAsanMalloc, "GwpAsanMalloc", kDefaultEnabled);
 BASE_FEATURE(kGwpAsanPartitionAlloc, "GwpAsanPartitionAlloc", kDefaultEnabled);
 
+GWP_ASAN_EXPORT BASE_FEATURE(kExtremeLightweightUAFDetector,
+                             "ExtremeLightweightUAFDetector",
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+GWP_ASAN_EXPORT const base::FeatureParam<int>
+    kExtremeLightweightUAFDetectorSamplingFrequency{
+        &kExtremeLightweightUAFDetector, "sampling_frequency",
+        1000};  // Quarantine once per 1000 calls to `free`.
+GWP_ASAN_EXPORT const base::FeatureParam<int>
+    kExtremeLightweightUAFDetectorQuarantineCapacityInBytes{
+        &kExtremeLightweightUAFDetector, "quarantine_capacity_in_bytes",
+        256 * 1024};
+
 }  // namespace gwp_asan::internal

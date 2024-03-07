@@ -226,10 +226,18 @@ void MemorySystem::Impl::InitializeGwpASan(
     const GwpAsanParameters& gwp_asan_parameters,
     InitializationData& initialization_data) {
 #if BUILDFLAG(ENABLE_GWP_ASAN)
+  // LUD has the highest priority and the Extreme LUD has the lowest priority.
+  // An allocator shim later installed has priority over the already-installed
+  // shims.
+  gwp_asan::MaybeEnableExtremeLightweightDetector(
+      gwp_asan_parameters.boost_sampling,
+      gwp_asan_parameters.process_type.c_str());
+
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
   gwp_asan::EnableForMalloc(gwp_asan_parameters.boost_sampling,
                             gwp_asan_parameters.process_type.c_str());
 #endif
+
 #if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
   gwp_asan::EnableForPartitionAlloc(gwp_asan_parameters.boost_sampling,
                                     gwp_asan_parameters.process_type.c_str());

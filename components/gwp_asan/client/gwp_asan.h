@@ -35,6 +35,10 @@ GWP_ASAN_EXPORT void EnableForPartitionAlloc(bool boost_sampling,
                                              const char* process_type);
 GWP_ASAN_EXPORT void MaybeEnableLightweightDetector(bool boost_sampling,
                                                     const char* process_type);
+GWP_ASAN_EXPORT void MaybeEnableExtremeLightweightDetector(
+    bool boost_sampling,
+    const char* process_type);
+
 }  // namespace gwp_asan
 
 #endif  // COMPONENTS_GWP_ASAN_CLIENT_GWP_ASAN_H_

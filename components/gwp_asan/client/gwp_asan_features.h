@@ -6,12 +6,19 @@
 #define COMPONENTS_GWP_ASAN_CLIENT_GWP_ASAN_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/gwp_asan/client/export.h"
 
 namespace gwp_asan::internal {
 
 GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kGwpAsanMalloc);
 GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kGwpAsanPartitionAlloc);
+
+GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kExtremeLightweightUAFDetector);
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kExtremeLightweightUAFDetectorSamplingFrequency;
+GWP_ASAN_EXPORT extern const base::FeatureParam<int>
+    kExtremeLightweightUAFDetectorQuarantineCapacityInBytes;
 
 }  // namespace gwp_asan::internal
 
