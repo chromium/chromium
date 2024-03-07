@@ -133,9 +133,8 @@ class BirchItemIconTest : public AshTestBase {
 TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
   BirchCalendarItem item(u"item");
 
-  // TODO(jamescook): Update this when BirchCalendarItem provides icons.
   item.LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
+      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
 
 TEST_F(BirchItemIconTest, Attachment_LoadIcon) {

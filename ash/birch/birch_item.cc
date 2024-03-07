@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/i18n/time_formatting.h"
@@ -114,9 +115,9 @@ void BirchCalendarItem::PerformAction() {
 }
 
 void BirchCalendarItem::LoadIcon(LoadIconCallback callback) {
-  // TODO(jamescook): Supply a static icon. The Google Calendar API does not
-  // provide an icon for calendar events.
-  std::move(callback).Run(ui::ImageModel());
+  // TODO(jamescook): Once we have birch UI to show the icon, verify that
+  // FromVectorIcon() doesn't require a color.
+  std::move(callback).Run(ui::ImageModel::FromVectorIcon(kCalendarEventIcon));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
