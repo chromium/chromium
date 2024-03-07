@@ -41,6 +41,13 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) UpdateEngineClient
     // of Life date, that is received in days since epoch, in possibly different
     // ways and at different locations.
     base::Time eol_date;
+
+    // The extended updates date, which should be before eol_date.
+    // |extended_date.is_null()| will be true to signify an empty value.
+    base::Time extended_date;
+
+    // Whether user opt-in is required to receive extended updates.
+    bool extended_opt_in_required = false;
   };
 
   // Interface for observing changes from the update engine.

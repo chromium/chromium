@@ -470,6 +470,12 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
       eol_info.eol_date =
           base::Time::UnixEpoch() + base::Days(status.eol_date());
     }
+    if (status.extended_date() > 0) {
+      eol_info.extended_date =
+          base::Time::UnixEpoch() + base::Days(status.extended_date());
+    }
+    eol_info.extended_opt_in_required = status.extended_opt_in_required();
+
     std::move(callback).Run(eol_info);
   }
 

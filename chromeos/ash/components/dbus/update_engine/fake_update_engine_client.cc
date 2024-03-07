@@ -88,8 +88,9 @@ void FakeUpdateEngineClient::GetChannel(bool get_current_channel,
 }
 
 void FakeUpdateEngineClient::GetEolInfo(GetEolInfoCallback callback) {
-  UpdateEngineClient::EolInfo eol_info;
-  eol_info.eol_date = eol_date_;
+  UpdateEngineClient::EolInfo eol_info{
+      .eol_date = eol_date_,
+  };
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), eol_info));
 }
