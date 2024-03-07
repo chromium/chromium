@@ -78,8 +78,8 @@ source_set("eg_app_support+eg2") {
   deps = [
     "//base",
     "//components/infobars/core",
-    "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model",

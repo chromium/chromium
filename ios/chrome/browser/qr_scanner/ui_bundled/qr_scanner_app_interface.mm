@@ -9,15 +9,15 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/ui/scanner/camera_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -35,11 +35,8 @@ using scanner::CameraState;
 @implementation QRScannerAppInterface
 
 + (UIViewController*)currentBrowserViewController {
-  MainController* mainController = chrome_test_util::GetMainController();
-  // TODO(crbug.com/327328147): Avoid using
-  // mainController.browserProviderInterface.
-  return mainController.browserProviderInterface.mainBrowserProvider
-      .viewController;
+  SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
+  return sceneState.browserProviderInterface.mainBrowserProvider.viewController;
 }
 
 + (NSString*)closeIconAccessibilityLabel {

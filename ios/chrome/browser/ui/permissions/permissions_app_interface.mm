@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 
-#import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -15,11 +15,9 @@
 @implementation PermissionsAppInterface
 
 + (NSDictionary<NSNumber*, NSNumber*>*)statesForAllPermissions {
-  // TODO(crbug.com/327327535): Avoid using
-  // mainController.browserProviderInterface.
+  SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
   web::WebState* activeWebState =
-      chrome_test_util::GetMainController()
-          .browserProviderInterface.currentBrowserProvider.browser
+      sceneState.browserProviderInterface.currentBrowserProvider.browser
           ->GetWebStateList()
           ->GetActiveWebState();
   if (activeWebState != nil) {
