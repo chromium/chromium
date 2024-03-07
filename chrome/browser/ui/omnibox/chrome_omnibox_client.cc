@@ -132,6 +132,13 @@ gfx::Image ChromeOmniboxClient::GetFavicon() const {
       ->GetFavicon();
 }
 
+ukm::SourceId ChromeOmniboxClient::GetUKMSourceId() const {
+  return CurrentPageExists() ? location_bar_->GetWebContents()
+                                   ->GetPrimaryMainFrame()
+                                   ->GetPageUkmSourceId()
+                             : ukm::kInvalidSourceId;
+}
+
 bool ChromeOmniboxClient::IsLoading() const {
   return location_bar_->GetWebContents()->IsLoading();
 }

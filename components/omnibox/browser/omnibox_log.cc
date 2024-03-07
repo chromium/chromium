@@ -44,7 +44,8 @@ OmniboxLog::OmniboxLog(
       final_destination_url(final_destination_url),
       is_incognito(is_incognito),
       steady_state_omnibox_position(
-          metrics::OmniboxEventProto::UNKNOWN_POSITION) {
+          metrics::OmniboxEventProto::UNKNOWN_POSITION),
+      ukm_source_id(ukm::kInvalidSourceId) {
   DCHECK(selection.line < result.size())
       << "The selection line index should always be valid. See comments on "
          "OmniboxLog::selection.";

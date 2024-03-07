@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/sessions/core/session_id.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/window_open_disposition.h"
@@ -140,6 +141,9 @@ struct OmniboxLog {
   // The preferred steady state (unfocused) omnibox position. Only logged on
   // iOS phones.
   metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position;
+
+  // The UKM source id for the last committed navigation in the top frame.
+  ukm::SourceId ukm_source_id;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_LOG_H_

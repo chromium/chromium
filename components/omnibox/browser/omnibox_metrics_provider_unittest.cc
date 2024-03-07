@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -17,6 +18,8 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
@@ -56,14 +59,31 @@ class OmniboxMetricsProviderTest : public testing::Test {
     return AutocompleteMatch(nullptr, 0, false, type);
   }
 
-  void RecordLogAndVerifyClientSummarizedResultType(const OmniboxLog& log,
-                                                    int32_t sample,
-                                                    int32_t expected_count) {
+  void RecordLogAndVerifyClientSummarizedResultType(
+      const OmniboxLog& log,
+      int32_t expected_uma_sample,
+      int64_t expected_ukm_value) {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
     provider_->RecordOmniboxOpenedURLClientSummarizedResultType(log);
+
+    // Verify the UMA histogram.
     histogram_tester.ExpectBucketCount(
-        "Omnibox.SuggestionUsed.ClientSummarizedResultType", sample,
-        expected_count);
+        "Omnibox.SuggestionUsed.ClientSummarizedResultType",
+        expected_uma_sample,
+        /*expected_count=*/1);
+
+    // Verify the UKM event.
+    const char* entry_name = ukm::builders::Omnibox_SuggestionUsed::kEntryName;
+    if (log.ukm_source_id != ukm::kInvalidSourceId) {
+      EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
+      auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::Omnibox_SuggestionUsed::kResultTypeName,
+          expected_ukm_value);
+    } else {
+      EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 0ul);
+    }
   }
 
   void RecordLogAndVerifyScoringSignals(
@@ -113,6 +133,7 @@ class OmniboxMetricsProviderTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<OmniboxMetricsProvider> provider_;
 };
 
@@ -121,16 +142,18 @@ TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeSingleURL) {
   result.AppendMatches(
       {BuildMatch(AutocompleteMatch::Type::URL_WHAT_YOU_TYPED)});
   OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0);
-  RecordLogAndVerifyClientSummarizedResultType(log, /*sample=*/0,
-                                               /*expected_count=*/1);
+  log.ukm_source_id = ukm::NoURLSourceId();
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/0,
+                                               /*expected_ukm_value=*/0);
 }
 
 TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeSingleSearch) {
   AutocompleteResult result;
   result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
   OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0);
-  RecordLogAndVerifyClientSummarizedResultType(log, /*sample=*/1,
-                                               /*expected_count=*/1);
+  log.ukm_source_id = ukm::NoURLSourceId();
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/1,
+                                               /*expected_ukm_value=*/1);
 }
 
 TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeMultipleSearch) {
@@ -140,8 +163,19 @@ TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeMultipleSearch) {
        BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST),
        BuildMatch(AutocompleteMatch::Type::URL_WHAT_YOU_TYPED)});
   OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/1);
-  RecordLogAndVerifyClientSummarizedResultType(log, /*sample=*/1,
-                                               /*expected_count=*/1);
+  log.ukm_source_id = ukm::NoURLSourceId();
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/1,
+                                               /*expected_ukm_value=*/1);
+}
+
+TEST_F(OmniboxMetricsProviderTest,
+       ClientSummarizedResultTypeInvalidUkmSourceId) {
+  AutocompleteResult result;
+  result.AppendMatches(
+      {BuildMatch(AutocompleteMatch::Type::URL_WHAT_YOU_TYPED)});
+  OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0);
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/0,
+                                               /*expected_ukm_value=*/0);
 }
 
 // TODO(b/261895038): This test is flaky on android.  Currently scoring signals

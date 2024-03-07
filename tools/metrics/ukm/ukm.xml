@@ -17114,6 +17114,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Omnibox.SuggestionUsed" singular="True">
+  <owner>mahmadi@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the user uses the omnibox to search or navigate.
+  </summary>
+  <metric name="ResultType" enum="ClientSummarizedResultType">
+    <summary>
+      A value that indicates if the user searched or navigated from the omnibox.
+      Used to understand which URLs most commonly lead to searches or
+      navigations from the omnibox.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="OmniboxSecurityIndicator.FormSubmission">
   <owner>meacer@chromium.org</owner>
   <summary>

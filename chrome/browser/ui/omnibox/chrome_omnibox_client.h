@@ -39,6 +39,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   const GURL& GetURL() const override;
   const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
+  ukm::SourceId GetUKMSourceId() const override;
   bool IsLoading() const override;
   bool IsPasteAndGoEnabled() const override;
   bool IsDefaultSearchProviderEnabled() const override;

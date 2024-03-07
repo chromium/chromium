@@ -2416,6 +2416,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       << "omnibox text at same time or before the most recent time the "
       << "default match changed.";
 
+  log.ukm_source_id = controller_->client()->GetUKMSourceId();
+
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
       controller_->client()->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
