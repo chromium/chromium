@@ -64,5 +64,9 @@
     <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
       Lorem Ipsum
     </message>
+    <!-- Suggestion strings -->
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT" desc="The main text in the Autofill suggestion for create a new plus address." translateable="false">
+      Lorem Ipsum
+    </message>
 
 </grit-part>

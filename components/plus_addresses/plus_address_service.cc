@@ -27,11 +27,13 @@
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/webdata/common/web_data_results.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses {
 
@@ -175,7 +177,8 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
       return {};
     }
     Suggestion create_plus_address_suggestion(
-        GetCreateSuggestionLabel(), PopupItemId::kCreateNewPlusAddress);
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
+        PopupItemId::kCreateNewPlusAddress);
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kCreateNewPlusAddressSuggested);
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
@@ -237,13 +240,6 @@ void PlusAddressService::ConfirmPlusAddress(
           // base::Unretained is safe here since PlusAddressService owns
           // the PlusAddressHttpClient and they will have the same lifetime.
           base::Unretained(this), origin, std::move(on_completed)));
-}
-
-std::u16string PlusAddressService::GetCreateSuggestionLabel() const {
-  // TODO(crbug.com/1467623): Once ready, use standard
-  // `l10n_util::GetStringUTF16` instead of using feature params.
-  return base::UTF8ToUTF16(
-      features::kEnterprisePlusAddressSuggestionLabelOverride.Get());
 }
 
 std::optional<std::string> PlusAddressService::GetPrimaryEmail() {

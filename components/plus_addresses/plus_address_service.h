@@ -86,9 +86,6 @@ class PlusAddressService : public KeyedService,
   bool SupportsPlusAddresses(const url::Origin& origin,
                              bool is_off_the_record) const;
 
-  // Returns the suggestion label for creating a new plus address.
-  std::u16string GetCreateSuggestionLabel() const;
-
   // Same as `GetPlusAddress`, but packages the plus address along with its
   // eTLD+1.
   std::optional<PlusProfile> GetPlusProfile(const url::Origin& origin) const;
