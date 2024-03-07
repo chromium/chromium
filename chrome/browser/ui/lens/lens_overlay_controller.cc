@@ -82,20 +82,23 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
 void LensOverlayController::ShowOverlayWidget() {
   CHECK(!overlay_widget_);
 
-  // TODO(b/327270921): Implement on Mac.
-#if !BUILDFLAG(IS_MAC)
   overlay_widget_ = std::make_unique<views::Widget>();
   overlay_widget_->Init(CreateWidgetInitParams());
   overlay_widget_->SetContentsView(CreateViewForOverlay());
 
   // Stack widget at top.
+#if BUILDFLAG(IS_MAC)
+  content::WebContents* active_web_contents = tab_model_->contents();
+  const gfx::NativeView web_contents_view =
+      active_web_contents->GetContentNativeView();
+  overlay_widget_->StackAbove(web_contents_view);
+#else
   auto* overlay_window = overlay_widget_->GetNativeWindow();
   auto* parent = overlay_window->parent();
   CHECK(parent);
   parent->StackChildAtTop(overlay_window);
-
-  overlay_widget_->Show();
 #endif
+  overlay_widget_->Show();
 }
 
 views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
@@ -104,7 +107,11 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "LensOverlayWidget";
   params.child = true;
-#if !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
+  const gfx::NativeView web_contents_view =
+      active_web_contents->GetContentNativeView();
+  params.parent = web_contents_view;
+#else
   const gfx::NativeWindow& native_window =
       active_web_contents->GetTopLevelNativeWindow();
   params.parent = native_window;

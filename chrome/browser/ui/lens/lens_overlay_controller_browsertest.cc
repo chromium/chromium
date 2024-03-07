@@ -31,8 +31,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
       [&]() { return controller->state() == State::kOverlay; }));
 }
 
-// TODO(b/327270921): Implement on Mac.
-#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
   // State should start in off.
   auto* controller =
@@ -54,6 +52,5 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
   ASSERT_EQ(overlay_web_view->GetWebContents()->GetLastCommittedURL(),
             webui_url);
 }
-#endif
 
 }  // namespace
