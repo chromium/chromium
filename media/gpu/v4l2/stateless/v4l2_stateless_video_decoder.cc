@@ -94,10 +94,10 @@ V4L2StatelessVideoDecoder::V4L2StatelessVideoDecoder(
 V4L2StatelessVideoDecoder::~V4L2StatelessVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
-  DCHECK(!current_decode_request_)
-      << "|current_decode_request_| should have been flushed.";
-  DCHECK(decode_request_queue_.empty())
-      << "|decode_request_queue_| is not empty, it should have been flushed.";
+
+  // There can be requests left in the queue if the decoder is torn down without
+  // waiting for an end of stream which would trigger a flush.
+  ClearPendingRequests(DecoderStatus::Codes::kAborted);
 }
 
 void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
