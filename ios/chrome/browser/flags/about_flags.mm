@@ -348,10 +348,15 @@ const FeatureEntry::FeatureParam kIOSTipsNotifications5SecondTrigger[] = {
 const FeatureEntry::FeatureParam kIOSTipsNotifications10SecondTrigger[] = {
     {kIOSTipsNotificationsTriggerTimeParam, "10s"},
 };
+const FeatureEntry::FeatureParam kIOSTipsNotifications30SecondTrigger[] = {
+    {kIOSTipsNotificationsTriggerTimeParam, "30s"},
+};
 const FeatureEntry::FeatureVariation kIOSTipsNotificationsVariations[] = {
     {"(5s trigger)", kIOSTipsNotifications5SecondTrigger,
      std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
     {"(10s trigger)", kIOSTipsNotifications10SecondTrigger,
+     std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
+    {"(30s trigger)", kIOSTipsNotifications30SecondTrigger,
      std::size(kIOSTipsNotifications10SecondTrigger), nullptr},
 };
 
