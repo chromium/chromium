@@ -269,6 +269,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       Run(VariantWith<LoginsResult>(ElementsAre(form_with_local_data))));
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
@@ -298,6 +301,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       Run(VariantWith<LoginsResult>(ElementsAre(form_with_local_data))));
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 // Tests that migration removes blocklisted entries with non-empty username or
@@ -329,6 +335,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   built_in_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 // Tests that migration does not affect username and password for
@@ -362,6 +371,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   built_in_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
@@ -405,6 +417,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   EXPECT_EQ(prefs()->GetInteger(
                 prefs::kTimesAttemptedToReenrollToGoogleMobileServices),
             0);
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 // Holds the built in and android backend's logins and the expected result after
@@ -509,6 +524,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
                                  p.GetAndroidLoginsAfterMigration()))));
   android_backend().GetAllLoginsAsync(android_reply.Get());
   RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 // Tests the initial migration result.
@@ -595,6 +613,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetBuiltInLogins()))));
   built_in_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
@@ -636,6 +657,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetBuiltInLogins()))));
   built_in_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
