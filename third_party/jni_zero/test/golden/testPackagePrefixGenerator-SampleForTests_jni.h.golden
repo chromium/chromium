@@ -224,8 +224,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(JNI
     JniIntWrapper foo,
     JniIntWrapper bar) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -247,8 +246,7 @@ static std::atomic<jmethodID>
 static void Java_SampleForTests_addStructA(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj, const
     jni_zero::JavaRef<jobject>& a) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env));
+  CHECK_CLAZZ(env, obj.obj(), clazz);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -268,8 +266,7 @@ static std::atomic<jmethodID>
 static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JNIEnv* env, const
     jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jclass>& arg0) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -291,8 +288,7 @@ static std::atomic<jmethodID>
 static std::string Java_SampleForTests_getFirstString(JNIEnv* env, const jni_zero::JavaRef<jobject>&
     obj, const std::vector<std::string>& array) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -305,7 +301,7 @@ static std::string Java_SampleForTests_getFirstString(JNIEnv* env, const jni_zer
 
   ScopedJavaLocalRef<jobjectArray> array_converted =
       jni_zero::ConvertArray<std::vector<std::string>>::ToJniType(env, array,
-      java_lang_String_clazz(env));
+      jni_zero::g_string_class);
   jstring ret =
       static_cast<jstring>(env->CallObjectMethod(obj.obj(),
           call_context.base.method_id, array_converted.obj()));
@@ -316,8 +312,7 @@ static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerEnum0(nullptr);
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -339,8 +334,7 @@ static std::atomic<jmethodID>
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env,
     JniIntWrapper a) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -361,8 +355,7 @@ static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerInterface0(nullptr);
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -384,8 +377,7 @@ static std::atomic<jmethodID>
 static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(JNIEnv* env, const
     jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jthrowable>& arg0) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), nullptr);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -407,8 +399,7 @@ static std::atomic<jmethodID>
 static void Java_SampleForTests_iterateAndDoSomething(JNIEnv* env, const jni_zero::JavaRef<jobject>&
     obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env));
+  CHECK_CLAZZ(env, obj.obj(), clazz);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -429,8 +420,7 @@ static jint Java_SampleForTests_javaMethod(JNIEnv* env, const jni_zero::JavaRef<
     JniIntWrapper foo,
     JniIntWrapper bar) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), 0);
+  CHECK_CLAZZ(env, obj.obj(), clazz, 0);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -455,8 +445,7 @@ static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
     JniIntWrapper baz,
     long bat) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env));
+  CHECK_CLAZZ(env, obj.obj(), clazz);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -478,8 +467,7 @@ static std::atomic<jmethodID>
 static void Java_SampleForTests_methodThatThrowsException(JNIEnv* env, const
     jni_zero::JavaRef<jobject>& obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env));
+  CHECK_CLAZZ(env, obj.obj(), clazz);
 
   jni_zero::internal::JniJavaCallContextUnchecked call_context;
   call_context.Init<
@@ -499,8 +487,7 @@ static std::atomic<jmethodID>
 static jboolean Java_SampleForTests_methodWithAnnotationParamAssignment(JNIEnv* env, const
     jni_zero::JavaRef<jobject>& obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), false);
+  CHECK_CLAZZ(env, obj.obj(), clazz, false);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -523,8 +510,7 @@ static void Java_SampleForTests_methodWithGenericParams(JNIEnv* env, const
     jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jobject>& foo,
     const jni_zero::JavaRef<jobject>& bar) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env));
+  CHECK_CLAZZ(env, obj.obj(), clazz);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -544,8 +530,7 @@ static std::atomic<jmethodID>
 static void Java_SampleForTests_packagePrivateJavaMethod(JNIEnv* env, const
     jni_zero::JavaRef<jobject>& obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env));
+  CHECK_CLAZZ(env, obj.obj(), clazz);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -564,8 +549,7 @@ static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_staticJavaMethod0(nullptr);
 static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env), false);
+  CHECK_CLAZZ(env, clazz, clazz, false);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -588,8 +572,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(JNIEnv* en
     JniIntWrapper i,
     const jni_zero::JavaRef<jstring>& s) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructA_clazz(env);
-  CHECK_CLAZZ(env, clazz,
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructA_clazz(env), nullptr);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -610,8 +593,7 @@ static std::atomic<jmethodID>
     g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_getKey0(nullptr);
 static jlong Java_InnerStructB_getKey(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env), 0);
+  CHECK_CLAZZ(env, obj.obj(), clazz, 0);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -633,8 +615,7 @@ static std::atomic<jmethodID>
 static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNIEnv* env, const
     jni_zero::JavaRef<jobject>& obj) {
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(),
-      this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env), nullptr);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
   jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<

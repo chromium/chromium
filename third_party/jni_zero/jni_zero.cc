@@ -51,7 +51,14 @@ jclass LazyGetClassInternal(JNIEnv* env,
   return ret;
 }
 
+jclass GetSystemClassGlobalRef(JNIEnv* env, const char* class_name) {
+  return static_cast<jclass>(env->NewGlobalRef(env->FindClass(class_name)));
+}
+
 }  // namespace
+
+jclass g_object_class = nullptr;
+jclass g_string_class = nullptr;
 
 ScopedJavaLocalFrame::ScopedJavaLocalFrame(JNIEnv* env) : env_(env) {
   int failed = env_->PushLocalFrame(kDefaultLocalFrameCapacity);
@@ -185,6 +192,10 @@ void DetachFromVM() {
 
 void InitVM(JavaVM* vm) {
   g_jvm = vm;
+  JNIEnv* env = AttachCurrentThread();
+  g_object_class = GetSystemClassGlobalRef(env, "java/lang/Object");
+  g_string_class = GetSystemClassGlobalRef(env, "java/lang/String");
+  CheckException(env);
 }
 
 void DisableJvmForTesting() {

@@ -18,15 +18,6 @@
 
 
 // Step 1: Class Accessors.
-#ifndef java_lang_String_clazz_defined
-#define java_lang_String_clazz_defined
-inline jclass java_lang_String_clazz(JNIEnv* env) {
-  static const char kClassName[] = "java/lang/String";
-  static std::atomic<jclass> cached_class;
-  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
-}
-#endif
-
 
 
 namespace jni_zero {
@@ -115,7 +106,7 @@ JNI_BOUNDARY_EXPORT jobjectArray
     jclass jcaller) {
   auto ret = JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(env);
   return jni_zero::ConvertArray<std::vector<std::string>>::ToJniType(env, ret,
-      java_lang_String_clazz(env)).Release();
+      jni_zero::g_string_class).Release();
 }
 
 static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForAnnotationProcessor_ReturnObject(JNIEnv*

@@ -428,8 +428,7 @@ $METHOD_STUBS
         'FULLY_QUALIFIED_CLASS':
         self.java_class.full_name_with_slashes,
         'CLASS_ACCESSORS':
-        header_common.class_accessor_snippet(java_classes,
-                                             self.jni_obj.module_name),
+        header_common.class_accessors(java_classes, self.jni_obj.module_name),
         'CONVERSION_FUNCTION_DECLARATIONS':
         self.GetConversionFunctionDeclarationsString(),
         'CONSTANT_FIELDS':
@@ -606,9 +605,8 @@ $METHOD_STUBS
           'jni_zero::ConvertArray<${CONVERTED_TYPE}>::ToJniType(env, ${ORIGINAL_NAME}${MAYBE_JAVA_CLAZZ})'
       )
       if not java_type.is_primitive_array():
-        escaped_java_classname = common.escape_class_name(
-            java_type.non_array_full_name_with_slashes)
-        maybe_java_clazz = f', {escaped_java_classname}_clazz(env)'
+        accessor = header_common.class_accessor_call(java_type.java_class)
+        maybe_java_clazz = f', {accessor}'
     ret = template.substitute({
         'CONVERTED_TYPE': java_type.converted_type(),
         'ORIGINAL_NAME': var_name,
@@ -825,9 +823,12 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
     sig = called_by_native.signature
     jni_descriptor = sig.to_descriptor()
 
+    class_accessor = header_common.class_accessor_call(
+        called_by_native.java_class)
     return {
         'JAVA_CLASS_ONLY': java_class_only,
         'JAVA_CLASS': common.escape_class_name(java_class),
+        'JAVA_CLASS_ACCESSOR': class_accessor,
         'RETURN_TYPE': return_type_str,
         'OPTIONAL_ERROR_RETURN': optional_error_return,
         'RETURN_DECLARATION': return_declaration,
@@ -862,9 +863,8 @@ ${FUNCTION_SIGNATURE} {""")
     template = Template("""
 static std::atomic<jmethodID> g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME}(nullptr);
 ${FUNCTION_HEADER}
-  jclass clazz = ${JAVA_CLASS}_clazz(env);
-  CHECK_CLAZZ(env, ${FIRST_PARAM_IN_CALL},
-      ${JAVA_CLASS}_clazz(env)${OPTIONAL_ERROR_RETURN});
+  jclass clazz = ${JAVA_CLASS_ACCESSOR};
+  CHECK_CLAZZ(env, ${FIRST_PARAM_IN_CALL}, clazz${OPTIONAL_ERROR_RETURN});
 
   jni_zero::internal::JniJavaCallContext${CHECK_EXCEPTION} call_context;
   call_context.Init<

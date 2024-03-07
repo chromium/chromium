@@ -212,7 +212,7 @@ class JavaType:
       return self
 
     # All other types should just be passed as Objects or Object arrays.
-    return dataclasses.replace(self, java_class=_OBJECT_CLASS)
+    return dataclasses.replace(self, java_class=OBJECT_CLASS)
 
   def converted_type(self):
     """Returns a C datatype listed in the JniType annotation for this type."""
@@ -372,8 +372,9 @@ class TypeResolver:
     return JavaClass(f'{self.java_class.package_with_slashes}/{name}')
 
 
-_OBJECT_CLASS = JavaClass('java/lang/Object')
-_EMPTY_TYPE_RESOLVER = TypeResolver(_OBJECT_CLASS)
+OBJECT_CLASS = JavaClass('java/lang/Object')
+STRING_CLASS = JavaClass('java/lang/String')
+_EMPTY_TYPE_RESOLVER = TypeResolver(OBJECT_CLASS)
 LONG = JavaType(primitive_name='long')
 VOID = JavaType(primitive_name='void')
 EMPTY_PARAM_LIST = JavaParamList()

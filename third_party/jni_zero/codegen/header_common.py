@@ -4,12 +4,15 @@
 """Codegen common to .h files."""
 
 import common
+import java_types
 
 
-def class_accessor_snippet(java_classes, module_name):
+def class_accessors(java_classes, module_name):
   split_arg = f'"{module_name}", ' if module_name else ''
   sb = []
   for java_class in java_classes:
+    if java_class in (java_types.OBJECT_CLASS, java_types.STRING_CLASS):
+      continue
     escaped_name = common.escape_class_name(java_class.full_name_with_slashes)
     # #ifdef needed when multple .h files are #included that common classes.
     sb.append(f"""\
@@ -29,3 +32,13 @@ inline jclass {escaped_name}_clazz(JNIEnv* env) {{
 
 """)
   return ''.join(sb)
+
+
+def class_accessor_call(java_class):
+  if java_class == java_types.OBJECT_CLASS:
+    return 'jni_zero::g_object_class'
+  if java_class == java_types.STRING_CLASS:
+    return 'jni_zero::g_string_class'
+
+  escaped_name = common.escape_class_name(java_class.full_name_with_slashes)
+  return f'{escaped_name}_clazz(env)'

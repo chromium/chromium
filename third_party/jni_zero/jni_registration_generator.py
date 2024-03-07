@@ -559,9 +559,8 @@ class DictionaryGenerator(object):
         'FULL_CLASS_NAME': self.fully_qualified_class,
         'FILE_PATH': self.file_path,
     }
-    self.registration_dict['CLASS_ACCESSORS'] = (
-        header_common.class_accessor_snippet(java_classes_with_natives,
-                                             self.jni_obj.module_name))
+    self.registration_dict['CLASS_ACCESSORS'] = (header_common.class_accessors(
+        java_classes_with_natives, self.jni_obj.module_name))
 
     self._AddForwardDeclaration()
     self._AddJNINativeMethodsArrays(java_classes_with_natives)
@@ -707,6 +706,8 @@ ${KMETHODS}
         values = {
             'NAMESPACE': namespace_str,
             'JAVA_CLASS': common.escape_class_name(full_clazz),
+            'JAVA_CLASS_ACCESSOR':
+            header_common.class_accessor_call(java_class),
             'KMETHODS': kmethods
         }
         ret += [template.substitute(values)]
@@ -738,11 +739,11 @@ ${NATIVES}\
   const int kMethods_${JAVA_CLASS}Size =
       std::size(${NAMESPACE}kMethods_${JAVA_CLASS});
   if (env->RegisterNatives(
-      ${JAVA_CLASS}_clazz(env),
+      ${JAVA_CLASS_ACCESSOR},
       ${NAMESPACE}kMethods_${JAVA_CLASS},
       kMethods_${JAVA_CLASS}Size) < 0) {
     jni_zero::internal::HandleRegistrationError(env,
-        ${JAVA_CLASS}_clazz(env),
+        ${JAVA_CLASS_ACCESSOR},
         __FILE__);
     return false;
   }

@@ -78,7 +78,7 @@ class PolicyConverterTest : public testing::Test {
       JNIEnv* env,
       std::vector<std::string> values) {
     jobjectArray java_array = (jobjectArray)env->NewObjectArray(
-        values.size(), env->FindClass("java/lang/String"), nullptr);
+        values.size(), jni_zero::g_string_class, nullptr);
     for (size_t i = 0; i < values.size(); i++) {
       env->SetObjectArrayElement(
           java_array, i,

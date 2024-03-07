@@ -77,6 +77,10 @@ inline jint as_jint(const JniIntWrapper& wrapper) {
 
 namespace jni_zero {
 
+// Commonly needed jclasses:
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_object_class;
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_string_class;
+
 // Creates a new local reference frame, in which at least a given number of
 // local references can be created. Note that local references already created
 // in previous local frames are still valid in the current local frame.
