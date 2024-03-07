@@ -189,4 +189,12 @@ public class TabUiFeatureUtilities {
     public static boolean isTabStripWindowLayoutOptimizationEnabled() {
         return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled();
     }
+
+    /** Returns whether drag drop from tab strip to create new instance is enabled. */
+    // TODO(crbug/328511660): This flag is similar with {@link #isTabDragAsWindowEnabled()}.
+    // Consider merge code logic.
+    public static boolean isTabTearingEnabled() {
+        return ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING);
+    }
 }

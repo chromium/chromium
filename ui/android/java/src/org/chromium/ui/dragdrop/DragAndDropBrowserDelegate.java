@@ -27,4 +27,13 @@ public interface DragAndDropBrowserDelegate {
 
     /** Build clip data for drag. */
     ClipData buildClipData(DropDataAndroid dropData);
+
+    /**
+     * Update the flags used for drag and drop.
+     *
+     * @param originalFlags The original flags by {@link DragAndDropDelegateImpl#buildFlags}.
+     * @param dropData {@link DropDataAndroid} used during drag/drop.
+     * @return The flags to be used by {@link android.view.View#startDragAndDrop}.
+     */
+    int buildFlags(int originalFlags, DropDataAndroid dropData);
 }

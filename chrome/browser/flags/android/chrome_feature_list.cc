@@ -207,6 +207,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDeferTabSwitcherLayoutCreation,
     &kDelayTempStripRemoval,
     &kDragDropIntoOmnibox,
+    &kDragDropTabTearing,
     &kDrawEdgeToEdge,
     &kDrawEdgeToEdgeInsetsManagement,
     &kDrawNativeEdgeToEdge,
@@ -616,6 +617,10 @@ BASE_FEATURE(kDownloadAutoResumptionThrottling,
 
 BASE_FEATURE(kDragDropIntoOmnibox,
              "DragDropIntoOmnibox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDragDropTabTearing,
+             "DragDropTabTearing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDrawEdgeToEdge,

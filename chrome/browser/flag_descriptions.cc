@@ -4045,6 +4045,11 @@ const char kDragDropIntoOmniboxName[] =
 const char kDragDropIntoOmniboxDescription[] =
     "Drag urls, text, and images into omnibox to start a search";
 
+const char kDragDropTabTearingName[] = "Drag and drop tab tearing";
+const char kDragDropTabTearingDescription[] =
+    "Allow drag tab from tab strip to create new instances if the drag is not "
+    "handled. Does not work when #tab-link-drag-drop is disabled.";
+
 const char kDrawCutoutEdgeToEdgeName[] = "DrawCutoutEdgeToEdge";
 const char kDrawCutoutEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge Feature to coordinate with the "

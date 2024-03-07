@@ -266,6 +266,7 @@ public abstract class ChromeFeatureList {
     public static final String DNS_OVER_HTTPS = "DnsOverHttps";
     public static final String DOWNLOADS_MIGRATE_TO_JOBS_API = "DownloadsMigrateToJobsAPI";
     public static final String DRAG_DROP_INTO_OMNIBOX = "DragDropIntoOmnibox";
+    public static final String DRAG_DROP_TAB_TEARING = "DragDropTabTearing";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
     public static final String DRAW_EDGE_TO_EDGE = "DrawEdgeToEdge";
     public static final String DRAW_EDGE_TO_EDGE_INSETS_MANAGEMENT =

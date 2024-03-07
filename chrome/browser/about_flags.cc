@@ -9303,6 +9303,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"drag-drop-into-omnibox", flag_descriptions::kDragDropIntoOmniboxName,
      flag_descriptions::kDragDropIntoOmniboxDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDragDropIntoOmnibox)},
+    {"drag-drop-tab-tearing", flag_descriptions::kDragDropTabTearingName,
+     flag_descriptions::kDragDropTabTearingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDragDropTabTearing)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

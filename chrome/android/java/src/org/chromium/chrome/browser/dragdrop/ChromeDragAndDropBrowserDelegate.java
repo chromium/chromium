@@ -5,20 +5,25 @@
 package org.chromium.chrome.browser.dragdrop;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
@@ -29,12 +34,16 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
 import org.chromium.ui.dragdrop.DropDataProviderUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /** Delegate for browser related functions used by Drag and Drop. */
 public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDelegate {
+    private static final String TAG = "DragDrop";
+
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
     @VisibleForTesting static final String PARAM_DROP_IN_CHROME = "DropInChrome";
     private final String[] mSupportedMimeTypes;
@@ -118,6 +127,13 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public ClipData buildClipData(@NonNull DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
+
+        if (chromeDropDataAndroid.hasTab() && TabUiFeatureUtilities.isTabTearingEnabled()) {
+            Tab tab = chromeDropDataAndroid.mTab;
+            ClipData clipData = buildClipDataForTabTearing(tab.getContext(), tab);
+            if (clipData != null) return clipData;
+        }
+
         Intent intent = null;
         if (!TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD.getValue()) {
             intent =
@@ -129,5 +145,58 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
                 null,
                 mSupportedMimeTypes,
                 new Item(chromeDropDataAndroid.buildTabClipDataText(), intent, null));
+    }
+
+    private @Nullable ClipData buildClipDataForTabTearing(Context context, Tab tab) {
+        Intent intent = createUrlIntent(tab.getUrl().getSpec(), UrlIntentSource.TAB_IN_STRIP);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        ClipData.Item item = ClipDataItemBuilder.buildClipDataItemWithPendingIntent(pendingIntent);
+        return item == null ? null : new ClipData(null, mSupportedMimeTypes, item);
+    }
+
+    @Override
+    public int buildFlags(int originalFlag, DropDataAndroid dropData) {
+        if (!TabUiFeatureUtilities.isTabTearingEnabled()) {
+            return originalFlag;
+        }
+        assert dropData instanceof ChromeDropDataAndroid;
+        ChromeDropDataAndroid chromeDropData = (ChromeDropDataAndroid) dropData;
+        if (!chromeDropData.hasTab()) {
+            return originalFlag;
+        }
+
+        return originalFlag
+                | ClipDataItemBuilder.DRAG_FLAG_GLOBAL_SAME_APPLICATION
+                | ClipDataItemBuilder.DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG;
+    }
+
+    /** Wrapper class over the invocation class. */
+    // TODO(crbug.com/328511660): Replace with OS provided values / APIs when available.
+    static class ClipDataItemBuilder {
+        private static final int DRAG_FLAG_GLOBAL_SAME_APPLICATION = 1 << 12;
+        private static final int DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG = 1 << 13;
+
+        static ClipData.Item buildClipDataItemWithPendingIntent(PendingIntent pendingIntent) {
+            ClipData.Item item;
+            try {
+                Class itemBuilder = Class.forName("android.content.ClipData$Item$Builder");
+                Object itemBuilderObj = itemBuilder.newInstance();
+                Method method =
+                        itemBuilder.getDeclaredMethod("setIntentSender", IntentSender.class);
+                Object obj2 = method.invoke(itemBuilderObj, pendingIntent.getIntentSender());
+                Method buildMethod = itemBuilder.getDeclaredMethod("build");
+                item = (Item) buildMethod.invoke(obj2);
+                return item;
+            } catch (ClassNotFoundException
+                    | InstantiationException
+                    | NoSuchMethodException
+                    | IllegalAccessException e) {
+                Log.e(TAG, e.toString());
+            } catch (InvocationTargetException e) {
+                Log.e(TAG, e.getTargetException().toString());
+            }
+            return null;
+        }
     }
 }

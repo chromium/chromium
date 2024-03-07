@@ -16938,6 +16938,7 @@ from previous Chrome versions.
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
   <int value="-1774290918" label="webview-shadow-dom-fenced-frames"/>
   <int value="-1773925297" label="TimedHtmlParserBudget:disabled"/>
+  <int value="-1773078316" label="DragDropTabTearing:enabled"/>
   <int value="-1772942854" label="LongPressBackForHistory:enabled"/>
   <int value="-1772905637"
       label="RunVideoCaptureServiceInBrowserProcess:enabled"/>
@@ -20608,6 +20609,7 @@ from previous Chrome versions.
       label="RequestDesktopSiteExceptionsDowngrade:enabled"/>
   <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
+  <int value="-106128305" label="DragDropTabTearing:disabled"/>
   <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
   <int value="-102537270" label="extension-content-verification"/>
   <int value="-102387656" label="FillingAcrossAffiliatedWebsites:disabled"/>
