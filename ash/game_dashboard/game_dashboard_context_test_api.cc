@@ -118,7 +118,7 @@ PillButton* GameDashboardContextTestApi::GetMainMenuGameControlsSetupButton() {
 Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
-  return main_menu_view->GetGameControlsFeatureSwith();
+  return main_menu_view->GetGameControlsFeatureSwitch();
 }
 
 views::LabelButton* GameDashboardContextTestApi::GetMainMenuFeedbackButton() {

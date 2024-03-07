@@ -176,8 +176,9 @@ views::BoxLayout* ConfigureFeatureRowLayout(views::Button* button,
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/true);
   auto* focus_ring = views::FocusRing::Get(button);
-  focus_ring->SetHaloInset(-4);
+  focus_ring->SetHaloInset(-5);
   focus_ring->SetHaloThickness(2);
+  focus_ring->SetColorId(cros_tokens::kCrosSysPrimary);
 
   return layout;
 }
@@ -207,7 +208,7 @@ class FeatureHeader : public views::View {
     icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
         is_enabled ? cros_tokens::kCrosSysSystemOnBase
                    : cros_tokens::kCrosSysDisabledContainer,
-        /*radius=*/12.0f));
+        /*radius=*/16.0f));
     icon_container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
     icon_container->SetProperty(views::kMarginsKey,
                                 gfx::Insets::TLBR(0, 0, 0, 16));
@@ -1076,7 +1077,7 @@ PillButton* GameDashboardMainMenuView::GetGameControlsSetupButton() {
                                 : nullptr;
 }
 
-Switch* GameDashboardMainMenuView::GetGameControlsFeatureSwith() {
+Switch* GameDashboardMainMenuView::GetGameControlsFeatureSwitch() {
   return game_controls_details_ ? game_controls_details_->feature_switch()
                                 : nullptr;
 }

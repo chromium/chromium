@@ -147,7 +147,7 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Gets UI elements from Game Controls details row.
   PillButton* GetGameControlsSetupButton();
-  Switch* GetGameControlsFeatureSwith();
+  Switch* GetGameControlsFeatureSwitch();
 
   // For test to access the nudge ID in the anonymous namespace.
   AnchoredNudge* GetGameControlsSetupNudgeForTesting();
