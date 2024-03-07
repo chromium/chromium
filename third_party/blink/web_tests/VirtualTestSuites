@@ -1453,6 +1453,7 @@
     "platforms": ["Linux"],
     "owners": ["masonf@chromium.org"],
     "bases": [
+      "fast/dom/mutation-events-usecounter.html",
       "fast/events/mutation-events-disabled.html",
       "dom/mutation-event-tests",
       "external/wpt/editing/crashtests/indent-outdent-after-closing-editable-dialog-element.html",

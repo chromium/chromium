@@ -713,10 +713,8 @@ void EventTarget::AddedEventListener(
     }
   }
 
-  WebFeature mutation_event_feature;
-  Document::ListenerType listener_type;
-  if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
-                                         listener_type)) {
+  auto info = event_util::IsDOMMutationEventType(event_type);
+  if (info.is_mutation_event) {
     if (ExecutionContext* context = GetExecutionContext()) {
       if (RuntimeEnabledFeatures::MutationEventsEnabled(context) &&
           (!document || document->SupportsLegacyDOMMutations())) {
@@ -735,7 +733,8 @@ void EventTarget::AddedEventListener(
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kDeprecation,
             mojom::blink::ConsoleMessageLevel::kWarning, message_text));
-        Deprecation::CountDeprecation(context, mutation_event_feature);
+        Deprecation::CountDeprecation(context, info.listener_feature);
+        UseCounter::Count(context, WebFeature::kAnyMutationEventListenerAdded);
       } else {
         String message_text;
         // Only show the special trial message if mutation events are disabled

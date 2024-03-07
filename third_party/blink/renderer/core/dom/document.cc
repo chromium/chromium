@@ -6189,11 +6189,9 @@ bool Document::HasListenerType(ListenerType listener_type) const {
 
 void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
                                        EventTarget& event_target) {
-  WebFeature mutation_event_feature;
-  ListenerType listener_type;
-  if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
-                                         listener_type)) {
-    AddMutationEventListenerTypeIfEnabled(listener_type);
+  auto info = event_util::IsDOMMutationEventType(event_type);
+  if (info.is_mutation_event) {
+    AddMutationEventListenerTypeIfEnabled(info.listener_type);
   } else if (event_type == event_type_names::kWebkitAnimationStart ||
              event_type == event_type_names::kAnimationstart) {
     AddListenerType(kAnimationStartListener);

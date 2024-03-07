@@ -4,50 +4,25 @@
 
 <div id=target>foo</div>
 
+<!-- This version is in the main repo, and tests that NO use counters fire. -->
+
 <script>
 test(() => {
   const target = document.getElementById('target');
 
-  // From web_feature.mojom
-  const kDOMSubtreeModifiedEvent = 143;
-  const kDOMNodeInsertedEvent = 144;
-  const kDOMNodeRemovedEvent = 145;
-  const kDOMNodeRemovedFromDocumentEvent = 146;
-  const kDOMNodeInsertedIntoDocumentEvent = 147;
-  const kDOMCharacterDataModifiedEvent = 148;
+  // This is all mutation event related use counters from web_feature.mojom:
+  const allCounters = [143, 144, 145, 146, 147, 148,
+      4885, 4886, 4887, 4888, 4889, 4890, 4891, 4892];
 
-  const events = [
-    {counter: kDOMSubtreeModifiedEvent, event: 'DOMSubtreeModified'},
-    {counter: kDOMNodeInsertedEvent, event: 'DOMNodeInserted'},
-    {counter: kDOMNodeRemovedEvent, event: 'DOMNodeRemoved'},
-    {counter: kDOMNodeRemovedFromDocumentEvent, event: 'DOMNodeRemovedFromDocument'},
-    {counter: kDOMNodeInsertedIntoDocumentEvent, event: 'DOMNodeInsertedIntoDocument'},
-    {counter: kDOMCharacterDataModifiedEvent, event: 'DOMCharacterDataModified'},
-  ];
+  // Trigger all mutation event types.
+  target.remove();
+  document.body.appendChild(target);
+  target.setAttribute('foo','bar');
+  target.removeAttribute('foo');
+  target.firstChild.textContent = "bar";
 
-  const expectedCounters = new Set();
-  function assertUseCounted(msg) {
-    events.forEach(evt => {
-      assert_equals(internals.isUseCounted(document, evt.counter), expectedCounters.has(evt.counter), evt.event + ', ' + msg);
-    });
-  }
-  function triggerThemAll() {
-    target.remove();
-    document.body.appendChild(target);
-    target.setAttribute('foo','bar');
-    target.removeAttribute('foo');
-    target.firstChild.textContent = "bar";
-  }
-
-  assertUseCounted('initial');
-  triggerThemAll();
-  assertUseCounted('before event listeners attached');
-  events.forEach(evt => {
-    target.addEventListener(evt.event,() => {});
-    expectedCounters.add(evt.counter);
-    assertUseCounted('after adding ' + evt.event + ' listener, before firing');
-    triggerThemAll();
-    assertUseCounted('after adding ' + evt.event + ' listener, after firing (no difference)');
+  allCounters.forEach(counter => {
+    assert_false(internals.isUseCounted(document, counter));
   });
-}, 'Use of Mutation Events is use counted.');
+}, 'Use of Mutation Events is NOT use-counted.');
 </script>

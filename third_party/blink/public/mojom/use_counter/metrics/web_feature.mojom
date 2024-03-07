@@ -4224,14 +4224,14 @@ enum WebFeature {
   kV8RTCEncodedVideoFrame_Constructor = 4860,
   kCSSFunctions = 4861,
   kCSSPageRule = 4862,
+  // The items above roughly this point are available in the M123 branch.
+
   kV8RTCRtpReceiver_JitterBufferTarget_AttributeGetter = 4863,
   kV8RTCRtpReceiver_JitterBufferTarget_AttributeSetter = 4864,
   kTrustedTypesIntrospectionAttributeType = 4865,
   kTrustedTypesIntrospectionPropertyType = 4866,
   kTrustedTypesIntrospectionTypeMapping = 4867,
   kIndexedDBFileLastModifiedDate = 4868,
-  // The items above roughly this point are available in the M123 branch.
-
   kSpeculationRulesRejectedLaxReferrerPolicy = 4869,
   kSpeculationRulesUsedLinkReferrerPolicy = 4870,
   kSpeculationRulesExplicitReferrerPolicy = 4871,
@@ -4248,7 +4248,15 @@ enum WebFeature {
   kViewportSegments = 4882,
   kPrivateNetworkAccessWebSocketConnected = 4883,
   kWebAppTitle = 4884,
-  
+  kDOMSubtreeModifiedEventFired = 4885,
+  kDOMNodeInsertedEventFired = 4886,
+  kDOMNodeRemovedEventFired = 4887,
+  kDOMNodeRemovedFromDocumentEventFired = 4888,
+  kDOMNodeInsertedIntoDocumentEventFired = 4889,
+  kDOMCharacterDataModifiedEventFired = 4890,
+  kAnyMutationEventFired = 4891,
+  kAnyMutationEventListenerAdded = 4892,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

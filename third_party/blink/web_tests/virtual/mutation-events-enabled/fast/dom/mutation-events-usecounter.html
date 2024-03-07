@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+
+<div id=target>foo</div>
+
+<!-- This version is in the virtual test suite, and tests that use counters DO fire. -->
+
+<script>
+test(() => {
+  const target = document.getElementById('target');
+
+  // From web_feature.mojom
+  const kDOMSubtreeModifiedEvent = 143;
+  const kDOMNodeInsertedEvent = 144;
+  const kDOMNodeRemovedEvent = 145;
+  const kDOMNodeRemovedFromDocumentEvent = 146;
+  const kDOMNodeInsertedIntoDocumentEvent = 147;
+  const kDOMCharacterDataModifiedEvent = 148;
+
+  const kDOMSubtreeModifiedEventFired = 4885;
+  const kDOMNodeInsertedEventFired = 4886;
+  const kDOMNodeRemovedEventFired = 4887;
+  const kDOMNodeRemovedFromDocumentEventFired = 4888;
+  const kDOMNodeInsertedIntoDocumentEventFired = 4889;
+  const kDOMCharacterDataModifiedEventFired = 4890;
+
+  const kAnyMutationEventFired = 4891;
+  const kAnyMutationEventListenerAdded = 4892;
+
+  const events = [
+    {event: 'DOMSubtreeModified', listenerCounter: kDOMSubtreeModifiedEvent, firedCounter: kDOMSubtreeModifiedEventFired},
+    {event: 'DOMNodeInserted', listenerCounter: kDOMNodeInsertedEvent, firedCounter: kDOMNodeInsertedEventFired},
+    {event: 'DOMNodeRemoved', listenerCounter: kDOMNodeRemovedEvent, firedCounter: kDOMNodeRemovedEventFired},
+    {event: 'DOMNodeRemovedFromDocument', listenerCounter: kDOMNodeRemovedFromDocumentEvent, firedCounter: kDOMNodeRemovedFromDocumentEventFired},
+    {event: 'DOMNodeInsertedIntoDocument', listenerCounter: kDOMNodeInsertedIntoDocumentEvent, firedCounter: kDOMNodeInsertedIntoDocumentEventFired},
+    {event: 'DOMCharacterDataModified', listenerCounter: kDOMCharacterDataModifiedEvent, firedCounter: kDOMCharacterDataModifiedEventFired},
+  ];
+  const allCounters = [...events.map(e => e.listenerCounter), ...events.map(e => e.firedCounter),
+      kAnyMutationEventFired, kAnyMutationEventListenerAdded];
+
+  const expectedCounters = new Set();
+  function assertUseCounted(msg) {
+    allCounters.forEach(counter => {
+      assert_equals(internals.isUseCounted(document, counter), expectedCounters.has(counter), 'Counter ' + counter + ', ' + msg);
+    });
+  }
+  function triggerThemAll() {
+    target.remove();
+    document.body.appendChild(target);
+    target.setAttribute('foo','bar');
+    target.removeAttribute('foo');
+    target.firstChild.textContent = "bar";
+  }
+
+  assertUseCounted('initial - no counters triggered');
+  triggerThemAll();
+  assertUseCounted('before event listeners attached - still no counters triggered');
+  events.forEach(evt => {
+    target.addEventListener(evt.event,() => {});
+    expectedCounters.add(evt.listenerCounter);
+    expectedCounters.add(kAnyMutationEventListenerAdded);
+    assertUseCounted('after adding ' + evt.event + ' listener, before firing');
+    triggerThemAll();
+    expectedCounters.add(evt.firedCounter);
+    expectedCounters.add(kAnyMutationEventFired);
+    assertUseCounted('after adding ' + evt.event + ' listener, after firing');
+  });
+}, 'Use of Mutation Events is use-counted.');
+</script>

@@ -39,40 +39,42 @@ bool IsPointerEventType(const AtomicString& event_type) {
          event_type == event_type_names::kPointerup;
 }
 
-bool IsDOMMutationEventType(const AtomicString& event_type) {
-  WebFeature web_feature;
-  Document::ListenerType listener_type;
-  return IsDOMMutationEventType(event_type, web_feature, listener_type);
-}
-bool IsDOMMutationEventType(const AtomicString& event_type,
-                            WebFeature& web_feature,
-                            Document::ListenerType& listener_type) {
+MutationEventInfo IsDOMMutationEventType(const AtomicString& event_type) {
   if (event_type == event_type_names::kDOMSubtreeModified) {
-    web_feature = WebFeature::kDOMSubtreeModifiedEvent;
-    listener_type = Document::kDOMSubtreeModifiedListener;
-    return true;
+    return {.is_mutation_event = true,
+            .listener_feature = WebFeature::kDOMSubtreeModifiedEvent,
+            .event_fired_feature = WebFeature::kDOMSubtreeModifiedEventFired,
+            .listener_type = Document::kDOMSubtreeModifiedListener};
   } else if (event_type == event_type_names::kDOMNodeInserted) {
-    web_feature = WebFeature::kDOMNodeInsertedEvent;
-    listener_type = Document::kDOMNodeInsertedListener;
-    return true;
+    return {.is_mutation_event = true,
+            .listener_feature = WebFeature::kDOMNodeInsertedEvent,
+            .event_fired_feature = WebFeature::kDOMNodeInsertedEventFired,
+            .listener_type = Document::kDOMNodeInsertedListener};
   } else if (event_type == event_type_names::kDOMNodeRemoved) {
-    web_feature = WebFeature::kDOMNodeRemovedEvent;
-    listener_type = Document::kDOMNodeRemovedListener;
-    return true;
+    return {.is_mutation_event = true,
+            .listener_feature = WebFeature::kDOMNodeRemovedEvent,
+            .event_fired_feature = WebFeature::kDOMNodeRemovedEventFired,
+            .listener_type = Document::kDOMNodeRemovedListener};
   } else if (event_type == event_type_names::kDOMNodeRemovedFromDocument) {
-    web_feature = WebFeature::kDOMNodeRemovedFromDocumentEvent;
-    listener_type = Document::kDOMNodeRemovedFromDocumentListener;
-    return true;
+    return {.is_mutation_event = true,
+            .listener_feature = WebFeature::kDOMNodeRemovedFromDocumentEvent,
+            .event_fired_feature =
+                WebFeature::kDOMNodeRemovedFromDocumentEventFired,
+            .listener_type = Document::kDOMNodeRemovedFromDocumentListener};
   } else if (event_type == event_type_names::kDOMNodeInsertedIntoDocument) {
-    web_feature = WebFeature::kDOMNodeInsertedIntoDocumentEvent;
-    listener_type = Document::kDOMNodeInsertedIntoDocumentListener;
-    return true;
+    return {.is_mutation_event = true,
+            .listener_feature = WebFeature::kDOMNodeInsertedIntoDocumentEvent,
+            .event_fired_feature =
+                WebFeature::kDOMNodeInsertedIntoDocumentEventFired,
+            .listener_type = Document::kDOMNodeInsertedIntoDocumentListener};
   } else if (event_type == event_type_names::kDOMCharacterDataModified) {
-    web_feature = WebFeature::kDOMCharacterDataModifiedEvent;
-    listener_type = Document::kDOMCharacterDataModifiedListener;
-    return true;
+    return {
+        .is_mutation_event = true,
+        .listener_feature = WebFeature::kDOMCharacterDataModifiedEvent,
+        .event_fired_feature = WebFeature::kDOMCharacterDataModifiedEventFired,
+        .listener_type = Document::kDOMCharacterDataModifiedListener};
   }
-  return false;
+  return {.is_mutation_event = false};
 }
 
 }  // namespace event_util

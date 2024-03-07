@@ -11314,6 +11314,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4882" label="ViewportSegments"/>
   <int value="4883" label="PrivateNetworkAccessWebSocketConnected"/>
   <int value="4884" label="WebAppTitle"/>
+  <int value="4885" label="DOMSubtreeModifiedEventFired"/>
+  <int value="4886" label="DOMNodeInsertedEventFired"/>
+  <int value="4887" label="DOMNodeRemovedEventFired"/>
+  <int value="4888" label="DOMNodeRemovedFromDocumentEventFired"/>
+  <int value="4889" label="DOMNodeInsertedIntoDocumentEventFired"/>
+  <int value="4890" label="DOMCharacterDataModifiedEventFired"/>
+  <int value="4891" label="AnyMutationEventFired"/>
+  <int value="4892" label="AnyMutationEventListenerAdded"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

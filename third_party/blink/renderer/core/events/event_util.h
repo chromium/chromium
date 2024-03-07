@@ -21,13 +21,14 @@ CORE_EXPORT bool IsMouseButtonEventType(const AtomicString& event_type);
 
 CORE_EXPORT bool IsPointerEventType(const AtomicString& event_type);
 
-// |web_feature| and |listener_type| are outputs, corresponding to the
-// provided |event_type|. They will not be changed if the provided |event_type|
-// is not a DOM Mutation Event.
-bool IsDOMMutationEventType(const AtomicString& event_type,
-                            WebFeature& web_feature,
-                            Document::ListenerType& listener_type);
-bool IsDOMMutationEventType(const AtomicString& event_type);
+struct MutationEventInfo {
+  bool is_mutation_event;
+  WebFeature listener_feature;
+  WebFeature event_fired_feature;
+  Document::ListenerType listener_type;
+};
+
+MutationEventInfo IsDOMMutationEventType(const AtomicString& event_type);
 
 }  // namespace event_util
 
