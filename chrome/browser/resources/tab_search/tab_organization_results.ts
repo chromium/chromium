@@ -51,7 +51,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
         observer: 'onAvailableHeightChange_',
       },
 
-      multiTabOrganization: Boolean,
+      multiTabOrganization: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
       feedbackSelectedOption_: {
         type: String,

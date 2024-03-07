@@ -99,6 +99,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchCardBackground] = {ui::kColorSysSurface5};
   mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
   mixer[kColorTabSearchDivider] = {ui::kColorSysDivider};
+  mixer[kColorTabSearchFooterBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorTabSearchImageTabContentBottom] = {ui::kColorSysHeaderContainer};
   mixer[kColorTabSearchImageTabContentTop] = {ui::kColorSysOnPrimary};
   mixer[kColorTabSearchImageTabText] = {ui::kColorSysStateRipplePrimary};

@@ -10,6 +10,13 @@
     justify-content: space-between;
   }
 
+  :host([multi-tab-organization]) .feedback {
+    background-color: var(--color-tab-search-footer-background);
+    margin: calc(var(--mwb-list-item-horizontal-margin) * -1);
+    margin-top: 0;
+    padding: var(--mwb-list-item-horizontal-margin);
+  }
+
   .results {
     background-color: var(--color-tab-search-card-background);
     border-radius: 8px;
