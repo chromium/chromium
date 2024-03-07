@@ -1168,6 +1168,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="InputMethod.Manta.Orca.IndexOfInsertedResponse.{Mode}"
+    units="units" expires_after="2024-11-01">
+  <owner>hdchuong@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Records the index of the response that is selected by the user to be
+    inserted. This metric is recorded at the time an insertion is performed.
+  </summary>
+  <token key="Mode">
+    <variant name="Elaborate"
+        summary="The user initiated editor by trying to elaborate their text"/>
+    <variant name="Emojify"
+        summary="The user initiated editor by trying to emojify their text"/>
+    <variant name="Formalize"
+        summary="The user initiated editor by trying to formalize their text"/>
+    <variant name="FreeformRewrite"
+        summary="The user initiated editor by trying to rewrite their text
+                 with a freeform prompt"/>
+    <variant name="Rephrase"
+        summary="The user initiated editor by trying to rephrase their text"/>
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Shorten"
+        summary="The user initiated editor by trying to shorten their text"/>
+    <variant name="Unknown"
+        summary="The user initiated editor with an unknown method
+                 (potentially a new prompt)"/>
+    <variant name="Unset" summary="The user hasn't yet chosen a tone"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.Manta.Orca.LengthOfLongestResponse.{Mode}"
     units="characters" expires_after="2024-11-01">
   <owner>hdchuong@google.com</owner>
