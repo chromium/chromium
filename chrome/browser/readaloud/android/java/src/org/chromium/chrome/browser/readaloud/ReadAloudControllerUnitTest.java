@@ -106,7 +106,11 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowDeviceConditions.class})
-@EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
+@EnableFeatures({
+    ChromeFeatureList.READALOUD,
+    ChromeFeatureList.READALOUD_PLAYBACK,
+    ChromeFeatureList.READALOUD_TAP_TO_SEEK
+})
 @DisableFeatures({ChromeFeatureList.READALOUD_IN_MULTI_WINDOW})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -2032,6 +2036,18 @@ public class ReadAloudControllerUnitTest {
 
         resolvePromises();
         histogram.assertExpected();
+    }
+
+    @Test
+    public void testTapToSeek_Success() {
+        // play tab
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        resolvePromises();
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
     }
 
     private void requestAndStartPlayback() {

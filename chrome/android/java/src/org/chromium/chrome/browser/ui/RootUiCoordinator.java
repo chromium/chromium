@@ -55,6 +55,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelection;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -322,6 +324,7 @@ public class RootUiCoordinator
     protected final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
+    @Nullable private ContextualSearchSelectionObserver mContextualSearchSelectionObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
     private boolean mKeyboardVisibleDuringFoldTransition;
@@ -740,10 +743,11 @@ public class RootUiCoordinator
         }
 
         if (mReadAloudControllerSupplier.hasValue()) {
-            if (mContextualSearchManagerSupplier.get() != null) {
-                mContextualSearchManagerSupplier
-                        .get()
-                        .removeObserver(mReadAloudContextualSearchObserver);
+            ContextualSearchManager contextualSearchManager =
+                    mContextualSearchManagerSupplier.get();
+            if (contextualSearchManager != null) {
+                contextualSearchManager.removeObserver(mReadAloudContextualSearchObserver);
+                contextualSearchManager.removeObserver(mContextualSearchSelectionObserver);
             }
             var readAloudController = mReadAloudControllerSupplier.get();
             mReadAloudControllerSupplier.set(null);
@@ -907,6 +911,16 @@ public class RootUiCoordinator
                             mWindowAndroid,
                             mActivityLifecycleDispatcher);
             mReadAloudControllerSupplier.set(controller);
+            mContextualSearchSelectionObserver =
+                    new ContextualSearchSelectionObserver() {
+                        @Override
+                        public void onSelectionChanged(ContextualSearchSelection selectionContext) {
+                            controller.tapToSeek(
+                                    selectionContext.content,
+                                    selectionContext.startOffset,
+                                    selectionContext.endOffset);
+                        }
+                    };
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
                         @Override
@@ -921,17 +935,17 @@ public class RootUiCoordinator
                         }
                     };
             mToolbarManager.setReadAloudReadabilitySupplier(controller.getReadabilitySupplier());
-            if (mContextualSearchManagerSupplier.get() != null) {
-                mContextualSearchManagerSupplier
-                        .get()
-                        .addObserver(mReadAloudContextualSearchObserver);
+            ContextualSearchManager contextualSearchManager =
+                    mContextualSearchManagerSupplier.get();
+            if (contextualSearchManager != null) {
+                contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
+                contextualSearchManager.addObserver(mContextualSearchSelectionObserver);
             }
         }
     }
 
     private void initMessagesInfra() {
         // TODO(crbug.com/1185887): Move feature flag and parameters into a separate class in
-        // the Messages component.
         MessagesResourceMapperInitializer.init();
         MessageContainer container = mActivity.findViewById(R.id.message_container);
         mMessageContainerCoordinator =

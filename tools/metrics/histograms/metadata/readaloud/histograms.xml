@@ -87,6 +87,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.HasTapToSeekFoundMatch" enum="BooleanSuccess"
+    expires_after="2024-08-04">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Record if Read Aloud finds a substring match between the user's requested
+    word to seek to and the distilled Read Aloud text.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.HighlightingEnabled" enum="BooleanEnabled"
     expires_after="2024-08-04">
   <owner>andreaxg@google.com</owner>
