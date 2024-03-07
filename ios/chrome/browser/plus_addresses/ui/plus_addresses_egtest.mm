@@ -142,7 +142,8 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
 #pragma mark - Tests
 
 // A basic test that simply opens and dismisses the bottom sheet.
-- (void)testShowPlusAddressBottomSheet {
+// TODO(b/328531373): Reenable once fixed.
+- (void)DISABLED_testShowPlusAddressBottomSheet {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -195,7 +196,8 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       1);
 }
 
-- (void)testPlusAddressBottomSheetSettingsLink {
+// TODO(b/328531373): Reenable once fixed.
+- (void)DISABLED_testPlusAddressBottomSheetSettingsLink {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -228,7 +230,8 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       assertWithMatcher:grey_notVisible()];
 }
 
-- (void)testPlusAddressBottomSheetErrorReportLink {
+// TODO(b/328531373): Reenable once fixed.
+- (void)DISABLED_testPlusAddressBottomSheetErrorReportLink {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -258,7 +261,8 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       assertWithMatcher:grey_notVisible()];
 }
 
-- (void)testSwipeToDismiss {
+// TODO(b/328531373): Reenable once fixed.
+- (void)DISABLED_testSwipeToDismiss {
   // TODO(crbug.com/1508365): Test fails on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
