@@ -6,32 +6,15 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "browser_switcher.url_list": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "BrowserSwitcherUrlList": [
-            "example.com",
-            "google.com"
-          ]
-        },
-        "prefs": {
-          "browser_switcher.url_list": {
-            "value": [
-              "example.com",
-              "google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser_switcher.url_list",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "example.com",
+          "google.com"
+        ]
+      ]
+    }
   }
 ]

@@ -6,26 +6,13 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "browser_switcher.parsing_mode": {
-            "default_value": 0
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "BrowserSwitcherParsingMode": 1
-        },
-        "prefs": {
-          "browser_switcher.parsing_mode": {
-            "value": 1
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser_switcher.parsing_mode",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
   }
 ]

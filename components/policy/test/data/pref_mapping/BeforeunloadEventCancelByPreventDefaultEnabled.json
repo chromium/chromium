@@ -9,35 +9,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "BeforeunloadEventCancelByPreventDefaultEnabled": true
-        },
-        "prefs": {
-          "policy.beforeunload_event_cancel_by_prevent_default_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "BeforeunloadEventCancelByPreventDefaultEnabled": false
-        },
-        "prefs": {
-          "policy.beforeunload_event_cancel_by_prevent_default_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "policy.beforeunload_event_cancel_by_prevent_default_enabled": {
-            "default_value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.beforeunload_event_cancel_by_prevent_default_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -3,30 +3,14 @@
     "os": [
       "win"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "browser_switcher.chrome_parameters": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "BrowserSwitcherChromeParameters": [
-            "--force-dark-mode"
-          ]
-        },
-        "prefs": {
-          "browser_switcher.chrome_parameters": {
-            "value": [
-              "--force-dark-mode"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser_switcher.chrome_parameters",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "--force-dark-mode"
+        ]
+      ]
+    }
   }
 ]

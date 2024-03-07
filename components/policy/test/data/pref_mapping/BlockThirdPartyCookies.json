@@ -30,6 +30,14 @@
             "value": 1
           }
         }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.cookie_controls_mode": {
+            "default_value": 2
+          }
+        }
       }
     ]
   }

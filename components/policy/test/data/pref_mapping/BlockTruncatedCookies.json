@@ -10,27 +10,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "BlockTruncatedCookies": false
-        },
-        "prefs": {
-          "profile.cookie_block_truncated": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "BlockTruncatedCookies": true
-        },
-        "prefs": {
-          "profile.cookie_block_truncated": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.cookie_block_truncated",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
