@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -17,6 +18,7 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -130,7 +132,8 @@ SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
     BUILDFLAG(CHROME_FOR_TESTING)
   return nullptr;
 #else
-  if (!g_is_chrome_build) {
+  if (!g_is_chrome_build && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                switches::kForceSearchEngineChoiceScreen)) {
     return nullptr;
   }
 
