@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -15,13 +16,16 @@ namespace ash {
 
 PineContextMenuModel::PineContextMenuModel() : ui::SimpleMenuModel(this) {
   const int group = 0;
-  AddTitle(u"Continue where you left off");
-  AddRadioItem(static_cast<int>(full_restore::RestoreOption::kAskEveryTime),
-               u"Ask every time", group);
-  AddRadioItem(static_cast<int>(full_restore::RestoreOption::kAlways),
-               u"Always restore", group);
-  AddRadioItem(static_cast<int>(full_restore::RestoreOption::kDoNotRestore),
-               u"Off", group);
+  AddTitleWithStringId(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_TITLE);
+  AddRadioItemWithStringId(
+      static_cast<int>(full_restore::RestoreOption::kAskEveryTime),
+      IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ASK_OPTION, group);
+  AddRadioItemWithStringId(
+      static_cast<int>(full_restore::RestoreOption::kAlways),
+      IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION, group);
+  AddRadioItemWithStringId(
+      static_cast<int>(full_restore::RestoreOption::kDoNotRestore),
+      IDS_ASH_PINE_DIALOG_CONTEXT_MENU_NEVER_OPTION, group);
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 }
 

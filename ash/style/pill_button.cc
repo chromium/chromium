@@ -12,6 +12,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -368,6 +369,10 @@ void PillButton::SetEnableBackgroundBlur(bool enable) {
 
   enable_background_blur_ = enable;
   UpdateBackgroundColor();
+}
+
+void PillButton::SetTextWithStringId(int message_id) {
+  SetText(l10n_util::GetStringUTF16(message_id));
 }
 
 void PillButton::Init() {

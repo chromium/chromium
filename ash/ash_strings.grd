@@ -7744,6 +7744,33 @@ To shut down the device, press and hold the power button on the device again.
          =1 {1 more window}
          other {# more windows}}
       </message>
+      <message name="IDS_ASH_PINE_DIALOG_TITLE" translateable="false" desc="Label of the title for the pine dialog.">
+        Welcome Back
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_DESCRIPTION" translateable="false" desc="Label of the description for the pine dialog. Gives a little more information than the title.">
+        Continue from where you left off?
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON" translateable="false" desc="Label of the no thanks button for the pine dialog, which users can click if they choose not to restore.">
+        No Thanks
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_RESTORE_BUTTON" translateable="false" desc="Label of the restore button for the pine dialog.">
+        Restore
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_TITLE" translateable="false" desc="Title of the pine dialog context menu.">
+        Continue where you left off
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ASK_OPTION" translateable="false" desc="Ask every time option for the pine dialog context menu.">
+        Ask every time
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_ALWAYS_OPTION" translateable="false" desc="Always restore option for the pine dialog context menu.">
+        Always restore
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_NEVER_OPTION" translateable="false" desc="Do not restore option for the pine dialog context menu.">
+        Off
+      </message>
+      <message name="IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO" translateable="false" desc="Text in the pine dialog's context menu. Gives users some information about the full restore setting.">
+        Change will be applied next time when you sign in. You can also change settings in Settings > System preferences > On startup.
+      </message>
      </messages>
     </release>
 </grit>

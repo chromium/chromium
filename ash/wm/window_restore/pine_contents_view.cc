@@ -7,6 +7,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desks_util.h"
@@ -16,6 +17,7 @@
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -83,7 +85,8 @@ PineContentsView::PineContentsView() {
                                              kContentsTitleFontSize,
                                              gfx::Font::Weight::BOLD))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetText(u"Welcome Back"),
+                  .SetText(
+                      l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_TITLE)),
               // Description.
               views::Builder<views::Label>()
                   .SetEnabledColor(SK_ColorBLACK)
@@ -92,7 +95,8 @@ PineContentsView::PineContentsView() {
                                              gfx::Font::Weight::NORMAL))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
-                  .SetText(u"Continue from where you left off?"),
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_ASH_PINE_DIALOG_DESCRIPTION)),
               // This box layout view is the container for the "No thanks" and
               // "Restore" pill buttons.
               views::Builder<views::BoxLayoutView>()
@@ -106,7 +110,8 @@ PineContentsView::PineContentsView() {
                               weak_ptr_factory_.GetWeakPtr()))
                           .SetPillButtonType(
                               PillButton::Type::kPrimaryWithoutIcon)
-                          .SetText(u"Restore"),
+                          .SetTextWithStringId(
+                              IDS_ASH_PINE_DIALOG_RESTORE_BUTTON),
                       views::Builder<PillButton>()
                           .CopyAddressTo(&cancel_button_for_testing_)
                           .SetCallback(base::BindRepeating(
@@ -114,7 +119,8 @@ PineContentsView::PineContentsView() {
                               weak_ptr_factory_.GetWeakPtr()))
                           .SetPillButtonType(
                               PillButton::Type::kSecondaryWithoutIcon)
-                          .SetText(u"No thanks")),
+                          .SetTextWithStringId(
+                              IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON)),
               views::Builder<views::View>().CopyAddressTo(&spacer),
               views::Builder<views::ImageButton>(
                   views::CreateVectorImageButtonWithNativeTheme(
@@ -125,7 +131,8 @@ PineContentsView::PineContentsView() {
                   .CopyAddressTo(&settings_button_)
                   .SetBackground(views::CreateRoundedRectBackground(
                       SK_ColorWHITE, kSettingsIconSize))
-                  .SetTooltipText(u"Settings"))
+                  .SetTooltipText(
+                      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS)))
           .Build());
 
   views::AsViewClass<views::BoxLayoutView>(spacer->parent())
@@ -208,9 +215,8 @@ void PineContentsView::OnSettingsButtonPressed() {
   // will not take place until the next time they sign in.
   views::MenuItemView* container =
       root_menu_item->AppendMenuItem(PineContextMenuModel::kDescriptionId);
-  std::unique_ptr<views::Label> context_label = std::make_unique<views::Label>(
-      u"Change will be applied next time when you sign in. You can also change "
-      u"settings in Settings > System preferences > On startup.");
+  auto context_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_CONTEXT_MENU_EXTRA_INFO));
   context_label->SetMultiLine(true);
   context_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   context_label->SizeToFit(kContextMenuMaxWidth);
