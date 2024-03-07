@@ -251,6 +251,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   }
 
   HoldingSpaceImage& image_for_testing() { return *image_; }
+  const HoldingSpaceImage& image_for_testing() const { return *image_; }
 
  private:
   // Constructor for file backed items.

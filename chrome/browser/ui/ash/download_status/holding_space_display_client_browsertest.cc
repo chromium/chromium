@@ -12,15 +12,21 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
+#include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/rounded_image_view.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
@@ -39,7 +45,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/views/controls/label.h"
@@ -72,6 +83,18 @@ class NotificationPopupBlocker : public message_center::NotificationBlocker {
     return false;
   }
 };
+
+// Helpers ---------------------------------------------------------------------
+
+// Creates a holding space icon of `size` with the specified `icon`.
+gfx::Image CreateHoldingSpaceIcon(const gfx::ImageSkia& icon,
+                                  const gfx::Size& size) {
+  return gfx::Image(gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      image_util::CreateEmptyImage(size),
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          icon, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+          gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize))));
+}
 
 }  // namespace
 
@@ -363,6 +386,75 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                                                  completed_download_id));
   EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips,
                                                   in_progress_download_id));
+}
+
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, OverriddenIcon) {
+  DarkLightModeControllerImpl* const dark_light_mode_controller =
+      DarkLightModeControllerImpl::Get();
+  ASSERT_TRUE(dark_light_mode_controller);
+
+  // Ensure the dark mode enabled.
+  if (!dark_light_mode_controller->IsDarkModeEnabled()) {
+    dark_light_mode_controller->ToggleColorMode();
+  }
+
+  // Create an in-progress download.
+  crosapi::mojom::DownloadStatusPtr in_progress_download =
+      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
+
+  // Set icons in `in_progress_download` that should override the default
+  // holding space icon. NOTE: Use a light/dark colored icon for dark/light
+  // modes to improve visibility.
+  in_progress_download->icons = crosapi::mojom::DownloadStatusIcons::New(
+      /*dark_mode=*/gfx::test::CreateImageSkia(/*size=*/60, SK_ColorWHITE),
+      /*light_mode=*/gfx::test::CreateImageSkia(/*size=*/60, SK_ColorBLACK));
+
+  // Hide the download chip's progress indicator.
+  in_progress_download->progress->visible = false;
+
+  // Without using a zero delay, the process of loading bitmap from the download
+  // file, which returns a null bitmap as expected but notifiers image change
+  // waiters, could complete before the invalidation timer fires. Therefore, use
+  // a zero delay to avoid flakiness.
+  HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(true);
+
+  Update(in_progress_download->Clone());
+  test_api().Show();
+
+  // Cache `holding_space_image`.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+  const auto* item_view =
+      views::AsViewClass<HoldingSpaceItemView>(download_chips.at(0));
+  const HoldingSpaceImage& holding_space_image =
+      item_view->item()->image_for_testing();
+
+  // Wait until `holding_space_image` is ready.
+  base::test::TestFuture<void> test_future;
+  auto subscription = holding_space_image.AddImageSkiaChangedCallback(
+      test_future.GetRepeatingCallback());
+  ASSERT_TRUE(test_future.Wait());
+  HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(false);
+
+  // Verify the image for the dark mode.
+  const auto* const image_view = views::AsViewClass<RoundedImageView>(
+      item_view->GetViewByID(kHoldingSpaceItemImageId));
+  const crosapi::mojom::DownloadStatusIconsPtr& icons =
+      in_progress_download->icons;
+  constexpr gfx::Size kIconSize(kHoldingSpaceChipIconSize,
+                                kHoldingSpaceChipIconSize);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(image_view->original_image()),
+      CreateHoldingSpaceIcon(icons->dark_mode, kIconSize)));
+
+  // Switch to the light mode. Then verify the image.
+  dark_light_mode_controller->ToggleColorMode();
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(image_view->original_image()),
+      CreateHoldingSpaceIcon(icons->light_mode, kIconSize)));
 }
 
 // Verifies clicking a completed download's holding space chip.

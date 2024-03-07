@@ -8,7 +8,9 @@
 #include <map>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/download_status/display_client.h"
+#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 
 class Profile;
 
@@ -27,17 +29,31 @@ class HoldingSpaceDisplayClient : public DisplayClient {
   ~HoldingSpaceDisplayClient() override;
 
  private:
+  // The data used during download updates.
+  struct UpdateMetadata : public base::SupportsWeakPtr<UpdateMetadata> {
+    UpdateMetadata();
+    UpdateMetadata(const UpdateMetadata&) = delete;
+    UpdateMetadata& operator=(const UpdateMetadata&) = delete;
+    ~UpdateMetadata();
+
+    // The ID of the download's associated holding space item.
+    std::string item_id;
+
+    // The nullable icons that override the default holding space icon.
+    crosapi::mojom::DownloadStatusIconsPtr icons;
+  };
+
   // DisplayClient:
   void AddOrUpdate(const std::string& guid,
                    const DisplayMetadata& display_metadata) override;
   void Remove(const std::string& guid) override;
 
-  // GUID to holding space item ID mappings.
+  // Maps update metadata by GUIDs.
   // Adds a mapping when displaying a new download.
-  // Removes a mapping when:
-  // 1. A displayed download is removed; OR
+  // Removes a mapping when a download does not update anymore, which includes:
+  // 1. A displayed download is removed
   // 2. An in-progress download completes.
-  std::map<std::string, std::string> item_ids_by_guids_;
+  std::map<std::string, UpdateMetadata> metadata_by_guids_;
 };
 
 }  // namespace ash::download_status

@@ -50,6 +50,21 @@ bool CanDisplay(const crosapi::mojom::DownloadStatus& download_status) {
   return file_path.has_value() && !file_path->empty();
 }
 
+// Returns valid icons from `download_status` if any.
+// NOTE: Returns a non-null only if both dark and light mode icons are valid.
+crosapi::mojom::DownloadStatusIconsPtr GetIcons(
+    const crosapi::mojom::DownloadStatus& download_status) {
+  auto is_image_valid = [](const gfx::ImageSkia& image) {
+    return !image.size().IsEmpty();
+  };
+
+  const crosapi::mojom::DownloadStatusIconsPtr& icons = download_status.icons;
+  return icons && is_image_valid(icons->dark_mode) &&
+                 is_image_valid(icons->light_mode)
+             ? icons.Clone()
+             : nullptr;
+}
+
 std::string GetPrintString(const std::optional<int64_t>& data) {
   return data.has_value() ? base::NumberToString(data.value()) : "null";
 }
@@ -316,6 +331,7 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   display_metadata.command_infos = std::move(command_infos);
 
   display_metadata.file_path = full_path;
+  display_metadata.icons = GetIcons(download_status);
   display_metadata.image = download_status.image;
   display_metadata.progress = GetProgress(download_status);
   display_metadata.secondary_text = download_status.status_text;

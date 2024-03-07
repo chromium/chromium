@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
 
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,8 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -23,6 +26,9 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
 namespace ash::download_status {
@@ -80,7 +86,25 @@ std::optional<holding_space_metrics::ItemAction> ConvertCommandTypeToAction(
   }
 }
 
+// Creates a holding space icon of `size` based on `icon`.
+gfx::ImageSkia CreateHoldingSpaceIcon(const gfx::ImageSkia& icon,
+                                      const gfx::Size& size) {
+  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      image_util::CreateEmptyImage(size),
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          icon, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+          gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize)));
+}
+
 }  // namespace
+
+// HoldingSpaceDisplayClient::UpdateMetadata -----------------------------------
+
+HoldingSpaceDisplayClient::UpdateMetadata::UpdateMetadata() = default;
+
+HoldingSpaceDisplayClient::UpdateMetadata::~UpdateMetadata() = default;
+
+// HoldingSpaceDisplayClient ---------------------------------------------------
 
 HoldingSpaceDisplayClient::HoldingSpaceDisplayClient(Profile* profile)
     : DisplayClient(profile) {
@@ -92,8 +116,8 @@ HoldingSpaceDisplayClient::~HoldingSpaceDisplayClient() = default;
 void HoldingSpaceDisplayClient::AddOrUpdate(
     const std::string& guid,
     const DisplayMetadata& display_metadata) {
-  // Point to the mapping from `guid` to the holding space item ID.
-  auto item_id_by_guid = item_ids_by_guids_.find(guid);
+  // Find the mapping from `guid` to an `UpdateMetadata` instance if any.
+  auto metadata_by_guid = metadata_by_guids_.find(guid);
 
   HoldingSpaceKeyedService* const service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile());
@@ -104,26 +128,73 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
       download_progress.received_bytes(), download_progress.total_bytes(),
       download_progress.complete(), download_progress.hidden());
 
-  if (item_id_by_guid == item_ids_by_guids_.end() ||
+  if (metadata_by_guid == metadata_by_guids_.end() ||
       !HoldingSpaceController::Get()->model()->GetItem(
-          item_id_by_guid->second)) {
+          metadata_by_guid->second.item_id)) {
+    // Create an `UpdateMetadata` associated with `guid` if not having one.
+    if (metadata_by_guid == metadata_by_guids_.end()) {
+      metadata_by_guid =
+          metadata_by_guids_
+              .emplace(std::piecewise_construct, std::forward_as_tuple(guid),
+                       std::forward_as_tuple())
+              .first;
+    }
+
     // Create a holding space item when displaying a new download. A download is
     // considered new if:
-    // 1. The key `guid` does not exist in `item_ids_by_guids_`; OR
+    // 1. The key `guid` does not exist in `metadata_by_guids_`; OR
     // 2. The item specified by the ID associated with `guid` is not found.
     // NOTE: Adding a new download holding space item may not always be
     // successful. For example, item additions should be avoided during service
     // suspension.
-    std::string id =
-        service->AddItemOfType(HoldingSpaceItem::Type::kLacrosDownload,
-                               display_metadata.file_path, progress);
-    item_id_by_guid = id.empty() ? item_ids_by_guids_.end()
-                                 : item_ids_by_guids_.insert_or_assign(
-                                       item_id_by_guid, guid, std::move(id));
+    std::string id = service->AddItemOfType(
+        HoldingSpaceItem::Type::kLacrosDownload, display_metadata.file_path,
+        progress,
+        base::BindRepeating(
+            [](const base::WeakPtr<UpdateMetadata>& update_metadata,
+               const base::FilePath& file_path, const gfx::Size& size,
+               const std::optional<bool>& dark_background,
+               const std::optional<bool>& is_folder) {
+              if (const crosapi::mojom::DownloadStatusIcons* const icons =
+                      update_metadata ? update_metadata->icons.get()
+                                      : nullptr) {
+                const gfx::ImageSkia icon =
+                    dark_background.value_or(
+                        DarkLightModeController::Get()->IsDarkModeEnabled())
+                        ? icons->dark_mode
+                        : icons->light_mode;
+                return CreateHoldingSpaceIcon(icon, size);
+              }
+
+              return HoldingSpaceImage::
+                  CreateDefaultPlaceholderImageSkiaResolver()
+                      .Run(file_path, size, dark_background, is_folder);
+            },
+            metadata_by_guid->second.AsWeakPtr()));
+
+    // Delete the mapping referred to by `metadata_by_guid` if failing to create
+    // a holding space item; otherwise, update the item ID.
+    if (id.empty()) {
+      metadata_by_guids_.erase(metadata_by_guid);
+      metadata_by_guid = metadata_by_guids_.end();
+    } else {
+      metadata_by_guid->second.item_id = std::move(id);
+    }
   }
 
-  if (item_id_by_guid == item_ids_by_guids_.end()) {
+  if (metadata_by_guid == metadata_by_guids_.end()) {
     return;
+  }
+
+  // Update the icons cached by `UpdateMetadata`.
+  UpdateMetadata& update_metadata = metadata_by_guid->second;
+  bool invalidate_image = false;
+  if (const auto& new_icons = display_metadata.icons) {
+    update_metadata.icons = new_icons.Clone();
+    invalidate_image = true;
+  } else if (auto& cached_icons = update_metadata.icons) {
+    cached_icons = nullptr;
+    invalidate_image = true;
   }
 
   // Generate in-progress commands from `display_metadata`.
@@ -161,30 +232,31 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile(), file_path);
 
-  service->UpdateItem(item_id_by_guid->second)
+  service->UpdateItem(update_metadata.item_id)
       ->SetBackingFile(HoldingSpaceFile(
           file_path,
           holding_space_util::ResolveFileSystemType(profile(), file_system_url),
           file_system_url))
       .SetInProgressCommands(std::move(in_progress_commands))
+      .SetInvalidateImage(invalidate_image)
       .SetProgress(progress)
       .SetSecondaryText(display_metadata.secondary_text)
       .SetText(display_metadata.text);
 
-  // Since `item_ids_by_guids_` no longer needs `guid` after the download
-  // specified by `guid` completes, remove `guid` from `item_ids_by_guids_`.
+  // After a download has completed, we do not expect to receive its updates.
+  // Therefore, remove the completed download's corresponding `UpdateMetadata`.
   if (progress.IsComplete()) {
-    item_ids_by_guids_.erase(item_id_by_guid);
+    metadata_by_guids_.erase(metadata_by_guid);
   }
 }
 
 void HoldingSpaceDisplayClient::Remove(const std::string& guid) {
-  if (auto iter = item_ids_by_guids_.find(guid);
-      iter != item_ids_by_guids_.end()) {
+  if (auto iter = metadata_by_guids_.find(guid);
+      iter != metadata_by_guids_.end()) {
     HoldingSpaceKeyedServiceFactory::GetInstance()
         ->GetService(profile())
-        ->RemoveItem(iter->second);
-    item_ids_by_guids_.erase(iter);
+        ->RemoveItem(iter->second.item_id);
+    metadata_by_guids_.erase(iter);
   }
 }
 
