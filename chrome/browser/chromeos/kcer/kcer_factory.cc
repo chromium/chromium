@@ -253,7 +253,10 @@ KcerFactory::BuildServiceInstanceForBrowserContext(
       FROM_HERE,
       base::BindOnce(&KcerFactory::StartInitializingKcerInstance,
                      base::Unretained(const_cast<KcerFactory*>(this)),
-                     new_kcer->GetWeakPtr(), context));
+                     new_kcer->GetWeakPtr(),
+                     // TODO(https://crbug.com/1380714): Remove
+                     // `UnsafeDanglingUntriaged`
+                     base::UnsafeDanglingUntriaged(context)));
 
   return std::make_unique<KcerService>(std::move(new_kcer));
 }
