@@ -272,6 +272,21 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
           {AudioDevice(output_internal), AudioDevice(output_USB)}),
       /*bucket_count=*/1);
 
+  histogram_tester().ExpectBucketCount(
+      CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      CrasAudioHandler::kSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+
   // User switches input device immediately.
   // Expect to record user overrides system decision of switching input
   // device.
@@ -333,6 +348,16 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
                             AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
 
+  histogram_tester().ExpectBucketCount(
+      CrasAudioHandler::kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal),
+                                 AudioDevice(output_USB)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB),
+                                AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
+
   // User switches to USB input after some time.
   // Expect to record user overrides system decision of not switching input
   // device.
@@ -367,6 +392,16 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(input_internal),
+                                 AudioDevice(input_bluetooth_nb),
+                                 AudioDevice(input_USB)},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
 
   // User switches to input_bluetooth_nb after some time.
@@ -429,10 +464,29 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
       num_of_output_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchInputAudioDeviceSet, 17,
+      CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
+      EncodeAudioDeviceSet(
+          {AudioDevice(input_internal), AudioDevice(input_USB)}),
       /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
-      CrasAudioHandler::kSystemSwitchOutputAudioDeviceSet, 17,
+      CrasAudioHandler::kSystemSwitchOutputAudioDeviceSet,
+      EncodeAudioDeviceSet(
+          {AudioDevice(input_internal), AudioDevice(input_USB)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_USB)}),
+      /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      CrasAudioHandler::kSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_USB)}),
       /*bucket_count=*/1);
 }
 

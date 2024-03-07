@@ -195,6 +195,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   static constexpr char kSystemNotSwitchOutputAudioDeviceSet[] =
       "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceSet";
 
+  // A series of histogram metrics to record the before and after condition
+  // of audio device types when the system selection decision is made after
+  // audio device has changed.
+  static constexpr char kSystemSwitchInputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
+  static constexpr char kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
+  static constexpr char kSystemSwitchOutputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
+  static constexpr char kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
+      "BeforeAndAfterAudioDeviceSet";
+
   class AudioObserver {
    public:
     AudioObserver(const AudioObserver&) = delete;
@@ -410,7 +426,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void GetAudioDevices(AudioDeviceList* device_list) const;
 
   // Gets the simple usage input or output audio devices.
-  AudioDeviceList GetSimpleUsageAudioDevices(bool is_input) const;
+  static AudioDeviceList GetSimpleUsageAudioDevices(
+      const AudioDeviceMap& audio_devices,
+      bool is_input);
+
+  const AudioDeviceMap& GetAudioDevicesMapForTesting(
+      bool is_current_device) const;
 
   // Gets the primary active output device in |device|.
   // Returns true if the primary active output device is successfully obtained.
@@ -1007,6 +1028,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Audio data and state.
   AudioDeviceMap audio_devices_;
+
+  // Previous audio devices before new device is connected or current device is
+  // disconnected. Used for histogram purpose to understand the context when the
+  // system makes a switch or not switch decision.
+  AudioDeviceMap previous_audio_devices_;
 
   bool output_mute_on_ = false;
   bool input_mute_on_ = false;

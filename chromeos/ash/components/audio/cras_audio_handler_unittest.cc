@@ -629,6 +629,10 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     return cras_audio_handler_->output_mono_enabled_;
   }
 
+  const AudioDeviceMap& GetAudioDeviceMap(bool is_current_device) {
+    return cras_audio_handler_->GetAudioDevicesMapForTesting(is_current_device);
+  }
+
  protected:
   FakeCrasAudioClient* fake_cras_audio_client() {
     return FakeCrasAudioClient::Get();
@@ -5534,15 +5538,20 @@ TEST_P(CrasAudioHandlerTest, SimpleUsageAudioDevices) {
   AudioNodeList audio_nodes =
       GenerateAudioNodeList({kInternalSpeaker, kInternalMic});
   SetUpCrasAudioHandler(audio_nodes);
+
+  uint32_t previous_input_count = 1u;
+  uint32_t previous_output_count = 1u;
   uint32_t input_count = 1u;
   uint32_t output_count = 1u;
 
   // Verify the audio devices size.
   AudioDeviceList input_devices =
       cras_audio_handler_->GetSimpleUsageAudioDevices(
+          GetAudioDeviceMap(/*is_current_device=*/true),
           /*is_input=*/true);
   AudioDeviceList output_devices =
       cras_audio_handler_->GetSimpleUsageAudioDevices(
+          GetAudioDeviceMap(/*is_current_device=*/true),
           /*is_input=*/false);
   EXPECT_EQ(input_count, input_devices.size());
   EXPECT_EQ(output_count, output_devices.size());
@@ -5554,11 +5563,24 @@ TEST_P(CrasAudioHandlerTest, SimpleUsageAudioDevices) {
 
   // Verify the audio devices size.
   input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/true),
       /*is_input=*/true);
   output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/true),
       /*is_input=*/false);
   EXPECT_EQ(++input_count, input_devices.size());
   EXPECT_EQ(++output_count, output_devices.size());
+
+  AudioDeviceList previous_input_devices =
+      cras_audio_handler_->GetSimpleUsageAudioDevices(
+          GetAudioDeviceMap(/*is_current_device=*/false),
+          /*is_input=*/true);
+  AudioDeviceList previous_output_devices =
+      cras_audio_handler_->GetSimpleUsageAudioDevices(
+          GetAudioDeviceMap(/*is_current_device=*/false),
+          /*is_input=*/false);
+  EXPECT_EQ(previous_input_count, previous_input_devices.size());
+  EXPECT_EQ(previous_output_count, previous_output_devices.size());
 
   // Unplug the headphone.
   audio_nodes = GenerateAudioNodeList({kInternalSpeaker, kInternalMic});
@@ -5566,11 +5588,22 @@ TEST_P(CrasAudioHandlerTest, SimpleUsageAudioDevices) {
 
   // Verify the audio devices size.
   input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/true),
       /*is_input=*/true);
   output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/true),
       /*is_input=*/false);
   EXPECT_EQ(--input_count, input_devices.size());
   EXPECT_EQ(--output_count, output_devices.size());
+
+  previous_input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/false),
+      /*is_input=*/true);
+  previous_output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/false),
+      /*is_input=*/false);
+  EXPECT_EQ(++previous_input_count, previous_input_devices.size());
+  EXPECT_EQ(++previous_output_count, previous_output_devices.size());
 
   // Plug a non simple usage device, which should not be counted.
   audio_nodes =
@@ -5579,11 +5612,22 @@ TEST_P(CrasAudioHandlerTest, SimpleUsageAudioDevices) {
 
   // Verify the audio devices size.
   input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/true),
       /*is_input=*/true);
   output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/true),
       /*is_input=*/false);
   EXPECT_EQ(input_count, input_devices.size());
   EXPECT_EQ(output_count, output_devices.size());
+
+  previous_input_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/false),
+      /*is_input=*/true);
+  previous_output_devices = cras_audio_handler_->GetSimpleUsageAudioDevices(
+      GetAudioDeviceMap(/*is_current_device=*/false),
+      /*is_input=*/false);
+  EXPECT_EQ(--previous_input_count, previous_input_devices.size());
+  EXPECT_EQ(--previous_output_count, previous_output_devices.size());
 }
 
 }  // namespace ash

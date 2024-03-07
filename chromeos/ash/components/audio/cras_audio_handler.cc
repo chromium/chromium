@@ -578,10 +578,12 @@ void CrasAudioHandler::GetAudioDevices(AudioDeviceList* device_list) const {
   }
 }
 
+// static.
 AudioDeviceList CrasAudioHandler::GetSimpleUsageAudioDevices(
-    bool is_input) const {
+    const AudioDeviceMap& audio_devices,
+    bool is_input) {
   AudioDeviceList device_list;
-  for (const auto& item : audio_devices_) {
+  for (const auto& item : audio_devices) {
     const AudioDevice& device = item.second;
     // Do not count non simple usage devices.
     if (!device.is_for_simple_usage()) {
@@ -592,6 +594,11 @@ AudioDeviceList CrasAudioHandler::GetSimpleUsageAudioDevices(
     }
   }
   return device_list;
+}
+
+const AudioDeviceMap& CrasAudioHandler::GetAudioDevicesMapForTesting(
+    bool is_current_device) const {
+  return is_current_device ? audio_devices_ : previous_audio_devices_;
 }
 
 bool CrasAudioHandler::GetPrimaryActiveOutputDevice(AudioDevice* device) const {
@@ -1204,7 +1211,7 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
     base::UmaHistogramBoolean(kSystemSwitchInputAudio, is_switched);
 
     AudioDeviceList input_devices =
-        GetSimpleUsageAudioDevices(/*is_input=*/true);
+        GetSimpleUsageAudioDevices(audio_devices_, /*is_input=*/true);
     // Record the number of audio devices at the moment.
     base::UmaHistogramExactLinear(is_switched
                                       ? kSystemSwitchInputAudioDeviceCount
@@ -1215,6 +1222,15 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
     base::UmaHistogramSparse(is_switched ? kSystemSwitchInputAudioDeviceSet
                                          : kSystemNotSwitchInputAudioDeviceSet,
                              EncodeAudioDeviceSet(input_devices));
+
+    AudioDeviceList previous_input_devices =
+        GetSimpleUsageAudioDevices(previous_audio_devices_, /*is_input=*/true);
+    // Record the before and after encoded device sets.
+    base::UmaHistogramSparse(
+        is_switched ? kSystemSwitchInputBeforeAndAfterAudioDeviceSet
+                    : kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
+        EncodeBeforeAndAfterAudioDeviceSets(previous_input_devices,
+                                            input_devices));
 
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // since only one decision can be made either switching or not switching.
@@ -1233,7 +1249,7 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
     base::UmaHistogramBoolean(kSystemSwitchOutputAudio, is_switched);
 
     AudioDeviceList output_devices =
-        GetSimpleUsageAudioDevices(/*is_input=*/false);
+        GetSimpleUsageAudioDevices(audio_devices_, /*is_input=*/false);
     // Record the number of audio devices at the moment.
     base::UmaHistogramExactLinear(is_switched
                                       ? kSystemSwitchOutputAudioDeviceCount
@@ -1244,6 +1260,15 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
     base::UmaHistogramSparse(is_switched ? kSystemSwitchOutputAudioDeviceSet
                                          : kSystemNotSwitchOutputAudioDeviceSet,
                              EncodeAudioDeviceSet(output_devices));
+    AudioDeviceList previous_output_devices =
+        GetSimpleUsageAudioDevices(previous_audio_devices_, /*is_input=*/false);
+
+    // Record the before and after encoded device sets.
+    base::UmaHistogramSparse(
+        is_switched ? kSystemSwitchOutputBeforeAndAfterAudioDeviceSet
+                    : kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet,
+        EncodeBeforeAndAfterAudioDeviceSets(previous_output_devices,
+                                            output_devices));
 
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // same as above.
@@ -2305,6 +2330,10 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   // Remove the least recently seen devices if there are too many devices.
   audio_pref_handler_->DropLeastRecentlySeenDevices(devices,
                                                     kMaxDeviceStoredInPref);
+
+  // Before audio_devices_ is cleared, saves all audio device types to
+  // previous_audio_devices_.
+  previous_audio_devices_ = audio_devices_;
 
   audio_devices_.clear();
   has_alternative_input_ = false;

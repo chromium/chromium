@@ -69,4 +69,12 @@ uint32_t EncodeAudioDeviceSet(const AudioDeviceList& devices) {
   return static_cast<uint32_t>(number.to_ulong());
 }
 
+uint32_t EncodeBeforeAndAfterAudioDeviceSets(
+    const AudioDeviceList& device_set_before,
+    const AudioDeviceList& device_set_after) {
+  uint32_t number_before = EncodeAudioDeviceSet(device_set_before);
+  uint32_t number_after = EncodeAudioDeviceSet(device_set_after);
+  return (number_before << kSingleDeviceSetBitSize) | number_after;
+}
+
 }  // namespace ash

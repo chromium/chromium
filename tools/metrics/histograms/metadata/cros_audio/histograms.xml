@@ -78,6 +78,27 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.BeforeAndAfterAudioDeviceSet"
+    units="counts" expires_after="2025-02-25">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record all the connected audio device types when the system {SwitchDecision}
+    {AudioType} audio after device is added or removed. Record both before and
+    after condition of audio device set. Recorded right after
+    ChromeOS.AudioSelection.{AudioType}.SystemSwitchAudio is recorded.
+  </summary>
+  <token key="AudioType">
+    <variant name="Input" summary="input"/>
+    <variant name="Output" summary="output"/>
+  </token>
+  <token key="SwitchDecision">
+    <variant name="NotSwitch" summary="not switching"/>
+    <variant name="Switch" summary="switching"/>
+  </token>
+</histogram>
+
+<histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}TimeElapsed"
     units="minutes" expires_after="2024-09-01">
   <owner>zhangwenyu@google.com</owner>
