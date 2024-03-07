@@ -226,12 +226,20 @@ void IndentOutdentCommand::IndentIntoBlockquote(const Position& start,
     // paragraph up to that point.
     target_blockquote = CreateBlockElement();
     if (outer_block == start.ComputeContainerNode()) {
-      // When we apply indent to an empty <blockquote>, we should call
-      // insertNodeAfter(). See http://crbug.com/625802 for more details.
-      if (outer_block->HasTagName(html_names::kBlockquoteTag))
-        InsertNodeAfter(target_blockquote, outer_block, editing_state);
-      else
+      if (outer_block->HasTagName(html_names::kBlockquoteTag)) {
+        if (RuntimeEnabledFeatures::InsertBlockquoteBeforeOuterBlockEnabled()) {
+          // Insert `target_blockquote` before `outer_block` so that
+          // `start_of_contents` includes the start of deletion. See
+          // https://crbug.com/327665597 for more details.
+          InsertNodeBefore(target_blockquote, outer_block, editing_state);
+        } else {
+          // When we apply indent to an empty <blockquote>, we should call
+          // InsertNodeAfter(). See http://crbug.com/625802 for more details.
+          InsertNodeAfter(target_blockquote, outer_block, editing_state);
+        }
+      } else {
         InsertNodeAt(target_blockquote, start, editing_state);
+      }
     } else
       InsertNodeBefore(target_blockquote, outer_block, editing_state);
     if (editing_state->IsAborted())

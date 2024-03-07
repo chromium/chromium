@@ -16,4 +16,10 @@ test(() => {
     'indent',
     '<div contenteditable><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote>1|</blockquote></blockquote></div>');
 }, 'indent <blockquote> with text');
+  test(() => {
+  assert_selection(
+    '<div contenteditable><blockquote>|<img src="../resources/abe.png"></blockquote></div>',
+    'indent',
+    '<div contenteditable><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote>|<img src="../resources/abe.png"></blockquote></blockquote></div>');
+}, 'indent <blockquote> with an image');
 </script>
