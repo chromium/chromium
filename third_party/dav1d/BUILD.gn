@@ -21,8 +21,10 @@ if (is_win) {
            current_cpu == "mipsel" || current_cpu == "mips64el" ||
            current_cpu == "ppc64") {
   platform_config_root = "config/linux-noasm/generic"
+} else if (is_apple && (current_cpu == "arm" || current_cpu == "arm64")) {
+  platform_config_root = "config/apple/$current_cpu"
 } else {
-  # Linux configuration files seem to work on Mac, so just reuse them.
+  # Linux x86/x64 configuration files seem to work on Mac, so just reuse them.
   platform_config_root = "config/linux/$current_cpu"
 }
 

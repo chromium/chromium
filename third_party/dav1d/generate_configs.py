@@ -149,6 +149,17 @@ def GenerateConfig(config_dir, env, special_args=[]):
     shutil.rmtree(temp_dir)
 
 
+def GenerateAppleConfig(src_dir, dest_dir):
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    shutil.copy(os.path.join(src_dir, 'config.h'), dest_dir)
+
+    # Apple doesn't have the <sys/auxv.h> header.
+    RewriteFile(os.path.join(dest_dir, 'config.h'),
+                [(r'#define HAVE_GETAUXVAL 1', r'')])
+
+
 def GenerateWindowsArm64Config(src_dir):
     win_arm64_dir = 'config/win/arm64'
     if not os.path.exists(win_arm64_dir):
@@ -234,6 +245,11 @@ def main():
     # Sadly meson doesn't support arm64 + clang-cl, so we need to create the
     # Windows arm64 config from the Windows x64 config.
     GenerateWindowsArm64Config(win_x64_dir)
+
+    # Create the Apple arm and arm64 configs from the Linux arm and arm64
+    # configs.
+    GenerateAppleConfig('config/linux/arm', 'config/apple/arm')
+    GenerateAppleConfig('config/linux/arm64', 'config/apple/arm64')
 
     GenerateVersion('version', linux_env)
 
