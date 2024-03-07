@@ -2764,19 +2764,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
         mInteractingTab.setIsReordering(true);
 
-        // 3. Select this tab so that it is always in the foreground.
+        // 3. Set mInReorderMode to true before selecting this tab to prevent unnecessary triggering
+        // of #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
+        mInReorderMode = true;
+
+        // 4. Select this tab so that it is always in the foreground.
         TabModelUtils.setIndex(
                 mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getId()), false);
 
-        // 4. Set initial state.
+        // 5. Set initial state.
         ArrayList<Animator> animationList = startReorderInternal(startX);
 
-        // 5. Lift the container off the toolbar and perform haptic feedback.
+        // 6. Lift the container off the toolbar and perform haptic feedback.
         Tab tab = getTabById(mInteractingTab.getId());
         updateTabAttachState(mInteractingTab, false, animationList);
         performHapticFeedback(tab);
 
-        // 6. Kick-off animations and request an update.
+        // 7. Kick-off animations and request an update.
         if (animationList != null) {
             startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
         }
@@ -2795,6 +2799,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mInteractingTab = hoveredTab;
 
         // 3. Set initial state.
+        mInReorderMode = true;
         mReorderingForTabDrop = true;
         ArrayList<Animator> animationList = startReorderInternal(startX);
 
@@ -2820,7 +2825,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mReorderState = REORDER_SCROLL_NONE;
         mLastReorderX = startX;
         mTabMarginWidth = mCachedTabWidth / 2;
-        mInReorderMode = true;
         mHoveringOverGroup = false;
 
         // 2. Fade-out model selector and new tab buttons.
