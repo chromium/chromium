@@ -147,9 +147,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
                                  kNotificationForegroundPresentation];
   // This method is invoked by iOS to process a notification that arrived while
   // the app was running in the foreground.
-  if (IsContentPushNotificationsEnabled()) {
-    [self registerNotificationCategories];
-  }
   auto* clientManager = GetApplicationContext()
                             ->GetPushNotificationService()
                             ->GetPushNotificationClientManager();
@@ -243,9 +240,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
-  if (IsContentPushNotificationsEnabled()) {
-    [self registerNotificationCategories];
-  }
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
         [PushNotificationUtil
