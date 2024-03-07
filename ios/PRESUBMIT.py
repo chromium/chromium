@@ -12,7 +12,8 @@ import os
 
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
-BUG_PATTERN = r'(crbug\.com|b)/\d+$'
+BUG_PATTERN = r'^(crbug\.com|b)/\d+$'
+DEPRECATED_BUG_PATTERN = r'^b/\d+$'
 INCLUDE_PATTERN = r'^#include'
 PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
 IOS_PACKAGE_PATTERN = r'^ios'
@@ -51,24 +52,45 @@ def _CheckNullabilityAnnotations(input_api, output_api):
 def _CheckBugInToDo(input_api, output_api):
     """ Checks whether TODOs in ios code are identified by a bug number."""
     errors = []
+    warnings = []
     for f in input_api.AffectedFiles():
         for line_num, line in f.ChangedContents():
             if _HasToDoWithNoBug(input_api, line):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
-    if not errors:
+            if _HasToDoWithDeprecatedBug(input_api, line):
+                warnings.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors and not warnings:
         return []
 
-    plural_suffix = '' if len(errors) == 1 else 's'
-    error_message = '\n'.join([
-        'Found TO'
-        'DO%(plural)s without bug number%(plural)s (expected format '
-        'is \"TO'
-        'DO(crbug.com/######)\":' % {
-            'plural': plural_suffix
-        }
-    ] + errors) + '\n'
+    output = []
+    if errors:
+      singular_article = 'a ' if len(errors) == 1 else ''
+      plural_suffix = '' if len(errors) == 1 else 's'
+      error_message = '\n'.join([
+          'Found TO'
+          'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
+          'is \"TO'
+          'DO(crbug.com/######)\"):' % {
+              'plural': plural_suffix,
+              'a' : singular_article
+          }
+      ] + errors) + '\n'
+      output.append(output_api.PresubmitError(error_message))
 
-    return [output_api.PresubmitError(error_message)]
+    if warnings:
+      singular_article = 'a ' if len(warnings) == 1 else ''
+      plural_suffix = '' if len(warnings) == 1 else 's'
+      warning_message = '\n'.join([
+          'Found TO'
+          'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
+          '"b/#####\", expected format is \"crbug.com/######"):' % {
+              'plural': plural_suffix,
+              'a' : singular_article
+          }
+      ] + warnings) + '\n'
+      output.append(output_api.PresubmitPromptWarning(warning_message))
+
+    return output
 
 
 def _CheckHasNoIncludeDirectives(input_api, output_api):
@@ -150,7 +172,18 @@ def _HasToDoWithNoBug(input_api, line):
     todo_match = todo_regex.search(line)
     if not todo_match:
         return False
+
     return not bug_regex.match(todo_match.group(1))
+
+def _HasToDoWithDeprecatedBug(input_api, line):
+    """ Returns True if TODO is identified by a deprecated bug number format."""
+    todo_regex = input_api.re.compile(TODO_PATTERN)
+    deprecated_bug_regex = input_api.re.compile(DEPRECATED_BUG_PATTERN)
+
+    todo_match = todo_regex.search(line)
+    if not todo_match:
+        return False
+    return deprecated_bug_regex.match(todo_match.group(1))
 
 def _CheckHasNoBoxedBOOL(input_api, output_api):
     """ Checks that there are no @(YES) or @(NO)."""

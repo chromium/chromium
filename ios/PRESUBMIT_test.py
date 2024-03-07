@@ -16,6 +16,10 @@ class CheckTODOFormatTest(unittest.TestCase):
     """Test the _CheckBugInToDo presubmit check."""
 
     def testTODOs(self):
+        # All instances of the "TO DO" string in the following test cases are
+        # broken by line breaks, because this file is run through the PRESUBIT
+        # that it tests, so incorrectly formatted items in the test fixture
+        # will trigger errors.
         bad_lines = [
             'TO'
             'DO(ldap): fix this', 'TO'
@@ -24,27 +28,35 @@ class CheckTODOFormatTest(unittest.TestCase):
             'DO(http://crbug.com/8675309): fix this', 'TO'
             'DO( crbug.com/8675309): fix this', 'TO'
             'DO(crbug/8675309): fix this', 'TO'
-            'DO(crbug.com): fix this'
+            'DO(crbug.com): fix this', 'TO'
+            'DO(inccrbug.com): fix this',
+        ]
+        deprecated_lines = [
+            'TO'
+            'DO(b/12345): fix this'
         ]
         good_lines = [
             'TO'
             'DO(crbug.com/8675309): fix this', 'TO'
-            'DO(crbug.com/8675309): fix this (please)',
-            'TODO(b/12345): fix this'
+            'DO(crbug.com/8675309): fix this (please)'
         ]
         mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        lines = bad_lines + deprecated_lines + good_lines
         mock_input.files = [
-            PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller.mm',
-                                          bad_lines + good_lines)
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller.mm', lines)
         ]
         mock_output = PRESUBMIT_test_mocks.MockOutputApi()
-        errors = PRESUBMIT._CheckBugInToDo(mock_input, mock_output)
-        self.assertEqual(len(errors), 1)
-        self.assertEqual('error', errors[0].type)
-        self.assertTrue('without bug numbers' in errors[0].message)
-        error_lines = errors[0].message.split('\n')
+        results = PRESUBMIT._CheckBugInToDo(mock_input, mock_output)
+        # Expect one error result and one warning result.
+        self.assertEqual(len(results), 2)
+        self.assertEqual('error', results[0].type)
+        self.assertEqual('warning', results[1].type)
+        self.assertTrue('without bug numbers' in results[0].message)
+        self.assertTrue('with a deprecated bug link' in results[1].message)
+        error_lines = results[0].message.split('\n')
         self.assertEqual(len(error_lines), len(bad_lines) + 2)
-
+        warning_lines = results[1].message.split('\n')
+        self.assertEqual(len(warning_lines), len(deprecated_lines) + 2)
 
 class CheckHasNoIncludeDirectivesTest(unittest.TestCase):
     """Test the _CheckHasNoIncludeDirectives presubmit check."""
