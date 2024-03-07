@@ -66,6 +66,50 @@ constexpr int kHeaderRowSpacing = 8;
 constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
 constexpr int kSourceRowSpacing = 8;
 
+// Options for a feedback button.
+enum FeedbackType {
+  THUMBS_UP,
+  THUMBS_DOWN,
+};
+
+// Creates a thumbs-up or thumbs-down button for the feedback section.
+std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
+  const bool is_thumbs_up = type == THUMBS_UP;
+  auto button =
+      IconButton::Builder()
+          .SetCallback(base::BindRepeating(
+              [](bool is_thumbs_up, const ui::Event& event) {
+                base::UmaHistogramBoolean(
+                    mahi_constants::kMahiFeedbackHistogramName, is_thumbs_up);
+                if (!is_thumbs_up) {
+                  // Open the feedback dialog if thumbs down button is pressed.
+                  if (auto* const manager = chromeos::MahiManager::Get()) {
+                    manager->OpenFeedbackDialog();
+                  } else {
+                    CHECK_IS_TEST();
+                  }
+                }
+              },
+              is_thumbs_up))
+          .SetType(IconButton::Type::kSmall)
+          .SetVectorIcon(is_thumbs_up ? &kMahiThumbsUpIcon
+                                      : &kMahiThumbsDownIcon)
+          // TODO(http://b/319264190): Replace the string IDs used here with the
+          // correct IDs.
+          .SetAccessibleNameId(
+              is_thumbs_up ? IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP
+                           : IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN)
+          .SetViewId(is_thumbs_up ? mahi_constants::ViewId::kThumbsUpButton
+                                  : mahi_constants::ViewId::kThumbsDownButton)
+          .SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated)
+          .Build();
+  button->SetImageHorizontalAlignment(
+      IconButton::HorizontalAlignment::ALIGN_RIGHT);
+  button->SetImageVerticalAlignment(
+      IconButton::VerticalAlignment::ALIGN_BOTTOM);
+  return button;
+}
+
 // Container for scrollable content in the Mahi panel, including the summary and
 // outlines section or the Q&A section. Clips its own bounds to present its
 // contents within a round-cornered container with a cutout in the bottom-right.
@@ -282,24 +326,8 @@ MahiPanelView::MahiPanelView() {
 
   auto feedback_view = std::make_unique<views::BoxLayoutView>();
   feedback_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-
-  // TODO(b/319264190): Replace the string IDs used here with the correct IDs.
-  auto thumbs_up_button = std::make_unique<IconButton>(
-      base::BindRepeating(&MahiPanelView::OnThumbsUpButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      IconButton::Type::kMedium, &kMahiThumbsUpIcon,
-      IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP);
-  thumbs_up_button->SetID(mahi_constants::ViewId::kThumbsUpButton);
-  feedback_view->AddChildView(std::move(thumbs_up_button));
-
-  auto thumbs_down_button = std::make_unique<IconButton>(
-      base::BindRepeating(&MahiPanelView::OnThumbsDownButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      IconButton::Type::kMedium, &kMahiThumbsDownIcon,
-      IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN);
-  thumbs_down_button->SetID(mahi_constants::ViewId::kThumbsDownButton);
-  feedback_view->AddChildView(std::move(thumbs_down_button));
-
+  feedback_view->AddChildView(CreateFeedbackButton(THUMBS_UP));
+  feedback_view->AddChildView(CreateFeedbackButton(THUMBS_DOWN));
   AddChildView(std::move(feedback_view));
 
   auto footer_row = std::make_unique<views::BoxLayoutView>();
@@ -319,22 +347,6 @@ MahiPanelView::MahiPanelView() {
 }
 
 MahiPanelView::~MahiPanelView() = default;
-
-void MahiPanelView::OnThumbsUpButtonPressed(const ui::Event& event) {
-  base::UmaHistogramBoolean(mahi_constants::kMahiFeedbackHistogramName, true);
-}
-
-void MahiPanelView::OnThumbsDownButtonPressed(const ui::Event& event) {
-  base::UmaHistogramBoolean(mahi_constants::kMahiFeedbackHistogramName, false);
-
-  // Open the feedback dialog if thumbs down button is pressed.
-  auto* manager = chromeos::MahiManager::Get();
-  if (manager) {
-    manager->OpenFeedbackDialog();
-  } else {
-    CHECK_IS_TEST();
-  }
-}
 
 void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
   CHECK(GetWidget());

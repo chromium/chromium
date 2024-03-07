@@ -30,8 +30,6 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView {
 
  private:
   // Callbacks for buttons and link.
-  void OnThumbsUpButtonPressed(const ui::Event& event);
-  void OnThumbsDownButtonPressed(const ui::Event& event);
   void OnCloseButtonPressed(const ui::Event& event);
   void OnLearnMoreLinkClicked();
 
