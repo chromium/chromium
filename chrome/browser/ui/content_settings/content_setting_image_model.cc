@@ -1000,6 +1000,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     } else {
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
       set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_ALLOWED));
+      set_accessibility_string_id(IDS_MICROPHONE_CAMERA_ALLOWED);
     }
     return true;
   }
