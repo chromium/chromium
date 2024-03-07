@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
 #include <array>
 #include <memory>
@@ -39,16 +39,13 @@
 
 namespace autofill {
 
-SaveUpdateAddressProfileBubbleControllerImpl::
-    SaveUpdateAddressProfileBubbleControllerImpl(
-        content::WebContents* web_contents)
+AddressBubblesController::AddressBubblesController(
+    content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
-      content::WebContentsUserData<
-          SaveUpdateAddressProfileBubbleControllerImpl>(*web_contents),
+      content::WebContentsUserData<AddressBubblesController>(*web_contents),
       app_locale_(g_browser_process->GetApplicationLocale()) {}
 
-SaveUpdateAddressProfileBubbleControllerImpl::
-    ~SaveUpdateAddressProfileBubbleControllerImpl() {
+AddressBubblesController::~AddressBubblesController() {
   // `address_profile_save_prompt_callback_` must have been invoked before
   // destroying the controller to inform the backend of the output of the
   // save/update flow. It's either invoked upon user action when accepting
@@ -57,7 +54,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::
   DCHECK(address_profile_save_prompt_callback_.is_null());
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
+void AddressBubblesController::OfferSave(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
     AutofillClient::SaveAddressProfilePromptOptions options,
@@ -89,11 +86,12 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
   is_migration_to_account_ = options.is_migration_to_account;
-  if (options.show_prompt)
+  if (options.show_prompt) {
     Show();
+  }
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
+void AddressBubblesController::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
   if (decision ==
@@ -108,7 +106,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
   }
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked(
+void AddressBubblesController::OnEditButtonClicked(
     const std::u16string& editor_footer_message) {
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
@@ -116,32 +114,31 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked(
   controller->OfferEdit(
       *address_profile_, base::OptionalToPtr(original_profile_),
       editor_footer_message,
-      base::BindOnce(
-          &SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision,
-          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&AddressBubblesController::OnUserDecision,
+                     weak_ptr_factory_.GetWeakPtr()),
       is_migration_to_account_);
   HideBubble();
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::OnBubbleClosed() {
+void AddressBubblesController::OnBubbleClosed() {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {
+void AddressBubblesController::OnPageActionIconClicked() {
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
   shown_by_user_gesture_ = true;
   Show();
 }
 
-bool SaveUpdateAddressProfileBubbleControllerImpl::IsBubbleActive() const {
+bool AddressBubblesController::IsBubbleActive() const {
   return !address_profile_save_prompt_callback_.is_null();
 }
 
-std::u16string
-SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconTootip() const {
+std::u16string AddressBubblesController::GetPageActionIconTootip() const {
   // TODO(b/325440757): Move tooltip defining outside this class.
   if (IsSaveBubble()) {
     return l10n_util::GetStringUTF16(
@@ -153,29 +150,27 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconTootip() const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 }
 
-AutofillBubbleBase*
-SaveUpdateAddressProfileBubbleControllerImpl::GetBubbleView() const {
+AutofillBubbleBase* AddressBubblesController::GetBubbleView() const {
   return bubble_view();
 }
 
 base::WeakPtr<AddressBubbleControllerDelegate>
-SaveUpdateAddressProfileBubbleControllerImpl::GetWeakPtr() {
+AddressBubblesController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::WebContentsDestroyed() {
+void AddressBubblesController::WebContentsDestroyed() {
   AutofillBubbleControllerBase::WebContentsDestroyed();
 
   OnUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
                  std::nullopt);
 }
 
-PageActionIconType
-SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconType() {
+PageActionIconType AddressBubblesController::GetPageActionIconType() {
   return PageActionIconType::kSaveAutofillAddress;
 }
 
-void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
+void AddressBubblesController::DoShowBubble() {
   DCHECK(!bubble_view());
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // TODO(b/325440757): Move the view factory defining outside this class.
@@ -202,10 +197,10 @@ void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
   DCHECK(bubble_view());
 }
 
-bool SaveUpdateAddressProfileBubbleControllerImpl::IsSaveBubble() const {
+bool AddressBubblesController::IsSaveBubble() const {
   return !original_profile_;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUpdateAddressProfileBubbleControllerImpl);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressBubblesController);
 
 }  // namespace autofill

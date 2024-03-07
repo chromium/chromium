@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLES_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLES_CONTROLLER_H_
 
 #include <string>
 
@@ -27,18 +27,18 @@ class AutofillBubbleBase;
 // Only single instance of this controller exists for a `WebContents`, to use
 // it for different flows it must be reconfigured, see the arguments of
 // the `OfferSave()` method.
-class SaveUpdateAddressProfileBubbleControllerImpl
+class AddressBubblesController
     : public AutofillBubbleControllerBase,
       public SaveUpdateAddressProfileIconController,
       public content::WebContentsUserData<
-          SaveUpdateAddressProfileBubbleControllerImpl>,
+          AddressBubblesController>,
       public AddressBubbleControllerDelegate {
  public:
-  SaveUpdateAddressProfileBubbleControllerImpl(
-      const SaveUpdateAddressProfileBubbleControllerImpl&) = delete;
-  SaveUpdateAddressProfileBubbleControllerImpl& operator=(
-      const SaveUpdateAddressProfileBubbleControllerImpl&) = delete;
-  ~SaveUpdateAddressProfileBubbleControllerImpl() override;
+  AddressBubblesController(
+      const AddressBubblesController&) = delete;
+  AddressBubblesController& operator=(
+      const AddressBubblesController&) = delete;
+  ~AddressBubblesController() override;
 
   // Sets up the controller and offers to save the `profile`. If
   // `original_profile` is not nullptr, it will be updated of the user accepts
@@ -74,10 +74,10 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   void DoShowBubble() override;
 
  private:
-  explicit SaveUpdateAddressProfileBubbleControllerImpl(
+  explicit AddressBubblesController(
       content::WebContents* web_contents);
   friend class content::WebContentsUserData<
-      SaveUpdateAddressProfileBubbleControllerImpl>;
+      AddressBubblesController>;
 
   bool IsSaveBubble() const;
 
@@ -104,7 +104,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   std::string app_locale_;
 
-  base::WeakPtrFactory<SaveUpdateAddressProfileBubbleControllerImpl>
+  base::WeakPtrFactory<AddressBubblesController>
       weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -112,4 +112,4 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_ADDRESS_BUBBLES_CONTROLLER_H_

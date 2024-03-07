@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
 #include <string>
 
@@ -29,19 +29,19 @@ namespace autofill {
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 
-class SaveUpdateAddressProfileBubbleControllerImplTest
+class AddressBubblesControllerTest
     : public BrowserWithTestWindowTest {
  public:
-  SaveUpdateAddressProfileBubbleControllerImplTest() = default;
+  AddressBubblesControllerTest() = default;
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
-    SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(
+    AddressBubblesController::CreateForWebContents(
         web_contents());
   }
 
-  SaveUpdateAddressProfileBubbleControllerImpl* controller() {
-    return SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
+  AddressBubblesController* controller() {
+    return AddressBubblesController::FromWebContents(
         web_contents());
   }
 
@@ -55,7 +55,7 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
   }
 };
 
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+TEST_F(AddressBubblesControllerTest,
        DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
@@ -73,7 +73,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       std::nullopt);
 }
 
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+TEST_F(AddressBubblesControllerTest,
        DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
@@ -94,7 +94,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 // This is testing that closing all tabs (which effectively destroys the web
 // contents) will trigger the save callback with kIgnored decions if the users
 // hasn't interacted with the prompt already.
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+TEST_F(AddressBubblesControllerTest,
        WebContentsDestroyedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
@@ -127,7 +127,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 
 // This is testing that when the SaveAddressProfilePromptOptions has the
 // show_prompt set to true, the bubble should be visible.
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+TEST_F(AddressBubblesControllerTest,
        BubbleShouldBeVisibleWithShowPrompt) {
   AutofillProfile profile = test::GetFullProfile();
   controller()->OfferSave(
@@ -142,7 +142,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 
 // This is testing that when the SaveAddressProfilePromptOptions has the
 // show_prompt set to false, the bubble should be invisible.
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+TEST_F(AddressBubblesControllerTest,
        BubbleShouldBeInvisibleWithoutShowPrompt) {
   AutofillProfile profile = test::GetFullProfile();
   controller()->OfferSave(
@@ -157,7 +157,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 // This is testing that when a second prompt comes while another prompt is
 // shown, the controller will ignore it, and inform the backend that the second
 // prompt has been auto declined.
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+TEST_F(AddressBubblesControllerTest,
        SecondPromptWillBeAutoDeclinedWhileFirstIsVisible) {
   AutofillProfile profile = test::GetFullProfile();
 
@@ -181,7 +181,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 // This is testing that when a second prompt comes while another prompt is in
 // progress but not shown, the controller will inform the backend that the first
 // process is ignored.
-TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+TEST_F(AddressBubblesControllerTest,
        FirstHiddenPromptWillBeIgnoredWhenSecondPromptArrives) {
   AutofillProfile profile = test::GetFullProfile();
 

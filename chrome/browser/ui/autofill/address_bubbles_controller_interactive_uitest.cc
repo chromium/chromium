@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
@@ -22,7 +22,7 @@ namespace autofill {
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
 
-class BaseSaveUpdateAddressProfileBubbleControllerImplTest
+class BaseAddressBubblesControllerTest
     : public InteractiveBrowserTest {
  protected:
   autofill::ContentAutofillClient* autofill_client() {
@@ -65,8 +65,7 @@ class BaseSaveUpdateAddressProfileBubbleControllerImplTest
 ///////////////////////////////////////////////////////////////////////////////
 // SaveAddressProfileTest
 
-class SaveAddressProfileTest
-    : public BaseSaveUpdateAddressProfileBubbleControllerImplTest {
+class SaveAddressProfileTest: public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,
@@ -156,8 +155,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, NoCrashesOnTabClose) {
 ///////////////////////////////////////////////////////////////////////////////
 // UpdateAddressProfileTest
 
-class UpdateAddressProfileTest
-    : public BaseSaveUpdateAddressProfileBubbleControllerImplTest {
+class UpdateAddressProfileTest: public BaseAddressBubblesControllerTest {
  protected:
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
@@ -233,8 +231,7 @@ IN_PROC_BROWSER_TEST_F(UpdateAccountAddressProfileTest, UpdateThroughEdit) {
 ///////////////////////////////////////////////////////////////////////////////
 // SaveAddressProfileTest
 
-class MigrateToProfileAddressProfileTest
-    : public BaseSaveUpdateAddressProfileBubbleControllerImplTest {
+class MigrateToProfileAddressProfileTest: public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,

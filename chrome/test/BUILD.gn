@@ -7781,6 +7781,7 @@ test("unit_tests") {
       "../browser/themes/theme_service_unittest.cc",
       "../browser/themes/theme_syncable_service_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_unittest.cc",
+      "../browser/ui/autofill/address_bubbles_controller_unittest.cc",
       "../browser/ui/autofill/address_editor_controller_unittest.cc",
       "../browser/ui/autofill/autofill_field_promo_controller_impl_unittest.cc",
       "../browser/ui/autofill/delete_address_profile_dialog_controller_impl_unittest.cc",
@@ -7793,7 +7794,6 @@ test("unit_tests") {
       "../browser/ui/autofill/payments/save_card_bubble_controller_impl_unittest.cc",
       "../browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_unittest.cc",
       "../browser/ui/autofill/save_address_bubble_controller_unittest.cc",
-      "../browser/ui/autofill/save_update_address_profile_bubble_controller_impl_unittest.cc",
       "../browser/ui/autofill/update_address_bubble_controller_unittest.cc",
       "../browser/ui/bookmarks/bookmark_context_menu_controller_unittest.cc",
       "../browser/ui/bookmarks/bookmark_drag_drop_unittest.cc",
@@ -11066,9 +11066,9 @@ if (!is_android && !is_chromeos_device) {
     if (toolkit_views) {
       sources += [
         "../browser/media/webrtc/conditional_focus_browsertest.cc",
+        "../browser/ui/autofill/address_bubbles_controller_interactive_uitest.cc",
         "../browser/ui/autofill/delete_address_profile_dialog_controller_impl_interactive_uitest.cc",
         "../browser/ui/autofill/edit_address_profile_dialog_controller_impl_interactive_uitest.cc",
-        "../browser/ui/autofill/save_update_address_profile_bubble_controller_impl_interactive_uitest.cc",
         "../browser/ui/commerce/mock_commerce_ui_tab_helper.cc",
         "../browser/ui/commerce/mock_commerce_ui_tab_helper.h",
         "../browser/ui/toolbar/app_menu_fullscreen_interactive_uitest.cc",

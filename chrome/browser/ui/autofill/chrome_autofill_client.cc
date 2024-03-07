@@ -41,6 +41,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
@@ -50,7 +51,6 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -979,11 +979,9 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
       web_contents(), profile, original_profile,
       options.is_migration_to_account, std::move(callback));
 #else
-  SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(
-      web_contents());
-  SaveUpdateAddressProfileBubbleControllerImpl* controller =
-      SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
-          web_contents());
+  AddressBubblesController::CreateForWebContents(web_contents());
+  AddressBubblesController* controller =
+      AddressBubblesController::FromWebContents(web_contents());
   controller->OfferSave(profile, original_profile, options,
                         std::move(callback));
 #endif

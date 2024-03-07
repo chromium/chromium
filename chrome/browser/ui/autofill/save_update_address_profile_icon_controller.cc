@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/save_update_address_profile_icon_controller.h"
 
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
 namespace autofill {
 
@@ -15,8 +15,7 @@ SaveUpdateAddressProfileIconController::Get(
   if (!web_contents)
     return nullptr;
 
-  return SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
-      web_contents);
+  return AddressBubblesController::FromWebContents(web_contents);
 }
 
 }  // namespace autofill

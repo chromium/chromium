@@ -14,8 +14,7 @@
 namespace autofill {
 
 // This delegate defines the way the address bubbles (for example, see
-// `SaveAddressBubbleController`) communicate to
-// `SaveUpdateAddressProfileBubbleControllerImpl`.
+// `SaveAddressBubbleController`) communicate to `AddressBubblesController`.
 class AddressBubbleControllerDelegate {
  public:
   virtual void OnUserDecision(
