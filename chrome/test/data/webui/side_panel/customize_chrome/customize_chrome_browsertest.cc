@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/config/coverage/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -70,7 +71,13 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ThemeSnapshot) {
   RunTest("side_panel/customize_chrome/theme_snapshot_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ChromeColors) {
+#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+// TODO(b/327036381): Fails on JS coverage bot.
+#define MAYBE_ChromeColors DISABLED_ChromeColors
+#else
+#define MAYBE_ChromeColors ChromeColors
+#endif
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, MAYBE_ChromeColors) {
   RunTest("side_panel/customize_chrome/chrome_colors_test.js", "mocha.run()");
 }
 
