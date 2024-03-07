@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
@@ -378,6 +379,37 @@ webnn::GemmAttributes ConvertToGemmAttributes(
   attributes.beta = options->beta();
   attributes.a_transpose = options->aTranspose();
   attributes.b_transpose = options->bTranspose();
+  return attributes;
+}
+
+webnn::GruAttributes ConvertToGruAttributes(MLGraphBuilder* builder,
+                                            blink::MLGruOptions* options) {
+  CHECK(options);
+  webnn::GruAttributes attributes;
+
+  if (options->hasBias()) {
+    attributes.bias = ConvertToComponentOperand(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    attributes.recurrent_bias =
+        ConvertToComponentOperand(options->recurrentBias());
+  }
+  if (options->hasInitialHiddenState()) {
+    attributes.initial_hidden_state =
+        ConvertToComponentOperand(options->initialHiddenState());
+  }
+  attributes.return_sequence = options->returnSequence();
+  attributes.direction =
+      BlinkRecurrentNetworkDirectionToComponent(options->direction().AsEnum());
+  if (!options->hasActivations()) {
+    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
+        builder, webnn::mojom::blink::Activation::Tag::kSigmoid);
+    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
+        builder, webnn::mojom::blink::Activation::Tag::kTanh);
+    options->setActivations({activation_sigmoid, activation_tanh});
+  }
+  attributes.activation_count = options->activations().size();
+
   return attributes;
 }
 
@@ -1163,6 +1195,53 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
   }
   gemm->Connect(std::move(inputs), {output.value()});
   return output.value();
+}
+
+HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
+    const MLOperand* input,
+    const MLOperand* weight,
+    const MLOperand* recurrent_weight,
+    const uint32_t steps,
+    const uint32_t hidden_size,
+    MLGruOptions* options,
+    ExceptionState& exception_state) {
+  auto validated_outputs = webnn::ValidateGruAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
+      ConvertToComponentOperand(recurrent_weight), steps, hidden_size,
+      ConvertToGruAttributes(this, options));
+  if (!validated_outputs.has_value()) {
+    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
+    return {};
+  }
+  auto* gru =
+      MakeGarbageCollected<MLGruOperator>(this, steps, hidden_size, options);
+
+  HeapVector<Member<const MLOperand>> outputs;
+  for (const auto& validated_output : validated_outputs.value()) {
+    auto output = MLOperand::ValidateAndCreateOutput(
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
+        Vector<uint32_t>(validated_output.dimensions), gru);
+    if (!output.has_value()) {
+      exception_state.ThrowTypeError(output.error());
+      return {};
+    }
+    outputs.push_back(output.value());
+  }
+
+  HeapVector<Member<const MLOperand>> inputs = {input, weight,
+                                                recurrent_weight};
+  if (options->hasBias()) {
+    inputs.push_back(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    inputs.push_back(options->recurrentBias());
+  }
+  if (options->hasInitialHiddenState()) {
+    inputs.push_back(options->initialHiddenState());
+  }
+
+  gru->Connect(std::move(inputs), outputs);
+  return outputs;
 }
 
 MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,

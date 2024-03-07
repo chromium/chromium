@@ -1206,6 +1206,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method gemm
 [Worker]     method greater
 [Worker]     method greaterOrEqual
+[Worker]     method gru
 [Worker]     method hardSigmoid
 [Worker]     method hardSwish
 [Worker]     method identity

@@ -270,6 +270,31 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+// Contains the attributes of gru operator.
+struct GruAttributes {
+  GruAttributes();
+  ~GruAttributes();
+
+  GruAttributes(GruAttributes&& other);
+  GruAttributes& operator=(GruAttributes&& other);
+
+  GruAttributes(const GruAttributes&) = delete;
+  GruAttributes& operator=(const GruAttributes&) = delete;
+
+  // The bias operand.
+  std::optional<Operand> bias;
+  // The recurrent bias operand.
+  std::optional<Operand> recurrent_bias;
+  // The initial hidden state operand.
+  std::optional<Operand> initial_hidden_state;
+  // Indicates whether to return the outputs of the entire sequence.
+  bool return_sequence;
+  // Specifies the processing direction of the input sequence.
+  RecurrentNetworkDirection direction;
+  // The number of activations.
+  uint32_t activation_count;
+};
+
 // Contains the attributes of instanceNormalization operator.
 struct InstanceNormalizationAttributes {
   InstanceNormalizationAttributes();
@@ -451,6 +476,16 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& a,
     const Operand& b,
     const GemmAttributes& attributes);
+
+// Validate and infer output information of gru operator defined in WebIDL here
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gru.
+base::expected<std::vector<Operand>, std::string> ValidateGruAndInferOutput(
+    const Operand& input,
+    const Operand& weight,
+    const Operand& recurrent_weight,
+    uint32_t steps,
+    uint32_t hidden_size,
+    const GruAttributes& attributes);
 
 // Validate and infer output information of instanceNormalization operator
 // defined in WebIDL here

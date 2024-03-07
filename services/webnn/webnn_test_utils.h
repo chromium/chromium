@@ -259,6 +259,49 @@ class GraphInfoBuilder final {
         mojom::Operation::NewGemm(std::move(gemm)));
   }
 
+  // A `GruAttributes` type should have the following members:
+  // struct GruAttributes {
+  //   std::optional<uint64_t> bias_operand_id;
+  //   std::optional<uint64_t> recurrent_bias_operand_id;
+  //   std::optional<uint64_t> initial_hidden_state_operand_id;
+  //   bool reset_after;
+  //   bool return_sequence;
+  //   mojom::RecurrentNetworkDirection direction;
+  //   mojom::Gru::GruWeightLayout layout;
+  //   std::vector<Activation> activations;
+  // };
+  template <typename GruAttributes>
+  void BuildGru(uint64_t input_operand_id,
+                uint64_t weight_operand_id,
+                uint64_t recurrent_weight_operand_id,
+                std::vector<uint64_t> output_operand_ids,
+                uint32_t steps,
+                uint32_t hidden_size,
+                const GruAttributes& attributes) {
+    mojom::GruPtr gru = mojom::Gru::New();
+    gru->input_operand_id = input_operand_id;
+    gru->weight_operand_id = weight_operand_id;
+    gru->recurrent_weight_operand_id = recurrent_weight_operand_id;
+    gru->output_operand_ids = std::move(output_operand_ids);
+    gru->steps = steps;
+    gru->hidden_size = hidden_size;
+
+    gru->bias_operand_id = attributes.bias_operand_id;
+    gru->recurrent_bias_operand_id = attributes.recurrent_bias_operand_id;
+    gru->initial_hidden_state_operand_id =
+        attributes.initial_hidden_state_operand_id;
+    gru->reset_after = attributes.reset_after;
+    gru->return_sequence = attributes.return_sequence;
+    gru->direction = attributes.direction;
+    gru->layout = attributes.layout;
+
+    for (const auto& activation : attributes.activations) {
+      gru->activations.push_back(CreateActivation(activation));
+    }
+
+    graph_info_->operations.push_back(mojom::Operation::NewGru(std::move(gru)));
+  }
+
   void BuildHardSigmoid(uint64_t input_operand_id,
                         uint64_t output_operand_id,
                         std::optional<float> alpha,

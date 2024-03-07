@@ -416,6 +416,36 @@ webnn::GemmAttributes ConvertToGemmAttributes(
   return component_attributes;
 }
 
+webnn::GruAttributes ConvertToGruAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const webnn::mojom::GruPtr& gru) {
+  webnn::GruAttributes component_attributes;
+  if (gru->bias_operand_id.has_value()) {
+    const auto* bias =
+        GetMojoOperand(id_to_operand_map, gru->bias_operand_id.value());
+    component_attributes.bias = ConvertToComponentOperand(bias);
+  }
+  if (gru->recurrent_bias_operand_id.has_value()) {
+    const auto* recurrent_bias = GetMojoOperand(
+        id_to_operand_map, gru->recurrent_bias_operand_id.value());
+    component_attributes.recurrent_bias =
+        ConvertToComponentOperand(recurrent_bias);
+  }
+  if (gru->initial_hidden_state_operand_id.has_value()) {
+    const auto* initial_hidden_state = GetMojoOperand(
+        id_to_operand_map, gru->initial_hidden_state_operand_id.value());
+    component_attributes.initial_hidden_state =
+        ConvertToComponentOperand(initial_hidden_state);
+  }
+
+  component_attributes.return_sequence = gru->return_sequence;
+  component_attributes.direction =
+      MojoRecurrentNetworkDirectionToComponent(gru->direction);
+  component_attributes.activation_count = gru->activations.size();
+
+  return component_attributes;
+}
+
 webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalizationPtr& instance_normalization) {
@@ -851,6 +881,77 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
   }
   if (validated_output != ConvertToComponentOperand(output)) {
     return false;
+  }
+
+  return true;
+}
+
+bool ValidateGru(const IdToOperandMap& id_to_operand_map,
+                 const mojom::GruPtr& gru) {
+  const auto* input = GetMojoOperand(id_to_operand_map, gru->input_operand_id);
+  const auto* weight =
+      GetMojoOperand(id_to_operand_map, gru->weight_operand_id);
+  const auto* recurrent_weight =
+      GetMojoOperand(id_to_operand_map, gru->recurrent_weight_operand_id);
+  if (!input || !weight || !recurrent_weight) {
+    return false;
+  }
+
+  const auto& bias_operand_id = gru->bias_operand_id;
+  if (bias_operand_id.has_value() &&
+      !id_to_operand_map.contains(bias_operand_id.value())) {
+    return false;
+  }
+  const auto& recurrent_bias_operand_id = gru->recurrent_bias_operand_id;
+  if (recurrent_bias_operand_id.has_value() &&
+      !id_to_operand_map.contains(recurrent_bias_operand_id.value())) {
+    return false;
+  }
+  const auto& initial_hidden_state_operand_id =
+      gru->initial_hidden_state_operand_id;
+  if (initial_hidden_state_operand_id.has_value() &&
+      !id_to_operand_map.contains(initial_hidden_state_operand_id.value())) {
+    return false;
+  }
+
+  for (uint64_t output_operand_id : gru->output_operand_ids) {
+    if (output_operand_id == gru->input_operand_id ||
+        output_operand_id == gru->weight_operand_id ||
+        output_operand_id == gru->recurrent_weight_operand_id) {
+      return false;
+    }
+    if (bias_operand_id == output_operand_id ||
+        recurrent_bias_operand_id == output_operand_id ||
+        initial_hidden_state_operand_id == output_operand_id) {
+      return false;
+    }
+  }
+
+  const auto validated_outputs = ValidateGruAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
+      ConvertToComponentOperand(recurrent_weight), gru->steps, gru->hidden_size,
+      ConvertToGruAttributes(id_to_operand_map, gru));
+  if (!validated_outputs.has_value()) {
+    return false;
+  }
+  if (gru->output_operand_ids.size() != validated_outputs->size()) {
+    return false;
+  }
+  for (size_t i = 0; i < validated_outputs->size(); ++i) {
+    const auto* output =
+        GetMojoOperand(id_to_operand_map, gru->output_operand_ids[i]);
+    if (!output) {
+      return false;
+    }
+    if (validated_outputs->at(i) != ConvertToComponentOperand(output)) {
+      return false;
+    }
+  }
+
+  for (const auto& activation : gru->activations) {
+    if (!ValidateActivation(activation)) {
+      return false;
+    }
   }
 
   return true;
@@ -1461,6 +1562,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateGather(id_to_operand_map, operation->get_gather());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
+    case mojom::Operation::Tag::kGru:
+      return ValidateGru(id_to_operand_map, operation->get_gru());
     case mojom::Operation::Tag::kHardSigmoid:
       return ValidateHardSigmoid(id_to_operand_map,
                                  operation->get_hard_sigmoid());

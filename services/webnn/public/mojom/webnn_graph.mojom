@@ -517,6 +517,54 @@ struct Gather {
   uint32 axis = 0;
 };
 
+// Represents the processing direction of the input sequence for the recurrent
+// network.
+enum RecurrentNetworkDirection {
+  kForward,
+  kBackward,
+  kBoth,
+};
+
+// Represents the Gated Recurrent Unit [GRU] recurrent network.
+struct Gru {
+  // The ordering of the weight for the update (z), reset (r), new (n) gates.
+  enum GruWeightLayout {
+    kZrn,
+    kRzn,
+  };
+
+  // The id of the input operand.
+  uint64 input_operand_id;
+  // The id of the weight operand.
+  uint64 weight_operand_id;
+  // The id of the recurrent weight operand.
+  uint64 recurrent_weight_operand_id;
+  // The number of steps in the recurrent network.
+  uint32 steps;
+  // The number of features in the hidden state.
+  uint32 hidden_size;
+  // The ids of the output operands must be distinct from other operand ids.
+  array<uint64> output_operand_ids;
+
+  // The id of the bias operand.
+  uint64? bias_operand_id;
+  // The id of the recurrent bias operand.
+  uint64? recurrent_bias_operand_id;
+  // The id of the initial hidden state operand.
+  uint64? initial_hidden_state_operand_id;
+  // Indicates whether to apply the reset gate after or before matrix multiplication.
+  bool reset_after;
+  // Indicates whether to also return the entire sequence with every output from each time step.
+  bool return_sequence;
+  // The processing direction of the input sequence.
+  RecurrentNetworkDirection direction;
+  // The ordering of the weight and bias vectors for the internal gates of GRU.
+  GruWeightLayout layout;
+  // Specifies a pair of activation functions for the update, reset and new gates.
+  array<Activation, 2> activations;
+};
+
+
 // Represents general matrix multiplication (gemm) operation in the expression
 // `alpha * A * B + beta * C`.
 struct Gemm {
@@ -620,14 +668,6 @@ struct Linear {
   float alpha = 1.0;
   // A float scalar addition.
   float beta = 0;
-};
-
-// Represents the processing direction of the input sequence for the recurrent
-// network.
-enum RecurrentNetworkDirection {
-  kForward,
-  kBackward,
-  kBoth,
 };
 
 // Represents an operation of Long Short-Term Memory (LSTM) recurrent network.
@@ -899,6 +939,7 @@ union Operation {
   Expand expand;
   Gather gather;
   Gemm gemm;
+  Gru gru;
   HardSigmoid hard_sigmoid;
   HardSwish hard_swish;
   LayerNormalization layer_normalization;

@@ -2921,6 +2921,277 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
   }
 }
 
+struct GruTester {
+  struct GruAttributes {
+    std::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> recurrent_bias_operand_id;
+    std::optional<uint64_t> initial_hidden_state_operand_id;
+    bool reset_after = true;
+    bool return_sequence = false;
+    mojom::RecurrentNetworkDirection direction =
+        mojom::RecurrentNetworkDirection::kForward;
+    mojom::Gru::GruWeightLayout layout = mojom::Gru::GruWeightLayout::kZrn;
+    std::vector<Activation> activations = {
+        Activation{.kind = mojom::Activation::Tag::kSigmoid},
+        Activation{.kind = mojom::Activation::Tag::kTanh}};
+  };
+
+  OperandInfo input;
+  OperandInfo weight;
+  OperandInfo recurrent_weight;
+  uint32_t steps;
+  uint32_t hidden_size;
+  std::optional<OperandInfo> bias;
+  std::optional<OperandInfo> recurrent_bias;
+  std::optional<OperandInfo> initial_hidden_state;
+  GruAttributes attributes;
+  std::vector<OperandInfo> outputs;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t weight_operand_id =
+        builder.BuildInput("weight", weight.dimensions, weight.type);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", recurrent_weight.dimensions, recurrent_weight.type);
+
+    std::vector<uint64_t> output_operand_ids;
+    output_operand_ids.reserve(outputs.size());
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      output_operand_ids.push_back(
+          builder.BuildOutput(base::StringPrintf("output%zu", i),
+                              outputs[i].dimensions, outputs[i].type));
+    }
+
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    if (recurrent_bias.has_value()) {
+      attributes.recurrent_bias_operand_id = builder.BuildInput(
+          "recurrentBias", recurrent_bias->dimensions, recurrent_bias->type);
+    }
+    if (initial_hidden_state.has_value()) {
+      attributes.initial_hidden_state_operand_id = builder.BuildInput(
+          "initialHiddenState", initial_hidden_state->dimensions,
+          initial_hidden_state->type);
+    }
+
+    builder.BuildGru(input_operand_id, weight_operand_id,
+                     recurrent_weight_operand_id, std::move(output_operand_ids),
+                     steps, hidden_size, std::move(attributes));
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, GruTest) {
+  {
+    // Test the gru operator.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t num_directions = 2;
+    GruTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {num_directions, 3 * hidden_size}},
+        .recurrent_bias =
+            OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {num_directions, 3 * hidden_size}},
+        .initial_hidden_state =
+            OperandInfo{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {num_directions, batch_size, hidden_size}},
+        .attributes = {.reset_after = true,
+                       .return_sequence = true,
+                       .direction = mojom::RecurrentNetworkDirection::kBoth},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {steps, num_directions, batch_size,
+                                    hidden_size}}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shape of weight is incorrect.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t num_directions = 1;
+    GruTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 4 * hidden_size, input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the the number of activation is not 2.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t num_directions = 1;
+    GruTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .attributes =
+            {.direction = mojom::RecurrentNetworkDirection::kBackward,
+             .activations = {Activation{.kind =
+                                            mojom::Activation::Tag::kSigmoid},
+                             Activation{.kind = mojom::Activation::Tag::kTanh},
+                             Activation{
+                                 .kind = mojom::Activation::Tag::kClamp,
+                                 .clamp_attributes =
+                                     ClampTester::ClampAttributes{
+                                         .min_value = 2.0, .max_value = 3.0}}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the clamp activation has incorrect
+    // attributes.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t num_directions = 1;
+    GruTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .attributes =
+            {.direction = mojom::RecurrentNetworkDirection::kBackward,
+             .activations = {Activation{.kind =
+                                            mojom::Activation::Tag::kSigmoid},
+                             Activation{
+                                 .kind = mojom::Activation::Tag::kClamp,
+                                 .clamp_attributes =
+                                     ClampTester::ClampAttributes{
+                                         .min_value = 3.0, .max_value = 2.0}}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output shape is incorrect.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t num_directions = 1;
+    GruTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size,
+                                    3 * hidden_size}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output number is incorrect.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t num_directions = 1;
+    GruTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size}},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size}},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {steps, num_directions, batch_size,
+                                    hidden_size}}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the initial hidden state has the same id as
+    // one of the outputs.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 3;
+    uint32_t hidden_size = 4;
+    uint32_t num_directions = 1;
+
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {steps, batch_size, input_size},
+                           mojom::Operand::DataType::kFloat32);
+    uint64_t weight_operand_id = builder.BuildInput(
+        "weight", {num_directions, 3 * hidden_size, input_size},
+        mojom::Operand::DataType::kFloat32);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", {num_directions, 3 * hidden_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+
+    uint64_t initial_hidden_state_operand_id = builder.BuildInput(
+        "initialHiddenState", {num_directions, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+
+    builder.BuildGru(
+        input_operand_id, weight_operand_id, recurrent_weight_operand_id,
+        {initial_hidden_state_operand_id}, steps, hidden_size,
+        GruTester::GruAttributes{.initial_hidden_state_operand_id =
+                                     initial_hidden_state_operand_id});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct InstanceNormalizationTester {
   OperandInfo input;
   std::optional<OperandInfo> scale;

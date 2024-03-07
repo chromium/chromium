@@ -1243,6 +1243,125 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
   return Operand(a.data_type, std::move(output_shape));
 }
 
+GruAttributes::GruAttributes() = default;
+GruAttributes::~GruAttributes() = default;
+
+GruAttributes::GruAttributes(GruAttributes&& other) = default;
+GruAttributes& GruAttributes::operator=(GruAttributes&& other) = default;
+
+base::expected<std::vector<Operand>, std::string> ValidateGruAndInferOutput(
+    const Operand& input,
+    const Operand& weight,
+    const Operand& recurrent_weight,
+    uint32_t steps,
+    uint32_t hidden_size,
+    const GruAttributes& attributes) {
+  if (steps <= 0) {
+    return base::unexpected("The steps must be greater than 0.");
+  }
+  if (hidden_size <= 0) {
+    return base::unexpected("The hidden size must be greater than 0.");
+  }
+
+  // Validate the weight operand.
+  // The current spec doesn't specify the operand data type constraints of
+  // gru. An issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The data type of input must be one of the floating point types.");
+  }
+  const auto& input_dimensions = input.dimensions;
+  if (input_dimensions.size() != 3) {
+    return base::unexpected("The input must be a 3-D tensor.");
+  }
+  if (input_dimensions[0] != steps) {
+    return base::unexpected(
+        "The input dimension[0] must be equal to the steps.");
+  }
+  const auto batch_size = input_dimensions[1];
+  const auto input_size = input_dimensions[2];
+  auto checked_three_times_hidden_size = base::MakeCheckedNum(hidden_size) * 3;
+  uint32_t three_times_hidden_size;
+  if (!checked_three_times_hidden_size.AssignIfValid(
+          &three_times_hidden_size)) {
+    return base::unexpected("The hidden size is too large.");
+  }
+  const uint32_t num_directions =
+      attributes.direction == RecurrentNetworkDirection::kBoth ? 2 : 1;
+
+  // Validate the weight operand.
+  uint32_t expected_weight_shape[3] = {num_directions, three_times_hidden_size,
+                                       input_size};
+  auto weight_validation_result = ValidateRecurrentNetworkOperand(
+      weight, "weight", expected_weight_shape, input.data_type);
+  if (!weight_validation_result.has_value()) {
+    return base::unexpected(weight_validation_result.error());
+  }
+
+  // Validate the recurrent weight operand.
+  uint32_t expected_recurrent_weight_shape[3] = {
+      num_directions, three_times_hidden_size, hidden_size};
+  auto recurrent_weight_validation_result = ValidateRecurrentNetworkOperand(
+      recurrent_weight, "recurrent weight", expected_recurrent_weight_shape,
+      input.data_type);
+  if (!recurrent_weight_validation_result.has_value()) {
+    return base::unexpected(recurrent_weight_validation_result.error());
+  }
+
+  // Validate the bias operand.
+  uint32_t expected_bias_shape[2] = {num_directions, three_times_hidden_size};
+  if (attributes.bias) {
+    const auto& bias = attributes.bias.value();
+    auto bias_validation_result = ValidateRecurrentNetworkOperand(
+        bias, "bias", expected_bias_shape, input.data_type);
+    if (!bias_validation_result.has_value()) {
+      return base::unexpected(bias_validation_result.error());
+    }
+  }
+
+  // Validate the recurrent bias operand.
+  uint32_t expected_recurrent_bias_shape[2] = {num_directions,
+                                               three_times_hidden_size};
+  if (attributes.recurrent_bias) {
+    const auto& recurrent_bias = attributes.recurrent_bias.value();
+    auto recurrent_bias_validation_result = ValidateRecurrentNetworkOperand(
+        recurrent_bias, "recurrent bias", expected_recurrent_bias_shape,
+        input.data_type);
+    if (!recurrent_bias_validation_result.has_value()) {
+      return base::unexpected(recurrent_bias_validation_result.error());
+    }
+  }
+
+  // Validate the initial hidden state operand.
+  uint32_t expected_initial_hidden_state_shape[3] = {num_directions, batch_size,
+                                                     hidden_size};
+  if (attributes.initial_hidden_state) {
+    const auto& initial_hidden_state = attributes.initial_hidden_state.value();
+    auto initial_hidden_state_validation_result =
+        ValidateRecurrentNetworkOperand(
+            initial_hidden_state, "initial hidden state",
+            expected_initial_hidden_state_shape, input.data_type);
+    if (!initial_hidden_state_validation_result.has_value()) {
+      return base::unexpected(initial_hidden_state_validation_result.error());
+    }
+  }
+
+  if (attributes.activation_count != 2) {
+    return base::unexpected("The number of activations must be 2.");
+  }
+
+  std::vector<Operand> outputs;
+  outputs.emplace_back(input.data_type,
+                       std::vector{num_directions, batch_size, hidden_size});
+  if (attributes.return_sequence) {
+    outputs.emplace_back(input.data_type, std::vector{steps, num_directions,
+                                                      batch_size, hidden_size});
+  }
+
+  return outputs;
+}
+
 InstanceNormalizationAttributes::InstanceNormalizationAttributes() = default;
 InstanceNormalizationAttributes::~InstanceNormalizationAttributes() = default;
 

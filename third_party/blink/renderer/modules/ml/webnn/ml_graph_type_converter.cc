@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
@@ -79,6 +80,16 @@ blink_mojom::Lstm::WeightLayout BlinkLstmWeightLayoutToMojo(
       return blink_mojom::Lstm::WeightLayout::kIofg;
     case blink::V8MLLstmWeightLayout::Enum::kIfgo:
       return blink_mojom::Lstm::WeightLayout::kIfgo;
+  }
+}
+
+blink_mojom::Gru::GruWeightLayout BlinkGruWeightLayoutToMojo(
+    blink::V8MLGruWeightLayout::Enum layout) {
+  switch (layout) {
+    case blink::V8MLGruWeightLayout::Enum::kZrn:
+      return blink_mojom::Gru::GruWeightLayout::kZrn;
+    case blink::V8MLGruWeightLayout::Enum::kRzn:
+      return blink_mojom::Gru::GruWeightLayout::kRzn;
   }
 }
 
@@ -646,6 +657,60 @@ OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
   return webnn::mojom::blink::Operation::NewGemm(std::move(gemm_mojo));
 }
 
+base::expected<OperationPtr, String> CreateGruOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* gru) {
+  auto gru_mojo = blink_mojom::Gru::New();
+  gru_mojo->input_operand_id = GetOperatorInputId(gru, operand_to_id_map, 0);
+  gru_mojo->weight_operand_id = GetOperatorInputId(gru, operand_to_id_map, 1);
+  gru_mojo->recurrent_weight_operand_id =
+      GetOperatorInputId(gru, operand_to_id_map, 2);
+
+  const auto* gru_operator = static_cast<const MLGruOperator*>(gru);
+  gru_mojo->hidden_size = gru_operator->hidden_size();
+  gru_mojo->steps = gru_operator->steps();
+
+  const auto* options = static_cast<const MLGruOptions*>(gru->Options());
+  CHECK(options);
+
+  if (options->hasBias()) {
+    gru_mojo->bias_operand_id = operand_to_id_map.at(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    gru_mojo->recurrent_bias_operand_id =
+        operand_to_id_map.at(options->recurrentBias());
+  }
+  if (options->hasInitialHiddenState()) {
+    gru_mojo->initial_hidden_state_operand_id =
+        operand_to_id_map.at(options->initialHiddenState());
+  }
+  gru_mojo->reset_after = options->resetAfter();
+  gru_mojo->return_sequence = options->returnSequence();
+  gru_mojo->direction =
+      mojo::BlinkRecurrentNetworkDirectionToMojo(options->direction().AsEnum());
+  gru_mojo->layout =
+      mojo::BlinkGruWeightLayoutToMojo(options->layout().AsEnum());
+
+  const auto& activations = options->activations();
+  gru_mojo->activations.reserve(activations.size());
+  for (const auto& activation : activations) {
+    auto validated_activation = CreateActivation(operand_to_id_map, activation);
+    if (!validated_activation.has_value()) {
+      return base::unexpected(validated_activation.error());
+    }
+    gru_mojo->activations.push_back(std::move(validated_activation.value()));
+  }
+
+  const wtf_size_t output_count = gru->Outputs().size();
+  gru_mojo->output_operand_ids.reserve(output_count);
+  for (wtf_size_t i = 0; i < output_count; ++i) {
+    gru_mojo->output_operand_ids.push_back(
+        GetOperatorOutputId(gru, operand_to_id_map, i));
+  }
+
+  return blink_mojom::Operation::NewGru(std::move(gru_mojo));
+}
+
 OperationPtr CreateHardSwishOperation(const OperandToIdMap& operand_to_id_map,
                                       const MLOperator* hard_swish) {
   auto hard_swish_mojo = blink_mojom::HardSwish::New();
@@ -1142,6 +1207,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateGatherOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
+    case blink_mojom::Operation::Tag::kGru:
+      return CreateGruOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kHardSigmoid:
       return blink_mojom::Operation::NewHardSigmoid(
           CreateHardSigmoid(operand_to_id_map, op, false));

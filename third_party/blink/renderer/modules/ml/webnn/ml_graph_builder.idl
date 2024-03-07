@@ -18,6 +18,8 @@ enum MLRecurrentNetworkDirection { "forward", "backward", "both" };
 
 enum MLLstmWeightLayout { "iofg", "ifgo" };
 
+enum MLGruWeightLayout { "zrn", "rzn" };
+
 dictionary MLArgMinMaxOptions {
   sequence<[EnforceRange] unsigned long> axes;
   boolean keepDimensions = false;
@@ -72,6 +74,17 @@ dictionary MLGemmOptions {
   float beta = 1.0;
   boolean aTranspose = false;
   boolean bTranspose = false;
+};
+
+dictionary MLGruOptions {
+  MLOperand bias;
+  MLOperand recurrentBias;
+  MLOperand initialHiddenState;
+  boolean resetAfter = true;
+  boolean returnSequence = false;
+  MLRecurrentNetworkDirection direction = "forward";
+  MLGruWeightLayout layout = "zrn";
+  sequence<MLActivation> activations;
 };
 
 dictionary MLHardSigmoidOptions {
@@ -245,6 +258,10 @@ dictionary MLTriangularOptions {
   [RaisesException] MLOperand gather(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
 
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
+
+  [RaisesException] sequence<MLOperand> gru(MLOperand input, MLOperand weight, MLOperand recurrentWeight,
+                    [EnforceRange] unsigned long steps, [EnforceRange] unsigned long hiddenSize,
+                    optional MLGruOptions options = {});
 
   [RaisesException] MLOperand hardSigmoid(MLOperand x, optional MLHardSigmoidOptions options = {});
   [RaisesException] MLActivation hardSigmoid(optional MLHardSigmoidOptions options = {});

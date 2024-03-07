@@ -34,6 +34,7 @@ class MLConvTranspose2dOptions;
 class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
+class MLGruOptions;
 class MLHardSigmoidOptions;
 class MLInstanceNormalizationOptions;
 class MLLayerNormalizationOptions;
@@ -197,6 +198,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLOperand* b,
                   const MLGemmOptions* options,
                   ExceptionState& exception_state);
+
+  HeapVector<Member<const MLOperand>> gru(const MLOperand* input,
+                                          const MLOperand* weight,
+                                          const MLOperand* recurrent_weight,
+                                          const uint32_t steps,
+                                          const uint32_t hidden_size,
+                                          MLGruOptions* options,
+                                          ExceptionState& exception_state);
 
   MLOperand* hardSigmoid(const MLOperand* input,
                          const MLHardSigmoidOptions* options,

@@ -5706,6 +5706,7 @@ interface MLGraphBuilder
     method gemm
     method greater
     method greaterOrEqual
+    method gru
     method hardSigmoid
     method hardSwish
     method identity
