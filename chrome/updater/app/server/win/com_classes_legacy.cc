@@ -1085,28 +1085,13 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
 
 namespace {
 
-void SendPing(UpdaterScope scope,
-              const std::string& app_id,
-              HRESULT hr,
-              int event_type) {
-  struct SendPingResult : public base::RefCountedThreadSafe<SendPingResult> {
-    base::WaitableEvent completion_event;
-
-   private:
-    friend class base::RefCountedThreadSafe<SendPingResult>;
-    virtual ~SendPingResult() = default;
-  };
-
-  auto result = base::MakeRefCounted<SendPingResult>();
+void SendPingOnProcessCompletion(UpdaterScope scope,
+                                 const std::string& app_id,
+                                 HRESULT hr,
+                                 base::Process process) {
   AppServerWin::PostRpcTask(base::BindOnce(
-      [](UpdaterScope scope, const std::string& app_id, const HRESULT hr,
-         int event_type, scoped_refptr<SendPingResult> result) {
-        const base::ScopedClosureRunner signal_event(base::BindOnce(
-            [](scoped_refptr<SendPingResult> result) {
-              result->completion_event.Signal();
-            },
-            result));
-
+      [](UpdaterScope scope, const std::string& app_id, HRESULT hr,
+         base::Process process) {
         scoped_refptr<Configurator> config =
             GetAppServerWinInstance()->config();
         scoped_refptr<PersistedData> persisted_data =
@@ -1123,17 +1108,23 @@ void SendPing(UpdaterScope scope,
         app_command_data.requires_network_encryption = false;
         app_command_data.version = persisted_data->GetProductVersion(app_id);
 
+        int exit_code = -1;
+        const HRESULT final_hr =
+            FAILED(hr) ? hr
+            : process.WaitForExitWithTimeout(kWaitForAppInstaller, &exit_code)
+                ? exit_code
+                : HRESULT_FROM_WIN32(ERROR_TIMEOUT);
+
         update_client::UpdateClientFactory(config)->SendPing(
             app_command_data,
-            {.event_type = event_type,
-             .result = SUCCEEDED(hr),
-             .error_code = hr,
+            {.event_type =
+                 update_client::protocol_request::kEventAppCommandComplete,
+             .result = SUCCEEDED(final_hr),
+             .error_code = final_hr,
              .extra_code1 = 0},
             base::DoNothing());
       },
-      scope, app_id, hr, event_type, result));
-
-  result->completion_event.TimedWait(base::Seconds(60));
+      scope, app_id, hr, process.Duplicate()));
 }
 
 }  // namespace
@@ -1148,6 +1139,9 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                                               VARIANT substitution8,
                                               VARIANT substitution9) {
   CHECK(app_command_runner_.has_value());
+  if (process_.IsValid()) {
+    return E_UNEXPECTED;
+  }
 
   std::vector<std::wstring> substitutions;
   for (const VARIANT& substitution :
@@ -1167,8 +1161,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
 
   const HRESULT hr = app_command_runner_->Run(substitutions, process_);
   if (send_pings_) {
-    SendPing(scope_, app_id_, hr,
-             update_client::protocol_request::kEventAppCommandBegin);
+    SendPingOnProcessCompletion(scope_, app_id_, hr, process_.Duplicate());
   }
   return hr;
 }

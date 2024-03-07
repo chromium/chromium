@@ -34,7 +34,7 @@ inline constexpr int kEventUninstall = 4;
 inline constexpr int kEventDownload = 14;
 
 // App Command Events.
-inline constexpr int kEventAppCommandBegin = 40;
+inline constexpr int kEventAppCommandComplete = 41;
 
 inline constexpr int kEventAction = 42;
 

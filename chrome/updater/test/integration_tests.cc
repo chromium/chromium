@@ -1488,11 +1488,13 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
-  // The test runs the appcommand twice, so two pings.
+  // The test runs the appcommand twice, so two pings of
+  // `kEventAppCommandComplete`.
   ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandBegin));
+      &test_server, update_client::protocol_request::kEventAppCommandComplete));
   ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandBegin));
+      &test_server, update_client::protocol_request::kEventAppCommandComplete));
+
   base::Value::List parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
@@ -1503,7 +1505,7 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
 }
 
 TEST_F(IntegrationTest,
-       LegacyAppCommandWeb_InstallUpdaterAndApp_UsageStatsEnabled_ExpectPing) {
+       LegacyAppCommandWeb_InstallUpdaterAndApp_UsageStatsEnabled_ExpectPings) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
   const base::Version v1("1");
@@ -1517,11 +1519,12 @@ TEST_F(IntegrationTest,
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
-  // The test runs the appcommand twice, so two pings.
+  // The test runs the appcommand twice, so two pings of
+  // `kEventAppCommandComplete`.
   ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandBegin));
+      &test_server, update_client::protocol_request::kEventAppCommandComplete));
   ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandBegin));
+      &test_server, update_client::protocol_request::kEventAppCommandComplete));
   base::Value::List parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
