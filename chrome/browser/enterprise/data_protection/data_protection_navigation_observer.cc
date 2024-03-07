@@ -59,10 +59,10 @@ void OnRealTimeLookupComplete(
     bool is_cached,
     std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(rt_lookup_response);
 
   std::string watermark_text;
-  if (rt_lookup_response->threat_info_size() > 0) {
+  if (is_success && rt_lookup_response &&
+      rt_lookup_response->threat_info_size() > 0) {
     watermark_text = GetWatermarkString(rt_lookup_response->threat_info(0));
   }
   std::move(callback).Run(watermark_text);
