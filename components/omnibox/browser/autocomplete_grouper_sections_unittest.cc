@@ -1520,11 +1520,12 @@ TEST(AutocompleteGrouperSectionsTest,
 
 // Test that (on Android) sections are grouped by Search vs URL.
 #if BUILDFLAG(IS_ANDROID)
-TEST(AutocompleteGrouperSectionsTest, AndroidTypedSection_groupsBySearchVsUrl) {
+TEST(AutocompleteGrouperSectionsTest,
+     AndroidNonZPSSection_groupsBySearchVsUrl) {
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
-    sections.push_back(std::make_unique<AndroidTypedSection>(group_configs));
+    sections.push_back(std::make_unique<AndroidNonZPSSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };

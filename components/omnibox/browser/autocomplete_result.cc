@@ -466,7 +466,7 @@ void AutocompleteResult::SortAndCull(
     PSections sections;
     if constexpr (is_android) {
       sections.push_back(
-          std::make_unique<AndroidTypedSection>(suggestion_groups_map_));
+          std::make_unique<AndroidNonZPSSection>(suggestion_groups_map_));
     } else {
       sections.push_back(
           std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));

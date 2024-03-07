@@ -80,9 +80,9 @@ class ZpsSectionWithMVTiles : public ZpsSection {
 };
 
 // Android prefixed section for Adaptive Suggestions grouping.
-class AndroidTypedSection : public Section {
+class AndroidNonZPSSection : public Section {
  public:
-  explicit AndroidTypedSection(omnibox::GroupConfigMap& group_configs);
+  explicit AndroidNonZPSSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Android ZPS limits and grouping for the NTP.

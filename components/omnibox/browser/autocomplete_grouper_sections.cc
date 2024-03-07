@@ -117,7 +117,8 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
   });
 }
 
-AndroidTypedSection::AndroidTypedSection(omnibox::GroupConfigMap& group_configs)
+AndroidNonZPSSection::AndroidNonZPSSection(
+    omnibox::GroupConfigMap& group_configs)
     : Section(
           15,
           {{1,  // Default match, not part of the Grouping.
