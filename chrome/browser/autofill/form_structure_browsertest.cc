@@ -224,6 +224,10 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillEnableExpirationDateImprovements,
           // TODO(crbug.com/1474308): Clean up when launched.
           features::kAutofillDefaultToCityAndNumber,
+          // TODO(b/40204601): Clean up when launched.
+          blink::features::kAutofillIncludeFormElementsInShadowDom,
+          blink::features::
+              kAutofillIncludeShadowDomInUnassociatedListedElements,
       },
       // Disabled
       {// TODO(crbug.com/1311937): Remove once launched.
