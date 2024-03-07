@@ -193,17 +193,17 @@ class DefaultProgressIndicatorAnimationRegistry
         FROM_HERE,
         base::BindOnce(
             [](const base::WeakPtr<DefaultProgressIndicatorAnimationRegistry>&
-                   registry,
-               ProgressRingAnimation* animation) {
-              if (!registry)
+                   self,
+               MayBeDangling<ProgressRingAnimation> animation) {
+              if (!self) {
                 return;
-              auto key = registry->progress_indicator_->animation_key();
-              if (registry->GetProgressRingAnimationForKey(key) == animation)
-                registry->SetProgressRingAnimationForKey(key, nullptr);
+              }
+              auto key = self->progress_indicator_->animation_key();
+              if (self->GetProgressRingAnimationForKey(key) == animation) {
+                self->SetProgressRingAnimationForKey(key, nullptr);
+              }
             },
-            weak_ptr_factory_.GetWeakPtr(),
-            // TODO(https://crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
-            base::UnsafeDanglingUntriaged(animation)));
+            weak_ptr_factory_.GetWeakPtr(), base::UnsafeDangling(animation)));
   }
 
   // Ensures that a progress icon animation exists and is started.
