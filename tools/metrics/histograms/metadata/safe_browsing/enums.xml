@@ -167,6 +167,9 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Blocked Ad redirect"/>
   <int value="20" label="Blocked Ad popup"/>
   <int value="21" label="Hash-prefix real-time experiment"/>
+  <int value="22" label="Phishy site interactions"/>
+  <int value="23" label="Safe Browsing warning shown to user"/>
+  <int value="24" label="Abusive notification permission accepted"/>
 </enum>
 
 <enum name="SafeBrowsingAllowlistAsyncMatch">
