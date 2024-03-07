@@ -923,6 +923,18 @@ class ExtensionsToolbarContainerFeatureUITest
                                  ContextMenuSource::kMenuItem));
   }
 
+  // Returns the visible children in the order they appear on the extensions
+  // toolbar container.
+  std::vector<views::View*> GetVisibleChildrenInContainer() {
+    std::vector<views::View*> visible_children;
+    for (views::View* child : GetExtensionsToolbarContainer()->children()) {
+      if (child->GetVisible()) {
+        visible_children.push_back(child);
+      }
+    }
+    return visible_children;
+  }
+
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
@@ -1242,4 +1254,83 @@ IN_PROC_BROWSER_TEST_F(
   // Verify the confirmation is not longer shown and the button is hidden.
   NavigateToUrl(GURL("chrome://extensions"));
   EXPECT_FALSE(request_access_button()->GetVisible());
+}
+
+// Tests that the container has its visible children in the correct order when
+// there are dynamic updates (e.g extension is installed).
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
+                       CorrectReorderAfterDynamicChanges) {
+  // Install extension A, withhold its host permissions (for request access
+  // button to be visible) and pin it.
+  auto extensionA =
+      InstallExtensionWithHostPermissions("Extension A", "<all_urls>");
+  extensions::ScriptingPermissionsModifier(profile(), extensionA)
+      .SetWithholdHostPermissions(true);
+  ToolbarActionsModel* const model = ToolbarActionsModel::Get(profile());
+  model->SetActionVisibility(extensionA->id(), true);
+
+  // Navigate to a site where extension A has withheld host permissions.
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateToUrl(url);
+
+  // Verify order of visible items in container:
+  //   A | ExtensionsRequestAccessButton | ExtensionsToolbarButton
+  std::vector<views::View*> visible_children = GetVisibleChildrenInContainer();
+  EXPECT_EQ(visible_children.size(), 3u);
+  EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[0]));
+  EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[0])
+                ->view_controller()
+                ->GetActionName(),
+            u"Extension A");
+  EXPECT_TRUE(
+      views::IsViewClass<ExtensionsRequestAccessButton>(visible_children[1]));
+  EXPECT_TRUE(views::IsViewClass<ExtensionsToolbarButton>(visible_children[2]));
+
+  // Add a new extension B that has an action (so action can pop out when
+  // triggered).
+  constexpr char kExtensionBManifest[] =
+      R"({
+             "name": "Extension B",
+             "manifest_version": 3,
+             "action": { "default_popup": "popup.html" },
+             "version": "0.1"
+           })";
+  constexpr char kPopupHtml[] =
+      R"(<html><script src="popup.js"></script></html>)";
+  constexpr char kPopupJsTemplate[] =
+      R"(chrome.test.sendMessage('popup opened');)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kExtensionBManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJsTemplate);
+  scoped_refptr<const extensions::Extension> extensionB =
+      extensions::ChromeTestExtensionLoader(browser()->profile())
+          .LoadExtension(test_dir.UnpackedPath());
+
+  // Trigger the extension B action.
+  ExtensionTestMessageListener listener("popup opened");
+  ToolbarActionViewController* const view_controller =
+      GetExtensionsToolbarContainer()->GetActionForId(extensionB->id());
+  view_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kMenuEntry);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  // Verify order of visible items in container:
+  //   A | B | ExtensionsRequestAccessButton | ExtensionsToolbarButton
+  visible_children = GetVisibleChildrenInContainer();
+  EXPECT_EQ(visible_children.size(), 4u);
+  EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[0]));
+  EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[0])
+                ->view_controller()
+                ->GetActionName(),
+            u"Extension A");
+  EXPECT_TRUE(views::IsViewClass<ToolbarActionView>(visible_children[1]));
+  EXPECT_EQ(views::AsViewClass<ToolbarActionView>(visible_children[1])
+                ->view_controller()
+                ->GetActionName(),
+            u"Extension B");
+  EXPECT_TRUE(
+      views::IsViewClass<ExtensionsRequestAccessButton>(visible_children[2]));
+  EXPECT_TRUE(views::IsViewClass<ExtensionsToolbarButton>(visible_children[3]));
 }

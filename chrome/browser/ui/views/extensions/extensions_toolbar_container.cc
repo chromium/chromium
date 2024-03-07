@@ -237,14 +237,14 @@ void ExtensionsToolbarContainer::CreateActions() {
     CreateActionForId(action_id);
   }
 
-  ReorderViews();
+  ReorderAllChildViews();
   UpdateContainerVisibility();
 }
 
 void ExtensionsToolbarContainer::AddAction(
     const ToolbarActionsModel::ActionId& action_id) {
   CreateActionForId(action_id);
-  ReorderViews();
+  ReorderAllChildViews();
 
   // Auto hide mode should not become visible due to extensions being added,
   // only due to user interaction.
@@ -307,7 +307,7 @@ void ExtensionsToolbarContainer::UpdatePinnedActions() {
   for (const auto& it : icons_) {
     UpdateIconVisibility(it.first);
   }
-  ReorderViews();
+  ReorderAllChildViews();
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -684,22 +684,35 @@ bool ExtensionsToolbarContainer::HasBlockingSecurityUI() const {
                      });
 }
 
-void ExtensionsToolbarContainer::ReorderViews() {
+void ExtensionsToolbarContainer::ReorderAllChildViews() {
+  // Reorder pinned action views left-to-right.
   const auto& pinned_action_ids = model_->pinned_action_ids();
-  for (size_t i = 0; i < pinned_action_ids.size(); ++i)
+  for (size_t i = 0; i < pinned_action_ids.size(); ++i) {
     ReorderChildView(GetViewForId(pinned_action_ids[i]), i);
-
-  if (drop_info_.get())
+  }
+  if (drop_info_.get()) {
     ReorderChildView(GetViewForId(drop_info_->action_id), drop_info_->index);
+  }
 
-  // The extension button is always second to last if |close_side_panel_button_|
-  // exists, or last otherwise.
-  ReorderChildView(main_item(), close_side_panel_button_ ? children().size() - 1
-                                                         : children().size());
+  // Reorder other buttons right-to-left. This guarantees popped out action
+  // views will appear in between pinned action views and other buttons. We
+  // don't reorder popped out action views because they should appear in the
+  // order they were triggered.
+  int button_index = children().size() - 1;
 
-  // The close side panel button is always last.
   if (close_side_panel_button_) {
-    ReorderChildView(close_side_panel_button_, children().size());
+    // The close side panel button is always last.
+    ReorderChildView(close_side_panel_button_, button_index--);
+  }
+
+  // The extension button is always second to last if `close_side_panel_button_`
+  // exists, or last otherwise.
+  ReorderChildView(main_item(), button_index--);
+
+  if (request_access_button_) {
+    // The request access button is always third to last if
+    // `close_side_panel_button_` exists, or second to last otherwise.
+    ReorderChildView(request_access_button_, button_index);
   }
 }
 
@@ -838,7 +851,7 @@ int ExtensionsToolbarContainer::OnDragUpdated(
   if (!drop_info_.get() || drop_info_->index != before_icon) {
     drop_info_ = std::make_unique<DropInfo>(data.id(), before_icon);
     SetExtensionIconVisibility(drop_info_->action_id, false);
-    ReorderViews();
+    ReorderAllChildViews();
   }
 
   return ui::DragDropTypes::DRAG_MOVE;
@@ -1007,7 +1020,7 @@ void ExtensionsToolbarContainer::MovePinnedAction(
 
 void ExtensionsToolbarContainer::DragDropCleanup(
     const ToolbarActionsModel::ActionId& dragged_extension_id) {
-  ReorderViews();
+  ReorderAllChildViews();
   GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
       &ExtensionsToolbarContainer::SetExtensionIconVisibility,
       weak_ptr_factory_.GetWeakPtr(), dragged_extension_id, true));

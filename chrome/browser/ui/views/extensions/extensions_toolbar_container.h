@@ -266,8 +266,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
 
   // Sorts child views to display them in the correct order (pinned actions,
-  // popped out actions, extensions button).
-  void ReorderViews();
+  // popped out actions, other buttons).
+  void ReorderAllChildViews();
 
   // Utility function for going from width to icon counts.
   size_t WidthToIconCount(int x_offset);
