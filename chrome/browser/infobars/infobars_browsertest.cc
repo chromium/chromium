@@ -217,7 +217,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
             {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
       });
-  const auto* const id_entry = kIdentifiers.find(name);
+  const auto id_entry = kIdentifiers.find(name);
   if (id_entry == kIdentifiers.end()) {
     ADD_FAILURE() << "Unexpected infobar " << name;
     return;

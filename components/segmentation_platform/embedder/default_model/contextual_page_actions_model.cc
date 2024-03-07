@@ -100,8 +100,7 @@ ContextualPageActionsModel::GetModelConfig() {
 
   // Set output config, labels, and classifier.
   writer.AddOutputConfigForMultiClassClassifier(
-      kContextualPageActionModelLabels.begin(),
-      kContextualPageActionModelLabels.size(),
+      kContextualPageActionModelLabels,
       /*top_k_outputs=*/1, threshold);
 
   constexpr int kModelVersion = 1;

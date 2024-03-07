@@ -166,18 +166,16 @@ class MetadataWriter {
                                           const std::string& negative_label);
 
   // Adds a MultiClassClassifier.
-  void AddOutputConfigForMultiClassClassifier(const char* const* class_labels,
-                                              size_t class_labels_length,
-                                              int top_k_outputs,
-                                              std::optional<float> threshold);
+  void AddOutputConfigForMultiClassClassifier(
+      base::span<const char* const> class_labels,
+      int top_k_outputs,
+      std::optional<float> threshold);
 
   // Adds a MultiClassClassifier with one threshold per label.
   void AddOutputConfigForMultiClassClassifier(
-      const char* const* class_labels,
-      size_t class_labels_length,
+      base::span<const char* const> class_labels,
       int top_k_outputs,
-      const float* per_label_thresholds,
-      size_t per_label_thresholds_length);
+      const base::span<float> per_label_thresholds);
 
   // Adds a BinnedClassifier.
   void AddOutputConfigForBinnedClassifier(

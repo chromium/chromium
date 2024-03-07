@@ -222,10 +222,9 @@ AndroidHomeModuleRanker::GetModelConfig() {
   metadata.set_upload_tensors(true);
 
   // Set output config.
-  writer.AddOutputConfigForMultiClassClassifier(
-      kAndroidHomeModuleLabels.begin(), kAndroidHomeModuleLabels.size(),
-      kAndroidHomeModuleLabels.size(),
-      /*threshold=*/0);
+  writer.AddOutputConfigForMultiClassClassifier(kAndroidHomeModuleLabels,
+                                                kAndroidHomeModuleLabels.size(),
+                                                /*threshold=*/0);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},
       /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);

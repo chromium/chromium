@@ -91,8 +91,8 @@ DeviceSwitcherModel::GetModelConfig() {
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "60";
 
-  writer.AddOutputConfigForMultiClassClassifier(
-      kOutputLabels.begin(), kOutputLabels.size(), kOutputLabels.size(), 0.1);
+  writer.AddOutputConfigForMultiClassClassifier(kOutputLabels,
+                                                kOutputLabels.size(), 0.1);
 
   constexpr int kModelVersion = 1;
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);

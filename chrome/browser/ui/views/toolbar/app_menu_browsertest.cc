@@ -114,7 +114,7 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
       {"profile_menu_in_app_menu_signin_not_allowed",
        IDC_PROFILE_MENU_IN_APP_MENU},
   });
-  const auto* const id_entry = kSubmenus.find(name);
+  const auto id_entry = kSubmenus.find(name);
   if (id_entry == kSubmenus.end()) {
     ADD_FAILURE() << "Unknown submenu " << name;
     return;

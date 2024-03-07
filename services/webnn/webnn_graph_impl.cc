@@ -807,7 +807,7 @@ bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
   }
   const auto constraints_iterator =
       kUnaryOperatorConstraints.find(operation->kind);
-  CHECK_NE(constraints_iterator, kUnaryOperatorConstraints.end());
+  CHECK(constraints_iterator != kUnaryOperatorConstraints.end());
   return ValidateUnaryOperation(id_to_operand_map, operation,
                                 constraints_iterator->second);
 }

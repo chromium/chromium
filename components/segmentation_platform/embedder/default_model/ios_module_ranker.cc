@@ -264,8 +264,7 @@ IosModuleRanker::GetModelConfig() {
   metadata.set_upload_tensors(true);
 
   // Set output config.
-  writer.AddOutputConfigForMultiClassClassifier(kIosModuleLabels.begin(),
-                                                kIosModuleLabels.size(),
+  writer.AddOutputConfigForMultiClassClassifier(kIosModuleLabels,
                                                 kIosModuleLabels.size(),
                                                 /*threshold=*/-99999.0);
   writer.AddPredictedResultTTLInOutputConfig(

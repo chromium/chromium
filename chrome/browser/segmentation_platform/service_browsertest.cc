@@ -269,7 +269,7 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
     proto::SegmentationModelMetadata search_user_metadata;
     MetadataWriter writer = MetadataWriter(&search_user_metadata);
     writer.SetSegmentationMetadataConfig(proto::TimeUnit::DAY, 1, 7, 7, 7);
-    writer.AddUmaFeatures(uma_features.begin(), uma_features.size());
+    writer.AddUmaFeatures(uma_features.data(), uma_features.size());
 
     return search_user_metadata;
   }

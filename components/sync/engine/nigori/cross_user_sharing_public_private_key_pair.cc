@@ -57,7 +57,7 @@ std::array<uint8_t, X25519_PRIVATE_KEY_LEN>
 CrossUserSharingPublicPrivateKeyPair::GetRawPrivateKey() const {
   std::array<uint8_t, X25519_PRIVATE_KEY_LEN> raw_private_key;
   size_t out_len;
-  CHECK(EVP_HPKE_KEY_private_key(key_.get(), raw_private_key.begin(), &out_len,
+  CHECK(EVP_HPKE_KEY_private_key(key_.get(), raw_private_key.data(), &out_len,
                                  raw_private_key.size()));
   CHECK_EQ(out_len, static_cast<size_t>(X25519_PRIVATE_KEY_LEN));
   return raw_private_key;
@@ -67,7 +67,7 @@ std::array<uint8_t, X25519_PUBLIC_VALUE_LEN>
 CrossUserSharingPublicPrivateKeyPair::GetRawPublicKey() const {
   std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> raw_public_key;
   size_t out_len;
-  CHECK(EVP_HPKE_KEY_public_key(key_.get(), raw_public_key.begin(), &out_len,
+  CHECK(EVP_HPKE_KEY_public_key(key_.get(), raw_public_key.data(), &out_len,
                                 raw_public_key.size()));
   CHECK_EQ(out_len, static_cast<size_t>(X25519_PUBLIC_VALUE_LEN));
   return raw_public_key;

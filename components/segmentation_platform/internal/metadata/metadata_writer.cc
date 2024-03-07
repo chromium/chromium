@@ -37,12 +37,11 @@ void FillCustomInput(const MetadataWriter::CustomInput feature,
 
 void PopulateMultiClassClassifier(
     proto::Predictor::MultiClassClassifier* multi_class_classifier,
-    const char* const* class_labels,
-    size_t class_labels_length,
+    base::span<const char* const> class_labels,
     int top_k_outputs) {
   multi_class_classifier->set_top_k_outputs(top_k_outputs);
-  for (size_t i = 0; i < class_labels_length; ++i) {
-    multi_class_classifier->mutable_class_labels()->Add(class_labels[i]);
+  for (auto* class_label : class_labels) {
+    multi_class_classifier->mutable_class_labels()->Add(class_label);
   }
 }
 
@@ -205,8 +204,7 @@ void MetadataWriter::SetIgnorePreviousModelTTLInOutputConfig() {
 }
 
 void MetadataWriter::AddOutputConfigForMultiClassClassifier(
-    const char* const* class_labels,
-    size_t class_labels_length,
+    base::span<const char* const> class_labels,
     int top_k_outputs,
     std::optional<float> threshold) {
   proto::Predictor::MultiClassClassifier* multi_class_classifier =
@@ -215,29 +213,27 @@ void MetadataWriter::AddOutputConfigForMultiClassClassifier(
           ->mutable_multi_class_classifier();
 
   PopulateMultiClassClassifier(multi_class_classifier, class_labels,
-                               class_labels_length, top_k_outputs);
+                               top_k_outputs);
   if (threshold.has_value()) {
     multi_class_classifier->set_threshold(threshold.value());
   }
 }
 
 void MetadataWriter::AddOutputConfigForMultiClassClassifier(
-    const char* const* class_labels,
-    size_t class_labels_length,
+    base::span<const char* const> class_labels,
     int top_k_outputs,
-    const float* per_class_thresholds,
-    size_t per_class_thresholds_length) {
-  CHECK_EQ(class_labels_length, per_class_thresholds_length);
+    const base::span<float> per_class_thresholds) {
+  CHECK_EQ(class_labels.size(), per_class_thresholds.size());
   proto::Predictor::MultiClassClassifier* multi_class_classifier =
       metadata_->mutable_output_config()
           ->mutable_predictor()
           ->mutable_multi_class_classifier();
 
   PopulateMultiClassClassifier(multi_class_classifier, class_labels,
-                               class_labels_length, top_k_outputs);
+                               top_k_outputs);
 
-  for (size_t i = 0; i < per_class_thresholds_length; ++i) {
-    multi_class_classifier->add_class_thresholds(per_class_thresholds[i]);
+  for (float per_class_threshold : per_class_thresholds) {
+    multi_class_classifier->add_class_thresholds(per_class_threshold);
   }
 }
 
