@@ -2,15 +2,13 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-body {
-  font-size: 84%;
-  margin: 0;
-  min-width: 45em;
-  padding: 0.75em;
-}
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
 
 .global-button {
   margin: 1px 3px 0 3px;
+  font-family: inherit;
 }
 
 h1,

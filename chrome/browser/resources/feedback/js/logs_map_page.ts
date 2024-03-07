@@ -4,8 +4,8 @@
 
 import '../strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 /**
  * A queue of a sequence of closures that will incrementally build the sys info
@@ -19,260 +19,287 @@ const tableCreationClosuresQueue: Array<() => void> = [];
  */
 const STANDARD_DELAY_MS: number = 32;
 
-/**
- * The total count of rows that have an Expand/Collapse button. This is needed
- * to calculate the aria-pressed state of the global Expand All/Collapse All
- * buttons.
- */
-let multilineRowsCount = 0;
+class LogsMapTable {
+  /**
+   * The total count of rows that have an Expand/Collapse button. This is needed
+   * to calculate the aria-pressed state of the global Expand All/Collapse All
+   * buttons.
+   */
+  private multilineRowsCount: number = 0;
 
-/**
- * Running count of rows that have been expanded to display all lines. This is
- * needed to calculate the aria-pressed state of the global Expand All/Collapse
- * All buttons.
- */
-let expandedRowsCount = 0;
+  /**
+   * Running count of rows that have been expanded to display all lines. This is
+   * needed to calculate the aria-pressed state of the global Expand
+   * All/Collapse All buttons.
+   */
+  private expandedRowsCount: number = 0;
 
-function updateGlobalExpandButtonStates() {
-  const hasExpanded = expandedRowsCount > 0;
-  const hasCollapsed = multilineRowsCount - expandedRowsCount > 0;
+  private root: ShadowRoot;
 
-  if (hasExpanded && hasCollapsed) {
-    getRequiredElement('expandAllBtn').ariaPressed = 'mixed';
-    getRequiredElement('collapseAllBtn').ariaPressed = 'mixed';
-  } else if (hasExpanded && !hasCollapsed) {
-    getRequiredElement('expandAllBtn').ariaPressed = 'true';
-    getRequiredElement('collapseAllBtn').ariaPressed = 'false';
-  } else if (!hasExpanded && hasCollapsed) {
-    getRequiredElement('expandAllBtn').ariaPressed = 'false';
-    getRequiredElement('collapseAllBtn').ariaPressed = 'true';
-  } else {
-    getRequiredElement('expandAllBtn').ariaPressed = 'false';
-    getRequiredElement('collapseAllBtn').ariaPressed = 'false';
-  }
-}
-
-function getValueDivForButton(button: HTMLElement) {
-  return getRequiredElement(button.id.substr(0, button.id.length - 4));
-}
-
-function getButtonForValueDiv(valueDiv: HTMLElement) {
-  return getRequiredElement(valueDiv.id + '-btn');
-}
-
-/**
- * Expands the multiline table cell that contains the given valueDiv.
- * @param button The expand button.
- * @param valueDiv The div that contains the multiline logs.
- * @param delayFactor A value used for increasing the delay after which the cell
- *     will be expanded. Useful for expandAll() since it expands the multiline
- *     cells one after another with each expension done slightly after the
- *     previous one.
- */
-function expand(
-    button: HTMLElement, valueDiv: HTMLElement, delayFactor: number) {
-  button.textContent = loadTimeData.getString('logsMapPageCollapseBtn');
-  // Show the spinner container.
-  const valueCell = valueDiv.parentNode as HTMLElement;
-  valueCell.removeAttribute('aria-hidden');
-  (valueCell.firstChild as HTMLElement).hidden = false;
-  // Expanding huge logs can take a very long time, so we do it after a delay
-  // to have a chance to render the spinner.
-  setTimeout(function() {
-    valueCell.className = 'number-expanded';
-    // Hide the spinner container.
-    (valueCell.firstChild as HTMLElement).hidden = true;
-  }, STANDARD_DELAY_MS * delayFactor);
-  expandedRowsCount++;
-}
-
-/**
- * Collapses the multiline table cell that contains the given valueDiv.
- * @param button The expand button.
- * @param valueDiv The div that contains the multiline logs.
- */
-function collapse(button: HTMLElement, valueDiv: HTMLElement) {
-  button.textContent = loadTimeData.getString('logsMapPageExpandBtn');
-  (valueDiv.parentNode as HTMLElement).className = 'number-collapsed';
-  // Don't have screen readers announce the empty cell.
-  const valueCell = valueDiv.parentNode as HTMLElement;
-  valueCell.setAttribute('aria-hidden', 'true');
-  expandedRowsCount--;
-}
-
-/**
- * Toggles whether an item is collapsed or expanded.
- */
-function changeCollapsedStatus(e: Event) {
-  const button = e.target as HTMLElement;
-  const valueDiv = getValueDivForButton(button);
-  if ((valueDiv.parentNode as HTMLElement).className === 'number-collapsed') {
-    expand(button, valueDiv, 1);
-  } else {
-    collapse(button, valueDiv);
+  constructor(root: ShadowRoot) {
+    this.root = root;
   }
 
-  updateGlobalExpandButtonStates();
-}
+  private updateGlobalExpandButtonStates() {
+    const hasExpanded = this.expandedRowsCount > 0;
+    const hasCollapsed = this.multilineRowsCount - this.expandedRowsCount > 0;
 
-/**
- * Collapses all log items.
- */
-function collapseAll() {
-  const valueDivs = document.body.querySelectorAll<HTMLElement>('.stat-value');
-  for (let i = 0; i < valueDivs.length; ++i) {
-    if ((valueDivs[i]!.parentNode as HTMLElement).className !==
-        'number-expanded') {
-      continue;
-    }
-    const button = getButtonForValueDiv(valueDivs[i]!);
-    if (button) {
-      collapse(button, valueDivs[i]!);
+    if (hasExpanded && hasCollapsed) {
+      this.getRequiredElement('#expandAllBtn').ariaPressed = 'mixed';
+      this.getRequiredElement('#collapseAllBtn').ariaPressed = 'mixed';
+    } else if (hasExpanded && !hasCollapsed) {
+      this.getRequiredElement('#expandAllBtn').ariaPressed = 'true';
+      this.getRequiredElement('#collapseAllBtn').ariaPressed = 'false';
+    } else if (!hasExpanded && hasCollapsed) {
+      this.getRequiredElement('#expandAllBtn').ariaPressed = 'false';
+      this.getRequiredElement('#collapseAllBtn').ariaPressed = 'true';
+    } else {
+      this.getRequiredElement('#expandAllBtn').ariaPressed = 'false';
+      this.getRequiredElement('#collapseAllBtn').ariaPressed = 'false';
     }
   }
 
-  updateGlobalExpandButtonStates();
-}
-
-/**
- * Expands all log items.
- */
-function expandAll() {
-  const valueDivs = document.body.querySelectorAll<HTMLElement>('.stat-value');
-  for (let i = 0; i < valueDivs.length; ++i) {
-    if ((valueDivs[i]!.parentNode as HTMLElement).className !==
-        'number-collapsed') {
-      continue;
-    }
-    const button = getButtonForValueDiv(valueDivs[i]!);
-    if (button) {
-      expand(button, valueDivs[i]!, i + 1);
-    }
+  private getValueDivForButton(button: HTMLElement): HTMLElement {
+    const id = button.id.substr(0, button.id.length - 4);
+    return this.getRequiredElement<HTMLElement>(`#${id}`)!;
   }
 
-  updateGlobalExpandButtonStates();
-}
-
-function sanitizeKeyForId(key: string): string {
-  // Replace any non-alphanumeric characters with a dash.
-  key = key.replace(/[^a-zA-Z0-9\-_]/g, '-');
-
-  // Ensure the ID starts with a letter
-  if (!/^[a-zA-Z]/.test(key)) {
-    key = 'sanitized-' + key;
+  private getButtonForValueDiv(valueDiv: HTMLElement): HTMLElement {
+    const id = valueDiv.id + '-btn';
+    return this.getRequiredElement<HTMLElement>(`#${id}`)!;
   }
-  return key;
-}
 
-function createNameCell(key: string): HTMLElement {
-  const nameCell = document.createElement('td');
-  nameCell.setAttribute('class', 'name');
-  const nameDiv = document.createElement('div');
-  nameDiv.id = sanitizeKeyForId(key);
-  nameDiv.setAttribute('class', 'stat-name');
-  nameDiv.appendChild(document.createTextNode(key));
-  nameCell.appendChild(nameDiv);
-  return nameCell;
-}
+  /**
+   * Expands the multiline table cell that contains the given valueDiv.
+   * @param button The expand button.
+   * @param valueDiv The div that contains the multiline logs.
+   * @param delayFactor A value used for increasing the delay after which the
+   *     cell will be expanded. Useful for expandAll() since it expands the
+   *     multiline cells one after another with each expension done slightly
+   *     after the previous one.
+   */
+  private expand(
+      button: HTMLElement, valueDiv: HTMLElement, delayFactor: number) {
+    button.textContent = loadTimeData.getString('logsMapPageCollapseBtn');
+    // Show the spinner container.
+    const valueCell = valueDiv.parentNode as HTMLElement;
+    valueCell.removeAttribute('aria-hidden');
+    (valueCell.firstChild as HTMLElement).hidden = false;
+    // Expanding huge logs can take a very long time, so we do it after a delay
+    // to have a chance to render the spinner.
+    setTimeout(function() {
+      valueCell.className = 'number-expanded';
+      // Hide the spinner container.
+      (valueCell.firstChild as HTMLElement).hidden = true;
+    }, STANDARD_DELAY_MS * delayFactor);
+    this.expandedRowsCount++;
+  }
 
-function createButtonCell(key: string, isMultiLine: boolean): HTMLElement {
-  const buttonCell = document.createElement('td');
-  buttonCell.setAttribute('class', 'button-cell');
-
-  if (isMultiLine) {
-    const sanitizedKey = sanitizeKeyForId(key);
-    const id = `${sanitizedKey}-value-btn`;
-    const button = document.createElement('button');
-    button.setAttribute('id', id);
-    button.setAttribute('aria-controls', `${sanitizedKey}-value`);
-    button.setAttribute('aria-labelledby', `${id} ${sanitizedKey}`);
-    button.onclick = changeCollapsedStatus;
+  /**
+   * Collapses the multiline table cell that contains the given valueDiv.
+   * @param button The expand button.
+   * @param valueDiv The div that contains the multiline logs.
+   */
+  private collapse(button: HTMLElement, valueDiv: HTMLElement) {
     button.textContent = loadTimeData.getString('logsMapPageExpandBtn');
-    buttonCell.appendChild(button);
-    multilineRowsCount++;
-  } else {
-    // Don't have screen reader read the empty cell.
-    buttonCell.setAttribute('aria-hidden', 'true');
-  }
-
-  return buttonCell;
-}
-
-function createValueCell(
-    key: string, value: string, isMultiLine: boolean): HTMLElement {
-  const valueCell = document.createElement('td');
-  const valueDiv = document.createElement('div');
-  valueDiv.setAttribute('class', 'stat-value');
-  valueDiv.setAttribute('id', sanitizeKeyForId(key) + '-value');
-  valueDiv.appendChild(document.createTextNode(value));
-
-  if (isMultiLine) {
-    valueCell.className = 'number-collapsed';
-    const loadingContainer =
-        getRequiredElement('spinner-container').cloneNode(true) as HTMLElement;
-    loadingContainer.setAttribute(
-        'id', sanitizeKeyForId(key) + '-value-loading');
-    loadingContainer.hidden = true;
-    valueCell.appendChild(loadingContainer);
-    // Don't have screen readers read the empty cell.
+    (valueDiv.parentNode as HTMLElement).className = 'number-collapsed';
+    // Don't have screen readers announce the empty cell.
+    const valueCell = valueDiv.parentNode as HTMLElement;
     valueCell.setAttribute('aria-hidden', 'true');
-  } else {
-    valueCell.className = 'number';
+    this.expandedRowsCount--;
   }
 
-  valueCell.appendChild(valueDiv);
-  return valueCell;
-}
+  /**
+   * Toggles whether an item is collapsed or expanded.
+   */
+  private changeCollapsedStatus(e: Event) {
+    const button = e.target as HTMLElement;
+    const valueDiv = this.getValueDivForButton(button);
+    if ((valueDiv.parentNode as HTMLElement).className === 'number-collapsed') {
+      this.expand(button, valueDiv, 1);
+    } else {
+      this.collapse(button, valueDiv);
+    }
 
-function createTableRow(key: string, value: string): HTMLElement {
-  const row = document.createElement('tr');
-
-  // Avoid using element.scrollHeight as it's very slow. crbug.com/653968.
-  const isMultiLine = value.split('\n').length > 2 || value.length > 1000;
-
-  row.appendChild(createNameCell(key));
-  row.appendChild(createButtonCell(key, isMultiLine));
-  row.appendChild(createValueCell(key, value, isMultiLine));
-
-  return row;
-}
-
-/**
- * Finalize the page after the content has been loaded.
- */
-function finishPageLoading() {
-  getRequiredElement('collapseAllBtn').onclick = collapseAll;
-  getRequiredElement('expandAllBtn').onclick = expandAll;
-
-  getRequiredElement('spinner-container').hidden = true;
-  updateGlobalExpandButtonStates();
-}
-
-/**
- * Pops a closure from the front of the queue and executes it.
- */
-function processQueue() {
-  const closure = tableCreationClosuresQueue.shift();
-  if (closure) {
-    closure();
+    this.updateGlobalExpandButtonStates();
   }
 
-  if (tableCreationClosuresQueue.length > 0) {
-    // Post a task to process the next item in the queue.
-    setTimeout(processQueue, STANDARD_DELAY_MS);
-  }
-}
+  /**
+   * Collapses all log items.
+   */
+  private collapseAll() {
+    const valueDivs = this.root.querySelectorAll<HTMLElement>('.stat-value');
+    for (let i = 0; i < valueDivs.length; ++i) {
+      if ((valueDivs[i]!.parentNode as HTMLElement).className !==
+          'number-expanded') {
+        continue;
+      }
+      const button = this.getButtonForValueDiv(valueDivs[i]!);
+      if (button) {
+        this.collapse(button, valueDivs[i]!);
+      }
+    }
 
-/**
- * Creates a closure that creates a table row for the given key and value.
- * @param key The name of the log.
- * @param value The contents of the log.
- * @return A closure that creates a row for the given log.
- */
-function createTableRowWrapper(key: string, value: string): () => void {
-  return function() {
-    getRequiredElement('detailsTable').appendChild(createTableRow(key, value));
-  };
+    this.updateGlobalExpandButtonStates();
+  }
+
+  /**
+   * Expands all log items.
+   */
+  private expandAll() {
+    const valueDivs = this.root.querySelectorAll<HTMLElement>('.stat-value');
+    for (let i = 0; i < valueDivs.length; ++i) {
+      if ((valueDivs[i]!.parentNode as HTMLElement).className !==
+          'number-collapsed') {
+        continue;
+      }
+      const button = this.getButtonForValueDiv(valueDivs[i]!);
+      if (button) {
+        this.expand(button, valueDivs[i]!, i + 1);
+      }
+    }
+
+    this.updateGlobalExpandButtonStates();
+  }
+
+  private sanitizeKeyForId(key: string): string {
+    // Replace any non-alphanumeric characters with a dash.
+    key = key.replace(/[^a-zA-Z0-9\-_]/g, '-');
+
+    // Ensure the ID starts with a letter
+    if (!/^[a-zA-Z]/.test(key)) {
+      key = 'sanitized-' + key;
+    }
+    return key;
+  }
+
+  private createNameCell(key: string): HTMLElement {
+    const nameCell = document.createElement('td');
+    nameCell.setAttribute('class', 'name');
+    const nameDiv = document.createElement('div');
+    nameDiv.id = this.sanitizeKeyForId(key);
+    nameDiv.setAttribute('class', 'stat-name');
+    nameDiv.appendChild(document.createTextNode(key));
+    nameCell.appendChild(nameDiv);
+    return nameCell;
+  }
+
+  private createButtonCell(key: string, isMultiLine: boolean): HTMLElement {
+    const buttonCell = document.createElement('td');
+    buttonCell.setAttribute('class', 'button-cell');
+
+    if (isMultiLine) {
+      const sanitizedKey = this.sanitizeKeyForId(key);
+      const id = `${sanitizedKey}-value-btn`;
+      const button = document.createElement('button');
+      button.setAttribute('id', id);
+      button.setAttribute('aria-controls', `${sanitizedKey}-value`);
+      button.setAttribute('aria-labelledby', `${id} ${sanitizedKey}`);
+      button.onclick = this.changeCollapsedStatus.bind(this);
+      button.textContent = loadTimeData.getString('logsMapPageExpandBtn');
+      buttonCell.appendChild(button);
+      this.multilineRowsCount++;
+    } else {
+      // Don't have screen reader read the empty cell.
+      buttonCell.setAttribute('aria-hidden', 'true');
+    }
+
+    return buttonCell;
+  }
+
+  private createValueCell(key: string, value: string, isMultiLine: boolean):
+      HTMLElement {
+    const valueCell = document.createElement('td');
+    const valueDiv = document.createElement('div');
+    valueDiv.setAttribute('class', 'stat-value');
+    valueDiv.setAttribute('id', this.sanitizeKeyForId(key) + '-value');
+    valueDiv.appendChild(document.createTextNode(value));
+
+    if (isMultiLine) {
+      valueCell.className = 'number-collapsed';
+      const loadingContainer =
+          this.getRequiredElement('#spinner-container').cloneNode(true) as
+          HTMLElement;
+      loadingContainer.setAttribute(
+          'id', this.sanitizeKeyForId(key) + '-value-loading');
+      loadingContainer.hidden = true;
+      valueCell.appendChild(loadingContainer);
+      // Don't have screen readers read the empty cell.
+      valueCell.setAttribute('aria-hidden', 'true');
+    } else {
+      valueCell.className = 'number';
+    }
+
+    valueCell.appendChild(valueDiv);
+    return valueCell;
+  }
+
+  private createTableRow(key: string, value: string): HTMLElement {
+    const row = document.createElement('tr');
+
+    // Avoid using element.scrollHeight as it's very slow. crbug.com/653968.
+    const isMultiLine = value.split('\n').length > 2 || value.length > 1000;
+
+    row.appendChild(this.createNameCell(key));
+    row.appendChild(this.createButtonCell(key, isMultiLine));
+    row.appendChild(this.createValueCell(key, value, isMultiLine));
+
+    return row;
+  }
+
+  /**
+   * Finalize the page after the content has been loaded.
+   */
+  finishPageLoading() {
+    this.getRequiredElement<HTMLElement>('#collapseAllBtn')!.onclick =
+        this.collapseAll.bind(this);
+    this.getRequiredElement<HTMLElement>('#expandAllBtn')!.onclick =
+        this.expandAll.bind(this);
+
+    this.getRequiredElement<HTMLElement>('#spinner-container')!.hidden = true;
+    this.updateGlobalExpandButtonStates();
+  }
+
+  /**
+   * Pops a closure from the front of the queue and executes it.
+   */
+  processQueue() {
+    const closure = tableCreationClosuresQueue.shift();
+    if (closure) {
+      closure();
+    }
+
+    if (tableCreationClosuresQueue.length > 0) {
+      // Post a task to process the next item in the queue.
+      setTimeout(this.processQueue.bind(this), STANDARD_DELAY_MS);
+    }
+  }
+
+  /**
+   * Creates a closure that creates a table row for the given key and value.
+   * @param key The name of the log.
+   * @param value The contents of the log.
+   * @return A closure that creates a row for the given log.
+   */
+  createTableRowWrapper(key: string, value: string): () => void {
+    return () => {
+      this.getRequiredElement('#detailsTable')
+          .appendChild(this.createTableRow(key, value));
+    };
+  }
+
+  /**
+   * TODO(crbug.com/1509032): A helper function in favor of converting feedback
+   * UI from non-web component HTML to PolymerElement. It's better to be
+   * replaced by polymer's $ helper dictionary.
+   */
+  private getRequiredElement<T extends HTMLElement = HTMLElement>(
+      query: string): T {
+    const el = this.root!.querySelector<T>(query);
+    assert(el);
+    assert(el instanceof HTMLElement);
+    return el;
+  }
 }
 
 /**
@@ -280,14 +307,17 @@ function createTableRowWrapper(key: string, value: string): () => void {
  * @param info The information that will be used to fill the table.
  */
 export function createLogsMapTable(
-    info: chrome.feedbackPrivate.LogsMapEntry[]) {
+    info: chrome.feedbackPrivate.LogsMapEntry[], root: ShadowRoot) {
+  const logsMapTable = new LogsMapTable(root);
+
   for (const key in info) {
     const item = info[key]!;
     tableCreationClosuresQueue.push(
-        createTableRowWrapper(item['key'], item['value']));
+        logsMapTable.createTableRowWrapper(item['key'], item['value']));
   }
 
-  tableCreationClosuresQueue.push(finishPageLoading);
+  tableCreationClosuresQueue.push(
+      logsMapTable.finishPageLoading.bind(logsMapTable));
 
-  processQueue();
+  logsMapTable.processQueue();
 }

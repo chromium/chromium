@@ -2,54 +2,54 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-html,
-body {
-  overflow: visible;
-  user-select: auto;
-}
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
 
-html:has(body.jelly-enabled) {
+<if expr="is_chromeos">
+:host-context(.jelly-enabled) :host {
   color: var(--cros-sys-on_surface);
   font: var(--cros-body-2-font);
 }
 
-html:has(body.jelly-enabled) button {
+:host-context(.jelly-enabled) button {
   font: var(--cros-button-2-font);
 }
 
-html:has(body.jelly-enabled) #header,
-html:has(body.jelly-enabled) #header h1,
-html:has(body.jelly-enabled) #header p {
+:host-context(.jelly-enabled) #header,
+:host-context(.jelly-enabled) #header h1,
+:host-context(.jelly-enabled) #header p {
   background-color: var(--cros-sys-primary);
   border: none;
   color: var(--cros-sys-on_primary);
   text-shadow: none;
 }
 
-html:has(body.jelly-enabled) #header h1::before {
+:host-context(.jelly-enabled) #header h1::before {
   background-color: var(--cros-sys-on_primary);
 }
 
-html:has(body.jelly-enabled) #tableTitle {
+:host-context(.jelly-enabled) #tableTitle {
   font: var(--cros-headline-1-font);
 }
 
-html:has(body.jelly-enabled) #title {
+:host-context(.jelly-enabled) #title {
   font: var(--cros-title-1-font);
 }
 
-html:has(body.jelly-enabled) #description {
+:host-context(.jelly-enabled) #description {
   font: var(--cros-annotation-2-font);
 }
 
-html:has(body.jelly-enabled) .list td {
+:host-context(.jelly-enabled) .list td {
   font: var(--cros-body-2-font);
 }
 
-html:has(body.jelly-enabled) tr > *:nth-child(1),
-html:has(body.jelly-enabled) tr > *:nth-child(2) {
+:host-context(.jelly-enabled) tr > *:nth-child(1),
+:host-context(.jelly-enabled) tr > *:nth-child(2) {
   border-inline-end: 1px solid var(--feedback-separator-color);
 }
+</if>
 
 #detailsTable {
   margin-top: .5em;
