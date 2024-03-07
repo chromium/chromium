@@ -155,9 +155,8 @@ class WebAppDatabaseTest : public WebAppTest,
       return;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    app.SetUserDisplayMode(app.user_display_mode_cros().value_or(
-        app.user_display_mode_default().value_or(
-            mojom::UserDisplayMode::kStandalone)));
+    app.SetUserDisplayMode(app.user_display_mode_default().value_or(
+        mojom::UserDisplayMode::kStandalone));
   }
 
  protected:
@@ -413,19 +412,24 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
   }
 
   // Regardless of platform, the current platform's UDM should be set.
-  EXPECT_EQ(app->user_display_mode().value(), mojom::UserDisplayMode::kBrowser);
+  EXPECT_TRUE(app->user_display_mode().has_value());
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On CrOS, the non-CrOS field should remain absent.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
   EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_default());
+  EXPECT_EQ(app->user_display_mode().value(), mojom::UserDisplayMode::kBrowser);
 #else
   // On non-CrOS, both platform's fields should now be populated.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
+  // Default value doesn't migrate from CrOS value so should fall back to
+  // standalone.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
-            sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
+            sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);
+  EXPECT_EQ(app->user_display_mode().value(),
+            mojom::UserDisplayMode::kStandalone);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -447,7 +451,8 @@ TEST_P(WebAppDatabaseTest,
 
   const WebApp* app = registrar().GetAppById(base_app->app_id());
 
-  // Regardless of platform, the current platform's UDM should be set.
+  // Regardless of platform, the current platform's UDM should be set: the
+  // default value should have been migrated in CrOS.
   EXPECT_EQ(app->user_display_mode().value(), mojom::UserDisplayMode::kBrowser);
 
   std::unique_ptr<WebAppProto> new_proto =

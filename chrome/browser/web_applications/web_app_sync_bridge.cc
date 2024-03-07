@@ -124,15 +124,13 @@ BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
-// Get the UserDisplayMode for the app on the current platform (may be absent
-// for not-yet-migrated apps loaded from the database). Use
-// `WebApp::user_display_mode` instead for migrated apps.
-std::optional<mojom::UserDisplayMode> GetCurrentPlatformUserDisplayMode(
-    const WebApp& app) {
+// Return whether `app` has a UserDisplayMode set for the current platform.
+// May be false for not-yet-migrated apps loaded from the database.
+bool HasCurrentPlatformUserDisplayMode(const WebApp& app) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return app.user_display_mode_cros();
+  return app.user_display_mode_cros().has_value();
 #else
-  return app.user_display_mode_default();
+  return app.user_display_mode_default().has_value();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 }  // namespace
@@ -176,7 +174,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
     // Conditional to avoid clobbering a valid UDM with an absent one, for the
     // case of old clients clearing the CrOS UDM value or non-sync-installed
     // apps.
-    if (!GetCurrentPlatformUserDisplayMode(*app)) {
+    if (!HasCurrentPlatformUserDisplayMode(*app)) {
       app->SetUserDisplayMode(
           ResolvePlatformSpecificUserDisplayMode(sync_data));
     }
@@ -615,11 +613,12 @@ void WebAppSyncBridge::OnDatabaseOpened(
 void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
   web_app::ScopedRegistryUpdate update = BeginUpdate();
   for (const WebApp& app : registrar().GetAppsIncludingStubs()) {
-    if (!GetCurrentPlatformUserDisplayMode(app).has_value()) {
-      // Use the other platform's UDM if set, or standalone.
-      mojom::UserDisplayMode udm = app.user_display_mode_cros().value_or(
-          app.user_display_mode_default().value_or(
-              mojom::UserDisplayMode::kStandalone));
+    if (!HasCurrentPlatformUserDisplayMode(app)) {
+      // On CrOS, populate the UDM-CrOS value by copying from the default value
+      // (falling back to Standalone). On non-CrOS, populate the UDM-Default
+      // value with Standalone.
+      mojom::UserDisplayMode udm = app.user_display_mode_default().value_or(
+          mojom::UserDisplayMode::kStandalone);
       update->UpdateApp(app.app_id())->SetUserDisplayMode(udm);
     }
   }
