@@ -1281,13 +1281,6 @@ BASE_FEATURE(kChromeOSHWVBREncoding,
 #endif
 );
 
-// Use a dedicated thread for hardware video decoding in Video decoder process.
-// If this is disabled, a sequenced task runner in base::ThreadPool is used for
-// hardware video decoding.
-BASE_FEATURE(kUseDedicatedDecoderThreadInVideoDecoderProcess,
-             "UseDedicatedDecoderThreadInVideoDecoderProcess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(USE_VAAPI)
 // Enable the hardware-accelerated direct video decoder instead of the one
 // needing the VdaVideoDecoder adapter. This flag is used mainly as a

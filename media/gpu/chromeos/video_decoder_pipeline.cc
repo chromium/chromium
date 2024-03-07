@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -95,9 +94,7 @@ scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner(
   // to discover the most native modifier accepted by the hardware video
   // decoder; this in turn may need to open the render node, and this is the
   // operation that may block.
-  if (in_video_decoder_process &&
-      !base::FeatureList::IsEnabled(
-          kUseDedicatedDecoderThreadInVideoDecoderProcess)) {
+  if (in_video_decoder_process) {
     return base::ThreadPool::CreateSequencedTaskRunner(
         {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
   }
