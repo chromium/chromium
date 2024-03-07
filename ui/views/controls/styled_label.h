@@ -178,6 +178,9 @@ class VIEWS_EXPORT StyledLabel : public View {
   // wrapped).  If 0, no fixed width is enforced.
   void SizeToFit(int fixed_width);
 
+  [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
+      views::PropertyChangedCallback callback);
+
   // If true, the preferred size is dependent on the last set width.
   // See the comment on `use_legacy_preferred_size_`.
   void set_use_legacy_preferred_size(bool use_legacy_preferred_size) {

@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_HOVER_BUTTON_H_
 
 #include <string>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -31,6 +33,7 @@ class StyledLabel;
 class View;
 }  // namespace views
 
+class HoverButtonTest;
 class HoverButtonController;
 class PageInfoBubbleViewBrowserTest;
 
@@ -75,10 +78,6 @@ class HoverButton : public views::LabelButton {
   void PreferredSizeChanged() override;
   void OnViewBoundsChanged(View* observed_view) override;
 
-  // Sets the title text to |text|, and updates the button size, when |title_|
-  // exists.
-  void SetTitleText(const std::u16string& text);
-
   // Sets the text style of the title considering the color of the background.
   // Passing |background_color| makes sure that the text color will not be
   // changed to a color that is not readable on the specified background.
@@ -91,15 +90,12 @@ class HoverButton : public views::LabelButton {
   void SetSubtitleTextStyle(int text_context,
                             views::style::TextStyle text_style);
 
-  // Updates the accessible name and tooltip of the button if necessary based on
-  // |title_| and |subtitle_| labels.
-  void SetTooltipAndAccessibleName();
-
-  views::StyledLabel* title() const { return title_; }
-
   PressedCallback& callback(base::PassKey<HoverButtonController>) {
     return callback_;
   }
+
+  views::StyledLabel* title() { return title_; }
+  const views::StyledLabel* title() const { return title_; }
 
  protected:
   // views::MenuButton:
@@ -116,12 +112,14 @@ class HoverButton : public views::LabelButton {
                            SetTitleLabel);
   FRIEND_TEST_ALL_PREFIXES(media_router::CastDialogSinkButtonTest,
                            SetStatusLabel);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionsMenuItemViewTest,
-                           NotifyClickExecutesAction);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionsMenuItemViewTest,
-                           UpdatesToDisplayCorrectActionTitle);
+  FRIEND_TEST_ALL_PREFIXES(HoverButtonTest,
+                           TooltipAndAccessibleName_DynamicTextUpdate);
   friend class AccountSelectionViewTestBase;
   friend class PageInfoBubbleViewBrowserTest;
+
+  // Updates the accessible name and tooltip of the button if necessary based on
+  // `title_` and `subtitle_` labels.
+  void UpdateTooltipAndAccessibleName();
 
   void OnPressed(const ui::Event& event);
 
@@ -132,6 +130,8 @@ class HoverButton : public views::LabelButton {
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::View> icon_view_ = nullptr;
   raw_ptr<views::View> secondary_view_ = nullptr;
+
+  std::vector<base::CallbackListSubscription> text_changed_subscriptions_;
 
   base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
       this};

@@ -165,12 +165,25 @@ HoverButton::HoverButton(PressedCallback callback,
   // Hover the whole button when hovering |title_|. This is OK because |title_|
   // will never have a link in it.
   title_->SetCanProcessEventsWithinSubtree(false);
+  // A title text update may result in the same label size and not trigger any
+  // observers. Thus, we need to add a callback that updates tooltip and
+  // accessible name when title text changes.
+  text_changed_subscriptions_.push_back(title_->AddTextChangedCallback(
+      base::BindRepeating(&HoverButton::UpdateTooltipAndAccessibleName,
+                          base::Unretained(this))));
 
   if (!subtitle.empty()) {
     auto subtitle_label = std::make_unique<views::Label>(
         subtitle, views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY);
     subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     subtitle_label->SetAutoColorReadabilityEnabled(false);
+    // A subtitle text update may result in the same label size and not trigger
+    // any observers. Thus, we need to add a callback that updates tooltip and
+    // accessible name when subtitle text changes.
+    text_changed_subscriptions_.push_back(
+        subtitle_label->AddTextChangedCallback(
+            base::BindRepeating(&HoverButton::UpdateTooltipAndAccessibleName,
+                                base::Unretained(this))));
     subtitle_ = label_wrapper->AddChildView(std::move(subtitle_label));
   }
 
@@ -233,15 +246,9 @@ void HoverButton::PreferredSizeChanged() {
 
 void HoverButton::OnViewBoundsChanged(View* observed_view) {
   LabelButton::OnViewBoundsChanged(observed_view);
-  if (observed_view == label_wrapper_)
-    SetTooltipAndAccessibleName();
-}
-
-void HoverButton::SetTitleText(const std::u16string& text) {
-  title_->SetText(text);
-  // Allow the styled label to assume its preferred size since the text size may
-  // have changed.
-  PreferredSizeChanged();
+  if (observed_view == label_wrapper_) {
+    UpdateTooltipAndAccessibleName();
+  }
 }
 
 void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
@@ -273,7 +280,7 @@ void HoverButton::SetSubtitleTextStyle(int text_context,
   PreferredSizeChanged();
 }
 
-void HoverButton::SetTooltipAndAccessibleName() {
+void HoverButton::UpdateTooltipAndAccessibleName() {
   const std::u16string accessible_name =
       subtitle_ == nullptr
           ? title_->GetText()

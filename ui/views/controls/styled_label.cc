@@ -256,6 +256,11 @@ void StyledLabel::SizeToFit(int fixed_width) {
   SetSize(size);
 }
 
+base::CallbackListSubscription StyledLabel::AddTextChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&text_, std::move(callback));
+}
+
 gfx::Size StyledLabel::CalculatePreferredSize() const {
   // Respect any existing size.  If there is none, default to a single line.
   return CalculatePreferredSize(
