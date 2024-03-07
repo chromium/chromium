@@ -286,7 +286,7 @@ Vector<uint8_t> EncodeShiftJis(StringView string,
     }
 
     DCHECK(range.first + 3 >= range.second);
-    for (auto* pair = range.first; pair < range.second; pair++) {
+    for (auto pair = range.first; pair < range.second; pair++) {
       uint16_t pointer = pair->second;
       if (pointer >= 8272 && pointer <= 8835)
         continue;
@@ -391,7 +391,7 @@ std::optional<UChar32> IndexGb18030RangesCodePoint(uint32_t pointer) {
     return 0xE7C7;
 
   const auto& gb18030_ranges = Gb18030Ranges();
-  auto* upper_bound =
+  auto upper_bound =
       std::upper_bound(gb18030_ranges.begin(), gb18030_ranges.end(),
                        MakeFirstAdapter(pointer), CompareFirst{});
   DCHECK(upper_bound != gb18030_ranges.begin());
@@ -404,7 +404,7 @@ std::optional<UChar32> IndexGb18030RangesCodePoint(uint32_t pointer) {
 uint32_t Gb18030RangesPointer(UChar32 code_point) {
   if (code_point == 0xE7C7)
     return 7457;
-  auto* upper_bound =
+  auto upper_bound =
       std::upper_bound(Gb18030Ranges().begin(), Gb18030Ranges().end(),
                        MakeSecondAdapter(code_point), CompareSecond{});
   DCHECK(upper_bound != Gb18030Ranges().begin());

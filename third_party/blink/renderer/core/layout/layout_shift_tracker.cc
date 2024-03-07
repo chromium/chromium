@@ -770,7 +770,7 @@ std::unique_ptr<TracedValue> LayoutShiftTracker::PerFrameTraceData(
 }
 
 void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
-  const Attribution* it = attributions_.begin();
+  auto it = attributions_.begin();
   if (!*it)
     return;
 
