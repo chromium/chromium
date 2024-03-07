@@ -62,14 +62,6 @@
 #error "Unsupported target abi"
 #endif
 
-#if !defined(PAGE_SIZE)
-#define PAGE_SIZE (1 << 12)
-#define PAGE_MASK (~(PAGE_SIZE - 1))
-#endif
-
-#define PAGE_START(x) ((x)&PAGE_MASK)
-#define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
-
 // Copied from //base/posix/eintr_wrapper.h to avoid depending on //base.
 #define HANDLE_EINTR(x)                                     \
   ({                                                        \
