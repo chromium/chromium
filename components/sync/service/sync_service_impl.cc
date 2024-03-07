@@ -1240,7 +1240,9 @@ void SyncServiceImpl::CryptoRequiredUserActionChanged() {
 
 void SyncServiceImpl::MaybeRecordTrustedVaultHistograms() {
   if (should_record_trusted_vault_error_shown_on_startup_ &&
-      crypto_.IsTrustedVaultKeyRequiredStateKnown() && IsSyncFeatureEnabled()) {
+      crypto_.IsTrustedVaultKeyRequiredStateKnown() &&
+      user_settings_->IsEncryptedDatatypeEnabled()) {
+    // If the key-required state is known, the engine must exist.
     DCHECK(engine_);
 
     should_record_trusted_vault_error_shown_on_startup_ = false;

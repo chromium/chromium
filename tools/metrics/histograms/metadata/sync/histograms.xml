@@ -1878,8 +1878,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether user action was required to fetch trusted vault keys upon
     first sync (i.e. after signin). Recorded only if trusted vault passphrase
-    type is used and sync-the-feature is enabled. Recorded at most once per
-    browser/profile lifetime.
+    type is used and at least one encrypted data type is enabled. Recorded at
+    most once per browser/profile lifetime.
+
+    Note: Before M124, this metric only included Sync-the-feature users. This
+    should mostly make a difference on iOS.
   </summary>
 </histogram>
 
@@ -1891,10 +1894,14 @@ chromium-metrics-reviews@google.com.
   <component>Services&gt;Sync</component>
   <summary>
     Records whether user action was required to fetch trusted vault keys upon
-    startup. Recorded only if trusted vault passphrase type is used and at most
-    once per browser/profile lifetime.
+    startup. Recorded only if trusted vault passphrase type is used and at least
+    one encrypted data type is enabled. Recorded at most once per
+    browser/profile lifetime.
 
     {TrustedVaultTimeSinceMigrationSuffix}
+
+    Note: Before M124, this metric only included Sync-the-feature users. This
+    should mostly make a difference on iOS.
   </summary>
   <token key="TrustedVaultTimeSinceMigrationSuffix"
       variants="TrustedVaultTimeSinceMigrationSuffix"/>
