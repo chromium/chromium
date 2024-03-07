@@ -29,6 +29,8 @@
 
 #define ARCH_X86_64 0
 
+#define AS_ARCH_LEVEL armv8.6-a+crc
+
 #define CONFIG_16BPC 1
 
 #define CONFIG_8BPC 1
@@ -39,6 +41,16 @@
 
 #define HAVE_ASM 1
 
+#define HAVE_AS_ARCHEXT_DOTPROD_DIRECTIVE 1
+
+#define HAVE_AS_ARCHEXT_I8MM_DIRECTIVE 1
+
+#define HAVE_AS_ARCHEXT_SVE2_DIRECTIVE 1
+
+#define HAVE_AS_ARCHEXT_SVE_DIRECTIVE 1
+
+#define HAVE_AS_ARCH_DIRECTIVE 1
+
 #define HAVE_AS_FUNC 0
 
 #define HAVE_C11_GENERIC 1
@@ -47,13 +59,21 @@
 
 #define HAVE_DLSYM 1
 
+#define HAVE_DOTPROD 1
+
 #define HAVE_GETAUXVAL 1
+
+#define HAVE_I8MM 1
 
 #define HAVE_POSIX_MEMALIGN 1
 
 // #define HAVE_PTHREAD_GETAFFINITY_NP 1 -- Controlled by Chomium
 
 // #define HAVE_PTHREAD_SETAFFINITY_NP 1 -- Controlled by Chomium
+
+#define HAVE_SVE 1
+
+#define HAVE_SVE2 1
 
 #define HAVE_UNISTD_H 1
 
