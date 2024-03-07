@@ -352,6 +352,22 @@ BASE_FEATURE(kBatchMainThreadReleaseCallbacks,
              "BatchMainThreadReleaseCallbacks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, snapshot the root surface when it is evicted.
+BASE_FEATURE(kSnapshotEvictedRootSurface,
+             "SnapshotEvictedRootSurface",
+// TODO(edcourtney): Enable for Android.
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
+// The scale to use for root surface snapshots on eviction. See
+// `kSnapshotEvictedRootSurface`.
+const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{
+    &kSnapshotEvictedRootSurface, "scale", 0.4};
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }
@@ -493,6 +509,13 @@ bool IsOnBeginFrameAcksEnabled() {
 bool ShouldDrawImmediatelyWhenInteractive() {
   return base::FeatureList::IsEnabled(
       features::kDrawImmediatelyWhenInteractive);
+}
+
+std::optional<double> SnapshotEvictedRootSurfaceScale() {
+  if (!base::FeatureList::IsEnabled(kSnapshotEvictedRootSurface)) {
+    return std::nullopt;
+  }
+  return kSnapshotEvictedRootSurfaceScale.Get();
 }
 
 }  // namespace features

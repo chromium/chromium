@@ -18,6 +18,7 @@
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "components/viz/service/frame_sinks/eviction_handler.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -205,10 +206,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   base::TimeDelta preferred_frame_interval_ =
       FrameRateDecider::UnspecifiedFrameInterval();
 
-  // If we evict the root surface, we want to push an empty compositor frame to
-  // it first to unref its resources. This requires a draw and swap to complete
-  // to actually unref.
-  LocalSurfaceId to_evict_on_next_draw_and_swap_ = LocalSurfaceId();
+  // See comments on `EvictionHandler`.
+  EvictionHandler eviction_handler_;
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   gfx::Size last_swap_pixel_size_;

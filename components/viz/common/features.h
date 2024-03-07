@@ -101,6 +101,10 @@ VIZ_COMMON_EXPORT extern const char kPredictorLsq[];
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawImmediatelyWhenInteractive);
 
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSnapshotEvictedRootSurface);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
+    kSnapshotEvictedRootSurfaceScale;
+
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
@@ -126,6 +130,7 @@ VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 VIZ_COMMON_EXPORT bool ShouldRendererAllocateImages();
 VIZ_COMMON_EXPORT bool IsOnBeginFrameAcksEnabled();
 VIZ_COMMON_EXPORT bool ShouldDrawImmediatelyWhenInteractive();
+VIZ_COMMON_EXPORT std::optional<double> SnapshotEvictedRootSurfaceScale();
 
 }  // namespace features
 
