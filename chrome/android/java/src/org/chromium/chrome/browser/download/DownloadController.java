@@ -6,13 +6,18 @@ package org.chromium.chrome.browser.download;
 
 import android.Manifest.permission;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -24,9 +29,22 @@ public class DownloadController {
      * download. This can be either a POST download or a GET download with authentication.
      */
     @CalledByNative
-    private static void onDownloadCompleted(DownloadInfo downloadInfo) {
+    private static void onDownloadCompleted(@Nullable Tab tab, DownloadInfo downloadInfo) {
         MediaStoreHelper.addImageToGalleryOnSDCard(
                 downloadInfo.getFilePath(), downloadInfo.getMimeType());
+        if (!PdfUtils.useAndroidPdfViewer()
+                || tab == null
+                || !downloadInfo.getMimeType().equals(MimeTypeUtils.PDF_MIME_TYPE)) {
+            return;
+        }
+        NativePage nativePage = tab.getNativePage();
+        if (nativePage == null || !nativePage.isPdf()) {
+            return;
+        }
+        assert nativePage instanceof PdfPage;
+        ((PdfPage) nativePage)
+                .onDownloadComplete(downloadInfo.getFileName(), downloadInfo.getFilePath());
+        // TODO(shuyng): Update tab title.
     }
 
     /**

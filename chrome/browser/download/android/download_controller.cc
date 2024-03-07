@@ -398,7 +398,16 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
     // download is in the COMPLETE state. Only handle one.
     item->RemoveObserver(this);
     // Call onDownloadCompleted
-    Java_DownloadController_onDownloadCompleted(env, j_item);
+    TabAndroid* tab = nullptr;
+    if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
+      content::WebContents* web_contents =
+          content::DownloadItemUtils::GetWebContents(item);
+      if (web_contents) {
+        tab = TabAndroid::FromWebContents(web_contents);
+      }
+    }
+    Java_DownloadController_onDownloadCompleted(
+        env, tab ? tab->GetJavaObject() : nullptr, j_item);
   }
 }
 
