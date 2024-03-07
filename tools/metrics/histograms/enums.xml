@@ -11287,7 +11287,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4858"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use"/>
   <int value="4859" label="V8PointerEvent_GetCoalescedEvents_Method"/>
-  <int value="4860" label="V8RTCEncodedVideoFrame_Constructor"/>
   <int value="4861" label="CSSFunctions"/>
   <int value="4862" label="CSSPageRule"/>
   <int value="4863"
