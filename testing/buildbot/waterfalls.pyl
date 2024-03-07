@@ -6142,7 +6142,7 @@
   {
     'name': 'client.openscreen.chromium',
     'machines': {
-      'chromium_linux64_debug': {
+      'chromium_linux_x64': {
         'additional_compile_targets': [
           'chrome/browser/media/router',
           'chrome/browser/media/router:openscreen_unittests',
@@ -6158,7 +6158,23 @@
           'components/openscreen_platform',
         ],
       },
-      'chromium_mac_debug': {
+      'chromium_mac_x64': {
+        'additional_compile_targets': [
+          'chrome/browser/media/router',
+          'chrome/browser/media/router:openscreen_unittests',
+          'chrome/browser/media/router:unittests',
+          'components/media_router/common/providers/cast/channel',
+          'components/media_router/common/providers/cast/channel:unit_tests',
+          'components/media_router/common/providers/cast/certificate',
+          'components/media_router/common/providers/cast/certificate:unit_tests',
+          'components/mirroring/browser',
+          'components/mirroring/service:mirroring_service',
+          'components/mirroring:mirroring_tests',
+          'components/mirroring:mirroring_unittests',
+          'components/openscreen_platform',
+        ],
+      },
+      'chromium_win_x64': {
         'additional_compile_targets': [
           'chrome/browser/media/router',
           'chrome/browser/media/router:openscreen_unittests',
