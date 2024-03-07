@@ -143,8 +143,6 @@ void UpdateManifestFetcher::OnUpdateManifestParsed(
               case UpdateManifest::JsonFormatError::kVersionsNotAnArray:
               case UpdateManifest::JsonFormatError::kVersionEntryNotADictionary:
                 return Error::kInvalidManifest;
-              case UpdateManifest::JsonFormatError::kNoApplicableVersion:
-                return Error::kNoApplicableVersion;
             }
           }));
 }

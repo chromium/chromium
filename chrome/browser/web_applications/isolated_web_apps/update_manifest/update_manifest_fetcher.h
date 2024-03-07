@@ -34,7 +34,6 @@ class UpdateManifestFetcher {
     kDownloadFailed,
     kInvalidJson,
     kInvalidManifest,
-    kNoApplicableVersion
   };
 
   using FetchCallback =

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
+#include <optional>
+
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -23,6 +25,7 @@ using testing::IsEmpty;
 using testing::IsFalse;
 using testing::IsTrue;
 using testing::Not;
+using testing::Optional;
 
 TEST(UpdateManifestTest, FailsToParseManifestWithoutKeys) {
   auto update_manifest = UpdateManifest::CreateFromJson(
@@ -53,13 +56,13 @@ TEST(UpdateManifestTest, FailsToParseManifestThatIsNotDict) {
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithEmptyVersions) {
-  auto update_manifest = UpdateManifest::CreateFromJson(
-      base::Value(base::Value::Dict().Set("versions", base::Value::List())),
-      GURL("https://c.de/um.json"));
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::Value::Dict().Set("versions", base::Value::List())),
+          GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(
-      update_manifest,
-      ErrorIs(Eq(UpdateManifest::JsonFormatError::kNoApplicableVersion)));
+  EXPECT_THAT(update_manifest.versions(), IsEmpty());
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithAdditionalKeys) {
@@ -75,9 +78,10 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalKeys) {
                                        .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre<UpdateManifest::VersionEntry>(
-                  {GURL("https://example.com"), base::Version("1.2.3")}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre<UpdateManifest::VersionEntry>(
+          {GURL("https://example.com"), base::Version("1.2.3"), {"default"}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithVersion) {
@@ -91,9 +95,10 @@ TEST(UpdateManifestTest, ParsesManifestWithVersion) {
                                   .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre<UpdateManifest::VersionEntry>(
-                  {GURL("https://example.com"), base::Version("1.2.3")}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre<UpdateManifest::VersionEntry>(
+          {GURL("https://example.com"), base::Version("1.2.3"), {"default"}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc) {
@@ -113,9 +118,11 @@ TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc) {
   EXPECT_THAT(
       update_manifest.versions(),
       ElementsAre(UpdateManifest::VersionEntry{GURL("https://c.de/sub/foo/bar"),
-                                               base::Version("1.2.3")},
+                                               base::Version("1.2.3"),
+                                               {"default"}},
                   UpdateManifest::VersionEntry{GURL("https://c.de/foo/bar"),
-                                               base::Version("2.3.4")}));
+                                               base::Version("2.3.4"),
+                                               {"default"}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc2) {
@@ -128,9 +135,10 @@ TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc2) {
                                                    .Set("src", "foo/bar")))),
                            GURL("https://c.de/um")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://c.de/foo/bar"), base::Version("1.2.3")}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{
+          GURL("https://c.de/foo/bar"), base::Version("1.2.3"), {"default"}}));
 }
 
 TEST(UpdateManifestTest, IgnoresVersionsWithoutUrl) {
@@ -146,9 +154,10 @@ TEST(UpdateManifestTest, IgnoresVersionsWithoutUrl) {
                               .Set("src", "https://example2.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example2.com"), base::Version("2.0.0")}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{
+          GURL("https://example2.com"), base::Version("2.0.0"), {"default"}}));
 }
 
 TEST(UpdateManifestTest, IgnoresVersionsWithoutSrc) {
@@ -164,9 +173,10 @@ TEST(UpdateManifestTest, IgnoresVersionsWithoutSrc) {
                               .Set("src", "https://example2.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example2.com"), base::Version("2.0.0")}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{
+          GURL("https://example2.com"), base::Version("2.0.0"), {"default"}}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithAdditionalVersionKeys) {
@@ -181,9 +191,92 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalVersionKeys) {
                                   .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{
+          GURL("https://example.com"), base::Version("1.2.3"), {"default"}}));
+}
+
+TEST(UpdateManifestTest, ParsesManifestWithVersionChannels) {
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::Value::Dict().Set(
+              "versions",
+              base::Value::List()
+                  .Append(base::Value::Dict()
+                              .Set("channels",
+                                   base::Value::List().Append("beta").Append(
+                                       "stable"))
+                              .Set("version", "1.2.3")
+                              .Set("src", "https://example.com"))
+                  .Append(base::Value::Dict()
+                              .Set("channels", base::Value::List())
+                              .Set("version", "1.2.4")
+                              .Set("src", "https://example.com")))),
+          GURL("https://c.de/um.json")));
+
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{GURL("https://example.com"),
+                                               base::Version("1.2.3"),
+                                               {"beta", "stable"}},
+                  UpdateManifest::VersionEntry{
+                      GURL("https://example.com"), base::Version("1.2.4"),
+                      // If the Update Manifest contains "channels: []", then we
+                      // do _not_ automatically add "default" to it.
+                      /*channels=*/{}}));
+}
+
+TEST(UpdateManifestTest, IgnoresChannelOrder) {
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest1,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::Value::Dict().Set(
+              "versions",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("channels",
+                           base::Value::List().Append("beta").Append("stable"))
+                      .Set("version", "1.2.3")
+                      .Set("src", "https://example.com")))),
+          GURL("https://c.de/um.json")));
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest2,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::Value::Dict().Set(
+              "versions",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("channels",
+                           base::Value::List().Append("stable").Append("beta"))
+                      .Set("version", "1.2.3")
+                      .Set("src", "https://example.com")))),
+          GURL("https://c.de/um.json")));
+
+  EXPECT_THAT(update_manifest1.versions(), Eq(update_manifest2.versions()));
+  EXPECT_THAT(update_manifest1.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example.com"), base::Version("1.2.3")}));
+                  GURL("https://example.com"),
+                  base::Version("1.2.3"),
+                  // Order should not matter here, because it is a set.
+                  {"stable", "beta"}}));
+}
+
+TEST(UpdateManifestTest, DoesNotAllowEmptyChannels) {
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::Value::Dict().Set(
+              "versions",
+              base::Value::List().Append(
+                  base::Value::Dict()
+                      .Set("channels",
+                           base::Value::List().Append("").Append("stable"))
+                      .Set("version", "1.2.3")
+                      .Set("src", "https://example.com")))),
+          GURL("https://c.de/um.json")));
+  EXPECT_THAT(update_manifest.versions(), IsEmpty());
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
@@ -202,10 +295,11 @@ TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
 
   EXPECT_THAT(
       update_manifest.versions(),
-      ElementsAre(UpdateManifest::VersionEntry{GURL("https://example.com"),
-                                               base::Version("1.2.3")},
-                  UpdateManifest::VersionEntry{GURL("http://localhost"),
-                                               base::Version("3.0.0")}));
+      ElementsAre(
+          UpdateManifest::VersionEntry{
+              GURL("https://example.com"), base::Version("1.2.3"), {"default"}},
+          UpdateManifest::VersionEntry{
+              GURL("http://localhost"), base::Version("3.0.0"), {"default"}}));
 }
 
 TEST(UpdateManifestTest, OverwritesRepeatedEntriesWithSameVersion) {
@@ -233,10 +327,11 @@ TEST(UpdateManifestTest, OverwritesRepeatedEntriesWithSameVersion) {
 
   EXPECT_THAT(
       update_manifest.versions(),
-      ElementsAre(UpdateManifest::VersionEntry{GURL("https://v3-3.com"),
-                                               base::Version("3.0.0")},
-                  UpdateManifest::VersionEntry{GURL("https://v5-2.com"),
-                                               base::Version("5.0.0")}));
+      ElementsAre(
+          UpdateManifest::VersionEntry{
+              GURL("https://v3-3.com"), base::Version("3.0.0"), {"default"}},
+          UpdateManifest::VersionEntry{
+              GURL("https://v5-2.com"), base::Version("5.0.0"), {"default"}}));
 }
 
 class UpdateManifestValidVersionTest
@@ -253,9 +348,11 @@ TEST_P(UpdateManifestValidVersionTest, ParsesValidVersion) {
                                   .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example.com"), base::Version(GetParam())}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{GURL("https://example.com"),
+                                               base::Version(GetParam()),
+                                               {"default"}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -278,9 +375,11 @@ TEST_P(UpdateManifestInvalidVersionTest, IgnoresEntriesWithInvalidVersions) {
                                           .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example.com"), base::Version("99.99.99")}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{GURL("https://example.com"),
+                                               base::Version("99.99.99"),
+                                               {"default"}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -301,7 +400,7 @@ TEST_P(UpdateManifestValidSrcTest, ParsesValidSrc) {
 
   EXPECT_THAT(update_manifest.versions(),
               ElementsAre(UpdateManifest::VersionEntry{
-                  GURL(GetParam()), base::Version("1.0.0")}));
+                  GURL(GetParam()), base::Version("1.0.0"), {"default"}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -327,9 +426,11 @@ TEST_P(UpdateManifestInvalidSrcTest, IgnoresEntriesWithInvalidSrc) {
                                           .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(update_manifest.versions(),
-              ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example.com"), base::Version("99.99.99")}));
+  EXPECT_THAT(
+      update_manifest.versions(),
+      ElementsAre(UpdateManifest::VersionEntry{GURL("https://example.com"),
+                                               base::Version("99.99.99"),
+                                               {"default"}}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -356,9 +457,11 @@ TEST_F(UpdateManifestSecureOriginAllowlistTest, CanSetHttpOriginsAsTrusted) {
                                      .Set("src", "http://example.com"))));
 
   {
-    auto update_manifest = UpdateManifest::CreateFromJson(
-        update_manifest_json, GURL("https://c.de/um.json"));
-    EXPECT_THAT(update_manifest, Not(HasValue()));
+    ASSERT_OK_AND_ASSIGN(
+        auto update_manifest,
+        UpdateManifest::CreateFromJson(update_manifest_json,
+                                       GURL("https://c.de/um.json")));
+    EXPECT_THAT(update_manifest.versions(), IsEmpty());
   }
 
   std::vector<std::string> rejected_patterns;
@@ -371,13 +474,14 @@ TEST_F(UpdateManifestSecureOriginAllowlistTest, CanSetHttpOriginsAsTrusted) {
         auto update_manifest,
         UpdateManifest::CreateFromJson(update_manifest_json,
                                        GURL("https://c.de/um.json")));
-    EXPECT_THAT(update_manifest.versions(),
-                ElementsAre(UpdateManifest::VersionEntry{
-                    GURL("http://example.com"), base::Version("1.0.0")}));
+    EXPECT_THAT(
+        update_manifest.versions(),
+        ElementsAre(UpdateManifest::VersionEntry{
+            GURL("http://example.com"), base::Version("1.0.0"), {"default"}}));
   }
 }
 
-TEST(GetLatestVersionEntryTest, CalculatesLatestVersionCorrectly) {
+TEST(GetLatestVersionTest, CalculatesLatestVersionCorrectly) {
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(
@@ -400,9 +504,51 @@ TEST(GetLatestVersionEntryTest, CalculatesLatestVersionCorrectly) {
                                           .Set("src", "https://v4.com")))),
           GURL("https://c.de/um.json")));
 
-  EXPECT_THAT(GetLatestVersionEntry(update_manifest),
-              Eq(UpdateManifest::VersionEntry{GURL("https://v10.com"),
-                                              base::Version("10.11.0")}));
+  EXPECT_THAT(
+      update_manifest.GetLatestVersion("default"),
+      Optional(Eq(UpdateManifest::VersionEntry{
+          GURL("https://v10.com"), base::Version("10.11.0"), {"default"}})));
+
+  EXPECT_THAT(update_manifest.GetLatestVersion("non-existing"),
+              Eq(std::nullopt));
+}
+
+TEST(GetLatestVersionTest, CalculatesLatestVersionForChannel) {
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(
+          base::Value(base::Value::Dict().Set(
+              "versions",
+              base::Value::List()
+                  .Append(base::Value::Dict()
+                              .Set("version", "3.99.123")
+                              .Set("src", "https://v3.com")
+                              .Set("channels",
+                                   base::Value::List().Append("default")))
+                  .Append(base::Value::Dict()
+                              .Set("version", "5.6.0")
+                              .Set("src", "https://v5.com")
+                              .Set("channels",
+                                   base::Value::List().Append("default").Append(
+                                       "beta")))
+                  .Append(base::Value::Dict()
+                              .Set("version", "10.3.0")
+                              .Set("src", "https://v10.com"))
+                  .Append(base::Value::Dict()
+                              .Set("version", "10.11.0")
+                              .Set("src", "https://v10.com"))
+                  .Append(base::Value::Dict()
+                              .Set("version", "4.5.0")
+                              .Set("src", "https://v4.com")))),
+          GURL("https://c.de/um.json")));
+
+  EXPECT_THAT(
+      update_manifest.GetLatestVersion("default"),
+      Optional(Eq(UpdateManifest::VersionEntry{
+          GURL("https://v10.com"), base::Version("10.11.0"), {"default"}})));
+
+  EXPECT_THAT(update_manifest.GetLatestVersion("non-existing"),
+              Eq(std::nullopt));
 }
 
 }  // namespace

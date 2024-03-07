@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
@@ -135,38 +136,43 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
-    base::expected<UpdateManifest, UpdateManifestFetcher::Error>
-        update_manifest) {
-  if (!update_manifest.has_value()) {
-    switch (update_manifest.error()) {
-      case UpdateManifestFetcher::Error::kDownloadFailed:
-        FailWith(Error::kUpdateManifestDownloadFailed);
-        break;
-      case UpdateManifestFetcher::Error::kInvalidJson:
-        FailWith(Error::kUpdateManifestInvalidJson);
-        break;
-      case UpdateManifestFetcher::Error::kInvalidManifest:
-        FailWith(Error::kUpdateManifestInvalidManifest);
-        break;
-      case UpdateManifestFetcher::Error::kNoApplicableVersion:
-        FailWith(Error::kUpdateManifestNoApplicableVersion);
-        break;
-    }
+    base::expected<UpdateManifest, UpdateManifestFetcher::Error> fetch_result) {
+  ASSIGN_OR_RETURN(UpdateManifest update_manifest, fetch_result,
+                   [&](UpdateManifestFetcher::Error error) {
+                     switch (error) {
+                       case UpdateManifestFetcher::Error::kDownloadFailed:
+                         FailWith(Error::kUpdateManifestDownloadFailed);
+                         break;
+                       case UpdateManifestFetcher::Error::kInvalidJson:
+                         FailWith(Error::kUpdateManifestInvalidJson);
+                         break;
+                       case UpdateManifestFetcher::Error::kInvalidManifest:
+                         FailWith(Error::kUpdateManifestInvalidManifest);
+                         break;
+                     }
+                   });
+
+  std::optional<UpdateManifest::VersionEntry> latest_version_entry =
+      update_manifest.GetLatestVersion(
+          // TODO(b/294481776): In the future, we will support channel selection
+          // via policy and by the end user for unmanaged users. For now, we
+          // always use the "default" channel.
+          UpdateManifest::kDefaultUpdateChannelId);
+  if (!latest_version_entry.has_value()) {
+    FailWith(Error::kUpdateManifestNoApplicableVersion);
     return;
   }
 
-  UpdateManifest::VersionEntry latest_version_entry =
-      GetLatestVersionEntry(*update_manifest);
-
   base::Value::List available_versions;
-  for (const auto& version_entry : update_manifest->versions()) {
+  for (const auto& version_entry : update_manifest.versions()) {
     available_versions.Append(version_entry.version().GetString());
   }
   debug_log_.Set("available_versions", std::move(available_versions));
-  debug_log_.Set("latest_version",
-                 base::Value::Dict()
-                     .Set("version", latest_version_entry.version().GetString())
-                     .Set("src", latest_version_entry.src().spec()));
+  debug_log_.Set(
+      "latest_version",
+      base::Value::Dict()
+          .Set("version", latest_version_entry->version().GetString())
+          .Set("src", latest_version_entry->src().spec()));
 
   const WebApp* web_app = registrar_->GetAppById(url_info_.app_id());
   if (!web_app) {
@@ -186,7 +192,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   if (isolation_data->pending_update_info().has_value() &&
       isolation_data->pending_update_info()->version ==
-          latest_version_entry.version()) {
+          latest_version_entry->version()) {
     // If we already have a pending update for this version, stop. However, we
     // do allow overwriting a pending update with a different pending update
     // version.
@@ -200,13 +206,13 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   // is not an issue, as `IsolatedWebAppUpdatePrepareAndStoreCommand` will
   // re-check that the new version is indeed newer than the currently installed
   // version.
-  if (currently_installed_version >= latest_version_entry.version()) {
+  if (currently_installed_version >= latest_version_entry->version()) {
     // Never downgrade apps for now.
     SucceedWith(Success::kNoUpdateFound);
     return;
   }
 
-  GetDownloadPath(std::move(latest_version_entry));
+  GetDownloadPath(std::move(*latest_version_entry));
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::GetDownloadPath(

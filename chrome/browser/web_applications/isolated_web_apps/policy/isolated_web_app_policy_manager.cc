@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
@@ -240,33 +241,37 @@ void BulkIwaInstaller::SetResultForAllAndFinish(InstallResult result) {
 }
 
 void BulkIwaInstaller::OnUpdateManifestParsed(
-    base::expected<UpdateManifest, UpdateManifestFetcher::Error>
-        update_manifest) {
+    base::expected<UpdateManifest, UpdateManifestFetcher::Error> fetch_result) {
   current_update_manifest_fetcher_.reset();
-  if (!update_manifest.has_value()) {
-    switch (update_manifest.error()) {
-      case UpdateManifestFetcher::Error::kDownloadFailed:
-        FinishWithResult(InstallResult(
-            InstallResult::Type::kErrorUpdateManifestDownloadFailed));
-        break;
-      case UpdateManifestFetcher::Error::kInvalidJson:
-      case UpdateManifestFetcher::Error::kInvalidManifest:
-        FinishWithResult(InstallResult(
-            InstallResult::Type::kErrorUpdateManifestParsingFailed));
-        break;
-      case UpdateManifestFetcher::Error::kNoApplicableVersion:
-        FinishWithResult(InstallResult(
-            InstallResult::Type::kErrorWebBundleUrlCantBeDetermined));
-        break;
-    }
+  ASSIGN_OR_RETURN(
+      UpdateManifest update_manifest, fetch_result,
+      [&](UpdateManifestFetcher::Error error) {
+        switch (error) {
+          case UpdateManifestFetcher::Error::kDownloadFailed:
+            FinishWithResult(InstallResult(
+                InstallResult::Type::kErrorUpdateManifestDownloadFailed));
+            break;
+          case UpdateManifestFetcher::Error::kInvalidJson:
+          case UpdateManifestFetcher::Error::kInvalidManifest:
+            FinishWithResult(InstallResult(
+                InstallResult::Type::kErrorUpdateManifestParsingFailed));
+            break;
+        }
+      });
+
+  std::optional<UpdateManifest::VersionEntry> latest_version =
+      update_manifest.GetLatestVersion(
+          // TODO(b/294481776): In the future, we will support channel selection
+          // via policy. For now, we always use the "default" channel.
+          UpdateManifest::kDefaultUpdateChannelId);
+  if (!latest_version.has_value()) {
+    FinishWithResult(
+        InstallResult(InstallResult::Type::kErrorWebBundleUrlCantBeDetermined));
     return;
   }
 
-  UpdateManifest::VersionEntry latest_version =
-      GetLatestVersionEntry(*update_manifest);
-
   current_app_->set_web_bundle_url_and_expected_version(
-      latest_version.src(), latest_version.version());
+      latest_version->src(), latest_version->version());
   CreateIwaDirectory();
 }
 

@@ -83,7 +83,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
 
   void OnUpdateManifestFetched(
       base::expected<UpdateManifest, UpdateManifestFetcher::Error>
-          update_manifest);
+          fetch_result);
 
   void GetDownloadPath(UpdateManifest::VersionEntry version_entry);
 

@@ -135,7 +135,7 @@ class BulkIwaInstaller {
   // Callback when the update manifest has been downloaded and parsed.
   void OnUpdateManifestParsed(
       base::expected<UpdateManifest, UpdateManifestFetcher::Error>
-          update_manifest);
+          fetch_result);
 
   // Create a new directory for the exact instance of the IWA.
   void CreateIwaDirectory();

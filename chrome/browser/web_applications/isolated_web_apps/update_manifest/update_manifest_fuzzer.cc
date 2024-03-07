@@ -163,6 +163,15 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                       "blah": 123
                     }
                   ]
+                })"),
+                *base::JSONReader::Read(R"({
+                  "versions": [
+                    {
+                      "version": "1.0.0",
+                      "url": "https://example.com/bundle.swbn",
+                      "channels": ["test", "stable", "test"]
+                    }
+                  ]
                 })")});
 }  // namespace
 }  // namespace web_app
