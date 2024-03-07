@@ -171,9 +171,8 @@ void NotificationPlatformBridgeMac::GetDisplayedForOrigin(
 
   std::vector<webapps::AppId> web_app_ids;
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
-    web_app::WebAppProvider* web_app_provider =
-        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-    if (web_app_provider) {
+    if (auto* web_app_provider =
+            web_app::WebAppProvider::GetForWebApps(profile)) {
       web_app::WebAppRegistrar& registrar =
           web_app_provider->registrar_unsafe();
       for (const webapps::AppId& app_id : registrar.GetAppIds()) {
