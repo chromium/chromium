@@ -152,11 +152,19 @@ public class UmaUtils {
     }
 
     /**
-     * Determines if this client is eligible to send metrics and crashes based on sampling. If it
-     * is, and there was user consent, then metrics and crashes would be reported
+     * Determines if this client is eligible to send metrics based on sampling. If it is, and there
+     * was user consent, then metrics should be reported.
      */
-    public static boolean isClientInMetricsReportingSample() {
-        return UmaUtilsJni.get().isClientInMetricsReportingSample();
+    public static boolean isClientInSampleForMetrics() {
+        return UmaUtilsJni.get().isClientInSampleForMetrics();
+    }
+
+    /**
+     * Determines if this client is eligible to send crashes based on sampling. If it is, and there
+     * was user consent, then crashes should be reported.
+     */
+    public static boolean isClientInSampleForCrashes() {
+        return UmaUtilsJni.get().isClientInSampleForCrashes();
     }
 
     /** Records various levels of background restrictions imposed by android on chrome. */
@@ -250,7 +258,9 @@ public class UmaUtils {
 
     @NativeMethods
     interface Natives {
-        boolean isClientInMetricsReportingSample();
+        boolean isClientInSampleForMetrics();
+
+        boolean isClientInSampleForCrashes();
 
         void recordMetricsReportingDefaultOptIn(boolean optIn);
     }

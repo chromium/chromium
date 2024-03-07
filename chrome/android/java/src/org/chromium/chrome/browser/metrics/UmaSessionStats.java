@@ -222,7 +222,11 @@ public class UmaSessionStats {
 
         // Update the metrics sampling state so it's available before the native feature list is
         // available.
-        prefManager.setClientInMetricsSample(UmaUtils.isClientInMetricsReportingSample());
+        prefManager.setClientInSampleForMetrics(UmaUtils.isClientInSampleForMetrics());
+
+        // Update the crash sampling state so it's available before the native feature list is
+        // available.
+        prefManager.setClientInSampleForCrashes(UmaUtils.isClientInSampleForCrashes());
 
         // Make sure preferences are in sync.
         prefManager.syncUsageAndCrashReportingPrefs();

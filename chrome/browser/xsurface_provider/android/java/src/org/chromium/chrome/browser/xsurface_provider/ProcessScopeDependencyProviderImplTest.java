@@ -50,10 +50,18 @@ public final class ProcessScopeDependencyProviderImplTest {
                 public void syncUsageAndCrashReportingPrefs() {}
 
                 @Override
-                public void setClientInMetricsSample(boolean inSample) {}
+                public void setClientInSampleForMetrics(boolean inSample) {}
 
                 @Override
-                public boolean isClientInMetricsSample() {
+                public boolean isClientInSampleForMetrics() {
+                    return true;
+                }
+
+                @Override
+                public void setClientInSampleForCrashes(boolean inSample) {}
+
+                @Override
+                public boolean isClientInSampleForCrashes() {
                     return true;
                 }
 

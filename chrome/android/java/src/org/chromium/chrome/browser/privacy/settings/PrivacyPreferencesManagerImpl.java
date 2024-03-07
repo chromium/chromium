@@ -162,16 +162,31 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     }
 
     @Override
-    public void setClientInMetricsSample(boolean inSample) {
-        mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE, inSample);
+    public void setClientInSampleForMetrics(boolean inSample) {
+        mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_IN_SAMPLE_FOR_METRICS, inSample);
     }
 
     @Override
-    public boolean isClientInMetricsSample() {
+    public boolean isClientInSampleForMetrics() {
+        // The default value is true to avoid sampling out metrics that occur before native code has
+        // been initialized on first run. I.e., clients are presumed to be in-sample until we know
+        // otherwise. Note that metrics reporting is also gated on the user's pref, not just being
+        // in-sample.
+        return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_IN_SAMPLE_FOR_METRICS, true);
+    }
+
+    @Override
+    public void setClientInSampleForCrashes(boolean inSampleForCrash) {
+        mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_IN_SAMPLE_FOR_CRASHES, inSampleForCrash);
+    }
+
+    @Override
+    public boolean isClientInSampleForCrashes() {
         // The default value is true to avoid sampling out crashes that occur before native code has
-        // been initialized on first run. We'd rather have some extra crashes than none from that
-        // time.
-        return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE, true);
+        // been initialized on first run.  I.e., clients are presumed to be in-sample until we know
+        // otherwise. Note that crash reporting is also gated on the user's pref, not just being
+        // in-sample.
+        return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_IN_SAMPLE_FOR_CRASHES, true);
     }
 
     @Override

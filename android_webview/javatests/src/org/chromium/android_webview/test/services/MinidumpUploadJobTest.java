@@ -263,16 +263,16 @@ public class MinidumpUploadJobTest {
 
             return new MockCrashReportingPermissionManager() {
                 {
-                    // This setup ensures we depend on isClientInMetricsSample().
+                    // This setup ensures we depend on isClientInSampleForCrashes().
                     mIsUserPermitted = true;
                     mIsNetworkAvailable = true;
                     mIsEnabledForTests = false;
                 }
 
                 @Override
-                public boolean isClientInMetricsSample() {
-                    // Ensure that we use the real implementation of isClientInMetricsSample.
-                    boolean isSampled = realPermissionManager.isClientInMetricsSample();
+                public boolean isClientInSampleForCrashes() {
+                    // Ensure that we use the real implementation of isClientInSampleForCrashes.
+                    boolean isSampled = realPermissionManager.isClientInSampleForCrashes();
                     Assert.assertEquals(mIsSampled, isSampled);
                     return isSampled;
                 }

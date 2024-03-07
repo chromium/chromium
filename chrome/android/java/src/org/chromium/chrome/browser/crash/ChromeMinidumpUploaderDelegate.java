@@ -17,7 +17,7 @@ import java.io.File;
 /** Chrome-specific implementations for minidump uploading logic. */
 public class ChromeMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
     // PersistableBundle keys:
-    static final String IS_CLIENT_IN_METRICS_SAMPLE = "isClientInMetricsSample";
+    static final String IS_CLIENT_IN_SAMPLE_FOR_CRASHES = "isClientInSampleForCrashes";
     static final String IS_UPLOAD_ENABLED_FOR_TESTS = "isUploadEnabledForTests";
 
     /** The application context in which minidump uploads are running. */
@@ -53,8 +53,8 @@ public class ChromeMinidumpUploaderDelegate implements MinidumpUploaderDelegate 
     public CrashReportingPermissionManager createCrashReportingPermissionManager() {
         return new CrashReportingPermissionManager() {
             @Override
-            public boolean isClientInMetricsSample() {
-                return mPermissions.getBoolean(IS_CLIENT_IN_METRICS_SAMPLE, true);
+            public boolean isClientInSampleForCrashes() {
+                return mPermissions.getBoolean(IS_CLIENT_IN_SAMPLE_FOR_CRASHES, true);
             }
 
             @Override

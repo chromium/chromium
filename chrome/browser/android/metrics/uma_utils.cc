@@ -30,8 +30,12 @@ base::TimeTicks GetProcessStartTime() {
       Java_UmaUtils_getProcessStartTime(env));
 }
 
-static jboolean JNI_UmaUtils_IsClientInMetricsReportingSample(JNIEnv* env) {
-  return ChromeMetricsServicesManagerClient::IsClientInSample();
+static jboolean JNI_UmaUtils_IsClientInSampleForMetrics(JNIEnv* env) {
+  return ChromeMetricsServicesManagerClient::IsClientInSampleForMetrics();
+}
+
+static jboolean JNI_UmaUtils_IsClientInSampleForCrashes(JNIEnv* env) {
+  return ChromeMetricsServicesManagerClient::IsClientInSampleForCrashes();
 }
 
 static void JNI_UmaUtils_RecordMetricsReportingDefaultOptIn(

@@ -56,12 +56,12 @@ class ChromeMetricsServicesManagerClient
 
   // Determines if this client is eligible to send metrics. If they are, and
   // there was user consent, then metrics and crashes would be reported.
-  static bool IsClientInSample();
+  static bool IsClientInSampleForMetrics();
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   // Same as above, but specifically just for crash reporting.
-  static bool IsClientInSampleForCrash();
-#endif  // BUILDFLAG(IS_WIN)
+  static bool IsClientInSampleForCrashes();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
   // Gets the sample rate for in-sample clients. If the sample rate is not
   // defined, returns false, and |rate| is unchanged, otherwise returns true,

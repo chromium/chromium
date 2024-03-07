@@ -224,25 +224,54 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManagerForTesting() {
 }
 
 // static
-bool ChromeMetricsServicesManagerClient::IsClientInSample() {
+bool ChromeMetricsServicesManagerClient::IsClientInSampleForMetrics() {
   return IsClientInSampleImpl(g_browser_process->local_state());
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // static
-bool ChromeMetricsServicesManagerClient::IsClientInSampleForCrash() {
-  // If the kMetricsReportingFeature is disabled, we don't send crashes.
+bool ChromeMetricsServicesManagerClient::IsClientInSampleForCrashes() {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, there are two field trials that, together, drive metrics and
+  // crash reporting. The determination of which trial to use is based on
+  // whether the client went through the FRE before or after the fix to
+  // crbug.com/1306481 was deployed.
+  //
+  // The PostFREFixSamplingTrial controls crash and metrics sampling for clients
+  // which went through the FRE after the FRE fix was deployed. These clients
+  // use the PostFREFixMetricsReortingFeature and its "disable_crashes" feature
+  // parameter to control whether the client is in-sample for crash reporting.
+  if (ShouldUsePostFREFixSamplingTrial(g_browser_process->local_state())) {
+    // If reporting isn't enabled at all, then we can return early.
+    if (!base::FeatureList::IsEnabled(
+            metrics::internal::kPostFREFixMetricsReportingFeature)) {
+      return false;
+    }
+    // Otherwise, send crashes if crash reporting is NOT disabled. By default
+    // crash reporting is not disabled.
+    const bool crashes_are_disabled = base::GetFieldTrialParamByFeatureAsBool(
+        metrics::internal::kPostFREFixMetricsReportingFeature,
+        "disable_crashes", false);
+    return !crashes_are_disabled;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // If this is a Windows client, or if this is an Android client that went
+  // through the FRE before the FRE fix was deployed, then this client uses
+  // the MetricsReportingFeature and its "disable_crashes" parameter to control
+  // whether the client is in-sample for crash reporting.
+
+  // If reporting isn't enabled at all, then we can return early.
   if (!base::FeatureList::IsEnabled(
           metrics::internal::kMetricsReportingFeature)) {
     return false;
   }
-  // Note we default to disabled being off, i.e. enabled as long as the
-  // feature is on.
-  bool crashpad_disabled = base::GetFieldTrialParamByFeatureAsBool(
+
+  const bool crashes_are_disabled = base::GetFieldTrialParamByFeatureAsBool(
       metrics::internal::kMetricsReportingFeature, "disable_crashes", false);
-  return !crashpad_disabled;
+  return !crashes_are_disabled;
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 // static
 bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
@@ -426,7 +455,7 @@ void ChromeMetricsServicesManagerClient::UpdateRunningServices(
   // value and the value sent from SetUploadConsent below.
   // We use IsClientInSampleForCrash() which checks the feature for if crashes
   // are allowed.
-  install_static::SetCollectStatsInSample(IsClientInSampleForCrash());
+  install_static::SetCollectStatsInSample(IsClientInSampleForCrashes());
 
   // The intent here is to set the value of the consent. However, since right
   // now we have may_record which is based off both consent and the Feature
