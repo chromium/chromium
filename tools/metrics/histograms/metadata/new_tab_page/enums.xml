@@ -304,6 +304,9 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Show shortcuts toggle clicked"/>
   <int value="18" label="Show cards toggle clicked"/>
   <int value="19" label="Wallpaper search opened from Appearance page."/>
+  <int value="20" label="Default color clicked"/>
+  <int value="21" label="Chrome color clicked"/>
+  <int value="22" label="Custom color clicked"/>
 </enum>
 
 <enum name="NTPCustomizedFeatures">

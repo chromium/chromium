@@ -24,6 +24,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './chrome_colors.html.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 
 export interface ChromeColorsElement {
   $: {
@@ -173,17 +174,20 @@ export class ChromeColorsElement extends PolymerElement {
   }
 
   private onDefaultColorClick_() {
+    recordCustomizeChromeAction(CustomizeChromeAction.DEFAULT_COLOR_CLICKED);
     this.pageHandler_.setDefaultColor();
     this.pageHandler_.removeBackgroundImage();
   }
 
   private onChromeColorClick_(e: DomRepeatEvent<ChromeColor>) {
+    recordCustomizeChromeAction(CustomizeChromeAction.CHROME_COLOR_CLICKED);
     this.pageHandler_.setSeedColor(
         e.model.item.seed, BrowserColorVariant.kTonalSpot);
     this.pageHandler_.removeBackgroundImage();
   }
 
   private onCustomColorClick_() {
+    recordCustomizeChromeAction(CustomizeChromeAction.CUSTOM_COLOR_CLICKED);
     this.$.colorPicker.focus();
     this.$.colorPicker.click();
   }

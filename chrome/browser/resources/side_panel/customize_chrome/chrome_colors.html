@@ -78,13 +78,13 @@
         aria-label$="$i18n{colorPickerLabel}"
         role="button"
         aria-current$="[[boolToString_(isCustomColorSelected_)]]"
-        tabindex="0"
-        on-click="onCustomColorClick_">
+        tabindex="0">
       <cr-theme-color
           id="customColor"
           background-color="[[customColor_.background]]"
           foreground-color="[[customColor_.foreground]]"
-          checked="[[isCustomColorSelected_]]">
+          checked="[[isCustomColorSelected_]]"
+          on-click="onCustomColorClick_">
       </cr-theme-color>
       <div id="colorPickerIcon"></div>
       <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
