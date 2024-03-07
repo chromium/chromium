@@ -55,8 +55,8 @@ class GerritAPITest(unittest.TestCase):
         host = MockHost()
         url = ('https://chromium-review.googlesource.com/changes/'
                '?q=project:"chromium%2Fsrc"+branch:main+is:open+-is:wip'
-               '&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
-               '&o=DETAILED_ACCOUNTS&n=500')
+               '&n=500&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
+               '&o=DETAILED_ACCOUNTS')
         payload = []
         host.web.urls = {
             url: RESPONSE_PREFIX + b'\n' + json.dumps(payload).encode(),
