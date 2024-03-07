@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -181,8 +182,14 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
 // will fail if the window loose focus before it finished.
 // The test use kLandingURL as the target, not using any functionality from
 // this page.
+// TODO(crbug.com/41487061): Test is flaky on Mac ARM64 builders.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_VerifyCopiedUrlReferrerChain DISABLED_VerifyCopiedUrlReferrerChain
+#else
+#define MAYBE_VerifyCopiedUrlReferrerChain VerifyCopiedUrlReferrerChain
+#endif
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
-                       VerifyCopiedUrlReferrerChain) {
+                       MAYBE_VerifyCopiedUrlReferrerChain) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kCopyReferrerUrl)));
   CopyUrlToWebClipboard(embedded_test_server()->GetURL(kLandingURL).spec());
@@ -292,8 +299,16 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 // will fail if the window loose focus before it finished.
 // The test use kLandingURL as the target, not using any functionality from
 // this page.
+// TODO(crbug.com/41487061): Test is flaky on Mac Arm64 builders.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_VerifyCopiedInnerUrlReferrerChain \
+  DISABLED_VerifyCopiedInnerUrlReferrerChain
+#else
+#define MAYBE_VerifyCopiedInnerUrlReferrerChain \
+  VerifyCopiedInnerUrlReferrerChain
+#endif
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
-                       VerifyCopiedInnerUrlReferrerChain) {
+                       MAYBE_VerifyCopiedInnerUrlReferrerChain) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kCopyReferrerUrl)));
   CopyUrlToWebClipboard(embedded_test_server()->GetURL(kLandingURL).spec(),
