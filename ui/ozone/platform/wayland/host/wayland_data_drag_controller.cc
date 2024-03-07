@@ -16,8 +16,10 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -387,7 +389,11 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
   } else {
     // Otherwise, we are about to accept data dragged from another application.
     // Reading the data may take some time so set |state_| to |kFetching|, and
-    // schedule a task to do the actual data fetching.
+    // schedule a task to do the actual data fetching. Also, as a safeguard
+    // against buggy/malicious compositors, before posting a new fetch task
+    // cancel the previous one, if any, so preventing from flooding the thread
+    // pool.
+    CancelDataFetchingIfNeeded();
     state_ = State::kFetching;
     auto cancel_flag = base::MakeRefCounted<CancelFlag>();
     PostDataFetchingTask(location, timestamp, cancel_flag);
@@ -434,7 +440,7 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
 }
 
 void WaylandDataDragController::OnDragLeave(base::TimeTicks timestamp) {
-  VLOG(2) << __FUNCTION__ << " window=" << !!window_
+  VLOG(1) << __FUNCTION__ << " window=" << !!window_
           << " fetching=" << (state_ == State::kFetching)
           << " is_source=" << IsDragSource();
 
@@ -559,10 +565,10 @@ void WaylandDataDragController::PostDataFetchingTask(
       continue;
     }
 
-    VLOG(1) << __func__ << " requests to receive data for " << mime_type;
+    VLOG(1) << __func__ << " requesting to receive data for " << mime_type;
     base::ScopedFD fd = data_offer_->Receive(mime_type);
     if (!fd.is_valid()) {
-      DPLOG(ERROR) << "Failed to open file descriptor for " << mime_type;
+      PLOG(ERROR) << "Failed to open file descriptor for " << mime_type;
       continue;
     }
     offered_data.emplace_back(mime_type, fd.release());
@@ -572,7 +578,10 @@ void WaylandDataDragController::PostDataFetchingTask(
   auto fetch_data_closure = [](FetchingInfo offered_data,
                                const scoped_refptr<CancelFlag>& cancel_flag)
       -> std::unique_ptr<OSExchangeData> {
+    base::ScopedBlockingCall blocking_call(FROM_HERE,
+                                           base::BlockingType::MAY_BLOCK);
     auto fetched_data = std::make_unique<WaylandExchangeDataProvider>();
+
     VLOG(1) << "Starting data fetching for " << offered_data.size()
             << " mime types.";
 
@@ -580,7 +589,7 @@ void WaylandDataDragController::PostDataFetchingTask(
       DCHECK(IsMimeTypeSupported(mime_type));
 
       if (cancel_flag->data.IsSet()) {
-        VLOG(2) << "cancelled data fetching.";
+        VLOG(1) << "cancelled data fetching.";
         return {};
       }
 
@@ -602,8 +611,8 @@ void WaylandDataDragController::PostDataFetchingTask(
   last_drag_location_ = location;
   data_fetch_cancel_flag_ = cancel_flag;
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+  GetDataFetchTaskRunner().PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(fetch_data_closure, std::move(offered_data), cancel_flag),
       base::BindOnce(&WaylandDataDragController::OnDataFetchingFinished,
                      weak_factory_.GetWeakPtr(), std::move(start_time)));
@@ -617,17 +626,19 @@ void WaylandDataDragController::OnDataFetchingFinished(
   VLOG(1) << __func__ << " fetching=" << (state_ == State::kFetching)
           << " window=" << !!window_;
 
-  data_fetch_cancel_flag_.reset();
-
-  if (state_ != State::kFetching) {
+  // Null `received_data` means the fetching task was cancelled. ie: drag leave
+  // arrived before data was fetched, in which case the `window_` was already
+  // notified and state already reset in OnDragLeave(), so just early out here.
+  if (!received_data) {
+    VLOG(1) << "fetching cancelled.";
     return;
   }
 
   // Move to `kStarted` state, regardless it is possible or not to deliver it.
   state_ = State::kStarted;
 
-  // |window_| may have already been unset here if, for instance, user has
-  // dragged out of it in incoming dnd sessions. See https://crbug.com/1487387.
+  // |window_| may have already been unset here if, eg: programmatically
+  // destroyed by the application. See https://crbug.com/1487387.
   if (!window_) {
     return;
   }
@@ -639,7 +650,8 @@ void WaylandDataDragController::CancelDataFetchingIfNeeded() {
     return;
   }
   if (data_fetch_cancel_flag_) {
-    VLOG(2) << "Cancelling data fetching.";
+    VLOG_IF(1, data_fetch_cancel_flag_->data.IsSet())
+        << "Cancelling data fetching.";
     data_fetch_cancel_flag_->data.Set();
     data_fetch_cancel_flag_ = nullptr;
   }
@@ -724,6 +736,20 @@ uint32_t WaylandDataDragController::DispatchEvent(const PlatformEvent& event) {
   }
 
   return POST_DISPATCH_PERFORM_DEFAULT;
+}
+
+//  Data fetch task runner is lazily initialized so unrelated test suites
+//  (without ThreadPool available) do not fail.
+//
+//  TODO(b/328574254): Move to constructor once the offending test suites
+//  provide a suitable task environment.
+base::TaskRunner& WaylandDataDragController::GetDataFetchTaskRunner() {
+  if (!data_fetch_task_runner_) {
+    data_fetch_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+  }
+  CHECK(data_fetch_task_runner_);
+  return *data_fetch_task_runner_;
 }
 
 }  // namespace ui
