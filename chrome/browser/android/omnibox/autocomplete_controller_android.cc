@@ -37,6 +37,7 @@
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
+#include "components/omnibox/browser/autocomplete_grouper_sections.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -462,7 +463,21 @@ void AutocompleteControllerAndroid::OnSuggestionDropdownHeightChanged(
     JNIEnv* env,
     jint dropdown_height_with_keyboard_active_px,
     jint suggestion_height_px) {
-  // TODO(b:327022170): plumb information to newly defined suggestion groups.
+  if (suggestion_height_px == 0) {
+    // Don't touch the group definitions.
+    return;
+  }
+
+  size_t num_visible_matches =
+      (size_t)(1.f * dropdown_height_with_keyboard_active_px /
+                   suggestion_height_px +
+               0.5f);
+
+  if (num_visible_matches == 0) {
+    return;
+  }
+
+  AndroidNonZPSSection::set_num_visible_matches(num_visible_matches);
 }
 
 void AutocompleteControllerAndroid::CreateNavigationObserver(

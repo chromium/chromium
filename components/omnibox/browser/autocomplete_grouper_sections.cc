@@ -117,6 +117,13 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
   });
 }
 
+// Number of matches that fit in the visible section of the screen.
+// This number includes the Default match, shown in the top section.
+// The default match needs to be kept separate, because it should not be
+// moved when we group suggestions by Search vs URL.
+// TODO(b/328617350): plumb the value via AutocompleteInput.
+/* static */ size_t AndroidNonZPSSection::num_visible_matches_{6};
+
 AndroidNonZPSSection::AndroidNonZPSSection(
     omnibox::GroupConfigMap& group_configs)
     : Section(
@@ -124,10 +131,10 @@ AndroidNonZPSSection::AndroidNonZPSSection(
           {{1,  // Default match, not part of the Grouping.
             {{omnibox::GROUP_SEARCH, {1}}, {omnibox::GROUP_OTHER_NAVS, {1}}}},
 
-           {5,  // Top section / above the keyboard.
+           {num_visible_matches_ - 1,  // Top section / above the keyboard.
             {{omnibox::GROUP_SEARCH, {5}}, {omnibox::GROUP_OTHER_NAVS, {5}}}},
 
-           {9,  // Bottom section / below the keyboard.
+           {14,  // Bottom section, up to the Section limit.
             {{omnibox::GROUP_SEARCH, {9}}, {omnibox::GROUP_OTHER_NAVS, {9}}}}},
           group_configs,
           omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}

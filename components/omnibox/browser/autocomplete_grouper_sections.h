@@ -83,6 +83,15 @@ class ZpsSectionWithMVTiles : public ZpsSection {
 class AndroidNonZPSSection : public Section {
  public:
   explicit AndroidNonZPSSection(omnibox::GroupConfigMap& group_configs);
+
+  // Specify number of matches that are at least 50% exposed while the
+  // software keyboard is visible.
+  static void set_num_visible_matches(size_t num_visible_matches) {
+    num_visible_matches_ = num_visible_matches;
+  }
+
+ private:
+  static size_t num_visible_matches_;
 };
 
 // Section expressing the Android ZPS limits and grouping for the NTP.
