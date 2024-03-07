@@ -518,7 +518,8 @@ bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled) {
       return false;
     }
     if (enabled) {
-      arc_session_manager->AllowActivation();
+      arc_session_manager->AllowActivation(
+          ArcSessionManager::AllowActivationReason::kUserEnableAction);
       arc_session_manager->RequestEnable();
     } else {
       arc_session_manager->RequestDisableWithArcDataRemoval();

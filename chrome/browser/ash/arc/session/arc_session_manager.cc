@@ -989,8 +989,14 @@ void ArcSessionManager::RequestEnable() {
   RequestEnableImpl();
 }
 
-void ArcSessionManager::AllowActivation() {
+void ArcSessionManager::AllowActivation(AllowActivationReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // First time that ARCVM is allowed in this user session.
+  if (!activation_is_allowed_) {
+    VLOG(1) << "ARCVM activation is allowed: " << static_cast<int>(reason);
+    // TODO(b/326065955): Take UMA about the `reason` here.
+  }
 
   activation_is_allowed_ = true;
   if (state_ == State::READY) {
@@ -1133,7 +1139,7 @@ void ArcSessionManager::RequestEnableImpl() {
   }
 
   if (should_start_arc_without_user_interaction) {
-    AllowActivation();
+    AllowActivation(AllowActivationReason::kAlwaysStartIsEnabled);
   }
 
   if (skip_terms_of_service_negotiation) {
@@ -1163,7 +1169,7 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
 
   activation_necessity_checker_.reset();
   if (result) {
-    AllowActivation();
+    AllowActivation(AllowActivationReason::kImmediateActivation);
   } else {
     activation_is_delayed = true;
     VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";

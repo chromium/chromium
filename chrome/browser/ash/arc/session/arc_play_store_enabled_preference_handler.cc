@@ -173,7 +173,8 @@ void ArcPlayStoreEnabledPreferenceHandler::UpdateArcSessionManager() {
   }
 
   if (ShouldArcAlwaysStart()) {
-    arc_session_manager_->AllowActivation();
+    arc_session_manager_->AllowActivation(
+        ArcSessionManager::AllowActivationReason::kAlwaysStartIsEnabled);
     arc_session_manager_->RequestEnable();
   } else if (IsArcPlayStoreEnabledForProfile(profile_)) {
     if (!ShouldArcStartManually()) {

@@ -171,7 +171,8 @@ TEST_F(ArcProvisionNotificationServiceTest,
   // shown when session starts.
   session_manager_->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  arc_session_manager_->AllowActivation();
+  arc_session_manager_->AllowActivation(
+      ArcSessionManager::AllowActivationReason::kImmediateActivation);
   arc_session_manager_->RequestEnable();
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));

@@ -418,7 +418,8 @@ void ArcAppQueueRestoreHandler::PrepareAppLaunching(const std::string& app_id) {
   }
 
   // Activate ARC in case still not active.
-  arc::ArcSessionManager::Get()->AllowActivation();
+  arc::ArcSessionManager::Get()->AllowActivation(
+      arc::ArcSessionManager::AllowActivationReason::kRestoreApps);
 
   for (const auto& [window_id, app_restore_data] : launch_list) {
     handler_->RecordRestoredAppLaunch(apps::AppTypeName::kArc);

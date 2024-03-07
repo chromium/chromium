@@ -745,7 +745,8 @@ void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
                kPolicyAppInstallTypeForceInstalled;
       });
   if (hasForceInstallApps) {
-    arc::ArcSessionManager::Get()->AllowActivation();
+    arc::ArcSessionManager::Get()->AllowActivation(
+        arc::ArcSessionManager::AllowActivationReason::kForcedByPolicy);
   }
 }
 
