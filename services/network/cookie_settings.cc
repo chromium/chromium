@@ -157,8 +157,10 @@ void CookieSettings::set_content_settings(
     ContentSettingsType type,
     const ContentSettingsForOneType& settings) {
   CHECK(IsValidType(type)) << static_cast<int>(type);
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
+  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
+  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
+  // value during execution and leading to "bad variant access".
+  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
     absl::get<EntryIndex>(content_settings_)[type] =
         content_settings::HostIndexedContentSettings::Create(settings);
   } else {
@@ -171,8 +173,10 @@ void CookieSettings::set_content_settings(
         settings.back().primary_pattern != ContentSettingsPattern::Wildcard() ||
         settings.back().secondary_pattern !=
             ContentSettingsPattern::Wildcard()) {
-      if (base::FeatureList::IsEnabled(
-              content_settings::features::kHostIndexedMetadataGrants)) {
+      // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
+      // holds_alternative<>, not the flag, because b/328475709 is changing the
+      // flag value during execution and leading to "bad variant access".
+      if (absl::holds_alternative<EntryIndex>(content_settings_)) {
         auto& index =
             absl::get<EntryIndex>(content_settings_)[type].emplace_back(
                 "default", false);
@@ -197,8 +201,10 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
     return DeleteCookiePredicate();
   }
   ContentSettingsForOneType settings;
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
+  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
+  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
+  // value during execution and leading to "bad variant access".
+  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
     // TODO(b/316530672): Ideally, clear on exit would work with the index
     // directly to benefit from faster lookup times instead of iterating over
     // a vector of content settings.
@@ -424,8 +430,10 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
 }
 
 bool CookieSettings::HasSessionOnlyOrigins() const {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
+  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
+  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
+  // value during execution and leading to "bad variant access".
+  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
     for (const auto& index :
          GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
       for (const auto& entry : index) {
@@ -470,8 +478,10 @@ ContentSetting CookieSettings::GetContentSetting(
     content_settings::SettingInfo* info) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "ContentSettings.GetContentSetting.Network.Duration");
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kHostIndexedMetadataGrants)) {
+  // EntryIndex is only used if kHostIndexedMetadataGrants is enabled. Check
+  // holds_alternative<>, not the flag, because b/328475709 is changing the flag
+  // value during execution and leading to "bad variant access".
+  if (absl::holds_alternative<EntryIndex>(content_settings_)) {
     for (const auto& index : GetHostIndexedContentSettings(content_type)) {
       const content_settings::RuleEntry* result =
           index.Find(primary_url, secondary_url);
