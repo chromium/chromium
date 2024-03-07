@@ -6590,8 +6590,12 @@
   },
   {
     "name": "price-tracking-icon-colors",
-    "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 122
+    "owners": [
+      "josephjoopark@chromium.org",
+      "mdjones@chromium.org",
+      "chrome-shopping-eng@google.com"
+    ],
+    "expiry_milestone": 128
   },
   {
     "name": "print-preview-cros-app",
