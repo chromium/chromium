@@ -53,8 +53,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     serial_tests = set()
     if host_information.IsWindows() and host_information.IsArmCpu():
       serial_tests |= {
-          # Checking whether serialization improves stability for
-          # crbug.com/323824490.
+          # crbug.com/323824490. Seems to flakily lose the D3D11 device when
+          # run in parallel.
           'WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder',
       }
     return serial_tests

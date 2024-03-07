@@ -98,16 +98,26 @@ class WebGLConformanceIntegrationTestBase(
     return True
 
   def _GetSerialGlobs(self) -> Set[str]:
-    return {
-        # crbug.com/1345466. Can be removed once OpenGL is no longer used on
-        # Mac.
-        'deqp/functional/gles3/transformfeedback/*',
-        # crbug.com/1347970. Flaking for unknown reasons on Metal backend.
-        'deqp/functional/gles3/textureshadow/*',
-        # crbug.com/1412460. Flaky timeouts on Mac Intel.
-        'deqp/functional/gles3/shadermatrix/*',
-        'deqp/functional/gles3/shaderoperator/*',
-    }
+    serial_globs = set()
+    if host_information.IsMac():
+      serial_globs |= {
+          # crbug.com/1347970. Suspected of being prone to causing Metal shader
+          # cache corruption when run in parallel.
+          'deqp/functional/gles3/textureshadow/*',
+      }
+      if host_information.IsAmdGpu():
+        serial_globs |= {
+            # crbug.com/1345466. Can be removed once OpenGL is no longer used on
+            # Mac.
+            'deqp/functional/gles3/transformfeedback/*',
+        }
+      if host_information.IsIntelGpu():
+        serial_globs |= {
+            # crbug.com/1412460. Flaky timeouts on Mac Intel.
+            'deqp/functional/gles3/shadermatrix/*',
+            'deqp/functional/gles3/shaderoperator/*',
+        }
+    return serial_globs
 
   def _GetSerialTests(self) -> Set[str]:
     return {
