@@ -16,6 +16,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,6 +41,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -85,6 +88,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     @Feature({"Automotive Toolbar"})
+    @DisableFeatures(VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR)
     public void testAutomotiveToolbar_ActionBar() throws Exception {
         mChromeTabbedActivityTestRule.startMainActivityOnBlankPage();
         ChromeTabbedActivity chromeTabbedActivity = mChromeTabbedActivityTestRule.getActivity();
