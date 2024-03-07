@@ -46,10 +46,6 @@ HEADER = headers.header(
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:angle-wrangler",
         ),
         headers.oncall(
-            name = "Perf",
-            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-perf-regression-sheriff",
-        ),
-        headers.oncall(
             name = "Perfbot",
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-perf-bot-sheriff",
         ),
