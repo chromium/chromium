@@ -902,7 +902,6 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/326462005")
     public void testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully()
             throws IOException {
         mAutoTestRule.setIsAutomotive(true);
@@ -925,8 +924,10 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
-        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        // The account is created without a capability that determines its minor mode, wait until
+        // all buttons are created in minor safe mode.
+        ViewUtils.onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
 
         // Accepting the sync on an automotive device should take the user to the device lock page.
         onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
@@ -948,7 +949,6 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/326462005")
     public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws IOException {
         mAutoTestRule.setIsAutomotive(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -970,8 +970,8 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
-        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        ViewUtils.onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
 
         // Accepting the sync on an automotive device should take the user to the device lock page.
         onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
@@ -1017,8 +1017,12 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
-        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
 
+        // The account is created without a capability that determines its minor mode, wait until
+        // all buttons are created in minor safe mode.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
         simulateDeviceLockReadyOnAutomotive();
 
         // Wait for sync opt-in process to finish.
@@ -1077,8 +1081,10 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
+        // The account is created without a capability that determines its minor mode, wait until
+        // all buttons are created in minor safe mode.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
         onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
-
         simulateDeviceLockRefused();
 
         // Check that the user is not consented to sync and the activity has finished.
