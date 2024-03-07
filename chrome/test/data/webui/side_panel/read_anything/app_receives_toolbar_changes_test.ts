@@ -210,4 +210,58 @@ suite('AppReceivesToolbarChanges', () => {
       assertNotEquals(highlightColor(), 'transparent');
     });
   });
+
+  suite('on granularity change', () => {
+    setup(() => {
+      app.updateContent();
+    });
+
+    function emitNextGranularity(): void {
+      emitEvent(app, 'next-granularity-click');
+    }
+
+    function emitPreviousGranularity(): void {
+      emitEvent(app, 'previous-granularity-click');
+    }
+
+    suite('next', () => {
+      test('propagates change', () => {
+        let movedToNext = false;
+        chrome.readingMode.movePositionToNextGranularity = () => {
+          movedToNext = true;
+        };
+
+        emitNextGranularity();
+
+        assertTrue(movedToNext);
+      });
+
+      test('highlights text', () => {
+        emitNextGranularity();
+        const currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        assertTrue(!!currentHighlight!.textContent);
+      });
+    });
+
+    suite('previous', () => {
+      test('propagates change', () => {
+        let movedToPrevious: boolean = false;
+        chrome.readingMode.movePositionToPreviousGranularity = () => {
+          movedToPrevious = true;
+        };
+
+        emitPreviousGranularity();
+
+        assertTrue(movedToPrevious);
+      });
+
+      test('highlights text', () => {
+        emitPreviousGranularity();
+        const currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        assertTrue(!!currentHighlight!.textContent);
+      });
+    });
+  });
 });

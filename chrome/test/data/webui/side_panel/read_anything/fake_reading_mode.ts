@@ -291,6 +291,16 @@ export class FakeReadingMode {
     return [2];
   }
 
+  // Increments the processed_granularity_index_ in ReadAnythingAppModel,
+  // effectively updating ReadAloud's state of the current granularity to
+  // refer to the next granularity.
+  movePositionToNextGranularity(): void {}
+
+  // Decrements the processed_granularity_index_ in ReadAnythingAppModel,
+  // effectively updating ReadAloud's state of the current granularity to
+  // refer to the previous granularity.
+  movePositionToPreviousGranularity(): void {}
+
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
   // If the sentence exceeds the maximum text length, the sentence will be

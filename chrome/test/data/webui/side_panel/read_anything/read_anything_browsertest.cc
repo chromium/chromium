@@ -77,6 +77,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightToggle) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NextPrevious) {
+  RunSidePanelTest("side_panel/read_anything/next_previous_granularity_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateSelection) {
   RunSidePanelTest("side_panel/read_anything/rate_selection_test.js",
                    "mocha.run()");
@@ -115,4 +120,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
   RunSidePanelTest(
       "side_panel/read_anything/read_aloud_update_content_selection.js",
       "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudHighlight) {
+  RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
+                   "mocha.run()");
 }
