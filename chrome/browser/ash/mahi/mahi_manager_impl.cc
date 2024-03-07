@@ -30,6 +30,7 @@
 
 namespace {
 
+using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
 
 std::unique_ptr<manta::MahiProvider> CreateProvider() {
@@ -99,19 +100,20 @@ void MahiManagerImpl::GetOutlines(MahiOutlinesCallback callback) {
     outlines.emplace_back(
         chromeos::MahiOutline(i, u"Outline " + base::NumberToString16(i)));
   }
-  std::move(callback).Run(outlines);
+  std::move(callback).Run(outlines, MahiResponseStatus::kSuccess);
 }
 
 void MahiManagerImpl::GoToOutlineContent(int outline_id) {}
 
 void MahiManagerImpl::AnswerQuestion(const std::string& question,
                                      MahiAnswerQuestionCallback callback) {
-  std::move(callback).Run(u"test answer");
+  std::move(callback).Run(u"test answer", MahiResponseStatus::kSuccess);
 }
 
 void MahiManagerImpl::GetSuggestedQuestion(
     MahiGetSuggestedQuestionCallback callback) {
-  std::move(callback).Run(u"test suggested question");
+  std::move(callback).Run(u"test suggested question",
+                          MahiResponseStatus::kSuccess);
 }
 
 void MahiManagerImpl::SetCurrentFocusedPageInfo(
@@ -149,7 +151,8 @@ void MahiManagerImpl::OnGetPageContent(
     MahiSummaryCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr) {
-    std::move(callback).Run(u"summary text");
+    std::move(callback).Run(u"summary text",
+                            MahiResponseStatus::kContentExtractionError);
     return;
   }
   mahi_provider_->Summarize(
@@ -158,14 +161,19 @@ void MahiManagerImpl::OnGetPageContent(
           [](MahiSummaryCallback summary_callback, base::Value::Dict dict,
              manta::MantaStatus status) {
             if (status.status_code != manta::MantaStatusCode::kOk) {
-              std::move(summary_callback).Run(u"Couldn't get summary");
+              std::move(summary_callback)
+                  .Run(u"Couldn't get summary",
+                       MahiResponseStatus::kUnknownError);
               return;
             }
 
             if (auto* text = dict.FindString("outputData")) {
-              std::move(summary_callback).Run(base::UTF8ToUTF16(*text));
+              std::move(summary_callback)
+                  .Run(base::UTF8ToUTF16(*text), MahiResponseStatus::kSuccess);
             } else {
-              std::move(summary_callback).Run(u"Cannot find outputdata");
+              std::move(summary_callback)
+                  .Run(u"Cannot find outputdata",
+                       MahiResponseStatus::kCantFindOutputData);
             }
           },
           std::move(callback)));

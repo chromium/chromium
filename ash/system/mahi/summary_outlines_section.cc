@@ -75,7 +75,8 @@ SummaryOutlinesSection::SummaryOutlinesSection() {
   if (manager) {
     manager->GetSummary(base::BindOnce(
         [](base::WeakPtr<SummaryOutlinesSection> parent,
-           views::Label* summary_label, std::u16string summary_text) {
+           views::Label* summary_label, std::u16string summary_text,
+           chromeos::MahiResponseStatus status) {
           if (!parent) {
             return;
           }

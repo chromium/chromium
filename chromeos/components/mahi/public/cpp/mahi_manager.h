@@ -23,6 +23,18 @@ struct MahiOutline {
   std::u16string outline_content;
 };
 
+// List os possible response statuses for a Mahi request.
+enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiResponseStatus {
+  kSuccess = 0,
+  kUnknownError = 1,
+  kInappropriate = 2,
+  kLowQuota = 3,
+  kQuotaLimitHit = 4,
+  kResourceExhausted = 5,
+  kContentExtractionError = 6,
+  kCantFindOutputData = 7,
+};
+
 // An interface serves as the connection between mahi system and the UI.
 class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
  public:
@@ -42,26 +54,28 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
 
   // Returns the quick summary of the current active content on the
   // corresponding surface.
-  using MahiSummaryCallback = base::OnceCallback<void(std::u16string)>;
+  using MahiSummaryCallback =
+      base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
   virtual void GetSummary(MahiSummaryCallback callback) = 0;
 
   // Returns the outlines of the current active content on the corresponding
   // surface.
   using MahiOutlinesCallback =
-      base::OnceCallback<void(std::vector<MahiOutline>)>;
+      base::OnceCallback<void(std::vector<MahiOutline>, MahiResponseStatus)>;
   virtual void GetOutlines(MahiOutlinesCallback callback) = 0;
 
   // Goes to the content that is associated with `outline_id`.
   virtual void GoToOutlineContent(int outline_id) = 0;
 
   // Answers the provided `question`.
-  using MahiAnswerQuestionCallback = base::OnceCallback<void(std::u16string)>;
+  using MahiAnswerQuestionCallback =
+      base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
   virtual void AnswerQuestion(const std::string& question,
                               MahiAnswerQuestionCallback callback) = 0;
 
   // Gets suggested question for the content currently displayed in the panel.
   using MahiGetSuggestedQuestionCallback =
-      base::OnceCallback<void(std::u16string)>;
+      base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
   virtual void GetSuggestedQuestion(
       MahiGetSuggestedQuestionCallback callback) = 0;
 

@@ -34,7 +34,8 @@ gfx::ImageSkia FakeMahiManager::GetContentIcon() {
 }
 
 void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
-  std::move(callback).Run(summary_text_);
+  std::move(callback).Run(summary_text_,
+                          chromeos::MahiResponseStatus::kSuccess);
 }
 
 void FakeMahiManager::OpenFeedbackDialog() {
