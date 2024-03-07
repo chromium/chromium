@@ -10388,8 +10388,6 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
     return nullptr;
   }
 
-  CHECK(!frame_tree_node_->current_origin().opaque());
-
   auto page_swap_event_params = blink::mojom::PageSwapEventParams::New();
   page_swap_event_params->url = common_params_->url;
 
