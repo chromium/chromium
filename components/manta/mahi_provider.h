@@ -58,15 +58,15 @@ class COMPONENT_EXPORT(MANTA) MahiProvider
  private:
   friend class FakeMahiProvider;
 
-  // Creates and returns unique pointer to an `EndpointFetcher` initialized with
-  // the provided parameters and defaults relevant to `MahiProvider`. Virtual
-  // to allow overriding in tests.
+  // Creates and returns unique pointer to an `EndpointFetcher` initialized
+  // with the provided parameters and defaults relevant to `MahiProvider`.
+  // Virtual to allow overriding in tests.
   virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       const GURL& url,
       const std::vector<std::string>& scopes,
       const std::string& post_data);
 
-  void RequestInternal(const std::string& input,
+  void RequestInternal(const proto::Request& request,
                        MantaGenericCallback done_callback);
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

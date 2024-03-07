@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/manta_service_callbacks.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/base/consent_level.h"
@@ -24,19 +25,13 @@ namespace manta {
 
 namespace {
 
-// TODO(b:318566801): use Orca free form for dogfood.
-constexpr char kOauthConsumerName[] = "manta_orca";
+constexpr char kOauthConsumerName[] = "manta_mahi";
 constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/x-protobuf";
-constexpr char kProdEndpointUrl[] = "https://aratea-pa.googleapis.com/generate";
+constexpr char kAutopushEndpointUrl[] =
+    "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
-
-constexpr char kSummaryTemplate[] =
-    "Summarize the following passage into a single 2-4 sentence paragraph: %s";
-constexpr char kOutlineTemplate[] =
-    "Create a thematic outline organized by topics based on the following "
-    "text: %s";
 
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,
@@ -63,20 +58,6 @@ void OnServerResponseOrErrorReceived(
       std::move(manta_status));
 }
 
-proto::Request ComposeRequest(const std::string& input) {
-  proto::Request request;
-  request.set_feature_name(proto::FeatureName::TEXT_TEST);
-
-  auto& request_config = *request.mutable_request_config();
-  request_config.set_tone(proto::RequestConfig::FREEFORM_WRITE);
-
-  auto* input_data = request.add_input_data();
-  input_data->set_tag("freeform_user_prompt");
-  input_data->set_text(input);
-
-  return request;
-}
-
 }  // namespace
 
 MahiProvider::MahiProvider(
@@ -91,17 +72,24 @@ MahiProvider::~MahiProvider() = default;
 
 void MahiProvider::Summarize(const std::string& input,
                              MantaGenericCallback done_callback) {
-  RequestInternal(base::StringPrintf(kSummaryTemplate, input.c_str()),
-                  std::move(done_callback));
+  proto::Request request;
+  request.set_feature_name(proto::FeatureName::CHROMEOS_READER);
+
+  auto* input_data = request.add_input_data();
+  input_data->set_tag("model_input");
+  input_data->set_text(input);
+
+  RequestInternal(request, std::move(done_callback));
 }
 
 void MahiProvider::Outline(const std::string& input,
                            MantaGenericCallback done_callback) {
-  RequestInternal(base::StringPrintf(kOutlineTemplate, input.c_str()),
-                  std::move(done_callback));
+  std::move(done_callback)
+      .Run(base::Value::Dict(),
+           {MantaStatusCode::kGenericError, "Unimplemented"});
 }
 
-void MahiProvider::RequestInternal(const std::string& input,
+void MahiProvider::RequestInternal(const proto::Request& request,
                                    MantaGenericCallback done_callback) {
   if (!identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
@@ -109,13 +97,11 @@ void MahiProvider::RequestInternal(const std::string& input,
     return;
   }
 
-  proto::Request request = ComposeRequest(input);
-
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 
   std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
-      GURL{kProdEndpointUrl}, {kOAuthScope}, serialized_request);
+      GURL{kAutopushEndpointUrl}, {kOAuthScope}, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   MantaProtoResponseCallback internal_callback = base::BindOnce(
