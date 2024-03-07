@@ -15,15 +15,15 @@ import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfa
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../oobe_cr_lottie.js';
 
 import {getTemplate} from './oobe_loading_dialog.html.js';
 
 const OobeLoadingDialogBase =
     mixinBehaviors(
-        [OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
+        [OobeDialogHostBehavior], OobeI18nMixin(PolymerElement)) as {
+      new (): PolymerElement & OobeI18nMixinInterface &
           OobeDialogHostBehaviorInterface,
     };
 

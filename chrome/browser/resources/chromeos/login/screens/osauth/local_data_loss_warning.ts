@@ -17,7 +17,7 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 
 import {getTemplate} from './local_data_loss_warning.html.js';
@@ -25,12 +25,11 @@ import {getTemplate} from './local_data_loss_warning.html.js';
 
 const LocalDataLossWarningBase = mixinBehaviors(
       [
-        OobeI18nBehavior,
         OobeDialogHostBehavior,
         LoginScreenBehavior,
       ],
-      PolymerElement) as {
-new (): PolymerElement & OobeI18nBehaviorInterface &
+      OobeI18nMixin(PolymerElement)) as {
+new (): PolymerElement & OobeI18nMixinInterface &
 LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
 };
 
@@ -111,7 +110,7 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
    * @return The translated subtitle message.
    */
   private getDataLossWarningSubtitleMessage(locale: string, email: string):
-      string {
+      TrustedHTML {
     return this.i18nAdvancedDynamic(
         locale, 'dataLossWarningSubtitle', {substitutions: [email]});
   }

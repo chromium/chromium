@@ -25,7 +25,7 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polym
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 
 import {getTemplate} from './hid_detection.html.js';
@@ -45,9 +45,9 @@ enum Connection {
 
 const HidDetectionScreenBase =
     mixinBehaviors(
-        [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
+        [OobeDialogHostBehavior, LoginScreenBehavior],
+        OobeI18nMixin(PolymerElement)) as {
+      new (): PolymerElement & OobeI18nMixinInterface &
           OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
     };
 

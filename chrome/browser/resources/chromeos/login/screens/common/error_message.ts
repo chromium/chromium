@@ -21,7 +21,7 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {Oobe} from '../../cr_ui.js';
@@ -80,12 +80,11 @@ const ERROR_STATES = [
 
 const ErrorMessageScreenBase = mixinBehaviors(
                                    [
-                                     OobeI18nBehavior,
                                      OobeDialogHostBehavior,
                                      LoginScreenBehavior,
                                    ],
-                                   PolymerElement) as {
-  new (): PolymerElement & OobeI18nBehaviorInterface &
+                                   OobeI18nMixin(PolymerElement)) as {
+  new (): PolymerElement & OobeI18nMixinInterface &
       LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
 };
 

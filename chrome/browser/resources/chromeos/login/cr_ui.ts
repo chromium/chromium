@@ -215,7 +215,7 @@ export class Oobe extends DisplayManager {
   /**
    * Update localized strings in tags that are used at the `document` level.
    * These strings are used outside of a Polymer Element and cannot leverage
-   * I18nBehavior for it.
+   * I18nMixin for it.
    */
   static updateDocumentLocalizedStrings(): void {
     // Update attributes used in the <html> tag.

@@ -25,7 +25,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {NetworkSelectLogin} from '../../components/network_select_login.js';
 
@@ -40,13 +40,12 @@ export enum NetworkScreenStates {
 
 const NetworkScreenBase = mixinBehaviors(
                               [
-                                OobeI18nBehavior,
                                 OobeDialogHostBehavior,
                                 LoginScreenBehavior,
                                 MultiStepBehavior,
                               ],
-                              PolymerElement) as {
-  new (): PolymerElement & OobeI18nBehaviorInterface &
+                              OobeI18nMixin(PolymerElement)) as {
+  new (): PolymerElement & OobeI18nMixinInterface &
       OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface &
       MultiStepBehaviorInterface,
 };

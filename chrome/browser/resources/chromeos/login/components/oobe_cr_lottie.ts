@@ -13,18 +13,14 @@ import './oobe_icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './oobe_cr_lottie.html.js';
 
-const OobeCrLottieBase =
-    mixinBehaviors([OobeI18nBehavior], PolymerElement) as {
-      new (): PolymerElement
-      & OobeI18nBehaviorInterface,
-    };
+const OobeCrLottieBase = OobeI18nMixin(PolymerElement);
 
 export class OobeCrLottie extends OobeCrLottieBase {
   static get is() {

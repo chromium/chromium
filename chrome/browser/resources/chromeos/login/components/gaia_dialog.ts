@@ -34,15 +34,15 @@ import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfa
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from './behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from './mixins/oobe_i18n_mixin.js';
 import type {OobeTextButton} from './buttons/oobe_text_button.js';
 import {getTemplate} from './gaia_dialog.html.js';
 import {OobeTypes} from './oobe_types.js';
 
 export const GaiaDialogBase =
     mixinBehaviors(
-        [OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
+        [OobeDialogHostBehavior], OobeI18nMixin(PolymerElement)) as {
+      new (): PolymerElement & OobeI18nMixinInterface &
           OobeDialogHostBehaviorInterface,
     };
 

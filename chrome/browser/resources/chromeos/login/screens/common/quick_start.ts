@@ -13,7 +13,7 @@ import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/po
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import {QrCodeCanvas} from '../../components/qr_code_canvas.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
@@ -42,11 +42,11 @@ enum UserActions {
 }
 
 const QuickStartScreenBase =
-    mixinBehaviors([LoginScreenBehavior, MultiStepBehavior, OobeI18nBehavior],
-      PolymerElement) as { new (): PolymerElement
+    mixinBehaviors([LoginScreenBehavior, MultiStepBehavior],
+      OobeI18nMixin(PolymerElement)) as { new (): PolymerElement
         & LoginScreenBehaviorInterface
         & MultiStepBehaviorInterface
-        & OobeI18nBehaviorInterface,
+        & OobeI18nMixinInterface,
     };
 
 export class QuickStartScreen extends QuickStartScreenBase {
@@ -126,20 +126,21 @@ export class QuickStartScreen extends QuickStartScreenBase {
     ];
   }
 
-  private getVerificationSubtitle(_title: string): string {
+  private getVerificationSubtitle(_title: string): TrustedHTML {
     return this.i18nAdvanced('quickStartSetupSubtitle', {
       substitutions:
           [loadTimeData.getString('deviceType'), this.discoverableName],
     });
   }
 
-  private getSetupCompleteTitle(locale: string): string {
+  private getSetupCompleteTitle(locale: string): TrustedHTML {
     return this.i18nAdvancedDynamic(locale, 'quickStartSetupCompleteTitle', {
       substitutions: [loadTimeData.getString('deviceType')],
     });
   }
 
-  private getSetupCompleteSubtitle(locale: string, _email: string): string {
+  private getSetupCompleteSubtitle(locale: string, _email: string):
+      TrustedHTML {
     return this.i18nAdvancedDynamic(locale, 'quickStartSetupCompleteSubtitle', {
       substitutions: [this.userEmail],
     });

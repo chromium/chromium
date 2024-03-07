@@ -8,13 +8,12 @@ import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import './common_styles/oobe_common_styles.css.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
 import {getTemplate} from './throbber_notice.html.js';
 
-const ThrobberNoticeBase = mixinBehaviors([OobeI18nBehavior], PolymerElement) as
-    {new (): PolymerElement & OobeI18nBehaviorInterface};
+const ThrobberNoticeBase = OobeI18nMixin(PolymerElement);
 
 export class ThrobberNotice extends ThrobberNoticeBase {
   static get is() {

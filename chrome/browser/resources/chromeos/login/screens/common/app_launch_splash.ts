@@ -15,14 +15,14 @@ import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfa
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 
 import {getTemplate} from './app_launch_splash.html.js';
 
 const AppLaunchSplashBase =
-    mixinBehaviors([OobeI18nBehavior, LoginScreenBehavior], PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
+    mixinBehaviors([LoginScreenBehavior], OobeI18nMixin(PolymerElement)) as {
+      new (): PolymerElement & OobeI18nMixinInterface &
           LoginScreenBehaviorInterface,
     };
 

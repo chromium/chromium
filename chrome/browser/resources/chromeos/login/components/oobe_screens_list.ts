@@ -7,9 +7,9 @@ import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './oobe_screens_list.html.js';
 
@@ -29,10 +29,7 @@ export interface OobeScreensListScreen {
 
 export interface OobeScreensListData extends Array<OobeScreensListScreen>{}
 
-const OobeScreensListBase = mixinBehaviors([OobeI18nBehavior],
-  PolymerElement) as { new (): PolymerElement
-  & OobeI18nBehaviorInterface,
-};
+const OobeScreensListBase = OobeI18nMixin(PolymerElement);
 
 export class OobeScreensList extends OobeScreensListBase {
   static get is() {

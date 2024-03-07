@@ -23,17 +23,16 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from './behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from './mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from './oobe_types.js';
 import {getTemplate} from './security_token_pin.html.js';
 
 const SecurityTokenPinBase = mixinBehaviors(
                                  [
-                                   OobeI18nBehavior,
                                    OobeDialogHostBehavior,
                                  ],
-                                 PolymerElement) as {
-  new (): PolymerElement & OobeI18nBehaviorInterface &
+                                 OobeI18nMixin(PolymerElement)) as {
+  new (): PolymerElement & OobeI18nMixinInterface &
       OobeDialogHostBehaviorInterface,
 };
 

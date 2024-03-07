@@ -22,7 +22,7 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from '//resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './multidevice_setup.html.js';
 
@@ -73,9 +73,9 @@ export class MultiDeviceSetupScreenDelegate implements MultiDeviceSetupDelegate{
 }
 
 const MultiDeviceSetupScreenBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, WebUIListenerBehavior],
-    PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
+    [LoginScreenBehavior, WebUIListenerBehavior],
+    OobeI18nMixin(PolymerElement)) as {
+      new (): PolymerElement & OobeI18nMixinInterface &
           LoginScreenBehaviorInterface & WebUIListenerBehavior,
     };
 

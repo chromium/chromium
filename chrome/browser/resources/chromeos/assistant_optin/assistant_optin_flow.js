@@ -22,7 +22,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {MultiStepBehavior} from '../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior} from '../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
 import {AssistantOptinFlowType, BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
 
@@ -43,8 +43,8 @@ const AssistantUIState = {
  * @extends {PolymerElement}
  */
 const AssistantOptInFlowBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, MultiStepBehavior],
-    PolymerElement);
+    [OobeDialogHostBehavior, MultiStepBehavior],
+    OobeI18nMixin(PolymerElement));
 
 /**
  * @polymer

@@ -25,10 +25,10 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior} from '../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
-import {AssistantNativeIconType, HtmlSanitizer, webviewStripLinksContentScript} from './utils.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import {HtmlSanitizer, webviewStripLinksContentScript} from './utils.js';
 
 
 /**
@@ -42,7 +42,7 @@ const VALUE_PROP_SCREEN_ID = 'ValuePropScreen';
  * @extends {PolymerElement}
  */
 const AssistantValuePropBase =
-    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement);
+    mixinBehaviors([OobeDialogHostBehavior], OobeI18nMixin(PolymerElement));
 
 /**
  * @polymer

@@ -26,7 +26,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './update.html.js';
 
@@ -73,9 +73,9 @@ enum UpdateUiState {
 }
 
 const UpdateBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as { new (): PolymerElement
-      & OobeI18nBehaviorInterface
+    [LoginScreenBehavior, MultiStepBehavior],
+    OobeI18nMixin(PolymerElement)) as { new (): PolymerElement
+      & OobeI18nMixinInterface
       & LoginScreenBehaviorInterface
       & MultiStepBehaviorInterface,
     };
