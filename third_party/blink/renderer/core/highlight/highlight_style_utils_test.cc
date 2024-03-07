@@ -65,8 +65,9 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
   TextPaintStyle paint_style;
 
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
-      GetDocument(), text_style, text_node, kPseudoIdSelection, paint_style,
-      paint_info);
+                    GetDocument(), text_style, text_node, kPseudoIdSelection,
+                    paint_style, paint_info)
+                    .style;
 
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
   EXPECT_TRUE(paint_style.shadow);
@@ -120,8 +121,9 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
           ->firstChild();
   const ComputedStyle& div1_style = div1_text->GetLayoutObject()->StyleRef();
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
-      GetDocument(), div1_style, div1_text, kPseudoIdSelection, paint_style,
-      paint_info);
+                    GetDocument(), div1_style, div1_text, kPseudoIdSelection,
+                    paint_style, paint_info)
+                    .style;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div1_style, div1_text, std::nullopt, kPseudoIdSelection);
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
@@ -132,8 +134,9 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
           ->firstChild();
   const ComputedStyle& div2_style = div1_text->GetLayoutObject()->StyleRef();
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
-      GetDocument(), div2_style, div2_text, kPseudoIdSelection, paint_style,
-      paint_info);
+                    GetDocument(), div2_style, div2_text, kPseudoIdSelection,
+                    paint_style, paint_info)
+                    .style;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div2_style, div2_text, std::nullopt, kPseudoIdSelection);
   EXPECT_EQ(default_highlight_background, paint_style.current_color);
@@ -145,8 +148,9 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
           ->firstChild();
   const ComputedStyle& div3_style = div1_text->GetLayoutObject()->StyleRef();
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
-      GetDocument(), div3_style, div3_text, kPseudoIdSelection, paint_style,
-      paint_info);
+                    GetDocument(), div3_style, div3_text, kPseudoIdSelection,
+                    paint_style, paint_info)
+                    .style;
   std::optional<Color> current_layer_color = default_highlight_background;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div3_style, div3_text, current_layer_color,
@@ -161,6 +165,149 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
   EXPECT_EQ(default_highlight_foreground, paint_style.current_color);
   EXPECT_EQ(Color(92, 92, 92), background_color);
 #endif
+}
+
+TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
+  ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  String html_content =
+      R"HTML(
+      <!doctype html>
+      <style>
+        ::selection {
+          text-decoration-line: underline;
+        }
+        ::highlight(highlight1) {
+          text-decoration-line: underline;
+        }
+        div {
+          text-decoration-line: underline;
+        }
+      </style>
+      <div id="div">Some text</div>
+      <script>
+        let r1 = new Range();
+        r1.setStart(div, 0);
+        r1.setEnd(div, 1);
+        CSS.highlights.set("highlight1", new Highlight(r1));
+      </script>
+    )HTML";
+  main_resource.Complete(html_content);
+
+  auto* div_node =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("#div")));
+  Window().getSelection()->setBaseAndExtent(div_node, 0, div_node, 1);
+
+  Compositor().BeginFrame();
+
+  std::unique_ptr<PaintController> controller{
+      std::make_unique<PaintController>()};
+  GraphicsContext context(*controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  TextPaintStyle paint_style;
+
+  auto* div_text = div_node->firstChild();
+  const ComputedStyle& div_style = div_text->GetLayoutObject()->StyleRef();
+  HighlightStyleUtils::HighlightTextPaintStyle highlight_paint_style =
+      HighlightStyleUtils::HighlightPaintingStyle(
+          GetDocument(), div_style, div_text, kPseudoIdHighlight, paint_style,
+          paint_info, AtomicString("highlight1"));
+  HighlightStyleUtils::HighlightTextPaintStyle selection_paint_style =
+      HighlightStyleUtils::HighlightPaintingStyle(GetDocument(), div_style,
+                                                  div_text, kPseudoIdSelection,
+                                                  paint_style, paint_info);
+
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kFillColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
+#if BUILDFLAG(IS_MAC)
+  // Mac does not have default selection in tests
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor));
+#else
+  EXPECT_FALSE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor));
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  // Mac does not have default selection colors in testing
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kFillColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor));
+#else
+  // Selection uses explicit default colors.
+  EXPECT_TRUE(selection_paint_style.properties_using_current_color.Empty());
+#endif
+}
+
+TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
+  ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  String html_content =
+      R"HTML(
+      <!doctype html>
+      <style>
+        ::highlight(highlight1) {
+          text-decoration-line: underline;
+          text-decoration-color: red;
+          -webkit-text-fill-color: blue;
+        }
+      </style>
+      <div id="div">Some text</div>
+      <script>
+        let r1 = new Range();
+        r1.setStart(div, 0);
+        r1.setEnd(div, 1);
+        CSS.highlights.set("highlight1", new Highlight(r1));
+      </script>
+    )HTML";
+  main_resource.Complete(html_content);
+
+  Compositor().BeginFrame();
+
+  std::unique_ptr<PaintController> controller{
+      std::make_unique<PaintController>()};
+  GraphicsContext context(*controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  TextPaintStyle paint_style;
+
+  auto* div_text =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("#div")))
+          ->firstChild();
+  const ComputedStyle& div_style = div_text->GetLayoutObject()->StyleRef();
+  HighlightStyleUtils::HighlightTextPaintStyle highlight_paint_style =
+      HighlightStyleUtils::HighlightPaintingStyle(
+          GetDocument(), div_style, div_text, kPseudoIdHighlight, paint_style,
+          paint_info, AtomicString("highlight1"));
+
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kCurrentColor));
+  EXPECT_FALSE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kFillColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kStrokeColor));
+  EXPECT_TRUE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kEmphasisColor));
+  EXPECT_FALSE(highlight_paint_style.properties_using_current_color.Has(
+      HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor));
 }
 
 TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
@@ -201,8 +348,9 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
 
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
-      GetDocument(), div_style, div_node, kPseudoIdSelection, paint_style,
-      paint_info);
+                    GetDocument(), div_style, div_node, kPseudoIdSelection,
+                    paint_style, paint_info)
+                    .style;
 
   EXPECT_EQ(Color(0, 0, 255), paint_style.fill_color);
 

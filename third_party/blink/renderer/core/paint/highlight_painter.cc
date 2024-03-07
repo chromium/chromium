@@ -409,6 +409,8 @@ HighlightPainter::HighlightPainter(
         HighlightOverlay::ComputeParts(fragment_paint_info_, layers, edges);
 
     const Document& document = layout_object_->GetDocument();
+    DCHECK_GT(layers.size(), 1u);
+    DCHECK_EQ(layers[0].type, HighlightLayerType::kOriginating);
     for (wtf_size_t i = 0; i < layers.size(); i++) {
       if (layers[i].type == HighlightLayerType::kOriginating) {
         layers_.push_back(LayerPaintState{
@@ -425,7 +427,8 @@ HighlightPainter::HighlightPainter(
             HighlightStyleUtils::HighlightPaintingStyle(
                 document, originating_style_, node_, layers[i].PseudoId(),
                 layers_[i - 1].text_style, paint_info_,
-                layers[i].PseudoArgument()),
+                layers[i].PseudoArgument())
+                .style,
         });
       }
     }
@@ -648,7 +651,8 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
       const TextPaintStyle text_style =
           HighlightStyleUtils::HighlightPaintingStyle(
               node_->GetDocument(), originating_style_, node_, PseudoFor(type),
-              originating_text_style_, paint_info_);
+              originating_text_style_, paint_info_)
+              .style;
       PaintOneSpellingGrammarDecoration(type, text, paint_start_offset,
                                         paint_end_offset, *pseudo_style,
                                         text_style, nullptr);
@@ -1204,8 +1208,9 @@ void HighlightPainter::PaintDecoratedText(const StringView& text,
 
   if (pseudo_style) {
     text_style = HighlightStyleUtils::HighlightPaintingStyle(
-        document, originating_style_, node_, pseudo, text_style, paint_info_,
-        pseudo_argument);
+                     document, originating_style_, node_, pseudo, text_style,
+                     paint_info_, pseudo_argument)
+                     .style;
   }
   LineRelativeRect decoration_rect = LineRelativeLocalRect(
       fragment_item_, text, paint_start_offset, paint_end_offset);
@@ -1229,7 +1234,7 @@ void HighlightPainter::PaintDecoratedText(const StringView& text,
 HighlightPainter::LayerPaintState::LayerPaintState(
     HighlightOverlay::HighlightLayer id,
     const ComputedStyle* style,
-    TextPaintStyle text_style)
+    const TextPaintStyle text_style)
     : id(id),
       style(style),
       text_style(text_style),
