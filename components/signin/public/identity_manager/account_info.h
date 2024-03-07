@@ -103,6 +103,8 @@ struct AccountInfo : public CoreAccountInfo {
 
   bool IsManaged() const;
 
+  bool IsEduAccount() const;
+
   // Returns true if the account email can be used in display fields.
   // If `capabilities.can_have_email_address_displayed()` is unknown at the time
   // this function is called, the email address will be considered displayable.

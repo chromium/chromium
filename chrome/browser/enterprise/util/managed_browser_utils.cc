@@ -28,6 +28,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/x509_certificate.h"
@@ -197,8 +198,8 @@ ManagementEnvironment GetManagementEnvironment(
   if (!UserAcceptedAccountManagement(profile)) {
     return ManagementEnvironment::kNone;
   }
-  // TODO (b/322796016): Add check for school using account_info
-  return ManagementEnvironment::kWork;
+  return account_info.IsEduAccount() ? ManagementEnvironment::kSchool
+                                     : ManagementEnvironment::kWork;
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {

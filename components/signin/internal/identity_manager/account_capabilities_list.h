@@ -63,3 +63,7 @@ ACCOUNT_CAPABILITY(kIsSubjectToEnterprisePoliciesCapabilityName,
 ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
+
+ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
+                   CAN_USE_EDU_FEATURES_CAPABILITY_NAME,
+                   "accountcapabilities/gezdsmbnmnqxa")

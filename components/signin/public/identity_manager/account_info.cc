@@ -151,6 +151,11 @@ bool AccountInfo::IsManaged() const {
   return IsManaged(hosted_domain);
 }
 
+bool AccountInfo::IsEduAccount() const {
+  return capabilities.can_use_edu_features() == signin::Tribool::kTrue &&
+         IsManaged();
+}
+
 bool AccountInfo::CanHaveEmailAddressDisplayed() const {
   return capabilities.can_have_email_address_displayed() ==
              signin::Tribool::kTrue ||

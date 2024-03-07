@@ -69,6 +69,9 @@ class AccountCapabilities {
   // The user account is able to use IP Protection.
   signin::Tribool can_use_chrome_ip_protection() const;
 
+  // The user account is able to use edu features.
+  signin::Tribool can_use_edu_features() const;
+
   // The user account is able to use model execution features.
   signin::Tribool can_use_model_execution_features() const;
 

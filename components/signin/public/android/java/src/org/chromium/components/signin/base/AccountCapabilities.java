@@ -103,6 +103,12 @@ public class AccountCapabilities {
         return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME);
     }
 
+    /** @return canUseEduFeatures capability value. */
+    public @Tribool int canUseEduFeatures() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME);
+    }
+
     /**
      * @return canUseModelExecutionFeatures capability value.
      */
