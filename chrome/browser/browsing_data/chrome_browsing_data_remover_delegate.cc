@@ -44,6 +44,8 @@
 #include "chrome/browser/downgrade/user_data_downgrade.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
@@ -715,6 +717,16 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     browsing_data::RemoveSiteSettingsData(delete_begin, delete_end,
                                           host_content_settings_map_);
+
+#if !BUILDFLAG(IS_ANDROID)
+    // The active permission does not have timestamps, so the all active grants
+    // will be revoked regardless of the time range because all the are expected
+    // to be recent.
+    if (auto* permission_context =
+            FileSystemAccessPermissionContextFactory::GetForProfile(profile_)) {
+      permission_context->RevokeAllActiveGrants();
+    }
+#endif
 
     auto* handler_registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_);

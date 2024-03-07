@@ -219,12 +219,6 @@ class ChromeFileSystemAccessPermissionContext
     return GetPersistedGrantStatus(origin);
   }
 
-  bool RevokeActiveGrantsForTesting(
-      const url::Origin& origin,
-      base::FilePath file_path = base::FilePath()) {
-    return RevokeActiveGrants(origin, std::move(file_path));
-  }
-
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjectsForTesting(
       const url::Origin& origin) {
     return GetExtendedPersistedObjects(origin);
@@ -278,6 +272,16 @@ class ChromeFileSystemAccessPermissionContext
   // permission state. Currently, called from UI (i.e. Site Settings page,
   // usage icon/bubble).
   void RevokeGrants(const url::Origin& origin);
+
+  // Revokes the active grants for the given origin, and returns whether any is
+  // revoked. If the `file_path` is provided, then only the grant matching
+  // the file path is revoked.
+  bool RevokeActiveGrants(const url::Origin& origin,
+                          base::FilePath file_path = base::FilePath());
+
+  // Revokes all the active grants in `active_permissions_map_`. This method is
+  // currently used by the browsing data clearning code.
+  void RevokeAllActiveGrants();
 
   // Returns whether active or extended grants exist for the origin of the given
   // type.
@@ -476,12 +480,6 @@ class ChromeFileSystemAccessPermissionContext
   // Similar to GetGrantedObjects() but returns only extended grants.
   std::vector<std::unique_ptr<Object>> GetExtendedPersistedObjects(
       const url::Origin& origin);
-
-  // Revokes the active grants for the given origin, and returns whether any is
-  // revoked. If the `file_path` is provided, then only the grant matching
-  // the file path is revoked.
-  bool RevokeActiveGrants(const url::Origin& origin,
-                          base::FilePath file_path = base::FilePath());
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
