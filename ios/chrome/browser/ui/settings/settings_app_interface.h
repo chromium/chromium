@@ -36,7 +36,8 @@
 // Override the default search engine with the given search engine URL.
 + (void)overrideSearchEngineURL:(NSString*)searchEngineURL;
 
-// Resets the default search engine to Google.
+// Restores the default search engine to Google, and wipes search engine choice
+// prefs.
 + (void)resetSearchEngine;
 
 // Adds a URL rewriter to replace all requests having their host containing a
