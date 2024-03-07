@@ -753,20 +753,6 @@ chrome.accessibilityPrivate.onIntroduceChromeVox;
 chrome.accessibilityPrivate.onAccessibilityGesture;
 
 /**
- * Fired when we first detect two fingers are held down, which can be used to
- * toggle spoken feedback on some touch-only devices.
- * @type {!ChromeEvent}
- */
-chrome.accessibilityPrivate.onTwoFingerTouchStart;
-
-/**
- * Fired when the user is no longer holding down two fingers (including
- * releasing one, holding down three, or moving them).
- * @type {!ChromeEvent}
- */
-chrome.accessibilityPrivate.onTwoFingerTouchStop;
-
-/**
  * Fired when the Select to Speak context menu is clicked from outside the
  * context of the Select to Speak extension.
  * @type {!ChromeEvent}

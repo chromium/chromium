@@ -1061,18 +1061,6 @@
         ]
       },
       {
-        "name": "onTwoFingerTouchStart",
-        "type": "function",
-        "description": "Fired when we first detect two fingers are held down, which can be used to toggle spoken feedback on some touch-only devices.",
-        "parameters": []
-      },
-      {
-        "name": "onTwoFingerTouchStop",
-        "type": "function",
-        "description": "Fired when the user is no longer holding down two fingers (including releasing one, holding down three, or moving them).",
-        "parameters": []
-      },
-      {
         "name": "onSelectToSpeakContextMenuClicked",
         "type": "function",
         "description": "Fired when the Select to Speak context menu is clicked from outside the context of the Select to Speak extension.",
