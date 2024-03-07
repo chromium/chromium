@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/promos/bubble_signin_promo_signin_button_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,6 +60,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -68,6 +70,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/profiles/badged_profile_photo.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 // Helpers --------------------------------------------------------------------
@@ -75,6 +81,7 @@ namespace {
 constexpr int kMenuWidth = 290;
 constexpr int kMaxImageSize = ProfileMenuViewBase::kIdentityImageSize;
 constexpr int kDefaultMargin = 8;
+constexpr int kAccountCardMargin = 4;
 constexpr int kBadgeSize = 16;
 constexpr int kCircularImageButtonSize = 28;
 constexpr int kCircularImageButtonRefreshSize = 32;
@@ -773,7 +780,8 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
     const std::u16string& button_text,
     ui::ColorId background_color_id,
     const base::RepeatingClosure& action,
-    bool show_sync_badge) {
+    bool show_sync_badge,
+    AccountInfo account) {
   const int kDescriptionIconSpacing =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -814,6 +822,9 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
 
   if (show_sync_badge) {
     description_container->AddChildView(std::make_unique<SyncImageView>(this));
+  } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                 switches::ExplicitBrowserSigninPhase::kFull)) {
+    description_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   } else {
     // If there is no image, the description is centered.
     description_layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
@@ -831,6 +842,10 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred, true));
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
 
   // Set sync info description as the name of the parent container, so
   // accessibility tools can read it together with the button text. The role
@@ -838,6 +853,62 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
   sync_info_container_->GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   sync_info_container_->GetViewAccessibility().SetName(
       description, ax::mojom::NameFrom::kAttribute);
+
+  // Add account card in the signin promo it the user is in the web-only signed
+  // in state in the UNO model.
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull) &&
+      !account.IsEmpty()) {
+    views::View* account_container =
+        sync_info_container_->AddChildView(std::make_unique<views::View>());
+    account_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::LayoutOrientation::kVertical,
+                                 views::MinimumFlexSizeRule::kPreferred,
+                                 views::MaximumFlexSizeRule::kUnbounded, true,
+                                 views::MinimumFlexSizeRule::kScaleToZero));
+    account_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetIgnoreDefaultMainAxisMargins(true)
+        .SetCollapseMargins(true)
+        .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetDefault(
+            views::kMarginsKey,
+            gfx::Insets::VH(kAccountCardMargin, kDescriptionIconSpacing));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+    gfx::Image account_icon = account.account_image;
+    if (account_icon.IsEmpty()) {
+      account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+          profiles::GetPlaceholderAvatarIconResourceID());
+    }
+    account_container->AddChildView(std::make_unique<BadgedProfilePhoto>(
+        BadgedProfilePhoto::BADGE_TYPE_NONE, account_icon));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+    auto* label_wrapper =
+        account_container->AddChildView(std::make_unique<views::View>());
+    label_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+    label_wrapper->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+    views::StyledLabel* title =
+        label_wrapper->AddChildView(std::make_unique<views::StyledLabel>());
+    title->SetText(base::UTF8ToUTF16(account.full_name));
+    title->SetDefaultTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+    // Allow the StyledLabel for title to assume its preferred size on a single
+    // line and let the flex layout attenuate its width if necessary.
+    title->SizeToFit(0);
+    views::Label* subtitle =
+        label_wrapper->AddChildView(std::make_unique<views::Label>(
+            base::UTF8ToUTF16(account.email), views::style::CONTEXT_LABEL,
+            views::style::STYLE_BODY_4));
+    subtitle->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    subtitle->SetAutoColorReadabilityEnabled(false);
+  }
 
   // Add the prominent button at the bottom.
   auto* button =

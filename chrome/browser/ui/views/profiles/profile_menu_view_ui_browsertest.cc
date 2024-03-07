@@ -128,8 +128,14 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                           .use_dark_theme = true,
                           .use_right_to_left_language = true},
      .signin_status = SigninStatusPixelTestParam::kSignedInSyncNotWorking},
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The test is disabled on these platforms because the maximum window
+    // height set by the operating system is smaller than the height of the
+    // dialog. The test will crash if we exceed that height.
     {.pixel_test_param = {.test_suffix = "WebSignedIn_Chrome"},
-     .signin_status = SigninStatusPixelTestParam::kWebSignedIn}};
+     .signin_status = SigninStatusPixelTestParam::kWebSignedIn},
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LACROS)
+};
 
 }  // namespace
 
@@ -140,7 +146,8 @@ class ProfileMenuViewPixelTest
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     if (GetParam().signin_status == SigninStatusPixelTestParam::kWebSignedIn) {
-      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+      feature_list_.InitAndEnableFeature(
+          switches::kExplicitBrowserSigninUIOnDesktop);
     }
   }
 

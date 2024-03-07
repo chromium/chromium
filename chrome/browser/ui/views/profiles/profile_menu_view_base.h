@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -117,12 +118,14 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& management_label = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   // Displays the sync info section as a rounded rectangle with text on top and
-  // a button on the bottom. Clicking the button triggers |action|.
+  // a button on the bottom. Clicking the button triggers |action|. |account| is
+  // only used for the sign-in promo for a web-only signed in account.
   void BuildSyncInfoWithCallToAction(const std::u16string& description,
                                      const std::u16string& button_text,
                                      ui::ColorId background_color_id,
                                      const base::RepeatingClosure& action,
-                                     bool show_sync_badge);
+                                     bool show_sync_badge,
+                                     AccountInfo account = AccountInfo());
   // Displays the sync info section as a rectangle with text. Clicking the
   // rectangle triggers |action|.
   void BuildSyncInfoWithoutCallToAction(const std::u16string& text,

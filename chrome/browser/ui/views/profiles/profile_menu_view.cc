@@ -683,6 +683,7 @@ void ProfileMenuView::BuildSyncInfo() {
   std::u16string button_text;
   ActionableItem button_type = ActionableItem::kSigninAccountButton;
   bool show_sync_badge = false;
+  bool show_account_card = false;
 
   if (!account_info.IsEmpty()) {
     description =
@@ -693,13 +694,18 @@ void ProfileMenuView::BuildSyncInfo() {
                  switches::ExplicitBrowserSigninPhase::kExperimental) &&
              !account_info_for_promos.IsEmpty()) {
     account_info = account_info_for_promos;
-    description = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
+    description = l10n_util::GetStringUTF16(
+        switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kFull)
+            ? IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION
+            : IDS_PROFILES_DICE_SYNC_PROMO);
     button_text = l10n_util::GetStringFUTF16(
         IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
         base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()
                               ? account_info_for_promos.given_name
                               : account_info_for_promos.email));
     button_type = ActionableItem::kEnableSyncForWebOnlyAccountButton;
+    show_account_card = true;
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // There is always an account on ChromeOS.
@@ -725,7 +731,8 @@ void ProfileMenuView::BuildSyncInfo() {
       description, button_text, ui::kColorSyncInfoBackground,
       base::BindRepeating(&ProfileMenuView::OnSigninButtonClicked,
                           base::Unretained(this), account_info, button_type),
-      show_sync_badge);
+      show_sync_badge,
+      show_account_card ? account_info_for_promos : AccountInfo());
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
