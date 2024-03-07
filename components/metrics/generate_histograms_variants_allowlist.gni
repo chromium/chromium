@@ -26,6 +26,7 @@ template("generate_histograms_variants_allowlist") {
     script =
         "//tools/metrics/histograms/generate_histograms_variants_allowlist.py"
     outputs = [ output_file ]
+    sources = [ invoker.input_xml_file ]
 
     args = [
       "-a" + invoker.allow_list_name,
