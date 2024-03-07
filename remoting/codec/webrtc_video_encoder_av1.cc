@@ -62,9 +62,9 @@ void WebrtcVideoEncoderAV1::SetLosslessColor(bool want_lossless) {
 void WebrtcVideoEncoderAV1::SetEncoderSpeed(int encoder_speed) {
   // Clamp values are based on the lowest and highest values available when
   // realtime encoding with AV1.  This allows for client-driven experimentation,
-  // however in practice, a value of 9 or 10 should be chosen as that will give
+  // however in practice, a value of 10 or 11 should be chosen as they will give
   // the best performance.
-  av1_encoder_speed_ = std::clamp<int>(encoder_speed, 7, 10);
+  av1_encoder_speed_ = std::clamp<int>(encoder_speed, 7, 11);
 }
 
 bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
