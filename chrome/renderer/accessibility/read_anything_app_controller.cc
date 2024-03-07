@@ -1070,10 +1070,12 @@ std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() const {
 
 void ReadAnythingAppController::RequestImageDataUrl(
     ui::AXNodeID node_id) const {
-  auto target_tree_id = model_.GetActiveTreeId();
-  CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
+  if (features::IsReadAnythingImagesViaAlgorithmEnabled()) {
+    auto target_tree_id = model_.GetActiveTreeId();
+    CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
 
-  page_handler_->OnImageDataRequested(target_tree_id, node_id);
+    page_handler_->OnImageDataRequested(target_tree_id, node_id);
+  }
 }
 
 std::string ReadAnythingAppController::GetImageDataUrl(
