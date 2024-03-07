@@ -508,9 +508,8 @@ bool PopupViewViews::RemoveSelectedCell() {
 }
 
 void PopupViewViews::OnSuggestionsChanged() {
-  if (open_sub_popup_timer_.IsRunning()) {
-    open_sub_popup_timer_.Stop();
-  }
+  // New suggestions invalidate this scheduling (if it's running), cancel it.
+  open_sub_popup_timer_.Stop();
   SetRowWithOpenSubPopup(std::nullopt);
 
   CreateChildViews();
@@ -625,9 +624,8 @@ void PopupViewViews::SetSelectedCell(
     GetPopupRowViewAt(old_index->first).SetSelectedCell(std::nullopt);
   }
 
-  if (open_sub_popup_timer_.IsRunning()) {
-    open_sub_popup_timer_.Stop();
-  }
+  // New selected cell invalidates this scheduling (if it's running), cancel it.
+  open_sub_popup_timer_.Stop();
 
   if (cell_index && HasPopupRowViewAt(cell_index->first)) {
     has_keyboard_focus_ = true;
