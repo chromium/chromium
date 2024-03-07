@@ -17,7 +17,6 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/web/web_local_frame_observer.h"
 
@@ -192,10 +191,6 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
 
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;
-
-  // DocumentToken associated with current page load. Only available after
-  // `DidCreateDocumentElement` event.
-  std::optional<blink::DocumentToken> document_token_;
 };
 
 }  // namespace page_load_metrics
