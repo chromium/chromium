@@ -115,7 +115,8 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
   const gfx::Size dimensions(dst_width, dst_height);
   VideoCaptureDevice::Client::Buffer capture_buffer;
   auto reservation_result_code = client->ReserveOutputBuffer(
-      dimensions, kTargetPixelFormat, frame_feedback_id, &capture_buffer);
+      dimensions, kTargetPixelFormat, frame_feedback_id, &capture_buffer,
+      /*require_new_buffer_id=*/nullptr, /*retire_old_buffer_id=*/nullptr);
   if (reservation_result_code !=
       VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     DLOG(ERROR) << "Failed to reserve output capture buffer: "
