@@ -243,6 +243,9 @@ CSSValue* ComputedStyleUtils::CurrentColorOrValidColor(
     const ComputedStyle& style,
     const StyleColor& color,
     CSSValuePhase value_phase) {
+  if (value_phase == CSSValuePhase::kComputedValue && color.IsCurrentColor()) {
+    return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+  }
   return cssvalue::CSSColor::Create(
       color.Resolve(style.GetCurrentColor(), style.UsedColorScheme()));
 }
@@ -3347,11 +3350,11 @@ CSSValue* ComputedStyleUtils::StrokeDashArrayToCSSValueList(
 }
 
 CSSValue* ComputedStyleUtils::ValueForSVGPaint(const SVGPaint& paint,
-                                               const ComputedStyle& style) {
+                                               const ComputedStyle& style,
+                                               CSSValuePhase value_phase) {
   switch (paint.type) {
     case SVGPaintType::kColor:
-      return CurrentColorOrValidColor(style, paint.GetColor(),
-                                      CSSValuePhase::kComputedValue);
+      return CurrentColorOrValidColor(style, paint.GetColor(), value_phase);
     case SVGPaintType::kNone:
       return CSSIdentifierValue::Create(CSSValueID::kNone);
     case SVGPaintType::kUriNone:
@@ -3359,11 +3362,10 @@ CSSValue* ComputedStyleUtils::ValueForSVGPaint(const SVGPaint& paint,
       CSSValueList* values = CSSValueList::CreateSpaceSeparated();
       values->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(
           CSSUrlData(paint.GetUrl())));
-      values->Append(
-          paint.type == SVGPaintType::kUriNone
-              ? *CSSIdentifierValue::Create(CSSValueID::kNone)
-              : *CurrentColorOrValidColor(style, paint.GetColor(),
-                                          CSSValuePhase::kComputedValue));
+      values->Append(paint.type == SVGPaintType::kUriNone
+                         ? *CSSIdentifierValue::Create(CSSValueID::kNone)
+                         : *CurrentColorOrValidColor(style, paint.GetColor(),
+                                                     value_phase));
       return values;
     }
     case SVGPaintType::kUri:
@@ -3423,7 +3425,8 @@ CSSValue* ComputedStyleUtils::ValueForShadowList(const ShadowList* shadow_list,
 
 CSSValue* ComputedStyleUtils::ValueForFilter(
     const ComputedStyle& style,
-    const FilterOperations& filter_operations) {
+    const FilterOperations& filter_operations,
+    CSSValuePhase value_phase) {
   if (filter_operations.Operations().empty()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
@@ -3514,9 +3517,8 @@ CSSValue* ComputedStyleUtils::ValueForFilter(
             MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kDropShadow);
         // We want our computed style to look like that of a text shadow (has
         // neither spread nor inset style).
-        filter_value->Append(
-            *ValueForShadowData(drop_shadow_operation.Shadow(), style, false,
-                                CSSValuePhase::kComputedValue));
+        filter_value->Append(*ValueForShadowData(drop_shadow_operation.Shadow(),
+                                                 style, false, value_phase));
         break;
       }
       default:

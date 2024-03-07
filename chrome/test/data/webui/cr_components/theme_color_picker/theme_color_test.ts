@@ -35,7 +35,7 @@ suite('CrComponentsThemeColorTest', () => {
         'cr-theme-color-check-mark-wrapper')!;
     assertTrue(wrapper.checked);
     const svg = colorElement.shadowRoot!.querySelector('svg')!;
-    assertTrue(hasStyle(svg, 'border', '0px none rgb(0, 0, 0)'));
+    assertTrue(hasStyle(svg, 'border', '0px none currentcolor'));
   });
 
   test('color can be unchecked', () => {
