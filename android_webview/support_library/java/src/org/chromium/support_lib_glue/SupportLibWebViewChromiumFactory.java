@@ -93,6 +93,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                 Features.ATTRIBUTION_BEHAVIOR,
                 Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
                 Features.MUTE_AUDIO,
+                Features.WEB_AUTHENTICATION + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -202,6 +203,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         ApiCall.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
         ApiCall.SET_AUDIO_MUTED,
         ApiCall.IS_AUDIO_MUTED,
+        ApiCall.WEB_SETTINGS_SET_WEBAUTHN_SUPPORT,
+        ApiCall.WEB_SETTINGS_GET_WEBAUTHN_SUPPORT,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -310,8 +313,10 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS = 99;
         int SET_AUDIO_MUTED = 100;
         int IS_AUDIO_MUTED = 101;
+        int WEB_SETTINGS_SET_WEBAUTHN_SUPPORT = 102;
+        int WEB_SETTINGS_GET_WEBAUTHN_SUPPORT = 103;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 102;
+        int COUNT = 104;
     }
 
     public static void recordApiCall(@ApiCall int apiCall) {
