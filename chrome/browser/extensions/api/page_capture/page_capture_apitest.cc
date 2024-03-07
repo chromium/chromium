@@ -90,8 +90,14 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+// TODO(crbug.com/326868086): Test is flaky on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SaveAsMHTMLWithoutFileAccess DISABLED_SaveAsMHTMLWithoutFileAccess
+#else
+#define MAYBE_SaveAsMHTMLWithoutFileAccess SaveAsMHTMLWithoutFileAccess
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       SaveAsMHTMLWithoutFileAccess) {
+                       MAYBE_SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
@@ -99,7 +105,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
   WaitForFileCleanup(&delegate);
 }
 
-#if defined(UNDEFINED_SANITIZER)
+// TODO(crbug.com/326868086): Test is flaky on UBSan and MSan.
+#if defined(UNDEFINED_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_SaveAsMHTMLWithFileAccess DISABLED_SaveAsMHTMLWithFileAccess
 #else
 #define MAYBE_SaveAsMHTMLWithFileAccess SaveAsMHTMLWithFileAccess
