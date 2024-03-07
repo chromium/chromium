@@ -17,20 +17,20 @@ class CreditCardBenefitBaseTestApi {
   explicit CreditCardBenefitBaseTestApi(CreditCardBenefitBase* benefit)
       : benefit_(*benefit) {}
 
-  void SetBenefitIdForTesting(CreditCardBenefitBase::BenefitId benefit_id) {
+  void SetBenefitId(CreditCardBenefitBase::BenefitId benefit_id) {
     benefit_->benefit_id_ = std::move(benefit_id);
   }
-  void SetLinkedCardInstrumentIdForTesting(
+  void SetLinkedCardInstrumentId(
       CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id) {
     benefit_->linked_card_instrument_id_ = linked_card_instrument_id;
   }
-  void SetBenefitDescriptionForTesting(std::u16string benefit_description) {
+  void SetBenefitDescription(std::u16string benefit_description) {
     benefit_->benefit_description_ = std::move(benefit_description);
   }
-  void SetStartTimeForTesting(base::Time start_time) {
+  void SetStartTime(base::Time start_time) {
     benefit_->start_time_ = start_time;
   }
-  void SetEndTimeForTesting(base::Time expiry_time) {
+  void SetExpiryTime(base::Time expiry_time) {
     benefit_->expiry_time_ = expiry_time;
   }
 
@@ -46,7 +46,7 @@ class CreditCardCategoryBenefitTestApi : public CreditCardBenefitBaseTestApi {
       : CreditCardBenefitBaseTestApi(category_benefit),
         category_benefit_(*category_benefit) {}
 
-  void SetBenefitCategoryForTesting(
+  void SetBenefitCategory(
       CreditCardCategoryBenefit::BenefitCategory benefit_category) {
     category_benefit_->benefit_category_ = benefit_category;
   }
@@ -63,8 +63,7 @@ class CreditCardMerchantBenefitTestApi : public CreditCardBenefitBaseTestApi {
       : CreditCardBenefitBaseTestApi(merchant_benefit),
         merchant_benefit_(*merchant_benefit) {}
 
-  void SetMerchantDomainsForTesting(
-      base::flat_set<url::Origin> merchant_domains) {
+  void SetMerchantDomains(base::flat_set<url::Origin> merchant_domains) {
     merchant_benefit_->merchant_domains_ = std::move(merchant_domains);
   }
 

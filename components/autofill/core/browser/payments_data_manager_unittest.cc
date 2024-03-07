@@ -1405,7 +1405,7 @@ TEST_F(PaymentsDataManagerTest, GetInactiveCreditCardBenefits) {
 
   CreditCardFlatRateBenefit flat_rate_benefit =
       test::GetActiveCreditCardFlatRateBenefit();
-  test_api(flat_rate_benefit).SetStartTimeForTesting(future_time);
+  test_api(flat_rate_benefit).SetStartTime(future_time);
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_flat_rate_benefit =
           flat_rate_benefit.linked_card_instrument_id();
@@ -1413,7 +1413,7 @@ TEST_F(PaymentsDataManagerTest, GetInactiveCreditCardBenefits) {
 
   CreditCardCategoryBenefit category_benefit =
       test::GetActiveCreditCardCategoryBenefit();
-  test_api(category_benefit).SetStartTimeForTesting(future_time);
+  test_api(category_benefit).SetStartTime(future_time);
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_category_benefit =
           category_benefit.linked_card_instrument_id();
@@ -1424,7 +1424,7 @@ TEST_F(PaymentsDataManagerTest, GetInactiveCreditCardBenefits) {
 
   CreditCardMerchantBenefit merchant_benefit =
       test::GetActiveCreditCardMerchantBenefit();
-  test_api(merchant_benefit).SetStartTimeForTesting(future_time);
+  test_api(merchant_benefit).SetStartTime(future_time);
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_merchant_benefit =
           merchant_benefit.linked_card_instrument_id();
@@ -1453,7 +1453,7 @@ TEST_F(PaymentsDataManagerTest, GetExpiredCreditCardBenefits) {
 
   CreditCardFlatRateBenefit flat_rate_benefit =
       test::GetActiveCreditCardFlatRateBenefit();
-  test_api(flat_rate_benefit).SetEndTimeForTesting(expired_time);
+  test_api(flat_rate_benefit).SetExpiryTime(expired_time);
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_flat_rate_benefit =
           flat_rate_benefit.linked_card_instrument_id();
@@ -1461,7 +1461,7 @@ TEST_F(PaymentsDataManagerTest, GetExpiredCreditCardBenefits) {
 
   CreditCardCategoryBenefit category_benefit =
       test::GetActiveCreditCardCategoryBenefit();
-  test_api(category_benefit).SetEndTimeForTesting(expired_time);
+  test_api(category_benefit).SetExpiryTime(expired_time);
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_category_benefit =
           category_benefit.linked_card_instrument_id();
@@ -1472,7 +1472,7 @@ TEST_F(PaymentsDataManagerTest, GetExpiredCreditCardBenefits) {
 
   CreditCardMerchantBenefit merchant_benefit =
       test::GetActiveCreditCardMerchantBenefit();
-  test_api(merchant_benefit).SetEndTimeForTesting(expired_time);
+  test_api(merchant_benefit).SetExpiryTime(expired_time);
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_merchant_benefit =
           merchant_benefit.linked_card_instrument_id();

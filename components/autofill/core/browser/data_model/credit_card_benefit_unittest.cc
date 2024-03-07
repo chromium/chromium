@@ -36,42 +36,57 @@ TEST(CreditCardBenefitTest, CompareFlatRateBenefits) {
 
   // Same benefit.
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different IDs.
-  test_api(other_benefit)
-      .SetBenefitIdForTesting(CreditCardBenefitBase::BenefitId("id2"));
+  test_api(other_benefit).SetBenefitId(CreditCardBenefitBase::BenefitId("id2"));
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetBenefitIdForTesting(benefit.benefit_id());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetBenefitId(benefit.benefit_id());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different instrument IDs.
   test_api(other_benefit)
-      .SetLinkedCardInstrumentIdForTesting(
+      .SetLinkedCardInstrumentId(
           CreditCardBenefitBase::LinkedCardInstrumentId(2234));
   EXPECT_TRUE(benefit != other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
   test_api(other_benefit)
-      .SetLinkedCardInstrumentIdForTesting(benefit.linked_card_instrument_id());
+      .SetLinkedCardInstrumentId(benefit.linked_card_instrument_id());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different benefit descriptions.
-  test_api(other_benefit).SetBenefitDescriptionForTesting(u"description2");
+  test_api(other_benefit).SetBenefitDescription(u"description2");
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit)
-      .SetBenefitDescriptionForTesting(benefit.benefit_description());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetBenefitDescription(benefit.benefit_description());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different start times.
-  test_api(other_benefit).SetStartTimeForTesting(base::Time::Min());
+  test_api(other_benefit).SetStartTime(base::Time::Min());
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetStartTimeForTesting(benefit.start_time());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetStartTime(benefit.start_time());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
-  // Different end times.
-  test_api(other_benefit)
-      .SetEndTimeForTesting(AutofillClock::Now() + base::Days(1));
+  // Different expiry times.
+  test_api(other_benefit).SetExpiryTime(AutofillClock::Now() + base::Days(1));
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetEndTimeForTesting(benefit.expiry_time());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetExpiryTime(benefit.expiry_time());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
+
+  // Different benefit type.
+  CreditCardBenefit other_type_benefit = CreditCardCategoryBenefit(
+      kArbitraryBenefitId, kArbitraryInstrumentId, kArbitraryBenefitCategory,
+      kArbitraryDescription, kArbitraryPastTime, kArbitraryFutureTime);
+  CreditCardBenefit this_benefit = benefit;
+  EXPECT_TRUE(other_type_benefit != this_benefit);
 }
 
 // Test equals when category benefits are different.
@@ -85,51 +100,66 @@ TEST(CreditCardBenefitTest, CompareCategoryBenefits) {
 
   // Same benefit.
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different IDs.
-  test_api(other_benefit)
-      .SetBenefitIdForTesting(CreditCardBenefitBase::BenefitId("id2"));
+  test_api(other_benefit).SetBenefitId(CreditCardBenefitBase::BenefitId("id2"));
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetBenefitIdForTesting(benefit.benefit_id());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetBenefitId(benefit.benefit_id());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different instrument IDs.
   test_api(other_benefit)
-      .SetLinkedCardInstrumentIdForTesting(
+      .SetLinkedCardInstrumentId(
           CreditCardBenefitBase::LinkedCardInstrumentId(2234));
   EXPECT_TRUE(benefit != other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
   test_api(other_benefit)
-      .SetLinkedCardInstrumentIdForTesting(benefit.linked_card_instrument_id());
+      .SetLinkedCardInstrumentId(benefit.linked_card_instrument_id());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different benefit categories.
   test_api(other_benefit)
-      .SetBenefitCategoryForTesting(
-          CreditCardCategoryBenefit::BenefitCategory::kFlights);
+      .SetBenefitCategory(CreditCardCategoryBenefit::BenefitCategory::kFlights);
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit)
-      .SetBenefitCategoryForTesting(benefit.benefit_category());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetBenefitCategory(benefit.benefit_category());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different benefit descriptions.
-  test_api(other_benefit).SetBenefitDescriptionForTesting(u"description2");
+  test_api(other_benefit).SetBenefitDescription(u"description2");
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit)
-      .SetBenefitDescriptionForTesting(benefit.benefit_description());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetBenefitDescription(benefit.benefit_description());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different start times.
-  test_api(other_benefit).SetStartTimeForTesting(base::Time::Min());
+  test_api(other_benefit).SetStartTime(base::Time::Min());
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetStartTimeForTesting(benefit.start_time());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetStartTime(benefit.start_time());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
-  // Different end times.
-  test_api(other_benefit)
-      .SetEndTimeForTesting(AutofillClock::Now() + base::Days(1));
+  // Different expiry times.
+  test_api(other_benefit).SetExpiryTime(AutofillClock::Now() + base::Days(1));
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetEndTimeForTesting(benefit.expiry_time());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetExpiryTime(benefit.expiry_time());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
+
+  // Different benefit type.
+  CreditCardBenefit other_type_benefit = CreditCardFlatRateBenefit(
+      kArbitraryBenefitId, kArbitraryInstrumentId, kArbitraryDescription,
+      kArbitraryPastTime, kArbitraryFutureTime);
+  CreditCardBenefit this_benefit = benefit;
+  EXPECT_TRUE(other_type_benefit != this_benefit);
 }
 
 // Test equals when merchant benefits are different.
@@ -145,51 +175,67 @@ TEST(CreditCardBenefitTest, CompareMerchantBenefits) {
 
   // Same benefit.
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different IDs.
-  test_api(other_benefit)
-      .SetBenefitIdForTesting(CreditCardBenefitBase::BenefitId("id2"));
+  test_api(other_benefit).SetBenefitId(CreditCardBenefitBase::BenefitId("id2"));
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetBenefitIdForTesting(benefit.benefit_id());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetBenefitId(benefit.benefit_id());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different instrument IDs.
   test_api(other_benefit)
-      .SetLinkedCardInstrumentIdForTesting(
+      .SetLinkedCardInstrumentId(
           CreditCardBenefitBase::LinkedCardInstrumentId(2234));
   EXPECT_TRUE(benefit != other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
   test_api(other_benefit)
-      .SetLinkedCardInstrumentIdForTesting(benefit.linked_card_instrument_id());
+      .SetLinkedCardInstrumentId(benefit.linked_card_instrument_id());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different benefit descriptions.
-  test_api(other_benefit).SetBenefitDescriptionForTesting(u"description2");
+  test_api(other_benefit).SetBenefitDescription(u"description2");
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit)
-      .SetBenefitDescriptionForTesting(benefit.benefit_description());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetBenefitDescription(benefit.benefit_description());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different merchant domains.
   test_api(other_benefit)
-      .SetMerchantDomainsForTesting(
+      .SetMerchantDomains(
           {url::Origin::Create(GURL("http://www.example2.com"))});
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit)
-      .SetMerchantDomainsForTesting(benefit.merchant_domains());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetMerchantDomains(benefit.merchant_domains());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
   // Different start times.
-  test_api(other_benefit).SetStartTimeForTesting(base::Time::Min());
+  test_api(other_benefit).SetStartTime(base::Time::Min());
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetStartTimeForTesting(benefit.start_time());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetStartTime(benefit.start_time());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
 
-  // Different end times.
-  test_api(other_benefit)
-      .SetEndTimeForTesting(AutofillClock::Now() + base::Days(1));
+  // Different expiry times.
+  test_api(other_benefit).SetExpiryTime(AutofillClock::Now() + base::Days(1));
   EXPECT_TRUE(benefit != other_benefit);
-  test_api(other_benefit).SetEndTimeForTesting(benefit.expiry_time());
+  EXPECT_TRUE(benefit <=> other_benefit != 0);
+  test_api(other_benefit).SetExpiryTime(benefit.expiry_time());
   EXPECT_TRUE(benefit == other_benefit);
+  EXPECT_TRUE(benefit <=> other_benefit == 0);
+
+  // Different benefit type.
+  CreditCardBenefit other_type_benefit = CreditCardFlatRateBenefit(
+      kArbitraryBenefitId, kArbitraryInstrumentId, kArbitraryDescription,
+      kArbitraryPastTime, kArbitraryFutureTime);
+  CreditCardBenefit this_benefit = benefit;
+  EXPECT_TRUE(other_type_benefit != this_benefit);
 }
 
 // Test that `IsValid` returns true for valid benefits.

@@ -37,7 +37,6 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -1719,11 +1718,23 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
 }
 
 bool PaymentsAutofillTable::GetAllCreditCardBenefits(
-    std::vector<CreditCardBenefit>* credit_card_benefits) {
+    std::vector<CreditCardBenefit>& credit_card_benefits) {
+  return GetCreditCardBenefitsForInstrumentId(std::nullopt,
+                                              credit_card_benefits);
+}
+
+bool PaymentsAutofillTable::GetCreditCardBenefitsForInstrumentId(
+    const std::optional<int64_t> instrument_id,
+    std::vector<CreditCardBenefit>& credit_card_benefits) {
   sql::Statement get_benefits;
+  std::string statement_modifiers =
+      instrument_id ? base::StrCat({"WHERE instrument_id = ",
+                                    base::NumberToString(*instrument_id)})
+                    : "";
   SelectBuilder(db_, get_benefits, kMaskedCreditCardBenefitsTable,
                 {kBenefitId, kInstrumentId, kBenefitType, kBenefitDescription,
-                 kStartTime, kEndTime, kBenefitCategory});
+                 kStartTime, kEndTime, kBenefitCategory},
+                statement_modifiers);
 
   while (get_benefits.Step()) {
     int index = 0;
@@ -1741,17 +1752,17 @@ bool PaymentsAutofillTable::GetAllCreditCardBenefits(
 
     switch (benefit_type) {
       case 0:
-        credit_card_benefits->push_back(CreditCardFlatRateBenefit(
+        credit_card_benefits.push_back(CreditCardFlatRateBenefit(
             benefit_id, linked_card_instrument_id, benefit_description,
             start_time, expiry_time));
         break;
       case 1:
-        credit_card_benefits->push_back(CreditCardCategoryBenefit(
+        credit_card_benefits.push_back(CreditCardCategoryBenefit(
             benefit_id, linked_card_instrument_id, benefit_category,
             benefit_description, start_time, expiry_time));
         break;
       case 2:
-        credit_card_benefits->push_back(CreditCardMerchantBenefit(
+        credit_card_benefits.push_back(CreditCardMerchantBenefit(
             benefit_id, linked_card_instrument_id, benefit_description,
             GetMerchantDomainsForBenefitId(benefit_id), start_time,
             expiry_time));
@@ -2081,7 +2092,7 @@ bool PaymentsAutofillTable::DeleteFromMaskedCreditCards(const std::string& id) {
 
 base::flat_set<url::Origin>
 PaymentsAutofillTable::GetMerchantDomainsForBenefitId(
-    const CreditCardBenefitBase::BenefitId benefit_id) {
+    const CreditCardBenefitBase::BenefitId& benefit_id) {
   base::flat_set<url::Origin> merchant_domains;
   sql::Statement s;
   SelectBuilder(db_, s, kBenefitMerchantDomainsTable, {kMerchantDomain},

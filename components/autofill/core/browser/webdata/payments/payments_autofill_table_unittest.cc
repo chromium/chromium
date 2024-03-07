@@ -1706,7 +1706,7 @@ TEST_F(PaymentsAutofillTableTest, GetAllCreditCardBenefits) {
 
   // Check all valid benefits are added to table and are searchable.
   std::vector<CreditCardBenefit> output_benefits;
-  EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
+  EXPECT_TRUE(table_->GetAllCreditCardBenefits(output_benefits));
   EXPECT_EQ(input_benefits.size(), output_benefits.size());
   for (const auto& input_benefit : input_benefits) {
     // Find input benefits in outputs.
@@ -1722,15 +1722,14 @@ TEST_F(PaymentsAutofillTableTest, AddInactiveCreditCardBenefit) {
   std::vector<CreditCardBenefit> input_benefits;
   CreditCardMerchantBenefit inactive_benefit =
       test::GetActiveCreditCardMerchantBenefit();
-  test_api(inactive_benefit)
-      .SetStartTimeForTesting(AutofillClock::Now() + base::Days(1));
+  test_api(inactive_benefit).SetStartTime(AutofillClock::Now() + base::Days(1));
   EXPECT_TRUE(inactive_benefit.IsValid());
   input_benefits.push_back(std::move(inactive_benefit));
   EXPECT_TRUE(table_->SetCreditCardBenefits(input_benefits));
 
   // Check the inactive benefit is added to table and is searchable.
   std::vector<CreditCardBenefit> output_benefits;
-  EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
+  EXPECT_TRUE(table_->GetAllCreditCardBenefits(output_benefits));
   ASSERT_EQ(1u, output_benefits.size());
   EXPECT_EQ(input_benefits[0], output_benefits[0]);
 }
@@ -1744,7 +1743,7 @@ TEST_F(PaymentsAutofillTableTest, AddInvalidCreditCardBenefit) {
   CreditCardCategoryBenefit invalid_benefit =
       test::GetActiveCreditCardCategoryBenefit();
   test_api(invalid_benefit)
-      .SetBenefitCategoryForTesting(
+      .SetBenefitCategory(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory);
   ASSERT_FALSE(invalid_benefit.IsValid());
 
@@ -1757,7 +1756,7 @@ TEST_F(PaymentsAutofillTableTest, AddInvalidCreditCardBenefit) {
 
   // Check invalid benefit will not be added to the table.
   std::vector<CreditCardBenefit> output_benefits;
-  EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
+  EXPECT_TRUE(table_->GetAllCreditCardBenefits(output_benefits));
   ASSERT_EQ(output_benefits.size(), 1u);
   EXPECT_EQ(valid_input_benefit_id, get_benefit_id(output_benefits[0]));
 }
@@ -1773,7 +1772,7 @@ TEST_F(PaymentsAutofillTableTest, ClearCreditCardBenefits) {
   std::vector<CreditCardBenefit> output_benefits;
 
   // Check benefits are added.
-  EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
+  EXPECT_TRUE(table_->GetAllCreditCardBenefits(output_benefits));
   EXPECT_EQ(input_benefits.size(), output_benefits.size());
   sql::Statement count_statement(table_->GetDbForTesting()->GetUniqueStatement(
       "SELECT COUNT(benefit_id) from benefit_merchant_domains"));
@@ -1784,12 +1783,33 @@ TEST_F(PaymentsAutofillTableTest, ClearCreditCardBenefits) {
 
   // Check benefits and benefit merchant domains are removed.
   output_benefits.clear();
-  EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
+  EXPECT_TRUE(table_->GetAllCreditCardBenefits(output_benefits));
   EXPECT_TRUE(output_benefits.empty());
 
   count_statement.Reset(/*clear_bound_vars=*/true);
   EXPECT_TRUE(count_statement.Step());
   EXPECT_EQ(0, count_statement.ColumnInt(0));
+}
+
+TEST_F(PaymentsAutofillTableTest, GetCreditCardBenefitsForInstrumentId) {
+  // Add benefits with different instrument ids to the table.
+  std::vector<CreditCardBenefit> input_benefits = {
+      test::GetActiveCreditCardFlatRateBenefit(),
+      test::GetActiveCreditCardCategoryBenefit(),
+      test::GetActiveCreditCardMerchantBenefit()};
+  EXPECT_TRUE(table_->SetCreditCardBenefits(input_benefits));
+
+  // Get the first benefit in the `input_benefits` from the table by instrument
+  // id.
+  std::vector<CreditCardBenefit> output_benefits;
+  EXPECT_TRUE(table_->GetCreditCardBenefitsForInstrumentId(
+      *absl::visit(
+          [](const auto& benefit) {
+            return benefit.linked_card_instrument_id();
+          },
+          input_benefits[0]),
+      output_benefits));
+  EXPECT_THAT(output_benefits, testing::ElementsAre(input_benefits[0]));
 }
 
 }  // namespace

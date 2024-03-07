@@ -865,7 +865,7 @@ AutofillWebDataBackendImpl::GetCreditCardBenefits(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<CreditCardBenefit> credit_card_benefits;
   PaymentsAutofillTable::FromWebDatabase(db)->GetAllCreditCardBenefits(
-      &credit_card_benefits);
+      credit_card_benefits);
   return std::make_unique<WDResult<std::vector<CreditCardBenefit>>>(
       CREDIT_CARD_BENEFIT_RESULT, std::move(credit_card_benefits));
 }
