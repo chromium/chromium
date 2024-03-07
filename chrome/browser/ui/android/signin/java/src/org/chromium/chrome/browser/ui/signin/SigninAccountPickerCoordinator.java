@@ -42,6 +42,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     private final Delegate mDelegate;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final SigninManager mSigninManager;
+    private final @AccountPickerLaunchMode int mAccountPickerLaunchMode;
     private final @SigninAccessPoint int mSigninAccessPoint;
 
     private ScrimCoordinator mScrim;
@@ -77,6 +78,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
             @NonNull Delegate delegate,
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull SigninManager signinManager,
+            @AccountPickerLaunchMode int accountPickerLaunchMode,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
@@ -84,6 +86,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         mDelegate = delegate;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mSigninManager = signinManager;
+        mAccountPickerLaunchMode = accountPickerLaunchMode;
         mSigninAccessPoint = signinAccessPoint;
 
         initAndShowBottomSheet();
@@ -147,7 +150,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                         this,
                         new AccountPickerBottomSheetStrings() {},
                         mDeviceLockActivityLauncher,
-                        AccountPickerLaunchMode.DEFAULT);
+                        mAccountPickerLaunchMode);
     }
 
     /** Called when the account picker is destroyed after dismissal. */
