@@ -40,6 +40,7 @@ source_set("affiliations") {
     "affiliation_service.h",
     "affiliation_service_impl.cc",
     "affiliation_service_impl.h",
+    "affiliation_source.h",
     "affiliation_utils.cc",
     "affiliation_utils.h",
     "facet_manager.cc",
@@ -86,6 +87,8 @@ source_set("test_support") {
     "mock_affiliation_fetcher_factory.h",
     "mock_affiliation_service.cc",
     "mock_affiliation_service.h",
+    "mock_affiliation_source.cc",
+    "mock_affiliation_source.h",
   ]
   deps = [
     ":affiliations",

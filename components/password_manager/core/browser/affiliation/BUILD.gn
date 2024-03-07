@@ -23,6 +23,8 @@ source_set("affiliation_fetching") {
   sources = [
     "affiliations_prefetcher.cc",
     "affiliations_prefetcher.h",
+    "password_affiliation_source_adapter.cc",
+    "password_affiliation_source_adapter.h",
   ]
   deps = [
     "//components/affiliations/core/browser:affiliations",
@@ -85,7 +87,10 @@ source_set("unit_tests") {
 
 source_set("affiliation_fetching_unittests") {
   testonly = true
-  sources = [ "affiliations_prefetcher_unittest.cc" ]
+  sources = [
+    "affiliations_prefetcher_unittest.cc",
+    "password_affiliation_source_adapter_unittest.cc",
+  ]
   deps = [
     ":affiliation_fetching",
     ":test_support",
