@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -64,18 +65,9 @@ base::FilePath GetTestComponentDir() {
       test_data_dir.Append(base::FilePath(kScreenAIResourcePathForTests));
 
   CHECK(base::PathExists(screenai_library_dir));
+  CHECK(base::PathExists(
+      screenai_library_dir.Append(kScreenAIComponentBinaryName)));
   return screenai_library_dir;
-}
-
-// Get the absolute path of the ScreenAI component for testing.
-base::FilePath GetTestComponentBinaryPath() {
-  base::FilePath test_data_dir = GetTestComponentDir();
-
-  base::FilePath screenai_library_path =
-      test_data_dir.Append(kScreenAIComponentBinaryName);
-
-  CHECK(base::PathExists(screenai_library_path));
-  return screenai_library_path;
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
 
@@ -109,11 +101,11 @@ base::FilePath GetComponentDir() {
   return components_dir.Append(kScreenAISubDirName);
 }
 
-base::FilePath GetLatestComponentBinaryPath() {
+base::FilePath GetLatestComponentPath() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
   if (features::IsScreenAITestModeEnabled()) {
     CHECK_IS_TEST();
-    return GetTestComponentBinaryPath();
+    return GetComponentDir();
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
 
@@ -129,21 +121,32 @@ base::FilePath GetLatestComponentBinaryPath() {
   base::FileEnumerator enumerator(screen_ai_dir,
                                   /*recursive=*/false,
                                   base::FileEnumerator::DIRECTORIES);
+  base::Version latest_version;
   for (base::FilePath version_dir = enumerator.Next(); !version_dir.empty();
        version_dir = enumerator.Next()) {
-    latest_version_dir =
-        latest_version_dir < version_dir ? version_dir : latest_version_dir;
+    base::Version this_version(version_dir.BaseName().AsUTF8Unsafe());
+    if (this_version.IsValid() &&
+        (!latest_version.IsValid() || this_version > latest_version)) {
+      latest_version = std::move(this_version);
+      latest_version_dir = std::move(version_dir);
+    }
   }
 #endif
 
-  if (latest_version_dir.empty()) {
-    return base::FilePath();
+  return latest_version_dir;
+}
+
+base::FilePath GetLatestComponentBinaryPath() {
+  base::FilePath component_path = GetLatestComponentPath();
+
+  if (component_path.empty()) {
+    return component_path;
   }
 
-  base::FilePath component_path =
-      latest_version_dir.Append(kScreenAIComponentBinaryName);
-  if (!base::PathExists(component_path))
+  component_path = component_path.Append(kScreenAIComponentBinaryName);
+  if (!base::PathExists(component_path)) {
     return base::FilePath();
+  }
 
   return component_path;
 }

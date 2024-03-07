@@ -130,10 +130,6 @@ ScreenAIComponentInstallerPolicy::GetInstallerAttributes() const {
 
 // static
 void ScreenAIComponentInstallerPolicy::DeleteComponent() {
-  if (screen_ai::GetLatestComponentBinaryPath().empty()) {
-    return;
-  }
-
   base::DeletePathRecursively(screen_ai::GetComponentDir());
   screen_ai::ScreenAIInstallState::RecordComponentInstallationResult(
       /*install=*/false,
@@ -148,7 +144,7 @@ void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,
   }
 
   // Clean up.
-  if (!screen_ai::GetLatestComponentBinaryPath().empty()) {
+  if (!screen_ai::GetLatestComponentPath().empty()) {
     ScreenAIComponentInstallerPolicy::DeleteComponent();
   }
 }
