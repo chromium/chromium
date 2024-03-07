@@ -18,6 +18,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -28,6 +29,8 @@ namespace {
 constexpr gfx::Size kFaviconPreferredSize(16, 16);
 constexpr int kItemIconBackgroundRounding = 10;
 constexpr gfx::Size kItemIconPreferredSize(32, 32);
+constexpr int kTitleFaviconSpacing = 4;
+constexpr int kBetweenFaviconSpacing = 4;
 
 // Constants for `PineItemsContainerView`.
 constexpr gfx::Insets kItemsContainerInsets = gfx::Insets::VH(15, 15);
@@ -55,17 +58,28 @@ class PineItemView : public views::BoxLayoutView {
                      .SetPreferredSize(pine::kItemIconBackgroundPreferredSize)
                      .Build());
 
-    views::Label* app_title_label;
-    AddChildView(views::Builder<views::Label>()
-                     .CopyAddressTo(&app_title_label)
-                     .SetEnabledColor(SK_ColorBLACK)
-                     .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
-                                                pine::kItemTitleFontSize,
-                                                gfx::Font::Weight::BOLD))
-                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                     .SetText(app_title)
-                     .Build());
-    SetFlexForView(app_title_label, 1);
+    // Add nested `BoxLayoutView`s, so we can have the title of the window on
+    // top, and a row of favicons on the bottom.
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+            .SetBetweenChildSpacing(kTitleFaviconSpacing)
+            .AddChildren(
+                views::Builder<views::Label>()
+                    .SetEnabledColor(SK_ColorBLACK)
+                    .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
+                                               pine::kItemTitleFontSize,
+                                               gfx::Font::Weight::BOLD))
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetText(app_title),
+                views::Builder<views::BoxLayoutView>()
+                    .CopyAddressTo(&favicon_container_view_)
+                    .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                    .SetCrossAxisAlignment(
+                        views::BoxLayout::CrossAxisAlignment::kCenter)
+                    .SetBetweenChildSpacing(kBetweenFaviconSpacing))
+            .Build());
 
     if (favicons.empty()) {
       return;
@@ -78,6 +92,7 @@ class PineItemView : public views::BoxLayoutView {
         /*done_callback=*/base::BindOnce(&PineItemView::OnAllFaviconsLoaded,
                                          weak_ptr_factory_.GetWeakPtr()));
 
+    // TODO(hewer): Add overflow view when there are more than 5 favicons.
     auto* delegate = Shell::Get()->saved_desk_delegate();
     for (const GURL& url : favicons) {
       // TODO(b/325638530): When lacros is active, this needs to supply a valid
@@ -110,23 +125,25 @@ class PineItemView : public views::BoxLayoutView {
   void OnAllFaviconsLoaded(const std::vector<gfx::ImageSkia>& favicons) {
     bool needs_layout = false;
     for (const gfx::ImageSkia& favicon : favicons) {
+      // TODO(hewer): If favicon is null, use default icon instead.
       if (favicon.isNull()) {
         continue;
       }
 
       needs_layout = true;
-      AddChildView(views::Builder<views::ImageView>()
-                       // TODO(b/322360273): The border is temporary for more
-                       // contrast until specs are ready.
-                       .SetBorder(views::CreateRoundedRectBorder(
-                           /*thickness=*/1,
-                           /*corner_radius=*/kFaviconPreferredSize.width(),
-                           SK_ColorBLACK))
-                       .SetImageSize(kFaviconPreferredSize)
-                       .SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-                           favicon, skia::ImageOperations::RESIZE_BEST,
-                           kFaviconPreferredSize))
-                       .Build());
+      favicon_container_view_->AddChildView(
+          views::Builder<views::ImageView>()
+              // TODO(b/322360273): The border is temporary for more
+              // contrast until specs are ready.
+              .SetBorder(views::CreateRoundedRectBorder(
+                  /*thickness=*/1,
+                  /*corner_radius=*/kFaviconPreferredSize.width(),
+                  SK_ColorBLACK))
+              .SetImageSize(kFaviconPreferredSize)
+              .SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+                  favicon, skia::ImageOperations::RESIZE_BEST,
+                  kFaviconPreferredSize))
+              .Build());
     }
 
     // If at least one favicon was added, relayout.
@@ -137,6 +154,8 @@ class PineItemView : public views::BoxLayoutView {
 
   // Owned by views hierarchy.
   raw_ptr<views::ImageView> image_view_;
+
+  raw_ptr<views::BoxLayoutView> favicon_container_view_;
 
   base::CancelableTaskTracker cancelable_favicon_task_tracker_;
 
@@ -157,7 +176,7 @@ PineItemsContainerView::PineItemsContainerView(
                                                    kItemsContainerRounding));
   SetBetweenChildSpacing(pine::kItemsContainerChildSpacing);
   SetInsideBorderInsets(kItemsContainerInsets);
-  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
   // TODO(sammiequon): Handle case where the app is not ready or installed.

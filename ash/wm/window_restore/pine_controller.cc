@@ -75,30 +75,31 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 
   // Chrome.
   data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Cnn",
-      std::vector<GURL>{GURL("https://www.cnn.com/"),
-                        GURL("https://www.youtube.com/"),
-                        GURL("https://www.google.com/")});
-  // Camera.
-  data->apps_infos.emplace_back("njfbnohfdkmbmnjapinfcopialeghnmh");
-  // Settings.
-  data->apps_infos.emplace_back("odknhmnlageboeamepcngndbggdpaobj");
-  // Files.
-  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb");
-  // Calculator.
-  data->apps_infos.emplace_back("oabkinaljpjeilageghcdlnekhphhphl");
-  // Chrome.
-  data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Maps",
-      std::vector<GURL>{GURL("https://www.google.com/maps/")});
-  // Files.
-  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb");
-  // Chrome.
-  data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Twitter",
-      std::vector<GURL>{GURL("https://www.twitter.com/"),
-                        GURL("https://www.youtube.com/"),
-                        GURL("https://www.google.com/")});
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Chrome",
+      std::vector<GURL>{
+          GURL("https://www.cnn.com/"), GURL("https://www.reddit.com/"),
+          GURL("https://www.youtube.com/"), GURL("https://www.waymo.com/"),
+          GURL("https://www.google.com/")});
+  // // Camera.
+  // data->apps_infos.emplace_back("njfbnohfdkmbmnjapinfcopialeghnmh");
+  // // Settings.
+  // data->apps_infos.emplace_back("odknhmnlageboeamepcngndbggdpaobj");
+  // // Files.
+  // data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb");
+  // // Calculator.
+  // data->apps_infos.emplace_back("oabkinaljpjeilageghcdlnekhphhphl");
+  // // Chrome.
+  // data->apps_infos.emplace_back(
+  //     "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Maps",
+  //     std::vector<GURL>{GURL("https://www.google.com/maps/")});
+  // // Files.
+  // data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb");
+  // // Chrome.
+  // data->apps_infos.emplace_back(
+  //     "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Twitter",
+  //     std::vector<GURL>{GURL("https://www.twitter.com/"),
+  //                       GURL("https://www.youtube.com/"),
+  //                       GURL("https://www.google.com/")});
 
   MaybeStartPineOverviewSession(std::move(data));
 }
