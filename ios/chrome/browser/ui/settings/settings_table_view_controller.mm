@@ -2248,6 +2248,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 }
 
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService {
+  DUMP_WILL_BE_CHECK(!_accountManagerServiceObserver.get());
+}
+
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
