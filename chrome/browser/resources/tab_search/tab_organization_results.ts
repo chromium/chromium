@@ -111,10 +111,6 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return mojoString16ToString(organization.name);
   }
 
-  private isLastOrganization_(organization: TabOrganization) {
-    return organization === this.session.organizations.slice(-1)[0];
-  }
-
   private onAvailableHeightChange_() {
     const maxHeight = Math.max(
         MINIMUM_SCROLLABLE_MAX_HEIGHT,
@@ -144,15 +140,6 @@ export class TabOrganizationResultsElement extends PolymerElement {
       bubbles: true,
       composed: true,
       detail: {organizations},
-    }));
-  }
-
-  private onRejectAllGroupsClick_(event: CustomEvent) {
-    event.stopPropagation();
-    event.preventDefault();
-    this.dispatchEvent(new CustomEvent('reject-all-groups-click', {
-      bubbles: true,
-      composed: true,
     }));
   }
 

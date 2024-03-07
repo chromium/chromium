@@ -384,41 +384,7 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('rejectTabOrganization'));
   });
 
-  test('Single organization refresh rejects organization', async () => {
-    const rejectFinalSuggestion = 'Clear';
-
-    loadTimeData.overrideValues({
-      tabOrganizationRefreshButtonEnabled: true,
-      rejectFinalSuggestion: rejectFinalSuggestion,
-      multiTabOrganizationEnabled: false,
-    });
-
-    await tabOrganizationPageSetup();
-
-    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-        createSession({state: TabOrganizationState.kSuccess}));
-    await flushTasks();
-
-    assertEquals(0, testApiProxy.getCallCount('rejectTabOrganization'));
-
-    const results = tabOrganizationPage.shadowRoot!.querySelector(
-        'tab-organization-results');
-    assertTrue(!!results);
-    const group = results.shadowRoot!.querySelector('tab-organization-group');
-    assertTrue(!!group);
-    const actions =
-        group.shadowRoot!.querySelector('tab-organization-results-actions');
-    assertTrue(!!actions);
-    const refreshButton = actions.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!refreshButton);
-    assertTrue(refreshButton.innerHTML.includes(rejectFinalSuggestion));
-    refreshButton.click();
-    await flushTasks();
-
-    assertEquals(1, testApiProxy.getCallCount('rejectTabOrganization'));
-  });
-
-  test('Multi organization refresh rejects session', async () => {
+  test('Clear rejects session', async () => {
     loadTimeData.overrideValues({
       multiTabOrganizationEnabled: true,
     });
@@ -437,47 +403,14 @@ suite('TabOrganizationPageTest', () => {
     const actions =
         results.shadowRoot!.querySelector('tab-organization-results-actions');
     assertTrue(!!actions);
-    const refreshButton =
-        actions.shadowRoot!.querySelector<HTMLElement>('#refreshButton');
-    assertTrue(!!refreshButton);
-    refreshButton.click();
+    const clearButton =
+        actions.shadowRoot!.querySelector<HTMLElement>('#clearButton');
+    assertTrue(!!clearButton);
+    clearButton.click();
     await flushTasks();
 
     assertEquals(1, testApiProxy.getCallCount('rejectSession'));
   });
-
-  test(
-      'Refresh button has different label for multiple suggestions',
-      async () => {
-        const rejectSuggestion = 'Refresh';
-
-        loadTimeData.overrideValues({
-          tabOrganizationRefreshButtonEnabled: true,
-          rejectSuggestion: rejectSuggestion,
-          multiTabOrganizationEnabled: false,
-        });
-
-        await tabOrganizationPageSetup();
-
-
-
-        testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
-            createMultiOrganizationSession(2));
-        await flushTasks();
-
-        const results = tabOrganizationPage.shadowRoot!.querySelector(
-            'tab-organization-results');
-        assertTrue(!!results);
-        const group =
-            results.shadowRoot!.querySelector('tab-organization-group');
-        assertTrue(!!group);
-        const actions =
-            group.shadowRoot!.querySelector('tab-organization-results-actions');
-        assertTrue(!!actions);
-        const refreshButton = actions.shadowRoot!.querySelector('cr-button');
-        assertTrue(!!refreshButton);
-        assertTrue(refreshButton.innerHTML.includes(rejectSuggestion));
-      });
 
   test('Sync required for organization', async () => {
     const syncInfo: SyncInfo = {

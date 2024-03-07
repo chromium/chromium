@@ -23,24 +23,16 @@ export class TabOrganizationResultsActionsElement extends PolymerElement {
 
   static get properties() {
     return {
-      isLastOrganization: Boolean,
       multipleOrganizations: Boolean,
-      showRefresh: Boolean,
+      showClear: Boolean,
     };
   }
 
-  isLastOrganization: boolean;
   multipleOrganizations: boolean;
-  showRefresh: boolean;
+  showClear: boolean;
 
   static get template() {
     return getTemplate();
-  }
-
-  private getRefreshButtonText_(): string {
-    return (this.isLastOrganization || this.multipleOrganizations) ?
-        loadTimeData.getString('rejectFinalSuggestion') :
-        loadTimeData.getString('rejectSuggestion');
   }
 
   private getCreateButtonText_(): string {
@@ -48,8 +40,8 @@ export class TabOrganizationResultsActionsElement extends PolymerElement {
                                         loadTimeData.getString('createGroup');
   }
 
-  private onRejectGroupClick_() {
-    this.dispatchEvent(new CustomEvent('reject-click', {
+  private onClearClick_() {
+    this.dispatchEvent(new CustomEvent('reject-all-groups-click', {
       bubbles: true,
       composed: true,
     }));

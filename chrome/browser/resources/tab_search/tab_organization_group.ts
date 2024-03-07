@@ -44,19 +44,12 @@ export class TabOrganizationGroupElement extends PolymerElement {
       },
 
       name: String,
-      isLastOrganization: Boolean,
       multiTabOrganization: Boolean,
       organizationId: Number,
 
       lastFocusedIndex_: {
         type: Number,
         value: 0,
-      },
-
-      refreshButtonEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('tabOrganizationRefreshButtonEnabled'),
       },
 
       showInput_: Boolean,
@@ -71,12 +64,10 @@ export class TabOrganizationGroupElement extends PolymerElement {
 
   tabs: Tab[];
   name: string;
-  isLastOrganization: boolean;
   multiTabOrganization: boolean;
   organizationId: number;
 
   private lastFocusedIndex_: number;
-  private refreshButtonEnabled_: boolean;
   private showInput_: boolean;
   private tabDatas_: TabData[];
 

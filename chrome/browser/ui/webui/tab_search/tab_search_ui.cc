@@ -125,8 +125,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
        IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY_ARIA_LABEL},
       {"notStartedTitle", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE},
       {"notStartedTitleFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE},
-      {"rejectSuggestion", IDS_TAB_ORGANIZATION_REJECT_SUGGESTION},
-      {"rejectFinalSuggestion", IDS_TAB_ORGANIZATION_REJECT_FINAL_SUGGESTION},
+      {"clearSuggestions", IDS_TAB_ORGANIZATION_CLEAR_SUGGESTIONS},
       {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
       {"successTitleSingle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_SINGLE},
       {"successTitleMulti", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_MULTI},
@@ -189,9 +188,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean(
       "multiTabOrganizationEnabled",
       base::FeatureList::IsEnabled(features::kMultiTabOrganization));
-  source->AddBoolean(
-      "tabOrganizationRefreshButtonEnabled",
-      base::FeatureList::IsEnabled(features::kTabOrganizationRefreshButton));
 
   source->AddInteger("tabIndex", TabIndex());
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());

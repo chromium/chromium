@@ -50,16 +50,14 @@
         name="[[getName_(item)]]"
         tabs="[[item.tabs]]"
         organization-id="[[item.organizationId]]"
-        is-last-organization="[[isLastOrganization_(item)]]"
         multi-tab-organization="[[multiTabOrganization]]">
       </tab-organization-group>
     </template>
   </div>
   <template is="dom-if" if="[[multiTabOrganization]]">
-    <tab-organization-results-actions show-refresh
+    <tab-organization-results-actions show-clear
         multiple-organizations="[[hasMultipleOrganizations_(session)]]"
-        on-create-group-click="onCreateAllGroupsClick_"
-        on-reject-click="onRejectAllGroupsClick_">
+        on-create-group-click="onCreateAllGroupsClick_">
     </tab-organization-results-actions>
   </template>
   <div class="feedback" role="toolbar" on-keydown="onFeedbackKeyDown_">

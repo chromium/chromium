@@ -11,10 +11,10 @@
 </style>
 
 <div class="button-row">
-  <template is="dom-if" if="[[showRefresh]]">
-    <cr-button id="refreshButton" class="tonal-button"
-        on-click="onRejectGroupClick_">
-      [[getRefreshButtonText_(isLastOrganization, multipleOrganizations)]]
+  <template is="dom-if" if="[[showClear]]">
+    <cr-button id="clearButton" class="tonal-button"
+        on-click="onClearClick_">
+      $i18n{clearSuggestions}
     </cr-button>
   </template>
   <cr-button id="createButton" class="action-button"
