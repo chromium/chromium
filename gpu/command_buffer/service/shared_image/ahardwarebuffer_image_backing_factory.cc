@@ -94,7 +94,6 @@ class OverlayImage final : public base::RefCounted<OverlayImage> {
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 
     void SetReadFence(base::ScopedFD fence_fd) override {
-      DCHECK(!image_->end_read_fence_.is_valid());
       DCHECK(!image_->previous_end_read_fence_.is_valid());
 
       image_->end_read_fence_ = std::move(fence_fd);
@@ -602,8 +601,8 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
   DCHECK(is_overlay_accessing_);
   is_overlay_accessing_ = false;
 
+  auto fence_fd = overlay_image_->TakeEndFence();
   if (!allow_concurrent_read_write()) {
-    auto fence_fd = overlay_image_->TakeEndFence();
     read_sync_fd_ = gl::MergeFDs(std::move(read_sync_fd_), std::move(fence_fd));
   }
 }

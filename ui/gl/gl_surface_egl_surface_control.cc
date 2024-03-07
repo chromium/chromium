@@ -269,7 +269,6 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   }
 
   AHardwareBuffer* hardware_buffer = nullptr;
-  base::ScopedFD fence_fd;
   auto scoped_hardware_buffer = std::move(image);
   bool is_primary_plane = overlay_plane_data.is_root_overlay;
   if (scoped_hardware_buffer) {
@@ -293,9 +292,11 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     resource_ref.scoped_buffer = std::move(scoped_hardware_buffer);
   }
 
-  if (uninitialized || surface_state.hardware_buffer != hardware_buffer) {
+  if (uninitialized || surface_state.hardware_buffer != hardware_buffer ||
+      gpu_fence) {
     surface_state.hardware_buffer = hardware_buffer;
 
+    base::ScopedFD fence_fd;
     if (gpu_fence && surface_state.hardware_buffer) {
       auto fence_handle = gpu_fence->GetGpuFenceHandle().Clone();
       DCHECK(!fence_handle.is_null());
