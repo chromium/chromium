@@ -27,8 +27,7 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
   GeolocationSwitchInteractiveTest()
       : https_server_(std::make_unique<net::EmbeddedTestServer>(
             net::EmbeddedTestServer::TYPE_HTTPS)) {
-    scoped_features_.InitWithFeatures(
-        {ash::features::kCrosPrivacyHubV0, ash::features::kCrosPrivacyHub}, {});
+    scoped_features_.InitWithFeatures({ash::features::kCrosPrivacyHub}, {});
   }
 
   GeolocationSwitchInteractiveTest(const GeolocationSwitchInteractiveTest&) =

@@ -28,13 +28,7 @@ using Sensor = SensorDisabledNotificationDelegate::Sensor;
 class PrivacyHubMetricsTest : public AshTestBase {
  public:
   PrivacyHubMetricsTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kCrosPrivacyHubV0, ash::features::kCrosPrivacyHub}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 TEST_F(PrivacyHubMetricsTest, EnableFromNotification) {

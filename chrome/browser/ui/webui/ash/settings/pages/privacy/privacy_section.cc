@@ -273,7 +273,6 @@ const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
       return init_tags;
     }
 
-    if (ash::features::IsCrosPrivacyHubV0Enabled()) {
       init_tags.push_back({IDS_OS_SETTINGS_TAG_PRIVACY_CONTROLS,
                            mojom::kPrivacyHubSubpagePath,
                            ash::features::IsOsSettingsRevampWayfindingEnabled()
@@ -312,7 +311,6 @@ const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
                              mojom::SearchResultType::kSetting,
                              {.setting = mojom::Setting::kMicrophoneOnOff}});
       }
-    }
 
     if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
       init_tags.push_back(
@@ -626,7 +624,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "showAppPermissionsInsidePrivacyHub",
       ash::features::IsCrosPrivacyHubAppPermissionsEnabled());
   html_source->AddBoolean("showPrivacyHubPage",
-                          ash::features::IsCrosPrivacyHubEnabled());
+                          true);  // TODO(b/326572459): remove
   html_source->AddBoolean("showPrivacyHubLocationControl",
                           ash::features::IsCrosPrivacyHubLocationEnabled());
   html_source->AddBoolean("showSpeakOnMuteDetectionPage",

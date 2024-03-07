@@ -60,8 +60,7 @@ class SystemGeolocationSourceTestsGeolocationOn
     : public SystemGeolocationSourceBrowserTests {
  protected:
   SystemGeolocationSourceTestsGeolocationOn() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
+    scoped_feature_list_.InitWithFeatures({features::kCrosPrivacyHub}, {});
   }
 };
 
@@ -70,8 +69,7 @@ class SystemGeolocationSourceTestsGeolocationOff
  protected:
   SystemGeolocationSourceTestsGeolocationOff() {
     // Disables the geolocation part of the PrivacyHub
-    scoped_feature_list_.InitWithFeatures({ash::features::kCrosPrivacyHubV0},
-                                          {ash::features::kCrosPrivacyHub});
+    scoped_feature_list_.InitWithFeatures({}, {ash::features::kCrosPrivacyHub});
   }
 };
 

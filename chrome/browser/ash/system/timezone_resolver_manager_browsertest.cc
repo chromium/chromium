@@ -188,8 +188,7 @@ class TimeZoneResolverManagerUnenrolledDeviceTest
  protected:
   TimeZoneResolverManagerUnenrolledDeviceTest() {
     // Enabling Privacy Hub with location switch
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kCrosPrivacyHubV0, ash::features::kCrosPrivacyHub}, {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kCrosPrivacyHub}, {});
   }
 
  private:

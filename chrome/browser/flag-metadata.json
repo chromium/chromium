@@ -1539,11 +1539,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "cros-privacy-hub-v0",
-    "owners": [ "chromeos-privacyhub@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "cros-shortstand",
     "owners": [ "mxcai@chromium.org", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 130

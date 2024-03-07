@@ -57,8 +57,7 @@ class PrivacyHubHandlerTest : public testing::Test {
     privacy_hub_handler_.set_web_ui(&web_ui_);
     privacy_hub_handler_.AllowJavascriptForTesting();
 
-    feature_list_.InitWithFeatures(
-        {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
+    feature_list_.InitWithFeatures({features::kCrosPrivacyHub}, {});
   }
 
   [[nodiscard]] base::Value GetLastWebUIListenerData(

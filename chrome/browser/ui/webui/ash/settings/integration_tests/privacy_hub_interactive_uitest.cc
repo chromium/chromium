@@ -115,7 +115,6 @@ class PrivacyHubSettingsPageTest
 // settings for all combinations of feature flags.
 IN_PROC_BROWSER_TEST_P(PrivacyHubSettingsPageTest, PrivacyControls) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
-  ASSERT_EQ(features::IsCrosPrivacyHubV0Enabled(), true);
   ASSERT_EQ(features::IsCrosPrivacyHubLocationEnabled(), LocationFlagOn());
   ASSERT_EQ(features::IsCrosPrivacyHubAppPermissionsEnabled(),
             PerAppPermissionFlagOn());
@@ -185,7 +184,6 @@ class PrivacyHubAppPermissionsInteractiveUiTest
         /*enabled_features=*/{features::kCrosPrivacyHub,
                               features::kCrosPrivacyHubAppPermissions},
         /*disabled_features=*/{});
-    CHECK(features::IsCrosPrivacyHubV0Enabled());
     CHECK(features::IsCrosPrivacyHubLocationEnabled());
     CHECK(features::IsCrosPrivacyHubAppPermissionsEnabled());
   }
@@ -250,56 +248,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
           kOsSettingsWebContentsId,
           chrome::GetOSSettingsUrl(
               chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath)),
-
-      Log("Test complete"));
-}
-
-// Tests for privacy hub disabled.
-class PrivacyHubDisabledInteractiveUiTest : public PrivacyHubInteractiveUiTest {
- public:
-  PrivacyHubDisabledInteractiveUiTest() {
-    // Privacy hub can be enabled by multiple feature flags, which can be true
-    // in the field trial config JSON file. Ensure all features are disabled.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, /*disabled_features=*/{
-            features::kCrosPrivacyHub, features::kCrosPrivacyHubV0,
-            features::kVideoConference});
-  }
-
-  // Returns a query to find the privacy controls subpage trigger.
-  static DeepQuery GetPrivacyControlsSubpageTrigger() {
-    return {
-        "os-settings-ui",
-        "os-settings-main",
-        "main-page-container",
-        "os-settings-privacy-page",
-        "cr-link-row#privacyHubSubpageTrigger",
-    };
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacyHubDisabledInteractiveUiTest, SettingsPage) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
-
-  RunTestSequence(
-      Log("Opening OS settings system web app"),
-      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
-      ShowOSSettingsSubPage(
-          chromeos::settings::mojom::kPrivacyAndSecuritySectionPath),
-      WaitForShow(kOsSettingsWebContentsId),
-
-      Log("Waiting for OS settings privacy section to load"),
-      WaitForWebContentsReady(
-          kOsSettingsWebContentsId,
-          chrome::GetOSSettingsUrl(
-              chromeos::settings::mojom::kPrivacyAndSecuritySectionPath)),
-
-      Log("Verifying that privacy controls subpage trigger does not exist"),
-      WaitForElementDoesNotExist(kOsSettingsWebContentsId,
-                                 GetPrivacyControlsSubpageTrigger()),
 
       Log("Test complete"));
 }

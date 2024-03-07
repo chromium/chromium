@@ -209,9 +209,6 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
 
  private:
   std::unique_ptr<PowerButtonControllerTestApi> power_button_test_api_;
-
-  // Security curtain requires privacy hub to force disable the camera access.
-  base::test::ScopedFeatureList features_{features::kCrosPrivacyHubV0};
 };
 
 TEST_F(SecurityCurtainControllerImplTest,

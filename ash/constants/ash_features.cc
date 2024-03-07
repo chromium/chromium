@@ -484,11 +484,6 @@ BASE_FEATURE(kCrosPrivacyHubAppPermissionsV2,
              "CrosPrivacyHubAppPermissionsV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Privacy Hub with only the camera and the microphone access control.
-BASE_FEATURE(kCrosPrivacyHubV0,
-             "CrosPrivacyHubV0",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables syncing attestation certificates to cryptauth for use by Cross Device
 // features, including Eche and Phone Hub.
 BASE_FEATURE(kCryptauthAttestationSyncing,
@@ -3242,28 +3237,19 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 }
 
 bool IsCrosPrivacyHubAppPermissionsEnabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissions) &&
-         IsCrosPrivacyHubV0Enabled();
+  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissions);
 }
 
 bool IsCrosPrivacyHubAppPermissionsV2Enabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissionsV2) &&
-         IsCrosPrivacyHubV0Enabled();
+  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissionsV2);
 }
 
 bool IsCrosPrivacyHubEnabled() {
-  return IsCrosPrivacyHubAppPermissionsEnabled() ||
-         IsCrosPrivacyHubLocationEnabled() || IsCrosPrivacyHubV0Enabled();
+  return true;
 }
 
 bool IsCrosPrivacyHubLocationEnabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHub) &&
-         IsCrosPrivacyHubV0Enabled();
-}
-
-bool IsCrosPrivacyHubV0Enabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubV0) ||
-         IsVideoConferenceEnabled();
+  return base::FeatureList::IsEnabled(kCrosPrivacyHub);
 }
 
 bool IsDeskButtonEnabled() {

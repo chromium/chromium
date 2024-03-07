@@ -120,19 +120,13 @@ class MockFrontendAPI : public PrivacyHubDelegate {
 
 }  // namespace
 
-class PrivacyHubCameraTestBase
-    : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class PrivacyHubCameraTestBase : public AshTestBase,
+                                 public testing::WithParamInterface<bool> {
  public:
   PrivacyHubCameraTestBase()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (IsPrivacyHubEnabled()) {
-      enabled_features.push_back(ash::features::kCrosPrivacyHubV0);
-    } else {
-      disabled_features.push_back(ash::features::kCrosPrivacyHubV0);
-    }
     if (IsVideoConferenceEnabled()) {
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
@@ -161,13 +155,11 @@ class PrivacyHubCameraTestBase
 
     Synchronizer()->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
 
-    if (IsPrivacyHubEnabled()) {
-      // Set up the fake `SensorDisabledNotificationDelegate`.
-      // In production it is set only if Privacy Hub is enabled.
-      scoped_delegate_ =
-          std::make_unique<ScopedSensorDisabledNotificationDelegateForTest>(
-              std::make_unique<FakeSensorDisabledNotificationDelegate>());
-    }
+    // Set up the fake `SensorDisabledNotificationDelegate`.
+    // In production it is set only if Privacy Hub is enabled.
+    scoped_delegate_ =
+        std::make_unique<ScopedSensorDisabledNotificationDelegateForTest>(
+            std::make_unique<FakeSensorDisabledNotificationDelegate>());
   }
 
   void TearDown() override {
@@ -176,8 +168,7 @@ class PrivacyHubCameraTestBase
     AshTestBase::TearDown();
   }
 
-  bool IsVideoConferenceEnabled() { return std::get<0>(GetParam()); }
-  bool IsPrivacyHubEnabled() { return std::get<1>(GetParam()); }
+  bool IsVideoConferenceEnabled() { return GetParam(); }
 
   void SetUserPref(bool allowed) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -228,14 +219,9 @@ TEST_P(PrivacyHubCameraSynchronizerTest, UserPrefChange) {
   for (const bool pref_val : user_pref_sequence) {
     SetUserPref(pref_val);
     // User toggle ON means the camera is DISABLED.
-    CameraSWPrivacySwitchSetting expected_val =
+    const CameraSWPrivacySwitchSetting expected_val =
         pref_val ? CameraSWPrivacySwitchSetting::kEnabled
                  : CameraSWPrivacySwitchSetting::kDisabled;
-    if (!IsPrivacyHubEnabled() && !IsVideoConferenceEnabled()) {
-      // If both VC and PrivacyHub features are off, the camera will always be
-      // re-enabled
-      expected_val = CameraSWPrivacySwitchSetting::kEnabled;
-    }
     EXPECT_EQ(captured_val, expected_val);
   }
 }
@@ -254,7 +240,7 @@ TEST_P(PrivacyHubCameraSynchronizerTest, OnCameraSoftwarePrivacySwitchChanged) {
   Synchronizer()->OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState::ON);
 
-  if (IsPrivacyHubEnabled() || IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled()) {
     // When `prefs::kUserCameraAllowed` is false and CrOS Camera Service
     // communicates the SW privacy switch state as UNKNOWN or OFF, the states
     // mismatch and `SetCameraSWPrivacySwitch(kDisabled)` should be called to
@@ -1056,20 +1042,14 @@ TEST_P(VideoConferenceCameraControllerTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PrivacyHubCameraSynchronizerTest,
-                         testing::Combine(
-                             /*IsVideoConferenceEnabled=*/testing::Bool(),
-                             /*IsPrivacyHubEnabled()=*/testing::Bool()));
+                         /*IsVideoConferenceEnabled=*/testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PrivacyHubCameraControllerTest,
-                         testing::Combine(
-                             /*IsVideoConferenceEnabled=*/testing::Bool(),
-                             /*IsPrivacyHubEnabled()=*/testing::Values(true)));
+                         /*IsVideoConferenceEnabled=*/testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoConferenceCameraControllerTest,
-                         testing::Combine(
-                             /*IsVideoConferenceEnabled=*/testing::Bool(),
-                             /*IsPrivacyHubEnabled()=*/testing::Values(true)));
+                         /*IsVideoConferenceEnabled=*/testing::Bool());
 
 }  // namespace ash

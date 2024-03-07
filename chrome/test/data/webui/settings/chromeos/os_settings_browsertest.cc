@@ -1440,7 +1440,6 @@ class OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/
         {
-            ash::features::kCrosPrivacyHubV0,
             ash::features::kCrosPrivacyHubAppPermissions,
         },
         /*disabled=*/{});
@@ -1466,7 +1465,6 @@ class OSSettingsPrivacyTestPrivacyHubAndV0Enabled : public OSSettingsMochaTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/
         {
-            ash::features::kCrosPrivacyHubV0,
             ash::features::kCrosPrivacyHub,
         },
         /*disabled=*/{});
@@ -1487,15 +1485,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
       "os_privacy_page/privacy_hub_geolocation_advanced_subpage_test.js");
 }
 
-class OSSettingsPrivacyTestPrivacyHubV0Enabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsPrivacyTestPrivacyHubV0Enabled() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHubV0);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class OSSettingsPrivacyTestPrivacyHubV0Enabled : public OSSettingsMochaTest {};
 
 using OSSettingsPrivacyPageTestPrivacyHubSubpage =
     OSSettingsPrivacyTestPrivacyHubV0Enabled;

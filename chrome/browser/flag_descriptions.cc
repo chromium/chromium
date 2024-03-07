@@ -7512,11 +7512,6 @@ const char kCrosPrivacyHubAppPermissionsV2Description[] =
     "When enabled, the user will be able to manage system access of sensors "
     "from the app specific subpages under the OS Apps section.";
 
-const char kCrosPrivacyHubV0Name[] =
-    "Enable ChromeOS Privacy Hub without the location switch.";
-const char kCrosPrivacyHubV0Description[] =
-    "Enables ChromeOS Privacy Hub without the location switch.";
-
 const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
     "Disable closing idle sockets on memory pressure";
 const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =
