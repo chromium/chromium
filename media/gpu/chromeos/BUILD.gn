@@ -269,6 +269,7 @@ source_set("unit_tests") {
     "platform_video_frame_pool_unittest.cc",
     "platform_video_frame_utils_unittest.cc",
     "video_decoder_pipeline_unittest.cc",
+    "video_frame_resource_unittest.cc",
   ]
   if (is_chromeos_ash) {
     deps +=

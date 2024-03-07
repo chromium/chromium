@@ -4,6 +4,7 @@
 
 #include "media/gpu/chromeos/video_frame_resource.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 
@@ -175,8 +176,19 @@ void VideoFrameResource::AddDestructionObserver(base::OnceClosure callback) {
 scoped_refptr<FrameResource> VideoFrameResource::CreateWrappingFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size) {
-  return Create(VideoFrame::WrapVideoFrame(GetMutableVideoFrame(), format(),
-                                           visible_rect, natural_size));
+  auto wrapping_frame = Create(VideoFrame::WrapVideoFrame(
+      GetMutableVideoFrame(), format(), visible_rect, natural_size));
+  if (!wrapping_frame) {
+    return nullptr;
+  }
+
+  // Adds a reference to |this| from the wrapping frame via a destruction
+  // observer. This avoids destroying the original frame before the wrapping
+  // frame has been destroyed.
+  wrapping_frame->AddDestructionObserver(base::DoNothingWithBoundArgs(
+      base::WrapRefCounted<VideoFrameResource>(this)));
+
+  return wrapping_frame;
 }
 
 std::string VideoFrameResource::AsHumanReadableString() const {
