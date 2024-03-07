@@ -636,43 +636,6 @@ void ViewAccessibility::OverrideName(const std::u16string& name,
   OverrideName(base::UTF16ToUTF8(name), name_from);
 }
 
-void ViewAccessibility::OverrideLabelledBy(
-    const View* labelled_by_view,
-    const ax::mojom::NameFrom name_from) {
-  DCHECK_NE(labelled_by_view, view_);
-  // |OverrideName| might have been used before |OverrideLabelledBy|.
-  // We don't want to keep an old/incorrect name. In addition, some ATs might
-  // expect the name to be provided by us from the label. So try to get the
-  // name from the labelling View and use the result.
-  //
-  // |ViewAccessibility::GetAccessibleNodeData| gets properties from: 1) The
-  // View's implementation of |View::GetAccessibleNodeData| and 2) the
-  // override_data_ set via ViewAccessibility's various Override functions.
-  // HOWEVER, it returns early prior to checking either of those sources if the
-  // Widget does not exist or is closed. Thus given a View whose Widget is about
-  // to be created, we cannot use |ViewAccessibility::GetAccessibleNodeData| to
-  // obtain the name. If |OverrideLabelledBy| is being called, presumably the
-  // labelling View is not in the process of being destroyed. So manually check
-  // the two sources.
-  ui::AXNodeData label_data;
-  const_cast<View*>(labelled_by_view)->GetAccessibleNodeData(&label_data);
-  const std::string& label =
-      label_data.GetStringAttribute(ax::mojom::StringAttribute::kName).empty()
-          ? labelled_by_view->GetViewAccessibility().data_.GetStringAttribute(
-                ax::mojom::StringAttribute::kName)
-          : label_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
-
-  // |SetName| includes logic to populate data_.role with the
-  // View's default role in cases where |SetRole| was not called (yet).
-  // This ensures |AXNodeData::SetName| is not called with |Role::kUnknown|.
-  SetName(label, name_from);
-
-  int32_t labelled_by_id =
-      labelled_by_view->GetViewAccessibility().GetUniqueId().Get();
-  override_data_.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kLabelledbyIds, {labelled_by_id});
-}
-
 void ViewAccessibility::OverrideDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {

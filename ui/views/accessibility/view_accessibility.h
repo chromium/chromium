@@ -219,21 +219,6 @@ class VIEWS_EXPORT ViewAccessibility {
       const std::u16string& name,
       const ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
 
-  // Sets the accessible label source by establishing a relationship between
-  // this View and another view, such as a Label. By default the source type of
-  // the name is "related element." This default should cover most, if not all,
-  // of the use cases for Views. Note that the name source types were created
-  // based on needs associated with web content accessibility, and assistive
-  // technologies may make decisions based on that supposition. For instance,
-  // kTitle implies that the source of the name will be presented as a tooltip,
-  // such as would result from the HTML 'title' attribute or the SVG <title>
-  // element.
-  // Deprecated. Use ViewAccessibility::SetName(View&) instead.
-  // See https://crbug.com/324485311.
-  void OverrideLabelledBy(const View* labelled_by_view,
-                          const ax::mojom::NameFrom name_from =
-                              ax::mojom::NameFrom::kRelatedElement);
-
   // Sets the accessible description to the specified string value.
   // By default the source type of the description is aria-description. While
   // Views technically don't support ARIA, aria-description is the closest
