@@ -246,7 +246,7 @@
 <translation id="2297989278479054870">你登出後，系統會將 Google 帳戶中的書籤、密碼和其他資訊從這部裝置移除。</translation>
 <translation id="2299218006564889602">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
-<translation id="2302742851632557585">變更網站上的密碼</translation>
+<translation id="2302742851632557585">變更網站密碼</translation>
 <translation id="230956208401264723">使用這個輪轉介面查看你追蹤的所有包裹</translation>
 <translation id="2310154074101836012">編輯輪轉介面</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
@@ -360,7 +360,7 @@
 <translation id="2834399722155632105">3. 輕觸「密碼選項」</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2843803966603263712">重設翻譯設定</translation>
-<translation id="284581348330507117">建立不重複的密碼</translation>
+<translation id="284581348330507117">設定不同的密碼</translation>
 <translation id="2848086008667475748">在「設定」中設為預設…</translation>
 <translation id="2858204748079866344">為保護個人隱私，Chrome 不會將你的密碼自動填入這個欄位。</translation>
 <translation id="285960592395650245">重新嘗試下載</translation>

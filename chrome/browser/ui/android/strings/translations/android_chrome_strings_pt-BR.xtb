@@ -376,7 +376,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="3027644380269727216">Com base na sua atividade em um site. Esta configuração está ativada.</translation>
 <translation id="3029276696788198026">Sem pré-carregamento</translation>
 <translation id="3029704984691124060">As senhas não correspondem</translation>
-<translation id="303514781271618814">O Chrome está explorando novos recursos que permitem que os sites ofereçam a mesma experiência de navegação usando menos dados</translation>
+<translation id="303514781271618814">O Chrome está explorando novos recursos para permitir que os sites ofereçam a mesma experiência de navegação com menos dados seus</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Receber ajuda<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3037517125981011456">Mostra solicitações para fazer login no Chrome</translation>
@@ -1103,7 +1103,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6828070228333235514">Parar de monitorar preço</translation>
 <translation id="6830728435402077660">Não seguro</translation>
 <translation id="6831043979455480757">Traduzir</translation>
-<translation id="6833996806551876956">Teste da Privacy Sandbox</translation>
+<translation id="6833996806551876956">Teste do Sandbox de privacidade</translation>
 <translation id="6836206421467243968">Restaurar grupo <ph name="TITLE_OF_GROUP" /> como um novo grupo de guias em segundo plano.</translation>
 <translation id="6846298663435243399">Carregando…</translation>
 <translation id="6850409657436465440">Seu download ainda está em andamento</translation>
