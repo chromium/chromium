@@ -18845,6 +18845,7 @@ from previous Chrome versions.
   <int value="-914210146" label="enable-web-based-signin"/>
   <int value="-914097698" label="EnableDbusAndX11StatusIcons:disabled"/>
   <int value="-913925109" label="FilesExtractArchive:disabled"/>
+  <int value="-913629421" label="CastStreamingVp8:enabled"/>
   <int value="-913571703" label="TabAndLinkDragDropAndroid:enabled"/>
   <int value="-913294939" label="DriveFS:enabled"/>
   <int value="-912946915" label="LauncherSearchControl:disabled"/>
@@ -20909,6 +20910,7 @@ from previous Chrome versions.
   <int value="27442980" label="ArcGameModeFeature:enabled"/>
   <int value="27507364" label="apps-keep-chrome-alive"/>
   <int value="27632363" label="JourneysOmniboxHistoryClusterProvider:enabled"/>
+  <int value="28182289" label="CastStreamingVp8:disabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="31258497"
       label="AutofillEnableSyncingOfPixBankAccounts:disabled"/>

@@ -49,12 +49,13 @@ bool IsHardwareVP8EncodingEnabled(
     return false;
   }
 
+  const bool is_enabled_on_platform =
+      base::FeatureList::IsEnabled(kCastStreamingVp8);
   const bool is_force_enabled =
       command_line.HasSwitch(switches::kCastStreamingForceEnableHardwareVp8);
 
   return IsHardwareEncodingEnabled(profiles, VP8PROFILE_MIN, VP8PROFILE_MAX,
-                                   /*is_enabled_on_platform=*/true,
-                                   is_force_enabled);
+                                   is_enabled_on_platform, is_force_enabled);
 }
 
 // Scan profiles for hardware H.264 encoder support.
@@ -89,7 +90,7 @@ bool IsHardwareH264EncodingEnabled(
 bool IsSoftwareEnabled(Codec codec) {
   switch (codec) {
     case Codec::kVideoVp8:
-      return true;
+      return base::FeatureList::IsEnabled(kCastStreamingVp8);
 
     case Codec::kVideoVp9:
       return base::FeatureList::IsEnabled(kCastStreamingVp9);

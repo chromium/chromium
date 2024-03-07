@@ -2275,6 +2275,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "enable-cast-streaming-vp8",
+    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-cast-streaming-vp9",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 135

@@ -1700,6 +1700,15 @@ BASE_FEATURE(kCastStreamingPerformanceOverlay,
 // Controls whether mirroring negotiations will include the VP9 codec for video
 // encoding.
 //
+// NOTE: this is the default codec for Cast Streaming. Be careful when
+// disabling.
+BASE_FEATURE(kCastStreamingVp8,
+             "CastStreamingVp8",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether mirroring negotiations will include the VP9 codec for video
+// encoding.
+//
 // NOTE: currently only software VP9 encoding is supported.
 // TODO(https://crbug.com/1311770): hardware VP9 encoding should be added.
 BASE_FEATURE(kCastStreamingVp9,
