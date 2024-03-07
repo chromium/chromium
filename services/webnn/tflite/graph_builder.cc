@@ -185,6 +185,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = elementwise_result.value();
       break;
     }
+    case mojom::Operation::Tag::kRelu:
+      operator_offset = SerializeRelu(*op.get_relu());
+      break;
     case mojom::Operation::Tag::kReshape: {
       const auto reshape_result = SerializeReshape(*op.get_reshape());
       RETURN_IF_ERROR(reshape_result);
@@ -240,8 +243,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("prelu is not implemented");
     case mojom::Operation::Tag::kReduce:
       return base::unexpected("reduce is not implemented");
-    case mojom::Operation::Tag::kRelu:
-      return base::unexpected("relu is not implemented");
     case mojom::Operation::Tag::kResample2d:
       return base::unexpected("resample2d is not implemented");
     case mojom::Operation::Tag::kSlice:
@@ -507,6 +508,11 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
+}
+
+auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
+  return SerializeUnaryOperator(::tflite::BuiltinOperator::BuiltinOperator_RELU,
+                                relu.input_operand_id, relu.output_operand_id);
 }
 
 auto GraphBuilder::SerializeReshape(const mojom::Reshape& reshape)

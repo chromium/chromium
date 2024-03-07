@@ -113,6 +113,7 @@ class GraphBuilder final {
       const mojom::ElementWiseBinary& op);
   base::expected<OperatorOffset, std::string> SerializeElementWiseUnary(
       const mojom::ElementWiseUnary& op);
+  OperatorOffset SerializeRelu(const mojom::Relu& relu);
   base::expected<OperatorOffset, std::string> SerializeReshape(
       const mojom::Reshape& reshape);
   OperatorOffset SerializeSigmoid(const mojom::Sigmoid& sigmoid);
