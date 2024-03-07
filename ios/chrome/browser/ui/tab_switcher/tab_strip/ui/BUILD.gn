@@ -35,9 +35,9 @@ swift_source_set("swift") {
 
 source_set("ui") {
   sources = [
-    "tab_strip_cell.h",
-    "tab_strip_cell.mm",
     "tab_strip_mutator.h",
+    "tab_strip_tab_cell.h",
+    "tab_strip_tab_cell.mm",
   ]
   deps = [
     "//base",

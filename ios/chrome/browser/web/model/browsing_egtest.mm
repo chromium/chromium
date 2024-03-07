@@ -84,7 +84,7 @@ class ReloadResponseProvider : public web::DataResponseProvider {
 // sufficiently visible.
 id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   return grey_allOf(grey_accessibilityLabel(base::SysUTF8ToNSString(tab_title)),
-                    grey_kindOfClassName(@"TabStripCell"),
+                    grey_kindOfClassName(@"TabStripTabCell"),
                     grey_sufficientlyVisible(), nil);
 }
 

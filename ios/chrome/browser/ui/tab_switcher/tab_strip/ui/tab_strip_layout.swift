@@ -194,7 +194,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     }
 
     guard
-      let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
+      let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell
     else { return layoutAttributes }
 
     let contentOffset = collectionView.contentOffset
@@ -368,7 +368,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     /// `cellAnimatediOS16` is always `false` above iOS 16.
     var cellAnimated = cellAnimatediOS16
-    let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
+    let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell
     if let animationKeys = cell?.layer.animationKeys() {
       cellAnimated = !animationKeys.isEmpty || cellAnimatediOS16
     }

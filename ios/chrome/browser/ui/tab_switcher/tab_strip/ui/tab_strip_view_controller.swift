@@ -7,7 +7,7 @@ import ios_chrome_browser_shared_ui_util_util_swift
 
 /// View Controller displaying the TabStrip.
 @objcMembers
-class TabStripViewController: UIViewController, TabStripCellDelegate,
+class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   TabStripConsumer, TabStripCommands, TabStripNewTabButtonDelegate
 {
 
@@ -21,7 +21,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   private let collectionView: UICollectionView
   // The DataSource for this collection view.
   private var diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>?
-  private var tabCellRegistration: UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem>?
+  private var tabCellRegistration:
+    UICollectionView.CellRegistration<TabStripTabCell, TabSwitcherItem>?
 
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton()
@@ -280,9 +281,9 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     newTabButton.IPHHighlighted = IPHHighlighted
   }
 
-  // MARK: - TabStripCellDelegate
+  // MARK: - TabStripTabCellDelegate
 
-  func closeButtonTapped(for cell: TabStripCell?) {
+  func closeButtonTapped(for cell: TabStripTabCell?) {
     guard let cell = cell, let diffableDataSource = diffableDataSource else {
       return
     }
@@ -321,7 +322,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
   /// Creates the registrations of the different cells used in the collection view.
   private func createRegistrations() {
-    tabCellRegistration = UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem> {
+    tabCellRegistration = UICollectionView.CellRegistration<TabStripTabCell, TabSwitcherItem> {
       (cell, indexPath, item) in
       cell.setTitle(item.title)
       cell.loading = item.showsActivity
@@ -344,10 +345,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       }
     }
 
-    // UICollectionViewDropPlaceholder uses a TabStripCell and needs the class to be
+    // UICollectionViewDropPlaceholder uses a TabStripTabCell and needs the class to be
     // registered.
     collectionView.register(
-      TabStripCell.self,
+      TabStripTabCell.self,
       forCellWithReuseIdentifier: TabStripConstants.CollectionView.tabStripCellReuseIdentifier)
   }
 
@@ -405,7 +406,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     }
   }
 
-  // Returns the accessibility identifier to set on a TabStripCell when
+  // Returns the accessibility identifier to set on a TabStripTabCell when
   // positioned at the given index.
   func tabTripCellAccessibilityIdentifier(index: Int) -> String {
     return String(
@@ -493,7 +494,7 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     contextMenuConfiguration configuration: UIContextMenuConfiguration,
     highlightPreviewForItemAt indexPath: IndexPath
   ) -> UITargetedPreview? {
-    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
+    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell else {
       return nil
     }
     return UITargetedPreview(view: cell, parameters: cell.dragPreviewParameters)
@@ -582,7 +583,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     _ collectionView: UICollectionView,
     dragPreviewParametersForItemAt indexPath: IndexPath
   ) -> UIDragPreviewParameters? {
-    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
+    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell else {
       return nil
     }
     return cell.dragPreviewParameters
@@ -666,7 +667,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
           reuseIdentifier: TabStripConstants.CollectionView.tabStripCellReuseIdentifier)
         placeholder.previewParametersProvider = {
           (placeholderCell: UICollectionViewCell) -> UIDragPreviewParameters? in
-          guard let tabStripCell = placeholderCell as? TabStripCell else {
+          guard let tabStripCell = placeholderCell as? TabStripTabCell else {
             return nil
           }
           return tabStripCell.dragPreviewParameters

@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_CELL_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_CELL_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_TAB_CELL_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_TAB_CELL_H_
 
 #import <UIKit/UIKit.h>
 
-@class TabStripCell;
+@class TabStripTabCell;
 
 // Informs the receiver of actions on the cell.
-@protocol TabStripCellDelegate
+@protocol TabStripTabCellDelegate
 // Informs the receiver that the close button on the cell was tapped.
-- (void)closeButtonTappedForCell:(TabStripCell*)cell;
+- (void)closeButtonTappedForCell:(TabStripTabCell*)cell;
 @end
 
 // UICollectionViewCell that contains a Tab title with a leading imageView
 // and a close tab button.
-@interface TabStripCell : UICollectionViewCell <UIPointerInteractionDelegate>
+@interface TabStripTabCell : UICollectionViewCell <UIPointerInteractionDelegate>
 
 // Delegate to inform the TabStrip on the cell.
-@property(nonatomic, weak) id<TabStripCellDelegate> delegate;
+@property(nonatomic, weak) id<TabStripTabCellDelegate> delegate;
 
 // Whether the associated tab is loading.
 @property(nonatomic, assign) BOOL loading;
@@ -56,4 +56,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_CELL_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_TAB_CELL_H_
