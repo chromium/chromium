@@ -142,7 +142,11 @@ def main():
                 f'--browser-executable={chrome_path}',
             ]
 
-        subprocess.run(cmd, check=True, env=env, cwd=ROOT_DIR)
+        subprocess.run(cmd,
+                       check=True,
+                       shell=sys.platform == 'win32',
+                       env=env,
+                       cwd=ROOT_DIR)
         if args.skip_profdata:
             return
 
@@ -177,6 +181,13 @@ def main():
             '--story-tag-filter=motionmark_fixed_2_seconds',
             '--story-filter-exclude=motionmark_fixed_2_seconds_images'
         ])
+        if sys.platform == 'darwin':
+            run_benchmark([
+                'rendering.desktop', '--also-run-disabled-tests',
+                '--story-tag-filter=motionmark_fixed_2_seconds',
+                '--extra-browser-args=--enable-features=SkiaGraphite'
+            ])
+
     if not args.skip_profdata:
         subprocess.run(
             [PROFDATA, 'merge', '-o', f'{builddir}/profile.profdata'] +
