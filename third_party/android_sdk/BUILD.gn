@@ -22,7 +22,14 @@ if (enable_java_templates) {
     jinja_template(_manifest_target) {
       input = "//third_party/android_sdk/AndroidManifest.xml.jinja2"
       output = _manifest_path
-      variables = [ "library_name=${invoker.library_name}" ]
+      _library_name = invoker.library_name
+      if (defined(invoker.runtime_library_name)) {
+        _library_name = invoker.runtime_library_name
+      }
+      variables = [
+        "library_name=$_library_name",
+        "required=${invoker.required}",
+      ]
     }
     java_group(target_name) {
       forward_variables_from(invoker, [ "jar_deps" ])
@@ -44,24 +51,20 @@ if (enable_java_templates) {
     }
   }
 
-  android_sdk_optional_library("android_test_base_java") {
-    testonly = true
-    library_name = "android.test.base"
-  }
   android_sdk_optional_library("android_test_mock_java") {
     testonly = true
+    required = true
     library_name = "android.test.mock"
-  }
-  android_sdk_optional_library("android_test_runner_java") {
-    testonly = true
-    library_name = "android.test.runner"
+    runtime_library_name = "android.test.runner"
   }
   android_sdk_optional_library("android_car_java") {
     library_name = "android.car"
+    required = false
   }
   if (!limit_android_deps) {
     android_sdk_optional_library("android_window_extensions_java") {
       library_name = "androidx.window.extensions"
+      required = false
       jar_deps = [ "//third_party/android_sdk/window_extensions:androidx_window_extensions" ]
       deps =
           [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]

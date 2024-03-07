@@ -66,14 +66,6 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_startup_startup_runtime_java") {
       # Keeps emoji2 code. See http://crbug.com/1205141
       ignore_proguard_configs = true
-    } else if (target_name == "androidx_test_rules_java") {
-      # Target needs Android SDK deps which exist in third_party/android_sdk.
-
-      deps += [
-        "//third_party/android_sdk:android_test_base_java",
-        "//third_party/android_sdk:android_test_mock_java",
-        "//third_party/android_sdk:android_test_runner_java",
-      ]
     } else if (target_name == "androidx_test_uiautomator_uiautomator_java") {
       deps += [ ":androidx_test_runner_java" ]
     } else if (target_name == "androidx_tracing_tracing_perfetto_java") {
