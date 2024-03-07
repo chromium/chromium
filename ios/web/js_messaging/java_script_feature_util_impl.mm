@@ -109,7 +109,7 @@ JavaScriptFeature* GetBaseJavaScriptFeature() {
   // Static storage is ok for `base_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> base_feature(
       ContentWorld::kAllContentWorlds,
-      std::vector<const JavaScriptFeature::FeatureScript>(
+      std::vector<JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kBaseScriptName,
               JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
@@ -121,7 +121,7 @@ JavaScriptFeature* GetCommonJavaScriptFeature() {
   // Static storage is ok for `common_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> common_feature(
       ContentWorld::kAllContentWorlds,
-      std::vector<const JavaScriptFeature::FeatureScript>(
+      std::vector<JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kCommonScriptName,
               JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
@@ -134,7 +134,7 @@ JavaScriptFeature* GetMessageJavaScriptFeature() {
   // Static storage is ok for `message_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> message_feature(
       ContentWorld::kAllContentWorlds,
-      std::vector<const JavaScriptFeature::FeatureScript>(
+      std::vector<JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kMessageScriptName,
               JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,

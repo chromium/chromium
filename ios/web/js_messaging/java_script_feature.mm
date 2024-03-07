@@ -141,16 +141,15 @@ NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
 JavaScriptFeature::JavaScriptFeature(ContentWorld supported_world)
     : supported_world_(supported_world), weak_factory_(this) {}
 
-JavaScriptFeature::JavaScriptFeature(
-    ContentWorld supported_world,
-    std::vector<const FeatureScript> feature_scripts)
+JavaScriptFeature::JavaScriptFeature(ContentWorld supported_world,
+                                     std::vector<FeatureScript> feature_scripts)
     : supported_world_(supported_world),
       scripts_(feature_scripts),
       weak_factory_(this) {}
 
 JavaScriptFeature::JavaScriptFeature(
     ContentWorld supported_world,
-    std::vector<const FeatureScript> feature_scripts,
+    std::vector<FeatureScript> feature_scripts,
     std::vector<const JavaScriptFeature*> dependent_features)
     : supported_world_(supported_world),
       scripts_(feature_scripts),
@@ -167,13 +166,13 @@ WebFramesManager* JavaScriptFeature::GetWebFramesManager(WebState* web_state) {
   return web_state->GetWebFramesManager(GetSupportedContentWorld());
 }
 
-const std::vector<const JavaScriptFeature::FeatureScript>
-JavaScriptFeature::GetScripts() const {
+std::vector<JavaScriptFeature::FeatureScript> JavaScriptFeature::GetScripts()
+    const {
   return scripts_;
 }
 
-const std::vector<const JavaScriptFeature*>
-JavaScriptFeature::GetDependentFeatures() const {
+std::vector<const JavaScriptFeature*> JavaScriptFeature::GetDependentFeatures()
+    const {
   return dependent_features_;
 }
 

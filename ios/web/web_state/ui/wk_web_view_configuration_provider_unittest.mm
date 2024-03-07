@@ -136,7 +136,7 @@ TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
   unsigned long original_script_count =
       [user_content_controller.userScripts count];
 
-  std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+  const std::vector<web::JavaScriptFeature::FeatureScript> feature_scripts = {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
           "java_script_feature_test_inject_once",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,

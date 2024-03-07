@@ -40,7 +40,7 @@ JavaScriptFeature* GetSendWebKitMessageJavaScriptFeature() {
   // state.
   static base::NoDestructor<JavaScriptFeature> send_webkit_message_feature(
       ContentWorld::kPageContentWorld,
-      std::vector<const JavaScriptFeature::FeatureScript>(
+      std::vector<JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kSendWebKitMessageScriptName,
               JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,

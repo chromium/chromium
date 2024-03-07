@@ -44,7 +44,7 @@ class JavaScriptFeatureManagerTest : public web::WebTest {
 TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
   ASSERT_TRUE(GetJavaScriptFeatureManager());
 
-  std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+  const std::vector<web::JavaScriptFeature::FeatureScript> feature_scripts = {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
           "java_script_feature_test_inject_once",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
@@ -70,7 +70,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
 TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
   ASSERT_TRUE(GetJavaScriptFeatureManager());
 
-  std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+  const std::vector<web::JavaScriptFeature::FeatureScript> feature_scripts = {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
           "java_script_feature_test_inject_once",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
@@ -95,7 +95,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
 TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeatureIsolatedWorld) {
   ASSERT_TRUE(GetJavaScriptFeatureManager());
 
-  std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+  const std::vector<web::JavaScriptFeature::FeatureScript> feature_scripts = {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
           "java_script_feature_test_inject_once",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
