@@ -378,8 +378,8 @@
       ],
     },
   },
-  'chromeos-tast-fieldtrial-enabled': {
-    'args': ["tast.setup.FieldTrialConfig=enable"],
+  'chromeos-tast-public-builder': {
+    'args': ["tast.setup.FieldTrialConfig=enable", "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"],
   },
   'chromeos-trogdor-skylab-chrome-all-tast-tests': {
     'shards': 20,

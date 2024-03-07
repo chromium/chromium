@@ -1133,7 +1133,8 @@
       },
       {
         "args": [
-          "tast.setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1152,7 +1153,8 @@
       },
       {
         "args": [
-          "tast.setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1173,7 +1175,8 @@
       },
       {
         "args": [
-          "tast.setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1211,7 +1214,8 @@
       },
       {
         "args": [
-          "tast.setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1227,6 +1231,10 @@
         "variant_id": "OCTOPUS_PUBLIC_LKGM"
       },
       {
+        "args": [
+          "tast.setup.FieldTrialConfig=enable",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+        ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
@@ -1243,6 +1251,10 @@
         "variant_id": "OCTOPUS_PUBLIC_LKGM"
       },
       {
+        "args": [
+          "tast.setup.FieldTrialConfig=enable",
+          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"
+        ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
