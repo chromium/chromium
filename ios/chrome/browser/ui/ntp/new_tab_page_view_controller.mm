@@ -9,6 +9,7 @@
 #import <algorithm>
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -52,6 +53,10 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 const CGFloat kModuleMaxWidth = 390;
 const CGFloat kModuleMinMargin = 16;
 }  // namespace
+
+BASE_FEATURE(kMagicStackRemoveGradientView,
+             "MagicStackRemoveGradientView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 @interface NewTabPageViewController () <UICollectionViewDelegate,
                                         UIGestureRecognizerDelegate>
@@ -212,12 +217,14 @@ const CGFloat kModuleMinMargin = 16;
   singleTapRecognizer.delegate = self;
   [self.view addGestureRecognizer:singleTapRecognizer];
   if (IsMagicStackEnabled()) {
-    _backgroundGradientView = [[GradientView alloc]
-        initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
-             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
-    _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_backgroundGradientView];
-    AddSameConstraints(_backgroundGradientView, self.view);
+    if (!base::FeatureList::IsEnabled(kMagicStackRemoveGradientView)) {
+      _backgroundGradientView = [[GradientView alloc]
+          initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
+               bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+      _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+      [self.view addSubview:_backgroundGradientView];
+      AddSameConstraints(_backgroundGradientView, self.view);
+    }
     [self updateModularHomeBackgroundColorForUserInterfaceStyle:
               self.traitCollection.userInterfaceStyle];
     self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
@@ -1650,7 +1657,9 @@ const CGFloat kModuleMinMargin = 16;
 // background color to this view's otherwise.
 - (void)updateModularHomeBackgroundColorForUserInterfaceStyle:
     (UIUserInterfaceStyle)style {
-  _backgroundGradientView.hidden = style == UIUserInterfaceStyleLight;
+  if (!base::FeatureList::IsEnabled(kMagicStackRemoveGradientView)) {
+    _backgroundGradientView.hidden = style == UIUserInterfaceStyleLight;
+  }
 }
 
 // Signal to the ViewController that the height above the feed needs to be
