@@ -9500,6 +9500,13 @@
        {}
       ]
      ],
+     "display-override-member-media-feature-tabbed-manual.tentative.html": [
+      "04560071dfa4cc1590475b6ff87feab545b8255e",
+      [
+       null,
+       {}
+      ]
+     ],
      "display-override-member-media-feature-window-controls-overlay-overrides-browser-manual.tentative.html": [
       "0929b43dec89c0ad50fd733fa48eb68177e9b8fa",
       [
@@ -135866,6 +135873,19 @@
         [
          [
           "/css/css-highlight-api/painting/custom-highlight-painting-prioritization-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-priority-text-decoration-001.html": [
+       "7ab318b5a118c46af4e4a01f146240d433fa8a5d",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-priority-text-decoration-001-ref.html",
           "=="
          ]
         ],
@@ -287629,6 +287649,14 @@
        "2bab061d43ab9e533b0160ca506231939886cd89",
        []
       ],
+      "display-override-member-media-feature-tabbed.webmanifest": [
+       "b8b5fdb0f0bf0db30e1c79d529639d1290b69c58",
+       []
+      ],
+      "display-override-member-media-feature-tabbed.webmanifest.headers": [
+       "2bab061d43ab9e533b0160ca506231939886cd89",
+       []
+      ],
       "display-override-member-media-feature-window-controls-overlay-overrides-browser.webmanifest": [
        "75e91eaf877a2a520ff0baee6d96c49e3e138e7b",
        []
@@ -318251,6 +318279,10 @@
       ],
       "custom-highlight-painting-prioritization-003-ref.html": [
        "9d3e3b00b08dd3242be7f5b180a5505aeb26354b",
+       []
+      ],
+      "custom-highlight-painting-priority-text-decoration-001-ref.html": [
+       "aa76cf08b46c2f1ab1a7ab2b5f4dbf5a1a11bbef",
        []
       ],
       "custom-highlight-painting-staticrange-001-ref.html": [
@@ -364385,6 +364417,10 @@
         []
        ],
        "resources": {
+        "302-no-Location-header-text-css.asis": [
+         "ddf4898d3f0e4aa52335f9dfb0bd41d446ff92c7",
+         []
+        ],
         "bad.css": [
          "4e1fe36165c52792e3a3816962c36e6090f04f67",
          []
@@ -364456,6 +364492,10 @@
        ],
        "stylesheet-media-ref.html": [
         "63b75d0ae262722c2d0043a1e4386b3c5554638c",
+        []
+       ],
+       "stylesheet-non-OK-status-expected.txt": [
+        "a353ce668f0ba67aa898af8d195d330903873de6",
         []
        ],
        "stylesheet-with-base-ref.html": [
@@ -439683,6 +439723,13 @@
        ],
        "grid-block-end.html": [
         "a7d5f44f377d18ecd7b18084daf09ad60f2ce098",
+        [
+         null,
+         {}
+        ]
+       ],
+       "grid-inline-end-columns-added-to-end.html": [
+        "9c88c2981598f316a3b19be88b5bc99c10c76725",
         [
          null,
          {}
@@ -565006,6 +565053,13 @@
          {}
         ]
        ],
+       "stylesheet-non-OK-status.html": [
+        "28ac55ff1a408309e1fe6fdf0662bee701f13068",
+        [
+         null,
+         {}
+        ]
+       ],
        "stylesheet-not-removed-until-next-stylesheet-loads.html": [
         "ab8ee727f2a27467430b38c4f9ce52f117dda75d",
         [
@@ -668404,6 +668458,57 @@
          [
           "title",
           "validation tests for WebNN API"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "lstm.https.any.js": [
+      "efa05090ca261fb601ca3563b2b55f5f85915869",
+      [
+       "webnn/validation_tests/lstm.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API lstm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/lstm.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API lstm operation"
          ],
          [
           "global",

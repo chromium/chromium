@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] 'load' event does not fire at link@rel=stylesheet having resource with non-OK response status
+  assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+
