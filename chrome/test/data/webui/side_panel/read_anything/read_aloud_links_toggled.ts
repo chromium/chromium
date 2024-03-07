@@ -8,8 +8,6 @@ import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-pa
 import {LINK_TOGGLE_BUTTON_ID, LINKS_DISABLED_ICON, LINKS_ENABLED_ICON} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEvent, suppressInnocuousErrors} from './common.js';
-
 suite('ReadAloudLinksToggled', () => {
   let app: ReadAnythingElement;
   let linksToggleButton: CrIconButtonElement;
@@ -55,6 +53,27 @@ suite('ReadAloudLinksToggled', () => {
       },
     ],
   };
+
+
+  /**
+   * Suppresses harmless ResizeObserver errors due to a browser bug.
+   * yaqs/2300708289911980032
+   */
+  function suppressInnocuousErrors() {
+    const onerror = window.onerror;
+    window.onerror = (message, url, lineNumber, column, error) => {
+      if ([
+            'ResizeObserver loop limit exceeded',
+            'ResizeObserver loop completed with undelivered notifications.',
+          ].includes(message.toString())) {
+        console.info('Suppressed ResizeObserver error: ', message);
+        return;
+      }
+      if (onerror) {
+        onerror.apply(window, [message, url, lineNumber, column, error]);
+      }
+    };
+  }
 
   function assertContainerHasLinks(hasLinks: boolean) {
     const innerHTML = app.$.container.innerHTML;
@@ -114,7 +133,7 @@ suite('ReadAloudLinksToggled', () => {
     suite('and after speech finishes', () => {
       setup(() => {
         for (let i = 0; i < axTree.nodes.length + 1; i++) {
-          emitEvent(app, 'next-granularity-click');
+          app.playNextGranularity();
         }
       });
 

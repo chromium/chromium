@@ -763,7 +763,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private playNextGranularity_() {
+  playNextGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlight();
     chrome.readingMode.movePositionToNextGranularity();
@@ -775,7 +775,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // TODO(crbug.com/1474951): Ensure the highlight is shown after playing the
   //  previous granularity.
-  private playPreviousGranularity_() {
+  playPreviousGranularity() {
     this.synth.cancel();
     this.resetPreviousHighlightAndRemoveCurrentHighlight();
     chrome.readingMode.movePositionToPreviousGranularity();
