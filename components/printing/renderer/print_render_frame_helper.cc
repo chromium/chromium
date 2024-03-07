@@ -2513,7 +2513,6 @@ void PrintRenderFrameHelper::PrintPageInternal(
 
   CHECK_EQ(params.display_header_footer, !!header_footer_frame);
   if (header_footer_frame) {
-    HeaderAndFooterContext context(*frame);
     PrintHeaderAndFooter(canvas, *header_footer_frame, page_index, page_count,
                          *frame, layout.fit_to_page_scale_factor,
                          *page_layout_in_css_pixels, params);
