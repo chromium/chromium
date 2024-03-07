@@ -37,7 +37,7 @@ public class MiniPlayerMediator {
     private final BrowserControlsSizer mBrowserControlsSizer;
     // Height of MiniPlayerLayout's background (without shadow).
     private int mLayoutHeightPx;
-    private static boolean sIsAnimationStarted;
+    private boolean mIsAnimationStarted;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateObserver =
             new BrowserControlsStateProvider.Observer() {
                 @Override
@@ -47,8 +47,8 @@ public class MiniPlayerMediator {
                         int bottomOffset,
                         int bottomControlsMinHeightOffset,
                         boolean needsAnimate) {
-                    if (!sIsAnimationStarted) {
-                        sIsAnimationStarted = true;
+                    if (!mIsAnimationStarted) {
+                        mIsAnimationStarted = true;
                     }
                     if (getVisibility() == VisibilityState.HIDING
                             && bottomControlsMinHeightOffset == 0) {
@@ -73,7 +73,7 @@ public class MiniPlayerMediator {
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
                                     if (getVisibility() == VisibilityState.SHOWING
-                                            && !sIsAnimationStarted
+                                            && !mIsAnimationStarted
                                             && mBrowserControlsSizer.getBottomControlsHeight()
                                                     > 0) {
                                         onBottomControlsGrown();
@@ -212,9 +212,14 @@ public class MiniPlayerMediator {
     }
 
     private void setBottomControlsHeight(int height, int minHeight) {
-        sIsAnimationStarted = false;
-        mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(
-                mModel.get(Properties.ANIMATE_VISIBILITY_CHANGES));
+        mIsAnimationStarted = false;
+        boolean animate = mModel.get(Properties.ANIMATE_VISIBILITY_CHANGES);
+        if (animate) {
+            mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
+        }
         mBrowserControlsSizer.setBottomControlsHeight(height, minHeight);
+        if (animate) {
+            mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(false);
+        }
     }
 }
