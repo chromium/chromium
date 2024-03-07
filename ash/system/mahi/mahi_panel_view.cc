@@ -25,6 +25,8 @@
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -66,7 +68,7 @@ constexpr int kSourceRowSpacing = 8;
 
 // Container for scrollable content in the Mahi panel, including the summary and
 // outlines section or the Q&A section. Clips its own bounds to present its
-// contents within a round-cornered container.
+// contents within a round-cornered container with a cutout in the bottom-right.
 class ContentScrollView : public views::ScrollView {
   METADATA_HEADER(ContentScrollView, views::ScrollView)
 
@@ -91,12 +93,86 @@ class ContentScrollView : public views::ScrollView {
  private:
   // views::ScrollView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    auto contents_bounds = GetContentsBounds();
-    // TODO(http://b/319732110): Change path to carve out bottom-right corner.
-    SetClipPath(SkPath::RRect(SkRRect::MakeRectXY(
-        SkRect::Make(
-            SkIRect::MakeWH(contents_bounds.width(), contents_bounds.height())),
-        kContentScrollViewCornerRadius, kContentScrollViewCornerRadius)));
+    const auto contents_bounds = GetContentsBounds();
+    const auto width = contents_bounds.width();
+    const auto height = contents_bounds.height();
+    constexpr auto radius = kContentScrollViewCornerRadius;
+
+    const auto bottom_left = SkPoint::Make(0.f, height);
+    const auto top_right = SkPoint::Make(width, 0.f);
+    constexpr auto top_left = SkPoint::Make(0.f, 0.f);
+
+    // One-radius offsets that can be added to or subtracted from coordinates to
+    // indicate a unidirectional move, e.g., when calculating the endpoint of an
+    // arc.
+    constexpr auto horizontal_offset = SkPoint::Make(radius, 0.f);
+    constexpr auto vertical_offset = SkPoint::Make(0.f, radius);
+
+    // The below constants for the feedback buttons and cutout dimensions refer
+    // to the following spec, where I also designate an order for the cutout's
+    // "first", "second", and "third" curves: http://screen/9K4tXBZXihWN9KA.
+
+    constexpr auto feedback_button_size = 20;
+    constexpr auto feedback_button_padding_above = 8;
+    constexpr auto feedback_button_padding_between = 16;
+    constexpr auto feedback_button_padding_left = 12;
+
+    // Radius of the cutout's first and third curves.
+    constexpr auto cutout_convex_radius = 10.f;
+    // Radius of the cutout's second curve.
+    constexpr auto cutout_concave_radius = 12.f;
+
+    // Width of the cutout in the bottom-right corner, not including the rounded
+    // corner immediately to its left.
+    const auto cutout_width = feedback_button_padding_left +
+                              feedback_button_size * 2 +
+                              feedback_button_padding_between;
+    // Height of the cutout in the bottom-right corner, not including the
+    // rounded corner immediately above it.
+    const auto cutout_height =
+        feedback_button_size + feedback_button_padding_above;
+
+    const auto cutout_curve1_end_x = width - cutout_width;
+    const auto cutout_curve1_end_y = height - cutout_convex_radius;
+
+    const auto cutout_curve2_end_x =
+        cutout_curve1_end_x + cutout_concave_radius;
+    const auto cutout_curve2_end_y = height - cutout_height;
+
+    const auto cutout_curve3_end_x = width;
+    const auto cutout_curve3_end_y = cutout_curve2_end_y - cutout_convex_radius;
+
+    auto clip_path =
+        SkPathBuilder()
+            // Start just after the curve of the top-left rounded corner.
+            .moveTo(0.f, radius)
+            // Draw the bottom-left rounded corner and a vertical line
+            // connecting it to the top-left corner.
+            .arcTo(bottom_left, bottom_left + horizontal_offset, radius)
+            // Draw the first curve of the bottom-right corner's cutout and a
+            // horizontal line connecting it to the bottom-left rounded corner.
+            .arcTo(SkPoint::Make(cutout_curve1_end_x, height),
+                   SkPoint::Make(cutout_curve1_end_x, cutout_curve1_end_y),
+                   cutout_convex_radius)
+            // Draw the cutout's second curve and a vertical line connecting it
+            // to the first curve.
+            .arcTo(SkPoint::Make(cutout_curve1_end_x, cutout_curve2_end_y),
+                   SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
+                   cutout_concave_radius)
+            // Draw the cutout's third curve and a horizontal line connecting
+            // it to the second curve.
+            .arcTo(SkPoint::Make(cutout_curve3_end_x, cutout_curve2_end_y),
+                   SkPoint::Make(cutout_curve3_end_x, cutout_curve3_end_y),
+                   cutout_convex_radius)
+            // Draw the top-right rounded corner and a vertical line connecting
+            // it to the bottom-right corner's cutout.
+            .arcTo(top_right, top_right - horizontal_offset, radius)
+            // Draw the top-left rounded corner and a horizontal line connecting
+            // it to the top-right corner.
+            .arcTo(top_left, top_left + vertical_offset, radius)
+            .close()
+            .detach();
+    SetClipPath(clip_path);
   }
 };
 
