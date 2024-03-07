@@ -20,6 +20,7 @@
 namespace blink {
 
 class DOMArrayBuffer;
+class ExceptionState;
 
 // This class wraps a WebRTC video frame and allows making shallow
 // copies. Its purpose is to support making RTCEncodedVideoFrames
@@ -32,15 +33,14 @@ class RTCEncodedVideoFrameDelegate
 
   String Type() const;
   uint32_t RtpTimestamp() const;
-  bool SetRtpTimestamp(uint32_t timestamp, String& error_message);
+  void SetRtpTimestamp(uint32_t timestamp, ExceptionState& exception_state);
   std::optional<webrtc::Timestamp> PresentationTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;
   std::optional<webrtc::VideoFrameMetadata> GetMetadata() const;
-  bool SetMetadata(const webrtc::VideoFrameMetadata& metadata,
-                   String& error_message);
+  void SetMetadata(const webrtc::VideoFrameMetadata& metadata);
   std::unique_ptr<webrtc::TransformableVideoFrameInterface> PassWebRtcFrame();
   std::unique_ptr<webrtc::TransformableVideoFrameInterface> CloneWebRtcFrame();
 
