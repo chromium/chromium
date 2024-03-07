@@ -1,0 +1,33 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+import "services/viz/public/mojom/compositing/shared_image_format.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+import "skia/public/mojom/surface_origin.mojom";
+import "skia/public/mojom/image_info.mojom";
+
+// Metadata describing a shared image.
+struct SharedImageMetadata {
+  // The pixel format of the image.
+  viz.mojom.SharedImageFormat format;
+
+  // Size in pixels.
+  gfx.mojom.Size size;
+
+  // Color space.
+  gfx.mojom.ColorSpace color_space;
+
+  // Which corner is considered the origin of the new image.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+};

@@ -75,22 +75,10 @@ std::vector<SyncToken> GenerateDependenciesFromSyncToken(
   return dependencies;
 }
 
-mojom::SharedImageMetadataPtr CreateSharedImageMetadata(
-    const SharedImageMetadata& meta) {
-  auto meta_ptr = mojom::SharedImageMetadata::New();
-  meta_ptr->format = meta.format;
-  meta_ptr->size = meta.size;
-  meta_ptr->color_space = meta.color_space;
-  meta_ptr->surface_origin = meta.surface_origin;
-  meta_ptr->alpha_type = meta.alpha_type;
-  meta_ptr->usage = meta.usage;
-  return meta_ptr;
-}
-
 mojom::SharedImageInfoPtr CreateSharedImageInfo(
     const SharedImageInfo& si_info) {
   auto info = mojom::SharedImageInfo::New();
-  info->meta = CreateSharedImageMetadata(si_info.meta);
+  info->meta = si_info.meta;
   info->debug_label = si_info.debug_label;
   return info;
 }

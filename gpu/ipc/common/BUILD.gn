@@ -342,6 +342,7 @@ mojom("interfaces") {
     "mailbox_holder.mojom",
     "memory_stats.mojom",
     "shared_image_capabilities.mojom",
+    "shared_image_metadata.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -354,6 +355,8 @@ mojom("interfaces") {
     ":gpu_preferences_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
+    "//services/viz/public/mojom:shared_image_format",
+    "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gl/mojom",
@@ -534,6 +537,16 @@ mojom("interfaces") {
     {
       types = [
         {
+          mojom = "gpu.mojom.SharedImageMetadata"
+          cpp = "::gpu::SharedImageMetadata"
+        },
+      ]
+      traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "gpu.mojom.SyncToken"
           cpp = "::gpu::SyncToken"
         },
@@ -614,6 +627,16 @@ mojom("interfaces") {
       ]
       traits_headers = [ "mailbox_holder_mojom_traits.h" ]
       traits_public_deps = [ "//gpu" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SharedImageMetadata"
+          cpp = "::gpu::SharedImageMetadata"
+        },
+      ]
+      traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//services/viz/public/mojom:shared_image_format" ]
     },
     {
       types = [

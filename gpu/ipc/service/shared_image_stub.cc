@@ -327,26 +327,26 @@ void SharedImageStub::SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
 void SharedImageStub::OnCreateSharedImage(
     mojom::CreateSharedImageParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
-               params->si_info->meta->size.width(), "height",
-               params->si_info->meta->size.height());
+               params->si_info->meta.size.width(), "height",
+               params->si_info->meta.size.height());
   if (!params->mailbox.IsSharedImage()) {
     LOG(ERROR) << kInvalidMailboxOnCreateError;
     OnError();
     return;
   }
 
-  bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta->usage);
+  bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
   }
 
   if (!factory_->CreateSharedImage(
-          params->mailbox, params->si_info->meta->format,
-          params->si_info->meta->size, params->si_info->meta->color_space,
-          params->si_info->meta->surface_origin,
-          params->si_info->meta->alpha_type, gpu::kNullSurfaceHandle,
-          params->si_info->meta->usage,
+          params->mailbox, params->si_info->meta.format,
+          params->si_info->meta.size, params->si_info->meta.color_space,
+          params->si_info->meta.surface_origin,
+          params->si_info->meta.alpha_type, gpu::kNullSurfaceHandle,
+          params->si_info->meta.usage,
           GetLabel(params->si_info->debug_label))) {
     LOG(ERROR) << kSICreationFailureError;
     OnError();
@@ -359,15 +359,15 @@ void SharedImageStub::OnCreateSharedImage(
 void SharedImageStub::OnCreateSharedImageWithData(
     mojom::CreateSharedImageWithDataParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithData", "width",
-               params->si_info->meta->size.width(), "height",
-               params->si_info->meta->size.height());
+               params->si_info->meta.size.width(), "height",
+               params->si_info->meta.size.height());
   if (!params->mailbox.IsSharedImage()) {
     LOG(ERROR) << kInvalidMailboxOnCreateError;
     OnError();
     return;
   }
 
-  bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta->usage);
+  bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
@@ -395,10 +395,10 @@ void SharedImageStub::OnCreateSharedImageWithData(
       memory.subspan(params->pixel_data_offset, params->pixel_data_size);
 
   if (!factory_->CreateSharedImage(
-          params->mailbox, params->si_info->meta->format,
-          params->si_info->meta->size, params->si_info->meta->color_space,
-          params->si_info->meta->surface_origin,
-          params->si_info->meta->alpha_type, params->si_info->meta->usage,
+          params->mailbox, params->si_info->meta.format,
+          params->si_info->meta.size, params->si_info->meta.color_space,
+          params->si_info->meta.surface_origin,
+          params->si_info->meta.alpha_type, params->si_info->meta.usage,
           GetLabel(params->si_info->debug_label), subspan)) {
     LOG(ERROR) << kSICreationFailureError;
     OnError();
@@ -417,14 +417,14 @@ void SharedImageStub::OnCreateSharedImageWithData(
 void SharedImageStub::OnCreateSharedImageWithBuffer(
     mojom::CreateSharedImageWithBufferParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithBuffer", "width",
-               params->si_info->meta->size.width(), "height",
-               params->si_info->meta->size.height());
+               params->si_info->meta.size.width(), "height",
+               params->si_info->meta.size.height());
   if (!CreateSharedImage(
           params->mailbox, std::move(params->buffer_handle),
-          params->si_info->meta->format, params->si_info->meta->size,
-          params->si_info->meta->color_space,
-          params->si_info->meta->surface_origin,
-          params->si_info->meta->alpha_type, params->si_info->meta->usage,
+          params->si_info->meta.format, params->si_info->meta.size,
+          params->si_info->meta.color_space,
+          params->si_info->meta.surface_origin,
+          params->si_info->meta.alpha_type, params->si_info->meta.usage,
           GetLabel(params->si_info->debug_label))) {
     return;
   }
@@ -438,9 +438,9 @@ void SharedImageStub::OnCreateGMBSharedImage(
                params->size.width(), "height", params->size.height());
   if (!CreateSharedImage(
           params->mailbox, std::move(params->buffer_handle), params->format,
-          params->plane, params->size, params->si_info->meta->color_space,
-          params->si_info->meta->surface_origin,
-          params->si_info->meta->alpha_type, params->si_info->meta->usage,
+          params->plane, params->size, params->si_info->meta.color_space,
+          params->si_info->meta.surface_origin,
+          params->si_info->meta.alpha_type, params->si_info->meta.usage,
           GetLabel(params->si_info->debug_label))) {
     return;
   }

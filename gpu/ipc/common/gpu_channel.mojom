@@ -7,6 +7,7 @@ module gpu.mojom;
 import "gpu/ipc/common/capabilities.mojom";
 import "gpu/ipc/common/context_result.mojom";
 import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
@@ -525,28 +526,6 @@ struct SetDefaultFramebufferSharedImageParams {
 
   // If this framebuffer needs stencil buffer.
   bool needs_stencil;
-};
-
-// Metadata describing a shared image.
-struct SharedImageMetadata {
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
 };
 
 // Common params used when creating a new shared image.
