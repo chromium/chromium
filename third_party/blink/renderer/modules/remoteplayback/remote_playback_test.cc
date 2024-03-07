@@ -107,7 +107,7 @@ class RemotePlaybackTest : public testing::Test,
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
-  raw_ptr<HTMLVideoElement> element_ = nullptr;
+  Persistent<HTMLVideoElement> element_ = nullptr;
 };
 
 TEST_F(RemotePlaybackTest, PromptCancelledRejectsWithNotAllowedError) {
