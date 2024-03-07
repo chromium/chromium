@@ -108,6 +108,16 @@ TasksClientImpl::TasksClientImpl(
 
 TasksClientImpl::~TasksClientImpl() = default;
 
+const ui::ListModel<api::TaskList>* TasksClientImpl::GetCachedTaskLists() {
+  // Note that this doesn't consider `task_lists_fetch_state_`, which means that
+  // the returned `task_lists_` may contain data that was fetched long time ago.
+  if (task_lists_.item_count() == 0) {
+    return nullptr;
+  }
+
+  return &task_lists_;
+}
+
 void TasksClientImpl::GetTaskLists(bool force_fetch,
                                    TasksClient::GetTaskListsCallback callback) {
   if (task_lists_fetch_state_.status == FetchStatus::kFresh && !force_fetch) {
@@ -122,6 +132,18 @@ void TasksClientImpl::GetTaskLists(bool force_fetch,
     FetchTaskListsPage(/*page_token=*/"", /*page_number=*/1,
                        /*accumulated_raw_task_lists=*/{});
   }
+}
+
+const ui::ListModel<api::Task>* TasksClientImpl::GetCachedTasksInTaskList(
+    const std::string& task_list_id) {
+  // Note that this doesn't consider `tasks_fetch_state_`, which means that the
+  // returned tasks may contain data that was fetched long time ago.
+  const auto iter = tasks_in_task_lists_.find(task_list_id);
+  if (iter == tasks_in_task_lists_.end()) {
+    return nullptr;
+  }
+
+  return &iter->second;
 }
 
 void TasksClientImpl::GetTasks(const std::string& task_list_id,

@@ -32,11 +32,22 @@ class ASH_EXPORT TasksClient {
   using OnTaskSavedCallback = base::OnceCallback<void(const Task* task)>;
   using OnAllPendingCompletedTasksSavedCallback = base::OnceClosure;
 
+  // Returns the list model of the task list that was cached when the
+  // glanceables was previously opened. Returns a nullptr if there is no cached
+  // list.
+  virtual const ui::ListModel<api::TaskList>* GetCachedTaskLists() = 0;
+
   // Retrieves all the authenticated user's task lists and invokes `callback`
   // when done. If `force_fetch` is true, new data will be pulled from the
   // Google Tasks API.
   virtual void GetTaskLists(bool force_fetch,
                             GetTaskListsCallback callback) = 0;
+
+  // Returns the list model of the tasks in task list with `task_list_id` that
+  // was cached when the glanceables was previously opened. Returns a nullptr if
+  // there is no cached tasks or the list does not exist.
+  virtual const ui::ListModel<api::Task>* GetCachedTasksInTaskList(
+      const std::string& task_list_id) = 0;
 
   // Retrieves all tasks in the specified task list (`task_list_id` must not be
   // empty) and invokes `callback` when done. If `force_fetch` is true, new data

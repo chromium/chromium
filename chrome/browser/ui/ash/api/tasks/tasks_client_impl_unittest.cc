@@ -251,6 +251,22 @@ TEST_F(TasksClientImplTest, GetTaskListsOnSubsequentCalls) {
   EXPECT_EQ(std::get<1>(future.Take()), task_lists);
 }
 
+TEST_F(TasksClientImplTest, GetCachedTaskLists) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTaskListsResponseContent))));
+
+  EXPECT_EQ(client()->GetCachedTaskLists(), nullptr);
+
+  TaskListsFuture future;
+  client()->GetTaskLists(/*force_fetch=*/false, future.GetRepeatingCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [status, task_lists] = future.Take();
+  EXPECT_TRUE(status);
+  EXPECT_EQ(client()->GetCachedTaskLists(), task_lists);
+}
+
 TEST_F(TasksClientImplTest, ConcurrentGetTaskListsCalls) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
@@ -391,7 +407,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
   TaskListsFuture future;
   client()->GetTaskLists(/*force_fetch=*/false, future.GetRepeatingCallback());
 
-  // Simulate bubble closure before first request response arives.
+  // Simulate bubble closure before first request response arrives.
   client()->OnGlanceablesBubbleClosed();
 
   ASSERT_TRUE(future.Wait());
@@ -498,7 +514,7 @@ TEST_F(TasksClientImplTest, GetTaskListsReturnsCachedResultsOnHttpError) {
   client()->OnGlanceablesBubbleClosed();
 
   TaskListsFuture failure_future;
-  client()->GetTaskLists(/*force_fetch=*/false, failure_future.GetCallback());
+  client()->GetTaskLists(/*force_fetch=*/true, failure_future.GetCallback());
   ASSERT_TRUE(failure_future.Wait());
 
   const auto [failure_status, failed_task_lists] = failure_future.Take();
@@ -591,7 +607,7 @@ TEST_F(TasksClientImplTest,
   client()->OnGlanceablesBubbleClosed();
 
   TaskListsFuture failure_future;
-  client()->GetTaskLists(/*force_fetch=*/false, failure_future.GetCallback());
+  client()->GetTaskLists(/*force_fetch=*/true, failure_future.GetCallback());
   ASSERT_TRUE(failure_future.Wait());
 
   const auto [failed_status, failed_task_lists] = failure_future.Take();
@@ -838,7 +854,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
   EXPECT_EQ(task_lists->GetItemAt(1)->id, "asdfgh");
 
   TasksFuture abandoned_tasks_future;
-  client()->GetTasks("asdfgh", /*force_fetch=*/false,
+  client()->GetTasks("asdfgh", /*force_fetch=*/true,
                      abandoned_tasks_future.GetCallback());
   ASSERT_TRUE(abandoned_tasks_future.Wait());
 
@@ -850,7 +866,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
   EXPECT_EQ(abandoned_tasks->GetItemAt(0)->id, "fgh");
 
   TasksFuture tasks_future;
-  client()->GetTasks("qwerty", /*force_fetch=*/false,
+  client()->GetTasks("qwerty", /*force_fetch=*/true,
                      tasks_future.GetCallback());
   ASSERT_TRUE(tasks_future.Wait());
 
@@ -864,7 +880,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
   client()->OnGlanceablesBubbleClosed();
 
   TaskListsFuture refreshed_task_list_future;
-  client()->GetTaskLists(/*force_fetch=*/false,
+  client()->GetTaskLists(/*force_fetch=*/true,
                          refreshed_task_list_future.GetCallback());
   ASSERT_TRUE(refreshed_task_list_future.Wait());
 
@@ -876,7 +892,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
   EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
 
   TasksFuture refreshed_abandoned_tasks_future;
-  client()->GetTasks("asdfgh", /*force_fetch=*/false,
+  client()->GetTasks("asdfgh", /*force_fetch=*/true,
                      refreshed_abandoned_tasks_future.GetCallback());
   ASSERT_TRUE(refreshed_abandoned_tasks_future.Wait());
 
@@ -887,7 +903,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
   EXPECT_EQ(refreshed_abandoned_tasks->item_count(), 0u);
 
   TasksFuture refreshed_tasks_future;
-  client()->GetTasks("qwerty", /*force_fetch=*/false,
+  client()->GetTasks("qwerty", /*force_fetch=*/true,
                      refreshed_tasks_future.GetCallback());
   ASSERT_TRUE(refreshed_tasks_future.Wait());
 
@@ -1071,6 +1087,24 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCallsForDifferentLists) {
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.GetTasks.Status", ApiErrorCode::HTTP_SUCCESS,
       /*expected_bucket_count=*/2);
+}
+
+TEST_F(TasksClientImplTest, GetCachedTasks) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
+          kDefaultTasksResponseContent))));
+
+  EXPECT_EQ(client()->GetCachedTasksInTaskList("test-task-list-id"), nullptr);
+
+  TasksFuture future;
+  client()->GetTasks("test-task-list-id", /*force_fetch=*/false,
+                     future.GetRepeatingCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_EQ(client()->GetCachedTasksInTaskList("test-task-list-id"),
+            root_tasks);
 }
 
 TEST_F(TasksClientImplTest, GetTasksOnSubsequentCalls) {
@@ -1349,7 +1383,7 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnHttpError) {
   client()->OnGlanceablesBubbleClosed();
 
   TasksFuture failed_future;
-  client()->GetTasks("test-task-list-id", /*force_fetch=*/false,
+  client()->GetTasks("test-task-list-id", /*force_fetch=*/true,
                      failed_future.GetCallback());
   ASSERT_TRUE(failed_future.Wait());
 
@@ -1370,7 +1404,7 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnHttpError) {
       /*expected_bucket_count=*/1);
 
   TasksFuture retry_future;
-  client()->GetTasks("test-task-list-id", /*force_fetch=*/false,
+  client()->GetTasks("test-task-list-id", /*force_fetch=*/true,
                      retry_future.GetCallback());
   ASSERT_TRUE(retry_future.Wait());
 
@@ -1444,7 +1478,7 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnPartialHttpError) {
   client()->OnGlanceablesBubbleClosed();
 
   TasksFuture failure_future;
-  client()->GetTasks("task-list-1", /*force_fetch=*/false,
+  client()->GetTasks("task-list-1", /*force_fetch=*/true,
                      failure_future.GetCallback());
   ASSERT_TRUE(failure_future.Wait());
 

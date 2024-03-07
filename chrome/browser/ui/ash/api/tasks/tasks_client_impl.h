@@ -53,8 +53,11 @@ class TasksClientImpl : public TasksClient {
   ~TasksClientImpl() override;
 
   // TasksClient:
+  const ui::ListModel<api::TaskList>* GetCachedTaskLists() override;
   void GetTaskLists(bool force_fetch,
                     TasksClient::GetTaskListsCallback callback) override;
+  const ui::ListModel<api::Task>* GetCachedTasksInTaskList(
+      const std::string& task_list_id) override;
   void GetTasks(const std::string& task_list_id,
                 bool force_fetch,
                 TasksClient::GetTasksCallback callback) override;

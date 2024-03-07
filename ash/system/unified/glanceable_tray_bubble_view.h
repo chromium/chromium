@@ -68,6 +68,10 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
       bool fetch_success,
       const ui::ListModel<api::TaskList>* task_lists);
 
+  // Updates the cached task lists to `task_lists`.
+  void UpdateTaskLists(bool fetch_success,
+                       const ui::ListModel<api::TaskList>* task_lists);
+
   void OnGlanceablesContainerPreferredSizeChanged();
   void OnGlanceablesContainerHeightChanged(int height_delta);
 

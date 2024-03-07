@@ -132,6 +132,12 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     return event_generator_.get();
   }
 
+  void ToggleDateTray() {
+    GetEventGenerator()->MoveMouseTo(
+        GetDateTray()->GetBoundsInScreen().CenterPoint());
+    GetEventGenerator()->ClickLeftButton();
+  }
+
   GlanceableTrayBubble* GetGlanceableTrayBubble() const {
     return date_tray_->bubble_.get();
   }
@@ -254,9 +260,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, OpenStudentCourseItemURL) {
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
 
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   EXPECT_TRUE(GetGlanceableTrayBubble());
   EXPECT_TRUE(GetStudentView());
@@ -285,9 +289,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ClickSeeAllStudentButton) {
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
 
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   EXPECT_TRUE(GetGlanceableTrayBubble());
   EXPECT_TRUE(GetStudentView());
@@ -317,9 +319,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest,
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
 
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   EXPECT_TRUE(GetGlanceableTrayBubble());
   EXPECT_TRUE(GetStudentView());
@@ -371,9 +371,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ViewAndSwitchTaskLists) {
   ASSERT_TRUE(glanceables_controller()->GetTasksClient());
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   EXPECT_TRUE(GetGlanceableTrayBubble());
   EXPECT_TRUE(GetTasksView());
@@ -415,9 +413,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, ClickSeeAllTasksButton) {
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   EXPECT_TRUE(GetGlanceableTrayBubble());
   EXPECT_TRUE(GetTasksView());
@@ -448,9 +444,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, CheckOffTaskItems) {
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   EXPECT_TRUE(GetGlanceableTrayBubble());
   EXPECT_TRUE(GetTasksView());
@@ -508,9 +502,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, AddTaskItem) {
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   ASSERT_TRUE(GetGlanceableTrayBubble());
   ASSERT_TRUE(GetTasksView());
@@ -587,9 +579,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {
   EXPECT_FALSE(GetGlanceableTrayBubble());
 
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   EXPECT_TRUE(GetGlanceableTrayBubble());
   EXPECT_TRUE(GetTasksView());
@@ -663,9 +653,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {
 
 IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, TasksViewLayout) {
   // Click the date tray to show the glanceable bubbles.
-  GetEventGenerator()->MoveMouseTo(
-      GetDateTray()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  ToggleDateTray();
 
   ASSERT_TRUE(GetGlanceableTrayBubble());
   ASSERT_TRUE(GetTasksView());
@@ -716,6 +704,140 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, TasksViewLayout) {
   // the new task.
   EXPECT_EQ(GetTasksView()->height(), original_task_view_height);
   EXPECT_FALSE(scroll_bar->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
+                       ShowsCachedDataBasic) {
+  auto* const client = fake_glanceables_tasks_client();
+  client->set_paused_on_fetch(true);
+
+  // Click the date tray to show the glanceable bubbles. For the first time the
+  // glanceables are shown, the tasks need to be fetched and the view should not
+  // be shown before the data returns.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+  ASSERT_FALSE(GetTasksView());
+
+  client->RunPendingGetTaskListsCallbacks();
+  client->RunPendingGetTasksCallbacks();
+  ASSERT_TRUE(GetTasksView());
+
+  // Close the glanceables.
+  ToggleDateTray();
+  ASSERT_FALSE(GetGlanceableTrayBubble());
+
+  // The second and following times when the tasks are shown, the cached
+  // tasks should be shown while waiting the new change to be fetched.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+  ASSERT_TRUE(GetTasksView());
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
+                       CachedTaskListAreUpdatedAfterFetch) {
+  // Click the date tray to show the glanceable bubbles.
+  ToggleDateTray();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that task list items from the first list are shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  // Close the glanceables.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  // Turn on the pause_on_fetch to verify the cached tasks and the updated
+  // tasks.
+  auto* const client = fake_glanceables_tasks_client();
+  client->set_paused_on_fetch(true);
+
+  // Add a task in Task List 1 directly via the client as an updated task.
+  client->AddTask(
+      /*task_list_id=*/"TaskListID1",
+      std::make_unique<api::Task>(
+          /*id=*/"TaskListItem5", /*title=*/"Task List 1 Item 3 Title",
+          /*due=*/base::Time::Now(), /*completed=*/false,
+          /*has_subtasks=*/false, /*has_email_link=*/false,
+          /*has_notes=*/false, /*updated=*/base::Time::Now()));
+
+  // Open the glanceables again.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  // Check that only the cached task list items from the first list are shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  client->RunPendingGetTaskListsCallbacks();
+  EXPECT_FALSE(GetTasksView()->GetCanProcessEventsWithinSubtree());
+  client->RunPendingGetTasksCallbacks();
+
+  // After running the get callbacks, the newly added task is shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>({"Task List 1 Item 1 Title",
+                                      "Task List 1 Item 2 Title",
+                                      "Task List 1 Item 3 Title"}));
+  EXPECT_TRUE(GetTasksView()->GetCanProcessEventsWithinSubtree());
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
+                       UpdateShownListIfCachedTaskListDeleted) {
+  // Click the date tray to show the glanceable bubbles.
+  ToggleDateTray();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that task list items from the first list are shown.
+  const auto* combobox = GetTasksComboBoxView();
+  EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+            u"Task List 1 Title");
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  // Close the glanceables.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  // Turn on the pause_on_fetch to verify the cached tasks and the updated
+  // tasks.
+  auto* const client = fake_glanceables_tasks_client();
+  client->set_paused_on_fetch(true);
+
+  // Delete the task list that was shown.
+  client->DeleteTaskList("TaskListID1");
+
+  // Open the glanceables again.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  // Check that deleted list is still showing as it is cached.
+  combobox = GetTasksComboBoxView();
+  EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+            u"Task List 1 Title");
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  client->RunPendingGetTaskListsCallbacks();
+  client->RunPendingGetTasksCallbacks();
+
+  // After running the get callbacks, the task list shown is updated.
+  combobox = GetTasksComboBoxView();
+  EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+            u"Task List 2 Title");
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>({"Task List 2 Item 1 Title",
+                                      "Task List 2 Item 2 Title",
+                                      "Task List 2 Item 3 Title"}));
 }
 
 }  // namespace ash

@@ -46,6 +46,11 @@ void TasksComboboxModel::ClearUserStatePrefs(PrefService* pref_service) {
   pref_service->ClearPref(kLastSelectedTaskListTimePref);
 }
 
+void TasksComboboxModel::UpdateTaskLists(
+    const ui::ListModel<api::TaskList>* task_lists) {
+  task_lists_ = task_lists;
+}
+
 size_t TasksComboboxModel::GetItemCount() const {
   return task_lists_->item_count();
 }

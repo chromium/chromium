@@ -36,21 +36,46 @@ size_t RunPendingCallbacks(std::list<base::OnceClosure>& pending_callbacks) {
 }  // namespace
 
 FakeTasksClient::FakeTasksClient()
-    : task_lists_(std::make_unique<ui::ListModel<TaskList>>()) {}
+    : task_lists_(std::make_unique<ui::ListModel<TaskList>>()),
+      cached_task_lists_(std::make_unique<ui::ListModel<TaskList>>()),
+      cached_tasks_(std::make_unique<ui::ListModel<Task>>()) {}
 
 FakeTasksClient::~FakeTasksClient() = default;
 
+const ui::ListModel<api::TaskList>* FakeTasksClient::GetCachedTaskLists() {
+  if (cached_task_lists_->item_count() == 0) {
+    return nullptr;
+  }
+
+  return cached_task_lists_.get();
+}
+
 void FakeTasksClient::GetTaskLists(bool force_fetch,
                                    GetTaskListsCallback callback) {
-  if (!paused_) {
-    std::move(callback).Run(/*succes=*/true, task_lists_.get());
-  } else {
+  const bool need_fetch = force_fetch || cached_task_lists_->item_count() == 0;
+  auto* task_lists_returned =
+      need_fetch ? task_lists_.get() : cached_task_lists_.get();
+
+  if (paused_ || (paused_on_fetch_ && need_fetch)) {
     pending_get_task_lists_callbacks_.push_back(base::BindOnce(
         [](ui::ListModel<TaskList>* task_lists, GetTaskListsCallback callback) {
           std::move(callback).Run(/*success=*/true, task_lists);
         },
-        task_lists_.get(), std::move(callback)));
+        task_lists_returned, std::move(callback)));
+  } else {
+    std::move(callback).Run(/*success=*/true, task_lists_returned);
   }
+}
+
+const ui::ListModel<api::Task>* FakeTasksClient::GetCachedTasksInTaskList(
+    const std::string& task_list_id) {
+  // TODO(b/321789067): Update `cached_tasks_` to a map of list id to tasks to
+  // adapt more complicated tests.
+  if (task_list_id != cached_task_list_id_) {
+    return nullptr;
+  }
+
+  return cached_tasks_.get();
 }
 
 void FakeTasksClient::GetTasks(const std::string& task_list_id,
@@ -59,14 +84,18 @@ void FakeTasksClient::GetTasks(const std::string& task_list_id,
   auto iter = tasks_in_task_lists_.find(task_list_id);
   CHECK(iter != tasks_in_task_lists_.end());
 
-  if (!paused_) {
-    std::move(callback).Run(/*success=*/true, iter->second.get());
-  } else {
+  const bool need_fetch = force_fetch || task_list_id != cached_task_list_id_;
+  auto* tasks_returned = need_fetch ? iter->second.get() : cached_tasks_.get();
+  cached_task_list_id_ = task_list_id;
+
+  if (paused_ || (paused_on_fetch_ && need_fetch)) {
     pending_get_tasks_callbacks_.push_back(base::BindOnce(
         [](ui::ListModel<Task>* tasks, GetTasksCallback callback) {
           std::move(callback).Run(/*success=*/true, tasks);
         },
-        iter->second.get(), std::move(callback)));
+        tasks_returned, std::move(callback)));
+  } else {
+    std::move(callback).Run(/*success=*/true, tasks_returned);
   }
 }
 
@@ -124,6 +153,8 @@ void FakeTasksClient::OnGlanceablesBubbleClosed(
   RunPendingUpdateTaskCallbacks();
   completed_tasks_ += pending_completed_tasks_.size();
   pending_completed_tasks_.clear();
+  CacheTaskLists();
+  CacheTasks();
   std::move(callback).Run();
 }
 
@@ -142,6 +173,18 @@ void FakeTasksClient::AddTask(const std::string& task_list_id,
   auto& tasks = task_list_iter->second;
   CHECK(!base::Contains(*tasks, task_data->id, &Task::id));
   tasks->Add(std::move(task_data));
+}
+
+void FakeTasksClient::DeleteTaskList(const std::string& task_list_id) {
+  // Find the task list iterator with id `task_list_id`.
+  auto iter = std::find_if(
+      task_lists_->begin(), task_lists_->end(),
+      [task_list_id](const auto& list) { return list->id == task_list_id; });
+  if (iter == task_lists_->end()) {
+    return;
+  }
+
+  task_lists_->DeleteAt(iter - task_lists_->begin());
 }
 
 void FakeTasksClient::SetTasksLastUpdateTime(base::Time time) {
@@ -216,6 +259,26 @@ void FakeTasksClient::UpdateTaskImpl(
   task->title = title;
   task->completed = completed;
   std::move(callback).Run(task);
+}
+
+void FakeTasksClient::CacheTaskLists() {
+  cached_task_lists_->DeleteAll();
+  for (const auto& list : *task_lists_) {
+    cached_task_lists_->Add(
+        std::make_unique<TaskList>(list->id, list->title, list->updated));
+  }
+}
+
+void FakeTasksClient::CacheTasks() {
+  auto iter = tasks_in_task_lists_.find(cached_task_list_id_);
+  CHECK(iter != tasks_in_task_lists_.end());
+
+  cached_tasks_->DeleteAll();
+  for (const auto& task : *iter->second) {
+    cached_tasks_->Add(std::make_unique<Task>(
+        task->id, task->title, task->due, task->completed, task->has_subtasks,
+        task->has_email_link, task->has_notes, task->updated));
+  }
 }
 
 }  // namespace ash::api

@@ -39,6 +39,9 @@ class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
   // Clears tasks glanceables state saved in user prefs.
   static void ClearUserStatePrefs(PrefService* pref_service);
 
+  // Updates `task_lists_` with `task_list`.
+  void UpdateTaskLists(const ui::ListModel<api::TaskList>* task_lists);
+
   // ui::ComboboxModel:
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
@@ -51,7 +54,7 @@ class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
 
  private:
   // Owned by `GlanceableTasksClientImpl`.
-  const raw_ptr<const ui::ListModel<api::TaskList>> task_lists_;
+  raw_ptr<const ui::ListModel<api::TaskList>> task_lists_;
 };
 
 }  // namespace ash
