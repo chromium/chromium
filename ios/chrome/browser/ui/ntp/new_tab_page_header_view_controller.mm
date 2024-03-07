@@ -453,9 +453,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 - (void)openLens {
   [self.NTPMetricsRecorder recordLensTapped];
-  if (IsIOSLargeFakeboxEnabled()) {
-    TriggerHapticFeedbackForSelectionChange();
-  }
+  TriggerHapticFeedbackForSelectionChange();
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
           initWithEntryPoint:LensEntrypoint::NewTabPage
@@ -467,9 +465,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 - (void)loadVoiceSearch:(id)sender {
   DCHECK(self.voiceSearchIsEnabled);
   [self.NTPMetricsRecorder recordVoiceSearchTapped];
-  if (IsIOSLargeFakeboxEnabled()) {
-    TriggerHapticFeedbackForSelectionChange();
-  }
+  TriggerHapticFeedbackForSelectionChange();
   UIView* voiceSearchButton = base::apple::ObjCCastStrict<UIView>(sender);
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
@@ -491,9 +487,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 - (void)fakeboxTapped {
   [self.NTPMetricsRecorder recordFakeOmniboxTapped];
-  if (IsIOSLargeFakeboxEnabled()) {
-    TriggerHapticFeedbackForSelectionChange();
-  }
+  TriggerHapticFeedbackForSelectionChange();
   [self.commandHandler fakeboxTapped];
 }
 
