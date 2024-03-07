@@ -71,7 +71,7 @@ void FakeBrowserManager::SetGetFeedbackDataResponse(
 }
 
 void FakeBrowserManager::SignalMojoDisconnected() {
-  SetState(State::TERMINATING);
+  OnMojoDisconnected();
 }
 
 void FakeBrowserManager::StartRunning() {

@@ -293,7 +293,8 @@ namespace autotestPrivate {
     PreLaunched,
     Starting,
     Running,
-    Terminating
+    WaitingForMojoDisconnected,
+    WaitingForProcessTerminated
   };
 
   // A mapping of crosapi::browser_util::LacrosMode

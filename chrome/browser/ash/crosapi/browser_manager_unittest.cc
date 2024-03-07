@@ -107,7 +107,8 @@ class BrowserManagerFake : public BrowserManager {
   void SetStatePublic(State state) { SetState(state); }
 
   void SimulateLacrosTermination() {
-    SetStatePublic(State::TERMINATING);
+    // Simulate termination triggered from Lacros.
+    SetStatePublic(State::WAITING_FOR_PROCESS_TERMINATED);
     if (browser_service_.has_value()) {
       OnBrowserServiceDisconnected(*crosapi_id_, browser_service_->mojo_id);
     }

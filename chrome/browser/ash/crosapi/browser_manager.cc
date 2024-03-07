@@ -385,6 +385,7 @@ BrowserManager::~BrowserManager() {
 
   // Try to kill the lacros-chrome binary.
   browser_launcher_.TriggerTerminate(/*exit_code=*/0);
+  SetState(State::WAITING_FOR_MOJO_DISCONNECTED);
 
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -396,7 +397,9 @@ bool BrowserManager::IsRunning() const {
 
 bool BrowserManager::IsRunningOrWillRun() const {
   return state_ == State::RUNNING || state_ == State::STARTING ||
-         state_ == State::PREPARING_FOR_LAUNCH || state_ == State::TERMINATING;
+         state_ == State::PREPARING_FOR_LAUNCH ||
+         state_ == State::WAITING_FOR_MOJO_DISCONNECTED ||
+         state_ == State::WAITING_FOR_PROCESS_TERMINATED;
 }
 
 bool BrowserManager::IsInitialized() const {
@@ -541,7 +544,8 @@ bool BrowserManager::EnsureLaunch() {
           << "Ensuring Lacros launch: already in the process of starting";
       return true;
 
-    case State::TERMINATING:
+    case State::WAITING_FOR_MOJO_DISCONNECTED:
+    case State::WAITING_FOR_PROCESS_TERMINATED:
       LOG(WARNING)
           << "Ensuring Lacros launch: currently terminating, enqueueing launch";
       PerformOrEnqueue(BrowserAction::GetActionForSessionStart());
@@ -687,6 +691,7 @@ void BrowserManager::Shutdown() {
   // restarted. If, on the other hand, process is alive, terminate it now.
   if (browser_launcher_.TriggerTerminate(/*exit_code=*/0)) {
     LOG(WARNING) << "Ash-chrome shutdown initiated. Terminating lacros-chrome";
+    SetState(State::WAITING_FOR_PROCESS_TERMINATED);
 
     // Synchronously post a shutdown blocking task that waits for lacros-chrome
     // to cleanly exit. Terminate() will eventually result in a callback into
@@ -694,7 +699,7 @@ void BrowserManager::Shutdown() {
     // risk that ash exits before this is called.
     // The 2.5s wait for a successful lacros exit stays below the 3s timeout
     // after which ash is forcefully terminated by the session_manager.
-    HandleLacrosChromeTermination(base::Milliseconds(2500));
+    EnsureLacrosChromeTermination(base::Milliseconds(2500));
   }
 }
 
@@ -717,9 +722,6 @@ void BrowserManager::SetState(State state) {
   state_ = state;
 
   for (auto& observer : observers_) {
-    if (state == State::TERMINATING) {
-      observer.OnMojoDisconnected();
-    }
     observer.OnStateChanged();
   }
 }
@@ -922,18 +924,21 @@ void BrowserManager::OnCoreDestruction(policy::CloudPolicyCore* core) {
 void BrowserManager::OnMojoDisconnected() {
   LOG(WARNING)
       << "Mojo to lacros-chrome is disconnected. Terminating lacros-chrome";
-  HandleLacrosChromeTermination(base::Seconds(5));
+  SetState(State::WAITING_FOR_PROCESS_TERMINATED);
+  EnsureLacrosChromeTermination(base::Seconds(5));
+  for (auto& observer : observers_) {
+    observer.OnMojoDisconnected();
+  }
 }
 
-void BrowserManager::HandleLacrosChromeTermination(base::TimeDelta timeout) {
+void BrowserManager::EnsureLacrosChromeTermination(base::TimeDelta timeout) {
   // This may be called following a synchronous termination in `Shutdown()` or
   // when the mojo pipe with the lacros-chrome process has disconnected. Early
   // return if already handling lacros-chrome termination.
   if (!browser_launcher_.IsProcessValid()) {
     return;
   }
-  DCHECK(state_ == State::PRE_LAUNCHED || state_ == State::STARTING ||
-         state_ == State::RUNNING);
+  CHECK_EQ(state_, State::WAITING_FOR_PROCESS_TERMINATED);
 
   browser_service_.reset();
   crosapi_id_.reset();
@@ -941,8 +946,6 @@ void BrowserManager::HandleLacrosChromeTermination(base::TimeDelta timeout) {
       base::BindOnce(&BrowserManager::OnLacrosChromeTerminated,
                      weak_factory_.GetWeakPtr()),
       timeout);
-
-  SetState(State::TERMINATING);
 }
 
 void BrowserManager::HandleReload() {
@@ -962,7 +965,8 @@ void BrowserManager::HandleReload() {
 }
 
 void BrowserManager::OnLacrosChromeTerminated() {
-  DCHECK_EQ(state_, State::TERMINATING);
+  CHECK(state_ == State::WAITING_FOR_PROCESS_TERMINATED ||
+        state_ == State::WAITING_FOR_MOJO_DISCONNECTED);
   LOG(WARNING) << "Lacros-chrome is terminated";
   is_terminated_ = true;
   SetState(State::STOPPED);
@@ -1180,6 +1184,7 @@ void BrowserManager::ResumeLaunch() {
     LOG(WARNING) << "Lacros is not enabled for the current user. "
                     "Terminating pre-launched instance";
     browser_launcher_.TriggerTerminate(/*exit_code=*/0);
+    SetState(State::WAITING_FOR_MOJO_DISCONNECTED);
     // We need to tell the server that Lacros does not run in this session.
     RecordLacrosLaunchMode();
     unload_requested_ = true;
@@ -1202,6 +1207,7 @@ void BrowserManager::ResumeLaunch() {
     // the relaunch.
     reload_requested_ = true;
     browser_launcher_.TriggerTerminate(/*exit_code=*/0);
+    SetState(State::WAITING_FOR_MOJO_DISCONNECTED);
     return;
   }
 
@@ -1404,7 +1410,8 @@ void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
                                     mojom::CreationResult::kBrowserNotRunning);
       return;
 
-    case State::TERMINATING:
+    case State::WAITING_FOR_MOJO_DISCONNECTED:
+    case State::WAITING_FOR_PROCESS_TERMINATED:
       LOG(WARNING) << "lacros-chrome is terminating, so cannot start now";
       pending_actions_.PushOrCancel(std::move(action),
                                     mojom::CreationResult::kBrowserNotRunning);
