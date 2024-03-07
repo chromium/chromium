@@ -138,7 +138,8 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean shouldAllowTabDrag() {
-        return mManufacturerAllowlist.contains(getCurrManufacturer());
+        return TabUiFeatureUtilities.isTabTearingEnabled()
+                || mManufacturerAllowlist.contains(getCurrManufacturer());
     }
 
     /**

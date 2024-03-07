@@ -328,7 +328,10 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
+        ChromeFeatureList.DRAG_DROP_TAB_TEARING
+    })
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_returnFalseForNonSplitScreen() {
         // Set params.
@@ -347,8 +350,11 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
+        ChromeFeatureList.DRAG_DROP_TAB_TEARING
+    })
     public void test_startTabDragAction_returnTrueForNonSplitScreenSamsung() {
         // Set params, add Samsung to allowed manufacturer list.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -362,6 +368,25 @@ public class TabDragSourceTest {
         assertTrue(
                 "Tab drag should start",
                 spySource.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+    public void test_startTabDragAction_returnTrueForNonSplitScreenTabTearing() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        mSourceInstance.setManufacturerAllowlistForTesting(new HashSet<String>());
+
+        // Verify.
+        assertTrue(
+                "Tab drag should start",
+                mSourceInstance.startTabDragAction(
                         mTabsToolbarView,
                         mTabBeingDragged,
                         DRAG_START_POINT,

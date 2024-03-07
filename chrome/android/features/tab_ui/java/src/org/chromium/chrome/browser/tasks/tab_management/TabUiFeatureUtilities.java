@@ -194,6 +194,7 @@ public class TabUiFeatureUtilities {
     // TODO(crbug/328511660): This flag is similar with {@link #isTabDragAsWindowEnabled()}.
     // Consider merge code logic.
     public static boolean isTabTearingEnabled() {
+        // TODO(crbug/328511660): Add OS version check once available.
         return ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING);
     }
