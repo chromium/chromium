@@ -7,30 +7,32 @@
  * with keyboard events.
  */
 import {AsyncUtil} from '/common/async_util.js';
-import {KeyCode, KeyName} from '/common/key_code.js';
+import {KeyCodeData} from '/common/key_code.js';
 
 import {KeySequence} from './key_sequence.js';
 import {Msgs} from './msgs.js';
 
-export class KeyUtil {
+export namespace KeyUtil {
   /**
    * Convert a key event into a Key Sequence representation.
    *
-   * @param {Event} keyEvent The keyEvent to convert.
-   * @return {!KeySequence} A key sequence representation of the key event.
+   * @param keyEvent The keyEvent to convert.
+   * @return A key sequence representation of the key event.
    */
-  static keyEventToKeySequence(keyEvent) {
-    const util = KeyUtil;
-    if (util.prevKeySequence &&
-        (util.maxSeqLength === util.prevKeySequence.length())) {
+  export function keyEventToKeySequence(keyEvent: KeyboardEvent): KeySequence {
+    if (KeyUtil.prevKeySequence &&
+        (KeyUtil.maxSeqLength === KeyUtil.prevKeySequence.length())) {
       // Reset the sequence buffer if max sequence length is reached.
-      util.sequencing = false;
-      util.prevKeySequence = null;
+      KeyUtil.sequencing = false;
+      KeyUtil.prevKeySequence = null;
     }
+    const hasKeyPrefix =
+        (keyEvent as unknown as {keyPrefix: boolean}).keyPrefix;
+    const stickyMode =
+        (keyEvent as unknown as {stickyMode: boolean}).stickyMode;
     // Either we are in the middle of a key sequence (N > H), or the key prefix
     // was pressed before (Ctrl+Z), or sticky mode is enabled
-    const keyIsPrefixed =
-        util.sequencing || keyEvent['keyPrefix'] || keyEvent['stickyMode'];
+    const keyIsPrefixed = KeyUtil.sequencing || hasKeyPrefix || stickyMode;
 
     // Create key sequence.
     let keySequence = new KeySequence(keyEvent);
@@ -40,37 +42,38 @@ export class KeyUtil {
     const keyWasCvox = keySequence.cvoxModifier;
 
     if (keyIsPrefixed || keyWasCvox) {
-      if (!util.sequencing && util.isSequenceSwitchKeyCode(keySequence)) {
+      if (!KeyUtil.sequencing && KeyUtil.isSequenceSwitchKeyCode(keySequence)) {
         // If this is the beginning of a sequence.
-        util.sequencing = true;
-        util.prevKeySequence = keySequence;
+        KeyUtil.sequencing = true;
+        KeyUtil.prevKeySequence = keySequence;
         return keySequence;
-      } else if (util.sequencing) {
-        if (util.prevKeySequence.addKeyEvent(keyEvent)) {
-          keySequence = util.prevKeySequence;
-          util.prevKeySequence = null;
-          util.sequencing = false;
+      } else if (KeyUtil.sequencing) {
+        // TODO(b/314203187): Not nulls asserted, check that this is correct.
+        if (KeyUtil.prevKeySequence!.addKeyEvent(keyEvent)) {
+          keySequence = KeyUtil.prevKeySequence!;
+          KeyUtil.prevKeySequence = null;
+          KeyUtil.sequencing = false;
           return keySequence;
         } else {
-          throw 'Think sequencing is enabled, yet util.prevKeySequence already' +
-              'has two key codes' + util.prevKeySequence;
+          throw 'Think sequencing is enabled, yet KeyUtil.prevKeySequence' +
+              'already has two key codes (' + KeyUtil.prevKeySequence + ')';
         }
       }
     } else {
-      util.sequencing = false;
+      KeyUtil.sequencing = false;
     }
 
     // Repeated keys pressed.
     const currTime = new Date().getTime();
-    if (KeyUtil.isDoubleTapKey(keySequence) && util.prevKeySequence &&
-        keySequence.equals(util.prevKeySequence)) {
-      const prevTime = util.modeKeyPressTime;
+    if (KeyUtil.isDoubleTapKey(keySequence) && KeyUtil.prevKeySequence &&
+        keySequence.equals(KeyUtil.prevKeySequence)) {
+      const prevTime = KeyUtil.modeKeyPressTime;
       const delta = currTime - prevTime;
       if (!keyEvent.repeat && prevTime > 0 && delta < 300) /* Double tap */ {
-        keySequence = util.prevKeySequence;
+        keySequence = KeyUtil.prevKeySequence;
         keySequence.doubleTap = true;
-        util.prevKeySequence = null;
-        util.sequencing = false;
+        KeyUtil.prevKeySequence = null;
+        KeyUtil.sequencing = false;
         return keySequence;
       }
       // The user double tapped the sticky key but didn't do it within the
@@ -78,23 +81,22 @@ export class KeyUtil {
       // time the sticky key was pressed and keep track of the corresponding
       // key sequence.
     }
-    util.prevKeySequence = keySequence;
-    util.modeKeyPressTime = currTime;
+    KeyUtil.prevKeySequence = keySequence;
+    KeyUtil.modeKeyPressTime = currTime;
     return keySequence;
   }
 
   /**
    * Returns the string representation of the specified key code.
-   *
-   * @param {number} keyCode key code.
-   * @return {string} A string representation of the key event.
+   * @return A string representation of the key event.
    */
-  static keyCodeToString(keyCode) {
-    if (keyCode === KeyCode.CONTROL) {
+  export function keyCodeToString(keyCode: number): string {
+    if (keyCode === KeyCodeData.CONTROL.code) {
       return 'Ctrl';
     }
-    if (KeyName.fromCode(keyCode)) {
-      return KeyName.fromCode(keyCode);
+    const name = getNameForCode(keyCode);
+    if (name) {
+      return name;
     }
 
     // Anything else
@@ -104,31 +106,31 @@ export class KeyUtil {
   /**
    * Returns the keycode of a string representation of the specified modifier.
    *
-   * @param {string} keyString Modifier key.
-   * @return {number} Key code.
+   * @param keyString Modifier key.
+   * @return Key code.
    */
-  static modStringToKeyCode(keyString) {
+  export function modStringToKeyCode(keyString: string): number {
     switch (keyString) {
       case 'Ctrl':
-        return KeyCode.CONTROL;
+        return KeyCodeData.CONTROL.code;
       case 'Alt':
-        return KeyCode.ALT;
+        return KeyCodeData.ALT.code;
       case 'Shift':
-        return KeyCode.SHIFT;
+        return KeyCodeData.SHIFT.code;
       case 'Cmd':
       case 'Win':
-        return KeyCode.SEARCH;
+        return KeyCodeData.SEARCH.code;
     }
     return -1;
   }
 
   /**
-   * Returns the key codes of a string respresentation of the ChromeVox
+   * Returns the key codes of a string representation of the ChromeVox
    * modifiers.
    *
-   * @return {Array<number>} Array of key codes.
+   * @return Array of key codes.
    */
-  static cvoxModKeyCodes() {
+  export function cvoxModKeyCodes(): number[] {
     const modKeyCombo = KeySequence.modKeyStr.split(/\+/g);
     const modKeyCodes =
         modKeyCombo.map(keyString => KeyUtil.modStringToKeyCode(keyString));
@@ -140,10 +142,10 @@ export class KeyUtil {
    * sequence mode. Sequence switch keys are specified in
    * KeySequence.sequenceSwitchKeyCodes
    *
-   * @param {!KeySequence} rhKeySeq The key sequence to check.
-   * @return {boolean} true if it is a sequence switch keycode, false otherwise.
+   * @param rhKeySeq The key sequence to check.
+   * @return true if it is a sequence switch keycode, false otherwise.
    */
-  static isSequenceSwitchKeyCode(rhKeySeq) {
+  export function isSequenceSwitchKeyCode(rhKeySeq: KeySequence): boolean {
     for (let i = 0; i < KeySequence.sequenceSwitchKeyCodes.length; i++) {
       const lhKeySeq = KeySequence.sequenceSwitchKeyCodes[i];
       if (lhKeySeq.equals(rhKeySeq)) {
@@ -156,59 +158,50 @@ export class KeyUtil {
   /**
    * Get readable string description of the specified keycode.
    *
-   * @param {number} keyCode The key code.
-   * @return {string} Returns a string description.
+   * @param keyCode The key code.
+   * @return Returns a string description.
    */
-  static getReadableNameForKeyCode(keyCode) {
+  export function getReadableNameForKeyCode(keyCode: number): string {
     const msg = Msgs.getMsg.bind(Msgs);
     switch (keyCode) {
-      case KeyCode.BROWSER_BACK:
+      case KeyCodeData.BROWSER_BACK.code:
         return msg('back_key');
-      case KeyCode.BROWSER_FORWARD:
+      case KeyCodeData.BROWSER_FORWARD.code:
         return msg('forward_key');
-      case KeyCode.BROWSER_REFRESH:
+      case KeyCodeData.BROWSER_REFRESH.code:
         return msg('refresh_key');
-      case KeyCode.ZOOM:
+      case KeyCodeData.ZOOM.code:
         return msg('toggle_full_screen_key');
-      case KeyCode.MEDIA_LAUNCH_APP1:
+      case KeyCodeData.MEDIA_LAUNCH_APP1.code:
         return msg('window_overview_key');
-      case KeyCode.BRIGHTNESS_DOWN:
+      case KeyCodeData.BRIGHTNESS_DOWN.code:
         return msg('brightness_down_key');
-      case KeyCode.BRIGHTNESS_UP:
+      case KeyCodeData.BRIGHTNESS_UP.code:
         return msg('brightness_up_key');
-      case KeyCode.VOLUME_MUTE:
+      case KeyCodeData.VOLUME_MUTE.code:
         return msg('volume_mute_key');
-      case KeyCode.VOLUME_DOWN:
+      case KeyCodeData.VOLUME_DOWN.code:
         return msg('volume_down_key');
-      case KeyCode.VOLUME_UP:
+      case KeyCodeData.VOLUME_UP.code:
         return msg('volume_up_key');
-      case KeyCode.ASSISTANT:
+      case KeyCodeData.ASSISTANT.code:
         return msg('assistant_key');
-      case KeyCode.MEDIA_PLAY_PAUSE:
+      case KeyCodeData.MEDIA_PLAY_PAUSE.code:
         return msg('media_play_pause');
     }
-    return KeyName.fromCode(keyCode);
+    return getNameForCode(keyCode) ?? '';
   }
 
   /**
    * Get the platform specific sticky key keycode.
-   *
-   * @return {number} The platform specific sticky key keycode.
+   * @return The platform specific sticky key keycode.
    */
-  static getStickyKeyCode() {
-    return KeyCode.SEARCH;  // Search.
+  export function getStickyKeyCode(): number {
+    return KeyCodeData.SEARCH.code;
   }
 
-  /**
-   * Get readable string description for an internal string representation of a
-   * key or a keyboard shortcut.
-   *
-   * @param {string} keyStr The internal string repsentation of a key or
-   *     a keyboard shortcut.
-   * @return {?string} Readable string representation of the input.
-   */
-  static getReadableNameForStr(keyStr) {
-    // TODO (clchen): Refactor this function away since it is no longer used.
+  // TODO (clchen): Refactor this function away since it is no longer used.
+  export function getReadableNameForStr(_keyStr: string): null {
     return null;
   }
 
@@ -228,16 +221,15 @@ export class KeyUtil {
    *   Shift
    *   Meta
    *
-   * @param {KeySequence} keySequence The KeySequence object.
-   * @param {boolean=} opt_readableKeyCode Whether or not to return a readable
+   * @param keySequence The KeySequence object.
+   * @param readableKeyCode Whether or not to return a readable
    * string description instead of a string with a pound symbol and a keycode.
    * Default is false.
-   * @param {boolean=} opt_modifiers Restrict printout to only modifiers.
-   *     Defaults
-   * to false.
+   * @param modifiers Restrict printout to only modifiers. Defaults to false.
    */
-  static async keySequenceToString(
-      keySequence, opt_readableKeyCode, opt_modifiers) {
+  export async function keySequenceToString(
+      keySequence: KeySequence, readableKeyCode?: boolean,
+      modifiers?: boolean): Promise<string> {
     // TODO(rshearer): Move this method and the getReadableNameForKeyCode and
     // the method to KeySequence after we refactor isModifierActive (when the
     // modifie key becomes customizable and isn't stored as a string). We can't
@@ -249,7 +241,7 @@ export class KeyUtil {
     const numKeys = keySequence.length();
 
     for (let index = 0; index < numKeys; index++) {
-      if (str !== '' && !opt_modifiers) {
+      if (str !== '' && !modifiers) {
         str += ', then ';
       } else if (str !== '') {
         str += '+';
@@ -261,7 +253,8 @@ export class KeyUtil {
       for (const keyPressed in keySequence.keys) {
         // This iterates through the actual key, taking into account any
         // modifiers.
-        if (!keySequence.keys[keyPressed][index]) {
+        //@ts-expect-error Indexing with string not allowed
+        if (!keySequence.keys[keyPressed][index as number]) {
           continue;
         }
         let modifier = '';
@@ -273,7 +266,8 @@ export class KeyUtil {
             modifier = 'Ctrl';
             break;
           case 'searchKeyHeld':
-            const searchKey = KeyUtil.getReadableNameForKeyCode(KeyCode.SEARCH);
+            const searchKey =
+                KeyUtil.getReadableNameForKeyCode(KeyCodeData.SEARCH.code);
             modifier = searchKey;
             break;
           case 'altKey':
@@ -286,18 +280,20 @@ export class KeyUtil {
             modifier = 'Shift';
             break;
           case 'metaKey':
-            const metaKey = KeyUtil.getReadableNameForKeyCode(KeyCode.SEARCH);
+            const metaKey =
+                KeyUtil.getReadableNameForKeyCode(KeyCodeData.SEARCH.code);
             modifier = metaKey;
             break;
           case 'keyCode':
+            // @ts-expect-error Can't index with string.
             const keyCode = keySequence.keys[keyPressed][index];
             // We make sure the keyCode isn't for a modifier key. If it is, then
             // we've already added that into the string above.
-            if (keySequence.isModifierKey(keyCode) || opt_modifiers) {
+            if (keySequence.isModifierKey(keyCode) || modifiers) {
               break;
             }
 
-            if (!opt_readableKeyCode) {
+            if (!readableKeyCode) {
               tempStr += KeyUtil.keyCodeToString(keyCode);
               break;
             }
@@ -349,10 +345,9 @@ export class KeyUtil {
 
   /**
    * Looks up if the given key sequence is triggered via double tap.
-   * @param {KeySequence} key The key.
-   * @return {boolean} True if key is triggered via double tap.
+   * @return True if key is triggered via double tap.
    */
-  static isDoubleTapKey(key) {
+  export function isDoubleTapKey(key: KeySequence): boolean {
     let isSet = false;
     const originalState = key.doubleTap;
     key.doubleTap = true;
@@ -365,38 +360,35 @@ export class KeyUtil {
     key.doubleTap = originalState;
     return isSet;
   }
+
+  /** The time in ms at which the ChromeVox Sticky Mode key was pressed. */
+  export let modeKeyPressTime: number;
+  modeKeyPressTime = 0;
+
+  /** Indicates if sequencing is currently building a keyboard shortcut. */
+  export let sequencing: boolean;
+  sequencing = false;
+
+  /** The previous KeySequence when sequencing is ON. */
+  export let prevKeySequence: KeySequence | null;
+  prevKeySequence = null;
+
+  /** The sticky key sequence. */
+  export let stickyKeySequence: KeySequence | null;
+  stickyKeySequence = null;
+
+  /**
+   * Maximum number of key codes the sequence buffer may hold. This is the max
+   * length of a sequential keyboard shortcut, i.e. the number of key that can
+   * be pressed one after the other while modifier keys (Cros+Shift) are held
+   * down.
+   */
+  export const maxSeqLength = 2;
 }
 
-/**
- * The time in ms at which the ChromeVox Sticky Mode key was pressed.
- * @type {number}
- */
-KeyUtil.modeKeyPressTime = 0;
-
-/**
- * Indicates if sequencing is currently active for building a keyboard shortcut.
- * @type {boolean}
- */
-KeyUtil.sequencing = false;
-
-/**
- * The previous KeySequence when sequencing is ON.
- * @type {KeySequence}
- */
-KeyUtil.prevKeySequence = null;
-
-
-/**
- * The sticky key sequence.
- * @type {KeySequence}
- */
-KeyUtil.stickyKeySequence = null;
-
-/**
- * Maximum number of key codes the sequence buffer may hold. This is the max
- * length of a sequential keyboard shortcut, i.e. the number of key that can be
- * pressed one after the other while modifier keys (Cros+Shift) are held down.
- * @const
- * @type {number}
- */
-KeyUtil.maxSeqLength = 2;
+function getNameForCode(keyCode: number): string | undefined {
+  const allData =
+      Object.values(KeyCodeData) as Array<{code: number, name: string}>;
+  return allData.filter(
+      (data: {code: number, name: string}) => data.code === keyCode)[0]?.name;
+}
