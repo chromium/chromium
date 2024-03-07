@@ -313,6 +313,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         });
             }
         }
+
+        if (CustomTabsConnection.getInstance()
+                .shouldEnableOmniboxForIntent(mIntentDataProvider.get())) {
+            toolbar.setOmniboxEnabled();
+        }
     }
 
     @Override

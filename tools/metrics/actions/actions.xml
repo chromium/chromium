@@ -8526,6 +8526,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CustomTabs.OmniboxClicked">
+  <owner>ender@google.com</owner>
+  <description>
+    Emitted by CCT when the Omnibox is clicked whenever CCT hosts an Omnibox.
+  </description>
+</action>
+
 <action name="CustomTabs.StartedInitially">
   <owner>tedchoc@chromium.org</owner>
   <description>
