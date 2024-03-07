@@ -316,6 +316,8 @@ void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
       if (signing_option_ == SigningOption::kTamperKeySignature) {
         *policy_response->mutable_new_public_key_signature() = "bad-key-sig";
       } else {
+        policy_response->set_policy_data_signature_type(
+            enterprise_management::PolicyFetchRequest::SHA256_RSA);
         signing_key_->SignData(
             policy_response->new_public_key(),
             policy_response->mutable_new_public_key_signature());
@@ -357,6 +359,8 @@ void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
   if (signing_option_ == SigningOption::kTamperDataSignature) {
     *policy_response->mutable_policy_data_signature() = "bad-data-sig";
   } else {
+    policy_response->set_policy_data_signature_type(
+        enterprise_management::PolicyFetchRequest::SHA256_RSA);
     signing_key->SignData(policy_response->policy_data(),
                           policy_response->mutable_policy_data_signature());
   }
