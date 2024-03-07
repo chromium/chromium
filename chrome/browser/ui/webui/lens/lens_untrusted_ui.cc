@@ -18,7 +18,7 @@
 namespace lens {
 
 LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
-    : ui::UntrustedWebUIController(web_ui) {
+    : ui::UntrustedBubbleWebUIController(web_ui) {
   // Set up the chrome-untrusted://lens source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(

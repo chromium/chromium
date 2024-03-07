@@ -10,13 +10,13 @@
 #include "chrome/browser/ui/webui/lens/lens_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/untrusted_web_ui_controller.h"
+#include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 namespace lens {
 class LensPageHandler;
 
 // WebUI controller for the chrome-untrusted://lens page.
-class LensUntrustedUI : public ui::UntrustedWebUIController,
+class LensUntrustedUI : public ui::UntrustedBubbleWebUIController,
                         public lens::mojom::LensPageHandlerFactory {
  public:
   explicit LensUntrustedUI(content::WebUI* web_ui);
@@ -29,6 +29,8 @@ class LensUntrustedUI : public ui::UntrustedWebUIController,
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<lens::mojom::LensPageHandlerFactory> receiver);
+
+  static constexpr std::string GetWebUIName() { return "LensUntrusted"; }
 
  private:
   // lens::mojom::LensPageHandlerFactory:
