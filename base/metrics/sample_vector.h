@@ -50,6 +50,8 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   // Access the bucket ranges held externally.
   const BucketRanges* bucket_ranges() const { return bucket_ranges_; }
 
+  AtomicSingleSample* SingleSampleForTesting() { return &single_sample(); }
+
  protected:
   SampleVectorBase(uint64_t id,
                    Metadata* meta,

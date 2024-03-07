@@ -242,6 +242,79 @@ TEST_F(SampleVectorTest, Iterate) {
   EXPECT_EQ(4, i);
 }
 
+TEST_F(SampleVectorTest, Iterator_InvalidSingleSample) {
+  // Create 3 buckets: [0, 1), [1, 2), [2, INT_MAX).
+  BucketRanges ranges(4);
+  ranges.set_range(0, 0);
+  ranges.set_range(1, 1);
+  ranges.set_range(2, 2);
+  ranges.set_range(3, HistogramBase::kSampleType_MAX);
+
+  // Create an invalid SingleSample.
+  HistogramSamples::AtomicSingleSample invalid_single_sample;
+  invalid_single_sample.Accumulate(/*bucket=*/4, /*count=*/1);
+
+  // Create a SampleVector and set its SingleSample to the invalid one.
+  SampleVector samples(&ranges);
+  *samples.SingleSampleForTesting() = invalid_single_sample;
+
+  // Create an iterator and verify that it is empty (the sample is ignored).
+  std::unique_ptr<SampleCountIterator> it = samples.Iterator();
+  ASSERT_TRUE(it->Done());
+
+  // Add some valid samples. SampleVector should now use a counts storage.
+  samples.Accumulate(/*value=*/0, /*count=*/1);
+  samples.Accumulate(/*value=*/1, /*count=*/1);
+
+  // Create an iterator. Verify that the new samples are returned, and that the
+  // invalid sample is not (it was discarded).
+  HistogramBase::Sample min;
+  int64_t max;
+  HistogramBase::Count count;
+  it = samples.Iterator();
+  ASSERT_FALSE(it->Done());
+  it->Get(&min, &max, &count);
+  EXPECT_EQ(min, 0);
+  EXPECT_EQ(max, 1);
+  EXPECT_EQ(count, 1);
+  it->Next();
+  ASSERT_FALSE(it->Done());
+  it->Get(&min, &max, &count);
+  EXPECT_EQ(min, 1);
+  EXPECT_EQ(max, 2);
+  EXPECT_EQ(count, 1);
+  it->Next();
+  EXPECT_TRUE(it->Done());
+}
+
+TEST_F(SampleVectorTest, ExtractingIterator_InvalidSingleSample) {
+  // Create 3 buckets: [0, 1), [1, 2), and [2, INT_MAX).
+  BucketRanges ranges(4);
+  ranges.set_range(0, 0);
+  ranges.set_range(1, 1);
+  ranges.set_range(2, 2);
+  ranges.set_range(3, HistogramBase::kSampleType_MAX);
+
+  // Create an invalid SingleSample.
+  HistogramSamples::AtomicSingleSample invalid_single_sample;
+  invalid_single_sample.Accumulate(/*bucket=*/4, /*count=*/1);
+
+  // Create a SampleVector and set its SingleSample to the invalid one.
+  SampleVector samples(&ranges);
+  *samples.SingleSampleForTesting() = invalid_single_sample;
+
+  // Create an extracting iterator and verify that it is empty (the sample is
+  // ignored).
+  std::unique_ptr<SampleCountIterator> it = samples.ExtractingIterator();
+  ASSERT_TRUE(it->Done());
+
+  // Verify that the invalid sample was extracted.
+  HistogramSamples::SingleSample current_single_sample =
+      samples.SingleSampleForTesting()->Load();
+  EXPECT_EQ(current_single_sample.bucket, 0);
+  EXPECT_EQ(current_single_sample.count, 0);
+}
+
 TEST_F(SampleVectorTest, IterateDoneDeath) {
   BucketRanges ranges(5);
   ranges.set_range(0, 0);

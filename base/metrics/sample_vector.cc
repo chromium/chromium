@@ -231,6 +231,16 @@ std::unique_ptr<SampleCountIterator> SampleVectorBase::Iterator() const {
   // Handle the single-sample case.
   SingleSample sample = single_sample().Load();
   if (sample.count != 0) {
+    static_assert(std::is_unsigned<decltype(SingleSample::bucket)>::value);
+    if (sample.bucket >= bucket_ranges_->bucket_count()) {
+      // Return an empty iterator if the specified bucket is invalid (e.g. due
+      // to corruption). If a different sample is eventually emitted, we will
+      // move from SingleSample to a counts storage, and that time, we will
+      // discard this invalid sample (see MoveSingleSampleToCounts()).
+      return std::make_unique<SampleVectorIterator>(
+          base::span<const HistogramBase::AtomicCount>(), bucket_ranges_);
+    }
+
     return std::make_unique<SingleSampleIterator>(
         bucket_ranges_->range(sample.bucket),
         bucket_ranges_->range(sample.bucket + 1), sample.count, sample.bucket,
@@ -251,6 +261,15 @@ std::unique_ptr<SampleCountIterator> SampleVectorBase::ExtractingIterator() {
   // Handle the single-sample case.
   SingleSample sample = single_sample().Extract();
   if (sample.count != 0) {
+    static_assert(std::is_unsigned<decltype(SingleSample::bucket)>::value);
+    if (sample.bucket >= bucket_ranges_->bucket_count()) {
+      // Return an empty iterator if the specified bucket is invalid (e.g. due
+      // to corruption). Note that we've already removed the sample from the
+      // underlying data, so this invalid sample is discarded.
+      return std::make_unique<ExtractingSampleVectorIterator>(
+          base::span<HistogramBase::AtomicCount>(), bucket_ranges_);
+    }
+
     // Note that we have already extracted the samples (i.e., reset the
     // underlying data back to 0 samples), even before the iterator has been
     // used. This means that the caller needs to ensure that this value is
