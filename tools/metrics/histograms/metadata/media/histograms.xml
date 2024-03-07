@@ -6626,6 +6626,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaPreviews.UI.PageInfo.Camera.NumInUseDevices"
+    units="devices" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the number of previews shown for camera devices in use on PageInfo.
+  </summary>
+</histogram>
+
+<histogram name="MediaPreviews.UI.PageInfo.Mic.NumInUseDevices" units="devices"
+    expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the number of previews shown for microphones (audio input) devices
+    in use on PageInfo.
+  </summary>
+</histogram>
+
 <histogram base="true" name="MediaRouter.Cast.App.Availability" units="ms"
     expires_after="2024-07-14">
 <!-- Name completed by histogram_suffixes name="MediaRouterSuccess" -->
