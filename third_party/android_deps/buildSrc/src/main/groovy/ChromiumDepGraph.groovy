@@ -118,6 +118,9 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0',
             // Both -jre and -android versions are listed. Filter to only the -android ones.
             versionFilter: '-android'),
+        com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
+            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+            licenseName: 'Apache 2.0'),
         org_bouncycastle_bcprov_jdk18on: new PropertyOverride(
             cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72',
             url: 'https://github.com/bcgit/bc-java',
