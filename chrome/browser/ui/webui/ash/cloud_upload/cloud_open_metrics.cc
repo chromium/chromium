@@ -263,6 +263,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
       } else if (task_result.value == OfficeTaskResult::kFailedToUpload) {
         ExpectNotLogged(drive_open_error);
         ExpectNotLogged(one_drive_open_error);
+        ExpectLogged(upload_result);
         switch (upload_result.value) {
           case OfficeFilesUploadResult::kOtherError:
           case OfficeFilesUploadResult::kFileSystemNotFound:
