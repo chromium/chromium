@@ -56,7 +56,13 @@ void RepostFormTabHelper::OnDialogPresented() {
 void RepostFormTabHelper::PresentDialog(
     CGPoint location,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK(!is_presenting_dialog_);
+  // As seen in crbug.com/327948110, it is possible under unknwon circumstances
+  // for ReportFormTabHelper::PresentDialog(...) to be called while a dialog is
+  // presented. In that case, dismiss any previous dialog.
+  if (is_presenting_dialog_) {
+    DismissReportFormDialog();
+  }
+
   if (!delegate_) {
     // If there is is no delegate, then assume that we should not continue.
     std::move(callback).Run(/*should_continue*/ false);
