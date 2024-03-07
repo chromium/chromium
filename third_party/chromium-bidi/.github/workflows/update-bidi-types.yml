@@ -73,7 +73,7 @@ jobs:
         with:
           go-version: '1.21.x'
       - name: Install cddlconv
-        run: cargo install cddlconv@0.1.3
+        run: cargo install cddlconv@0.1.4
       - name: Set up Node.js
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
