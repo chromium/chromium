@@ -482,6 +482,11 @@ class GraphInfoBuilder final {
                       uint64_t output_operand_id,
                       std::vector<uint32_t> permutation);
 
+  void BuildTriangular(uint64_t input_operand_id,
+                       uint64_t output_operand_id,
+                       bool upper,
+                       int32_t diagonal);
+
   void BuildWhere(uint64_t condition_operand_id,
                   uint64_t true_value_operand_id,
                   uint64_t false_value_operand_id,

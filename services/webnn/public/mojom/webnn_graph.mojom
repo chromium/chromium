@@ -802,6 +802,27 @@ struct Transpose {
   array<uint32> permutation;
 };
 
+// Given a 2-D tensor (matrix), triangular will return a 2-D tensor
+// containing either the upper or lower triangular part of the input tensor.
+// If the input tensor has greater than 2 dimensions it is treated as a
+// batch of matrices which represented by last two dimensions and the result
+// has the same shape.
+struct Triangular {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // The upper indicates whether the output the upper or the lower part of
+  // the input matrix is retained. True indicates that the upper part is
+  // retained.
+  bool upper;
+  // The diagonal specifies how many diagonals above or below the main
+  // diagonals of the input matrix are retained or excluded. A value of 0
+  // means no diagonals other than the main diagonals are affected.
+  int32 diagonal;
+};
+
 // Resample the tensor values from the source to the destination spatial
 // dimensions.
 struct Resample2d {
@@ -901,6 +922,7 @@ union Operation {
   Split split;
   Tanh tanh;
   Transpose transpose;
+  Triangular triangular;
   Where where;
 };
 

@@ -1703,6 +1703,21 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
   return Operand(input.data_type, std::move(validated_output_shape.value()));
 }
 
+base::expected<Operand, std::string> ValidateTriangularAndInferOutput(
+    Operand input) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-triangular, the input
+  // tensor which is at least 2-D.
+  if (input.dimensions.size() < 2) {
+    return base::unexpected(
+        "The input rank must be larger than or equal to 2.");
+  }
+
+  // The output tensor of triangular is the same shape and the same type as the
+  // input tensor.
+  return input;
+}
+
 base::expected<Operand, std::string> ValidateWhereAndInferOutput(
     const Operand& condition,
     const Operand& true_value,

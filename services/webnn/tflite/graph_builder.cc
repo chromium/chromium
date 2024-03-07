@@ -252,6 +252,8 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("split is not implemented");
     case mojom::Operation::Tag::kTanh:
       return base::unexpected("tanh is not implemented");
+    case mojom::Operation::Tag::kTriangular:
+      return base::unexpected("triangular is not implemented");
     case mojom::Operation::Tag::kWhere:
       return base::unexpected("where is not implemented");
   }

@@ -76,6 +76,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "tanh";
     case mojom::Operation::Tag::kTranspose:
       return "transpose";
+    case mojom::Operation::Tag::kTriangular:
+      return "triangular";
     case mojom::Operation::Tag::kWhere:
       return "where";
   }

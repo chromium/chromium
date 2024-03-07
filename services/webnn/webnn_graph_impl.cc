@@ -1340,6 +1340,28 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
+                        const mojom::TriangularPtr& triangular) {
+  auto* input = GetMojoOperand(id_to_operand_map, triangular->input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, triangular->output_operand_id);
+  if (!input || !output || output == input) {
+    // The triangular operator is invalid.
+    return false;
+  }
+
+  base::expected<Operand, std::string> validated_output =
+      ValidateTriangularAndInferOutput(ConvertToComponentOperand(input));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
                    const mojom::WherePtr& where) {
   auto* condition =
@@ -1495,6 +1517,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                                     DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, operation->get_transpose());
+    case mojom::Operation::Tag::kTriangular:
+      return ValidateTriangular(id_to_operand_map, operation->get_triangular());
     case mojom::Operation::Tag::kWhere:
       return ValidateWhere(id_to_operand_map, operation->get_where());
   }

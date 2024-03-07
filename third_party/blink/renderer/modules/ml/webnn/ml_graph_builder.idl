@@ -177,6 +177,11 @@ dictionary MLSplitOptions {
   [EnforceRange] unsigned long axis = 0;
 };
 
+dictionary MLTriangularOptions {
+  boolean upper = true;
+  [EnforceRange] long diagonal = 0;
+};
+
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
   Exposed=(Window, DedicatedWorker)
@@ -313,6 +318,8 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand transpose(
       MLOperand input, optional MLTransposeOptions options = {});
+
+  [RaisesException] MLOperand triangular(MLOperand input, optional MLTriangularOptions options = {});
 
   [RaisesException] MLOperand where(MLOperand condition, MLOperand true_value, MLOperand false_value);
 

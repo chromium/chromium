@@ -509,6 +509,11 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
     base::span<const uint32_t> axes,
     bool keepDimensions = false);
 
+// Validate triangular operator defined in WebIDL here
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-triangular.
+base::expected<Operand, std::string> ValidateTriangularAndInferOutput(
+    Operand input);
+
 // TODO(crbug.com/1273291): Add the link of the where operator definition in
 // WebIDL.
 // Validate where operator.

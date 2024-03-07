@@ -214,6 +214,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kTranspose:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "transpose";
+    case webnn::mojom::blink::Operation::Tag::kTriangular:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "triangular";
     case webnn::mojom::blink::Operation::Tag::kWhere:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "where";

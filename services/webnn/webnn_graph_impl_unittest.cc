@@ -5358,6 +5358,68 @@ TEST_F(WebNNGraphImplTest, TransposeTest) {
   }
 }
 
+struct TriangularTester {
+  OperandInfo input;
+  bool upper = true;
+  int32_t diagonal = 0;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildTriangular(input_operand_id, output_operand_id, upper,
+                            diagonal);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, TriangularTest) {
+  {
+    // Test triangular operator with upper = true and diagonal = 2.
+    TriangularTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 2}},
+                     .upper = true,
+                     .diagonal = 2,
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 2}},
+                     .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    TriangularTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {4, 2}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2}},
+                     .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    TriangularTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 5}},
+                     .output = {.type = mojom::Operand::DataType::kFloat16,
+                                .dimensions = {2, 5}},
+                     .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {4, 6}, mojom::Operand::DataType::kFloat32);
+
+    builder.BuildTriangular(input_operand_id, input_operand_id,
+                            /*upper*/ true, /*diagonal*/ -1);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct WhereTester {
   OperandInfo condition;
   OperandInfo true_value;

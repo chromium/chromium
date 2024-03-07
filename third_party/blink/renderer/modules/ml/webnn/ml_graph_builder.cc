@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -1878,6 +1879,31 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
     return nullptr;
   }
   transpose->Connect({input}, {output.value()});
+  return output.value();
+}
+
+MLOperand* MLGraphBuilder::triangular(const MLOperand* input,
+                                      const MLTriangularOptions* options,
+                                      ExceptionState& exception_state) {
+  const base::expected<webnn::Operand, std::string> validated_output =
+      webnn::ValidateTriangularAndInferOutput(ConvertToComponentOperand(input));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+
+  auto* triangular = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kTriangular,
+      /*sub_kind=*/absl::monostate{}, options);
+  const base::expected<MLOperand*, String> output =
+      MLOperand::ValidateAndCreateOutput(
+          this, ComponentOperandTypeToBlink(validated_output->data_type),
+          Vector<uint32_t>(validated_output->dimensions), triangular);
+  if (!output.has_value()) {
+    exception_state.ThrowTypeError(output.error());
+    return nullptr;
+  }
+  triangular->Connect({input}, {output.value()});
   return output.value();
 }
 

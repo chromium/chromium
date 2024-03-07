@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
@@ -6055,9 +6056,9 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     ASSERT_THAT(compute_exception, testing::NotNull());
     EXPECT_EQ(compute_exception->name(), "OperationError");
-    EXPECT_EQ(
-        compute_exception->message(),
-        "There is an unknown output tensor in the computation result: output");
+    EXPECT_EQ(compute_exception->message(),
+              "There is an unknown output tensor in the computation "
+              "result: output");
   }
   {
     // Reset the inputs which are detached in above failed tests.
@@ -6071,9 +6072,9 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     ASSERT_THAT(compute_exception, testing::NotNull());
     EXPECT_EQ(compute_exception->name(), "OperationError");
-    EXPECT_EQ(
-        compute_exception->message(),
-        "There is an unknown output tensor in the computation result: output");
+    EXPECT_EQ(compute_exception->message(),
+              "There is an unknown output tensor in the computation "
+              "result: output");
   }
   {
     // Reset the inputs which are detached in above failed tests.
@@ -6086,9 +6087,9 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     ASSERT_THAT(compute_exception, testing::NotNull());
     EXPECT_EQ(compute_exception->name(), "UnknownError");
-    EXPECT_EQ(
-        compute_exception->message(),
-        "The output tensor size does not match graph's expectation: output");
+    EXPECT_EQ(compute_exception->message(),
+              "The output tensor size does not match graph's expectation: "
+              "output");
   }
 }
 

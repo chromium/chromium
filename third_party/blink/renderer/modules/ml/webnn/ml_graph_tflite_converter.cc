@@ -1422,6 +1422,7 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     case webnn::mojom::blink::Operation::Tag::kSoftsign:
     case webnn::mojom::blink::Operation::Tag::kSplit:
     case webnn::mojom::blink::Operation::Tag::kTanh:
+    case webnn::mojom::blink::Operation::Tag::kTriangular:
     case webnn::mojom::blink::Operation::Tag::kWhere:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");

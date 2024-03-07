@@ -366,6 +366,16 @@ void GraphInfoBuilder::BuildTranspose(uint64_t input_operand_id,
       mojom::Operation::NewTranspose(std::move(transpose)));
 }
 
+void GraphInfoBuilder::BuildTriangular(uint64_t input_operand_id,
+                                       uint64_t output_operand_id,
+                                       bool upper,
+                                       int32_t diagonal) {
+  mojom::TriangularPtr triangular = mojom::Triangular::New(
+      input_operand_id, output_operand_id, upper, diagonal);
+  graph_info_->operations.push_back(
+      mojom::Operation::NewTriangular(std::move(triangular)));
+}
+
 void GraphInfoBuilder::BuildWhere(uint64_t condition_operand_id,
                                   uint64_t true_value_operand_id,
                                   uint64_t false_value_operand_id,

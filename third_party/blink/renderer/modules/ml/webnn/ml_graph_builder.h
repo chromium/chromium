@@ -47,6 +47,7 @@ class MLResample2dOptions;
 class MLSoftplusOptions;
 class MLSplitOptions;
 class MLTransposeOptions;
+class MLTriangularOptions;
 class MLOperand;
 class MLOperandDescriptor;
 class ScriptPromiseResolver;
@@ -338,6 +339,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* transpose(const MLOperand* input,
                        const MLTransposeOptions* options,
                        ExceptionState& exception_state);
+
+  MLOperand* triangular(const MLOperand* input,
+                        const MLTriangularOptions* options,
+                        ExceptionState& exception_state);
 
   MLOperand* where(const MLOperand* condition,
                    const MLOperand* true_value,

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
@@ -1067,6 +1068,23 @@ OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewTranspose(std::move(transpose_mojo));
 }
 
+OperationPtr CreateTriangularOperation(const OperandToIdMap& operand_to_id_map,
+                                       const MLOperator* triangular) {
+  const auto input_operand_id =
+      GetOperatorInputId(triangular, operand_to_id_map);
+  const auto output_operand_id =
+      GetOperatorOutputId(triangular, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const MLTriangularOptions*>(triangular->Options());
+  CHECK(options);
+
+  auto triangular_mojo =
+      blink_mojom::Triangular::New(input_operand_id, output_operand_id,
+                                   options->upper(), options->diagonal());
+  return blink_mojom::Operation::NewTriangular(std::move(triangular_mojo));
+}
+
 OperationPtr CreateWhereOperation(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* where) {
   auto where_mojo = blink_mojom::Where::New();
@@ -1176,6 +1194,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateTanhOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kTranspose:
       return CreateTransposeOperation(operand_to_id_map, op);
+    case blink_mojom::Operation::Tag::kTriangular:
+      return CreateTriangularOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kWhere:
       return CreateWhereOperation(operand_to_id_map, op);
   }
