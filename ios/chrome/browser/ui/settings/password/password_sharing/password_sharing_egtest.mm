@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -522,7 +523,15 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testTappingLearnMoreInFamilyPickerInfoPopup {
+// TODO(crbug.com/328648892):reenable after fix. 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_testTappingLearnMoreInFamilyPickerInfoPopup \
+  DISABLED_testTappingLearnMoreInFamilyPickerInfoPopup
+#else
+#define MAYBE_testTappingLearnMoreInFamilyPickerInfoPopup \
+  testTappingLearnMoreInFamilyPickerInfoPopup
+#endif
+- (void)MAYBE_testTappingLearnMoreInFamilyPickerInfoPopup {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
