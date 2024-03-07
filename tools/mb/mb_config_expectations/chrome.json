@@ -101,7 +101,7 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-octopus-chrome-skylab": {
+  "chromeos-octopus-chrome": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {
       "also_build_lacros_chrome_for_architecture": "amd64",

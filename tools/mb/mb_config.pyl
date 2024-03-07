@@ -33,7 +33,7 @@
       'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-brya-chrome-skylab': 'chromeos_brya_include_unwind_tables_official_skylab_reclient',
       'chromeos-jacuzzi-chrome-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
-      'chromeos-octopus-chrome-skylab': 'chromeos_octopus_include_unwind_tables_official_skylab',
+      'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_skylab',
       'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks_reclient',
       'chromeos-volteer-chrome-skylab': 'chromeos_volteer_include_unwind_tables_official_skylab_reclient',
       'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
