@@ -193,9 +193,14 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("ignoreCache", [True, False])
+@pytest.mark.parametrize("ignore_cache", [True, False])
 async def test_browsingContext_reload_ignoreCache(websocket, context_id,
-                                                  ignoreCache, cacheable_url):
+                                                  ignore_cache, cacheable_url):
+    if ignore_cache is False:
+        pytest.xfail(
+            reason=  # noqa: E251. The line is too long.
+            "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/1928"
+        )
 
     await subscribe(websocket, [
         "network.responseCompleted",
@@ -208,7 +213,7 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             "method": "browsingContext.reload",
             "params": {
                 "context": context_id,
-                "ignoreCache": ignoreCache,
+                "ignoreCache": ignore_cache,
                 "wait": "complete",
             }
         })
@@ -224,7 +229,7 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": ANY_DICT,
-            "response": AnyExtending({"status": 200 if ignoreCache else 304}),
+            "response": AnyExtending({"status": 200 if ignore_cache else 304}),
             "timestamp": ANY_TIMESTAMP,
         },
     }

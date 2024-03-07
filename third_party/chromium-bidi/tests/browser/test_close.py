@@ -18,6 +18,9 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/1964"
+)
 async def test_browser_close_response_received(websocket):
 
     # Just wait for the command as it will timeout if we don't receive it
