@@ -230,33 +230,15 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
   DCHECK(title);
 
   NSArray<URLAndTitle*>* urls_and_titles =
-      clipboard_util::URLsAndTitlesFromPasteboard(GetPasteboard(),
-                                                  /*include_files=*/false);
-  if (urls_and_titles.count) {
-    *url = GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
-    *title = base::SysNSStringToUTF16(urls_and_titles.firstObject.title);
-    return true;
+      clipboard_util::URLsAndTitlesFromPasteboard(
+          GetPasteboard(), policy == FilenameToURLPolicy::CONVERT_FILENAMES);
+  if (!urls_and_titles.count) {
+    return false;
   }
 
-  // If there are no URLs, try to convert a filename to a URL if the policy
-  // allows it. The title remains blank.
-  //
-  // This could be done in the call to `URLsAndTitlesFromPasteboard` above if
-  // `true` were passed in for the `include_files` parameter, but that function
-  // strips the trailing slashes off of paths and always returns the last path
-  // element as the title whereas no path conversion nor title is wanted.
-  //
-  // TODO(avi): What is going on here? This comment and code was written for the
-  // old pasteboard code; is this still true with the new pasteboard code? What
-  // uses this, and why does it care about titles or path conversion?
-  std::vector<ui::FileInfo> files;
-  if (policy != FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES &&
-      GetFilenames(&files) && !files.empty()) {
-    *url = net::FilePathToFileURL(files[0].path);
-    return true;
-  }
-
-  return false;
+  *url = GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
+  *title = base::SysNSStringToUTF16(urls_and_titles.firstObject.title);
+  return true;
 }
 
 bool OSExchangeDataProviderMac::GetFilenames(

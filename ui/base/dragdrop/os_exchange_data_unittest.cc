@@ -19,10 +19,6 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace ui {
 
 class OSExchangeDataTest : public PlatformTest {
@@ -114,8 +110,8 @@ TEST_F(OSExchangeDataTest, URLStringFileContents) {
 }
 
 TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
-  base::FilePath current_directory;
-  ASSERT_TRUE(base::GetCurrentDirectory(&current_directory));
+  base::FilePath file_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
 
   const OSExchangeData copy([&] {
     OSExchangeData data;
@@ -123,7 +119,7 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
     EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
     EXPECT_FALSE(data.HasFile());
 
-    data.SetFilename(current_directory);
+    data.SetFilename(file_path);
 
     return data.provider().Clone();
   }());
@@ -145,17 +141,14 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
     std::u16string actual_title;
     EXPECT_TRUE(copy.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
                                     &actual_url, &actual_title));
-    // Some Mac OS versions return the URL in file://localhost form instead
-    // of file:///, so we compare the url's path not its absolute string.
-    EXPECT_EQ(net::FilePathToFileURL(current_directory).path(),
-              actual_url.path());
+    EXPECT_EQ(net::FilePathToFileURL(file_path), actual_url);
     EXPECT_EQ(std::u16string(), actual_title);
   }
   EXPECT_TRUE(copy.HasFile());
   std::vector<FileInfo> actual_files;
   EXPECT_TRUE(copy.GetFilenames(&actual_files));
   EXPECT_EQ(1u, actual_files.size());
-  EXPECT_EQ(current_directory, actual_files[0].path);
+  EXPECT_EQ(file_path, actual_files[0].path);
 }
 
 TEST_F(OSExchangeDataTest, TestPickledData) {

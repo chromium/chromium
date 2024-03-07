@@ -294,8 +294,8 @@ URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item) {
                                    title:base::SysUTF8ToNSString(url.host())];
 }
 
-// If there is a file URL on the pasteboard, returns that file as the URL and
-// returns the file's name as the title.
+// If there is a file URL on the pasteboard, returns that file as the URL. For
+// compatibility with other platforms, return no title.
 URLAndTitle* ExtractFileURL(NSPasteboardItem* item) {
   NSString* file = [item stringForType:NSPasteboardTypeFileURL];
   if (!file) {
@@ -303,11 +303,7 @@ URLAndTitle* ExtractFileURL(NSPasteboardItem* item) {
   }
   NSURL* file_url = [NSURL URLWithString:file].filePathURL;
 
-  NSString* filename =
-      DeriveTitleFromFilename(file_url, /*strip_extension=*/false);
-
-  return [URLAndTitle URLAndTitleWithURL:file_url.absoluteString
-                                   title:filename];
+  return [URLAndTitle URLAndTitleWithURL:file_url.absoluteString title:@""];
 }
 
 // Reads the given pasteboard, and returns URLs/titles found on it. If
