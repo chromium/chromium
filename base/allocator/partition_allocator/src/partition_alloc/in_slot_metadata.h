@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_IN_SLOT_METADATA_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_IN_SLOT_METADATA_H_
 
 #include <atomic>
 #include <cstddef>
@@ -28,38 +28,31 @@
 
 namespace partition_alloc::internal {
 
-// Aligns up (on 8B boundary) `ref_count_size` on Mac as a workaround for crash.
-// Workaround was introduced for MacOS 13: https://crbug.com/1378822.
-// But it has been enabled by default because MacOS 14 and later seems to need
-// it too. https://crbug.com/1457756
+// Aligns up (on 8B boundary) `in_slot_metadata_size` on Mac as a workaround for
+// crash. Workaround was introduced for MacOS 13: https://crbug.com/1378822. But
+// it has been enabled by default because MacOS 14 and later seems to need it
+// too. https://crbug.com/1457756
 //
 // Placed outside `BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)`
 // intentionally to accommodate usage in contexts also outside
 // this gating.
-PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForApple(size_t ref_count_size) {
+PA_ALWAYS_INLINE size_t
+AlignUpInSlotMetadataSizeForApple(size_t in_slot_metadata_size) {
 #if BUILDFLAG(IS_APPLE)
-  return internal::base::bits::AlignUp<size_t>(ref_count_size, 8);
+  return internal::base::bits::AlignUp<size_t>(in_slot_metadata_size, 8);
 #else
-  return ref_count_size;
+  return in_slot_metadata_size;
 #endif  // BUILDFLAG(IS_APPLE)
 }
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-// Special-purpose atomic reference count class used by RawPtrBackupRefImpl.
-// The least significant bit of the count is reserved for tracking the liveness
-// state of an allocation: it's set when the allocation is created and cleared
-// on free(). So the count can be:
-//
-// 1 for an allocation that is just returned from Alloc()
-// 2 * k + 1 for a "live" allocation with k references
-// 2 * k for an allocation with k dangling references after Free()
-//
-// This protects against double-free's, as we check whether the reference count
-// is odd in |ReleaseFromAllocator()|, and if not we have a double-free.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
+// Special-purpose atomic bit field class mainly used by RawPtrBackupRefImpl.
+// Formerly known as `PartitionRefCount`, but renamed to support usage that is
+// unrelated to BRP.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
  public:
-  // This class holds an atomic bit field: `count_`. It holds up to 5 values:
+  // This class holds an atomic 32 bits field: `count_`. It holds 3 values:
   //
   // bits   name                   description
   // -----  ---------------------  ----------------------------------------
@@ -67,14 +60,28 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   //                               allocator.
   //                               - 1 at construction time.
   //                               - Decreased in ReleaseFromAllocator();
+  //                               - We check whether this bit is set in
+  //                                 `ReleaseFromAllocator()`, and if not we
+  //                                 have a double-free.
   //
-  // 1-31   ptr_count              Number of raw_ptr<T>.
+  // 1-30   ptr_count              Number of raw_ptr<T>.
   //                               - Increased in Acquire()
   //                               - Decreased in Release()
   //
-  // 32     dangling_detected      A dangling raw_ptr<> has been detected.
-  // 33     needs_mac11_malloc_    Whether malloc_size() return value needs to
+  // 31     needs_mac11_malloc_    Whether malloc_size() return value needs to
   //          size_hack            be adjusted for this allocation.
+  //
+  // On `BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)` builds, this holds 5 values
+  // in 64 bits.
+  //
+  // bits   name                   description
+  // -----  ---------------------  ----------------------------------------
+  // 0      is_allocated
+  // 1-31   ptr_count
+  //
+  // 32     dangling_detected      A dangling raw_ptr<> has been detected.
+  // 33     needs_mac11_malloc_
+  //          size_hack
   //
   // 34-63  unprotected_ptr_count  Number of
   //                               raw_ptr<T, DisableDanglingPtrDetection>
@@ -114,8 +121,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   static constexpr CountType kPtrInc = 0x0000'0002;
 #endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
-  PA_ALWAYS_INLINE explicit PartitionRefCount(
-      bool needs_mac11_malloc_size_hack);
+  PA_ALWAYS_INLINE explicit InSlotMetadata(bool needs_mac11_malloc_size_hack);
 
   // Incrementing the counter doesn't imply any visibility about modified
   // memory, hence relaxed atomics. For decrement, visibility is required before
@@ -208,7 +214,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
     CheckCookieIfSupported();
 
     // TODO(bartekn): Make the double-free check more effective. Once freed, the
-    // ref-count is overwritten by an encoded freelist-next pointer.
+    // in-slot metadata is overwritten by an encoded freelist-next pointer.
     CountType old_count =
         count_.fetch_and(~kMemoryHeldByAllocatorBit, std::memory_order_release);
 
@@ -276,7 +282,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // PA `free` on such a slot. GWP-ASan takes the extra reference into account
   // when determining whether the slot can be reused.
   PA_ALWAYS_INLINE void InitalizeForGwpAsan() {
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
     brp_cookie_ = CalculateCookie();
 #endif
     count_.store(kPtrInc | kMemoryHeldByAllocatorBit,
@@ -293,12 +299,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
            kNeedsMac11MallocSizeHackBit;
   }
 
-#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   PA_ALWAYS_INLINE void SetRequestedSize(size_t size) {
     requested_size_ = static_cast<uint32_t>(size);
   }
   PA_ALWAYS_INLINE uint32_t requested_size() const { return requested_size_; }
-#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
  private:
   // The common parts shared by Release() and ReleaseFromUnprotectedPtr().
@@ -333,23 +339,23 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // 1) The reference count pointer calculation is correct.
   // 2) The returned allocation slot is not freed.
   PA_ALWAYS_INLINE void CheckCookieIfSupported() {
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
     PA_CHECK(brp_cookie_ == CalculateCookie());
 #endif
   }
 
   PA_ALWAYS_INLINE void ClearCookieIfSupported() {
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
     brp_cookie_ = 0;
 #endif
   }
 
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
   PA_ALWAYS_INLINE uint32_t CalculateCookie() {
     return static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) ^
            kCookieSalt;
   }
-#endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#endif  // PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
 
   [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void
   DoubleFreeOrCorruptionDetected(CountType count) {
@@ -365,132 +371,134 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // this class, to preserve this functionality.
   std::atomic<CountType> count_;
 
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
   static constexpr uint32_t kCookieSalt = 0xc01dbeef;
   volatile uint32_t brp_cookie_;
 #endif
 
-#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   uint32_t requested_size_;
 #endif
 };
 
-PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount(
+PA_ALWAYS_INLINE InSlotMetadata::InSlotMetadata(
     bool needs_mac11_malloc_size_hack)
     : count_(kMemoryHeldByAllocatorBit |
              (needs_mac11_malloc_size_hack ? kNeedsMac11MallocSizeHackBit : 0))
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
       ,
       brp_cookie_(CalculateCookie())
 #endif
 {
 }
 
-static_assert(kAlignment % alignof(PartitionRefCount) == 0,
-              "kAlignment must be multiples of alignof(PartitionRefCount).");
+static_assert(kAlignment % alignof(InSlotMetadata) == 0,
+              "kAlignment must be multiples of alignof(InSlotMetadata).");
 
-static constexpr size_t kInSlotRefCountBufferSize = sizeof(PartitionRefCount);
+static constexpr size_t kInSlotMetadataBufferSize = sizeof(InSlotMetadata);
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE) || \
-    PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
-static constexpr size_t kPartitionRefCountSizeShift = 4;
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE) || \
+    PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+static constexpr size_t kInSlotMetadataSizeShift = 4;
 #else
-static constexpr size_t kPartitionRefCountSizeShift = 3;
+static constexpr size_t kInSlotMetadataSizeShift = 3;
 #endif
 
 #else  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE) && \
-    PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
-static constexpr size_t kPartitionRefCountSizeShift = 4;
-#elif PA_CONFIG(REF_COUNT_CHECK_COOKIE) || \
-    PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
-static constexpr size_t kPartitionRefCountSizeShift = 3;
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE) && \
+    PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+static constexpr size_t kInSlotMetadataSizeShift = 4;
+#elif PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE) || \
+    PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
+static constexpr size_t kInSlotMetadataSizeShift = 3;
 #else
-static constexpr size_t kPartitionRefCountSizeShift = 2;
+static constexpr size_t kInSlotMetadataSizeShift = 2;
 #endif
 
 #endif  // PA_CONFIG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-static_assert((1 << kPartitionRefCountSizeShift) == sizeof(PartitionRefCount));
+static_assert((1 << kInSlotMetadataSizeShift) == sizeof(InSlotMetadata));
 
-// The ref-count table is tucked in the metadata region of the super page,
-// and spans a single system page.
+// The in-slot metadata table is tucked in the metadata region of the super
+// page, and spans a single system page.
 //
-// We need one PartitionRefCount for each data system page in a super page. They
-// take `x = sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize())`
+// We need one InSlotMetadata for each data system page in a super page. They
+// take `x = sizeof(InSlotMetadata) * (kSuperPageSize / SystemPageSize())`
 // space. They need to fit into a system page of metadata as sparsely as
 // possible to minimize cache line sharing, hence we calculate a multiplier as
 // `SystemPageSize() / x` which is equal to
-// `SystemPageSize()^2 / kSuperPageSize / sizeof(PartitionRefCount)`.
+// `SystemPageSize()^2 / kSuperPageSize / sizeof(InSlotMetadata)`.
 //
 // The multiplier is expressed as a bitshift to optimize the code generation.
 // SystemPageSize() isn't always a constrexpr, in which case the compiler
 // wouldn't know it's a power of two. The equivalence of these calculations is
 // checked in PartitionAllocGlobalInit().
 PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
-GetPartitionRefCountIndexMultiplierShift() {
-  return SystemPageShift() * 2 - kSuperPageShift - kPartitionRefCountSizeShift;
+GetInSlotMetadataIndexMultiplierShift() {
+  return SystemPageShift() * 2 - kSuperPageShift - kInSlotMetadataSizeShift;
 }
 
-PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
+PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(
     uintptr_t slot_start,
     size_t slot_size,
-    bool ref_count_in_same_slot) {
-  // In the "previous slot" mode, ref-counts that would be on a different page
-  // than their corresponding slot are instead placed in the super page metadata
-  // area. This is done so that they don't interfere with discarding of data
-  // pages.
+    bool in_slot_metadata_in_same_slot) {
+  // In the "previous slot" mode, in-slot metadatas that would be on a different
+  // page than their corresponding slot are instead placed in the super page
+  // metadata area. This is done so that they don't interfere with discarding of
+  // data pages.
   //
   // In the "same slot" mode, we have a handful of other issues:
   // 1. GWP-ASan uses 2-page slots and wants the 2nd page to be inaccissable, so
-  //    putting a ref-count there is a no-go.
+  //    putting an in-slot metadata there is a no-go.
   // 2. When direct map is reallocated in-place, it's `slot_size` may change and
-  //    pages can be (de)committed. This would force ref-count relocation, which
-  //    in turn could cause a race with ref-count access.
+  //    pages can be (de)committed. This would force in-slot metadata
+  //    relocation, which in turn could cause a race with in-slot metadata
+  //    access.
   // 3. For single-slot spans, the unused pages between `GetUtilizedSlotSize()`
-  //    and `slot_size` may be discarded thus interfering with the ref-count.
-  // All of the above happen have `slot_start` at the page boundary, so we can
-  // reuse the "previous slot" mode code.
+  //    and `slot_size` may be discarded thus interfering with the in-slot
+  //    metadata.
+  // All of the above happen to have `slot_start` at the page boundary, so we
+  // can reuse the "previous slot" mode code.
   if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
-    uintptr_t refcount_address = slot_start +
-                                 (ref_count_in_same_slot ? slot_size : 0) -
-                                 sizeof(PartitionRefCount);
+    uintptr_t refcount_address =
+        slot_start + (in_slot_metadata_in_same_slot ? slot_size : 0) -
+        sizeof(InSlotMetadata);
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
+    PA_CHECK(refcount_address % alignof(InSlotMetadata) == 0);
 #endif
     // In theory, no need to MTE-tag in the "previous slot" mode, because
-    // ref-count isn't protected by MTE. But it doesn't hurt to do so, and helps
-    // us avoid a branch (plus, can't easily #include partition_root.h here, due
-    // to cyclic dependencies).
+    // in-slot metadata isn't protected by MTE. But it doesn't hurt to do so,
+    // and helps us avoid a branch (plus, can't easily #include partition_root.h
+    // here, due to cyclic dependencies).
     // TODO(bartekn): Plumb the tag from the callers, so that it can be included
     // in the calculations, and not re-read from memory.
-    return static_cast<PartitionRefCount*>(TagAddr(refcount_address));
+    return static_cast<InSlotMetadata*>(TagAddr(refcount_address));
   } else {
     // No need to MTE-tag, as the metadata region isn't protected by MTE.
-    PartitionRefCount* table_base = reinterpret_cast<PartitionRefCount*>(
+    InSlotMetadata* table_base = reinterpret_cast<InSlotMetadata*>(
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
     size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift())
-                   << GetPartitionRefCountIndexMultiplierShift();
+                   << GetInSlotMetadataIndexMultiplierShift();
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
+    PA_CHECK(sizeof(InSlotMetadata) * index <= SystemPageSize());
 #endif
     return table_base + index;
   }
 }
 
-static_assert(sizeof(PartitionRefCount) <= kInSlotRefCountBufferSize,
-              "PartitionRefCount should fit into the in-slot buffer.");
+static_assert(sizeof(InSlotMetadata) <= kInSlotMetadataBufferSize,
+              "InSlotMetadata should fit into the in-slot buffer.");
 
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-static constexpr size_t kInSlotRefCountBufferSize = 0;
+static constexpr size_t kInSlotMetadataBufferSize = 0;
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-constexpr size_t kPartitionRefCountSizeAdjustment = kInSlotRefCountBufferSize;
+constexpr size_t kInSlotMetadataSizeAdjustment = kInSlotMetadataBufferSize;
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_IN_SLOT_METADATA_H_

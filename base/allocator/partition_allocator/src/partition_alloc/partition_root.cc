@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "partition_alloc/freeslot_bitmap.h"
+#include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_address_space.h"
@@ -25,7 +26,6 @@
 #include "partition_alloc/partition_cookie.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_ref_count.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
@@ -80,7 +80,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
 
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
-  // Double check that ref-count is indeed present.
+  // Double check that in-slot metadata is indeed present.
   PA_DCHECK(root->brp_enabled());
 
   uintptr_t object_addr = root->SlotStartToObjectAddr(slot_start);
@@ -880,9 +880,11 @@ void PartitionRoot::InitMac11MallocSizeHackUsableSize() {
   settings.mac11_malloc_size_hack_enabled_ = true;
 
   // Request of 32B will fall into a 48B bucket in the presence of BRP
-  // ref-count, yielding |48 - ref_count_size| of actual usable space.
-  PA_DCHECK(settings.ref_count_size);
-  settings.mac11_malloc_size_hack_usable_size_ = 48 - settings.ref_count_size;
+  // in-slot metadata, yielding |48 - in_slot_metadata_size| of actual usable
+  // space.
+  PA_DCHECK(settings.in_slot_metadata_size);
+  settings.mac11_malloc_size_hack_usable_size_ =
+      48 - settings.in_slot_metadata_size;
 }
 
 void PartitionRoot::EnableMac11MallocSizeHackForTesting() {
@@ -1033,21 +1035,23 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (brp_enabled()) {
-      size_t ref_count_size = internal::kPartitionRefCountSizeAdjustment;
-      ref_count_size = internal::AlignUpRefCountSizeForApple(ref_count_size);
-#if PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      size_t in_slot_metadata_size = internal::kInSlotMetadataSizeAdjustment;
+      in_slot_metadata_size =
+          internal::AlignUpInSlotMetadataSizeForApple(in_slot_metadata_size);
+#if PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
       // When MTE is enabled together with BRP (crbug.com/1445816) in the
       // "previous slot" mode (note the brp_enabled() check above), there is a
-      // race that can be avoided by making ref-count a multiple of the MTE
-      // granule and not tagging it.
-      if (IsMemoryTaggingEnabled() && !ref_count_in_same_slot_) {
-        ref_count_size = internal::base::bits::AlignUp(
-            ref_count_size, internal::kMemTagGranuleSize);
+      // race that can be avoided by making in-slot metadata a multiple of the
+      // MTE granule and not tagging it.
+      if (IsMemoryTaggingEnabled() && !in_slot_metadata_in_same_slot_) {
+        in_slot_metadata_size = internal::base::bits::AlignUp(
+            in_slot_metadata_size, internal::kMemTagGranuleSize);
       }
-#endif  // PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
-      settings.ref_count_size = ref_count_size;
-      PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
-      settings.extras_size += ref_count_size;
+#endif  // PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
+      settings.in_slot_metadata_size = in_slot_metadata_size;
+      PA_CHECK(internal::kInSlotMetadataSizeAdjustment <=
+               in_slot_metadata_size);
+      settings.extras_size += in_slot_metadata_size;
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
       EnableMac11MallocSizeHackIfNeeded();
 #endif
@@ -1309,9 +1313,9 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
-    internal::PartitionRefCount* old_ref_count = nullptr;
+    internal::InSlotMetadata* old_ref_count = nullptr;
     if (brp_enabled()) {
-      old_ref_count = RefCountPointerFromSlotStartAndSize(
+      old_ref_count = InSlotMetadataPointerFromSlotStartAndSize(
           slot_start, slot_span->bucket->slot_size);
     }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
@@ -1320,9 +1324,9 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     slot_span->SetRawSize(new_raw_size);
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
     if (brp_enabled()) {
-      internal::PartitionRefCount* new_ref_count =
-          RefCountPointerFromSlotStartAndSize(slot_start,
-                                              slot_span->bucket->slot_size);
+      internal::InSlotMetadata* new_ref_count =
+          InSlotMetadataPointerFromSlotStartAndSize(
+              slot_start, slot_span->bucket->slot_size);
       PA_DCHECK(new_ref_count == old_ref_count);
     }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&

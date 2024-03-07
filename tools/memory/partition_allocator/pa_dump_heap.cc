@@ -13,10 +13,10 @@
 #include <optional>
 #include <string>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/in_slot_metadata.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/bits.h"
@@ -281,7 +281,7 @@ class HeapDumper {
     return super_pages_value;
   }
 
-#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   base::Value::List DumpAllocatedSizes() {
     // Note: Here and below, it is safe to follow pointers into the super page,
     // or to the root or buckets, since they share the same address in the this
@@ -344,8 +344,9 @@ class HeapDumper {
           }
           uintptr_t slot_start =
               slot_span_start + slot_index * metadata.bucket->slot_size;
-          auto* ref_count = PartitionRoot::RefCountPointerFromSlotStartAndSize(
-              slot_start, metadata.bucket->slot_size);
+          auto* ref_count =
+              PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
+                  slot_start, metadata.bucket->slot_size);
           uint32_t requested_size = ref_count->requested_size();
 
           // Address space dumping is not synchronized with allocation, meaning
@@ -366,7 +367,7 @@ class HeapDumper {
 
     return ret;
   }
-#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
   base::Value::List DumpBuckets() {
     base::Value::List ret;
@@ -451,9 +452,9 @@ int main(int argc, char** argv) {
   base::Value::Dict overall_dump;
   overall_dump.Set("superpages", dumper.Dump());
 
-#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   overall_dump.Set("allocated_sizes", dumper.DumpAllocatedSizes());
-#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
   overall_dump.Set("buckets", dumper.DumpBuckets());
 

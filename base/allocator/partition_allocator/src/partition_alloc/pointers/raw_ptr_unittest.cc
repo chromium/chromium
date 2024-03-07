@@ -1976,7 +1976,7 @@ TEST_F(BackupRefPtrTest, Bind) {
   EXPECT_TRUE(IsQuarantineEmpty(allocator_));
 }
 
-#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
 TEST_F(BackupRefPtrTest, ReinterpretCast) {
   void* ptr = allocator_.root()->Alloc(16);
   allocator_.root()->Free(ptr);
@@ -1986,13 +1986,14 @@ TEST_F(BackupRefPtrTest, ReinterpretCast) {
   // been already freed.
   BASE_EXPECT_DEATH(*wrapped_ptr = nullptr, "");
 }
-#endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+#endif  // PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
 
 // Tests that ref-count management is correct, despite `std::optional` may be
 // using `union` underneath.
 TEST_F(BackupRefPtrTest, WorksWithOptional) {
   void* ptr = allocator_.root()->Alloc(16);
-  auto* ref_count = allocator_.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* ref_count =
+      allocator_.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
   std::optional<raw_ptr<void>> opt = ptr;
@@ -2025,7 +2026,8 @@ TEST_F(BackupRefPtrTest, WorksWithOptional) {
 // using `union` underneath.
 TEST_F(BackupRefPtrTest, WorksWithVariant) {
   void* ptr = allocator_.root()->Alloc(16);
-  auto* ref_count = allocator_.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* ref_count =
+      allocator_.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
   absl::variant<uintptr_t, raw_ptr<void>> vary = ptr;

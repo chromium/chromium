@@ -9,10 +9,10 @@
 #include <cstring>
 
 #include "build/build_config.h"
+#include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_ref_count.h"
 #include "partition_alloc/random.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"

@@ -25,6 +25,7 @@
 #include "partition_alloc/chromecast_buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/freeslot_bitmap.h"
+#include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/lightweight_quarantine.h"
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/page_allocator_constants.h"
@@ -46,7 +47,6 @@
 #include "partition_alloc/partition_cookie.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_page.h"
-#include "partition_alloc/partition_ref_count.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/reservation_offset_table.h"
@@ -233,9 +233,9 @@ const size_t kTestAllocSize = 16;
 
 constexpr size_t kPointerOffset = 0;
 #if !BUILDFLAG(PA_DCHECK_IS_ON)
-constexpr size_t kExtraAllocSizeWithoutRefCount = 0ull;
+constexpr size_t kExtraAllocSizeWithoutMetadata = 0ull;
 #else
-constexpr size_t kExtraAllocSizeWithoutRefCount = kCookieSize;
+constexpr size_t kExtraAllocSizeWithoutMetadata = kCookieSize;
 #endif
 
 const char* type_name = nullptr;
@@ -441,24 +441,24 @@ class PartitionAllocTest
   }
 
   static size_t ExtraAllocSize(const PartitionAllocator& allocator) {
-    size_t ref_count_size = 0;
+    size_t metadata_size = 0;
     // Duplicate the logic from PartitionRoot::Init().
     if (allocator.root()->brp_enabled()) {
-      ref_count_size = kPartitionRefCountSizeAdjustment;
-      ref_count_size = AlignUpRefCountSizeForApple(ref_count_size);
-#if PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      metadata_size = kInSlotMetadataSizeAdjustment;
+      metadata_size = AlignUpInSlotMetadataSizeForApple(metadata_size);
+#if PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
       // When MTE is enabled together with BRP (crbug.com/1445816) in the
       // "previous slot" mode (note the brp_enabled() check above), there is a
-      // race that can be avoided by making ref-count a multiple of the MTE
-      // granule and not tagging it.
+      // race that can be avoided by making in-slot metadata a multiple of the
+      // MTE granule and not tagging it.
       if (allocator.root()->IsMemoryTaggingEnabled() &&
-          !PartitionRoot::GetBrpRefCountInSameSlot()) {
-        ref_count_size = partition_alloc::internal::base::bits::AlignUp(
-            ref_count_size, kMemTagGranuleSize);
+          !PartitionRoot::IsInSlotMetadataInSameSlot()) {
+        metadata_size = partition_alloc::internal::base::bits::AlignUp(
+            metadata_size, kMemTagGranuleSize);
       }
-#endif  // PA_CONFIG(MAYBE_INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#endif  // PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
     }
-    return kExtraAllocSizeWithoutRefCount + ref_count_size;
+    return kExtraAllocSizeWithoutMetadata + metadata_size;
   }
 
   size_t GetNumPagesPerSlotSpan(size_t size) {
@@ -2516,13 +2516,13 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
 }
 
 // These tests don't work deterministically when BRP is enabled on certain
-// architectures. On Free(), BRP's ref-count gets overwritten by an encoded
-// freelist pointer. On little-endian 64-bit architectures, this happens to be
-// always an even number, which will trigger BRP's own CHECK (sic!). On other
-// architectures, it's likely to be an odd number >1, which will fool BRP into
-// thinking the memory isn't freed and still referenced, thus making it
-// quarantine it and return early, before PA_CHECK(slot_start != freelist_head)
-// is reached.
+// architectures. On Free(), BRP's ref-count inside in-slot metadata gets
+// overwritten by an encoded freelist pointer. On little-endian 64-bit
+// architectures, this happens to be always an even number, which will trigger
+// BRP's own CHECK (sic!). On other architectures, it's likely to be an odd
+// number >1, which will fool BRP into thinking the memory isn't freed and still
+// referenced, thus making it quarantine it and return early, before
+// PA_CHECK(slot_start != freelist_head) is reached.
 // TODO(bartekn): Enable in the "previous slot" mode.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     (BUILDFLAG(HAS_64_BIT_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
@@ -2595,7 +2595,7 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
   }
 }
 
-// These tests rely on precise layout. They handle cookie, not ref-count.
+// These tests rely on precise layout. They handle cookie, not in-slot metadata.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 
@@ -3817,8 +3817,8 @@ TEST_P(PartitionAllocTest, FundamentalAlignment) {
     // C % kAlignment == (slot_size - ExtraAllocSize(allocator)) % kAlignment.
     // C % kAlignment == (-ExtraAllocSize(allocator)) % kAlignment.
     // Since kCookieSize is a multiple of kAlignment,
-    // C % kAlignment == (-kInSlotRefCountBufferSize) % kAlignment
-    // == (kAlignment - kInSlotRefCountBufferSize) % kAlignment.
+    // C % kAlignment == (-kInSlotMetadataBufferSize) % kAlignment
+    // == (kAlignment - kInSlotMetadataBufferSize) % kAlignment.
     EXPECT_EQ(allocator.root()->AllocationCapacityFromSlotStart(slot_start) %
                   fundamental_alignment,
               UseBRPPool()
@@ -4201,16 +4201,17 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
 
   *ptr1 = kCookie;
 
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr1);
-  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr1);
+  EXPECT_TRUE(in_slot_metadata->IsAliveWithNoKnownRefs());
 
-  ref_count->Acquire();
-  EXPECT_FALSE(ref_count->Release());
-  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+  in_slot_metadata->Acquire();
+  EXPECT_FALSE(in_slot_metadata->Release());
+  EXPECT_TRUE(in_slot_metadata->IsAliveWithNoKnownRefs());
   EXPECT_EQ(*ptr1, kCookie);
 
-  ref_count->AcquireFromUnprotectedPtr();
-  EXPECT_FALSE(ref_count->IsAliveWithNoKnownRefs());
+  in_slot_metadata->AcquireFromUnprotectedPtr();
+  EXPECT_FALSE(in_slot_metadata->IsAliveWithNoKnownRefs());
 
   allocator.root()->Free(ptr1);
   // The allocation shouldn't be reclaimed, and its contents should be zapped.
@@ -4227,9 +4228,10 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   allocator.root()->Free(ptr2);
 
   // When the last reference is released, the slot should become reusable.
-  // Retag ref_count because PartitionAlloc retags ptr to enforce quarantine.
-  ref_count = TagPtr(ref_count);
-  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  // Retag in_slot_metadata because PartitionAlloc retags ptr to enforce
+  // quarantine.
+  in_slot_metadata = TagPtr(in_slot_metadata);
+  EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr1));
   uint64_t* ptr3 =
       static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
@@ -4242,40 +4244,40 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
   void* ptr1 = allocator.root()->Alloc(orig_size, type_name);
   EXPECT_TRUE(ptr1);
 
-  auto* ref_count1 =
-      allocator.root()->RefCountPointerFromObjectForTesting(ptr1);
-  EXPECT_TRUE(ref_count1->IsAliveWithNoKnownRefs());
+  auto* in_slot_metadata1 =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr1);
+  EXPECT_TRUE(in_slot_metadata1->IsAliveWithNoKnownRefs());
 
-  ref_count1->AcquireFromUnprotectedPtr();
-  EXPECT_FALSE(ref_count1->IsAliveWithNoKnownRefs());
+  in_slot_metadata1->AcquireFromUnprotectedPtr();
+  EXPECT_FALSE(in_slot_metadata1->IsAliveWithNoKnownRefs());
 
   void* ptr2 = allocator.root()->Realloc(ptr1, new_size, type_name);
   EXPECT_TRUE(ptr2);
 
   // PartitionAlloc may retag memory areas on realloc (even if they
   // do not move), so recover the true tag here.
-  ref_count1 = TagPtr(ref_count1);
+  in_slot_metadata1 = TagPtr(in_slot_metadata1);
 
-  // Re-query ref-count. It may have moved if Realloc changed the slot.
-  auto* ref_count2 =
-      allocator.root()->RefCountPointerFromObjectForTesting(ptr2);
+  // Re-query in-slot metadata. It may have moved if Realloc changed the slot.
+  auto* in_slot_metadata2 =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr2);
 
   if (UntagPtr(ptr1) == UntagPtr(ptr2)) {
-    // If the slot didn't change, ref-count should stay the same.
-    EXPECT_EQ(ref_count1, ref_count2);
-    EXPECT_FALSE(ref_count2->IsAliveWithNoKnownRefs());
+    // If the slot didn't change, in-slot metadata should stay the same.
+    EXPECT_EQ(in_slot_metadata1, in_slot_metadata2);
+    EXPECT_FALSE(in_slot_metadata2->IsAliveWithNoKnownRefs());
 
-    EXPECT_FALSE(ref_count2->ReleaseFromUnprotectedPtr());
+    EXPECT_FALSE(in_slot_metadata2->ReleaseFromUnprotectedPtr());
   } else {
-    // If the allocation was moved to another slot, the old ref-count stayed
-    // in the same location in memory, is no longer alive, but still has a
-    // reference. The new ref-count is alive, but has no references.
-    EXPECT_NE(ref_count1, ref_count2);
-    EXPECT_FALSE(ref_count1->IsAlive());
-    EXPECT_FALSE(ref_count1->IsAliveWithNoKnownRefs());
-    EXPECT_TRUE(ref_count2->IsAliveWithNoKnownRefs());
+    // If the allocation was moved to another slot, the old in-slot metadata
+    // stayed in the same location in memory, is no longer alive, but still has
+    // a reference. The new in-slot metadata is alive, but has no references.
+    EXPECT_NE(in_slot_metadata1, in_slot_metadata2);
+    EXPECT_FALSE(in_slot_metadata1->IsAlive());
+    EXPECT_FALSE(in_slot_metadata1->IsAliveWithNoKnownRefs());
+    EXPECT_TRUE(in_slot_metadata2->IsAliveWithNoKnownRefs());
 
-    EXPECT_TRUE(ref_count1->ReleaseFromUnprotectedPtr());
+    EXPECT_TRUE(in_slot_metadata1->ReleaseFromUnprotectedPtr());
     PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr1));
   }
 
@@ -4341,14 +4343,15 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrNoReport) {
 
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
-  ref_count->Acquire();
-  EXPECT_TRUE(ref_count->IsAlive());
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
+  in_slot_metadata->Acquire();
+  EXPECT_TRUE(in_slot_metadata->IsAlive());
   // Allocation is still live, so calling ReportIfDangling() should not result
   // in any detections.
-  ref_count->ReportIfDangling();
+  in_slot_metadata->ReportIfDangling();
   EXPECT_EQ(g_unretained_dangling_raw_ptr_detected_count, 0);
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   allocator.root()->Free(ptr);
 }
 
@@ -4359,16 +4362,17 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
 
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
-  ref_count->AcquireFromUnprotectedPtr();
-  EXPECT_TRUE(ref_count->IsAlive());
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
+  in_slot_metadata->AcquireFromUnprotectedPtr();
+  EXPECT_TRUE(in_slot_metadata->IsAlive());
   allocator.root()->Free(ptr);
   // At this point, memory shouldn't be alive...
-  EXPECT_FALSE(ref_count->IsAlive());
+  EXPECT_FALSE(in_slot_metadata->IsAlive());
   // ...and we should report the ptr as dangling.
-  ref_count->ReportIfDangling();
+  in_slot_metadata->ReportIfDangling();
   EXPECT_EQ(g_unretained_dangling_raw_ptr_detected_count, 1);
-  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
 
   PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
@@ -4414,17 +4418,18 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
   // Allocate memory, and reference it from 3 raw_ptr.
   uint64_t* ptr = static_cast<uint64_t*>(
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name));
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
 
-  ref_count->Acquire();
-  ref_count->Acquire();
-  ref_count->Acquire();
+  in_slot_metadata->Acquire();
+  in_slot_metadata->Acquire();
+  in_slot_metadata->Acquire();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The first raw_ptr stops referencing it, before the memory has been
   // released.
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4435,12 +4440,12 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The dangling raw_ptr stop referencing it.
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The dangling raw_ptr stop referencing it again.
-  EXPECT_TRUE(ref_count->Release());
+  EXPECT_TRUE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 #else
@@ -4450,12 +4455,12 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The dangling raw_ptr stop referencing it.
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 
   // The dangling raw_ptr stop referencing it again.
-  EXPECT_TRUE(ref_count->Release());
+  EXPECT_TRUE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 2);
 #endif
@@ -4476,16 +4481,17 @@ TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
   // Allocate memory, and reference it from 3 raw_ptr.
   uint64_t* ptr = static_cast<uint64_t*>(
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name));
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
-  ref_count->AcquireFromUnprotectedPtr();
-  ref_count->AcquireFromUnprotectedPtr();
-  ref_count->AcquireFromUnprotectedPtr();
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
+  in_slot_metadata->AcquireFromUnprotectedPtr();
+  in_slot_metadata->AcquireFromUnprotectedPtr();
+  in_slot_metadata->AcquireFromUnprotectedPtr();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The first raw_ptr<T, DisableDanglingPtrDetection> stops referencing it,
   // before the memory has been released.
-  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_FALSE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4495,13 +4501,13 @@ TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The dangling raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
-  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_FALSE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The dangling raw_ptr<T, DisableDanglingPtrDetection> stop referencing it
   // again.
-  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4519,10 +4525,11 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
 
   uint64_t* ptr = static_cast<uint64_t*>(
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name));
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
-  ref_count->AcquireFromUnprotectedPtr();
-  ref_count->Acquire();
+  in_slot_metadata->AcquireFromUnprotectedPtr();
+  in_slot_metadata->Acquire();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4533,12 +4540,12 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<> stops referencing it.
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
-  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 #else
@@ -4548,12 +4555,12 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<> stops referencing it.
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 
   // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
-  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 #endif
@@ -4574,10 +4581,11 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
-  ref_count->AcquireFromUnprotectedPtr();
-  ref_count->Acquire();
+  in_slot_metadata->AcquireFromUnprotectedPtr();
+  in_slot_metadata->Acquire();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4588,12 +4596,12 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<> stops referencing it.
-  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_FALSE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
-  EXPECT_TRUE(ref_count->Release());
+  EXPECT_TRUE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 #else
@@ -4603,12 +4611,12 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<> stops referencing it.
-  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_FALSE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
-  EXPECT_TRUE(ref_count->Release());
+  EXPECT_TRUE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 #endif
@@ -4628,9 +4636,10 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection>.
-  ref_count->AcquireFromUnprotectedPtr();
+  in_slot_metadata->AcquireFromUnprotectedPtr();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4640,17 +4649,17 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // A raw_ptr<> starts referencing it.
-  ref_count->Acquire();
+  in_slot_metadata->Acquire();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<> stops referencing it.
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<T, DisableDanglingPtrDetection> stops referencing it.
-  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4668,9 +4677,10 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection>.
-  ref_count->AcquireFromUnprotectedPtr();
+  in_slot_metadata->AcquireFromUnprotectedPtr();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4680,17 +4690,17 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // A raw_ptr<> starts referencing it.
-  ref_count->Acquire();
+  in_slot_metadata->Acquire();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<> stops referencing it.
-  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_FALSE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<T, DisableDanglingPtrDetection> stops referencing it.
-  EXPECT_TRUE(ref_count->Release());
+  EXPECT_TRUE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4709,15 +4719,16 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
-  ref_count->Acquire();
-  ref_count->AcquireFromUnprotectedPtr();
+  in_slot_metadata->Acquire();
+  in_slot_metadata->AcquireFromUnprotectedPtr();
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // Release the raw_ptr<>.
-  EXPECT_FALSE(ref_count->Release());
+  EXPECT_FALSE(in_slot_metadata->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4727,7 +4738,7 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
   // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
-  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_TRUE(in_slot_metadata->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
@@ -4747,10 +4758,11 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
-  ref_count->Acquire();
-  EXPECT_FALSE(ref_count->Release());
-  EXPECT_DCHECK_DEATH(ref_count->Release());
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
+  in_slot_metadata->Acquire();
+  EXPECT_FALSE(in_slot_metadata->Release());
+  EXPECT_DCHECK_DEATH(in_slot_metadata->Release());
   allocator.root()->Free(ptr);
 }
 
@@ -4762,10 +4774,11 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
-  auto* ref_count = allocator.root()->RefCountPointerFromObjectForTesting(ptr);
-  ref_count->AcquireFromUnprotectedPtr();
-  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
-  EXPECT_DCHECK_DEATH(ref_count->ReleaseFromUnprotectedPtr());
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
+  in_slot_metadata->AcquireFromUnprotectedPtr();
+  EXPECT_FALSE(in_slot_metadata->ReleaseFromUnprotectedPtr());
+  EXPECT_DCHECK_DEATH(in_slot_metadata->ReleaseFromUnprotectedPtr());
   allocator.root()->Free(ptr);
 }
 

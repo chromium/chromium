@@ -936,7 +936,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
-  bool ref_count_in_same_slot = false;
+  bool in_slot_metadata_in_same_slot = false;
   bool process_affected_by_brp_flag = false;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
@@ -980,7 +980,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         break;
 
       case base::features::BackupRefPtrMode::kEnabledInSameSlotMode:
-        ref_count_in_same_slot = true;
+        in_slot_metadata_in_same_slot = true;
         ABSL_FALLTHROUGH_INTENDED;
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp = true;
@@ -992,7 +992,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
   return {
       enable_brp,
-      ref_count_in_same_slot,
+      in_slot_metadata_in_same_slot,
       process_affected_by_brp_flag,
   };
 }
@@ -1199,9 +1199,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
            partition_alloc::TagViolationReportingMode::kDisabled));
   }
 
-  // Set ref-count mode before we create any roots that have BRP enabled.
-  partition_alloc::PartitionRoot::SetBrpRefCountInSameSlot(
-      brp_config.ref_count_in_same_slot);
+  // Set in-slot metadata mode before we create any roots that have BRP enabled.
+  partition_alloc::PartitionRoot::SetInSlotMetadataInSameSlot(
+      brp_config.in_slot_metadata_in_same_slot);
 
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),

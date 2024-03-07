@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "partition_alloc/freeslot_bitmap.h"
+#include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
@@ -18,7 +19,6 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_ref_count.h"
 
 #if !defined(ARCH_CPU_BIG_ENDIAN)
 #include "partition_alloc/reverse_bytes.h"

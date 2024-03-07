@@ -611,12 +611,11 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
       internal::kPartitionCachelineSize == 64,
       "The computation below assumes that cache lines are 64 bytes long.");
   int distance_to_next_cacheline_in_16_bytes = 4 - ((slot_start >> 4) & 3);
-  // When BRP is on in the "previous slot" mode, this slot may have a BRP
-  // ref-count of the next, potentially allocated slot. Make sure we don't
-  // overwrite it.
+  // In the "previous slot" mode, this slot may have an in-slot metadata of the
+  // next, potentially allocated slot. Make sure we don't overwrite it.
   // TODO(bartekn): Ok to overwrite in the "same slot" mode.
   int slot_size_remaining_in_16_bytes =
-      (bucket.slot_size - internal::kInSlotRefCountBufferSize) / 16;
+      (bucket.slot_size - internal::kInSlotMetadataBufferSize) / 16;
 
   slot_size_remaining_in_16_bytes = std::min(
       slot_size_remaining_in_16_bytes, distance_to_next_cacheline_in_16_bytes);
