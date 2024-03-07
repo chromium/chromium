@@ -2052,7 +2052,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowMoveConfirmation) {
   // Launches the first move confirmation dialog. Let it
   // hang waiting for a choice from the user.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      profile(), file_urls, CreateOpenInOfficeTask(),
+      ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
 
@@ -2185,7 +2186,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
 
   // Triggers Move Confirmation dialog.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      profile(), file_urls, CreateOpenInOfficeTask(),
+      ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
 
@@ -2220,7 +2222,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   // Open file directly from ODFS.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      profile(), file_urls, CreateOpenInOfficeTask(),
+      ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
   // Expect that there was a notification.
@@ -2267,7 +2270,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
 
   // Open file directly from ODFS.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      profile(), file_urls, CreateOpenInOfficeTask(),
+      ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
   // Expect that there was a notification.
@@ -2314,7 +2318,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
 
   // Open the file indirectly from Android OneDrive (via ODFS).
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), {android_onedrive_url},
+      profile(), {android_onedrive_url}, CreateOpenInOfficeTask(),
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2366,7 +2370,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   // Open the file indirectly from Android OneDrive (via ODFS).
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), {android_onedrive_url},
+      profile(), {android_onedrive_url}, CreateOpenInOfficeTask(),
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2420,7 +2424,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as the email accounts don't match.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), {android_onedrive_url},
+      profile(), {android_onedrive_url}, CreateOpenInOfficeTask(),
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2463,7 +2467,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as there is not an equivalent ODFS file path.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), {android_onedrive_url},
+      profile(), {android_onedrive_url}, CreateOpenInOfficeTask(),
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2511,7 +2515,7 @@ IN_PROC_BROWSER_TEST_F(
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as there is not an equivalent ODFS file path.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), {android_onedrive_url},
+      profile(), {android_onedrive_url}, CreateOpenInOfficeTask(),
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();

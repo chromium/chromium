@@ -6997,6 +6997,15 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS" desc="Office Fallback dialog instructions for the choices (buttons) the user has available to open the office file.">
     Choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
   </message>
+  <message name="IDS_OFFICE_FALLBACK_TITLE_WAITING_FOR_UPLOAD" desc="Title for a dialog that appears when a user attempts to open a file in Web Drive before it is fully synced.">
+    Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph>
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_REASON_WAITING_FOR_UPLOAD" desc="Explanation for a dialog that appears when a user attempts to open a file in Web Drive before it is fully synced.">
+    The file is still being synced to Drive.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_WAITING_FOR_UPLOAD" desc="Office Fallback dialog instructions when a user attempts to open a file in Web Drive before it is fully synced.">
+    Try again after the file has finished syncing.
+  </message>
 
   <!-- Office file handler selection dialog -->
   <message name="IDS_OFFICE_FILE_HANDLER_TITLE" desc="Title for office file handler selection dialog, which allows the user to choose an app to open office files.">

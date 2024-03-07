@@ -29,6 +29,7 @@ const int kDisableDrivePreferenceSetHeight = 268;
 const int kDriveUnavailableHeight = 268;
 const int kDriveDisabledForAccountType = 268;
 const int kMeteredHeight = 268;
+const int kWaitingForUploadHeight = 228;
 
 // Height of a line of text as found with the inspector tool.
 const int kLineHeight = 20;
@@ -117,6 +118,15 @@ void GetDialogTextIdsAndSize(
       enable_retry_option = true;
       enable_quick_office_option = true;
       height = kDriveUnavailableHeight;
+      break;
+    case ash::office_fallback::FallbackReason::kWaitingForUpload:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_WAITING_FOR_UPLOAD;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_WAITING_FOR_UPLOAD;
+      instructions_message_id =
+          IDS_OFFICE_FALLBACK_INSTRUCTIONS_WAITING_FOR_UPLOAD;
+      enable_retry_option = false;
+      enable_quick_office_option = false;
+      height = kWaitingForUploadHeight;
       break;
   }
   // Add extra height to account for translations.

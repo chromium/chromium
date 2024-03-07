@@ -103,6 +103,7 @@ class CloudOpenTask : public BrowserListObserver,
   // in the closures used for async steps.
   static bool Execute(Profile* profile,
                       const std::vector<storage::FileSystemURL>& file_urls,
+                      const ::file_manager::file_tasks::TaskDescriptor& task,
                       const CloudProvider cloud_provider,
                       std::unique_ptr<CloudOpenMetrics> cloud_open_metrics);
 
@@ -161,6 +162,7 @@ class CloudOpenTask : public BrowserListObserver,
 
   CloudOpenTask(Profile* profile,
                 std::vector<storage::FileSystemURL> file_urls,
+                const ::file_manager::file_tasks::TaskDescriptor& task,
                 const CloudProvider cloud_provider,
                 std::unique_ptr<CloudOpenMetrics> cloud_open_metrics);
 
@@ -239,6 +241,7 @@ class CloudOpenTask : public BrowserListObserver,
   std::vector<storage::FileSystemURL> file_urls_;
   // File being currently uploaded.
   size_t file_urls_idx_ = 0;
+  const ::file_manager::file_tasks::TaskDescriptor task_;
   CloudProvider cloud_provider_;
   std::unique_ptr<CloudOpenMetrics> cloud_open_metrics_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;

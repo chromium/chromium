@@ -22,6 +22,7 @@ enum class FallbackReason {
   kMeteredConnection,
   kDisableDrivePreferenceSet,
   kDriveDisabledForAccountType,
+  kWaitingForUpload,
 };
 
 using DialogChoiceCallback =

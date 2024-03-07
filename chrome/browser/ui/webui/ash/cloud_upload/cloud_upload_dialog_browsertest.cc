@@ -181,8 +181,9 @@ void LaunchCloudUploadDialog(
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch dialog.
-  EXPECT_TRUE(CloudOpenTask::Execute(profile, file_urls, cloud_provider,
-                                     std::move(cloud_open_metrics)));
+  EXPECT_TRUE(CloudOpenTask::Execute(
+      profile, file_urls, file_manager::file_tasks::TaskDescriptor(),
+      cloud_provider, std::move(cloud_open_metrics)));
 
   // Wait for chrome://cloud-upload to open.
   navigation_observer_dialog.Wait();
@@ -1146,9 +1147,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   {
     file_manager::file_tasks::TaskDescriptor default_task;
 
-    auto cloud_open_task = base::WrapRefCounted(
-        new CloudOpenTask(profile(), files_, CloudProvider::kGoogleDrive,
-                          std::move(cloud_open_metrics)));
+    auto cloud_open_task = base::WrapRefCounted(new CloudOpenTask(
+        profile(), files_, file_manager::file_tasks::TaskDescriptor(),
+        CloudProvider::kGoogleDrive, std::move(cloud_open_metrics)));
     cloud_open_task->SetTasksForTest(tasks_);
 
     for (int selected_task = 0; selected_task < num_tasks_; selected_task++) {
@@ -1182,9 +1183,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
       CloudProvider::kGoogleDrive, /*file_count=*/1);
   auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
   {
-    auto cloud_open_task = base::WrapRefCounted(
-        new CloudOpenTask(profile(), files_, CloudProvider::kGoogleDrive,
-                          std::move(cloud_open_metrics)));
+    auto cloud_open_task = base::WrapRefCounted(new CloudOpenTask(
+        profile(), files_, file_manager::file_tasks::TaskDescriptor(),
+        CloudProvider::kGoogleDrive, std::move(cloud_open_metrics)));
     cloud_open_task->SetTasksForTest(tasks_);
 
     int out_of_range_task = num_tasks_;
@@ -1376,10 +1377,11 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
-  auto cloud_open_task = base::WrapRefCounted(
-      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive,
-                        std::make_unique<CloudOpenMetrics>(
-                            CloudProvider::kOneDrive, /*file_count=*/1)));
+  auto cloud_open_task = base::WrapRefCounted(new CloudOpenTask(
+      profile(), files_, file_manager::file_tasks::TaskDescriptor(),
+      CloudProvider::kOneDrive,
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
+                                         /*file_count=*/1)));
   mojom::DialogArgsPtr args =
       cloud_open_task->CreateDialogArgs(SetupOrMoveDialogPage::kOneDriveSetup);
   // Self-deleted on close.
@@ -1455,10 +1457,11 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
-  auto cloud_open_task = base::WrapRefCounted(
-      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive,
-                        std::make_unique<CloudOpenMetrics>(
-                            CloudProvider::kOneDrive, /*file_count=*/1)));
+  auto cloud_open_task = base::WrapRefCounted(new CloudOpenTask(
+      profile(), files_, file_manager::file_tasks::TaskDescriptor(),
+      CloudProvider::kOneDrive,
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
+                                         /*file_count=*/1)));
   mojom::DialogArgsPtr args =
       cloud_open_task->CreateDialogArgs(SetupOrMoveDialogPage::kOneDriveSetup);
   // Self-deleted on close.
@@ -1529,7 +1532,7 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
         my_files_dir_.AppendASCII("file.docx")));
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-        profile(), source_files_,
+        profile(), source_files_, file_manager::file_tasks::TaskDescriptor(),
         ash::cloud_upload::CloudProvider::kGoogleDrive,
         std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
                                            /*file_count=*/1)));
@@ -1544,7 +1547,7 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
         smb_dir_.AppendASCII("file.docx")));
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-        profile(), source_files_,
+        profile(), source_files_, file_manager::file_tasks::TaskDescriptor(),
         ash::cloud_upload::CloudProvider::kGoogleDrive,
         std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
                                            /*file_count=*/1)));
@@ -1559,7 +1562,7 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
         read_only_dir_.AppendASCII("file.docx")));
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-        profile(), source_files_,
+        profile(), source_files_, file_manager::file_tasks::TaskDescriptor(),
         ash::cloud_upload::CloudProvider::kGoogleDrive,
         std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
                                            /*file_count=*/1)));
@@ -1574,7 +1577,8 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
         my_files_dir_.AppendASCII("file.docx")));
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-        profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
+        profile(), source_files_, file_manager::file_tasks::TaskDescriptor(),
+        ash::cloud_upload::CloudProvider::kOneDrive,
         std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
                                            /*file_count=*/1)));
   }
@@ -1588,7 +1592,8 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
         smb_dir_.AppendASCII("file.docx")));
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-        profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
+        profile(), source_files_, file_manager::file_tasks::TaskDescriptor(),
+        ash::cloud_upload::CloudProvider::kOneDrive,
         std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
                                            /*file_count=*/1)));
   }
@@ -1602,7 +1607,8 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
         read_only_dir_.AppendASCII("file.docx")));
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-        profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
+        profile(), source_files_, file_manager::file_tasks::TaskDescriptor(),
+        ash::cloud_upload::CloudProvider::kOneDrive,
         std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
                                            /*file_count=*/1)));
   }

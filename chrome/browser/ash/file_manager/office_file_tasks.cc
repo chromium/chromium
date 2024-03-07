@@ -204,7 +204,7 @@ bool ExecuteWebDriveOfficeTask(
   }
 
   return ash::cloud_upload::CloudOpenTask::Execute(
-      profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
+      profile, file_urls, task, ash::cloud_upload::CloudProvider::kGoogleDrive,
       std::move(cloud_open_metrics));
 }
 
@@ -223,7 +223,7 @@ bool ExecuteOpenInOfficeTask(
   }
 
   return ash::cloud_upload::CloudOpenTask::Execute(
-      profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      profile, file_urls, task, ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics));
 }
 
@@ -265,6 +265,7 @@ void LogOneDriveMetricsAfterFallback(
     case ash::office_fallback::FallbackReason::kMeteredConnection:
     case ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet:
     case ash::office_fallback::FallbackReason::kDriveDisabledForAccountType:
+    case ash::office_fallback::FallbackReason::kWaitingForUpload:
       NOTREACHED();
       break;
   }
@@ -310,6 +311,8 @@ void LogGoogleDriveMetricsAfterFallback(
           ash::cloud_upload::OfficeDriveOpenErrors::
               kDriveDisabledForAccountType);
       break;
+    case ash::office_fallback::FallbackReason::kWaitingForUpload:
+      NOTREACHED();
   }
   cloud_open_metrics->LogTaskResult(task_result);
 }

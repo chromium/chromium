@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
+#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -353,10 +354,11 @@ mojom::OperationType UploadTypeToOperationType(UploadType upload_type) {
 bool CloudOpenTask::Execute(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls,
+    const fm_tasks::TaskDescriptor& task,
     const CloudProvider cloud_provider,
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics) {
   scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(new CloudOpenTask(
-      profile, file_urls, cloud_provider, std::move(cloud_open_metrics)));
+      profile, file_urls, task, cloud_provider, std::move(cloud_open_metrics)));
   // Keep `upload_task` alive until `TaskFinished` executes.
   bool status = upload_task->ExecuteInternal();
   return status;
@@ -365,10 +367,12 @@ bool CloudOpenTask::Execute(
 CloudOpenTask::CloudOpenTask(
     Profile* profile,
     std::vector<storage::FileSystemURL> file_urls,
+    const fm_tasks::TaskDescriptor& task,
     const CloudProvider cloud_provider,
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
       file_urls_(file_urls),
+      task_(task),
       cloud_provider_(cloud_provider),
       cloud_open_metrics_(std::move(cloud_open_metrics)) {
   BrowserList::AddObserver(this);
@@ -510,6 +514,10 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
              metadata->item_id.value_or("").starts_with("local-")) {
     LOG(ERROR) << "Local item id, the file hasn't been uploaded";
     open_result = OfficeDriveOpenErrors::kWaitingForUpload;
+    GetUserFallbackChoice(
+        profile_, task_, file_urls_,
+        ash::office_fallback::FallbackReason::kWaitingForUpload,
+        base::DoNothing());
   } else if (hosted_url.is_empty()) {
     LOG(ERROR) << "Empty URL";
     open_result = OfficeDriveOpenErrors::kEmptyAlternateUrl;
