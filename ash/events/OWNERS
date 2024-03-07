@@ -3,3 +3,5 @@ per-file select_to_speak_event_handler*=file://ash/accessibility/OWNERS
 per-file keyboard_capability*=zentaro@chromium.org,dpad@google.com
 per-file peripheral_customization*=zentaro@chromium.org,dpad@google.com
 per-file prerewritten_event_forwarder*=zentaro@chromium.org,dpad@google.com,jimmyxgong@chromium.org
+hidehiko@chromium.org
+
