@@ -120,7 +120,7 @@ class DeviceSyncClient {
 
  private:
   bool is_ready_ = false;
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
 };
 
 }  // namespace device_sync

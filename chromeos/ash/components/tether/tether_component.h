@@ -59,7 +59,7 @@ class TetherComponent {
 
  private:
   Status status_ = Status::ACTIVE;
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
 };
 
 }  // namespace tether

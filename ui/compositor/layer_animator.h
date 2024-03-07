@@ -453,7 +453,8 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   // TODO(crbug.com/1248132): Once all references to Add/RemoveObserver
   // functions are removed, delete these, the associated methods other internal
   // related code.
-  base::ObserverList<LayerAnimationObserver>::Unchecked observers_;
+  base::ObserverList<LayerAnimationObserver>::UncheckedAndDanglingUntriaged
+      observers_;
 
   std::vector<std::unique_ptr<ImplicitAnimationObserver>> owned_observer_list_;
 

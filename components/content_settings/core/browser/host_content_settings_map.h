@@ -567,7 +567,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   base::ThreadChecker thread_checker_;
 
-  base::ObserverList<content_settings::Observer>::Unchecked observers_;
+  base::ObserverList<content_settings::Observer>::UncheckedAndDanglingUntriaged
+      observers_;
 
   // When true, allows setting secondary patterns even for types that should not
   // allow them. Only used for testing that inserts previously valid patterns in

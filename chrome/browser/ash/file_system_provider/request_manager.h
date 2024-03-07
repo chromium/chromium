@@ -207,7 +207,7 @@ class RequestManager {
       notification_manager_;  // Not owned.
   int next_id_;
   base::TimeDelta timeout_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 };
 

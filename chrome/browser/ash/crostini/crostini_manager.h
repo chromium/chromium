@@ -871,19 +871,19 @@ class CrostiniManager : public KeyedService,
 
   std::vector<RemoveCrostiniCallback> remove_crostini_callbacks_;
 
-  base::ObserverList<LinuxPackageOperationProgressObserver>::Unchecked
-      linux_package_operation_progress_observers_;
+  base::ObserverList<LinuxPackageOperationProgressObserver>::
+      UncheckedAndDanglingUntriaged linux_package_operation_progress_observers_;
 
   base::ObserverList<PendingAppListUpdatesObserver>
       pending_app_list_updates_observers_;
 
-  base::ObserverList<ExportContainerProgressObserver>::Unchecked
-      export_container_progress_observers_;
-  base::ObserverList<ImportContainerProgressObserver>::Unchecked
-      import_container_progress_observers_;
+  base::ObserverList<ExportContainerProgressObserver>::
+      UncheckedAndDanglingUntriaged export_container_progress_observers_;
+  base::ObserverList<ImportContainerProgressObserver>::
+      UncheckedAndDanglingUntriaged import_container_progress_observers_;
 
-  base::ObserverList<UpgradeContainerProgressObserver>::Unchecked
-      upgrade_container_progress_observers_;
+  base::ObserverList<UpgradeContainerProgressObserver>::
+      UncheckedAndDanglingUntriaged upgrade_container_progress_observers_;
 
   base::ObserverList<ash::VmShutdownObserver> vm_shutdown_observers_;
   base::ObserverList<ash::VmStartingObserver> vm_starting_observers_;

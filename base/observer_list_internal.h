@@ -24,6 +24,7 @@ namespace base {
 namespace internal {
 
 // Adapter for putting raw pointers into an ObserverList<Foo>::Unchecked.
+template <base::RawPtrTraits ptr_traits = RawPtrTraits::kEmpty>
 class BASE_EXPORT UncheckedObserverAdapter {
  public:
   explicit UncheckedObserverAdapter(const void* observer)
@@ -54,7 +55,7 @@ class BASE_EXPORT UncheckedObserverAdapter {
 #endif  // DCHECK_IS_ON()
 
  private:
-  raw_ptr<void, AcrossTasksDanglingUntriaged> ptr_;
+  raw_ptr<void, ptr_traits> ptr_;
 #if DCHECK_IS_ON()
   base::debug::StackTrace stack_;
 #endif  // DCHECK_IS_ON()

@@ -145,7 +145,8 @@ class TabLifecycleUnitSource : public BrowserListObserver,
 
   // Observers notified when the discarded or auto-discardable state of a tab
   // changes.
-  base::ObserverList<TabLifecycleObserver>::Unchecked tab_lifecycle_observers_;
+  base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged
+      tab_lifecycle_observers_;
 
   // A clock that advances when Chrome is in use.
   const raw_ptr<UsageClock> usage_clock_;

@@ -130,7 +130,7 @@ class DeviceDisablingManager {
   raw_ptr<CrosSettings> cros_settings_;
   raw_ptr<user_manager::UserManager> user_manager_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 
   base::CallbackListSubscription device_disabled_subscription_;
   base::CallbackListSubscription disabled_message_subscription_;

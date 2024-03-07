@@ -105,7 +105,7 @@ template <class ObserverType,
 class ObserverList {
  public:
   // Allow declaring an ObserverList<...>::Unchecked that replaces the default
-  // ObserverStorageType to use raw pointers. This is required to support legacy
+  // ObserverStorageType to use `raw_ptr<T>`. This is required to support legacy
   // observers that do not inherit from CheckedObserver. The majority of new
   // code should not use this, but it may be suited for performance-critical
   // situations to avoid overheads of a CHECK(). Note the type can't be chosen
@@ -114,7 +114,18 @@ class ObserverList {
   using Unchecked = ObserverList<ObserverType,
                                  check_empty,
                                  allow_reentrancy,
-                                 internal::UncheckedObserverAdapter>;
+                                 internal::UncheckedObserverAdapter<>>;
+  // Allow declaring an ObserverList<...>::UncheckedAndDanglingUntriaged that
+  // replaces the default ObserverStorageType to use
+  // `raw_ptr<T, DanglingUntriaged>`. New use of this alias is strongly
+  // discouraged.
+  // TODO(crbug.com/40212619): Triage existing dangling observer pointers and
+  // remove this alias.
+  using UncheckedAndDanglingUntriaged =
+      ObserverList<ObserverType,
+                   check_empty,
+                   allow_reentrancy,
+                   internal::UncheckedObserverAdapter<DanglingUntriaged>>;
 
   // An iterator class that can be used to access the list of observers.
   class Iter {

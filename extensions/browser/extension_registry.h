@@ -213,7 +213,8 @@ class ExtensionRegistry : public KeyedService {
   // subset of |enabled_extensions_|.
   ExtensionSet ready_extensions_;
 
-  base::ObserverList<ExtensionRegistryObserver>::Unchecked observers_;
+  base::ObserverList<ExtensionRegistryObserver>::UncheckedAndDanglingUntriaged
+      observers_;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 };

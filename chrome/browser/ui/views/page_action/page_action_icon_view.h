@@ -227,7 +227,8 @@ class PageActionIconView : public IconLabelBubbleView {
   // The loading indicator, showing a throbber animation on top of the icon.
   raw_ptr<PageActionIconLoadingIndicatorView> loading_indicator_ = nullptr;
 
-  base::ObserverList<PageActionIconViewObserver>::Unchecked observer_list_;
+  base::ObserverList<PageActionIconViewObserver>::UncheckedAndDanglingUntriaged
+      observer_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_VIEW_H_

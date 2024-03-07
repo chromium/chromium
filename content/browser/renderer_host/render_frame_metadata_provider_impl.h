@@ -95,7 +95,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
       const gfx::PointF& root_scroll_offset) override;
 #endif
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 
   cc::RenderFrameMetadata last_render_frame_metadata_;
 

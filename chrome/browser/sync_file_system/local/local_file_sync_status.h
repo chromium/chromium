@@ -99,7 +99,7 @@ class LocalFileSyncStatus {
   // If this flag is set sync process is running on the file.
   URLSet syncing_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
 };
 
 }  // namespace sync_file_system

@@ -165,7 +165,8 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   ::testing::StrictMock<MockTabLifecycleObserver> observer_;
-  base::ObserverList<TabLifecycleObserver>::Unchecked observers_;
+  base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged
+      observers_;
   raw_ptr<content::WebContents, DanglingUntriaged>
       web_contents_;  // Owned by tab_strip_model_.
   std::unique_ptr<TabStripModel> tab_strip_model_;

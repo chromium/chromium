@@ -816,7 +816,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   raw_ptr<LayerDelegate, DanglingUntriaged> delegate_ = nullptr;
 
-  base::ObserverList<LayerObserver>::Unchecked observer_list_;
+  base::ObserverList<LayerObserver>::UncheckedAndDanglingUntriaged
+      observer_list_;
 
   raw_ptr<LayerOwner> owner_;
 

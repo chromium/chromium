@@ -111,7 +111,8 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   std::unique_ptr<UIElement> element_root_;
   std::unordered_map<int, UIElement*> node_id_to_ui_element_;
 
-  base::ObserverList<DOMAgentObserver>::Unchecked observers_;
+  base::ObserverList<DOMAgentObserver>::UncheckedAndDanglingUntriaged
+      observers_;
 
   using SearchResults = std::unordered_map<std::string, std::vector<int>>;
   SearchResults search_results_;

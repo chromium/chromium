@@ -756,7 +756,7 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
     }
   }
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 
   std::string current_channel_;
   std::string target_channel_;

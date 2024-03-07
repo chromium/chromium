@@ -134,7 +134,8 @@ class SyncManagerImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::ObserverList<SyncManager::Observer>::Unchecked observers_;
+  base::ObserverList<SyncManager::Observer>::UncheckedAndDanglingUntriaged
+      observers_;
 
   // The ServerConnectionManager used to abstract communication between the
   // client (the Syncer) and the sync server.

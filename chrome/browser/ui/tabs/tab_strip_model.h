@@ -844,7 +844,8 @@ class TabStripModel : public TabGroupController {
 
   bool tab_strip_ui_was_set_ = false;
 
-  base::ObserverList<TabStripModelObserver>::Unchecked observers_;
+  base::ObserverList<TabStripModelObserver>::UncheckedAndDanglingUntriaged
+      observers_;
 
   // A profile associated with this TabStripModel.
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;

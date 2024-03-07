@@ -387,7 +387,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   std::unique_ptr<View> footnote_view_;
 
   // Observers for DialogModel changes.
-  base::ObserverList<DialogObserver>::Unchecked observer_list_;
+  base::ObserverList<DialogObserver>::UncheckedAndDanglingUntriaged
+      observer_list_;
 
   // Callbacks for the dialog's actions:
   absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>

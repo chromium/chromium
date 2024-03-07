@@ -164,7 +164,7 @@ class TabLoadTracker {
   // The counts of tabs in each state.
   size_t state_counts_[static_cast<size_t>(LoadingState::kMaxValue) + 1] = {0};
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

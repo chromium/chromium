@@ -634,7 +634,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
  private:
   // Observers to notify when the native theme changes.
-  base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
+  base::ObserverList<NativeThemeObserver>::UncheckedAndDanglingUntriaged
+      native_theme_observers_;
 
   // User's primary color. Included in the `ColorProvider::Key` as the basis of
   // all generated colors.

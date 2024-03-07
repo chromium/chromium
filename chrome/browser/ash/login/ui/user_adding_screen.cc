@@ -39,7 +39,8 @@ class UserAddingScreenImpl : public UserAddingScreen {
   UserAddingScreenImpl();
   ~UserAddingScreenImpl() override;
 
-  base::ObserverList<UserAddingScreen::Observer>::Unchecked observers_;
+  base::ObserverList<UserAddingScreen::Observer>::UncheckedAndDanglingUntriaged
+      observers_;
   raw_ptr<LoginDisplayHost, DanglingUntriaged> display_host_;
 
   UserAddingScreenInputMethodsController im_controller_;

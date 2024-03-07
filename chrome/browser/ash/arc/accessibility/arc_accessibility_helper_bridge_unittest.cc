@@ -145,7 +145,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
 
    private:
     std::map<std::string, ArcNotificationSurface*> surfaces_;
-    base::ObserverList<Observer>::Unchecked observers_;
+    base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
   };
 
   ArcAccessibilityHelperBridgeTest() = default;

@@ -263,7 +263,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   mojo::ReceiverSet<prerender::mojom::PrerenderCanceler>
       prerender_canceler_receiver_set_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
 
   // The prefetch manager owning this object.
   raw_ptr<NoStatePrefetchManager> no_state_prefetch_manager_;

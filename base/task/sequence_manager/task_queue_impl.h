@@ -421,7 +421,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     std::unique_ptr<WorkQueue> delayed_work_queue;
     std::unique_ptr<WorkQueue> immediate_work_queue;
     DelayedIncomingQueue delayed_incoming_queue;
-    ObserverList<TaskObserver>::Unchecked task_observers;
+    ObserverList<TaskObserver>::UncheckedAndDanglingUntriaged task_observers;
     HeapHandle heap_handle;
     bool is_enabled = true;
     std::optional<Fence> current_fence;

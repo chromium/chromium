@@ -95,7 +95,8 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   // The cursor state to restore when the cursor is unlocked.
   std::unique_ptr<internal::CursorState> state_on_unlock_;
 
-  base::ObserverList<aura::client::CursorClientObserver>::Unchecked observers_;
+  base::ObserverList<aura::client::CursorClientObserver>::
+      UncheckedAndDanglingUntriaged observers_;
 
   // This flag holds the cursor visibility state for the duration of the
   // process. Defaults to true. This flag helps ensure that when a

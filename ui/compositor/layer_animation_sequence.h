@@ -200,7 +200,8 @@ class COMPOSITOR_EXPORT LayerAnimationSequence
   int animation_group_id_;
 
   // These parties are notified when layer animations end.
-  base::ObserverList<LayerAnimationObserver>::Unchecked observers_;
+  base::ObserverList<LayerAnimationObserver>::UncheckedAndDanglingUntriaged
+      observers_;
 
   // Tracks the last_progressed_fraction() of the most recently progressed
   // element.

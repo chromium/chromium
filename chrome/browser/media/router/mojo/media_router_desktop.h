@@ -358,7 +358,8 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
     // we need more fine-grained associations between sinks and origins.
     std::vector<url::Origin> origins_;
 
-    base::ObserverList<MediaSinksObserver>::Unchecked observers_;
+    base::ObserverList<MediaSinksObserver>::UncheckedAndDanglingUntriaged
+        observers_;
   };
 
   // Represents a query to the MediaRouteProviders for media routes and caches

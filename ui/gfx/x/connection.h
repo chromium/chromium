@@ -569,7 +569,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   base::circular_deque<Event> events_;
 
-  base::ObserverList<EventObserver>::Unchecked event_observers_;
+  base::ObserverList<EventObserver>::UncheckedAndDanglingUntriaged
+      event_observers_;
 
   // The Event currently being dispatched, or nullptr if there is none.
   raw_ptr<const Event> dispatching_event_ = nullptr;

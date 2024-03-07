@@ -928,7 +928,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   // Observers of BluetoothAdapter, notified from implementation subclasses.
-  base::ObserverList<device::BluetoothAdapter::Observer>::Unchecked observers_;
+  base::ObserverList<device::BluetoothAdapter::Observer>::
+      UncheckedAndDanglingUntriaged observers_;
 
   // Devices paired with, connected to, discovered by, or visible to the
   // adapter. The key is the Bluetooth address of the device and the value is

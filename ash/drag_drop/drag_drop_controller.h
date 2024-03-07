@@ -232,8 +232,8 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   gfx::Point start_location_;
   gfx::Point current_location_;
 
-  base::ObserverList<aura::client::DragDropClientObserver>::Unchecked
-      observers_;
+  base::ObserverList<aura::client::DragDropClientObserver>::
+      UncheckedAndDanglingUntriaged observers_;
 
   raw_ptr<ToplevelWindowDragDelegate, DanglingUntriaged>
       toplevel_window_drag_delegate_ = nullptr;

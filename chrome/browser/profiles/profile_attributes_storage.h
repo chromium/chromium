@@ -314,7 +314,8 @@ class ProfileAttributesStorage {
   mutable std::unordered_map<base::FilePath::StringType, ProfileAttributesEntry>
       profile_attributes_entries_;
 
-  mutable base::ObserverList<Observer>::Unchecked observer_list_;
+  mutable base::ObserverList<Observer>::UncheckedAndDanglingUntriaged
+      observer_list_;
 
   // A cache of gaia/high res avatar profile pictures. This cache is updated
   // lazily so it needs to be mutable.

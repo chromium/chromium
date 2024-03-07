@@ -161,7 +161,8 @@ class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
 
 TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
     TabLifecycleUnitSource* source,
-    base::ObserverList<TabLifecycleObserver>::Unchecked* observers,
+    base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged*
+        observers,
     UsageClock* usage_clock,
     content::WebContents* web_contents,
     TabStripModel* tab_strip_model)
