@@ -706,9 +706,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
 
-  // Pipe FDs through which Ash and Lacros exchange post-login parameters.
-  base::ScopedFD postlogin_pipe_fd_;
-
   // Whether we are starting "rootfs" or "stateful" lacros.
   std::optional<LacrosSelection> lacros_selection_;
 
