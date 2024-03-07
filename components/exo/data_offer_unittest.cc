@@ -740,9 +740,10 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
       &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
       data_exchange_delegate.GetDataTransferEndpointType(window));
 
-  EXPECT_EQ(2u, delegate.mime_types().size());
+  EXPECT_EQ(3u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/html;charset=utf-8"));
   EXPECT_EQ(1u, delegate.mime_types().count("text/html;charset=utf-16"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/html"));
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;
@@ -758,6 +759,11 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
   std::u16string result16;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result16));
   EXPECT_EQ("Test data", base::UTF16ToUTF8(result16));
+
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/html", std::move(write_pipe));
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  EXPECT_EQ("Test data", result);
 }
 
 TEST_F(DataOfferTest, SetClipboardDataRTF) {
