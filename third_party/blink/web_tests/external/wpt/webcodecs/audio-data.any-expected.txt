@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] Test conversion of u8 to u8
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of u8 to s16
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of u8 to s32
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of u8 to f32
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s16 to u8
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s16 to s16
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s16 to s32
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s16 to f32
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s32 to u8
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s32 to s16
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s32 to s32
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of s32 to f32
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of f32 to u8
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of f32 to s16
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+[FAIL] Test conversion of f32 to s32
+  Failed to execute 'copyTo' on 'AudioData': AudioData currently only supports copy conversion to f32-planar.
+Harness: the test ran to completion.
+

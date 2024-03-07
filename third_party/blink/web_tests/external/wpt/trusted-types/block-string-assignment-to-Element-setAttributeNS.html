@@ -21,7 +21,7 @@
       assert_element_accepts_trusted_script_url_set_ns(window, '2', t, 'a', 'b', RESULTS.SCRIPTURL);
     }, "Element.setAttributeNS assigned via policy (successful ScriptURL transformation)");
 
-    // Unknown, namespaced attributes should not be TT checked:
+    // Unknown attributes should not be TT checked:
     test(t => {
       assert_element_accepts_non_trusted_type_set_ns('a', 'b', 'A string', 'A string');
     }, "Element.setAttributeNS accepts untrusted string for non-specced accessor");
