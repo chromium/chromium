@@ -174,8 +174,6 @@ class StartSurfaceMediator
     @Nullable private OmniboxStub mOmniboxStub;
     private Context mContext;
     @Nullable UrlFocusChangeListener mUrlFocusChangeListener;
-    @StartSurfaceState private int mStartSurfaceState;
-    @StartSurfaceState private int mPreviousStartSurfaceState;
     @NewTabPageLaunchOrigin private int mLaunchOrigin;
     @Nullable private TabModel mNormalTabModel;
     @Nullable private TabModelObserver mNormalTabModelObserver;
@@ -450,10 +448,6 @@ class StartSurfaceMediator
                                 setTopMargin(
                                         mBrowserControlsStateProvider
                                                 .getTopControlsMinHeightOffset());
-                            } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-                                // Set the top margin to the top controls offset (toolbar height +
-                                // indicator height).
-                                setTopMargin(mBrowserControlsStateProvider.getContentOffset());
                             } else {
                                 setTopMargin(0);
                             }
@@ -509,8 +503,6 @@ class StartSurfaceMediator
         if (mController != null) {
             mController.addTabSwitcherViewObserver(this);
         }
-        mPreviousStartSurfaceState = StartSurfaceState.NOT_SHOWN;
-        mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
 
         if (backPressManager != null && BackPressManager.isEnabled()) {
             backPressManager.addHandler(this, Type.START_SURFACE);
@@ -530,26 +522,6 @@ class StartSurfaceMediator
             }
             notifyBackPressStateChanged();
         }
-    }
-
-    private void initContextMenuStartPosition() {
-        Resources resources = mContext.getResources();
-        int contextMenuStartX =
-                resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_lateral_margin)
-                        + resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_padding_bottom)
-                        + resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_tab_thumbnail_size);
-        int contextMenuStartY =
-                resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_padding_top)
-                        * 3;
-        mContextMenuStartPosotion = new Point(contextMenuStartX, contextMenuStartY);
     }
 
     void initWithNative(
@@ -790,56 +762,6 @@ class StartSurfaceMediator
         mStateObservers.removeObserver(observer);
     }
 
-    // Implements StartSurface.Controller
-    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
-    // two different things, audit the wording usage and see if we can rename this method to
-    // setStartSurfaceState.
-    void setStartSurfaceState(
-            @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
-        // TODO(crbug.com/1039691): Refactor into state and trigger to separate SHOWING and SHOWN
-        // states.
-
-        if (mPropertyModel == null || state == mStartSurfaceState) return;
-
-        // Cache previous state.
-        int cachedPreviousState = mPreviousStartSurfaceState;
-        if (mStartSurfaceState != StartSurfaceState.NOT_SHOWN) {
-            mPreviousStartSurfaceState = mStartSurfaceState;
-        }
-
-        mStartSurfaceState = state;
-        setOverviewStateInternal();
-
-        // Immediately transition from SHOWING to SHOWN state if overview is visible but state not
-        // SHOWN. This is only necessary when the new state is a SHOWING state.
-        if (mPropertyModel.get(IS_SHOWING_OVERVIEW)
-                && mStartSurfaceState != StartSurfaceState.NOT_SHOWN
-                && !isShownState(mStartSurfaceState)) {
-            // Compute SHOWN state before updating previous state, because the previous state is
-            // still needed to compute the shown state.
-            @StartSurfaceState int shownState = computeOverviewStateShown();
-
-            mStartSurfaceState = shownState;
-            setOverviewStateInternal();
-        }
-        notifyStateChange();
-
-        setLaunchOrigin(launchOrigin);
-        // Metrics collection
-        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            RecordUserAction.record("StartSurface.SinglePane.Home");
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-            RecordUserAction.record("StartSurface.SinglePane.Tabswitcher");
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS
-                && cachedPreviousState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
-        }
-    }
-
-    void setStartSurfaceState(@StartSurfaceState int state) {
-        setStartSurfaceState(state, mLaunchOrigin);
-    }
-
     void setLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
         if (launchOrigin == NewTabPageLaunchOrigin.WEB_FEED) {
             StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
@@ -862,136 +784,12 @@ class StartSurfaceMediator
         StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
     }
 
-    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
-    // two different things, audit the wording usage and see if we can rename this method to
-    // setStartSurfaceStateInternal.
-    private void setOverviewStateInternal() {
-        if (mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
-                || mStartSurfaceState == StartSurfaceState.SHOWING_START) {
-            // When entering the Start surface by tapping home button or new tab page, we need to
-            // reset the scrolling position.
-            resetScrollPosition();
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
-            onHide();
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-                mayRecordHomepageSessionBegin();
-            }
-            boolean hasNormalTab = getNormalTabCount() > 0;
-
-            // If new home surface for home button is enabled, MV tiles and carousel tab switcher
-            // will not show.
-            setMVTilesVisibility(!mIsIncognito);
-            setLogoVisibility(!mIsIncognito);
-            setTabCardVisibility(hasNormalTab && !mIsIncognito);
-            setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
-            setFakeBoxVisibility(!mIsIncognito);
-            updateTopToolbarPlaceholderHeight();
-            // Set the top margin to the top controls min height (indicator height if it's shown)
-            // since the toolbar height as extra margin is handled by top toolbar placeholder.
-            setTopMargin(mBrowserControlsStateProvider.getTopControlsMinHeight());
-            // Only pad single pane home page since tabs grid has already been padding for the
-            // bottom bar.
-            setBottomMargin(mBrowserControlsStateProvider.getBottomControlsHeight());
-            if (mNormalTabModel != null) {
-                mNormalTabModel.addObserver(mNormalTabModelObserver);
-            } else {
-                mPendingObserver = true;
-            }
-        } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-                mayRecordHomepageSessionEnd();
-            }
-            setTabCardVisibility(false);
-            setMVTilesVisibility(false);
-            setLogoVisibility(false);
-            setFakeBoxVisibility(false);
-            setExploreSurfaceVisibility(false);
-            updateTopToolbarPlaceholderHeight();
-            // Set the top margin to the top controls height (toolbar height + indicator height).
-            setTopMargin(mBrowserControlsStateProvider.getTopControlsHeight());
-            setBottomMargin(0);
-        }
-
-        if (isShownState(mStartSurfaceState)) {
-            setIncognitoModeDescriptionVisibility(
-                    mIsIncognito && (mTabModelSelector.getModel(true).getCount() <= 0));
-        }
-    }
-
-    @StartSurfaceState
-    int getStartSurfaceState() {
-        return mStartSurfaceState;
-    }
-
-    void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
-        mObservers.addObserver(observer);
-    }
-
-    void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
-        mObservers.removeObserver(observer);
-    }
-
     void hideTabSwitcherView(boolean animate) {
         if (mController != null) {
             mController.hideTabSwitcherView(animate);
         } else {
             startedHiding();
         }
-    }
-
-    void beforeHideTabSwitcherView() {
-        if (mController != null) {
-            mController.prepareHideTabSwitcherView();
-        }
-    }
-
-    void showOverview(boolean animate) {
-        // TODO(crbug.com/982018): Animate the bottom bar together with the Tab Grid view.
-        if (mPropertyModel != null) {
-            RecordUserAction.record("StartSurface.Shown");
-
-            // update incognito
-            mIsIncognito = mTabModelSelector.isIncognitoSelected();
-            mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
-            updateBackgroundColor(mPropertyModel);
-
-            // if OverviewModeState is NOT_SHOWN, default to SHOWING_TABSWITCHER. This should only
-            // happen when entering Start through SwipeDown gesture on URL bar.
-            if (mStartSurfaceState == StartSurfaceState.NOT_SHOWN) {
-                mStartSurfaceState = StartSurfaceState.SHOWING_TABSWITCHER;
-            }
-
-            // set OverviewModeState
-            @StartSurfaceState int shownState = computeOverviewStateShown();
-            assert (isShownState(shownState));
-            setStartSurfaceState(shownState);
-
-            // Make sure ExploreSurfaceCoordinator is built before the explore surface is showing
-            // by default.
-            if (mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE)
-                    && mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR) == null
-                    && !mActivityStateChecker.isFinishingOrDestroyed()
-                    && mExploreSurfaceCoordinatorFactory != null) {
-                createAndSetExploreSurfaceCoordinator();
-            }
-            mTabModelSelector.addObserver(mTabModelSelectorObserver);
-
-            if (mBrowserControlsObserver != null) {
-                mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
-            }
-
-            mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
-            if (mOmniboxStub != null) {
-                mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
-            }
-        }
-        mayRecordHomepageSessionBegin();
-        if (mController != null) {
-            mController.showTabSwitcherView(animate);
-        }
-
-        maybeScheduleSpareTabCreation();
     }
 
     /**
@@ -1017,8 +815,8 @@ class StartSurfaceMediator
             boolean ret = mController.onBackPressed();
             assert !BackPressManager.isEnabled() || ret
                     : String.format(
-                            "Wrong back press state: %s, start surface: %s",
-                            mController.getClass().getName(), mStartSurfaceState);
+                            "Wrong back press state: %s, is start surface shown : %s",
+                            mController.getClass().getName(), mIsHomepageShown);
             return ret;
         }
 
@@ -1036,8 +834,8 @@ class StartSurfaceMediator
             boolean ret = mController.onBackPressed();
             assert !BackPressManager.isEnabled() || ret
                     : String.format(
-                            "Wrong back press state: %s, start surface: %s",
-                            mController.getClass().getName(), mStartSurfaceState);
+                            "Wrong back press state: %s, is start surface shown : %s",
+                            mController.getClass().getName(), mIsHomepageShown);
             return ret;
         }
         return false;
@@ -1089,21 +887,6 @@ class StartSurfaceMediator
         }
     }
 
-    @Deprecated
-    // TODO(1347089): Removes this test after the refactoring is enabled by default. This is because
-    // the StartSurfaceState will go away.
-    boolean isShowingStartSurfaceHomepage() {
-        // When state is SHOWN_HOMEPAGE or SHOWING_HOMEPAGE or SHOWING_START, state surface homepage
-        // is showing. When state is StartSurfaceState.SHOWING_PREVIOUS and the previous state is
-        // SHOWN_HOMEPAGE or NOT_SHOWN, homepage is showing.
-        return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                || mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
-                || mStartSurfaceState == StartSurfaceState.SHOWING_START
-                || (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS
-                        && (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                                || mPreviousStartSurfaceState == StartSurfaceState.NOT_SHOWN));
-    }
-
     // Implements TabSwitcher.TabSwitcherViewObserver.
     @Override
     public void startedShowing() {
@@ -1148,7 +931,6 @@ class StartSurfaceMediator
             if (mBrowserControlsObserver != null) {
                 mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
             }
-            setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
             RecordUserAction.record("StartSurface.Hidden");
             mIsHomepageShown = false;
         }
@@ -1248,7 +1030,6 @@ class StartSurfaceMediator
 
         mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
         updateBackgroundColor(mPropertyModel);
-        setOverviewStateInternal();
 
         // TODO(crbug.com/1021399): This looks not needed since there is no way to change incognito
         // mode when focusing on the omnibox and incognito mode change won't affect the visibility
@@ -1294,11 +1075,7 @@ class StartSurfaceMediator
      * @param height The height of the top toolbar placeholder.
      */
     private void updateTopToolbarPlaceholderHeight() {
-        mPropertyModel.set(
-                TOP_TOOLBAR_PLACEHOLDER_HEIGHT,
-                mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
-                        ? 0
-                        : getTopToolbarPlaceholderHeight());
+        mPropertyModel.set(TOP_TOOLBAR_PLACEHOLDER_HEIGHT, getTopToolbarPlaceholderHeight());
     }
 
     private void setTabCardVisibility(boolean isVisible) {
@@ -1387,45 +1164,6 @@ class StartSurfaceMediator
         mPropertyModel.set(IS_SURFACE_BODY_VISIBLE, !isVisible);
     }
 
-    // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
-    // two different things, audit the wording usage and see if we can rename this method to
-    // computeStartSurfaceState.
-    private @StartSurfaceState int computeOverviewStateShown() {
-        if (mIsStartSurfaceEnabled) {
-            if (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS) {
-                assert mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                        || mPreviousStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
-                        || mPreviousStartSurfaceState == StartSurfaceState.NOT_SHOWN;
-
-                // This class would be re-instantiated after changing theme, then
-                // mPreviousOverviewModeState will be reset to OverviewModeState.NOT_SHOWN. We
-                // default to OverviewModeState.SHOWN_HOMEPAGE in this case when SHOWING_PREVIOUS.
-                return mPreviousStartSurfaceState == StartSurfaceState.NOT_SHOWN
-                        ? StartSurfaceState.SHOWN_HOMEPAGE
-                        : mPreviousStartSurfaceState;
-            } else if (mStartSurfaceState == StartSurfaceState.SHOWING_START) {
-                if (mTabModelSelector.isIncognitoSelected()) {
-                    return StartSurfaceState.SHOWN_TABSWITCHER;
-                }
-                return StartSurfaceState.SHOWN_HOMEPAGE;
-            } else if (mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER) {
-                return StartSurfaceState.SHOWN_TABSWITCHER;
-            } else if (mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE) {
-                return StartSurfaceState.SHOWN_HOMEPAGE;
-            } else {
-                assert (isShownState(mStartSurfaceState)
-                        || mStartSurfaceState == StartSurfaceState.NOT_SHOWN);
-                return mStartSurfaceState;
-            }
-        }
-        return StartSurfaceState.DISABLED;
-    }
-
-    private boolean isShownState(@StartSurfaceState int state) {
-        return state == StartSurfaceState.SHOWN_HOMEPAGE
-                || state == StartSurfaceState.SHOWN_TABSWITCHER;
-    }
-
     private int getNormalTabCount() {
         if (!mTabModelSelector.isTabStateInitialized()) {
             return ChromeSharedPreferences.getInstance()
@@ -1459,12 +1197,6 @@ class StartSurfaceMediator
     boolean shouldInterceptBackPress() {
         if (mController != null && mController.isDialogVisible()) {
             return true;
-        }
-
-        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE && !mIsIncognito) {
-                return true;
-            }
         }
 
         if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {

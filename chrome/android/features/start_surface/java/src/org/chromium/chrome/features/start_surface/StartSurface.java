@@ -136,12 +136,6 @@ public interface StartSurface {
      */
     boolean onBackPressed();
 
-    /**
-     * @return The current {@link StartSurfaceState}.
-     */
-    @StartSurfaceState
-    int getStartSurfaceState();
-
     /*
      * Returns whether start surface homepage is showing. Compared with
      * isShowingStartSurfaceHomepage(), this API only checks state

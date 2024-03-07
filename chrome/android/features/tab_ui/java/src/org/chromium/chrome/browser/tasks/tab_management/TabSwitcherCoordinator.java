@@ -450,11 +450,6 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    public void refreshTabList() {
-        mMediator.refreshTabList();
-    }
-
-    @Override
     public int getTabListTopOffset() {
         return mTabListCoordinator.getTabListTopOffset();
     }
@@ -475,11 +470,6 @@ public class TabSwitcherCoordinator
         // should listen for |requestFocusOnCurrentTab| signal implicitly and apply changes. This
         // would require refactoring TabSwitcher.TabListDelegate and its implementation.
         mMediator.requestAccessibilityFocusOnCurrentTab();
-    }
-
-    @Override
-    public void prepareTabGridView() {
-        mTabListCoordinator.prepareTabGridView();
     }
 
     @Override

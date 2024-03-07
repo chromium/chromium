@@ -157,12 +157,6 @@ public interface TabSwitcher {
         int getResourceId();
 
         /**
-         * Call before showing the Grid Tab Switcher from Start Surface with refactor disabled to
-         * properly register the layout changed listener.
-         */
-        void prepareTabGridView();
-
-        /**
          * Before calling {@link Controller#showTabSwitcherView} to start showing the
          * TabSwitcher {@link TabListRecyclerView}, call this to populate it without making it
          * visible.
@@ -251,7 +245,4 @@ public interface TabSwitcher {
      *     animation is complete.
      */
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
-
-    /** Refresh the tab switcher's tab list to display any out-of-band updates properly. */
-    void refreshTabList();
 }

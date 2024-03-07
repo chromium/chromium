@@ -107,7 +107,6 @@ public class StartSurfaceCoordinatorUnitTest {
     @Test
     @MediumTest
     public void testFeedSwipeLayoutVisibility() {
-        assert mCoordinator.getStartSurfaceState() == StartSurfaceState.NOT_SHOWN;
         Assert.assertEquals(
                 View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
 

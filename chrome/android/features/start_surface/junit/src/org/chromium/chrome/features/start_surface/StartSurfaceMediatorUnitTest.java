@@ -289,7 +289,7 @@ public class StartSurfaceMediatorUnitTest {
                 .addTabSwitcherViewObserver(
                         mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
+        assertFalse(mediator.isHomepageShown());
         // Sets the current StartSurfaceState to SHOWING_START before calling the
         // {@link StartSurfaceMediator#showOverview()}. This is because if the current
         // StartSurfaceState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
@@ -492,7 +492,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         StartSurfaceMediator mediator = createStartSurfaceMediator();
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
+        assertFalse(mediator.isHomepageShown());
 
         doReturn(2).when(mNormalTabModel).getCount();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -555,7 +555,7 @@ public class StartSurfaceMediatorUnitTest {
         verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
+        assertFalse(mediator.isHomepageShown());
 
         doReturn(30).when(mBrowserControlsStateProvider).getBottomControlsHeight();
         doReturn(2).when(mNormalTabModel).getCount();
@@ -686,21 +686,6 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void defaultStateSinglePane() {
-        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        StartSurfaceMediator mediator = createStartSurfaceMediator();
-        verify(mSingleTabSwitcherModuleController)
-                .addTabSwitcherViewObserver(
-                        mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
-
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
-        mediator.showOverview(false);
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
-    }
-
-    @Test
     public void showAndHideTabSwitcherToolbarTabswitcher() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -710,7 +695,7 @@ public class StartSurfaceMediatorUnitTest {
                 .addTabSwitcherViewObserver(
                         mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
+        assertFalse(mediator.isHomepageShown());
 
         showHomepageAndVerify(mediator);
         verify(mSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
@@ -743,7 +728,7 @@ public class StartSurfaceMediatorUnitTest {
                 .verify(mSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
+        assertFalse(mediator.isHomepageShown());
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
         when(mExploreSurfaceCoordinatorFactory.create(anyBoolean(), anyBoolean(), anyInt()))
@@ -816,7 +801,7 @@ public class StartSurfaceMediatorUnitTest {
                 .addTabSwitcherViewObserver(
                         mCardTabSwitcherModuleVisibilityObserverCaptor.capture());
 
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
+        assertFalse(mediator.isHomepageShown());
         // Sets the current StartSurfaceState to SHOWING_START before calling the
         // {@link StartSurfaceMediator#showOverview()}. This is because if the current
         // StartSurfaceState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in

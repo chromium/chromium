@@ -78,9 +78,4 @@ public class TabSwitcherPaneAdapter implements TabSwitcher {
     public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         mTabSwitcherPane.showQuickDeleteAnimation(onAnimationEnd, tabs);
     }
-
-    @Override
-    public void refreshTabList() {
-        mTabSwitcherPane.showAllTabs();
-    }
 }

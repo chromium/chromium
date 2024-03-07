@@ -32930,14 +32930,18 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="StartSurfaceState">
-  <int value="0" label="NOT_SHOWN">The Start surface isn't shown.</int>
+  <int value="0" label="NOT_SHOWN">
+    (obsolete) The Start surface isn't shown.
+  </int>
   <int value="1" label="SHOWN_HOMEPAGE">
-    The Start surface homepage is visible.
+    (obsolete) The Start surface homepage is visible.
   </int>
   <int value="2" label="SHOWN_TABSWITCHER">
-    The grid Tab switcher is visible.
+    (obsolete) The grid Tab switcher is visible.
   </int>
-  <int value="3" label="DISABLED">The Start surface is disabled.</int>
+  <int value="3" label="DISABLED">
+    (obsolete) The Start surface is disabled.
+  </int>
   <int value="4" label="SHOWING_TABSWITCHER">
     The Tab switcher is shown when the Tab switcher button on the toolbar is
     clicked.

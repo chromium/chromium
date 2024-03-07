@@ -385,9 +385,7 @@ public class InstantStartTest {
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(
-                            startSurfaceCoordinator.getStartSurfaceState(),
-                            StartSurfaceState.NOT_SHOWN);
+                    Assert.assertFalse(startSurfaceCoordinator.isHomepageShown());
                 });
     }
 

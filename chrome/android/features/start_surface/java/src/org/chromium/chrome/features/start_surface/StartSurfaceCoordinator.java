@@ -460,11 +460,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public int getStartSurfaceState() {
-        return mStartSurfaceMediator.getStartSurfaceState();
-    }
-
-    @Override
     public boolean isHomepageShown() {
         return mStartSurfaceMediator.isHomepageShown();
     }

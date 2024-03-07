@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface StartSurfaceState {
-    int NOT_SHOWN = 0;
+    @Deprecated int NOT_SHOWN = 0;
 
     // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
     // two different things, let's audit all the state here.
@@ -39,7 +39,7 @@ public @interface StartSurfaceState {
     @Deprecated int SHOWN_HOMEPAGE = 1;
     @Deprecated int SHOWN_TABSWITCHER = 2;
 
-    int DISABLED = 3;
+    @Deprecated int DISABLED = 3;
 
     // SHOWING states are intermediary states that will immediately transition
     // to one of the SHOWN states when overview is/becomes visible.
