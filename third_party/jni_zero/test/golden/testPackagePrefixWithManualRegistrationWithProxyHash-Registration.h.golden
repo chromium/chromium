@@ -19,17 +19,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 
-// Step 1: Forward declarations (classes).
-
-extern const char kClassPath_java_lang_String[];
-extern std::atomic<jclass> g_java_lang_String_clazz;
-#ifndef java_lang_String_clazz_defined
-#define java_lang_String_clazz_defined
-inline jclass java_lang_String_clazz(JNIEnv* env) {
-  return jni_zero::internal::LazyGetClass(env, kClassPath_java_lang_String,
-      &g_java_lang_String_clazz);
-}
-#endif
+// Step 1: Class Accessors.
 
 
 // Step 2: Forward declarations (methods).
@@ -189,8 +179,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_this_is_a_package_prefix_J_N
       kMethods_this_is_a_package_prefix_J_N,
       number_of_methods) < 0) {
 
-    jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(),
-        __FILE__);
+    jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
 

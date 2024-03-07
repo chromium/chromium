@@ -17,51 +17,34 @@
 #include "third_party/jni_zero/jni_zero_helper.h"
 
 
-// Step 1: Forward declarations.
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_org_jni_1zero_SampleForTests[];
-const char kClassPath_org_jni_1zero_SampleForTests[] = "org/jni_zero/SampleForTests";
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
-    kClassPath_org_jni_1zero_SampleForTests_00024InnerStructA[];
-const char kClassPath_org_jni_1zero_SampleForTests_00024InnerStructA[] =
-    "org/jni_zero/SampleForTests$InnerStructA";
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
-    kClassPath_org_jni_1zero_SampleForTests_00024InnerStructB[];
-const char kClassPath_org_jni_1zero_SampleForTests_00024InnerStructB[] =
-    "org/jni_zero/SampleForTests$InnerStructB";
-// Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass> g_org_jni_1zero_SampleForTests_clazz(nullptr);
+// Step 1: Class Accessors.
 #ifndef org_jni_1zero_SampleForTests_clazz_defined
 #define org_jni_1zero_SampleForTests_clazz_defined
 inline jclass org_jni_1zero_SampleForTests_clazz(JNIEnv* env) {
-  return jni_zero::internal::LazyGetClass(env, kClassPath_org_jni_1zero_SampleForTests,
-      &g_org_jni_1zero_SampleForTests_clazz);
+  static const char kClassName[] = "org/jni_zero/SampleForTests";
+  static std::atomic<jclass> cached_class;
+  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
-// Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
-    g_org_jni_1zero_SampleForTests_00024InnerStructA_clazz(nullptr);
+
 #ifndef org_jni_1zero_SampleForTests_00024InnerStructA_clazz_defined
 #define org_jni_1zero_SampleForTests_00024InnerStructA_clazz_defined
 inline jclass org_jni_1zero_SampleForTests_00024InnerStructA_clazz(JNIEnv* env) {
-  return jni_zero::internal::LazyGetClass(env,
-      kClassPath_org_jni_1zero_SampleForTests_00024InnerStructA,
-      &g_org_jni_1zero_SampleForTests_00024InnerStructA_clazz);
+  static const char kClassName[] = "org/jni_zero/SampleForTests$InnerStructA";
+  static std::atomic<jclass> cached_class;
+  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
-// Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
-    g_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(nullptr);
+
 #ifndef org_jni_1zero_SampleForTests_00024InnerStructB_clazz_defined
 #define org_jni_1zero_SampleForTests_00024InnerStructB_clazz_defined
 inline jclass org_jni_1zero_SampleForTests_00024InnerStructB_clazz(JNIEnv* env) {
-  return jni_zero::internal::LazyGetClass(env,
-      kClassPath_org_jni_1zero_SampleForTests_00024InnerStructB,
-      &g_org_jni_1zero_SampleForTests_00024InnerStructB_clazz);
+  static const char kClassName[] = "org/jni_zero/SampleForTests$InnerStructB";
+  static std::atomic<jclass> cached_class;
+  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
+
 
 
 namespace jni_zero {

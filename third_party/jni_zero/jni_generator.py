@@ -26,6 +26,7 @@ _BUILD_ANDROID_GYP = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp')
 # (if set); item 2 is system libraries.
 sys.path.insert(1, _BUILD_ANDROID_GYP)
 
+from codegen import header_common
 from codegen import placeholder_gen_jni_java
 from codegen import placeholder_java_type
 from codegen import proxy_impl_java
@@ -49,6 +50,7 @@ _WRAPPERS_BY_INDENT = [
 class NativeMethod:
   """Describes a C/C++ method that is called by Java."""
   def __init__(self, parsed_method, *, java_class, is_proxy):
+    self.java_class = java_class
     self.name = parsed_method.name
     self.signature = parsed_method.signature
     self.is_proxy = is_proxy
@@ -97,7 +99,7 @@ class NativeMethod:
 
 
 class CalledByNative:
-  """Describes a java method exported to c/c++"""
+  """Describes a Java method that is called from C++"""
   def __init__(self,
                parsed_called_by_native,
                *,
@@ -266,49 +268,23 @@ def RemoveIndentedEmptyLines(string):
   return re.sub('^(?: {2})+$\n', '', string, flags=re.MULTILINE)
 
 
-class JNIFromJavaP:
-  """Uses 'javap' to parse a .class file and generate the JNI header file."""
-  def __init__(self, parsed_file, options):
-    self.options = options
-    self.type_resolver = parsed_file.type_resolver
-
-    called_by_natives = []
-    for parsed_called_by_native in parsed_file.called_by_natives:
-      called_by_natives.append(
-          CalledByNative(parsed_called_by_native,
-                         unchecked=options.unchecked_exceptions,
-                         is_system_class=True))
-    _AssignMethodIdFunctionNames(parsed_file.type_resolver, called_by_natives)
-    self.called_by_natives = called_by_natives
-
-    self.constant_fields = parsed_file.constant_fields
-    self.jni_namespace = options.namespace or 'JNI_' + self.java_class.name
-
-  def GetContent(self):
-    # We pass in an empty string for the module (which will make the JNI use the
-    # base module's files) for all javap-derived JNI. There may be a way to get
-    # the module from a jar file, but it's not needed right now.
-    generator = InlHeaderFileGenerator('', self.jni_namespace, self.java_class,
-                                       [], self.called_by_natives,
-                                       self.constant_fields, self.type_resolver,
-                                       self.options)
-    return generator.GetContent()
-
-  @property
-  def java_class(self):
-    return self.type_resolver.java_class
-
-
-class JNIFromJavaSource:
+class JniObject:
   """Uses the given java source file to generate the JNI header file."""
-  def __init__(self, parsed_file, options):
+
+  def __init__(self, parsed_file, options, *, from_javap):
     self.options = options
     self.filename = parsed_file.filename
     self.type_resolver = parsed_file.type_resolver
-    self.jni_namespace = parsed_file.jni_namespace or options.namespace
     self.module_name = parsed_file.module_name
     self.proxy_interface = parsed_file.proxy_interface
     self.proxy_visibility = parsed_file.proxy_visibility
+    self.constant_fields = parsed_file.constant_fields
+
+    # These are different only for legacy reasons.
+    if from_javap:
+      self.jni_namespace = options.namespace or 'JNI_' + self.java_class.name
+    else:
+      self.jni_namespace = parsed_file.jni_namespace or options.namespace
 
     natives = []
     for parsed_method in parsed_file.proxy_methods:
@@ -327,10 +303,21 @@ class JNIFromJavaSource:
     called_by_natives = []
     for parsed_called_by_native in parsed_file.called_by_natives:
       called_by_natives.append(
-          CalledByNative(parsed_called_by_native, is_system_class=False))
+          CalledByNative(parsed_called_by_native,
+                         unchecked=from_javap and options.unchecked_exceptions,
+                         is_system_class=from_javap))
 
     _AssignMethodIdFunctionNames(parsed_file.type_resolver, called_by_natives)
     self.called_by_natives = called_by_natives
+
+    # from-jar does not define these flags.
+    if natives:
+      self.final_gen_jni_class = proxy.get_gen_jni_class(
+          short=options.use_proxy_hash or options.enable_jni_multiplexing,
+          name_prefix=self.module_name,
+          package_prefix=options.package_prefix)
+    else:
+      self.final_gen_jni_class = None
 
   @property
   def java_class(self):
@@ -347,182 +334,51 @@ class JNIFromJavaSource:
   def RemoveTestOnlyNatives(self):
     self.natives = [n for n in self.natives if not n.is_test_only]
 
-  def GetContent(self):
-    generator = InlHeaderFileGenerator(self.module_name, self.jni_namespace,
-                                       self.java_class, self.natives,
-                                       self.called_by_natives, [],
-                                       self.type_resolver, self.options)
-    return generator.GetContent()
-
-
-class HeaderFileGeneratorHelper(object):
-  """Include helper methods for header generators."""
-  def __init__(self,
-               java_class,
-               *,
-               module_name,
-               package_prefix=None,
-               split_name=None,
-               use_proxy_hash=False,
-               enable_jni_multiplexing=False):
-    self.class_name = java_class.name
-    self.module_name = module_name
-    self.fully_qualified_class = java_class.full_name_with_slashes
-    self.use_proxy_hash = use_proxy_hash
-    self.package_prefix = package_prefix
-    self.split_name = split_name
-    self.enable_jni_multiplexing = enable_jni_multiplexing
-    self.gen_jni_class = proxy.get_gen_jni_class(short=use_proxy_hash
-                                                 or enable_jni_multiplexing,
-                                                 name_prefix=module_name,
-                                                 package_prefix=package_prefix)
-
   def GetStubName(self, native):
-    """Return the name of the stub function for this native method.
-
-    Args:
-      native: the native dictionary describing the method.
-
-    Returns:
-      A string with the stub function name (used by the JVM).
-    """
+    """Return the name of the stub function for a native method."""
     if native.is_proxy:
-      if self.use_proxy_hash:
+      if self.options.use_proxy_hash:
         method_name = common.escape_class_name(native.hashed_proxy_name)
       else:
         method_name = common.escape_class_name(native.proxy_name)
       return 'Java_%s_%s' % (common.escape_class_name(
-          self.gen_jni_class.full_name_with_slashes), method_name)
+          self.final_gen_jni_class.full_name_with_slashes), method_name)
 
-    template = Template('Java_${JAVA_NAME}_native${NAME}')
-
-    java_name = self.fully_qualified_class
-
-    values = {
-        'NAME': native.cpp_name,
-        'JAVA_NAME': common.escape_class_name(java_name)
-    }
-    return template.substitute(values)
-
-  def GetUniqueClasses(self, origin):
-    """Collects java classes used in cpp header file.
-
-    This is GEN_JNI class for proxy natives, the java class we are generating
-    the header file for, the java (inner) classes that have the @CalledByNative
-    methods and also the array types for object arrays (e.g. String for
-    String[]) which are annotated by @JniType.
-
-    Args:
-      origin: A list of method objects (either NativeNethod or CalledByNative).
-
-    Returns:
-      {simple_name: fqn_with_slashes} for referenced java classes.
-    """
-    ret = collections.OrderedDict()
-    for entry in origin:
-      if isinstance(entry, NativeMethod) and entry.is_proxy:
-        ret[self.gen_jni_class.name] = self.gen_jni_class.full_name_with_slashes
-        return_type = entry.return_type
-        if (not return_type.is_primitive_array()
-            and return_type.converted_type()):
-          simple_name = return_type.java_class.name
-          ret[simple_name] = return_type.java_class.full_name_with_slashes
-        continue
-      ret[self.class_name] = self.fully_qualified_class
-
-      if isinstance(entry, CalledByNative):
-        class_name = entry.java_class.name
-        jni_class_path = entry.java_class.full_name_with_slashes
-      else:
-        class_name = self.class_name
-        jni_class_path = self.fully_qualified_class
-      ret[class_name] = jni_class_path
-    return ret
-
-  def GetClassPathLines(self, classes, declare_only=False):
-    """Returns the ClassPath constants."""
-    ret = []
-    if declare_only:
-      template = Template("""
-extern const char kClassPath_${JAVA_CLASS}[];
-""")
-    else:
-      template = Template("""
-JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_${JAVA_CLASS}[];
-const char kClassPath_${JAVA_CLASS}[] = \
-"${JNI_CLASS_PATH}";
-""")
-
-    for full_clazz in classes.values():
-      values = {
-          'JAVA_CLASS': common.escape_class_name(full_clazz),
-          'JNI_CLASS_PATH': full_clazz,
-      }
-      # Since all proxy methods use the same class, defining this in every
-      # header file would result in duplicated extern initializations.
-      if full_clazz != self.gen_jni_class.full_name_with_slashes:
-        ret += [template.substitute(values)]
-
-    class_getter = """\
-#ifndef ${JAVA_CLASS}_clazz_defined
-#define ${JAVA_CLASS}_clazz_defined
-inline jclass ${JAVA_CLASS}_clazz(JNIEnv* env) {
-  return jni_zero::internal::LazyGetClass(env, kClassPath_${JAVA_CLASS}, \
-${MAYBE_SPLIT_NAME_ARG}&g_${JAVA_CLASS}_clazz);
-}
-#endif
-"""
-    if declare_only:
-      template = Template("""\
-extern std::atomic<jclass> g_${JAVA_CLASS}_clazz;
-""" + class_getter)
-    else:
-      template = Template("""\
-// Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
-""" + class_getter)
-
-    for full_clazz in classes.values():
-      values = {
-          'JAVA_CLASS':
-          common.escape_class_name(full_clazz),
-          'MAYBE_SPLIT_NAME_ARG':
-          (('"%s", ' % self.split_name) if self.split_name else '')
-      }
-      # Since all proxy methods use the same class, defining this in every
-      # header file would result in duplicated extern initializations.
-      if full_clazz != self.gen_jni_class.full_name_with_slashes:
-        ret += [template.substitute(values)]
-
-    return ''.join(ret)
+    escaped_name = common.escape_class_name(
+        self.java_class.full_name_with_slashes)
+    return f'Java_{escaped_name}_native{native.cpp_name}'
 
 
-class InlHeaderFileGenerator(object):
-  """Generates an inline header file for JNI integration."""
-  def __init__(self, module_name, namespace, java_class, natives,
-               called_by_natives, constant_fields, type_resolver, options):
-    self.namespace = namespace
+def _CollectReferencedClasses(jni_obj):
+  ret = set()
+  # @CalledByNatives can appear on nested classes, so check each one.
+  for called_by_native in jni_obj.called_by_natives:
+    ret.add(called_by_native.java_class)
+
+  # Find any classes needed for @JniType conversions.
+  for native in jni_obj.proxy_natives:
+    return_type = native.return_type
+    if not return_type.is_primitive_array() and return_type.converted_type():
+      ret.add(return_type.java_class)
+  return sorted(ret)
+
+
+class InlHeaderFileGenerator:
+
+  def __init__(self, jni_obj):
+    self.jni_obj = jni_obj
+    self.namespace = jni_obj.jni_namespace
+    java_class = jni_obj.java_class
     self.java_class = java_class
     self.class_name = java_class.name
-    self.natives = natives
-    self.called_by_natives = called_by_natives
-    self.header_guard = java_class.full_name_with_slashes.replace('/',
-                                                                  '_') + '_JNI'
-    self.constant_fields = constant_fields
-    self.type_resolver = type_resolver
-    self.options = options
-
-    # from-jar does not define these flags.
-    kwargs = {}
-    if hasattr(options, 'use_proxy_hash'):
-      kwargs['use_proxy_hash'] = options.use_proxy_hash
-      kwargs['enable_jni_multiplexing'] = options.enable_jni_multiplexing
-      kwargs['package_prefix'] = options.package_prefix
-
-    self.helper = HeaderFileGeneratorHelper(java_class,
-                                            module_name=module_name,
-                                            split_name=options.split_name,
-                                            **kwargs)
+    self.module_name = jni_obj.module_name
+    self.natives = jni_obj.natives
+    self.called_by_natives = jni_obj.called_by_natives
+    self.header_guard = (java_class.full_name_with_slashes.replace('/', '_') +
+                         '_JNI')
+    self.constant_fields = jni_obj.constant_fields
+    self.type_resolver = jni_obj.type_resolver
+    self.options = jni_obj.options
 
   def GetContent(self):
     """Returns the content of the JNI binding file."""
@@ -545,8 +401,8 @@ class InlHeaderFileGenerator(object):
 #include "third_party/jni_zero/jni_export.h"
 ${INCLUDES}
 
-// Step 1: Forward declarations.
-$CLASS_PATH_DEFINITIONS
+// Step 1: Class Accessors.
+${CLASS_ACCESSORS}
 
 namespace jni_zero {
 
@@ -565,13 +421,15 @@ $METHOD_STUBS
 
 #endif  // ${HEADER_GUARD}
 """)
+    java_classes = _CollectReferencedClasses(self.jni_obj)
     values = {
         'SCRIPT_NAME':
         GetScriptName(),
         'FULLY_QUALIFIED_CLASS':
         self.java_class.full_name_with_slashes,
-        'CLASS_PATH_DEFINITIONS':
-        self.GetClassPathDefinitionsString(),
+        'CLASS_ACCESSORS':
+        header_common.class_accessor_snippet(java_classes,
+                                             self.jni_obj.module_name),
         'CONVERSION_FUNCTION_DECLARATIONS':
         self.GetConversionFunctionDeclarationsString(),
         'CONSTANT_FIELDS':
@@ -595,11 +453,6 @@ $METHOD_STUBS
             [open_namespace, constant_fields, close_namespace])
 
     return WrapOutput(template.substitute(values))
-
-  def GetClassPathDefinitionsString(self):
-    classes = self.helper.GetUniqueClasses(self.called_by_natives)
-    classes.update(self.helper.GetUniqueClasses(self.natives))
-    return self.helper.GetClassPathLines(classes)
 
   def GetConstantFieldsString(self):
     if not self.constant_fields:
@@ -860,7 +713,7 @@ $METHOD_STUBS
         'PARAMS_IN_CALL': params_in_call,
         'POST_CALL': post_call,
         'CONVERSION_CALLS': '\n  '.join(conversion_calls),
-        'STUB_NAME': self.helper.GetStubName(native),
+        'STUB_NAME': self.jni_obj.GetStubName(native),
         'POST_RETURN_STATEMENT': post_return_statement,
         'MAYBE_RETURN_PHRASE': return_phrase,
     }
@@ -1127,7 +980,7 @@ def _ParseClassFiles(jar_file, class_files, args):
         class_file = os.path.join(temp_dir, class_file)
         contents = _RunJavap(args.javap, class_file)
         parsed_file = parse.parse_javap(class_file, contents)
-        ret.append(JNIFromJavaP(parsed_file, args))
+        ret.append(JniObject(parsed_file, args, from_javap=True))
   return ret
 
 
@@ -1191,7 +1044,8 @@ def _CreatePlaceholderSrcJar(srcjar_path, gen_jni_class, jni_objs, *,
 def _WriteHeaders(jni_objs, output_names, output_dir):
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
-    content = jni_obj.GetContent()
+    content = InlHeaderFileGenerator(jni_obj).GetContent()
+
     with common.atomic_output(output_file, 'w') as f:
       f.write(content)
 
@@ -1207,7 +1061,7 @@ def GenerateFromSource(parser, args):
         parse.parse_java_file(f, package_prefix=args.package_prefix)
         for f in args.input_files
     ]
-    jni_objs = [JNIFromJavaSource(x, args) for x in parsed_files]
+    jni_objs = [JniObject(x, args, from_javap=False) for x in parsed_files]
     _CheckNotEmpty(jni_objs)
     _CheckSameModule(jni_objs)
   except parse.ParseError as e:

@@ -17,7 +17,7 @@
 #include "third_party/jni_zero/jni_zero_helper.h"
 
 
-// Step 1: Forward declarations.
+// Step 1: Class Accessors.
 
 
 namespace jni_zero {

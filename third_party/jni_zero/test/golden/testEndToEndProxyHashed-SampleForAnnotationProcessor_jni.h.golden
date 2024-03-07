@@ -17,19 +17,16 @@
 #include "third_party/jni_zero/jni_zero_helper.h"
 
 
-// Step 1: Forward declarations.
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_java_lang_String[];
-const char kClassPath_java_lang_String[] = "java/lang/String";
-// Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass> g_java_lang_String_clazz(nullptr);
+// Step 1: Class Accessors.
 #ifndef java_lang_String_clazz_defined
 #define java_lang_String_clazz_defined
 inline jclass java_lang_String_clazz(JNIEnv* env) {
-  return jni_zero::internal::LazyGetClass(env, kClassPath_java_lang_String,
-      &g_java_lang_String_clazz);
+  static const char kClassName[] = "java/lang/String";
+  static std::atomic<jclass> cached_class;
+  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
+
 
 
 namespace jni_zero {
