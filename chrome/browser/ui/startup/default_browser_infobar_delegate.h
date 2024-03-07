@@ -22,8 +22,9 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a default browser infobar and delegate and adds the infobar to
   // |infobar_manager|.
-  static void Create(infobars::ContentInfoBarManager* infobar_manager,
-                     Profile* profile);
+  static infobars::InfoBar* Create(
+      infobars::ContentInfoBarManager* infobar_manager,
+      Profile* profile);
 
   DefaultBrowserInfoBarDelegate(const DefaultBrowserInfoBarDelegate&) = delete;
   DefaultBrowserInfoBarDelegate& operator=(

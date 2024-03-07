@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,7 +23,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -41,6 +44,13 @@ void ResetCheckDefaultBrowserPref(const base::FilePath& profile_path) {
 }
 
 void ShowPrompt() {
+  // When the prompt refresh feature is enabled, use the
+  // DefaultBrowserPromptManager to show the prompt;
+  if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh)) {
+    DefaultBrowserPromptManager::GetInstance()->ShowPrompt();
+    return;
+  }
+
   // Show the default browser request prompt in the most recently active,
   // visible, tabbed browser. Do not show the prompt if no such browser exists.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {

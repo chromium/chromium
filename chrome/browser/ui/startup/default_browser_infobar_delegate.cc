@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,10 +25,10 @@
 namespace chrome {
 
 // static
-void DefaultBrowserInfoBarDelegate::Create(
+infobars::InfoBar* DefaultBrowserInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     Profile* profile) {
-  infobar_manager->AddInfoBar(
+  return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::make_unique<DefaultBrowserInfoBarDelegate>(
           base::PassKey<DefaultBrowserInfoBarDelegate>(), profile)));
 }
@@ -83,6 +84,8 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
                             DISMISS_INFO_BAR,
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
+
+  ConfirmInfoBarDelegate::InfoBarDismissed();
 }
 
 std::u16string DefaultBrowserInfoBarDelegate::GetMessageText() const {
@@ -118,7 +121,8 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
   // and it will be automatically freed once all its tasks have finished.
   base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
       ->StartSetAsDefault(base::NullCallback());
-  return true;
+
+  return ConfirmInfoBarDelegate::Accept();
 }
 
 }  // namespace chrome

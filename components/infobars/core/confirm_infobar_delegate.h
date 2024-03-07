@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -36,8 +37,15 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   ConfirmInfoBarDelegate& operator=(const ConfirmInfoBarDelegate&) = delete;
   ~ConfirmInfoBarDelegate() override;
 
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnAccept() {}
+    virtual void OnDismiss() {}
+  };
+
   // InfoBarDelegate:
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
+  void InfoBarDismissed() override;
   ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate() override;
 
   // Returns the title string to be displayed for the InfoBar.
@@ -91,8 +99,14 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // in handling this call something triggers the infobar to begin closing.
   virtual bool ExtraButtonPressed();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(const Observer* observer);
+
  protected:
   ConfirmInfoBarDelegate();
+
+ private:
+  base::ObserverList<Observer> observers_;
 };
 
 #endif  // COMPONENTS_INFOBARS_CORE_CONFIRM_INFOBAR_DELEGATE_H_
