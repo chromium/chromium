@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -136,8 +138,11 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
  private:
   const std::string GetFileSystemId() const;
   void OnTimer();
+  void OnContentCacheInitialized(
+      base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache);
+
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
-  raw_ptr<CacheManager, DanglingUntriaged> cache_manager_;  // Not owned.
+  std::unique_ptr<ContentCache> content_cache_;
   base::MetronomeTimer timer_;
   int file_manager_watchers_ = 0;
 

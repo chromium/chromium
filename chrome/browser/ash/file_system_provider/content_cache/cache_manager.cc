@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 
 #include "base/files/file_util.h"
+#include "base/types/expected.h"
 
 namespace ash::file_system_provider {
 
@@ -21,16 +22,24 @@ base::File::Error CreateProviderDirectory(const base::FilePath& path) {
 
 }  // namespace
 
-CacheManager::CacheManager(const base::FilePath& profile_path)
-    : profile_path_(profile_path) {}
+CacheManager::CacheManager(const base::FilePath& profile_path,
+                           bool in_memory_only)
+    : profile_path_(profile_path), in_memory_only_(in_memory_only) {}
 
 CacheManager::~CacheManager() = default;
 
 void CacheManager::InitializeForProvider(
     const base::FilePath& provider_mount_path,
-    FileErrorCallback callback) {
+    FileErrorOrContentCacheCallback callback) {
   if (provider_mount_path.empty()) {
-    std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL);
+    std::move(callback).Run(
+        base::unexpected(base::File::FILE_ERROR_INVALID_URL));
+    return;
+  }
+
+  if (in_memory_only_) {
+    OnInitializeForProvider(std::move(callback), provider_mount_path,
+                            base::File::FILE_OK);
     return;
   }
 
@@ -39,18 +48,23 @@ void CacheManager::InitializeForProvider(
       base::BindOnce(&CreateProviderDirectory,
                      profile_path_.Append(kFspContentCacheDirName)
                          .Append(provider_mount_path)),
-      base::BindOnce(&CacheManager::OnInitialized,
+      base::BindOnce(&CacheManager::OnInitializeForProvider,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      provider_mount_path));
 }
 
-void CacheManager::OnInitialized(FileErrorCallback callback,
-                                 base::FilePath mount_path,
-                                 base::File::Error result) {
-  if (result == base::File::FILE_OK) {
-    initialized_providers_.emplace(mount_path);
+void CacheManager::OnInitializeForProvider(
+    FileErrorOrContentCacheCallback callback,
+    base::FilePath mount_path,
+    base::File::Error result) {
+  if (result != base::File::FILE_OK) {
+    std::move(callback).Run(base::unexpected(result));
+    return;
   }
-  std::move(callback).Run(result);
+
+  initialized_providers_.emplace(mount_path);
+  std::move(callback).Run(std::make_unique<ContentCache>(
+      profile_path_.Append(kFspContentCacheDirName).Append(mount_path)));
 }
 
 }  // namespace ash::file_system_provider

@@ -97,26 +97,42 @@ CloudFileSystem::CloudFileSystem(
 CloudFileSystem::CloudFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system,
     CacheManager* cache_manager)
-    : file_system_(std::move(file_system)), cache_manager_(cache_manager) {
-  if (cache_manager_) {
-    // Add watcher to keep content cache up to date. Notifications are received
-    // though Notify() so no notification_callback is needed.
-    AddWatcher(GetContentCacheURL(), RootFilePath(),
-               /*recursive=*/true, /*persistent=*/false,
-               base::BindOnce([](base::File::Error result) {
-                 VLOG(1) << "Added file watcher on root: " << result;
-               }),
-               base::DoNothing());
+    : file_system_(std::move(file_system)) {
+  if (!cache_manager) {
+    return;
   }
+
+  cache_manager->InitializeForProvider(
+      file_system_->GetFileSystemInfo().mount_path().BaseName(),
+      base::BindOnce(&CloudFileSystem::OnContentCacheInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // Add watcher to keep content cache up to date. Notifications are received
+  // though Notify() so no notification_callback is needed.
+  AddWatcher(GetContentCacheURL(), RootFilePath(),
+             /*recursive=*/true, /*persistent=*/false,
+             base::BindOnce([](base::File::Error result) {
+               VLOG(1) << "Added file watcher on root: " << result;
+             }),
+             base::DoNothing());
 }
 
 CloudFileSystem::~CloudFileSystem() {
-  if (cache_manager_) {
+  if (content_cache_) {
     RemoveWatcher(GetContentCacheURL(), RootFilePath(),
                   /*recursive=*/true,
                   base::BindOnce([](base::File::Error result) {
                     VLOG(1) << "Removed file watcher on root: " << result;
                   }));
+  }
+}
+
+void CloudFileSystem::OnContentCacheInitialized(
+    base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache) {
+  LOG_IF(ERROR, !error_or_cache.has_value())
+      << "Error initializing the content cache: " << error_or_cache.error();
+  if (error_or_cache.has_value()) {
+    content_cache_ = std::move(error_or_cache.value());
   }
 }
 

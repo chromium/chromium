@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -15,11 +16,13 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 
 namespace ash::file_system_provider {
 
 // Callback type used when an FSP has been intiialized.
-using FileErrorCallback = base::OnceCallback<void(base::File::Error)>;
+using FileErrorOrContentCacheCallback =
+    base::OnceCallback<void(base::FileErrorOr<std::unique_ptr<ContentCache>>)>;
 
 // The root directory name that houses all FSP content caches.
 inline constexpr char kFspContentCacheDirName[] = "FspContentCache";
@@ -29,9 +32,11 @@ inline constexpr char kFspContentCacheDirName[] = "FspContentCache";
 // behind both the `FileSystemProviderCloudFileSystem` and
 // `FileSystemProviderContentCache` flags and only enabled on ODFS when the
 // flags are toggled on.
+// Supply the flag `in_memory_only` to avoid creating the FSP cache directory.
 class CacheManager {
  public:
-  explicit CacheManager(const base::FilePath& profile_path);
+  explicit CacheManager(const base::FilePath& profile_path,
+                        bool in_memory_only = false);
 
   CacheManager(const CacheManager&) = delete;
   CacheManager& operator=(const CacheManager&) = delete;
@@ -40,14 +45,17 @@ class CacheManager {
 
   // Setup the cache directory for the specific FSP.
   void InitializeForProvider(const base::FilePath& provider_mount_path,
-                             FileErrorCallback callback);
+                             FileErrorOrContentCacheCallback callback);
 
  private:
-  void OnInitialized(FileErrorCallback callback,
-                     base::FilePath mount_path,
-                     base::File::Error result);
+  // Responds to the FSP with the a `ContentCache` instance if directory
+  // creation was successful (or `in_memory_only` is true).
+  void OnInitializeForProvider(FileErrorOrContentCacheCallback callback,
+                               base::FilePath mount_path,
+                               base::File::Error result);
 
   const base::FilePath profile_path_;
+  bool in_memory_only_ = false;
   std::set<base::FilePath> initialized_providers_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{

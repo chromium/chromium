@@ -1224,6 +1224,8 @@ source_set("ash") {
     "file_system_provider/content_cache/cache_file_context.h",
     "file_system_provider/content_cache/cache_manager.cc",
     "file_system_provider/content_cache/cache_manager.h",
+    "file_system_provider/content_cache/content_cache.cc",
+    "file_system_provider/content_cache/content_cache.h",
     "file_system_provider/content_cache/content_lru_cache.cc",
     "file_system_provider/content_cache/content_lru_cache.h",
     "file_system_provider/extension_provider.cc",
