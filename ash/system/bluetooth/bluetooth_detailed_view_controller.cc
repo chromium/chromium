@@ -120,7 +120,8 @@ void BluetoothDetailedViewController::OnPropertiesUpdated(
 
 void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
   if (features::IsBluetoothDisconnectWarningEnabled()) {
-    remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(new_state);
+    remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
+        new_state, mojom::HidWarningDialogSource::kQuickSettings);
   } else {
     remote_cros_bluetooth_config_->SetBluetoothEnabledState(new_state);
   }

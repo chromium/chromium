@@ -1508,6 +1508,8 @@ component("ash") {
     "system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller.h",
     "system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller_impl.cc",
     "system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller_impl.h",
+    "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_metrics.cc",
+    "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_metrics.h",
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller.cc",
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller.h",
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_service.cc",

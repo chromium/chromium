@@ -1358,6 +1358,21 @@ chromium-metrics-reviews@google.com.
   <int value="2136716957" label="fe69"/>
 </enum>
 
+<enum name="HidWarningDialogDisabledBehavior">
+  <int value="0" label="kWarningDialogShown"/>
+  <int value="1" label="kWarningDialogNotShown"/>
+</enum>
+
+<enum name="HidWarningDialogSource">
+  <int value="0" label="kOsSettings"/>
+  <int value="1" label="kQuickSettings"/>
+</enum>
+
+<enum name="HidWarningUserAction">
+  <int value="0" label="kKeepOn"/>
+  <int value="1" label="kTurnOff"/>
+</enum>
+
 <enum name="SetNicknameResult">
   <int value="0" label="Invalid nickname format"/>
   <int value="1" label="Device not found"/>

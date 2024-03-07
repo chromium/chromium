@@ -27,7 +27,9 @@ class ASH_EXPORT FakeHidPreservingBluetoothStateController
   ~FakeHidPreservingBluetoothStateController() override;
 
   // mojom::HidPreservingBluetoothStateController:
-  void TryToSetBluetoothEnabledState(bool enabled) override;
+  void TryToSetBluetoothEnabledState(
+      bool enabled,
+      mojom::HidWarningDialogSource source) override;
 
   void SetShouldShowWarningDialog(bool should_show_warning_dialog);
 

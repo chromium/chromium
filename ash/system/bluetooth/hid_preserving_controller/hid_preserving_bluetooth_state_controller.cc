@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller_impl.h"
+#include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_metrics.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
@@ -38,7 +39,8 @@ void HidPreservingBluetoothStateController::BindPendingReceiver(
 }
 
 void HidPreservingBluetoothStateController::TryToSetBluetoothEnabledState(
-    bool enabled) {
+    bool enabled,
+    mojom::HidWarningDialogSource source) {
   // If we are not disabling Bluetooth, no action is needed.
   if (enabled) {
     SetBluetoothEnabledState(enabled);
@@ -49,6 +51,7 @@ void HidPreservingBluetoothStateController::TryToSetBluetoothEnabledState(
   if (device_names.empty()) {
     BLUETOOTH_LOG(DEBUG) << "No Bluetooth devices found, disabling Bluetooth";
     SetBluetoothEnabledState(enabled);
+    bluetooth::RecordHidPoweredStateDisableBehavior(/*dialog_shown=*/false);
     return;
   }
 
@@ -57,6 +60,8 @@ void HidPreservingBluetoothStateController::TryToSetBluetoothEnabledState(
         std::make_unique<DisableBluetoothDialogControllerImpl>();
   }
 
+  bluetooth::RecordHidWarningDialogSource(source);
+  bluetooth::RecordHidPoweredStateDisableBehavior(/*dialog_shown=*/true);
   BLUETOOTH_LOG(EVENT)
       << "Showing warning dialog: number of Bluetooth HID devices connected: "
       << device_names.size();
@@ -70,7 +75,7 @@ void HidPreservingBluetoothStateController::OnShowCallback(
     bool enabled,
     bool show_dialog_result) {
   BLUETOOTH_LOG(USER) << "Warning dialog result: " << show_dialog_result;
-
+  bluetooth::RecordHidWarningUserAction(show_dialog_result);
   // User decided not to disable bluetooth.
   if (!show_dialog_result) {
     return;

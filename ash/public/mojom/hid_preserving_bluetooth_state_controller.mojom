@@ -4,6 +4,12 @@
 
 module ash.mojom;
 
+// Used when recording which surface the HID warning dialog is shown from.
+enum HidWarningDialogSource {
+  kOsSettings,
+  kQuickSettings,
+};
+
 // HidPreservingBluetoothStateController interface provides a method to
 // enable/disable Bluetooth device state. If only Bluetooth input devices are
 // connected, and bluetooth is being disabled a warning dialog is shown,
@@ -15,5 +21,6 @@ interface HidPreservingBluetoothStateController {
   // If only Bluetooth input devices are connected, and |enabled| is false,
   // shows a dialog warning the user that turning Bluetooth off will disconnect
   // those devices.
-  TryToSetBluetoothEnabledState(bool enabled);
+  TryToSetBluetoothEnabledState(bool enabled,
+                                HidWarningDialogSource source);
  };

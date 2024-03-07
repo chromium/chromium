@@ -6,8 +6,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/bluetooth/hid_preserving_controller/fake_disable_bluetooth_dialog_controller.h"
+#include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
@@ -46,6 +48,15 @@ const ui::KeyboardDevice GetSampleMouseInternal() {
 
 class HidPreservingBluetoothStateControllerTest : public AshTestBase {
  public:
+  struct ExpectedHistogramState {
+    size_t disabled_bluetooth_dialog_shown_count = 0u;
+    size_t disabled_bluetooth_dialog_not_shown_count = 0u;
+    size_t user_action_keep_on_count = 0u;
+    size_t user_action_turn_off_count = 0u;
+    size_t disabled_bluetooth_dialog_source_os_settings_count = 0u;
+    size_t disabled_bluetooth_dialog_source_quick_settings_count = 0u;
+  };
+
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -71,9 +82,10 @@ class HidPreservingBluetoothStateControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void TryToSetBluetoothEnabledState(bool enabled) {
+  void TryToSetBluetoothEnabledState(bool enabled,
+                                     mojom::HidWarningDialogSource source) {
     hid_preserving_bluetooth_state_controller_->TryToSetBluetoothEnabledState(
-        enabled);
+        enabled, source);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -96,25 +108,59 @@ class HidPreservingBluetoothStateControllerTest : public AshTestBase {
         ->GetAdapterState();
   }
 
+  void CheckHistogramState(const ExpectedHistogramState& state) {
+    histogram_tester_.ExpectBucketCount(
+        bluetooth::kPoweredDisableDialogBehavior,
+        bluetooth::DisabledBehavior::kWarningDialogShown,
+        state.disabled_bluetooth_dialog_shown_count);
+    histogram_tester_.ExpectBucketCount(
+        bluetooth::kPoweredDisableDialogBehavior,
+        bluetooth::DisabledBehavior::kWarningDialogNotShown,
+        state.disabled_bluetooth_dialog_not_shown_count);
+    histogram_tester_.ExpectBucketCount(bluetooth::kUserAction,
+                                        bluetooth::UserAction::kKeepOn,
+                                        state.user_action_keep_on_count);
+    histogram_tester_.ExpectBucketCount(bluetooth::kUserAction,
+                                        bluetooth::UserAction::kTurnOff,
+                                        state.user_action_turn_off_count);
+    histogram_tester_.ExpectBucketCount(
+        bluetooth::kDialogSource, bluetooth::DialogSource::kQuickSettings,
+        state.disabled_bluetooth_dialog_source_quick_settings_count);
+    histogram_tester_.ExpectBucketCount(
+        bluetooth::kDialogSource, bluetooth::DialogSource::kOsSettings,
+        state.disabled_bluetooth_dialog_source_os_settings_count);
+  }
+
  private:
   ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {
     return ash_test_helper()->bluetooth_config_test_helper();
   }
 
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<HidPreservingBluetoothStateController>
       hid_preserving_bluetooth_state_controller_;
 };
 
 TEST_F(HidPreservingBluetoothStateControllerTest, BluetoothEnabled) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
   SetBluetoothAdapterState(BluetoothSystemState::kDisabled);
   EXPECT_EQ(BluetoothSystemState::kDisabled, GetBluetoothAdapterState());
-  TryToSetBluetoothEnabledState(/*enabled=*/true);
+  CheckHistogramState(expected_state);
+
+  TryToSetBluetoothEnabledState(/*enabled=*/true,
+                                mojom::HidWarningDialogSource::kQuickSettings);
   EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
        DisableBluetoothWithTouchScreenDevice) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
   SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
 
@@ -124,76 +170,124 @@ TEST_F(HidPreservingBluetoothStateControllerTest,
                             "Touchscreen", gfx::Size(1024, 768), 0));
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices(screens);
 
-  TryToSetBluetoothEnabledState(/*enabled=*/false);
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
        DisableBluetoothWithMouseDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
   SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
 
   ui::DeviceDataManagerTestApi().SetMouseDevices({GetSampleMouseUsb(),
                                                   GetSampleMouseBluetooth(),
                                                   GetSampleMouseInternal()});
   base::RunLoop().RunUntilIdle();
 
-  TryToSetBluetoothEnabledState(/*enabled=*/false);
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
        DisableBluetoothWithKeyboardDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
   SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {GetSampleKeyboardBluetooth(), GetSampleKeyboardUsb()});
   base::RunLoop().RunUntilIdle();
 
-  TryToSetBluetoothEnabledState(/*enabled=*/false);
+  TryToSetBluetoothEnabledState(/*enabled=*/false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
-       DisableBluetoothWithOnlyBluetoothDevices_resultTrue) {
+       DisableBluetoothWithOnlyBluetoothDevices_AllResults) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
   SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
 
   ui::DeviceDataManagerTestApi().SetMouseDevices({GetSampleMouseBluetooth()});
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {GetSampleKeyboardBluetooth()});
   base::RunLoop().RunUntilIdle();
 
-  TryToSetBluetoothEnabledState(false);
-  CompleteShowDialog(/*called_count=*/1u, /*show_dialog_result=*/true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
-}
+  size_t called_count = 0u;
+  // Try to set Bluetooth enabled state with different sources and results.
+  for (const auto& [source, result] :
+       std::vector<std::pair<mojom::HidWarningDialogSource, bool>>{
+           {mojom::HidWarningDialogSource::kQuickSettings, true},
+           {mojom::HidWarningDialogSource::kQuickSettings, false},
+           {mojom::HidWarningDialogSource::kOsSettings, true},
+           {mojom::HidWarningDialogSource::kOsSettings, false}}) {
+    SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
+    base::RunLoop().RunUntilIdle();
+    TryToSetBluetoothEnabledState(false, source);
+    expected_state.disabled_bluetooth_dialog_shown_count++;
+    if (source == mojom::HidWarningDialogSource::kQuickSettings) {
+      expected_state.disabled_bluetooth_dialog_source_quick_settings_count++;
+    } else {
+      expected_state.disabled_bluetooth_dialog_source_os_settings_count++;
+    }
+    CheckHistogramState(expected_state);
 
-TEST_F(HidPreservingBluetoothStateControllerTest,
-       DisableBluetoothWithOnlyBluetoothDevices_resultFalse) {
-  SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
-  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+    CompleteShowDialog(++called_count, /*show_dialog_result=*/result);
+    base::RunLoop().RunUntilIdle();
 
-  ui::DeviceDataManagerTestApi().SetMouseDevices({GetSampleMouseBluetooth()});
-  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
-      {GetSampleKeyboardBluetooth()});
-  base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(result ? BluetoothSystemState::kDisabling
+                     : BluetoothSystemState::kEnabled,
+              GetBluetoothAdapterState());
 
-  TryToSetBluetoothEnabledState(false);
-  CompleteShowDialog(/*called_count=*/1u, /*show_dialog_result=*/false);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+    expected_state.user_action_turn_off_count += result;
+    expected_state.user_action_keep_on_count += !result;
+    CheckHistogramState(expected_state);
+  }
 }
 
 TEST_F(HidPreservingBluetoothStateControllerTest,
        DisableBluetoothNoBluetoothDevices) {
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
   SetBluetoothAdapterState(BluetoothSystemState::kEnabled);
   EXPECT_EQ(BluetoothSystemState::kEnabled, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
 
-  TryToSetBluetoothEnabledState(false);
+  TryToSetBluetoothEnabledState(false,
+                                mojom::HidWarningDialogSource::kQuickSettings);
   EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
+
+  TryToSetBluetoothEnabledState(true,
+                                mojom::HidWarningDialogSource::kQuickSettings);
+  EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
+  CheckHistogramState(expected_state);
+
+  TryToSetBluetoothEnabledState(false,
+                                mojom::HidWarningDialogSource::kOsSettings);
+  EXPECT_EQ(BluetoothSystemState::kDisabling, GetBluetoothAdapterState());
+  expected_state.disabled_bluetooth_dialog_not_shown_count++;
+  CheckHistogramState(expected_state);
 }
 
 }  // namespace ash

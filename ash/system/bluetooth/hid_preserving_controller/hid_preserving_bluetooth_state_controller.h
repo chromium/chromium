@@ -45,7 +45,9 @@ class ASH_EXPORT HidPreservingBluetoothStateController
   friend class HidPreservingBluetoothStateControllerTest;
 
   // mojom::HidPreservingBluetoothStateController:
-  void TryToSetBluetoothEnabledState(bool enabled) override;
+  void TryToSetBluetoothEnabledState(
+      bool enabled,
+      mojom::HidWarningDialogSource source) override;
 
   // Called when warning dialog selection is made.
   // `enabled`: new state of Bluetooth device. Passed in from

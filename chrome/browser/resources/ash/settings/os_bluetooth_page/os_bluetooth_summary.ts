@@ -15,6 +15,7 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {getHidPreservingController} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
+import {HidWarningDialogSource} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -288,7 +289,8 @@ export class SettingsBluetoothSummaryElement extends
       // Reset Bluetooth toggle state to previous state. Toggle should only be
       // updated when System properties changes.
       this.isBluetoothToggleOn_ = !enabled;
-      getHidPreservingController().tryToSetBluetoothEnabledState(enabled);
+      getHidPreservingController().tryToSetBluetoothEnabledState(
+          enabled, HidWarningDialogSource.kOsSettings);
     } else {
       getBluetoothConfig().setBluetoothEnabledState(enabled);
     }

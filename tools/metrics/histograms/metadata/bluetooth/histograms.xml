@@ -134,6 +134,25 @@ chromium-metrics-reviews@google.com.
   <token key="BluetoothPairedStates" variants="BluetoothPairedStates"/>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.DisconnectHidWarningDialog.Source"
+    enum="HidWarningDialogSource" expires_after="2025-02-20">
+  <owner>tjohnsonkanu@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the surface used to toggle Bluetooth each time the user attempts to
+    disable Bluetooth and the HID warning dialog is shown.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.DisconnectHidWarningDialog.UserAction"
+    enum="HidWarningUserAction" expires_after="2025-02-20">
+  <owner>tjohnsonkanu@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the button selected by the user on the HID warning dialog.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.AccountKey.Failure.{FastPairPairingProtocol}"
     enum="FastPairAccountKeyFailure" expires_after="2024-06-28">
@@ -1652,6 +1671,17 @@ chromium-metrics-reviews@google.com.
     Metric emitted when the user logs in on a device which supports Bluetooth as
     well as when the Bluetooth adapter powered state changes (i.e., from off to
     on or vice versa).
+  </summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.PoweredState.Disable.HidWarningDialogBehavior"
+    units="HidWarningDialogDisabledBehavior" expires_after="2025-02-20">
+  <owner>tjohnsonkanu@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records whether the HID warning dialog is shown each time Bluetooth is
+    attempted to be disabled.
   </summary>
 </histogram>
 

@@ -92,7 +92,7 @@ void BluetoothFeaturePodController::OnIconPressed() {
   const bool is_toggled = IsButtonToggled();
   if (features::IsBluetoothDisconnectWarningEnabled()) {
     remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
-        !is_toggled);
+        !is_toggled, mojom::HidWarningDialogSource::kQuickSettings);
   } else {
     remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
   }
