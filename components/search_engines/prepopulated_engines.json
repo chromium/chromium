@@ -29,7 +29,7 @@
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 148
+    "kCurrentDataVersion": 149
   },
 
   // The following engines are included in country lists and are added to the
@@ -424,7 +424,7 @@
     },
 
     "yahoo_es": {
-      "name": "Yahoo! Espa\u00f1a",
+      "name": "Yahoo Búsquedas",
       "keyword": "es.yahoo.com",
       "favicon_url": "https://es.search.yahoo.com/favicon.ico",
       "search_url": "https://es.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
@@ -443,7 +443,7 @@
     },
 
     "yahoo_fr": {
-      "name": "Yahoo! France",
+      "name": "Yahoo Recherche",
       "keyword": "fr.yahoo.com",
       "favicon_url": "https://fr.search.yahoo.com/favicon.ico",
       "search_url": "https://fr.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
@@ -483,7 +483,7 @@
     },
 
     "yahoo_it": {
-      "name": "Yahoo! Italia",
+      "name": "Ricerca di Yahoo",
       "keyword": "it.yahoo.com",
       "favicon_url": "https://it.search.yahoo.com/favicon.ico",
       "search_url": "https://it.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
@@ -611,7 +611,7 @@
     },
 
     "yahoo_uk": {
-      "name": "Yahoo! UK & Ireland",
+      "name": "Yahoo Search",
       "keyword": "uk.yahoo.com",
       "favicon_url": "https://uk.search.yahoo.com/favicon.ico",
       "search_url": "https://uk.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
