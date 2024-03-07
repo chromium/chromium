@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "services/webnn/tflite/graph_builder.h"
+#include <cstdint>
 
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
@@ -21,6 +23,20 @@ namespace {
 // compatible. If that ever changes, we must ensure that version is the first
 // entry in the new tflite root so that we can see that version is not 1.
 #define TFLITE_SCHEMA_VERSION (3)
+
+// Maps a DataType to a `::tflite::TensorType`. Other `TensorTypeMap` overloads
+// may be declared below as needed.
+//
+// Example: TensorTypeMap<uint32_t>::value -> ::tflite::TensorType_UINT32
+template <typename DataType>
+  requires IsSupportedTensorType<DataType>
+struct TensorTypeMap;
+
+template <>
+struct TensorTypeMap<uint32_t> {
+  static constexpr ::tflite::TensorType value =
+      ::tflite::TensorType::TensorType_UINT32;
+};
 
 // Useful for converting dimension arrays coming from mojo as uint32 to the
 // int32 vectors used by TFLite.
@@ -181,6 +197,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kSoftmax:
       operator_offset = SerializeSoftmax(*op.get_softmax());
       break;
+    case mojom::Operation::Tag::kTranspose:
+      operator_offset = SerializeTranspose(*op.get_transpose());
+      break;
     case mojom::Operation::Tag::kArgMinMax:
       return base::unexpected("argMinMax is not implemented");
     case mojom::Operation::Tag::kBatchNormalization:
@@ -231,8 +250,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("split is not implemented");
     case mojom::Operation::Tag::kTanh:
       return base::unexpected("tanh is not implemented");
-    case mojom::Operation::Tag::kTranspose:
-      return base::unexpected("transpose is not implemented");
     case mojom::Operation::Tag::kWhere:
       return base::unexpected("where is not implemented");
   }
@@ -291,13 +308,31 @@ flatbuffers::DetachedBuffer GraphBuilder::FinishAndTakeFlatBuffer(
 }
 
 uint32_t GraphBuilder::SerializeBuffer(const mojo_base::BigBuffer& constant) {
-  // Create `tflite::Buffer` with raw data buffers for constant operand.
   const auto buffer_data =
       builder_.CreateVector(constant.data(), constant.size());
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
   buffers_.emplace_back(::tflite::CreateBuffer(builder_, buffer_data));
   // The index of buffer is referenced by tensors.
   return buffer_index;
+}
+
+template <typename DataType>
+  requires IsSupportedTensorType<DataType>
+uint32_t GraphBuilder::SerializeTensorWithBuffer(
+    base::span<const DataType> buffer,
+    base::span<const int32_t> dimensions) {
+  const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
+  const auto buffer_data =
+      builder_.CreateVector<uint8_t>(base::as_byte_span(buffer));
+  buffers_.emplace_back(::tflite::CreateBuffer(builder_, buffer_data));
+
+  // Create `tflite::Tensor` with the dimensions and the index of buffer.
+  const int32_t tensor_index = base::checked_cast<int32_t>(tensors_.size());
+  tensors_.emplace_back(::tflite::CreateTensor(
+      builder_, builder_.CreateVector<int32_t>(dimensions),
+      TensorTypeMap<DataType>::value, buffer_index));
+
+  return tensor_index;
 }
 
 uint32_t GraphBuilder::GetOperatorCodeIndex(::tflite::BuiltinOperator code) {
@@ -372,7 +407,7 @@ auto GraphBuilder::SerializeConcat(const mojom::Concat& concat)
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
   // code.
-  const auto operator_code_index =
+  const uint32_t operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_CONCATENATION);
   const std::array<int32_t, 1> operator_outputs = {output_index};
   return ::tflite::CreateOperator(
@@ -515,6 +550,25 @@ auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
       builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
       builder_.CreateVector<int32_t>(op_outputs),
       ::tflite::BuiltinOptions_SoftmaxOptions, softmax_options.Union());
+}
+
+auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
+    -> OperatorOffset {
+  const std::array<int32_t, 1> permutation_shape = {
+      base::checked_cast<int32_t>(transpose.permutation.size())};
+  const uint32_t permutation_tensor_index = SerializeTensorWithBuffer<uint32_t>(
+      transpose.permutation, permutation_shape);
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_TRANSPOSE);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(transpose.input_operand_id),
+      base::checked_cast<int32_t>(permutation_tensor_index)};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(transpose.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 }  // namespace webnn::tflite

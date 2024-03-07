@@ -5,12 +5,14 @@
 #ifndef SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_H_
 #define SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_H_
 
+#include <concepts>
 #include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
@@ -20,6 +22,16 @@
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
 
 namespace webnn::tflite {
+
+// Methods which take a generic numerical type as input (e.g. uint32_t) and
+// expect to serialize the data as a TFLite tensor (e.g.
+// ::tflite::TensorType_UINT32) may use the `IsSupportedTensorType` concept to
+// enforce that the data type maps to a supported TFLite tensor type.
+// The list of supported data types may be expanded as needed.
+template <typename T, typename... U>
+concept IsAnyOf = (std::same_as<T, U> || ...);
+template <typename T>
+concept IsSupportedTensorType = IsAnyOf<T, uint32_t>;
 
 // This class converts WebNN graph to tflite model and persist into FlatBuffer.
 // The schema_generated.h file defines the format for each data structure to
@@ -75,6 +87,13 @@ class GraphBuilder final {
   // buffer.
   uint32_t SerializeBuffer(const mojo_base::BigBuffer& constant);
 
+  // Serializes `buffer` as a tensor with the given `dimensions` and `type `to
+  // the flat buffer and returns the index in `tensors_` if it's successful.
+  template <typename DataType>
+    requires IsSupportedTensorType<DataType>
+  uint32_t SerializeTensorWithBuffer(base::span<const DataType> buffer,
+                                     base::span<const int32_t> dimensions);
+
   uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code);
 
   // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
@@ -98,6 +117,7 @@ class GraphBuilder final {
       const mojom::Reshape& reshape);
   OperatorOffset SerializeSigmoid(const mojom::Sigmoid& sigmoid);
   OperatorOffset SerializeSoftmax(const mojom::Softmax& softmax);
+  OperatorOffset SerializeTranspose(const mojom::Transpose& transpose);
 
   // There are no further methods should be called on this class after this
   // function because the buffer of `buffer_` is now owned by the detached
