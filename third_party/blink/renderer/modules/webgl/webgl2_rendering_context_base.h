@@ -33,12 +33,12 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   void bufferData(GLenum,
                   MaybeShared<DOMArrayBufferView>,
                   GLenum,
-                  GLuint,
+                  int64_t,
                   GLuint);
   void bufferSubData(GLenum,
                      int64_t offset,
                      MaybeShared<DOMArrayBufferView>,
-                     GLuint,
+                     int64_t,
                      GLuint);
   // Have to re-declare/re-define the following buffer{Sub}Data functions from
   // base class.  This is because the above buffer{Sub}Data() hides the name
@@ -57,7 +57,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   void getBufferSubData(GLenum,
                         int64_t,
                         MaybeShared<DOMArrayBufferView>,
-                        GLuint,
+                        int64_t,
                         GLuint);
 
   /* Framebuffer objects */
@@ -1145,7 +1145,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                        GLenum target,
                                        int64_t source_byte_offset,
                                        DOMArrayBufferView*,
-                                       GLuint destination_offset,
+                                       int64_t destination_offset,
                                        GLuint length,
                                        WebGLBuffer**,
                                        void** out_destination_data_ptr,

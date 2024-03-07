@@ -276,12 +276,12 @@ interface mixin WebGL2RenderingContextBase {
 
     /* Buffer objects */
     void bufferData(GLenum target, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView srcData,
-        GLenum usage, GLuint srcOffset, optional GLuint length = 0);
+        GLenum usage, GLintptr srcOffset, optional GLuint length = 0);
     void bufferSubData(GLenum target, GLintptr dstByteOffset, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView srcData,
-        GLuint srcOffset, optional GLuint length = 0);
+        GLintptr srcOffset, optional GLuint length = 0);
     void copyBufferSubData(GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
     void getBufferSubData(GLenum target, GLintptr srcByteOffset, [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView dstData,
-        optional GLuint dstOffset = 0, optional GLuint length = 0);
+        optional GLintptr dstOffset = 0, optional GLuint length = 0);
 
     /* Framebuffer objects */
     void blitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);

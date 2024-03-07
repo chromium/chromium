@@ -305,7 +305,7 @@ void WebGL2RenderingContextBase::bufferData(
     GLenum target,
     MaybeShared<DOMArrayBufferView> src_data,
     GLenum usage,
-    GLuint src_offset,
+    int64_t src_offset,
     GLuint length) {
   if (isContextLost())
     return;
@@ -344,7 +344,7 @@ void WebGL2RenderingContextBase::bufferSubData(
     GLenum target,
     int64_t dst_byte_offset,
     MaybeShared<DOMArrayBufferView> src_data,
-    GLuint src_offset,
+    int64_t src_offset,
     GLuint length) {
   if (isContextLost())
     return;
@@ -427,7 +427,7 @@ void WebGL2RenderingContextBase::getBufferSubData(
     GLenum target,
     int64_t src_byte_offset,
     MaybeShared<DOMArrayBufferView> dst_data,
-    GLuint dst_offset,
+    int64_t dst_offset,
     GLuint length) {
   WebGLBuffer* source_buffer = nullptr;
   void* destination_data_ptr = nullptr;
@@ -6234,7 +6234,7 @@ const char* WebGL2RenderingContextBase::ValidateGetBufferSubData(
     GLenum target,
     int64_t source_byte_offset,
     DOMArrayBufferView* destination_array_buffer_view,
-    GLuint destination_offset,
+    int64_t destination_offset,
     GLuint length,
     WebGLBuffer** out_source_buffer,
     void** out_destination_data_ptr,
