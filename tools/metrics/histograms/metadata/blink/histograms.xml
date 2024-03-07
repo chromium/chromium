@@ -188,13 +188,7 @@ chromium-metrics-reviews@google.com.
 
     Note that a given Animation may have more than one reason, so this histogram
     cannot be used to determine the overall rate of 'composited' vs
-    'noncomposited' animations. Also note that &quot;failure&quot; to run on the
-    compositor thread is actually good when the animation can be skipped
-    entirely. Prior to M124, this case was restricted to composited properties
-    that had no visual effect. This failure reason (bucket 18) has been
-    generalized to capture cases where the animation can be optimized out even
-    if having non-compositable properties. These animations will not run on the
-    compositor and only tick on main at the boundaries of the active phase.
+    'noncomposited' animations.
   </summary>
 </histogram>
 

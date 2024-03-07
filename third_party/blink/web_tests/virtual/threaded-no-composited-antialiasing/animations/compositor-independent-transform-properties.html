@@ -12,25 +12,14 @@ function assertComposited(properties, isComposited) {
   element.innerText = 'x';
   document.getElementById('parent').appendChild(element);
 
-
-  const keyframeValueMap = {
-    translate: '0px 0px 0px',
-    scale: '1 1 1',
-    rotate: '0deg',
-    transform: 'translate(0px, 0px)',
-    opacity: '1'
-  };
-
-  properties = typeof properties == "string" ? [properties] : properties;
-  const keyframe1 = {};
-  const keyframe2 = {};
+  var properties = typeof properties == "string" ? [properties] : properties;
+  var keyframe = {};
 
   properties.forEach(function(property) {
-    keyframe1[property] = 'initial';
-    keyframe2[property] = keyframeValueMap[property];
+    keyframe[property] = 'initial';
   });
 
-  var animation = element.animate([keyframe1, keyframe2], {
+  var animation = element.animate([keyframe, keyframe], {
     duration: 4000,
     iterations: Infinity
   });
