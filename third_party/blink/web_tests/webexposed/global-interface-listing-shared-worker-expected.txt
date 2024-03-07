@@ -1266,6 +1266,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method arcTo
 [Worker]     method beginLayer
 [Worker]     method beginPath
+[Worker]     method beginWebGPUAccess
 [Worker]     method bezierCurveTo
 [Worker]     method clearRect
 [Worker]     method clip
@@ -1284,11 +1285,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drawMesh
 [Worker]     method ellipse
 [Worker]     method endLayer
+[Worker]     method endWebGPUAccess
 [Worker]     method fill
 [Worker]     method fillRect
 [Worker]     method fillText
 [Worker]     method getImageData
 [Worker]     method getLineDash
+[Worker]     method getTextureFormat
 [Worker]     method getTransform
 [Worker]     method isContextLost
 [Worker]     method isPointInPath

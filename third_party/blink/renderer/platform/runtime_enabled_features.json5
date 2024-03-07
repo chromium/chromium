@@ -538,6 +538,7 @@
     },
     {
       name: "CanvasWebGPUAccess",
+      status: "experimental",
     },
     {
       name: "CapabilityDelegationDisplayCaptureRequest",

@@ -5,7 +5,7 @@
 // https://github.com/fserb/canvas2D/blob/master/spec/webgpu.md
 [
     RuntimeEnabled=CanvasWebGPUAccess,
-    Exposed=Window,
+    Exposed=(Window,Worker),
     SecureContext
 ] interface mixin CanvasWebGPUAccess {
   [RaisesException] GPUTexture beginWebGPUAccess(CanvasWebGPUAccessOption options);

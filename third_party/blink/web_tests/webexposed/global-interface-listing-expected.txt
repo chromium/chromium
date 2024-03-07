@@ -1136,6 +1136,7 @@ interface CanvasRenderingContext2D
     method arcTo
     method beginLayer
     method beginPath
+    method beginWebGPUAccess
     method bezierCurveTo
     method clearRect
     method clip
@@ -1155,12 +1156,14 @@ interface CanvasRenderingContext2D
     method drawMesh
     method ellipse
     method endLayer
+    method endWebGPUAccess
     method fill
     method fillRect
     method fillText
     method getContextAttributes
     method getImageData
     method getLineDash
+    method getTextureFormat
     method getTransform
     method isContextLost
     method isPointInPath
@@ -6882,6 +6885,7 @@ interface OffscreenCanvasRenderingContext2D
     method arcTo
     method beginLayer
     method beginPath
+    method beginWebGPUAccess
     method bezierCurveTo
     method clearRect
     method clip
@@ -6900,11 +6904,13 @@ interface OffscreenCanvasRenderingContext2D
     method drawMesh
     method ellipse
     method endLayer
+    method endWebGPUAccess
     method fill
     method fillRect
     method fillText
     method getImageData
     method getLineDash
+    method getTextureFormat
     method getTransform
     method isContextLost
     method isPointInPath
