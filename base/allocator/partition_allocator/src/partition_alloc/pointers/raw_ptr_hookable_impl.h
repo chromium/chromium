@@ -133,7 +133,7 @@ struct RawPtrHookableImpl {
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
   PA_ALWAYS_INLINE static constexpr T*
-  Advance(T* wrapped_ptr, Z delta_elems, bool is_in_pointer_modification) {
+  Advance(T* wrapped_ptr, Z delta_elems, bool /*is_in_pointer_modification*/) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->advance(
@@ -151,7 +151,7 @@ struct RawPtrHookableImpl {
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
   PA_ALWAYS_INLINE static constexpr T*
-  Retreat(T* wrapped_ptr, Z delta_elems, bool is_in_pointer_modification) {
+  Retreat(T* wrapped_ptr, Z delta_elems, bool /*is_in_pointer_modification*/) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
       if (EnableHooks) {
         GetRawPtrHooks()->advance(
