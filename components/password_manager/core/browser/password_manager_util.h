@@ -139,11 +139,6 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
     password_manager::PasswordManagerClient* client);
 #endif
 
-// Helper which checks if biometric authentication is available.
-// TODO(b/326735413): Remove this function.
-bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
-                         password_manager::PasswordManagerClient* client);
-
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
 

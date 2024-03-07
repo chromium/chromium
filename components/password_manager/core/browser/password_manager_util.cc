@@ -385,28 +385,6 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
-                         password_manager::PasswordManagerClient* client) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (!client || !client->GetLocalStatePrefs() || !client->GetPrefs() ||
-      !authenticator) {
-    return false;
-  }
-  return client->GetPasswordFeatureManager()
-      ->IsBiometricAuthenticationBeforeFillingEnabled();
-#elif BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    CHECK(authenticator);
-    return true;
-  }
-  return authenticator && authenticator->CanAuthenticateWithBiometrics() &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricTouchToFill);
-#else
-  return false;
-#endif
-}
-
 GURL StripAuthAndParams(const GURL& gurl) {
   GURL::Replacements rep;
   rep.ClearUsername();

@@ -724,50 +724,6 @@ TEST(PasswordManagerUtil, GetSignonRealm) {
   }
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
-  EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
-              IsBiometricAuthenticationBeforeFillingEnabled)
-      .WillOnce(Return(false));
-  EXPECT_FALSE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
-
-  EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
-              IsBiometricAuthenticationBeforeFillingEnabled)
-      .WillOnce(Return(true));
-  EXPECT_TRUE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
-}
-
-TEST_F(PasswordManagerUtilTest, BiometricsUnavailable) {
-  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_CALL(*authenticator_, CanAuthenticateWithBiometrics)
-      .WillOnce(Return(false));
-  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(authenticator_))));
-  EXPECT_FALSE(
-      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
-}
-
-TEST_F(PasswordManagerUtilTest, ShouldShowBiometricAuthPromo) {
-  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_CALL(*authenticator_, CanAuthenticateWithBiometrics)
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_client_, GetDeviceAuthenticator)
-      .WillOnce(Return(testing::ByMove(std::move(authenticator_))));
-  EXPECT_TRUE(
-      ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
-}
-
-#elif BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerUtilTest, CanUseBiometricAuthAndroidAutomotive) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
-
-  EXPECT_TRUE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
-}
-
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswordsAfterStoreSplit_Syncing) {
   pref_service()->SetInteger(
