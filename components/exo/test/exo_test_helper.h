@@ -85,7 +85,9 @@ class ExoTestHelper {
 
   // Creates an exo::Buffer that will be backed by either GpuMemoryBuffer or
   // MappableSI if enabled.
-  std::unique_ptr<Buffer> CreateBuffer(gfx::Size buffer_size);
+  std::unique_ptr<Buffer> CreateBuffer(
+      gfx::Size buffer_size,
+      gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888);
 
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,

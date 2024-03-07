@@ -149,10 +149,12 @@ std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
       shell_surface->GetWidget()->GetWindowBoundsInScreen().size(), format));
 }
 
-std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(gfx::Size buffer_size) {
+std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(
+    gfx::Size buffer_size,
+    gfx::BufferFormat buffer_format) {
   return Buffer::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
-      "ExoTestHelper", gpu::kNullSurfaceHandle, /*shutdown_event=*/nullptr);
+      buffer_size, buffer_format, gfx::BufferUsage::GPU_READ, "ExoTestHelper",
+      gpu::kNullSurfaceHandle, /*shutdown_event=*/nullptr);
 }
 
 std::unique_ptr<InputMethodSurface> ExoTestHelper::CreateInputMethodSurface(
