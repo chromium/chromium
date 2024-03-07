@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -99,6 +100,7 @@ public class SigninBridgeTest {
 
         lenient().when(mTabMock.getProfile()).thenReturn(mProfileMock);
         lenient().when(mTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
+        lenient().when(mTabMock.isUserInteractable()).thenReturn(true);
 
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
@@ -111,6 +113,33 @@ public class SigninBridgeTest {
     @After
     public void tearDown() {
         SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
+    }
+
+    @Test
+    @SmallTest
+    public void testAccountPickerSuppressedWhenNoWindow() {
+        //  Reset default values configured in `setUp`.
+        Mockito.reset(mTabMock);
+        when(mTabMock.getWindowAndroid()).thenReturn(null);
+
+        SigninBridge.openAccountPickerBottomSheet(
+                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+        verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
+                .create(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testAccountPickerSuppressedWhenTabNotInteractable() {
+        //  Reset default values configured in `setUp`.
+        Mockito.reset(mTabMock);
+        when(mTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
+        when(mTabMock.isUserInteractable()).thenReturn(false);
+
+        SigninBridge.openAccountPickerBottomSheet(
+                mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
+        verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
+                .create(any(), any(), any(), any(), any());
     }
 
     @Test

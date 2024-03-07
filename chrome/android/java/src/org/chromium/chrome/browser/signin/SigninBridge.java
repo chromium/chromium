@@ -95,6 +95,12 @@ final class SigninBridge {
     static void openAccountPickerBottomSheet(
             Tab tab, String continueUrl, AccountPickerBottomSheetCoordinatorFactory factory) {
         ThreadUtils.assertOnUiThread();
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null || !tab.isUserInteractable()) {
+            // The page is opened in the background, ignore the header. See
+            // https://crbug.com/1145031#c5 and https://crbug.com/323424409 for details.
+            return;
+        }
         Profile profile = tab.getProfile();
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(profile.getOriginalProfile());
@@ -118,12 +124,6 @@ final class SigninBridge {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
                     SigninAccessPoint.WEB_SIGNIN);
-            return;
-        }
-        WindowAndroid windowAndroid = tab.getWindowAndroid();
-        if (windowAndroid == null) {
-            // The page is prefetched in the background, ignore the header. See
-            // https://crbug.com/1145031#c5 for details.
             return;
         }
         BottomSheetController bottomSheetController =
