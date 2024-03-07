@@ -9,6 +9,7 @@
 
 #include "components/gwp_asan/common/allocation_info.h"
 #include "components/gwp_asan/common/allocator_state.h"
+#include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "third_party/crashpad/crashpad/util/misc/address_types.h"
 
@@ -122,6 +123,12 @@ class CrashAnalyzer {
   static bool AnalyzeLightweightDetectorCrash(
       const crashpad::ProcessSnapshot& process_snapshot,
       gwp_asan::Crash* proto);
+
+  static Crash_Mode LightweightDetectorModeToGwpAsanMode(
+      LightweightDetectorMode mode);
+
+  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAnalyzerTest, UseAfterFree);
+  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAnalyzerTest, InternalError);
 };
 
 }  // namespace internal

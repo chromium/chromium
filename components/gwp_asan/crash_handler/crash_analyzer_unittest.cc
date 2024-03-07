@@ -226,6 +226,7 @@ TEST_F(CrashAnalyzerTest, StackTraceCollection) {
                   proto.deallocation().stack_trace_size() - i),
               reinterpret_cast<uintptr_t>(trace[trace.size() - i]));
   }
+  EXPECT_EQ(proto.mode(), Crash_Mode_CLASSIC);
 }
 #endif
 
@@ -252,19 +253,25 @@ TEST_F(CrashAnalyzerTest, InternalError) {
   EXPECT_TRUE(proto.has_internal_error());
   ASSERT_TRUE(proto.has_missing_metadata());
   EXPECT_TRUE(proto.missing_metadata());
+  EXPECT_EQ(proto.mode(), Crash_Mode_CLASSIC);
 }
 
 // The detector is not used on 32-bit systems because pointers there aren't big
 // enough to safely store metadata IDs.
 #if defined(ARCH_CPU_64_BITS)
-class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
+
+class LightweightDetectorAnalyzerTest
+    : public BaseCrashAnalyzerTest,
+      public testing::WithParamInterface<LightweightDetectorMode> {
  protected:
   LightweightDetectorAnalyzerTest()
-      : BaseCrashAnalyzerTest(/* is_partition_alloc = */ true,
-                              LightweightDetectorMode::kBrpQuarantine) {}
+      : BaseCrashAnalyzerTest(/* is_partition_alloc = */ true, GetParam()) {}
 };
 
-TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
+extern Crash_Mode LightweightDetectorModeToGwpAsanMode(
+    LightweightDetectorMode mode);
+
+TEST_P(LightweightDetectorAnalyzerTest, UseAfterFree) {
   uint64_t alloc;
   ASSERT_TRUE(lud::PoisonMetadataRecorder::Get());
   lud::PoisonMetadataRecorder::Get()->RecordAndZap(&alloc, sizeof(alloc));
@@ -287,9 +294,11 @@ TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
   EXPECT_FALSE(proto.has_internal_error());
   ASSERT_TRUE(proto.has_missing_metadata());
   EXPECT_FALSE(proto.missing_metadata());
+  EXPECT_EQ(proto.mode(),
+            CrashAnalyzer::LightweightDetectorModeToGwpAsanMode(GetParam()));
 }
 
-TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
+TEST_P(LightweightDetectorAnalyzerTest, InternalError) {
   uint64_t alloc;
   lud::PoisonMetadataRecorder::Get()->RecordAndZap(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
@@ -315,7 +324,15 @@ TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
   EXPECT_TRUE(proto.has_internal_error());
   ASSERT_TRUE(proto.has_missing_metadata());
   EXPECT_TRUE(proto.missing_metadata());
+  EXPECT_EQ(proto.mode(),
+            CrashAnalyzer::LightweightDetectorModeToGwpAsanMode(GetParam()));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    VaryLightweightDetectorMode,
+    LightweightDetectorAnalyzerTest,
+    testing::Values(LightweightDetectorMode::kBrpQuarantine,
+                    LightweightDetectorMode::kRandom));
 #endif  // defined(ARCH_CPU_64_BITS)
 
 }  // namespace internal

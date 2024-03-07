@@ -389,9 +389,13 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     }
   }
 
-  void checkProto(Crash_ErrorType error_type,
+  void checkProto(Crash_Mode mode,
+                  Crash_ErrorType error_type,
                   HasAllocation has_allocation,
                   HasDeallocation has_deallocation) {
+    EXPECT_TRUE(proto_.has_mode());
+    EXPECT_EQ(proto_.mode(), mode);
+
     EXPECT_TRUE(proto_.has_error_type());
     EXPECT_EQ(proto_.error_type(), error_type);
 
@@ -463,32 +467,32 @@ class CrashHandlerTest : public BaseCrashHandlerTest {};
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(UseAfterFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_USE_AFTER_FREE, HasAllocation::kYes,
-             HasDeallocation::kYes);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_USE_AFTER_FREE,
+             HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(DoubleFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_DOUBLE_FREE, HasAllocation::kYes,
-             HasDeallocation::kYes);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_DOUBLE_FREE,
+             HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Underflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_BUFFER_UNDERFLOW, HasAllocation::kYes,
-             HasDeallocation::kNo);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_UNDERFLOW,
+             HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Overflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_BUFFER_OVERFLOW, HasAllocation::kYes,
-             HasDeallocation::kNo);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_OVERFLOW,
+             HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(FreeInvalidAddress)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_FREE_INVALID_ADDRESS, HasAllocation::kYes,
-             HasDeallocation::kNo);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_FREE_INVALID_ADDRESS,
+             HasAllocation::kYes, HasDeallocation::kNo);
   EXPECT_TRUE(proto_.has_free_invalid_address());
 }
 
@@ -536,7 +540,8 @@ class LightweightDetectorCrashHandlerTest : public BaseCrashHandlerTest {};
 TEST_P(LightweightDetectorCrashHandlerTest, LightweightDetectorUseAfterFree) {
   ASSERT_TRUE(gwp_asan_found_);
 
-  checkProto(Crash_ErrorType_LIGHTWEIGHT_USE_AFTER_FREE, HasAllocation::kNo,
+  checkProto(Crash_Mode_LIGHTWEIGHT_DETECTOR_BRP,
+             Crash_ErrorType_USE_AFTER_FREE, HasAllocation::kNo,
              HasDeallocation::kYes);
 }
 
