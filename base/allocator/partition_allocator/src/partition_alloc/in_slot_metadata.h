@@ -32,6 +32,8 @@ namespace partition_alloc::internal {
 // crash. Workaround was introduced for MacOS 13: https://crbug.com/1378822. But
 // it has been enabled by default because MacOS 14 and later seems to need it
 // too. https://crbug.com/1457756
+// Enabled on iOS as a workaround for a speculative bug in Swift's
+// __StringStorage.create https://crbug.com/327804972
 //
 // Placed outside `BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)`
 // intentionally to accommodate usage in contexts also outside
