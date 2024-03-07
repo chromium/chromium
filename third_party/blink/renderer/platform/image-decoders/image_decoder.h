@@ -31,6 +31,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -107,7 +108,8 @@ class PLATFORM_EXPORT ColorProfile final {
   USING_FAST_MALLOC(ColorProfile);
 
  public:
-  ColorProfile(const skcms_ICCProfile&, std::unique_ptr<uint8_t[]> = nullptr);
+  ColorProfile(const skcms_ICCProfile&,
+               base::HeapArray<uint8_t> = base::HeapArray<uint8_t>());
   ColorProfile(const ColorProfile&) = delete;
   ColorProfile& operator=(const ColorProfile&) = delete;
   static std::unique_ptr<ColorProfile> Create(const void* buffer, size_t size);
@@ -117,7 +119,7 @@ class PLATFORM_EXPORT ColorProfile final {
 
  private:
   skcms_ICCProfile profile_;
-  std::unique_ptr<uint8_t[]> buffer_;
+  base::HeapArray<uint8_t> buffer_;
 };
 
 class PLATFORM_EXPORT ColorProfileTransform final {
