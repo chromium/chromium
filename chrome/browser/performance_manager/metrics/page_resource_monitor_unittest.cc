@@ -534,7 +534,14 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
                                       expected_ids_and_algorithms));
 }
 
-TEST_P(PageResourceMonitorUnitTest, TestResourceUsageBackgroundState) {
+// TODO(crbug.com/328630446): Test fails on ChromeOS MSan.
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_TestResourceUsageBackgroundState \
+  DISABLED_TestResourceUsageBackgroundState
+#else
+#define MAYBE_TestResourceUsageBackgroundState TestResourceUsageBackgroundState
+#endif
+TEST_P(PageResourceMonitorUnitTest, MAYBE_TestResourceUsageBackgroundState) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
