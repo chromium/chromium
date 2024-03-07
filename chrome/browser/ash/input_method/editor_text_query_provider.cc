@@ -155,6 +155,8 @@ void TextQueryProviderForOrca::Process(orca::mojom::TextQueryRequestPtr request,
     return;
   }
 
+  metrics_recorder_->LogEditorState(EditorStates::kRequest);
+
   ++request_id_;
   orca_provider_->Call(
       CreateProviderRequest(std::move(request)),

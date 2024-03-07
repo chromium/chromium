@@ -130,7 +130,9 @@ enum class EditorStates {
   kTextInsertionRequested = 42,
   // Increase by 1 when text has been queued for insertion.
   kTextQueuedForInsertion = 43,
-  kMaxValue = kTextQueuedForInsertion,
+  // Increase by 1 when any request is made
+  kRequest = 44,
+  kMaxValue = kRequest,
 };
 
 }  // namespace ash::input_method

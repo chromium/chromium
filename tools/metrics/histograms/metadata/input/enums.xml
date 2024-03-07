@@ -229,6 +229,7 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="CONSENT_SCREEN_IMPRESSION"/>
   <int value="42" label="TEXT_INSERTION_REQUESTED"/>
   <int value="43" label="TEXT_QUEUED_FOR_INSERTION"/>
+  <int value="44" label="REQUEST"/>
 </enum>
 
 <enum name="IMEGrammarActions">
