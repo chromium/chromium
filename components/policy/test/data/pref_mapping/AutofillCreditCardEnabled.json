@@ -20,13 +20,24 @@
         }
       },
       {
-        "note": "Simple value.",
+        "note": "Disabling",
         "policies": {
           "AutofillCreditCardEnabled": false
         },
         "prefs": {
           "autofill.credit_card_enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "note": "Enabling (ignored via policy handler, pref still has default value)",
+        "policies": {
+          "AutofillCreditCardEnabled": true
+        },
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "default_value": true
           }
         }
       }

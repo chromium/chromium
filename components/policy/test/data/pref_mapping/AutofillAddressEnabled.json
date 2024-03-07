@@ -20,13 +20,24 @@
         }
       },
       {
-        "note": "Simple value.",
+        "note": "Disabling",
         "policies": {
           "AutofillAddressEnabled": false
         },
         "prefs": {
           "autofill.profile_enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "note": "Enabling (ignored via policy handler, pref still has default value)",
+        "policies": {
+          "AutofillAddressEnabled": true
+        },
+        "prefs": {
+          "autofill.profile_enabled": {
+            "default_value": true
           }
         }
       }

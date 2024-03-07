@@ -6,8 +6,7 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "components/autofill/core/browser/autofill_address_policy_handler.h"
-#import "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
 #import "components/commerce/core/pref_names.h"
@@ -170,10 +169,12 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
         kSimplePolicyMap[i].value_type));
   }
 
-  handlers->AddHandler(
-      std::make_unique<autofill::AutofillAddressPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
+  handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
+      policy::key::kAutofillAddressEnabled,
+      autofill::prefs::kAutofillProfileEnabled));
+  handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
+      policy::key::kAutofillCreditCardEnabled,
+      autofill::prefs::kAutofillCreditCardEnabled));
   handlers->AddHandler(
       std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
   handlers->AddHandler(

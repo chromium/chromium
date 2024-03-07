@@ -56,9 +56,8 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "components/autofill/core/browser/autofill_address_policy_handler.h"
-#include "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
 #include "components/autofill/core/browser/autofill_policy_handler.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/blocked_content/pref_names.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
@@ -2210,10 +2209,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   }
 
   // Policies for all platforms - Start
-  handlers->AddHandler(
-      std::make_unique<autofill::AutofillAddressPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
+  handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
+      key::kAutofillAddressEnabled, autofill::prefs::kAutofillProfileEnabled));
+  handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
+      key::kAutofillCreditCardEnabled,
+      autofill::prefs::kAutofillCreditCardEnabled));
   handlers->AddHandler(std::make_unique<autofill::AutofillPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<enterprise_reporting::CloudReportingPolicyHandler>());
@@ -2239,7 +2239,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
           base::Value::Type::BOOLEAN),
       std::make_unique<BooleanDisablingPolicyHandler>(
-          policy::key::kUrlKeyedMetricsAllowed,
+          key::kUrlKeyedMetricsAllowed,
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
   // Policies for all platforms - End
 
@@ -2538,9 +2538,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       false));
   handlers->AddHandler(
       std::make_unique<policy::SimpleSchemaValidatingPolicyHandler>(
-          policy::key::kToolbarAvatarLabelSettings,
-          prefs::kToolbarAvatarLabelSettings, chrome_schema,
-          policy::SchemaOnErrorStrategy::SCHEMA_STRICT,
+          key::kToolbarAvatarLabelSettings, prefs::kToolbarAvatarLabelSettings,
+          chrome_schema, policy::SchemaOnErrorStrategy::SCHEMA_STRICT,
           policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
           policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -2942,7 +2941,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<SpellcheckLanguagePolicyHandler>());
   handlers->AddHandler(
       std::make_unique<SpellcheckLanguageBlocklistPolicyHandler>(
-          policy::key::kSpellcheckLanguageBlocklist));
+          key::kSpellcheckLanguageBlocklist));
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
@@ -2959,10 +2958,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       /*legacy_policy_handler=*/std::make_unique<
           first_party_sets::FirstPartySetsOverridesPolicyHandler>(
-          policy::key::kFirstPartySetsOverrides, chrome_schema),
+          key::kFirstPartySetsOverrides, chrome_schema),
       /*new_policy_handler=*/std::make_unique<
           first_party_sets::FirstPartySetsOverridesPolicyHandler>(
-          policy::key::kRelatedWebsiteSetsOverrides, chrome_schema)));
+          key::kRelatedWebsiteSetsOverrides, chrome_schema)));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<PrivacySandboxPolicyHandler>());

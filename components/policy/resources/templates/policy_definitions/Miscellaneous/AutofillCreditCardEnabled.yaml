@@ -16,8 +16,8 @@ items:
 - caption: Disable AutoFill for credit cards
   value: false
 owners:
+- file://components/autofill/OWNERS
 - caitkp@chromium.org
-- zmin@chromium.org
 schema:
   type: boolean
 supported_on:
