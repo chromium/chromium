@@ -352,6 +352,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       DVLOG(1) << "Bad scheme: " << request.url.scheme();
       SCOPED_CRASH_KEY_STRING32("WebUI", "actual_scheme", request.url.scheme());
       SCOPED_CRASH_KEY_STRING32("WebUI", "expected_scheme", scheme_);
+      SCOPED_CRASH_KEY_STRING64("WebUI", "requested_url", request.url.spec());
       mojo::ReportBadMessage("Incorrect scheme");
       mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
           ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
