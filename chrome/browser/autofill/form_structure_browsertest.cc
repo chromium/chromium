@@ -291,8 +291,8 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
   return std::move(response);
 }
 
-// TODO(crbug.com/1459409): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/41493195): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 #define MAYBE_DataDrivenHeuristics DISABLED_DataDrivenHeuristics
 #else
 #define MAYBE_DataDrivenHeuristics DataDrivenHeuristics
