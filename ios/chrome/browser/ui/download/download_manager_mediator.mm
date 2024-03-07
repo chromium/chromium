@@ -27,6 +27,10 @@
 DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
 DownloadManagerMediator::~DownloadManagerMediator() {
   SetDownloadTask(nullptr);
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+  }
+  identity_manager_ = nullptr;
 }
 
 #pragma mark - Public
@@ -37,7 +41,14 @@ void DownloadManagerMediator::SetIsIncognito(bool is_incognito) {
 
 void DownloadManagerMediator::SetIdentityManager(
     signin::IdentityManager* identity_manager) {
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+  }
   identity_manager_ = identity_manager;
+  if (identity_manager_) {
+    identity_manager_->AddObserver(this);
+  }
+  UpdateConsumer();
 }
 
 void DownloadManagerMediator::SetDriveService(
@@ -139,8 +150,12 @@ bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
 #pragma mark - Private
 
 void DownloadManagerMediator::UpdateConsumer() {
+  if (!download_task_) {
+    // If there is no download task, keep the latest state (not started or
+    // finished) as it is not possible to determine what is the new state).
+    return;
+  }
   DownloadManagerState state = GetDownloadManagerState();
-
 
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     [consumer_ setMultipleDestinationsAvailable:IsSaveToDriveAvailable()];
@@ -313,4 +328,16 @@ void DownloadManagerMediator::OnUploadUpdated(UploadTask* task) {
 
 void DownloadManagerMediator::OnUploadDestroyed(UploadTask* task) {
   SetUploadTask(nullptr);
+}
+
+#pragma mark - signin::IdentityManager::Observer overrides
+
+void DownloadManagerMediator::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  SetIdentityManager(nullptr);
+}
+
+void DownloadManagerMediator::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  UpdateConsumer();
 }

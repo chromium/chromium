@@ -7,6 +7,7 @@
 
 #import "base/files/file_path.h"
 #import "base/memory/weak_ptr.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/drive/model/upload_task_observer.h"
 #import "ios/chrome/browser/ui/download/download_manager_consumer.h"
 #import "ios/web/public/download/download_task_observer.h"
@@ -31,7 +32,8 @@ class DownloadTask;
 // Manages a single download task by providing means to start the download and
 // update consumer if download task was changed.
 class DownloadManagerMediator : public web::DownloadTaskObserver,
-                                public UploadTaskObserver {
+                                public UploadTaskObserver,
+                                public signin::IdentityManager::Observer {
  public:
   DownloadManagerMediator();
 
@@ -111,6 +113,12 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // UploadTaskObserver overrides:
   void OnUploadUpdated(UploadTask* task) override;
   void OnUploadDestroyed(UploadTask* task) override;
+
+  // signin::IdentityManager::Observer overrides:
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
