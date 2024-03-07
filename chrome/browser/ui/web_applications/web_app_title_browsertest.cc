@@ -148,7 +148,13 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
 }
 
 // Navigate to page with and without app title to validate app title is updated.
-IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
+#if BUILDFLAG(IS_LINUX)
+// TODO(b/328563549): Re-enable after the bug is fixed.
+#define MAYBE_AppTitleNavigation DISABLED_AppTitleNavigation
+#else
+#define MAYBE_AppTitleNavigation AppTitleNavigation
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, MAYBE_AppTitleNavigation) {
   const GURL app_url =
       https_server()->GetURL("/web_apps/page_with_app_title.html");
   const std::u16string app_title = u"A Web App";
