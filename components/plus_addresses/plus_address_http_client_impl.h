@@ -115,11 +115,10 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // List of loaders used by the creation flow (CreatePlusAddress). We use a
   // list of loaders instead of a single one to handle several requests made
   // quickly across different tabs.
-
   std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_for_creation_;
+
   // A loader used infrequently for calls to GetAllPlusAddresses which keeps
   // the PlusAddressService synced with the remote server.
-
   std::unique_ptr<network::SimpleURLLoader> loader_for_sync_;
 
   std::optional<GURL> server_url_;

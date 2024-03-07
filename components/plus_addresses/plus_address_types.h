@@ -38,8 +38,14 @@ enum class PlusAddressRequestErrorType {
 
 class PlusAddressRequestError {
  public:
-  explicit PlusAddressRequestError(PlusAddressRequestErrorType error_type) {
-    error_type_ = error_type;
+  explicit PlusAddressRequestError(PlusAddressRequestErrorType error_type)
+      : error_type_(error_type) {}
+
+  static PlusAddressRequestError AsNetworkError(
+      std::optional<int> response_code) {
+    PlusAddressRequestError result(PlusAddressRequestErrorType::kNetworkError);
+    result.http_response_code_ = response_code;
+    return result;
   }
 
   bool operator==(const PlusAddressRequestError&) const = default;
@@ -48,7 +54,7 @@ class PlusAddressRequestError {
 
   void set_http_response_code(int code) {
     CHECK(error_type_ == PlusAddressRequestErrorType::kNetworkError);
-    http_response_code_.emplace(code);
+    http_response_code_ = code;
   }
 
   std::optional<int> http_response_code() const { return http_response_code_; }

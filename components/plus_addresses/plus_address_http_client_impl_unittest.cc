@@ -290,7 +290,6 @@ TEST_P(PlusAddressCreationRequests, RequestsOauthToken) {
 }
 
 TEST_P(PlusAddressCreationRequests, RunCallbackOnSuccess) {
-  // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -313,8 +312,10 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnSuccess) {
                                       1);
 }
 
+// Tests that calls to the `Reserve` and `Create` endpoints run the callback
+// with an error if the network request experienced an error. Also checks that
+// the error includes the HTTP response code.
 TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
-  // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -328,8 +329,8 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
   // The request fails and the appropriate callback is run.
   ASSERT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().has_value());
-  EXPECT_EQ(future.Get().error().type(),
-            PlusAddressRequestErrorType::kNetworkError);
+  EXPECT_EQ(future.Get().error(),
+            PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND));
 
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(LatencyHistogram(), latency_, 1);
@@ -339,7 +340,6 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
 }
 
 TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
-  // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -364,7 +364,6 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
 }
 
 TEST_P(PlusAddressCreationRequests, RunCallbackOnOauthError) {
-  // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -507,9 +506,8 @@ TEST_F(PlusAddressHttpClientRequests,
       fullProfileEndpoint, "", net::HTTP_NOT_FOUND));
   EXPECT_TRUE(callback.IsReady());
   EXPECT_FALSE(callback.Get().has_value());
-  EXPECT_EQ(callback.Get().error().type(),
-            PlusAddressRequestErrorType::kNetworkError);
-  EXPECT_EQ(callback.Get().error().http_response_code(), net::HTTP_NOT_FOUND);
+  EXPECT_EQ(callback.Get().error(),
+            PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND));
 
   // Verify expected metrics.
   histogram_tester.ExpectUniqueTimeSample(

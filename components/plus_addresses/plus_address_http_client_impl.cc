@@ -134,6 +134,15 @@ std::optional<GURL> ValidateAndGetUrl() {
   return maybe_url.is_valid() ? std::make_optional(maybe_url) : std::nullopt;
 }
 
+// Returns the HTTP response code for the response in the `loader`. If there is
+// none, it returns `std::nullopt`.
+std::optional<int> GetResponseCode(network::SimpleURLLoader* loader) {
+  return loader && loader->ResponseInfo() && loader->ResponseInfo()->headers
+             ? std::optional<int>(
+                   loader->ResponseInfo()->headers->response_code())
+             : std::optional<int>();
+}
+
 }  // namespace
 
 PlusAddressHttpClientImpl::PlusAddressHttpClientImpl(
@@ -315,17 +324,16 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   PlusAddressMetrics::RecordNetworkRequestLatency(
       type, base::TimeTicks::Now() - request_start);
-  if (loader && loader->ResponseInfo() && loader->ResponseInfo()->headers) {
-    PlusAddressMetrics::RecordNetworkRequestResponseCode(
-        type, loader->ResponseInfo()->headers->response_code());
+  std::optional<int> response_code = GetResponseCode(loader.get());
+  if (response_code) {
+    PlusAddressMetrics::RecordNetworkRequestResponseCode(type, *response_code);
   }
   // Destroy the loader before returning.
   loaders_for_creation_.erase(it);
   if (!response) {
-    // TODO(crbug.com/1467623): Check response code & propagate it here.
     std::move(on_completed)
-        .Run(base::unexpected(PlusAddressRequestError(
-            PlusAddressRequestErrorType::kNetworkError)));
+        .Run(base::unexpected(
+            PlusAddressRequestError::AsNetworkError(response_code)));
     return;
   }
   PlusAddressMetrics::RecordNetworkRequestResponseSize(type, response->size());
@@ -355,23 +363,17 @@ void PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete(
   PlusAddressMetrics::RecordNetworkRequestLatency(
       PlusAddressNetworkRequestType::kList,
       base::TimeTicks::Now() - request_start);
-  std::optional<int> response_code;
-  if (loader_for_sync_ && loader_for_sync_->ResponseInfo() &&
-      loader_for_sync_->ResponseInfo()->headers) {
+  std::optional<int> response_code = GetResponseCode(loader_for_sync_.get());
+  if (response_code) {
     PlusAddressMetrics::RecordNetworkRequestResponseCode(
-        PlusAddressNetworkRequestType::kList,
-        loader_for_sync_->ResponseInfo()->headers->response_code());
-    response_code.emplace(
-        loader_for_sync_->ResponseInfo()->headers->response_code());
+        PlusAddressNetworkRequestType::kList, *response_code);
   }
   // Destroy the loader before returning.
   loader_for_sync_.reset();
   if (!response) {
-    PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
-    if (response_code.has_value()) {
-      error.set_http_response_code(response_code.value());
-    }
-    std::move(on_completed).Run(base::unexpected(error));
+    std::move(on_completed)
+        .Run(base::unexpected(
+            PlusAddressRequestError::AsNetworkError(response_code)));
     return;
   }
   PlusAddressMetrics::RecordNetworkRequestResponseSize(
