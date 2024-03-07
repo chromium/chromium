@@ -129,6 +129,12 @@ class AnimationThroughputReporter::AnimationTracker
         throughput_tracker_->Cancel();
       else
         throughput_tracker_->Stop();
+
+      // `OnAnimationEnded` could be called multiple times when scheduling
+      // animations. Destroy the tracker so that it is not stopped/canceled
+      // more than once. New tracker will be created when new animation sequence
+      // is started.
+      throughput_tracker_.reset();
     }
 
     first_animation_group_id_.reset();
