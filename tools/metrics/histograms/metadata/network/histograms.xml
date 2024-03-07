@@ -3181,6 +3181,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.ANQP.AddressTypeAvailabilitySupport"
+    enum="WiFiANQPAddressTypeAvailabilitySupport" expires_after="2025-02-27">
+  <owner>damiendejean@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS WiFi metric emitted every time an access point compatible with ANQP
+    is connected. It tracks the support of the ANQP Address Type Availability
+    field.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.ANQP.NetworkAuthTypeSupport"
+    enum="WiFiANQPNetworkAuthTypeSupport" expires_after="2025-02-27">
+  <owner>damiendejean@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS WiFi metric emitted every time an access point compatible with ANQP
+    is connected. It tracks the support of the ANQP Network Authentication Type
+    field.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.ANQP.QueryResult"
+    enum="WiFiANQPQueryResult" expires_after="2025-02-27">
+  <owner>damiendejean@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS WiFi metric emitted every time an ANQP query is done. It tracks the
+    success or the different types of failures of a query.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.ANQP.VenueNameSupport"
+    enum="WiFiANQPVenueNameSupport" expires_after="2025-02-27">
+  <owner>damiendejean@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS WiFi metric emitted every time an access point compatible with ANQP
+    is connected. It tracks the support of the ANQP Venue Name field.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.ANQP.VenueURLSupport"
+    enum="WiFiANQPVenueURLSupport" expires_after="2025-02-27">
+  <owner>damiendejean@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS WiFi metric emitted every time an access point compatible with ANQP
+    is connected. It tracks the support of the ANQP Venue URL field.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.WiFi.Ap80211kSupport" enum="WiFiAp80211kSupport"
     expires_after="2024-12-31">
   <owner>matthewmwang@chromium.org</owner>

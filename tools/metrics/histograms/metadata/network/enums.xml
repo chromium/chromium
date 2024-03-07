@@ -2423,6 +2423,33 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Adapter in allowlist but not in AVL"/>
 </enum>
 
+<enum name="WiFiANQPAddressTypeAvailabilitySupport">
+  <int value="0" label="Does not support Address Type Availability"/>
+  <int value="1" label="Supports Address Type Availability"/>
+</enum>
+
+<enum name="WiFiANQPNetworkAuthTypeSupport">
+  <int value="0" label="Does not support Network Authentication Type"/>
+  <int value="1" label="Supports Network Authentication Type"/>
+</enum>
+
+<enum name="WiFiANQPQueryResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="Invalid frame"/>
+</enum>
+
+<enum name="WiFiANQPVenueNameSupport">
+  <int value="0" label="Does not support Venue Name"/>
+  <int value="1" label="Supports Venue Name"/>
+</enum>
+
+<enum name="WiFiANQPVenueURLSupport">
+  <int value="0" label="Does not support Venue URL"/>
+  <int value="1" label="Supports Venue URL"/>
+</enum>
+
 <enum name="WiFiAp80211kSupport">
   <int value="0" label="Does not support 802.11k"/>
   <int value="1" label="Supports 802.11k neighbor lists"/>
