@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'LinkText' has the same color as the color of an anchor element (dark)
+  assert_equals: expected "rgb(158, 158, 255)" but got "rgb(0, 0, 238)"
+Harness: the test ran to completion.
+

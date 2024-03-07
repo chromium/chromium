@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] System color LinkText works
+  assert_not_equals: LinkText should react to color-scheme got disallowed value "rgb(0, 0, 238)"
+[FAIL] System color VisitedText works
+  assert_not_equals: VisitedText should react to color-scheme got disallowed value "rgb(85, 26, 139)"
+[FAIL] System color Highlight works
+  assert_not_equals: Highlight should react to color-scheme got disallowed value "rgba(0, 65, 198, 0.8)"
+Harness: the test ran to completion.
+
