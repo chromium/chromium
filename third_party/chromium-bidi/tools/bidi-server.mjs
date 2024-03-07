@@ -63,7 +63,7 @@ export function parseCommandLineArgs() {
       describe:
         'Whether to start the server in headless or headful mode. The --headless flag takes precedence over the HEADLESS environment variable.',
       type: 'boolean',
-      default: process.env.HEADLESS === 'true',
+      default: (process.env.HEADLESS ?? 'true') === 'true',
     })
     .option('k', {
       describe: 'Provide a test name to filter by',

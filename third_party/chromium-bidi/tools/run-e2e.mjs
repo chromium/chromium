@@ -143,7 +143,7 @@ e2eArgs.push('--verbose', '-vv');
 if (argv.fileOrFolder) {
   e2eArgs.push(argv.fileOrFolder);
 }
-if (!argv.headless) {
+if (!argv.headless && !argv.k) {
   e2eArgs.push('--ignore=tests/input');
 }
 if (argv.k) {
