@@ -240,7 +240,6 @@ std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(
     std::move(trace_callback).Run(resource_request);
   }
 
-  KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
   std::optional<ResourceRequestBlockedReason> blocked_reason =
       context.CanRequest(resource_type, resource_request,
                          MemoryCache::RemoveFragmentIdentifierIfNeeded(
