@@ -1193,7 +1193,8 @@ PartitionAllocGetSlotStartAndSizeInBRPPool(uintptr_t address) {
   auto* slot_span = SlotSpanMetadata::FromAddr(address);
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
-  // Double check that in-slot metadata is indeed present.
+  // Double check that in-slot metadata is indeed present. Currently that's the
+  // case only when BRP is used.
   PA_DCHECK(root->brp_enabled());
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
@@ -1242,8 +1243,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
 PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
-  // InSlotMetadata is required to be allocated inside a `PartitionRoot` that
-  // supports reference counts.
+  // Currently, InSlotMetadata is allocated when BRP is used.
   PA_DCHECK(root->brp_enabled());
   PA_DCHECK(!PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
                  slot_start, slot_span->bucket->slot_size)
@@ -2272,8 +2272,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   //   slot, thus creating the "empty" space.
   // - Unlike "unused", "empty" counts towards usable_size, because the app can
   //   query for it and use this space without a need for reallocation.
-  // - In-slot metadata may or may not exist in the slot, depending on
-  //   ENABLE_BACKUP_REF_PTR_SUPPORT and brp_enabled().
+  // - In-slot metadata may or may not exist in the slot. Currently it exists
+  //   only when BRP is used.
   // - If slot_start is not SystemPageSize()-aligned (possible only for small
   //   allocations), in-slot metadata is stored either at the end of the current
   //   slot or the previous slot, depending on the
