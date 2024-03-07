@@ -221,7 +221,7 @@ void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
   if (!pinned) {
     button = GetPoppedOutButtonFor(id);
     if (!button && is_active) {
-      button = AddPopOutButtonFor(id);
+      button = AddPoppedOutButtonFor(id);
     }
   }
   // If the button doesn't exist, do nothing. This could happen if |is_active|
@@ -256,7 +256,7 @@ void PinnedToolbarActionsContainer::ShowActionEphemerallyInToolbar(
   }
   // Create the button if it doesn't exist.
   if (!button) {
-    button = AddPopOutButtonFor(id);
+    button = AddPoppedOutButtonFor(id);
   }
   button->SetShouldShowEphemerallyInToolbar(show);
 
@@ -481,7 +481,7 @@ actions::ActionItem* PinnedToolbarActionsContainer::GetActionItemFor(
               ->root_action_item());
 }
 
-PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPopOutButtonFor(
+PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
     const actions::ActionId& id) {
   CHECK(GetActionItemFor(id));
   auto popped_out_button = std::make_unique<PinnedActionToolbarButton>(

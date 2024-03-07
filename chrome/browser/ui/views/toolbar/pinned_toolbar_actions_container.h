@@ -98,7 +98,7 @@ class PinnedToolbarActionsContainer
   // A struct representing the position and action being dragged.
   struct DropInfo;
 
-  PinnedActionToolbarButton* AddPopOutButtonFor(const actions::ActionId& id);
+  PinnedActionToolbarButton* AddPoppedOutButtonFor(const actions::ActionId& id);
   // Removes the popped out button if it should no longer remain in the toolbar.
   void MaybeRemovePoppedOutButtonFor(const actions::ActionId& id);
   void AddPinnedActionButtonFor(const actions::ActionId& id);
