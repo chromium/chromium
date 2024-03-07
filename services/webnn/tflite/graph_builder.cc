@@ -197,6 +197,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = elementwise_result.value();
       break;
     }
+    case mojom::Operation::Tag::kHardSwish:
+      operator_offset = SerializeHardSwish(*op.get_hard_swish());
+      break;
     case mojom::Operation::Tag::kLeakyRelu:
       operator_offset = SerializeLeakyRelu(*op.get_leaky_relu());
       break;
@@ -242,8 +245,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("gru is not implemented");
     case mojom::Operation::Tag::kHardSigmoid:
       return base::unexpected("hardSigmoid is not implemented");
-    case mojom::Operation::Tag::kHardSwish:
-      return base::unexpected("hardSwish is not implemented");
     case mojom::Operation::Tag::kLayerNormalization:
       return base::unexpected("layerNormalization is not implemented");
     case mojom::Operation::Tag::kInstanceNormalization:
@@ -525,6 +526,13 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
+}
+
+auto GraphBuilder::SerializeHardSwish(const mojom::HardSwish& hard_swish)
+    -> OperatorOffset {
+  return SerializeUnaryOperator(::tflite::BuiltinOperator_HARD_SWISH,
+                                hard_swish.input_operand_id,
+                                hard_swish.output_operand_id);
 }
 
 auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
