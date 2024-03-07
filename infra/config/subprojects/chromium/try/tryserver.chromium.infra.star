@@ -45,6 +45,10 @@ try_.builder(
             # Enable for CLs touching files under "3pp" directories which are
             # two level deep or more from the repo root.
             ".+/3pp/.+",
+            # Also enable for cls that affect fetch_all.py or the groovy scripts
+            # it runs unders buildSrc.
+            "third_party/android_deps/fetch_all.py",
+            "third_party/android_deps/buildSrc/src/main/groovy/.+",
         ],
     ),
 )

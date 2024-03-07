@@ -105,6 +105,8 @@ builder.
 
   Location filters:
   * [`//.+/3pp/.+`](https://cs.chromium.org/search?q=+file:.+/3pp/)
+  * [`//third_party/android_deps/fetch_all.py`](https://cs.chromium.org/search?q=+file:third_party/android_deps/fetch_all.py)
+  * [`//third_party/android_deps/buildSrc/src/main/groovy/.+`](https://cs.chromium.org/chromium/src/third_party/android_deps/buildSrc/src/main/groovy/)
 
 * [android-cronet-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-arm-dbg""))
 
