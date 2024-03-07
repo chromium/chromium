@@ -5,25 +5,22 @@
  * @fileoverview Provides Japanese phonetic disambiguation data for ChromeVox.
  */
 
+interface PrefixInfo {
+  delimiter: boolean;
+  prefix: string | null;
+}
+
 export class JaPhoneticData {
-  /**
-   * Initialize phoneticMap_ by |map|.
-   * @param {Map<string, string>} map
-   */
-  static init(map) {
-    /**
-     * A map containing phonetic disambiguation data for Japanese.
-     * @private {Map<string, string>}
-     */
+  /** A map containing phonetic disambiguation data for Japanese. */
+  private static phoneticMap_: Map<string, string>;
+
+  /** Initialize phoneticMap_ by |map|. */
+  static init(map: Map<string, string>): void {
     this.phoneticMap_ = map;
   }
 
-  /**
-   * Returns a phonetic reading for |char|.
-   * @param {string} char
-   * @return {string}
-   */
-  static forCharacter(char) {
+  /** Returns a phonetic reading for |char|. */
+  static forCharacter(char: string): string {
     const characterSet =
         JaPhoneticData.getCharacterSet(char, JaPhoneticData.CharacterSet.NONE);
     let resultChar = JaPhoneticData.maybeGetLargeLetterKana(char);
@@ -35,13 +32,9 @@ export class JaPhoneticData {
     return resultChar;
   }
 
-  /**
-   * Returns a phonetic reading for |text|.
-   * @param {string} text
-   * @return {string}
-   */
-  static forText(text) {
-    const result = [];
+  /** Returns a phonetic reading for |text|. */
+  static forText(text: string): string {
+    const result: string[] = [];
     const chars = [...text];
     let lastCharacterSet = JaPhoneticData.CharacterSet.NONE;
     for (const char of chars) {
@@ -69,12 +62,7 @@ export class JaPhoneticData {
     return result.join(' ');
   }
 
-  /**
-   * @param {string} character
-   * @param {JaPhoneticData.CharacterSet} lastCharacterSet
-   * @return {JaPhoneticData.CharacterSet}
-   */
-  static getCharacterSet(character, lastCharacterSet) {
+  static getCharacterSet(character: string, lastCharacterSet: JaPhoneticData.CharacterSet): JaPhoneticData.CharacterSet {
     // See https://www.unicode.org/charts/PDF/U3040.pdf
     if (character >= 'ぁ' && character <= 'ゖ') {
       if (JaPhoneticData.isSmallLetter(character)) {
@@ -147,35 +135,22 @@ export class JaPhoneticData {
 
   /**
    * Returns true if the character is part of the small letter character set.
-   * @param {string} character
-   * @return {boolean}
    */
-  static isSmallLetter(character) {
+  static isSmallLetter(character: string): boolean {
     return JaPhoneticData.SMALL_TO_LARGE.has(character);
   }
 
-  /**
-   * Returns a large equivalent if the character is a small letter of Kana.
-   * @param {string} character
-   * @return {string}
-   */
-  static maybeGetLargeLetterKana(character) {
+  /** Returns a large equivalent if the character is a small letter of Kana. */
+  static maybeGetLargeLetterKana(character: string): string {
     return JaPhoneticData.SMALL_TO_LARGE.get(character) || character;
   }
 
-  /**
-   * @param {JaPhoneticData.CharacterSet} characterSet
-   * @return {string}
-   */
-  static getDefaultPrefix(characterSet) {
-    return JaPhoneticData.DEFAULT_PREFIX.get(characterSet);
+  static getDefaultPrefix(characterSet: JaPhoneticData.CharacterSet): string {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    return JaPhoneticData.DEFAULT_PREFIX.get(characterSet)!;
   }
 
-  /**
-   * @param {JaPhoneticData.CharacterSet} characterSet
-   * @return {?string}
-   */
-  static getPrefixForCharacter(characterSet) {
+  static getPrefixForCharacter(characterSet: JaPhoneticData.CharacterSet): string | null {
     // Removing an annoucement of capital because users can distinguish
     // uppercase and lowercase by capiatalStrategy options.
     switch (characterSet) {
@@ -194,15 +169,13 @@ export class JaPhoneticData {
   /**
    * Returns an object containing the relationship between the preceding
    * character set and the current character set.
-   * @param {JaPhoneticData.CharacterSet} lastCharacterSet
-   * @param {JaPhoneticData.CharacterSet} currentCharacterSet
-   * @return {Object<{delimiter: boolean, prefix: ?string}>}
+   * @return Object containing prefixes.
    * delimiter: true if a space between preceding character and current
    * character is necessary. A space leaves a pause so users can recognize that
    * the type of characters has changed.
    * prefix: a string that represents the character set. Null if unncessary.
    */
-  static getPrefixInfo(lastCharacterSet, currentCharacterSet) {
+  static getPrefixInfo(lastCharacterSet: JaPhoneticData.CharacterSet, currentCharacterSet: JaPhoneticData.CharacterSet): PrefixInfo {
     // Don't add prefixes for the same character set except for the sets always
     // read phonetically.
     if (lastCharacterSet === currentCharacterSet) {
@@ -331,7 +304,7 @@ export class JaPhoneticData {
    * @param {JaPhoneticData.CharacterSet} characterSet
    * @return {boolean}
    */
-  static alwaysReadPhonetically(characterSet) {
+  static alwaysReadPhonetically(characterSet: JaPhoneticData.CharacterSet): boolean {
     switch (characterSet) {
       case JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL:
       case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
@@ -344,110 +317,100 @@ export class JaPhoneticData {
   }
 }
 
-/** @enum {number} */
-JaPhoneticData.CharacterSet = {
-  NONE: 0,
-  HIRAGANA: 1,                             // 'あ'
-  KATAKANA: 2,                             // 'ア'
-  HIRAGANA_SMALL_LETTER: 3,                // 'ぁ'
-  KATAKANA_SMALL_LETTER: 4,                // 'ァ'
-  HALF_WIDTH_KATAKANA: 5,                  // 'ｱ'
-  HALF_WIDTH_KATAKANA_SMALL_LETTER: 6,     // 'ｧ'
-  HALF_WIDTH_ALPHABET_UPPER: 7,            // 'A'
-  HALF_WIDTH_ALPHABET_LOWER: 8,            // 'a'
-  HALF_WIDTH_NUMERIC: 9,                   // '1'
-  HALF_WIDTH_SYMBOL: 10,                   // '@'
-  FULL_WIDTH_ALPHABET_UPPER: 11,           // 'Ａ'
-  FULL_WIDTH_ALPHABET_LOWER: 12,           // 'ａ'
-  FULL_WIDTH_NUMERIC: 13,                  // '１'
-  FULL_WIDTH_SYMBOL: 14,                   // '＠'
-  FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER: 15,  // 'Α'
-  FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER: 16,  // 'α'
-  OTHER: 17,                               // Kanji and unsupported symbols
-};
+export namespace JaPhoneticData {
+  export enum CharacterSet {
+    NONE = 0,
+    HIRAGANA,                             // 'あ'
+    KATAKANA,                             // 'ア'
+    HIRAGANA_SMALL_LETTER,                // 'ぁ'
+    KATAKANA_SMALL_LETTER,                // 'ァ'
+    HALF_WIDTH_KATAKANA,                  // 'ｱ'
+    HALF_WIDTH_KATAKANA_SMALL_LETTER,     // 'ｧ'
+    HALF_WIDTH_ALPHABET_UPPER,            // 'A'
+    HALF_WIDTH_ALPHABET_LOWER,            // 'a'
+    HALF_WIDTH_NUMERIC,                   // '1'
+    HALF_WIDTH_SYMBOL,                    // '@'
+    FULL_WIDTH_ALPHABET_UPPER,            // 'Ａ'
+    FULL_WIDTH_ALPHABET_LOWER,            // 'ａ'
+    FULL_WIDTH_NUMERIC,                   // '１'
+    FULL_WIDTH_SYMBOL,                    // '＠'
+    FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER,   // 'Α'
+    FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER,   // 'α'
+    OTHER,                                // Kanji and unsupported symbols
+  }
 
-/**
- *  @type {Map<JaPhoneticData.CharacterSet, string>}
- *  @const
- */
-JaPhoneticData.DEFAULT_PREFIX = new Map([
-  // 'あ'
-  [JaPhoneticData.CharacterSet.HIRAGANA, 'ヒラガナ'],
-  // 'ア'
-  [JaPhoneticData.CharacterSet.KATAKANA, 'カタカナ'],
-  // 'ぁ'
-  [JaPhoneticData.CharacterSet.HIRAGANA_SMALL_LETTER, 'ヒラガナ チイサイ'],
-  // 'ァ'
-  [JaPhoneticData.CharacterSet.KATAKANA_SMALL_LETTER, 'カタカナ チイサイ'],
-  // 'ｱ'
-  [JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA, 'ハンカク'],
-  // 'ｧ'
-  [
-    JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER,
-    'ハンカク チイサイ',
-  ],
-  // 'A'
-  [JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER, 'オオモジ'],
-  // 'a'
-  [JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER, 'ハンカク'],
-  // '1'
-  [JaPhoneticData.CharacterSet.HALF_WIDTH_NUMERIC, 'ハンカク'],
-  // '@'
-  [JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL, 'ハンカク'],
-  // 'Ａ'
-  [JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER, 'ゼンカクオオモジ'],
-  // 'ａ'
-  [JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER, 'ゼンカク'],
-  // '１'
-  [JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC, 'ゼンカク'],
-  // '＠'
-  [JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL, 'ゼンカク'],
-  // 'Α'
-  [JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER, 'オオモジ'],
-  // 'α'
-  [JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER, 'コモジ'],
-]);
+  export const DEFAULT_PREFIX: Map<CharacterSet, string> = new Map([
+    // 'あ'
+    [CharacterSet.HIRAGANA, 'ヒラガナ'],
+    // 'ア'
+    [CharacterSet.KATAKANA, 'カタカナ'],
+    // 'ぁ'
+    [CharacterSet.HIRAGANA_SMALL_LETTER, 'ヒラガナ チイサイ'],
+    // 'ァ'
+    [CharacterSet.KATAKANA_SMALL_LETTER, 'カタカナ チイサイ'],
+    // 'ｱ'
+    [CharacterSet.HALF_WIDTH_KATAKANA, 'ハンカク'],
+    // 'ｧ'
+    [CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER, 'ハンカク チイサイ'],
+    // 'A'
+    [CharacterSet.HALF_WIDTH_ALPHABET_UPPER, 'オオモジ'],
+    // 'a'
+    [CharacterSet.HALF_WIDTH_ALPHABET_LOWER, 'ハンカク'],
+    // '1'
+    [CharacterSet.HALF_WIDTH_NUMERIC, 'ハンカク'],
+    // '@'
+    [CharacterSet.HALF_WIDTH_SYMBOL, 'ハンカク'],
+    // 'Ａ'
+    [CharacterSet.FULL_WIDTH_ALPHABET_UPPER, 'ゼンカクオオモジ'],
+    // 'ａ'
+    [CharacterSet.FULL_WIDTH_ALPHABET_LOWER, 'ゼンカク'],
+    // '１'
+    [CharacterSet.FULL_WIDTH_NUMERIC, 'ゼンカク'],
+    // '＠'
+    [CharacterSet.FULL_WIDTH_SYMBOL, 'ゼンカク'],
+    // 'Α'
+    [CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER, 'オオモジ'],
+    // 'α'
+    [CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER, 'コモジ'],
+  ]);
 
-/**
- * This object maps small letters of Kana to their large equivalents.
- * @type {Map<string, string>}
- * @const
- */
-JaPhoneticData.SMALL_TO_LARGE = new Map([
-  // Hiragana
-  ['ぁ', 'あ'],
-  ['ぃ', 'い'],
-  ['ぅ', 'う'],
-  ['ぇ', 'え'],
-  ['ぉ', 'お'],
-  ['っ', 'つ'],
-  ['ゃ', 'や'],
-  ['ゅ', 'ゆ'],
-  ['ょ', 'よ'],
-  ['ゎ', 'わ'],
-  ['ゕ', 'か'],
-  ['ゖ', 'け'],
-  // Katakana
-  ['ァ', 'ア'],
-  ['ィ', 'イ'],
-  ['ゥ', 'ウ'],
-  ['ェ', 'エ'],
-  ['ォ', 'オ'],
-  ['ッ', 'ツ'],
-  ['ャ', 'ヤ'],
-  ['ュ', 'ユ'],
-  ['ョ', 'ヨ'],
-  ['ヮ', 'ワ'],
-  ['ヵ', 'カ'],
-  ['ヶ', 'ケ'],
-  // HalfWidthKatakana
-  ['ｧ', 'ｱ'],
-  ['ｨ', 'ｲ'],
-  ['ｩ', 'ｳ'],
-  ['ｪ', 'ｴ'],
-  ['ｫ', 'ｵ'],
-  ['ｬ', 'ﾔ'],
-  ['ｭ', 'ﾕ'],
-  ['ｮ', 'ﾖ'],
-  ['ｯ', 'ﾂ'],
-]);
+  /** This object maps small letters of Kana to their large equivalents. */
+  export const SMALL_TO_LARGE: Map<string, string> = new Map([
+    // Hiragana
+    ['ぁ', 'あ'],
+    ['ぃ', 'い'],
+    ['ぅ', 'う'],
+    ['ぇ', 'え'],
+    ['ぉ', 'お'],
+    ['っ', 'つ'],
+    ['ゃ', 'や'],
+    ['ゅ', 'ゆ'],
+    ['ょ', 'よ'],
+    ['ゎ', 'わ'],
+    ['ゕ', 'か'],
+    ['ゖ', 'け'],
+    // Katakana
+    ['ァ', 'ア'],
+    ['ィ', 'イ'],
+    ['ゥ', 'ウ'],
+    ['ェ', 'エ'],
+    ['ォ', 'オ'],
+    ['ッ', 'ツ'],
+    ['ャ', 'ヤ'],
+    ['ュ', 'ユ'],
+    ['ョ', 'ヨ'],
+    ['ヮ', 'ワ'],
+    ['ヵ', 'カ'],
+    ['ヶ', 'ケ'],
+    // HalfWidthKatakana
+    ['ｧ', 'ｱ'],
+    ['ｨ', 'ｲ'],
+    ['ｩ', 'ｳ'],
+    ['ｪ', 'ｴ'],
+    ['ｫ', 'ｵ'],
+    ['ｬ', 'ﾔ'],
+    ['ｭ', 'ﾕ'],
+    ['ｮ', 'ﾖ'],
+    ['ｯ', 'ﾂ'],
+  ]);
+}
