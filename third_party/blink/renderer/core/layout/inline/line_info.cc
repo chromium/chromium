@@ -12,6 +12,15 @@
 
 namespace blink {
 
+void LineInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(results_);
+  visitor->Trace(items_data_);
+  visitor->Trace(line_style_);
+  visitor->Trace(break_token_);
+  visitor->Trace(parallel_flow_break_tokens_);
+  visitor->Trace(block_in_inline_layout_result_);
+}
+
 void LineInfo::Reset() {
   items_data_ = nullptr;
   line_style_ = nullptr;

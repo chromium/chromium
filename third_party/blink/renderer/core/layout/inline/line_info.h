@@ -29,9 +29,10 @@ struct InlineItemsData;
 //
 // LineBreaker produces, and InlineLayoutAlgorithm consumes.
 class CORE_EXPORT LineInfo {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
+  void Trace(Visitor* visitor) const;
   void Reset();
 
   const InlineItemsData& ItemsData() const {
@@ -256,16 +257,16 @@ class CORE_EXPORT LineInfo {
   LayoutUnit ComputeTrailingSpaceWidth(
       unsigned* end_offset_out = nullptr) const;
 
-  const InlineItemsData* items_data_ = nullptr;
-  const ComputedStyle* line_style_{nullptr};
+  Member<const InlineItemsData> items_data_;
+  Member<const ComputedStyle> line_style_;
   InlineItemResults results_;
 
   BfcOffset bfc_offset_;
 
-  const InlineBreakToken* break_token_ = nullptr;
+  Member<const InlineBreakToken> break_token_;
   HeapVector<Member<const InlineBreakToken>> parallel_flow_break_tokens_;
 
-  const LayoutResult* block_in_inline_layout_result_ = nullptr;
+  Member<const LayoutResult> block_in_inline_layout_result_;
 
   std::optional<LayoutUnit> minimum_space_shortage_;
 
