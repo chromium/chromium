@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.verify;
@@ -98,8 +99,8 @@ public class HistorySyncTest {
         onView(withId(R.id.sync_consent_subtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.account_image)).check(matches(isDisplayed()));
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.negative_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.no_thanks)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_consent_details_description)).check(matches(isDisplayed()));
     }
 
@@ -111,7 +112,7 @@ public class HistorySyncTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT);
 
-        onView(withId(R.id.positive_button)).perform(click());
+        onView(withText(R.string.signin_accept_button)).perform(click());
 
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
@@ -127,7 +128,7 @@ public class HistorySyncTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT);
 
-        onView(withId(R.id.negative_button)).perform(click());
+        onView(withText(R.string.no_thanks)).perform(click());
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
