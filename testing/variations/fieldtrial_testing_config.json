@@ -18433,7 +18433,7 @@
                 {
                     "name": "Enabled_Without_Extracting_Form_Elements_20240306",
                     "enable_features": [
-                        "AutofillIncludeFormElementsInShadowDom",
+                        "AutofillIncludeShadowDomInUnassociatedListedElements",
                         "ShadowDomSupport"
                     ],
                     "disable_features": [
