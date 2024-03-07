@@ -10847,9 +10847,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="ServiceWorkerEventHandlerModifiedAfterInitialization"/>
   <int value="4470" label="AuthorizationCrossOrigin"/>
   <int value="4471" label="CSSColorMixFunction"/>
-  <int value="4472" label="CSSColorColorSpecifiedSpace"/>
-  <int value="4473" label="CSSColorLabOklab"/>
-  <int value="4474" label="CSSColorLchOklch"/>
+  <int value="4472" label="OBSOLETE_CSSColorColorSpecifiedSpace"/>
+  <int value="4473" label="OBSOLETE_CSSColorLabOklab"/>
+  <int value="4474" label="OBSOLETE_CSSColorLchOklch"/>
   <int value="4475" label="OBSOLETE_CreateNSResolverWithNonElements2"/>
   <int value="4476" label="GetDisplayMediaWithPreferCurrentTabTrue"/>
   <int value="4477" label="FencedFrameConfigAttribute"/>
@@ -11322,6 +11322,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4890" label="DOMCharacterDataModifiedEventFired"/>
   <int value="4891" label="AnyMutationEventFired"/>
   <int value="4892" label="AnyMutationEventListenerAdded"/>
+  <int value="4893" label="CSSColor_SpaceRGB"/>
+  <int value="4894" label="CSSColor_SpaceRGB_outOfRec2020"/>
+  <int value="4895" label="CSSColor_SpaceOkLxx"/>
+  <int value="4896" label="CSSColor_SpaceOkLxx_outOfRec2020"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
