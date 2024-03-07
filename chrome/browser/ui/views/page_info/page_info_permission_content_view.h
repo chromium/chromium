@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_PERMISSION_CONTENT_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "chrome/browser/ui/views/media_preview/active_devices_media_coordinator.h"
+#include "components/media_effects/media_device_info.h"
 #endif
 
 class ChromePageInfoUiDelegate;
@@ -35,7 +37,12 @@ class ToggleButton;
 // |---------------------------------------------------------------|
 // | Manage button                                                 |
 // *---------------------------------------------------------------*
-class PageInfoPermissionContentView : public views::View, public PageInfoUI {
+class PageInfoPermissionContentView
+    : public views::View,
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+      public media_effects::MediaDeviceInfo::Observer,
+#endif
+      public PageInfoUI {
   METADATA_HEADER(PageInfoPermissionContentView, views::View)
 
  public:
@@ -57,6 +64,16 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
   void OnRememberSettingPressed();
   void PermissionChanged();
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  // media_effects::MediaDeviceInfo::Observer overrides.
+  void OnAudioDevicesChanged(
+      const std::optional<std::vector<media::AudioDeviceDescription>>&
+          device_infos) override;
+  void OnVideoDevicesChanged(
+      const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
+          device_infos) override;
+#endif
+
   // Adds Media (Camera or Mic) live preview feeds.
   void MaybeAddMediaPreview(content::WebContents* web_contents,
                             views::View& preceding_separator);
@@ -75,6 +92,9 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   std::optional<ActiveDevicesMediaCoordinator>
       active_devices_media_preview_coordinator_;
+  base::ScopedObservation<media_effects::MediaDeviceInfo,
+                          PageInfoPermissionContentView>
+      devices_observer_{this};
 #endif
 };
 

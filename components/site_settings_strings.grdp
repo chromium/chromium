@@ -58,6 +58,9 @@
   <message name="IDS_SITE_SETTINGS_TYPE_CAMERA_MID_SENTENCE" desc="The label used for the camera site settings controls when used mid-sentence.">
     camera
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_CAMERA_WITH_COUNT" desc="The label used for the camera site settings controls, in addition to the number of real cameras.">
+    Cameras (<ph name="CAMERAS_COUNT">$1<ex>1</ex></ph>)
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM" desc="The label used for the Camera PTZ site settings controls.">
     Camera use &amp; movement
   </message>
@@ -108,6 +111,9 @@
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MIC_MID_SENTENCE" desc="The label used for the microphone site settings controls when used mid-sentence.">
     microphone
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_MIC_WITH_COUNT" desc="The label used for the microphone site settings controls, in addition to the number of real mics.">
+    Microphones (<ph name="MICS_COUNT">$1<ex>1</ex></ph>)
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX" desc="The label used for system exclusive messages for MIDI devices site settings controls.">
     MIDI device control &amp; reprogram

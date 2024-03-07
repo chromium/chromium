@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -200,6 +200,29 @@ void PageInfoPermissionContentView::PermissionChanged() {
                                       permission_.is_one_time);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+void PageInfoPermissionContentView::OnAudioDevicesChanged(
+    const std::optional<std::vector<media::AudioDeviceDescription>>&
+        device_infos) {
+  if (type_ == ContentSettingsType::MEDIASTREAM_MIC && device_infos) {
+    title_->SetText(l10n_util::GetStringFUTF16(
+        IDS_SITE_SETTINGS_TYPE_MIC_WITH_COUNT,
+        base::NumberToString16(
+            media_effects::GetRealAudioDeviceCount(device_infos.value()))));
+  }
+}
+
+void PageInfoPermissionContentView::OnVideoDevicesChanged(
+    const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
+        device_infos) {
+  if (type_ == ContentSettingsType::MEDIASTREAM_CAMERA && device_infos) {
+    title_->SetText(l10n_util::GetStringFUTF16(
+        IDS_SITE_SETTINGS_TYPE_CAMERA_WITH_COUNT,
+        base::NumberToString16(device_infos->size())));
+  }
+}
+#endif
+
 void PageInfoPermissionContentView::MaybeAddMediaPreview(
     content::WebContents* web_contents,
     views::View& preceding_separator) {
@@ -211,6 +234,16 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
   if (type_ != ContentSettingsType::MEDIASTREAM_CAMERA &&
       type_ != ContentSettingsType::MEDIASTREAM_MIC) {
     return;
+  }
+
+  auto* cached_device_info = media_effects::MediaDeviceInfo::GetInstance();
+  devices_observer_.Observe(cached_device_info);
+  if (type_ == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    // Initialize `title_` with the current number of cached video devices.
+    OnVideoDevicesChanged(cached_device_info->GetVideoDeviceInfos());
+  } else {
+    // Initialize `title_` with the current number of cached audio devices.
+    OnAudioDevicesChanged(cached_device_info->GetAudioDeviceInfos());
   }
 
   preceding_separator.GetProperty(views::kMarginsKey)->set_bottom(0);
