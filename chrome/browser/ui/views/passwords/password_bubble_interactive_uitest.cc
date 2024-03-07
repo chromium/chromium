@@ -115,10 +115,12 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
  public:
   PasswordBubbleInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
-        {password_manager::features::
-             kNewConfirmationBubbleForGeneratedPasswords,
-         password_manager::features::kButterOnDesktopFollowup},
-        {});
+        /*enabled_features=*/{password_manager::features::
+                                  kNewConfirmationBubbleForGeneratedPasswords,
+                              password_manager::features::
+                                  kButterOnDesktopFollowup},
+        /*disabled_features=*/{
+            password_manager::features::kPasswordManualFallbackAvailable});
   }
 
   PasswordBubbleInteractiveUiTest(const PasswordBubbleInteractiveUiTest&) =
@@ -1032,6 +1034,42 @@ IN_PROC_BROWSER_TEST_F(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(ManagePasswordsView::kFooterId, std::string(), "5189779"));
+}
+
+class PasswordBubbleWithManagePasswordButtonInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTest {
+ public:
+  ~PasswordBubbleWithManagePasswordButtonInteractiveUiTest() override = default;
+  auto ScreenshotSharedPasswordsNotificationRootView(const char* baseline);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kPasswordManualFallbackAvailable};
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
+                       NavigateToManagementDetailsViewAndTakeScreenshot) {
+  const char kFirstCredentialsRow[] = "FirstCredentialsRow";
+
+  std::unique_ptr<base::AutoReset<bool>> bypass_user_auth_for_testing =
+      GetController()->BypassUserAuthtForTesting();
+  auto setup_passwords = [this]() { SetupManagingPasswords(); };
+
+  RunTestSequence(Do(setup_passwords),
+                  PressButton(kPasswordsOmniboxKeyIconElementId),
+                  WaitForShow(ManagePasswordsView::kTopView),
+                  EnsurePresent(ManagePasswordsListView::kTopView),
+                  NameChildViewByType<RichHoverButton>(
+                      ManagePasswordsListView::kTopView, kFirstCredentialsRow),
+                  PressButton(kFirstCredentialsRow),
+                  WaitForShow(ManagePasswordsDetailsView::kTopView),
+                  EnsureNotPresent(ManagePasswordsListView::kTopView),
+                  // Screenshots are supposed only on Windows.
+                  SetOnIncompatibleAction(
+                      OnIncompatibleAction::kIgnoreAndContinue,
+                      "Screenshot can only run in pixel_tests on Windows."),
+                  Screenshot(ManagePasswordsDetailsView::kTopView,
+                             std::string(), "5314579"));
 }
 
 class SharedPasswordsNotificationBubbleInteractiveUiTest

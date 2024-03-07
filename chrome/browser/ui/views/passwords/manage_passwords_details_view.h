@@ -12,8 +12,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
+class RichHoverButton;
+
 namespace views {
 class Label;
+class Separator;
 class Textarea;
 class Textfield;
 class View;
@@ -102,6 +105,9 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
   raw_ptr<views::View> edit_note_row_ = nullptr;
   raw_ptr<views::Textarea> note_textarea_ = nullptr;
   raw_ptr<views::Label> note_error_label_ = nullptr;
+
+  raw_ptr<views::Separator> separator_row_ = nullptr;
+  raw_ptr<RichHoverButton> manage_password_row_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_DETAILS_VIEW_H_

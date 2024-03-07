@@ -279,11 +279,6 @@ void ManagePasswordsView::RecreateLayout() {
         CreatePasswordDetailsView();
     password_details_view_ = details_view.get();
     page_container_->SwitchToPage(std::move(details_view));
-    page_container_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()
-                                     ->GetInsetsMetric(views::INSETS_DIALOG)
-                                     .bottom()));
     if (controller_.IsOptedInForAccountStorage() &&
         !controller_.get_currently_selected_password()
              .value()
