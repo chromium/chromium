@@ -21,7 +21,7 @@ BASE_FEATURE(kAmbientBadgeSuppressFirstVisit,
 // Enables or disables the installable ambient badge message.
 BASE_FEATURE(kInstallPromptGlobalGuardrails,
              "InstallPromptGlobalGuardrails",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 extern const base::FeatureParam<int>
     kInstallPromptGlobalGuardrails_DismissCount{&kInstallPromptGlobalGuardrails,
                                                 "dismiss_count", 3};
@@ -55,7 +55,7 @@ BASE_FEATURE(kCreateShortcutIgnoresManifest,
 // Use segmentation to decide whether install prompt should be shown.
 BASE_FEATURE(kInstallPromptSegmentation,
              "InstallPromptSegmentation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keys to use when querying the variations params.
 BASE_FEATURE(kAppBannerTriggering,

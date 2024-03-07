@@ -17270,22 +17270,6 @@
             ]
         }
     ],
-    "SmartPWAInstallPromptAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InstallPromptGlobalGuardrails",
-                        "InstallPromptSegmentation"
-                    ]
-                }
-            ]
-        }
-    ],
     "SmartZoom": [
         {
             "platforms": [
