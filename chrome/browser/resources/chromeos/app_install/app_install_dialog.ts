@@ -136,7 +136,7 @@ class AppInstallDialogElement extends HTMLElement {
         this.$<HTMLElement>('#title-icon-install').style.display = 'block';
         this.$<HTMLElement>('#title-icon-installed').style.display = 'none';
         this.$<HTMLElement>('#title').textContent =
-            'Install app to your Chromebook';
+            loadTimeData.getString('installAppToDevice');
 
         installButton.disabled = false;
         installButton.label = loadTimeData.getString('install');
@@ -148,7 +148,8 @@ class AppInstallDialogElement extends HTMLElement {
             .setAttribute('slot', 'leading-icon');
         break;
       case DialogState.INSTALLING:
-        this.$<HTMLElement>('#title').textContent = 'Installing app...';
+        this.$<HTMLElement>('#title').textContent =
+            loadTimeData.getString('installingApp');
 
         installButton.disabled = true;
         installButton.label = loadTimeData.getString('installing');
@@ -161,11 +162,11 @@ class AppInstallDialogElement extends HTMLElement {
       case DialogState.INSTALLED:
         this.$<HTMLElement>('#title-icon-install').style.display = 'none';
         this.$<HTMLElement>('#title-icon-installed').style.display = 'block';
-        this.$<HTMLElement>('#title').textContent = 'App installed';
+        this.$<HTMLElement>('#title').textContent =
+            loadTimeData.getString('appInstalled');
 
         installButton.disabled = false;
-        // TODO(crbug.com/1488697): Localize string.
-        installButton.label = 'Open app';
+        installButton.label = loadTimeData.getString('openApp');
         installButton.classList.replace('installing', 'installed');
         installButton.addEventListener(
             'click', this.onOpenAppButtonClick.bind(this));

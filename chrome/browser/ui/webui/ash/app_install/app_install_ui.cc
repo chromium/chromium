@@ -19,6 +19,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::app_install {
@@ -32,9 +34,17 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
       {"cancel", IDS_CANCEL},
       {"install", IDS_INSTALL},
       {"installing", IDS_OFFICE_INSTALL_PWA_INSTALLING_BUTTON},
+      {"openApp", IDS_OPEN_APP},
+      {"developerInformation", IDS_DEVELOPER_INFORMATION},
+      {"installingApp", IDS_INSTALLING_APP},
+      {"appInstalled", IDS_APP_INSTALLED},
   };
 
   source->AddLocalizedStrings(kStrings);
+  source->AddString("installAppToDevice",
+                    l10n_util::GetStringFUTF8(IDS_INSTALL_DIALOG_TITLE,
+                                              ui::GetChromeOSDeviceName()));
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kAppInstallResources, kAppInstallResourcesSize),
