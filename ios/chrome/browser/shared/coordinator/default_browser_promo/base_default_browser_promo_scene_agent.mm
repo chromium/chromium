@@ -99,6 +99,10 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
     return;
   }
 
+  if (![self promoCanBeDisplayed]) {
+    return;
+  }
+
   // This assumes that the currently active webstate is the one that the paste
   // occured in.
   web::WebState* activeWebState = self.webStateList->GetActiveWebState();
@@ -118,12 +122,21 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
   if (self.currentPromoReason != PromoReasonNone) {
     return;
   }
+
+  if (![self promoCanBeDisplayed]) {
+    return;
+  }
+
   self.currentPromoReason = PromoReasonShare;
   [self startShowPromoTimer];
 }
 
 - (void)logUserEnteredAppViaFirstPartyScheme {
   if (self.currentPromoReason != PromoReasonNone) {
+    return;
+  }
+
+  if (![self promoCanBeDisplayed]) {
     return;
   }
 

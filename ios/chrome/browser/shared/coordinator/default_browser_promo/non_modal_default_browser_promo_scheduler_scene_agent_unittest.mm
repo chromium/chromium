@@ -547,4 +547,29 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   task_env_.FastForwardBy(base::Seconds(60));
 }
 
+// Tests that backgrounding the app will not record anything if promo couldn't
+// have been displayed. See b/326565601.
+TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
+       TestBackgroundingDoesNotRecordIfCannotDisplayPromo) {
+  // Make sure the impression limit is met.
+  for (int i = 0; i < GetNonModalDefaultBrowserPromoImpressionLimit(); i++) {
+    LogUserInteractionWithNonModalPromo(i, i);
+  }
+
+  base::HistogramTester histogram_tester;
+  [scheduler_ logUserPastedInOmnibox];
+
+  // Background the app before page is finished loading.
+  test_web_state_->SetLoading(true);
+  [[promo_commands_handler_ expect]
+      dismissDefaultBrowserNonModalPromoAnimated:NO];
+  [scheduler_ sceneState:nil
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+  [promo_commands_handler_ verify];
+
+  // Check that backgrounding did not record any metrics.
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
+}
 }  // namespace
