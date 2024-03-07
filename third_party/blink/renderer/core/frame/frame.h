@@ -257,6 +257,12 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return user_activation_state_.LastActivationWasRestricted();
   }
 
+  // Sets the sticky user activation state of this frame. This does not change
+  // the transient user activation state.
+  void SetStickyUserActivationState() {
+    user_activation_state_.SetHasBeenActive();
+  }
+
   // Resets the user activation state of this frame.
   void ClearUserActivation() { user_activation_state_.Clear(); }
 
@@ -483,8 +489,10 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   void ApplyFrameOwnerProperties(
       mojom::blink::FrameOwnerPropertiesPtr properties);
 
+  void NotifyUserActivationInFrameTreeStickyOnly();
   void NotifyUserActivationInFrameTree(
-      mojom::blink::UserActivationNotificationType notification_type);
+      mojom::blink::UserActivationNotificationType notification_type,
+      bool sticky_only = false);
   bool ConsumeTransientUserActivationInFrameTree();
   void ClearUserActivationInFrameTree();
 

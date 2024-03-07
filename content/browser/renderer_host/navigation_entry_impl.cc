@@ -951,8 +951,9 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           true /* origin_agent_cluster_left_as_default */,
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
-          false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
-          -1 /* http_response_code */,
+          false /* is_cross_site_cross_browsing_context_group */,
+          false /* should_have_sticky_user_activation */,
+          nullptr /* old_page_info */, -1 /* http_response_code */,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           // This timestamp will be populated when the commit IPC is sent.

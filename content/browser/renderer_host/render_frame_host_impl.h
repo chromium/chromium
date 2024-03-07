@@ -2905,7 +2905,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ClearUserActivation();
   void ConsumeTransientUserActivation();
   void ActivateUserActivation(
-      blink::mojom::UserActivationNotificationType notification_type);
+      blink::mojom::UserActivationNotificationType notification_type,
+      bool sticky_only = false);
 
   // These are called only when RenderFrameHostOwner is iterating over all
   // frames, not directly from the renderer.
@@ -5053,7 +5054,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // document commit occurs (including a BFCache activation).
 
   // The value is manually reset on cross-document navigations in
-  // ClearUserActivation via ResetForNavigation, and not via
+  // ClearUserActivation via UpdateUserActivationState, and not via
   // DocumentAssociatedData (which does not get reset for BFCache activations).
   bool honor_sticky_activation_for_history_intervention_ = true;
 

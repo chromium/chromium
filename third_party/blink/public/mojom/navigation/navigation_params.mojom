@@ -520,6 +520,10 @@ struct CommitNavigationParams {
   // Whether this is a cross-site navigation that swaps BrowsingContextGroups.
   bool is_cross_site_cross_browsing_context_group = false;
 
+  // Whether the new document should start with sticky user activation, because
+  // the previously committed document did, and the navigation was same-site.
+  bool should_have_sticky_user_activation = false;
+
   // Should only be set to a valid value for main-frame same-site navigations
   // where we did a proactive BrowsingInstance swap and we're reusing the old
   // page's process.

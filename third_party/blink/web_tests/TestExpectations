@@ -5543,12 +5543,6 @@ crbug.com/1374264 [ Mac12 Release ] external/wpt/screen-capture/permissions-poli
 # Sheriff 2022-10-04
 crbug.com/1145491 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-overlay-menu.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disable tests to investigate iframe not loading issue
-crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Failure Pass Timeout ]
-crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child.tentative.sub.window.html [ Failure Pass Timeout ]
-crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-special-cases.tentative.sub.window.html [ Failure Pass Timeout ]
-crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild.tentative.sub.window.html [ Failure Pass Timeout ]
-
 #Temporarily disable tests until debugged and fixed  2022-10-05
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/alpha-video-playback.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/color-profile-video-seek-object-fit.html [ Failure Skip ]

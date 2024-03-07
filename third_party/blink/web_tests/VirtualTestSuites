@@ -742,6 +742,11 @@
     "exclusive_tests": "ALL",
     "args": ["--disable-site-isolation-trials",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": [
+      "alexmos@chromium.org",
+      "creis@chromium.org",
+      "wjmaclean@chromium.org"
+    ],
     "expires": "never"
   },
   {
@@ -750,6 +755,11 @@
     "bases": ["external/wpt/performance-timeline/tentative"],
     "args": ["--disable-site-isolation-trials",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": [
+      "alexmos@chromium.org",
+      "creis@chromium.org",
+      "wjmaclean@chromium.org"
+    ],
     "expires": "never"
   },
 
@@ -766,6 +776,7 @@
     "bases": [
       "external/wpt/html/browsers/origin/origin-keyed-agent-clusters",
       "external/wpt/html/infrastructure/urls/terminology-0",
+      "external/wpt/html/semantics/embedded-content/the-iframe-element",
       "external/wpt/navigation-api/navigate-event/cross-window",
       "http/tests/security/cross-frame-access-callback-explicit-domain-ALLOW.html",
       "http/tests/security/cross-frame-access-callback-explicit-domain-DENY.html",
@@ -780,6 +791,11 @@
              "--reset-browsing-instance-between-tests",
              "--disable-features=OriginAgentClusterDefaultEnable",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": [
+      "alexmos@chromium.org",
+      "creis@chromium.org",
+      "wjmaclean@chromium.org"
+    ],
     "expires": "never"
   },
   {

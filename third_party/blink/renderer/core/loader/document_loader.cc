@@ -318,6 +318,7 @@ struct SameSizeAsDocumentLoader
   bool origin_agent_cluster;
   bool origin_agent_cluster_left_as_default;
   bool is_cross_site_cross_browsing_context_group;
+  bool should_have_sticky_user_activation;
   WebVector<WebHistoryItem> navigation_api_back_entries;
   WebVector<WebHistoryItem> navigation_api_forward_entries;
   Member<HistoryItem> navigation_api_previous_entry;
@@ -542,6 +543,8 @@ DocumentLoader::DocumentLoader(
           params_->origin_agent_cluster_left_as_default),
       is_cross_site_cross_browsing_context_group_(
           params_->is_cross_site_cross_browsing_context_group),
+      should_have_sticky_user_activation_(
+          params_->should_have_sticky_user_activation),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
       navigation_api_previous_entry_(params_->navigation_api_previous_entry),
@@ -686,6 +689,9 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->document_ukm_source_id = ukm_source_id_;
   params->is_cross_site_cross_browsing_context_group =
       is_cross_site_cross_browsing_context_group_;
+  // Required for javascript: URL commits to propagate sticky user activation.
+  params->should_have_sticky_user_activation =
+      frame_->HasStickyUserActivation() && !frame_->IsMainFrame();
   params->has_text_fragment_token = has_text_fragment_token_;
   // Origin trials must still work on the cloned document.
   params->initiator_origin_trial_features =
@@ -2728,10 +2734,19 @@ void DocumentLoader::CommitNavigation() {
 
   frame_->ClearScrollSnapshotClients();
 
-  // Clear the user activation state.
+  // Determine whether to give the frame sticky user activation. These checks
+  // mirror the check in Navigator::DidNavigate(). Main frame navigations and
+  // cross-site navigations should not hold on to the sticky user activation
+  // state of the previously navigated page. Same-site navigations should retain
+  // the previous document's sticky user activation state, regardless of whether
+  // the navigation resulted in a new process being created.
+  // See: crbug.com/41493458
   // TODO(crbug.com/736415): Clear this bit unconditionally for all frames.
-  if (frame_->IsMainFrame())
+  if (!should_have_sticky_user_activation_) {
     frame_->ClearUserActivation();
+  } else {
+    frame_->SetStickyUserActivationState();
+  }
 
   // The DocumentLoader was flagged as activated if it needs to notify the frame
   // that it was activated before navigation. Update the frame state based on

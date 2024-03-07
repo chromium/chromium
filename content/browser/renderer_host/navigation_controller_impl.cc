@@ -4010,7 +4010,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*origin_agent_cluster_left_as_default=*/true,
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
-          /*is_cross_browsing_instance=*/false, /*old_page_info=*/nullptr,
+          /*is_cross_site_cross_browsing_context_group=*/false,
+          /*should_have_sticky_user_activation=*/false,
+          /*old_page_info=*/nullptr,
           /*http_response_code=*/-1,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           /*early_hints_preloaded_resources=*/std::vector<GURL>(),

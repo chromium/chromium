@@ -286,10 +286,21 @@ void Frame::DidChangeVisibilityState() {
     child_frames[i]->DidChangeVisibilityState();
 }
 
+void Frame::NotifyUserActivationInFrameTreeStickyOnly() {
+  NotifyUserActivationInFrameTree(
+      mojom::blink::UserActivationNotificationType::kNone,
+      /*sticky_only=*/true);
+}
+
 void Frame::NotifyUserActivationInFrameTree(
-    mojom::blink::UserActivationNotificationType notification_type) {
+    mojom::blink::UserActivationNotificationType notification_type,
+    bool sticky_only) {
   for (Frame* node = this; node; node = node->Tree().Parent()) {
-    node->user_activation_state_.Activate(notification_type);
+    if (sticky_only) {
+      node->user_activation_state_.SetHasBeenActive();
+    } else {
+      node->user_activation_state_.Activate(notification_type);
+    }
     auto* local_node = DynamicTo<LocalFrame>(node);
     if (local_node) {
       local_node->SetHadUserInteraction(true);
@@ -310,7 +321,11 @@ void Frame::NotifyUserActivationInFrameTree(
       if (local_frame_node &&
           security_origin->CanAccess(
               local_frame_node->GetSecurityContext()->GetSecurityOrigin())) {
-        node->user_activation_state_.Activate(notification_type);
+        if (sticky_only) {
+          node->user_activation_state_.SetHasBeenActive();
+        } else {
+          node->user_activation_state_.Activate(notification_type);
+        }
         local_frame_node->SetHadUserInteraction(true);
       }
     }

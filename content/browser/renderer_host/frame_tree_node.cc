@@ -326,19 +326,6 @@ bool FrameTreeNode::IsOutermostMainFrame() const {
   return !GetParentOrOuterDocument();
 }
 
-void FrameTreeNode::ResetForNavigation() {
-  // This frame has had its user activation bits cleared in the renderer before
-  // arriving here. We just need to clear them here and in the other renderer
-  // processes that may have a reference to this frame.
-  //
-  // We do not take user activation into account when calculating
-  // |ResetForNavigationResult|, as we are using it to determine bfcache
-  // eligibility and the page can get another user gesture after restore.
-  UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kClearActivation,
-      blink::mojom::UserActivationNotificationType::kNone);
-}
-
 RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocument() const {
   return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/false,
                                         /*include_prospective=*/true);
@@ -749,15 +736,22 @@ void FrameTreeNode::BeforeUnloadCanceled() {
   }
 }
 
+bool FrameTreeNode::NotifyUserActivationStickyOnly() {
+  return NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kNone,
+      /*sticky_only=*/true);
+}
+
 bool FrameTreeNode::NotifyUserActivation(
-    blink::mojom::UserActivationNotificationType notification_type) {
+    blink::mojom::UserActivationNotificationType notification_type,
+    bool sticky_only) {
   // User Activation V2 requires activating all ancestor frames in addition to
   // the current frame. See
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
   for (RenderFrameHostImpl* rfh = current_frame_host(); rfh;
        rfh = rfh->GetParent()) {
     rfh->DidReceiveUserActivation();
-    rfh->ActivateUserActivation(notification_type);
+    rfh->ActivateUserActivation(notification_type, sticky_only);
   }
 
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
@@ -772,7 +766,8 @@ bool FrameTreeNode::NotifyUserActivation(
     for (FrameTreeNode* node : frame_tree().Nodes()) {
       if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
               current_origin)) {
-        node->current_frame_host()->ActivateUserActivation(notification_type);
+        node->current_frame_host()->ActivateUserActivation(notification_type,
+                                                           sticky_only);
       }
     }
   }
@@ -836,6 +831,9 @@ bool FrameTreeNode::UpdateUserActivationState(
         return false;
       }
     } break;
+    case blink::mojom::UserActivationUpdateType::kNotifyActivationStickyOnly:
+      update_result = NotifyUserActivationStickyOnly();
+      break;
     case blink::mojom::UserActivationUpdateType::kClearActivation:
       update_result = ClearUserActivation();
       break;

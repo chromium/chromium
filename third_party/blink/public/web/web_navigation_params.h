@@ -468,6 +468,10 @@ struct BLINK_EXPORT WebNavigationParams {
   // (BrowsingInstances).
   bool is_cross_site_cross_browsing_context_group = false;
 
+  // Whether the new document should start with sticky user activation, because
+  // the previously committed document did, and the navigation was same-site.
+  bool should_have_sticky_user_activation = false;
+
   // Blink's copy of the policy container containing security policies to be
   // enforced on the document created by this navigation.
   std::unique_ptr<WebPolicyContainer> policy_container;

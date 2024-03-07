@@ -805,6 +805,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // BrowsingContextGroup.
   bool is_cross_site_cross_browsing_context_group_ = false;
 
+  // Whether the new document should start with sticky user activation, because
+  // the previously committed document did, and the navigation was same-site.
+  bool should_have_sticky_user_activation_ = false;
+
   WebVector<WebHistoryItem> navigation_api_back_entries_;
   WebVector<WebHistoryItem> navigation_api_forward_entries_;
   Member<HistoryItem> navigation_api_previous_entry_;

@@ -111,14 +111,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   bool IsMainFrame() const;
   bool IsOutermostMainFrame() const;
 
-  // Clears any state in this node which was set by the document itself (CSP &
-  // UserActivationState) and notifies proxies as appropriate. Invoked after
-  // committing navigation to a new document (since the new document comes with
-  // a fresh set of CSP).
-  // TODO(arthursonzogni): Remove this function. The frame/document must not be
-  // left temporarily with lax state.
-  void ResetForNavigation();
-
   FrameTree& frame_tree() const { return frame_tree_.get(); }
   Navigator& navigator();
 
@@ -782,8 +774,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   class OpenerDestroyedObserver;
 
   // The |notification_type| parameter is used for histograms only.
+  // |sticky_only| is set to true when propagating sticky user activation during
+  // cross-document navigations. The transient state remains unchanged.
   bool NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType notification_type);
+      blink::mojom::UserActivationNotificationType notification_type,
+      bool sticky_only = false);
+
+  bool NotifyUserActivationStickyOnly();
 
   bool ConsumeTransientUserActivation();
 
