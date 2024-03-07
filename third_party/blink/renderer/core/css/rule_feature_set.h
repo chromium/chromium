@@ -344,9 +344,16 @@ class CORE_EXPORT RuleFeatureSet {
 
   void UpdateInvalidationSets(const CSSSelector&, const StyleScope*);
 
+  // This class is used during collection of features from a given selector;
+  // it collects a subset of referenced classes, IDs etc. from the subject
+  // of the selector (see e.g. ExtractInvalidationSetFeaturesFromCompound()).
+  // It is heavily used during feature set construction (i.e., initial style
+  // calculation) but not stored except for the stack, which is why it is
+  // fine to have inline sizes on the vectors.
   struct InvalidationSetFeatures {
-    DISALLOW_NEW();
+    STACK_ALLOCATED();
 
+   public:
     void Merge(const InvalidationSetFeatures& other);
     bool HasFeatures() const;
     bool HasIdClassOrAttribute() const;
@@ -393,11 +400,11 @@ class CORE_EXPORT RuleFeatureSet {
              tag_names.size() + emitted_tag_names.size();
     }
 
-    Vector<AtomicString> classes;
-    Vector<AtomicString> attributes;
-    Vector<AtomicString> ids;
-    Vector<AtomicString> tag_names;
-    Vector<AtomicString> emitted_tag_names;
+    Vector<AtomicString, 4> classes;
+    Vector<AtomicString, 4> attributes;
+    Vector<AtomicString, 4> ids;
+    Vector<AtomicString, 4> tag_names;
+    Vector<AtomicString, 4> emitted_tag_names;
     unsigned max_direct_adjacent_selectors = 0;
 
     // descendant_features_depth is used while adding features for logical
