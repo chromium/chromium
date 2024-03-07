@@ -94,16 +94,23 @@ LayoutUnit ResolveInlineLengthInternal(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     LayoutUnit override_available_size,
-    Length::AnchorEvaluator* anchor_evaluator) {
+    Length::AnchorEvaluator* anchor_evaluator,
+    LayoutUnit unresolvable_length_result) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
-      DCHECK_GE(constraint_space.AvailableSize().inline_size, LayoutUnit());
-      const LayoutUnit available_size =
-          override_available_size == kIndefiniteSize
-              ? constraint_space.AvailableSize().inline_size
-              : override_available_size;
+      LayoutUnit available_size = constraint_space.AvailableSize().inline_size;
+      if (available_size == kIndefiniteSize) {
+        // TODO(https://crbug.com/328572265): Should this check go after the
+        // overriding just below?  If so, should InlineLengthUnresolvable
+        // change to match?
+        return unresolvable_length_result;
+      }
+      DCHECK_GE(available_size, LayoutUnit());
+      if (override_available_size != kIndefiniteSize) {
+        available_size = override_available_size;
+      }
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       return std::max(border_padding.InlineSum(),
                       available_size - margins.InlineSum());
@@ -113,16 +120,18 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kCalculated: {
       const LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
-      DCHECK(!length.HasPercent() ||
-             percentage_resolution_size != kIndefiniteSize)
-          << length.ToString();
+      if (length.HasPercent() &&
+          percentage_resolution_size == kIndefiniteSize) {
+        return unresolvable_length_result;
+      }
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
           {.anchor_evaluator = anchor_evaluator,
            .intrinsic_evaluator = [&](const Length& length_to_evaluate) {
              return ResolveInlineLengthInternal(
                  constraint_space, style, border_padding, min_max_sizes_func,
-                 length_to_evaluate, override_available_size, anchor_evaluator);
+                 length_to_evaluate, override_available_size, anchor_evaluator,
+                 unresolvable_length_result);
            }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
@@ -147,6 +156,12 @@ LayoutUnit ResolveInlineLengthInternal(
         return min_max_sizes.max_size;
 
       LayoutUnit available_size = constraint_space.AvailableSize().inline_size;
+      if (available_size == kIndefiniteSize) {
+        // TODO(https://crbug.com/328572265): Should this check go after the
+        // overriding just below?  If so, should InlineLengthUnresolvable
+        // change to match?
+        return unresolvable_length_result;
+      }
       DCHECK_GE(available_size, LayoutUnit());
       if (override_available_size != kIndefiniteSize)
         available_size = override_available_size;
@@ -155,16 +170,17 @@ LayoutUnit ResolveInlineLengthInternal(
           (available_size - margins.InlineSum()).ClampNegativeToZero();
       return min_max_sizes.ShrinkToFit(fill_available);
     }
+    case Length::kAuto:
+    case Length::kNone:
+      return unresolvable_length_result;
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
       [[fallthrough]];
-    case Length::kAuto:
-    case Length::kNone:
     default:
       NOTREACHED();
-      return border_padding.InlineSum();
+      return unresolvable_length_result;
   }
 }
 
@@ -173,18 +189,25 @@ LayoutUnit ResolveBlockLengthInternal(
     const ComputedStyle& style,
     const BoxStrut& border_padding,
     const Length& length,
-    LayoutUnit intrinsic_size,
+    bool use_intrinsic_size,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    Length::AnchorEvaluator* anchor_evaluator) {
+    Length::AnchorEvaluator* anchor_evaluator,
+    IntrinsicBlockSizeFunctionRef unresolvable_block_size_func) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
-      const LayoutUnit available_size =
-          override_available_size == kIndefiniteSize
-              ? constraint_space.AvailableSize().block_size
-              : override_available_size;
+      LayoutUnit available_size = constraint_space.AvailableSize().block_size;
+      if (available_size == kIndefiniteSize) {
+        // TODO(https://crbug.com/328572265): Should this check go after the
+        // overriding just below?  If so, should BlockLengthUnresolvable
+        // change to match?
+        return unresolvable_block_size_func();
+      }
+      if (override_available_size != kIndefiniteSize) {
+        available_size = override_available_size;
+      }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       return std::max(border_padding.BlockSum(),
@@ -197,16 +220,19 @@ LayoutUnit ResolveBlockLengthInternal(
           override_percentage_resolution_size
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
-      DCHECK(!length.HasPercent() ||
-             percentage_resolution_size != kIndefiniteSize);
+      if (length.HasPercent() &&
+          percentage_resolution_size == kIndefiniteSize) {
+        return unresolvable_block_size_func();
+      }
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
           {.anchor_evaluator = anchor_evaluator,
            .intrinsic_evaluator = [&](const Length& length_to_evaluate) {
              return ResolveBlockLengthInternal(
                  constraint_space, style, border_padding, length_to_evaluate,
-                 intrinsic_size, override_available_size,
-                 override_percentage_resolution_size, anchor_evaluator);
+                 use_intrinsic_size, override_available_size,
+                 override_percentage_resolution_size, anchor_evaluator,
+                 unresolvable_block_size_func);
            }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
@@ -218,7 +244,9 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
-    case Length::kFitContent:
+    case Length::kFitContent: {
+      LayoutUnit intrinsic_size =
+          use_intrinsic_size ? unresolvable_block_size_func() : kIndefiniteSize;
 #if DCHECK_IS_ON()
       // Due to how intrinsic_size is calculated, it should always include
       // border and padding. We cannot check for this if we are
@@ -229,13 +257,15 @@ LayoutUnit ResolveBlockLengthInternal(
         DCHECK_GE(intrinsic_size, border_padding.BlockSum());
 #endif  // DCHECK_IS_ON()
       return intrinsic_size;
+    }
+    case Length::kAuto:
+    case Length::kNone:
+      return unresolvable_block_size_func();
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
       [[fallthrough]];
-    case Length::kAuto:
-    case Length::kNone:
     default:
       NOTREACHED();
       return border_padding.BlockSum();

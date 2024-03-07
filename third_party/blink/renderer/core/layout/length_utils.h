@@ -78,14 +78,15 @@ CORE_EXPORT bool BlockLengthUnresolvable(
 //  - |override_available_size| overrides the available-size. This is used when
 //    computing the size of an OOF-positioned element, accounting for insets
 //    and the static position.
-CORE_EXPORT LayoutUnit ResolveInlineLengthInternal(
-    const ConstraintSpace&,
-    const ComputedStyle&,
-    const BoxStrut& border_padding,
-    MinMaxSizesFunctionRef,
-    const Length&,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr);
+CORE_EXPORT LayoutUnit
+ResolveInlineLengthInternal(const ConstraintSpace&,
+                            const ComputedStyle&,
+                            const BoxStrut& border_padding,
+                            MinMaxSizesFunctionRef,
+                            const Length&,
+                            LayoutUnit override_available_size,
+                            Length::AnchorEvaluator* anchor_evaluator,
+                            LayoutUnit unresolvable_length_result);
 
 // Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
 // plays the part of |MinMaxSizes|.
@@ -94,10 +95,11 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const ComputedStyle&,
     const BoxStrut& border_padding,
     const Length&,
-    LayoutUnit intrinsic_size,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr);
+    bool use_intrinsic_size,
+    LayoutUnit override_available_size,
+    const LayoutUnit* override_percentage_resolution_size,
+    Length::AnchorEvaluator* anchor_evaluator,
+    IntrinsicBlockSizeFunctionRef unresolvable_block_size_func);
 
 // Used for resolving min inline lengths, (|ComputedStyle::MinLogicalWidth|).
 inline LayoutUnit ResolveMinInlineLength(
@@ -108,13 +110,9 @@ inline LayoutUnit ResolveMinInlineLength(
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
-  if (LIKELY(length.IsAuto() ||
-             InlineLengthUnresolvable(constraint_space, length)))
-    return border_padding.InlineSum();
-
-  return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes_func, length,
-                                     override_available_size, anchor_evaluator);
+  return ResolveInlineLengthInternal(
+      constraint_space, style, border_padding, min_max_sizes_func, length,
+      override_available_size, anchor_evaluator, border_padding.InlineSum());
 }
 
 // Used for resolving max inline lengths, (|ComputedStyle::MaxLogicalWidth|).
@@ -126,13 +124,11 @@ inline LayoutUnit ResolveMaxInlineLength(
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
-  if (LIKELY(length.IsNone() ||
-             InlineLengthUnresolvable(constraint_space, length)))
-    return LayoutUnit::Max();
-
-  return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes_func, length,
-                                     override_available_size, anchor_evaluator);
+  // TODO(https://crbug.com/313072): Ensure that we don't do math on
+  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
+  return ResolveInlineLengthInternal(
+      constraint_space, style, border_padding, min_max_sizes_func, length,
+      override_available_size, anchor_evaluator, LayoutUnit::Max());
 }
 
 // Used for resolving main inline lengths, (|ComputedStyle::LogicalWidth|).
@@ -144,11 +140,14 @@ inline LayoutUnit ResolveMainInlineLength(
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+  // TODO(https://crbug.com/313072): We will need to accept 'auto'
+  // lengths here and handle them in ResolveInlineLengthInternal in
+  // order to support 'auto' values inside of calc-size().
   DCHECK(!length.IsAuto());
 
-  return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes_func, length,
-                                     override_available_size, anchor_evaluator);
+  return ResolveInlineLengthInternal(
+      constraint_space, style, border_padding, min_max_sizes_func, length,
+      override_available_size, anchor_evaluator, LayoutUnit());
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
@@ -160,14 +159,12 @@ inline LayoutUnit ResolveMinBlockLength(
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
-  if (LIKELY(BlockLengthUnresolvable(constraint_space, length,
-                                     override_percentage_resolution_size)))
-    return border_padding.BlockSum();
-
+  LayoutUnit border_padding_sum = border_padding.BlockSum();
   return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length, kIndefiniteSize,
-      override_available_size, override_percentage_resolution_size,
-      anchor_evaluator);
+      constraint_space, style, border_padding, length,
+      /* use_intrinsic_size */ false, override_available_size,
+      override_percentage_resolution_size, anchor_evaluator,
+      [border_padding_sum]() { return border_padding_sum; });
 }
 
 // Used for resolving max block lengths, (|ComputedStyle::MaxLogicalHeight|).
@@ -183,10 +180,13 @@ inline LayoutUnit ResolveMaxBlockLength(
                                      override_percentage_resolution_size)))
     return LayoutUnit::Max();
 
+  // TODO(https://crbug.com/313072): Ensure that we don't do math on
+  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
   return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length, kIndefiniteSize,
-      override_available_size, override_percentage_resolution_size,
-      anchor_evaluator);
+      constraint_space, style, border_padding, length,
+      /* use_intrinsic_size */ false, override_available_size,
+      override_percentage_resolution_size, anchor_evaluator,
+      []() { return LayoutUnit::Max(); });
 }
 
 // Used for resolving main block lengths, (|ComputedStyle::LogicalHeight|).
@@ -199,17 +199,16 @@ inline LayoutUnit ResolveMainBlockLength(
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+  // TODO(https://crbug.com/313072): We will need to accept 'auto'
+  // lengths here and handle them in ResolveBlockLengthInternal in
+  // order to support 'auto' values inside of calc-size().
   DCHECK(!length.IsAuto());
-  if (UNLIKELY((length.HasPercent() || length.IsFillAvailable()) &&
-               BlockLengthUnresolvable(constraint_space, length,
-                                       override_percentage_resolution_size))) {
-    return intrinsic_size;
-  }
 
   return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length, intrinsic_size,
-      override_available_size, override_percentage_resolution_size,
-      anchor_evaluator);
+      constraint_space, style, border_padding, length,
+      /* use_intrinsic_size */ true, override_available_size,
+      override_percentage_resolution_size, anchor_evaluator,
+      [intrinsic_size]() { return intrinsic_size; });
 }
 
 inline LayoutUnit ResolveMainBlockLength(
@@ -220,21 +219,16 @@ inline LayoutUnit ResolveMainBlockLength(
     IntrinsicBlockSizeFunctionRef intrinsic_block_size_func,
     LayoutUnit override_available_size = kIndefiniteSize,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+  // TODO(https://crbug.com/313072): We will need to accept 'auto'
+  // lengths here and handle them in ResolveBlockLengthInternal in
+  // order to support 'auto' values inside of calc-size().
   DCHECK(!length.IsAuto());
-  if (UNLIKELY((length.HasPercent() || length.IsFillAvailable()) &&
-               BlockLengthUnresolvable(constraint_space, length))) {
-    return intrinsic_block_size_func();
-  }
-
-  LayoutUnit intrinsic_block_size = kIndefiniteSize;
-  if (length.HasContentOrIntrinsic()) {
-    intrinsic_block_size = intrinsic_block_size_func();
-  }
 
   return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length, intrinsic_block_size,
-      override_available_size,
-      /* override_percentage_resolution_size */ nullptr, anchor_evaluator);
+      constraint_space, style, border_padding, length,
+      /* use_intrinsic_size */ true, override_available_size,
+      /* override_percentage_resolution_size */ nullptr, anchor_evaluator,
+      intrinsic_block_size_func);
 }
 
 // Computes the min-block-size and max-block-size values for a node.
