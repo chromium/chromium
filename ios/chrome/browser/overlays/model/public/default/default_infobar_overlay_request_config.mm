@@ -17,11 +17,7 @@ DefaultInfobarOverlayRequestConfig::DefaultInfobarOverlayRequestConfig(
 
 infobars::InfoBarDelegate* DefaultInfobarOverlayRequestConfig::delegate()
     const {
-  InfoBarIOS* infobar = weak_infobar_.get();
-  if (!infobar) {
-    return nil;
-  }
-  return infobar->delegate();
+  return weak_infobar_ ? weak_infobar_->delegate() : nullptr;
 }
 
 DefaultInfobarOverlayRequestConfig::~DefaultInfobarOverlayRequestConfig() =
