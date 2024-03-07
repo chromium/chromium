@@ -47,6 +47,7 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : false
             key : key0-set-from-document
             value : value0
         }
@@ -57,6 +58,7 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : false
             key : key1-set-from-document
             value : value1
         }
@@ -77,6 +79,7 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : false
             key : key2-set-from-document
             value : value2
         }

@@ -33,6 +33,7 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : false
             key : key0-set-from-document
             value : value0
         }
@@ -43,6 +44,7 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : true
             key : key1-set-from-document
             value : value1
         }
@@ -63,6 +65,7 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : false
             key : key2-set-from-document
             value : value2
         }
@@ -73,11 +76,22 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : true
+            key : key2-set-from-document
+            value : value3
+        }
+        type : documentSet
+    }
+    [5] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
             key : key2-set-from-document
         }
         type : documentDelete
     }
-    [5] : {
+    [6] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -86,7 +100,7 @@ Events: [
         }
         type : documentAddModule
     }
-    [6] : {
+    [7] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -96,23 +110,14 @@ Events: [
         }
         type : documentRun
     }
-    [7] : {
-        accessTime : <number>
-        mainFrameId : <string>
-        ownerOrigin : http://127.0.0.1:8000
-        params : {
-            key : key0-set-from-worklet
-            value : value0
-        }
-        type : workletSet
-    }
     [8] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
-            key : key1-set-from-worklet
-            value : value1
+            ignoreIfPresent : false
+            key : key0-set-from-worklet
+            value : value0
         }
         type : workletSet
     }
@@ -121,12 +126,24 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
+            ignoreIfPresent : false
+            key : key1-set-from-worklet
+            value : value1
+        }
+        type : workletSet
+    }
+    [10] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : true
             key : key2-set-from-worklet
             value : value2
         }
         type : workletSet
     }
-    [10] : {
+    [11] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -136,7 +153,7 @@ Events: [
         }
         type : workletAppend
     }
-    [11] : {
+    [12] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -145,7 +162,7 @@ Events: [
         }
         type : workletDelete
     }
-    [12] : {
+    [13] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -153,7 +170,7 @@ Events: [
         }
         type : workletLength
     }
-    [13] : {
+    [14] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -161,7 +178,7 @@ Events: [
         }
         type : workletRemainingBudget
     }
-    [14] : {
+    [15] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -169,7 +186,7 @@ Events: [
         }
         type : workletKeys
     }
-    [15] : {
+    [16] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -177,7 +194,7 @@ Events: [
         }
         type : workletEntries
     }
-    [16] : {
+    [17] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -199,7 +216,7 @@ Events: [
         }
         type : documentSelectURL
     }
-    [17] : {
+    [18] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -208,7 +225,7 @@ Events: [
         }
         type : workletGet
     }
-    [18] : {
+    [19] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -217,7 +234,7 @@ Events: [
         }
         type : workletGet
     }
-    [19] : {
+    [20] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -227,7 +244,7 @@ Events: [
         }
         type : documentRun
     }
-    [20] : {
+    [21] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
@@ -235,7 +252,7 @@ Events: [
         }
         type : workletClear
     }
-    [21] : {
+    [22] : {
         accessTime : <number>
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000

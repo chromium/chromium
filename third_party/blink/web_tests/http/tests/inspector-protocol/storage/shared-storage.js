@@ -44,17 +44,21 @@
 
   await dp.Storage.setSharedStorageTracking({enable: true});
 
-  eventPromise = getPromiseForEventCount(6);
+  eventPromise = getPromiseForEventCount(7);
 
   // The following calls should trigger events if shared storage is enabled, as
   // tracking is now enabled.
   //
-  // Generates 6 events.
+  // Generates 7 events.
   await session.evaluateAsync(`
         sharedStorage.set('key0-set-from-document', 'value0');
-        sharedStorage.set('key1-set-from-document', 'value1');
+        sharedStorage.set('key1-set-from-document', 'value1',
+                          {ignoreIfPresent: true});
         sharedStorage.append('key1-set-from-document', 'value1');
-        sharedStorage.set('key2-set-from-document', 'value2');
+        sharedStorage.set('key2-set-from-document', 'value2',
+                          {ignoreIfPresent: false});
+        sharedStorage.set('key2-set-from-document', 'value3',
+                          {ignoreIfPresent: true});
         sharedStorage.delete('key2-set-from-document');
         const script_url = "${base}shared-storage-module.js";
         sharedStorage.worklet.addModule(script_url);

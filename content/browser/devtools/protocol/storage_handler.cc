@@ -1589,6 +1589,9 @@ void StorageHandler::NotifySharedStorageAccessed(
   if (params.value) {
     protocol_params->SetValue(*params.value);
   }
+  if (params.ignore_if_present) {
+    protocol_params->SetIgnoreIfPresent(*params.ignore_if_present);
+  }
 
   if (params.urls_with_metadata) {
     auto protocol_urls = std::make_unique<
