@@ -379,7 +379,7 @@
     },
   },
   'chromeos-tast-fieldtrial-enabled': {
-    'args': ["-var=setup.FieldTrialConfig=enable"],
+    'args': ["tast.setup.FieldTrialConfig=enable"],
   },
   'chromeos-trogdor-skylab-chrome-all-tast-tests': {
     'shards': 20,

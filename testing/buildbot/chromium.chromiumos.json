@@ -1133,7 +1133,7 @@
       },
       {
         "args": [
-          "-var=setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1152,7 +1152,7 @@
       },
       {
         "args": [
-          "-var=setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1173,7 +1173,7 @@
       },
       {
         "args": [
-          "-var=setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
@@ -1211,7 +1211,7 @@
       },
       {
         "args": [
-          "-var=setup.FieldTrialConfig=enable"
+          "tast.setup.FieldTrialConfig=enable"
         ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",

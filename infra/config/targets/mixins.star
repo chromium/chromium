@@ -414,7 +414,7 @@ targets.mixin(
 targets.mixin(
     name = "chromeos-tast-fieldtrial-enabled",
     skylab = targets.skylab(
-        args = ["-var=setup.FieldTrialConfig=enable"],
+        args = ["tast.setup.FieldTrialConfig=enable"],
     ),
 )
 
