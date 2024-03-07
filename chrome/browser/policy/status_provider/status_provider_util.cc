@@ -17,7 +17,7 @@
 #include "components/user_manager/user_manager.h"
 #else
 #include "chrome/browser/enterprise/util/affiliation.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -57,8 +57,9 @@ void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
   if (!profile->IsMainProfile())
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   {
-    if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
+    if (!policy::GetDMToken(profile).is_valid()) {
       return;
+    }
   }
   dict->Set("isAffiliated",
             chrome::enterprise_util::IsProfileAffiliated(profile));
