@@ -427,7 +427,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
   RecordMojoResultForDataTransfer(result, "Read");
   switch (read_result) {
     case MOJO_RESULT_OK:
-      CHECK(state.readable());
       write_buffer_manager_for_race_network_request_.ArmOrNotify();
       write_buffer_manager_for_fetch_handler_.ArmOrNotify();
       return;
