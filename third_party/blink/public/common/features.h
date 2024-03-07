@@ -948,6 +948,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNewBaseUrlInheritanceBehavior);
 // Disables forced frame updates for web tests. Used by web test runner only.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);
 
+// If enabled, open broadcast channels do not block back/forward cache.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBFCacheOpenBroadcastChannel);
+
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);

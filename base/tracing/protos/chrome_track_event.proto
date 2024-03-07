@@ -662,6 +662,7 @@ message BackForwardCacheCanStoreDocumentResult {
     COOKIE_DISABLED = 56;
     HTTP_AUTH_REQUIRED = 57;
     COOKIE_FLUSHED = 58;
+    BROADCAST_CHANNEL_ON_MESSAGE = 59;
   }
 
   optional BackForwardCacheNotRestoredReason

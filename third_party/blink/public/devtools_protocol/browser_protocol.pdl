@@ -8953,6 +8953,7 @@ domain Page
       CookieDisabled
       HTTPAuthRequired
       CookieFlushed
+      BroadcastChannelOnMessage
       #Blocklisted features
       WebSocket
       WebTransport

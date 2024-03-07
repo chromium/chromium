@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/modules/broadcastchannel/broadcast_channel.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -175,6 +178,23 @@ void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
   } else {
     event = MessageEvent::CreateError(context->GetSecurityOrigin()->ToString());
   }
+
+  if (base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel) &&
+      context->is_in_back_forward_cache()) {
+    LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
+    CHECK(window);
+    if (LocalFrame* frame = window->GetFrame()) {
+      base::UmaHistogramEnumeration(
+          "BackForwardCache.Eviction.Renderer",
+          mojom::blink::RendererEvictionReason::kBroadcastChannelOnMessage);
+      // We don't need to report the source location of a broadcast channel.
+      frame->GetBackForwardCacheControllerHostRemote()
+          .EvictFromBackForwardCache(
+              mojom::blink::RendererEvictionReason::kBroadcastChannelOnMessage,
+              /*source=*/nullptr);
+    }
+    return;
+  }
   // <specdef
   // href="https://html.spec.whatwg.org/multipage/web-messaging.html#dom-broadcastchannel-postmessage">
   // <spec>The tasks must use the DOM manipulation task source, and, for
@@ -207,11 +227,15 @@ BroadcastChannel::BroadcastChannel(
       name_(name),
       receiver_(this, execution_context),
       remote_client_(execution_context),
-      feature_handle_for_scheduler_(
-          execution_context->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kBroadcastChannel,
-              {SchedulingPolicy::DisableBackForwardCache()})),
       associated_remote_(execution_context) {
+  // TODO(crbug.com/327075943): Support BroadcastChannel created on workers.
+  if (!execution_context->IsWindow() ||
+      !base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel)) {
+    feature_handle_for_scheduler_ =
+        execution_context->GetScheduler()->RegisterFeature(
+            SchedulingPolicy::Feature::kBroadcastChannel,
+            {SchedulingPolicy::DisableBackForwardCache()});
+  }
   provider->ConnectToChannel(
       name_,
       receiver_.BindNewEndpointAndPassRemote(
@@ -244,11 +268,15 @@ BroadcastChannel::BroadcastChannel(
       name_(name),
       receiver_(this, execution_context),
       remote_client_(execution_context),
-      feature_handle_for_scheduler_(
-          execution_context->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kBroadcastChannel,
-              {SchedulingPolicy::DisableBackForwardCache()})),
       associated_remote_(execution_context) {
+  // TODO(crbug.com/327075943): Support BroadcastChannel created on workers.
+  if (!execution_context->IsWindow() ||
+      !base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel)) {
+    feature_handle_for_scheduler_ =
+        execution_context->GetScheduler()->RegisterFeature(
+            SchedulingPolicy::Feature::kBroadcastChannel,
+            {SchedulingPolicy::DisableBackForwardCache()});
+  }
   // Note: We cannot associate per-frame task runner here, but postTask
   //       to it manually via EnqueueEvent, since the current expectation
   //       is to receive messages even after close for which queued before

@@ -183,6 +183,7 @@ chromium-metrics-reviews@google.com.
   <int value="61"
       label="Same-origin HTTP authentication is required from another tab"/>
   <int value="62" label="Cookie is flushed"/>
+  <int value="63" label="BroadcastChannel in bfcache received a message"/>
 </enum>
 
 <enum name="BackForwardCachePageWithFormStorable">

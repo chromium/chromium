@@ -125,7 +125,8 @@ class BackForwardCacheMetrics
     kCookieDisabled = 60,
     kHTTPAuthRequired = 61,
     kCookieFlushed = 62,
-    kMaxValue = kCookieFlushed,
+    kBroadcastChannelOnMessage = 63,
+    kMaxValue = kBroadcastChannelOnMessage,
   };
 
   using NotRestoredReasons =

@@ -1,0 +1,15 @@
+<html>
+  <title>BroadcastChannel test</title>
+</html>
+<script>
+let sender;
+
+function acquireBroadcastChannel() {
+    sender = new BroadcastChannel('foo');
+}
+
+function sendMessageOnce() {
+  sender.postMessage('hello');
+}
+
+</script>

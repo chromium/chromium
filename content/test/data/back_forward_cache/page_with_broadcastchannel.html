@@ -19,6 +19,8 @@ function setShouldAcquireBroadcastChannelInPageHide(acquire) {
   shouldAcquireBroadcastChannelInPageHide = acquire;
 }
 
+function setOnMessage() {}
+
 window.onpagehide = event => {
   if (shouldCloseChannelInPageHide) {
     channel.close();

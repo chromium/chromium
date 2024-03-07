@@ -189,6 +189,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::HTTP_AUTH_REQUIRED;
     case Reason::kCookieFlushed:
       return ProtoEnum::COOKIE_FLUSHED;
+    case Reason::kBroadcastChannelOnMessage:
+      return ProtoEnum::BROADCAST_CHANNEL_ON_MESSAGE;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -461,6 +463,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Same-origin HTTP authentication is required in another tab.";
     case Reason::kCookieFlushed:
       return "Cookie is flushed.";
+    case Reason::kBroadcastChannelOnMessage:
+      return "Broadcast channel in bfcache received a message";
   }
 }
 
@@ -518,6 +522,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kNetworkExceedsBufferLimit:
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
       return "outstanding-network-request";
+    case Reason::kBroadcastChannelOnMessage:
+      return "broadcast-channel-on-message";
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:

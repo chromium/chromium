@@ -5707,6 +5707,7 @@ data/back_forward_cache/empty.html
 data/back_forward_cache/empty.js
 data/back_forward_cache/page_with_blocking_feature.html
 data/back_forward_cache/page_with_broadcastchannel.html
+data/back_forward_cache/page_with_broadcastchannel_sender.html
 data/back_forward_cache/page_with_cross_origin_subframe_with_pageshow.html
 data/back_forward_cache/page_with_dedicated_worker.html
 data/back_forward_cache/page_with_dedicated_worker_and_importscripts.html

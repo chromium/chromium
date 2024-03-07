@@ -464,6 +464,9 @@ RendererEvictionReasonToNotRestoredReason(
     case blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit:
       return BackForwardCacheMetrics::NotRestoredReason::
           kNetworkExceedsBufferLimit;
+    case blink::mojom::RendererEvictionReason::kBroadcastChannelOnMessage:
+      return BackForwardCacheMetrics::NotRestoredReason::
+          kBroadcastChannelOnMessage;
   }
   NOTREACHED();
   return BackForwardCacheMetrics::NotRestoredReason::kUnknown;
