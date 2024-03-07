@@ -10,11 +10,13 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "components/google/core/common/google_util.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -43,6 +45,7 @@
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
@@ -169,6 +172,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   self.mediator.forcedSigninEnabled =
       self.authService->GetServiceStatus() ==
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
+  if (IsLinkedServicesSettingIosEnabled()) {
+    self.mediator.isEEAAccount =
+        ios::TemplateURLServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState())
+            ->IsEeaChoiceCountry();
+  }
 
   ManageSyncSettingsTableViewController* viewController =
       [[ManageSyncSettingsTableViewController alloc]

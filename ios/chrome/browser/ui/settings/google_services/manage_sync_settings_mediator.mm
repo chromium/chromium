@@ -443,10 +443,15 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     TableViewImageItem* personalizeGoogleServicesItem =
         [[TableViewImageItem alloc]
             initWithType:PersonalizeGoogleServicesItemType];
-    // TODO(crbug.com/324091979): Different symbol for EEA users.
-    personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
-        initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                          kExternalLinkSymbol)];
+    if (self.isEEAAccount) {
+      personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
+          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                            kChevronForwardSymbol)];
+    } else {
+      personalizeGoogleServicesItem.accessoryView = [[UIImageView alloc]
+          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                            kExternalLinkSymbol)];
+    }
     personalizeGoogleServicesItem.accessoryView.tintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
     personalizeGoogleServicesItem.title =
