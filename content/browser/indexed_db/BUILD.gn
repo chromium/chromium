@@ -28,8 +28,6 @@ source_set("indexed_db") {
     "indexed_db_callback_helpers.h",
     "indexed_db_compaction_task.cc",
     "indexed_db_compaction_task.h",
-    "indexed_db_connection.cc",
-    "indexed_db_connection.h",
     "indexed_db_connection_coordinator.cc",
     "indexed_db_connection_coordinator.h",
     "indexed_db_context_impl.cc",

@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/indexed_db/database_impl.h"
-#include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -91,7 +90,8 @@ void IndexedDBFactoryClient::OnUpgradeNeeded(
   }
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending =
-      DatabaseImpl::CreateAndBind(std::move(connection));
+      IndexedDBConnection::MakeSelfOwnedReceiverAndBindRemote(
+          std::move(connection));
   remote_->UpgradeNeeded(std::move(pending), old_version, data_loss_info.status,
                          data_loss_info.message, metadata);
 }
@@ -123,8 +123,8 @@ void IndexedDBFactoryClient::OnOpenSuccess(
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (database_connection) {
-    pending_remote =
-        DatabaseImpl::CreateAndBind(std::move(database_connection));
+    pending_remote = IndexedDBConnection::MakeSelfOwnedReceiverAndBindRemote(
+        std::move(database_connection));
   }
   remote_->OpenSuccess(std::move(pending_remote), metadata);
   complete_ = true;

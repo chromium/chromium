@@ -25,9 +25,9 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/indexed_db/database_impl.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
-#include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
@@ -164,17 +164,10 @@ TEST_F(IndexedDBDatabaseTest, ForcedClose) {
 
   EXPECT_EQ(db_, request.connection()->database().get());
 
-  const int64_t transaction_id = 123;
-  const std::vector<int64_t> scope;
-  IndexedDBTransaction* transaction = request.connection()->CreateTransaction(
-      mojo::NullAssociatedReceiver(), transaction_id,
-      std::set<int64_t>(scope.begin(), scope.end()),
-      blink::mojom::IDBTransactionMode::ReadOnly,
-      new IndexedDBBackingStore::Transaction(
-          bucket_context_->backing_store()->AsWeakPtr(),
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          blink::mojom::IDBTransactionMode::ReadWrite));
-  db_->RegisterAndScheduleTransaction(transaction);
+  request.connection()->CreateTransaction(
+      mojo::NullAssociatedReceiver(), /*transaction_id=*/123,
+      /*object_store_ids=*/{}, blink::mojom::IDBTransactionMode::ReadOnly,
+      blink::mojom::IDBTransactionDurability::Relaxed);
   db_ = nullptr;
 
   base::RunLoop run_loop;

@@ -9,20 +9,16 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
-#include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "third_party/blink/public/common/features.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using blink::IndexedDBIndexKeys;
@@ -38,6 +34,8 @@ class IndexedDBKeyRange;
 namespace content {
 namespace {
 
+static int32_t g_next_indexed_db_connection_id;
+
 const char kBadTransactionMode[] = "Bad transaction mode";
 const char kTransactionAlreadyExists[] = "Transaction already exists";
 
@@ -45,41 +43,127 @@ const char kTransactionAlreadyExists[] = "Transaction already exists";
 
 // static
 mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>
-DatabaseImpl::CreateAndBind(std::unique_ptr<IndexedDBConnection> connection) {
+IndexedDBConnection::MakeSelfOwnedReceiverAndBindRemote(
+    std::unique_ptr<IndexedDBConnection> connection) {
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   mojo::MakeSelfOwnedAssociatedReceiver(
-      base::WrapUnique(new DatabaseImpl(std::move(connection))),
+      std::move(connection),
       pending_remote.InitWithNewEndpointAndPassReceiver());
   return pending_remote;
 }
 
-DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection)
-    : connection_(std::move(connection)) {
-  DCHECK(connection_);
+IndexedDBConnection::IndexedDBConnection(
+    IndexedDBBucketContext& bucket_context,
+    base::WeakPtr<IndexedDBDatabase> database,
+    base::RepeatingClosure on_version_change_ignored,
+    base::OnceCallback<void(IndexedDBConnection*)> on_close,
+    std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
+    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker,
+    base::UnguessableToken client_token)
+    : id_(g_next_indexed_db_connection_id++),
+      bucket_context_handle_(bucket_context),
+      database_(std::move(database)),
+      on_version_change_ignored_(std::move(on_version_change_ignored)),
+      on_close_(std::move(on_close)),
+      callbacks_(std::move(callbacks)),
+      client_state_checker_(std::move(client_state_checker)),
+      client_token_(client_token) {
+  bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
+      bucket_context_handle_->bucket_locator(), base::Time::Now());
 }
 
-DatabaseImpl::~DatabaseImpl() {
+IndexedDBConnection::~IndexedDBConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   leveldb::Status status;
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     return;
   }
 
-  connection_->AbortTransactionsAndClose(
-      IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
 }
 
-void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
-                                     int64_t object_store_id,
-                                     const std::u16string& new_name) {
+bool IndexedDBConnection::IsConnected() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
-    return;
+  return callbacks_.get();
+}
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+IndexedDBTransaction* IndexedDBConnection::CreateVersionChangeTransaction(
+    int64_t id,
+    const std::set<int64_t>& scope,
+    IndexedDBBackingStore::Transaction* backing_store_transaction) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
+  return (transactions_[id] = std::make_unique<IndexedDBTransaction>(
+              id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
+              bucket_context_handle_, backing_store_transaction))
+      .get();
+}
+
+void IndexedDBConnection::DisallowInactiveClient(
+    storage::mojom::DisallowInactiveClientReason reason,
+    base::OnceCallback<void(bool)> callback) {
+  if (!client_state_checker_.is_bound()) {
+    // If the remote is no longer connected, we expect the client will terminate
+    // the connection soon, so marking `was_active` true here.
+    std::move(callback).Run(/*was_active=*/true);
     return;
+  }
+
+  if (reason ==
+      storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent) {
+    // It's only necessary to keep the client active under this scenario.
+    mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
+        client_keep_active_remote;
+    client_state_checker_->DisallowInactiveClient(
+        reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
+        std::move(callback));
+    client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
+  } else {
+    client_state_checker_->DisallowInactiveClient(reason, mojo::NullReceiver(),
+                                                  std::move(callback));
+  }
+}
+
+void IndexedDBConnection::RemoveTransaction(int64_t id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  transactions_.erase(id);
+}
+
+void IndexedDBConnection::AbortTransactionAndTearDownOnError(
+    IndexedDBTransaction* transaction,
+    const IndexedDBDatabaseError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::Abort(error)", "txn.id",
+               transaction->id());
+  leveldb::Status status = transaction->Abort(error);
+  if (!status.ok()) {
+    bucket_context_handle_->OnDatabaseError(status, {});
+  }
+}
+
+void IndexedDBConnection::CloseAndReportForceClose() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsConnected()) {
+    return;
+  }
+
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError)
+      ->OnForcedClose();
+}
+
+void IndexedDBConnection::RenameObjectStore(int64_t transaction_id,
+                                            int64_t object_store_id,
+                                            const std::u16string& new_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsConnected()) {
+    return;
+  }
+
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
+    return;
+  }
 
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
@@ -99,11 +183,10 @@ void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       BindWeakOperation(&IndexedDBDatabase::RenameObjectStoreOperation,
-                        connection_->database()->AsWeakPtr(), object_store_id,
-                        new_name));
+                        database_, object_store_id, new_name));
 }
 
-void DatabaseImpl::CreateTransaction(
+void IndexedDBConnection::CreateTransaction(
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
         transaction_receiver,
     int64_t transaction_id,
@@ -111,8 +194,9 @@ void DatabaseImpl::CreateTransaction(
     blink::mojom::IDBTransactionMode mode,
     blink::mojom::IDBTransactionDurability durability) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
   if (mode != blink::mojom::IDBTransactionMode::ReadOnly &&
       mode != blink::mojom::IDBTransactionMode::ReadWrite) {
@@ -120,7 +204,7 @@ void DatabaseImpl::CreateTransaction(
     return;
   }
 
-  if (connection_->GetTransaction(transaction_id)) {
+  if (GetTransaction(transaction_id)) {
     mojo::ReportBadMessage(kTransactionAlreadyExists);
     return;
   }
@@ -136,32 +220,36 @@ void DatabaseImpl::CreateTransaction(
     }
   }
 
-  IndexedDBTransaction* transaction = connection_->CreateTransaction(
-      std::move(transaction_receiver), transaction_id,
-      std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()), mode,
-      connection_->database()
-          ->backing_store()
-          ->CreateTransaction(durability, mode)
-          .release());
-  connection_->database()->RegisterAndScheduleTransaction(transaction);
+  std::set<int64_t> scope(object_store_ids.begin(), object_store_ids.end());
+  IndexedDBBackingStore::Transaction* backing_store_transaction =
+      database_->backing_store()->CreateTransaction(durability, mode).release();
+  IndexedDBTransaction* transaction =
+      (transactions_[transaction_id] = std::make_unique<IndexedDBTransaction>(
+           transaction_id, this, std::move(scope), mode, bucket_context_handle_,
+           backing_store_transaction))
+          .get();
+
+  transaction->BindReceiver(std::move(transaction_receiver));
+  database_->RegisterAndScheduleTransaction(transaction);
 }
 
-void DatabaseImpl::VersionChangeIgnored() {
+void IndexedDBConnection::VersionChangeIgnored() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
-  connection_->VersionChangeIgnored();
+  on_version_change_ignored_.Run();
 }
 
-void DatabaseImpl::Get(int64_t transaction_id,
-                       int64_t object_store_id,
-                       int64_t index_id,
-                       const IndexedDBKeyRange& key_range,
-                       bool key_only,
-                       blink::mojom::IDBDatabase::GetCallback callback) {
+void IndexedDBConnection::Get(int64_t transaction_id,
+                              int64_t object_store_id,
+                              int64_t index_id,
+                              const IndexedDBKeyRange& key_range,
+                              bool key_only,
+                              blink::mojom::IDBDatabase::GetCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                  "Not connected.");
     std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
@@ -169,8 +257,7 @@ void DatabaseImpl::Get(int64_t transaction_id,
     return;
   }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction) {
     IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                  "Unknown transaction.");
@@ -194,23 +281,24 @@ void DatabaseImpl::Get(int64_t transaction_id,
           std::move(callback), transaction->AsWeakPtr());
 
   transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::GetOperation, connection_->database()->AsWeakPtr(),
-      object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
+      &IndexedDBDatabase::GetOperation, database_, object_store_id, index_id,
+      std::make_unique<IndexedDBKeyRange>(key_range),
       key_only ? indexed_db::CursorType::kKeyOnly
                : indexed_db::CursorType::kKeyAndValue,
       std::move(aborting_callback)));
 }
 
-void DatabaseImpl::GetAll(int64_t transaction_id,
-                          int64_t object_store_id,
-                          int64_t index_id,
-                          const IndexedDBKeyRange& key_range,
-                          bool key_only,
-                          int64_t max_count,
-                          blink::mojom::IDBDatabase::GetAllCallback callback) {
+void IndexedDBConnection::GetAll(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    int64_t index_id,
+    const IndexedDBKeyRange& key_range,
+    bool key_only,
+    int64_t max_count,
+    blink::mojom::IDBDatabase::GetAllCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     // TODO(enne): see note below.  It can be incorrect for result ordering to
     // run the callback directly from this function.
     mojo::Remote<blink::mojom::IDBDatabaseGetAllResultSink> result_sink;
@@ -224,8 +312,7 @@ void DatabaseImpl::GetAll(int64_t transaction_id,
     return;
   }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction) {
     mojo::Remote<blink::mojom::IDBDatabaseGetAllResultSink> result_sink;
     auto receiver = result_sink.BindNewPipeAndPassReceiver();
@@ -259,26 +346,27 @@ void DatabaseImpl::GetAll(int64_t transaction_id,
           std::move(callback), transaction->AsWeakPtr());
 
   transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::GetAllOperation, connection_->database()->AsWeakPtr(),
-      object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
+      &IndexedDBDatabase::GetAllOperation, database_, object_store_id, index_id,
+      std::make_unique<IndexedDBKeyRange>(key_range),
       key_only ? indexed_db::CursorType::kKeyOnly
                : indexed_db::CursorType::kKeyAndValue,
       max_count, std::move(aborting_callback)));
 }
 
-void DatabaseImpl::SetIndexKeys(
+void IndexedDBConnection::SetIndexKeys(
     int64_t transaction_id,
     int64_t object_store_id,
     const IndexedDBKey& primary_key,
     const std::vector<IndexedDBIndexKeys>& index_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
     return;
+  }
 
   if (!primary_key.IsValid()) {
     mojo::ReportBadMessage("SetIndexKeys used with invalid key.");
@@ -302,23 +390,24 @@ void DatabaseImpl::SetIndexKeys(
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
-      BindWeakOperation(&IndexedDBDatabase::SetIndexKeysOperation,
-                        connection_->database()->AsWeakPtr(), object_store_id,
-                        std::make_unique<IndexedDBKey>(primary_key),
-                        index_keys));
+      BindWeakOperation(
+          &IndexedDBDatabase::SetIndexKeysOperation, database_, object_store_id,
+          std::make_unique<IndexedDBKey>(primary_key), index_keys));
 }
 
-void DatabaseImpl::SetIndexesReady(int64_t transaction_id,
-                                   int64_t object_store_id,
-                                   const std::vector<int64_t>& index_ids) {
+void IndexedDBConnection::SetIndexesReady(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    const std::vector<int64_t>& index_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
     return;
+  }
 
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
@@ -337,12 +426,11 @@ void DatabaseImpl::SetIndexesReady(int64_t transaction_id,
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
-      BindWeakOperation(&IndexedDBDatabase::SetIndexesReadyOperation,
-                        connection_->database()->AsWeakPtr(),
+      BindWeakOperation(&IndexedDBDatabase::SetIndexesReadyOperation, database_,
                         index_ids.size()));
 }
 
-void DatabaseImpl::OpenCursor(
+void IndexedDBConnection::OpenCursor(
     int64_t transaction_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -352,7 +440,7 @@ void DatabaseImpl::OpenCursor(
     blink::mojom::IDBTaskType task_type,
     blink::mojom::IDBDatabase::OpenCursorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                  "Not connected.");
     std::move(callback).Run(
@@ -361,8 +449,7 @@ void DatabaseImpl::OpenCursor(
     return;
   }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction) {
     IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                  "Unknown transaction.");
@@ -406,27 +493,25 @@ void DatabaseImpl::OpenCursor(
   params->task_type = task_type;
   params->callback = std::move(aborting_callback);
   transaction->ScheduleTask(
-      BindWeakOperation(&IndexedDBDatabase::OpenCursorOperation,
-                        connection_->database()->AsWeakPtr(), std::move(params),
-                        GetBucketLocator()));
+      BindWeakOperation(&IndexedDBDatabase::OpenCursorOperation, database_,
+                        std::move(params), GetBucketLocator()));
 }
 
-void DatabaseImpl::Count(int64_t transaction_id,
-                         int64_t object_store_id,
-                         int64_t index_id,
-                         const IndexedDBKeyRange& key_range,
-                         CountCallback callback) {
+void IndexedDBConnection::Count(int64_t transaction_id,
+                                int64_t object_store_id,
+                                int64_t index_id,
+                                const IndexedDBKeyRange& key_range,
+                                CountCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), /*success=*/false, 0);
 
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     return;
   }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction || !transaction->IsAcceptingRequests()) {
     // TODO(https://crbug.com/1249908): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
@@ -437,27 +522,25 @@ void DatabaseImpl::Count(int64_t transaction_id,
   }
 
   transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::CountOperation, connection_->database()->AsWeakPtr(),
-      object_store_id, index_id,
+      &IndexedDBDatabase::CountOperation, database_, object_store_id, index_id,
       std::make_unique<blink::IndexedDBKeyRange>(key_range),
       std::move(wrapped_callback)));
 }
 
-void DatabaseImpl::DeleteRange(int64_t transaction_id,
-                               int64_t object_store_id,
-                               const IndexedDBKeyRange& key_range,
-                               DeleteRangeCallback success_callback) {
+void IndexedDBConnection::DeleteRange(int64_t transaction_id,
+                                      int64_t object_store_id,
+                                      const IndexedDBKeyRange& key_range,
+                                      DeleteRangeCallback success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(success_callback), /*success=*/false);
 
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     return;
   }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction) {
     return;
   }
@@ -471,14 +554,13 @@ void DatabaseImpl::DeleteRange(int64_t transaction_id,
     return;
   }
 
-  transaction->ScheduleTask(
-      BindWeakOperation(&IndexedDBDatabase::DeleteRangeOperation,
-                        connection_->database()->AsWeakPtr(), object_store_id,
-                        std::make_unique<IndexedDBKeyRange>(key_range),
-                        std::move(wrapped_callback)));
+  transaction->ScheduleTask(BindWeakOperation(
+      &IndexedDBDatabase::DeleteRangeOperation, database_, object_store_id,
+      std::make_unique<IndexedDBKeyRange>(key_range),
+      std::move(wrapped_callback)));
 }
 
-void DatabaseImpl::GetKeyGeneratorCurrentNumber(
+void IndexedDBConnection::GetKeyGeneratorCurrentNumber(
     int64_t transaction_id,
     int64_t object_store_id,
     GetKeyGeneratorCurrentNumberCallback callback) {
@@ -489,10 +571,10 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
           blink::mojom::IDBException::kIgnorableAbortError,
           u"Aborting due to unknown failure."));
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
     return;
+  }
 
   if (!transaction->IsAcceptingRequests()) {
     // TODO(https://crbug.com/1249908): If the transaction was already committed
@@ -504,25 +586,23 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
   }
 
   transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::GetKeyGeneratorCurrentNumberOperation,
-      connection_->database()->AsWeakPtr(), object_store_id,
-      std::move(wrapped_callback)));
+      &IndexedDBDatabase::GetKeyGeneratorCurrentNumberOperation, database_,
+      object_store_id, std::move(wrapped_callback)));
 }
 
-void DatabaseImpl::Clear(int64_t transaction_id,
-                         int64_t object_store_id,
-                         ClearCallback callback) {
+void IndexedDBConnection::Clear(int64_t transaction_id,
+                                int64_t object_store_id,
+                                ClearCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), /*success=*/false);
 
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     return;
   }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
   if (!transaction || !transaction->IsAcceptingRequests()) {
     // TODO(https://crbug.com/1249908): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
@@ -532,26 +612,27 @@ void DatabaseImpl::Clear(int64_t transaction_id,
     return;
   }
 
-  transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::ClearOperation, connection_->database()->AsWeakPtr(),
-      object_store_id, std::move(wrapped_callback)));
+  transaction->ScheduleTask(
+      BindWeakOperation(&IndexedDBDatabase::ClearOperation, database_,
+                        object_store_id, std::move(wrapped_callback)));
 }
 
-void DatabaseImpl::CreateIndex(int64_t transaction_id,
-                               int64_t object_store_id,
-                               int64_t index_id,
-                               const std::u16string& name,
-                               const IndexedDBKeyPath& key_path,
-                               bool unique,
-                               bool multi_entry) {
+void IndexedDBConnection::CreateIndex(int64_t transaction_id,
+                                      int64_t object_store_id,
+                                      int64_t index_id,
+                                      const std::u16string& name,
+                                      const IndexedDBKeyPath& key_path,
+                                      bool unique,
+                                      bool multi_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
     return;
+  }
 
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
@@ -570,22 +651,23 @@ void DatabaseImpl::CreateIndex(int64_t transaction_id,
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
-      BindWeakOperation(&IndexedDBDatabase::CreateIndexOperation,
-                        connection_->database()->AsWeakPtr(), object_store_id,
-                        index_id, name, key_path, unique, multi_entry));
+      BindWeakOperation(&IndexedDBDatabase::CreateIndexOperation, database_,
+                        object_store_id, index_id, name, key_path, unique,
+                        multi_entry));
 }
 
-void DatabaseImpl::DeleteIndex(int64_t transaction_id,
-                               int64_t object_store_id,
-                               int64_t index_id) {
+void IndexedDBConnection::DeleteIndex(int64_t transaction_id,
+                                      int64_t object_store_id,
+                                      int64_t index_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
     return;
+  }
 
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
@@ -602,23 +684,24 @@ void DatabaseImpl::DeleteIndex(int64_t transaction_id,
     return;
   }
 
-  transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::DeleteIndexOperation,
-      connection_->database()->AsWeakPtr(), object_store_id, index_id));
+  transaction->ScheduleTask(
+      BindWeakOperation(&IndexedDBDatabase::DeleteIndexOperation, database_,
+                        object_store_id, index_id));
 }
 
-void DatabaseImpl::RenameIndex(int64_t transaction_id,
-                               int64_t object_store_id,
-                               int64_t index_id,
-                               const std::u16string& new_name) {
+void IndexedDBConnection::RenameIndex(int64_t transaction_id,
+                                      int64_t object_store_id,
+                                      int64_t index_id,
+                                      const std::u16string& new_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
     return;
+  }
 
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
@@ -636,34 +719,34 @@ void DatabaseImpl::RenameIndex(int64_t transaction_id,
   }
 
   transaction->ScheduleTask(
-      BindWeakOperation(&IndexedDBDatabase::RenameIndexOperation,
-                        connection_->database()->AsWeakPtr(), object_store_id,
-                        index_id, new_name));
+      BindWeakOperation(&IndexedDBDatabase::RenameIndexOperation, database_,
+                        object_store_id, index_id, new_name));
 }
 
-void DatabaseImpl::Abort(int64_t transaction_id) {
+void IndexedDBConnection::Abort(int64_t transaction_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
+  IndexedDBTransaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
     return;
+  }
 
-  connection_->AbortTransactionAndTearDownOnError(
+  AbortTransactionAndTearDownOnError(
       transaction,
       IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
                              "Transaction aborted by user."));
 }
 
-void DatabaseImpl::DidBecomeInactive() {
+void IndexedDBConnection::DidBecomeInactive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected()) {
+  if (!IsConnected()) {
     return;
   }
 
-  for (const auto& [_, transaction] : connection_->transactions()) {
+  for (const auto& [_, transaction] : transactions_) {
     // If the transaction is holding the locks while others are waiting for
     // the acquisition, we should disallow the activation for this client
     // so the lock is immediately available.
@@ -673,14 +756,93 @@ void DatabaseImpl::DidBecomeInactive() {
   }
 }
 
-const storage::BucketInfo& DatabaseImpl::GetBucketInfo() {
-  CHECK(connection_->bucket_context());
-  return connection_->bucket_context()->bucket_info();
+const storage::BucketInfo& IndexedDBConnection::GetBucketInfo() {
+  CHECK(bucket_context());
+  return bucket_context()->bucket_info();
 }
 
-storage::BucketLocator DatabaseImpl::GetBucketLocator() {
-  CHECK(connection_->bucket_context());
-  return connection_->bucket_context()->bucket_locator();
+storage::BucketLocator IndexedDBConnection::GetBucketLocator() {
+  CHECK(bucket_context());
+  return bucket_context()->bucket_locator();
+}
+
+IndexedDBTransaction* IndexedDBConnection::GetTransaction(int64_t id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = transactions_.find(id);
+  if (it == transactions_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
+}
+
+std::unique_ptr<IndexedDBDatabaseCallbacks>
+IndexedDBConnection::AbortTransactionsAndClose(
+    CloseErrorHandling error_handling) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsConnected()) {
+    return {};
+  }
+
+  DCHECK(database_);
+
+  // Finish up any transaction, in case there were any running.
+  IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
+                               "Connection is closing.");
+  leveldb::Status status;
+  switch (error_handling) {
+    case CloseErrorHandling::kReturnOnFirstError:
+      status = AbortAllTransactions(error);
+      break;
+    case CloseErrorHandling::kAbortAllReturnLastError:
+      status = AbortAllTransactionsAndIgnoreErrors(error);
+      break;
+  }
+
+  std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks = std::move(callbacks_);
+  std::move(on_close_).Run(this);
+  client_keep_active_remotes_.Clear();
+  bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
+      bucket_context_handle_->bucket_locator(), base::Time::Now());
+  if (!status.ok()) {
+    bucket_context_handle_->OnDatabaseError(status, {});
+  }
+  bucket_context_handle_.Release();
+  return callbacks;
+}
+
+leveldb::Status IndexedDBConnection::AbortAllTransactionsAndIgnoreErrors(
+    const IndexedDBDatabaseError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  leveldb::Status last_error;
+  for (const auto& pair : transactions_) {
+    auto& transaction = pair.second;
+    if (transaction->state() != IndexedDBTransaction::FINISHED) {
+      TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::Abort(error)",
+                   "transaction.id", transaction->id());
+      leveldb::Status status = transaction->Abort(error);
+      if (!status.ok()) {
+        last_error = status;
+      }
+    }
+  }
+  return last_error;
+}
+
+leveldb::Status IndexedDBConnection::AbortAllTransactions(
+    const IndexedDBDatabaseError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& pair : transactions_) {
+    auto& transaction = pair.second;
+    if (transaction->state() != IndexedDBTransaction::FINISHED) {
+      TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::Abort(error)",
+                   "transaction.id", transaction->id());
+      leveldb::Status status = transaction->Abort(error);
+      if (!status.ok()) {
+        return status;
+      }
+    }
+  }
+  return leveldb::Status::OK();
 }
 
 }  // namespace content
