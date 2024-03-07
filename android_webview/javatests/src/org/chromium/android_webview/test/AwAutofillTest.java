@@ -54,7 +54,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.components.autofill.AutofillHintsServiceTestHelper;
@@ -374,10 +373,6 @@ public class AwAutofillTest extends AwParameterizedTest {
     private static boolean sIsAwGCurrentAutofillService;
 
     @Rule public AwActivityTestRule mRule;
-
-    @Rule
-    public Features.InstrumentationProcessor mFeaturesProcessor =
-            new Features.InstrumentationProcessor();
 
     private TestWebServer mWebServer;
     private EmbeddedTestServer mEmbeddedServer;
@@ -3345,7 +3340,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({"AndroidAutofillCancelSessionOnNavigation"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testFrameDetachedOnFormlessSubmission() throws Throwable {
         final String subFrame =
                 """
