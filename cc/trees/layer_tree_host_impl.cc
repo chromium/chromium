@@ -1427,7 +1427,15 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   if (GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
       checkerboarded_no_recording_content_area > 0) {
-    SetCurrentScrollCheckerboardsDueToNoRecording();
+    CHECK(base::FeatureList::IsEnabled(features::kUseRecordedBoundsForTiling));
+    // TODO(crbug.com/41490692): With UseRecordedBoundsForTiling enabled,
+    // checkerboarded_no_recording_content_area means differently from its
+    // original meaning (which was some tiles out of blink interest rect has
+    // become visible) before CompositeAfterPaint. Calling
+    // SetCurrentScrollCheckerboardsDueToNoRecording() may cause unexpected
+    // consequences. Disable it for now, and will clean up after checking
+    // finch data of UseRecordedBoundsForTiling.
+    // SetCurrentScrollCheckerboardsDueToNoRecording();
   }
 
   // If CommitToActiveTree() is true, then we wait to draw until

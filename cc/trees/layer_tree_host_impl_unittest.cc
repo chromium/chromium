@@ -3696,6 +3696,10 @@ class MissingTilesLayer : public LayerImpl {
 };
 
 TEST_F(LayerTreeHostImplTest, CurrentScrollCheckerboardsDueToNoRecording) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUseRecordedBoundsForTiling);
+
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
@@ -3750,7 +3754,8 @@ TEST_F(LayerTreeHostImplTest, CurrentScrollCheckerboardsDueToNoRecording) {
   // Now that a scroll update has been processed and the latest
   // CalculateRenderPasses run has computed significant visible checkerboarding,
   // expect this flag to be true.
-  EXPECT_TRUE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
+  // TODO(crbug.com/41490692): For now this is disabled.
+  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
 
   GetInputHandler().ScrollEnd();
 
