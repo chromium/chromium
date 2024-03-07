@@ -392,7 +392,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kAuthAndroidNegotiateAccountType,
     base::Value::Type::STRING },
   { key::kBackForwardCacheEnabled,
-    prefs::kMixedFormsWarningsEnabled,
+    policy_prefs::kBackForwardCacheEnabled,
     base::Value::Type::BOOLEAN },
   { key::kIsolateOriginsAndroid,
     prefs::kIsolateOrigins,
