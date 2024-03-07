@@ -336,7 +336,7 @@ gboolean FdWatchSourceDispatch(GSource* gsource,
   return TRUE;
 }
 
-void FdWatchSourcFinalize(GSource* gsource) {
+void FdWatchSourceFinalize(GSource* gsource) {
   // Read the comment in `WorkSourceFinalize`, the issue is exactly the same.
   auto* source = static_cast<FdWatchSource*>(gsource);
   source->pump = nullptr;
@@ -345,7 +345,7 @@ void FdWatchSourcFinalize(GSource* gsource) {
 
 GSourceFuncs g_fd_watch_source_funcs = {
     FdWatchSourcePrepare, FdWatchSourceCheck, FdWatchSourceDispatch,
-    FdWatchSourcFinalize};
+    FdWatchSourceFinalize};
 
 }  // namespace
 
