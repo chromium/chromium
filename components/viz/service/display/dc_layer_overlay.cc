@@ -196,7 +196,7 @@ DCLayerResult ValidateYUVQuad(
 
     // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
     // may cause blue output result if content is NV12 8bit HDR10.
-    if (quad->bits_per_channel != 10) {
+    if (quad->bits_per_channel < 10) {
       return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010;
     }
   }
