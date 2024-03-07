@@ -12,8 +12,13 @@
 
 namespace gwp_asan::internal {
 
+struct GWP_ASAN_EXPORT ExtremeLightweightDetectorOptions {
+  size_t sampling_frequency;
+  size_t quarantine_capacity_in_bytes;
+};
+
 GWP_ASAN_EXPORT void InstallExtremeLightweightDetectorHooks(
-    size_t sampling_frequency);
+    const ExtremeLightweightDetectorOptions& options);
 
 // Elud = Extreme Lightweight UAF Detector
 GWP_ASAN_EXPORT partition_alloc::internal::LightweightQuarantineBranch&

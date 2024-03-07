@@ -18,6 +18,7 @@ namespace gwp_asan::internal {
 namespace {
 
 constexpr size_t kSamplingFrequency = 10;
+constexpr size_t kQuarantineCapacityInBytes = 4096;
 
 // Number of loop iterations required to definitely hit a sampled allocation.
 constexpr size_t kLoopIterations = kSamplingFrequency * 10;
@@ -30,7 +31,9 @@ class ExtremeLightweightDetectorMallocShimsTest
  public:
   static void MultiprocessTestSetup() {
     allocator_shim::ConfigurePartitionsForTesting();
-    InstallExtremeLightweightDetectorHooks(kSamplingFrequency);
+    InstallExtremeLightweightDetectorHooks(
+        {.sampling_frequency = kSamplingFrequency,
+         .quarantine_capacity_in_bytes = kQuarantineCapacityInBytes});
   }
 
  protected:

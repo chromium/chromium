@@ -4,6 +4,8 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
 
+#include <atomic>
+
 #include "base/no_destructor.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/extreme_lightweight_detector_util.h"
@@ -32,27 +34,100 @@ SamplingState<EXTREMELIGHTWEIGHTDETECTOR> g_sampling_state;
 using partition_alloc::internal::LightweightQuarantineBranch;
 using partition_alloc::internal::LightweightQuarantineRoot;
 
-inline partition_alloc::PartitionRoot* GetPartitionRoot() {
-  return allocator_shim::internal::PartitionAllocMalloc::Allocator();
+ExtremeLightweightDetectorOptions g_init_options;
+
+std::atomic<bool> g_is_quarantine_initialized = false;
+
+// The PartitionRoot used by the PartitionAlloc-Everywhere (i.e. PartitionAlloc
+// as malloc), which is also the target partition root of the quarantine.
+// Since LightweightQuarantineRoot is designed to be used for a certain
+// PartitionRoot and LightweightQuarantineBranch::Quarantine() cannot handle
+// an object in an unknown root, the Extreme LUD performs only for the objects
+// in this PartitionRoot.
+partition_alloc::PartitionRoot* g_lightweight_quarantine_partition_root;
+// A raw pointer to the LightweightQuarantineBranch as the fast path to the
+// object. This bypasses the access check and indirect access due to the
+// following std::optional and base::NoDestructor.
+LightweightQuarantineBranch* g_lightweight_quarantine_branch;
+
+// The memory storage for the quarantine root and branch to make them alive for
+// the process lifetime. std::optional reserves the memory space without
+// constructing the objects and allows to construct them lazily.
+std::optional<LightweightQuarantineRoot> g_lightweight_quarantine_root_storage;
+std::optional<base::NoDestructor<LightweightQuarantineBranch>>
+    g_lightweight_quarantine_branch_storage;
+
+// Sets up all we need and returns true, or returns false.
+//
+// We need to wait for the completion of `allocator_shim::ConfigurePartitions`
+// so that the default PartitionRoot for `malloc` is fixed and the quarantine
+// will be created for the default PartitionRoot. Until then, returns false.
+bool TryInitSlow();
+
+inline bool TryInit() {
+  if (LIKELY(g_is_quarantine_initialized.load(std::memory_order_acquire))) {
+    return true;
+  }
+
+  return TryInitSlow();
 }
 
-LightweightQuarantineRoot& EnsureQuarantineRoot() {
-  constexpr size_t capacity_in_bytes = 256 * 1024;
-  static LightweightQuarantineRoot s_root(*GetPartitionRoot(),
-                                          capacity_in_bytes);
-  return s_root;
-}
+bool TryInitSlow() {
+  if (!allocator_shim::internal::PartitionAllocMalloc::
+          AllocatorConfigurationFinalized()) {
+    // `allocator_shim::ConfigurePartitions` has not yet been called, and the
+    // default PartitionRoot for `malloc` has not yet been fixed. Delay the
+    // initialization of the quarantine.
+    return false;
+  }
 
-LightweightQuarantineBranch& EnsureQuarantineBranch() {
-  static base::NoDestructor<LightweightQuarantineBranch> s_branch(
-      EnsureQuarantineRoot().CreateBranch(/*lock_required=*/true));
-  return *s_branch;
+  // Run the initialization process only once atomically (thread-safely).
+  //
+  // CAUTION: No deallocation is allowed here.
+  //
+  // This code runs only on the codepaths of deallocations (`free`, `delete`,
+  // etc.) and _never_ runs on the codepaths of allocations (`malloc`, `new`,
+  // etc.) because this allocator shim hooks only FreeFn, FreeDefiniteSizeFn,
+  // etc. So, it's safe to allocate memory here as it doesn't recurse, however,
+  // it's _NOT_ allowed to deallocate memory here as it _does_ recurse.
+  //
+  // The following code may allocate memory:
+  // - `static` as a mutex may allocate memory.
+  // - `LightweightQuarantineBranch` may allocate memory.
+  //   `LightweightQuarantineBranch` has a data member of type `std::vector`,
+  //   which may allocate.
+  static bool init_once = [&]() -> bool {
+    partition_alloc::PartitionRoot* partition_root =
+        allocator_shim::internal::PartitionAllocMalloc::Allocator();
+
+    g_lightweight_quarantine_partition_root = partition_root;
+    g_lightweight_quarantine_root_storage.emplace(
+        *partition_root, g_init_options.quarantine_capacity_in_bytes);
+    g_lightweight_quarantine_branch_storage.emplace(
+        g_lightweight_quarantine_root_storage->CreateBranch(
+            /*lock_required=*/true));
+    g_lightweight_quarantine_branch =
+        g_lightweight_quarantine_branch_storage.value().get();
+
+    g_is_quarantine_initialized.store(true, std::memory_order_release);
+
+    return true;
+  }();
+
+  return init_once;
 }
 
 // Quarantines the object pointed to by `object`.
 // Returns true when the object is quarantined (hence will be freed later) or
 // freed immediately, otherwise false.
+//
+// CAUTION: No deallocation is allowed in this function because it causes
+// a reentrancy issue.
 inline bool Quarantine(void* object) {
+  if (UNLIKELY(!TryInit())) {
+    return false;
+  }
+
   if (UNLIKELY(!object)) {
     return false;
   }
@@ -71,9 +146,10 @@ inline bool Quarantine(void* object) {
       partition_alloc::internal::SlotSpanMetadata::FromObject(object);
   partition_alloc::PartitionRoot* root =
       partition_alloc::PartitionRoot::FromSlotSpanMetadata(slot_span);
-  if (UNLIKELY(root != GetPartitionRoot())) {
-    // The LightweightQuarantineRoot is configured for GetPartitionRoot().
-    // We cannot quarantine an object in other partition roots.
+  if (UNLIKELY(root != g_lightweight_quarantine_partition_root)) {
+    // The LightweightQuarantineRoot is configured for
+    // g_lightweight_quarantine_partition_root. We cannot quarantine an object
+    // in other partition roots.
     return false;
   }
 
@@ -81,7 +157,8 @@ inline bool Quarantine(void* object) {
   ExtremeLightweightDetectorUtil::Zap(object, usable_size);
 
   uintptr_t slot_start = root->ObjectToSlotStart(object);
-  EnsureQuarantineBranch().Quarantine(object, slot_span, slot_start);
+  g_lightweight_quarantine_branch->Quarantine(object, slot_span, slot_start);
+
   return true;
 }
 
@@ -184,27 +261,27 @@ void TryFreeDefaultFn(const AllocatorDispatch* self,
   self->next->try_free_default_function(self->next, address, context);
 }
 
-static void* AlignedMallocFn(const AllocatorDispatch* self,
-                             size_t size,
-                             size_t alignment,
-                             void* context) {
+void* AlignedMallocFn(const AllocatorDispatch* self,
+                      size_t size,
+                      size_t alignment,
+                      void* context) {
   return self->next->aligned_malloc_function(self->next, size, alignment,
                                              context);
 }
 
-static void* AlignedReallocFn(const AllocatorDispatch* self,
-                              void* address,
-                              size_t size,
-                              size_t alignment,
-                              void* context) {
+void* AlignedReallocFn(const AllocatorDispatch* self,
+                       void* address,
+                       size_t size,
+                       size_t alignment,
+                       void* context) {
   // Just the same as realloc, no support yet.
   return self->next->aligned_realloc_function(self->next, address, size,
                                               alignment, context);
 }
 
-static void AlignedFreeFn(const AllocatorDispatch* self,
-                          void* address,
-                          void* context) {
+void AlignedFreeFn(const AllocatorDispatch* self,
+                   void* address,
+                   void* context) {
   // As of 2024 Jan, only _aligned_free on Windows calls this function, so the
   // Extreme LUD doesn't support this for now.
   self->next->aligned_free_function(self->next, address, context);
@@ -232,17 +309,22 @@ AllocatorDispatch g_allocator_dispatch = {
 
 }  // namespace
 
-void InstallExtremeLightweightDetectorHooks(size_t sampling_frequency) {
-  DCHECK(allocator_shim::internal::PartitionAllocMalloc::
-             AllocatorConfigurationFinalized());
+void InstallExtremeLightweightDetectorHooks(
+    const ExtremeLightweightDetectorOptions& options) {
+  DCHECK(!g_init_options.sampling_frequency);
+  DCHECK(options.sampling_frequency);
 
-  g_sampling_state.Init(sampling_frequency);
+  g_init_options = options;
+
+  g_sampling_state.Init(g_init_options.sampling_frequency);
   allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);
 }
 
 partition_alloc::internal::LightweightQuarantineBranch&
 GetEludQuarantineBranchForTesting() {
-  return EnsureQuarantineBranch();
+  CHECK(TryInit());
+
+  return *g_lightweight_quarantine_branch;
 }
 
 }  // namespace gwp_asan::internal
