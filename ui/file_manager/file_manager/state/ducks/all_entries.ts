@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getParentEntry} from '../../common/js/api.js';
-import {canHaveSubDirectories, isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
+import {canHaveSubDirectories, isDirectoryEntry, isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries, supportsUiChildren} from '../../common/js/entry_utils.js';
 import {getIcon} from '../../common/js/file_type.js';
 import type {FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
@@ -636,7 +638,7 @@ export async function*
       // it has children or not (so we know if we need to show expand icon
       // or not).
       for await (const action of readSubDirectoriesToCheckDirectoryChildren(
-          childEntry)) {
+          childEntry.toURL())) {
         yield action;
       }
     }
@@ -744,38 +746,54 @@ async function checkDirectoryChildByPartialScan(
  * or not.
  */
 async function*
-    readSubDirectoriesToCheckDirectoryChildrenInternal(
-        entry: Entry|FilesAppEntry|null): ActionsProducerGen {
-  if (!isEntryScannable(entry)) {
+    readSubDirectoriesToCheckDirectoryChildrenInternal(fileKey: FileKey|null):
+        ActionsProducerGen {
+  if (!fileKey) {
     return;
   }
 
   const state = getStore().getState();
-  const fileData = getFileData(state, entry.toURL());
-  // Do nothing because we already know it has children.
-  if (fileData && (fileData.children.length > 0 || fileData.canExpand)) {
+  const fileData = getFileData(state, fileKey);
+  if (!fileData) {
+    console.warn(`No file data: ${fileKey}`);
     return;
   }
+  if (!canHaveSubDirectories(fileData)) {
+    return;
+  }
+
+  // Do nothing because we already know it has children.
+  if (fileData.children.length > 0 || fileData.canExpand) {
+    return;
+  }
+
   const {directoryModel} = window.fileManager;
   const fileFilter = directoryModel.getFileFilter();
   const isDirectoryChild = (childEntry: Entry|FilesAppEntry): boolean =>
       childEntry.isDirectory && fileFilter.filter(childEntry);
   // The entry has UIChildren but has no FileData.children, we know it can be
   // expanded.
-  if (isEntrySupportUiChildren(entry) && entry.getUiChildren().length > 0) {
+  if (supportsUiChildren(fileData)) {
+    const entry = fileData.entry;
+    assert(isEntrySupportUiChildren(entry));
     const uiChildrenDirectories =
         entry.getUiChildren().filter(isDirectoryChild);
     if (uiChildrenDirectories.length > 0) {
-      yield updateFileData(
-          {key: entry.toURL(), partialFileData: {canExpand: true}});
+      yield updateFileData({key: fileKey, partialFileData: {canExpand: true}});
     }
-    return;
   }
 
-  const hasDirectoryChild = await checkDirectoryChildByPartialScan(entry);
-  if (hasDirectoryChild) {
-    yield updateFileData(
-        {key: entry.toURL(), partialFileData: {canExpand: true}});
+  // TODO(lucmult): Add support to Materialize Views.
+  const entry = fileData.entry;
+  if (!entry) {
+    console.warn(`No entry: ${fileKey}`);
+    return;
+  }
+  if (isDirectoryEntry(entry)) {
+    const hasDirectoryChild = await checkDirectoryChildByPartialScan(entry);
+    if (hasDirectoryChild) {
+      yield updateFileData({key: fileKey, partialFileData: {canExpand: true}});
+    }
   }
 }
 
@@ -786,7 +804,7 @@ async function*
  */
 export const readSubDirectoriesToCheckDirectoryChildren = keyedKeepLatest(
     readSubDirectoriesToCheckDirectoryChildrenInternal,
-    (entry) => entry ? entry.toURL() : '');
+    (fileKey) => fileKey ?? '');
 
 /**
  * Read child entries for the newly renamed directory entry.

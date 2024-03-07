@@ -949,6 +949,11 @@ export function isEntrySupportUiChildren(entry: FilesAppEntry|Entry):
   return 'getUiChildren' in entry;
 }
 
+export function supportsUiChildren(fileData: FileData): boolean {
+  return fileData.type === EntryType.ENTRY_LIST ||
+      fileData.type === EntryType.VOLUME_ROOT;
+}
+
 /**
  * A generator version of `entry.readEntries()`.
  *

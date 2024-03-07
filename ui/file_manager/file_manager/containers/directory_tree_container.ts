@@ -615,8 +615,8 @@ export class DirectoryTreeContainer {
       shouldCheckDirectoryChildren = !!(element.parentItem?.expanded);
     }
     if (shouldCheckDirectoryChildren) {
-      const entry = fileData.entry;
-      this.store_.dispatch(readSubDirectoriesToCheckDirectoryChildren(entry));
+      this.store_.dispatch(
+          readSubDirectoriesToCheckDirectoryChildren(fileData.key));
     }
   }
 
@@ -966,7 +966,7 @@ export class DirectoryTreeContainer {
     if (shouldDelayLoadingChildren(fileData, this.store_.getState()) &&
         fileData.children.length === 0) {
       this.store_.dispatch(
-          readSubDirectoriesToCheckDirectoryChildren(fileData.entry));
+          readSubDirectoriesToCheckDirectoryChildren(fileData.key));
     }
 
     this.store_.dispatch(changeDirectory({toKey: fileKey}));
