@@ -1789,7 +1789,8 @@ bool IsBookmarked(const GURL& url,
       return self.settingsDestination;
     case overflow_menu::Destination::WhatsNew:
       // Set the new label badge.
-      if (!WasWhatsNewUsed() && self.engagementTracker &&
+      if (self.whatsNewDestination.badge == BadgeTypeNone &&
+          !WasWhatsNewUsed() && self.engagementTracker &&
           self.engagementTracker->ShouldTriggerHelpUI(
               feature_engagement::kIPHWhatsNewUpdatedFeature)) {
         // Highlight What's New with a badge if it was never used before.
