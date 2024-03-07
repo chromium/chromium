@@ -2193,7 +2193,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mBackPressManager,
                 getSavedInstanceState(),
                 mMultiInstanceManager,
-                getOverviewIncognitoSupplier());
+                getOverviewIncognitoSupplier(),
+                getBaseChromeLayout());
     }
 
     @Override

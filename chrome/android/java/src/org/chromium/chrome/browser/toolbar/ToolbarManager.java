@@ -513,6 +513,9 @@ public class ToolbarManager
      * @param openHistoryClustersDelegate
      * @param overviewIncognitoSupplier Incognito supplier specifically for the overview. During
      *     animations especially this might diverge from the tab model version.
+     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
+     *     suggestion list) will position themselves relative to. If null, the content view will be
+     *     used.
      */
     public ToolbarManager(
             AppCompatActivity activity,
@@ -561,7 +564,8 @@ public class ToolbarManager
             boolean initializeWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate,
-            @Nullable BooleanSupplier overviewIncognitoSupplier) {
+            @Nullable BooleanSupplier overviewIncognitoSupplier,
+            @Nullable View baseChromeLayout) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -854,7 +858,8 @@ public class ToolbarManager
                             scrollListener,
                             openHistoryClustersDelegate,
                             tabModelSelectorSupplier,
-                            /* forcePhoneStyleOmnibox= */ false);
+                            /* forcePhoneStyleOmnibox= */ false,
+                            baseChromeLayout);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;

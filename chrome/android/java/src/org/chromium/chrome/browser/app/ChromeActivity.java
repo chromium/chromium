@@ -409,6 +409,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
     // Handling the dismissal of tab modal dialog.
     private TabModalLifetimeHandler mTabModalLifetimeHandler;
+    private ViewGroup mBaseChromeLayout;
 
     protected ChromeActivity() {
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
@@ -488,6 +489,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void performPreInflationStartup() {
         setupUnownedUserDataSuppliers();
+
+        if (BuildInfo.getInstance().isAutomotive
+                && ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled()) {
+            mBaseChromeLayout = new FrameLayout(this);
+        }
 
         // Ensure that mConfig is initialized before tablet mode changes.
         mConfig = getResources().getConfiguration();
@@ -811,14 +817,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // https://crbug.com/639352.
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 TraceEvent.begin("setContentView(R.layout.main)");
-                if (BuildInfo.getInstance().isAutomotive
-                        && ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled()) {
+                if (mBaseChromeLayout != null) {
                     // Automotive devices override ChromeBaseAppCompatActivity#setContentView to add
                     // the automotive back button toolbar. This doesn't work if the layout uses
                     // <merge> tags, so we need to wrap R.layout.main in a ViewGroup first.
-                    View mainView =
-                            getLayoutInflater().inflate(R.layout.main, new FrameLayout(this), true);
-                    setContentView(mainView);
+                    getLayoutInflater().inflate(R.layout.main, mBaseChromeLayout, true);
+                    setContentView(mBaseChromeLayout);
                 } else {
                     setContentView(R.layout.main);
                 }
@@ -3196,5 +3200,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (!mTabModelProfileSupplier.hasValue()) return null;
         return SyncServiceFactory.getForProfile(
                 mTabModelProfileSupplier.get().getOriginalProfile());
+    }
+
+    /**
+     * Returns the base view hosting Chrome that certain views (e.g. the omnibox suggestion list)
+     * will position themselves relative to. If null, the content view can be used.
+     *
+     * @return The base {@link View} hosting Chrome.
+     */
+    protected @Nullable View getBaseChromeLayout() {
+        return mBaseChromeLayout;
     }
 }

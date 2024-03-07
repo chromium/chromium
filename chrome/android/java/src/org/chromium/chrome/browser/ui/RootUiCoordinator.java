@@ -335,6 +335,7 @@ public class RootUiCoordinator
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private @Nullable BoardingPassController mBoardingPassController;
     private @Nullable BooleanSupplier mOverviewIncognitoSupplier;
+    private @Nullable View mBaseChromeLayout;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -382,6 +383,9 @@ public class RootUiCoordinator
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
      * @param overviewIncognitoSupplier Whether the overview is showing incognito UI.
+     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
+     *     suggestion list) will position themselves relative to. If null, the content view will be
+     *     used.
      */
     public RootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -426,7 +430,8 @@ public class RootUiCoordinator
             boolean initializeUiWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
-            @Nullable BooleanSupplier overviewIncognitoSupplier) {
+            @Nullable BooleanSupplier overviewIncognitoSupplier,
+            @Nullable View baseChromeLayout) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -562,6 +567,7 @@ public class RootUiCoordinator
         mExpandedBottomSheetHelper =
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
         mOverviewIncognitoSupplier = overviewIncognitoSupplier;
+        mBaseChromeLayout = baseChromeLayout;
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -1439,7 +1445,8 @@ public class RootUiCoordinator
                             mInitializeUiWithIncognitoColors,
                             mBackPressManager,
                             openHistoryClustersDelegate,
-                            mOverviewIncognitoSupplier);
+                            mOverviewIncognitoSupplier,
+                            mBaseChromeLayout);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

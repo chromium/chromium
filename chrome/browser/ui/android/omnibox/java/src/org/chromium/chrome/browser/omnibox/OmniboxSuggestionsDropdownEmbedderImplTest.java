@@ -53,6 +53,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private static final int ANCHOR_TOP = 31;
     private static final int TABLET_OVERLAP = 2;
 
+    private static final int INTERMEDIATE_VIEW_TOP = 75;
+
     private static final int ALIGNMENT_WIDTH = 400;
     // Sentinel value for mistaken use of alignment view top instead of left. If you see a 43, it's
     // probably because you used position[1] instead of position[0].
@@ -72,6 +74,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private @Mock ViewTreeObserver mViewTreeObserver;
     private @Mock ViewGroup mContentView;
     private @Mock ViewGroup mAnchorView;
+    private @Mock ViewGroup mIntermediateView;
     private @Mock View mHorizontalAlignmentView;
     private @Mock DisplayAndroid mDisplay;
     private @Mock InsetObserver mInsetObserver;
@@ -104,7 +107,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         mWindowDelegate,
                         mAnchorView,
                         mHorizontalAlignmentView,
-                        false);
+                        false,
+                        null);
     }
 
     @Test
@@ -131,6 +135,37 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(
+                new OmniboxAlignment(
+                        0,
+                        ANCHOR_HEIGHT + ANCHOR_TOP,
+                        ANCHOR_WIDTH,
+                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
+                        0,
+                        0),
+                alignment);
+    }
+
+    @Test
+    public void testRecalculateOmniboxAlignment_definedBaseChromeLayout() {
+        // Add an intermediate view between the anchorView and contentView
+        doReturn(mIntermediateView).when(mAnchorView).getParent();
+        doReturn(mContentView).when(mIntermediateView).getParent();
+        doReturn(INTERMEDIATE_VIEW_TOP).when(mIntermediateView).getTop();
+
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+
+        OmniboxSuggestionsDropdownEmbedderImpl impl =
+                new OmniboxSuggestionsDropdownEmbedderImpl(
+                        mWindowAndroid,
+                        mWindowDelegate,
+                        mAnchorView,
+                        mHorizontalAlignmentView,
+                        false,
+                        mIntermediateView);
+        impl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = impl.getCurrentAlignment();
         assertEquals(
                 new OmniboxAlignment(
                         0,

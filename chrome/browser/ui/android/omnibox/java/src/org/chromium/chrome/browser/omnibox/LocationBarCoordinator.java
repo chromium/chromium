@@ -145,6 +145,9 @@ public class LocationBarCoordinator
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param forcePhoneStyleOmnibox Whether a "phone-style" (full bleed, unrounded corners) omnibox
      *     suggestions list should be used even when the screen width is >600dp.
+     * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
+     *     suggestion list) will position themselves relative to. If null, the content view will be
+     *     used.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -181,7 +184,8 @@ public class LocationBarCoordinator
                             omniboxSuggestionsDropdownScrollListener,
             @Nullable OpenHistoryClustersDelegate openHistoryClustersDelegate,
             @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            boolean forcePhoneStyleOmnibox) {
+            boolean forcePhoneStyleOmnibox,
+            @Nullable View baseChromeLayout) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -196,7 +200,8 @@ public class LocationBarCoordinator
                         mWindowDelegate,
                         autocompleteAnchorView,
                         mLocationBarLayout,
-                        forcePhoneStyleOmnibox);
+                        forcePhoneStyleOmnibox,
+                        baseChromeLayout);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
