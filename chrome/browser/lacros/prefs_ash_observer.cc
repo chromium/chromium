@@ -28,20 +28,21 @@ void PrefsAshObserver::Init() {
       crosapi::mojom::PrefPath::kDnsOverHttpsMode,
       base::BindRepeating(&PrefsAshObserver::OnDnsOverHttpsModeChanged,
                           base::Unretained(this)));
+
   doh_templates_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kDnsOverHttpsEffectiveTemplatesChromeOS,
+      base::BindRepeating(
+          &PrefsAshObserver::OnDnsOverHttpsEffectiveTemplatesChromeOSChanged,
+          base::Unretained(this)));
+  // TODO(acostinas, b/328566515) Remove `deprecated_doh_templates_observer_` in
+  // version 126. In the meantime, monitor the pref kDnsOverHttpsTemplates
+  // (which is deprecated in Lacros) to support older version of Ash.
+  deprecated_doh_templates_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kDnsOverHttpsTemplates,
-      base::BindRepeating(&PrefsAshObserver::OnDnsOverHttpsTemplatesChanged,
-                          base::Unretained(this)));
-  doh_templates_with_identifiers_observer_ =
-      std::make_unique<CrosapiPrefObserver>(
-          crosapi::mojom::PrefPath::kDnsOverHttpsTemplatesWithIdentifiers,
-          base::BindRepeating(
-              &PrefsAshObserver::OnDnsOverHttpsTemplatesWithIdentifiersChanged,
-              base::Unretained(this)));
-  doh_salt_observer_ = std::make_unique<CrosapiPrefObserver>(
-      crosapi::mojom::PrefPath::kDnsOverHttpsSalt,
-      base::BindRepeating(&PrefsAshObserver::OnDnsOverHttpsSaltChanged,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &PrefsAshObserver::OnDeprecatedDnsOverHttpsTemplatesChanged,
+          base::Unretained(this)));
+
   access_to_get_all_screens_media_in_session_allowed_for_urls_observer_ =
       std::make_unique<CrosapiPrefObserver>(
           crosapi::mojom::PrefPath::
@@ -92,35 +93,30 @@ void PrefsAshObserver::OnDnsOverHttpsModeChanged(base::Value value) {
   local_state_->SetString(prefs::kDnsOverHttpsMode, value.GetString());
 }
 
-void PrefsAshObserver::OnDnsOverHttpsTemplatesChanged(base::Value value) {
-  if (!value.is_string()) {
-    LOG(WARNING) << "Unexpected value type: "
-                 << base::Value::GetTypeName(value.type());
-    return;
-  }
-  local_state_->SetString(prefs::kDnsOverHttpsTemplates, value.GetString());
-}
-
-void PrefsAshObserver::OnDnsOverHttpsTemplatesWithIdentifiersChanged(
+void PrefsAshObserver::OnDnsOverHttpsEffectiveTemplatesChromeOSChanged(
     base::Value value) {
+  effective_chromeos_secure_dns_settings_active_ = true;
   if (!value.is_string()) {
     LOG(WARNING) << "Unexpected value type: "
                  << base::Value::GetTypeName(value.type());
     return;
   }
-
-  local_state_->SetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state_->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
                           value.GetString());
 }
 
-void PrefsAshObserver::OnDnsOverHttpsSaltChanged(base::Value value) {
+void PrefsAshObserver::OnDeprecatedDnsOverHttpsTemplatesChanged(
+    base::Value value) {
+  if (effective_chromeos_secure_dns_settings_active_) {
+    return;
+  }
   if (!value.is_string()) {
     LOG(WARNING) << "Unexpected value type: "
                  << base::Value::GetTypeName(value.type());
     return;
   }
-
-  local_state_->SetString(prefs::kDnsOverHttpsSalt, value.GetString());
+  local_state_->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
+                          value.GetString());
 }
 
 void PrefsAshObserver::OnUserProfileValueChanged(const std::string& target_pref,

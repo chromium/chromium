@@ -30,12 +30,15 @@ class PrefsAshObserver {
   void InitPostProfileInitialized(Profile* profile);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PrefsAshObserver, LocalStateUpdatedOnChange);
+  FRIEND_TEST_ALL_PREFIXES(PrefsAshObserver,
+                           DnsOverHttpsEffectiveTemplatesChromeOSChanged);
 
   void OnDnsOverHttpsModeChanged(base::Value value);
-  void OnDnsOverHttpsTemplatesChanged(base::Value value);
-  void OnDnsOverHttpsTemplatesWithIdentifiersChanged(base::Value value);
-  void OnDnsOverHttpsSaltChanged(base::Value value);
+  void OnDnsOverHttpsEffectiveTemplatesChromeOSChanged(base::Value value);
+  // TODO(acostinas, b/328566515) Remove monitoring of the
+  // kDnsOverHttpsTemplates after version 126.
+  void OnDeprecatedDnsOverHttpsTemplatesChanged(base::Value value);
+
   void OnUserProfileValueChanged(const std::string& target_pref,
                                  base::Value value);
   static void ListChangedHandler(PrefService* pref_service,
@@ -64,8 +67,13 @@ class PrefsAshObserver {
   raw_ptr<PrefService> local_state_{nullptr};
   std::unique_ptr<CrosapiPrefObserver> doh_mode_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_templates_observer_;
-  std::unique_ptr<CrosapiPrefObserver> doh_templates_with_identifiers_observer_;
-  std::unique_ptr<CrosapiPrefObserver> doh_salt_observer_;
+  // Tracks whether the DoH template URI is set via the pref
+  // kDnsOverHttpsTemplates (which is deprecated in Lacros) or via the new pref,
+  // kDnsOverHttpsEffectiveTemplatesChromeOS.
+  bool effective_chromeos_secure_dns_settings_active_ = false;
+  // TODO(acostinas, b/328566515) Remove monitoring of the
+  // kDnsOverHttpsTemplates after version 126.
+  std::unique_ptr<CrosapiPrefObserver> deprecated_doh_templates_observer_;
   std::unique_ptr<CrosapiPrefObserver>
       access_to_get_all_screens_media_in_session_allowed_for_urls_observer_;
 };

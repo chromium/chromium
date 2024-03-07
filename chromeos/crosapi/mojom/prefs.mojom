@@ -22,6 +22,8 @@ enum PrefPath {
   [MinVersion=1] kDeviceSystemWideTracingEnabled = 3,
   // M98: prefs::kDnsOverHttpsMode (local state)
   [MinVersion=2] kDnsOverHttpsMode = 4,
+  // Deprecated in m124: Use kDnsOverHttpsEffectiveTemplatesChromeOS to track
+  // the effective DoH URI template. TODO(b/40160600): Remove this entry.
   // M98: prefs::kDnsOverHttpsTemplates (local state)
   [MinVersion=2] kDnsOverHttpsTemplates = 5,
   // M98: prefs::kDockedMagnifierEnabled (extension).
@@ -98,8 +100,12 @@ enum PrefPath {
   [MinVersion=5] kSharedStorage = 30,
   // Deprecated in m123: No longer supported as ash-controlled pref. Do not use.
   [MinVersion=6] kProtectedContentDefaultDeprecated = 31,
+  // Deprecated in m124: Use kDnsOverHttpsEffectiveTemplatesChromeOS to track
+  // the effective DoH URI template. TODO(b/40160600): Remove this entry.
   // M109: prefs::kDnsOverHttpsTemplatesWithIdentifiers (local state)
   [MinVersion=7] kDnsOverHttpsTemplatesWithIdentifiers = 32,
+  // Deprecated in m124: Use kDnsOverHttpsEffectiveTemplatesChromeOS to track
+  // the effective DoH URI template. TODO(b/40160600): Remove this entry.
   // M109: prefs::kDnsOverHttpsSalt (local state)
   [MinVersion=7] kDnsOverHttpsSalt = 33,
   // M110: ash::prefs::kUserGeolocationAccessLevel
@@ -123,6 +129,8 @@ enum PrefPath {
   [MinVersion=15] kDefaultSearchProviderDataPrefName = 43,
   // M121: prefs::kIsolatedWebAppsEnabled
   [MinVersion=16] kIsolatedWebAppsEnabled = 44,
+  // M124: prefs::kDnsOverHttpsEffectiveTemplatesChromeOS
+  [MinVersion=17] kDnsOverHttpsEffectiveTemplatesChromeOS = 45,
 };
 
 // Information about who or what is controlling a particular pref. This is used
