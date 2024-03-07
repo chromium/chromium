@@ -7291,8 +7291,8 @@ New install
       <message name="IDS_GLANCEABLES_LIST_FOOTER_ACTION_BUTTON_LABEL" desc="The glanceable displays classroom or tasks items fetched from Google Classroom or Google Tasks API. Glanceables UI renders only limited number of items, the rest of them can be seen by clicking this button, which will open a corresponding website.">
         See all
       </message>
-      <message name="IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL" desc="Tasks glanceable displays non-completed tasks fetched from Google Tasks API. This text in displayed on the button, which allows creating new tasks (currently it redirects to Tasks Web UI).">
-        Add new task
+      <message name="IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL" desc="Tasks glanceable displays non-completed tasks fetched from Google Tasks API. This text in displayed on the button, which allows creating new tasks.">
+        Add a task
       </message>
       <message name="IDS_GLANCEABLES_TASKS_EDIT_IN_TASKS_LABEL" desc="A glanceables label button placed under the task title textfield that allows users to edit the task in Google Tasks website.">
         Edit in Google Tasks
