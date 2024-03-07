@@ -222,6 +222,11 @@ using ::chrome_test_util::ForwardButton;
 // Tests that the swipe back/forward IPH is attempted on navigation, and
 // disappears when user leaves the page.
 - (void)testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation {
+  // TODO(crbug.com/328638069): Flaky and is disabled.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on ios-simulator-noncq.");
+  }
+
   [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
