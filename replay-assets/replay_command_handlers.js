@@ -1725,12 +1725,170 @@ function getInternalFunctionLocationProp(cdpProperties) {
   return getInternalProp(cdpProperties, '[[FunctionLocation]]');
 }
 
+/**
+ * String utility for function parameter parsing.
+ */
+function substringEndsAt(haystack, needle, i) {
+  return haystack.substring(1 + i - needle.length, 1 + i) === needle;
+}
+
+/**
+ * @return {boolean} (a + b).endsWith(end)
+ */
+function stringsEndWith(a, b, end) {
+  // NOTE: This can be done more performantly.
+  return (a + b).endsWith(end);
+}
+
+const complementaryTokensStart = "({[\"'`";
+const complementaryTokensEnd =   ")}]\"'`";
+
+/**
+ * [RUN-3146] Extract parameter names from the description.
+ * @param {string} s 
+ * @return {string[]}
+ */
+function extractFunctionParameterNames(s) {
+  try {
+    /** 
+     * Function head declaration patterns:
+     * P1. modifiers function f(PARAMS) Body
+     * P2. modifiers f(PARAMS) Body  // ObjectMethod, ClassMethod
+     * P3. modifiers (PARAMS) => ExpressionOrBody
+     * P4. modifiers PARAM => ExpressionOrBody
+     */
+
+    // All patterns fall into two buckets:
+    // A. PARENS: Get the thing within the first opening pair of parentheses.
+    // B. SINGLEARROW: Get the single param before =>.
+
+    // Base case: Find pattern A or B, while ignoring comments.
+    // Special case 1: Parameter initializers (e.g. `x = f()`).
+    //    Commas can be part of initializers, but they would have to be contained
+    //    by complementary tokens, any of: ``""''[](){}. 
+    //    → Let's simply ignore everything inside of that.
+    // Special case 2: Argument destructuring.
+    //    -> Don't give the param a name (empty string).
+    //    Same parsing logic as case 1.
+
+    /**
+     * The function header without (i) comments and without (ii) nested AST nodes.
+     */
+    let cleanHeader = "";
+    /**
+     * When in a comment, this is set to the counterpart that we are looking for.
+     * @type {string | null}
+     */
+    let expectedCommentEnd = null;
+    let parensStart = -1;
+    let insideInitializer = false;
+    /**
+     * @type {string[]}
+     */
+    const ignoreStack = [];
+    for (let i = 0; i < s.length; ++i) {
+      const c = s[i];
+      if (expectedCommentEnd) {
+        // In a comment.
+        if (substringEndsAt(s, expectedCommentEnd, i)) {
+          // Comment End: Start new segment from here.
+          expectedCommentEnd = null;
+        }
+        continue;
+      }
+
+      // Not in a comment.
+      if (cleanHeader.endsWith("/") && (c === "/" || c === "*")) {
+        // Comment Start.
+        if (c === "*") {
+          expectedCommentEnd = "*/";
+        } else {
+          expectedCommentEnd = "\n";
+        }
+        // Remove "/" from header:
+        cleanHeader = cleanHeader.slice(0, -1);
+        continue;
+      }
+
+      // Parse everything but comments:
+
+      if (parensStart === -1) {
+        // Not in params parentheses.
+        if (c === "(") {
+          // PARENS: Params start.
+          cleanHeader += c;
+          parensStart = cleanHeader.length;
+          continue;
+        }
+
+        if (stringsEndWith(cleanHeader, c, "=>")) {
+          // SINGLEARROW: Found the arrow → The last word in the header (sans "=") is the param.
+          const param = cleanHeader.trim().match(/([^\s]+)\s*=$/)?.[1];
+          return param ? [param] : [];
+        }
+
+        // otherwise keep the character
+        cleanHeader += c;
+        continue;
+      }
+
+      // destructuring
+      if (complementaryTokensStart.includes(c)) {
+        // Inside destructuring argument or initializer expression:
+        // Enter node. Push complementary (to be searched for) onto stack.
+        const tokenIdx = complementaryTokensStart.indexOf(c);
+        ignoreStack.push(complementaryTokensEnd[tokenIdx]);
+        continue; // don't include destructuring in the header
+      }
+      if (ignoreStack.length) {
+        // Inside destructuring or initializer expression.
+        if (c === ignoreStack[ignoreStack.length - 1]) {
+          // Exit node.
+          ignoreStack.pop();
+        }
+
+        continue; // don't include the destructuring in the header
+      }
+
+      if (c === ")") {
+        // PARENS: Params end.
+        return cleanHeader.substring(parensStart).split(",").map(p => p.trim());
+      }
+
+      // initializers
+      if (c === "=") {
+        // Initializer start.
+        insideInitializer = true;
+        continue; // don't include initializers in the header
+      }
+      if (insideInitializer) {
+        if (c === ",") {
+          // Initializer end.
+          insideInitializer = false;
+          cleanHeader += c; // include the comma in the header.  it's not part of an initializer, it's the separator between params.
+        }
+
+        continue;
+      }
+
+      // all other characters are kept
+      cleanHeader += c;
+    }
+
+    // This should not happen, but might.
+    log(`[RuntimeError] extractFunctionParameterNames fell through for: ${s.slice(0, 80)}... header=${cleanHeader}`);
+    return [];
+  } catch (err) {
+    log(`[RuntimeError] extractFunctionParameterNames failed for: ${s.slice(0, 80)}...\n ${err?.stack || err}`);
+  }
+}
+
 function previewFunction(cdpProperties) {
   const nameProperty = cdpProperties.result.find(prop => prop.name == "name");
   const locationProperty = getInternalFunctionLocationProp(cdpProperties);
 
   if (nameProperty) {
-    // RUN-1991: nameProperty.value might not always exist, for some reason.
+    // RUN-1991: nameProperty.value might not always exist.
     this.extra.functionName = nameProperty?.value?.value || "";
   }
 
@@ -1740,6 +1898,10 @@ function previewFunction(cdpProperties) {
       warning(`[RUN-1991] previewFunction missing location: ${JSON_stringify(nameProperty)}, ${JSON_stringify(locationProperty)}`);
     }
     this.extra.functionLocation = createProtocolLocation(loc);
+  }
+
+  if (this.cdpObj.description) {
+    this.extra.functionParameterNames = extractFunctionParameterNames(this.cdpObj.description);
   }
 }
 
