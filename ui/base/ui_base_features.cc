@@ -45,11 +45,23 @@ BASE_FEATURE(kScreenPowerListenerForNativeWinOcclusion,
 // name `kApplyNativeOcclusionToCompositorType`.
 BASE_FEATURE(kApplyNativeOcclusionToCompositor,
              "ApplyNativeOcclusionToCompositor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
-    &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};
+    &kApplyNativeOcclusionToCompositor, "type",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    /*default=*/"throttle_and_release"
+#else
+    /*default=*/""
+#endif
+};
+
 // When the WindowTreeHost is occluded or hidden, resources are released and
 // the compositor is hidden. See WindowTreeHost for specifics on what this
 // does.
