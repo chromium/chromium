@@ -275,7 +275,7 @@ def main():
               '`--manifest_dict_replacements` is present.'))
     parser.add_argument(
         '--manifest_dict_replacements',
-        required=False,
+        default='{}',
         help=('A dictionary of `{key1:value1, ...keyN:valueN}`. This script '
               'replaces the keys that it finds in the offline manifest .gup '
               'file with the corresponding values.'))
