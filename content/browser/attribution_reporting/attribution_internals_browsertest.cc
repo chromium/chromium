@@ -427,27 +427,27 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       const tds = table.querySelectorAll('td');
       if (
         // Priority
-        tds[0]?.innerText === $1 &&
+        tds[9]?.innerText === $1 &&
         // Filter Data
-        tds[1]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+        tds[10]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
         // Debug Cookie Set
-        tds[2]?.innerText === 'true' &&
+        tds[11]?.innerText === 'true' &&
         // Max Reports
-        tds[3]?.innerText === '3' &&
+        tds[12]?.innerText === '3' &&
         // Epsilon
-        tds[4]?.innerText === '14.000' &&
+        tds[13]?.innerText === '14.000' &&
         // Trigger Data Matching
-        tds[5]?.innerText === 'modulus' &&
+        tds[14]?.innerText === 'modulus' &&
         // Event-Level Dedup Keys
-        tds[7]?.children[0]?.children[0]?.innerText === '13' &&
-        tds[7]?.children[0]?.children[1]?.innerText === '17' &&
+        tds[16]?.children[0]?.children[0]?.innerText === '13' &&
+        tds[16]?.children[0]?.children[1]?.innerText === '17' &&
         // Budget Consumed
-        tds[9]?.innerText === '1300 / 65536' &&
+        tds[18]?.innerText === '1300 / 65536' &&
         // Aggregation Keys
-        tds[10]?.innerText === '{\n "a": "0x1"\n}' &&
+        tds[19]?.innerText === '{\n "a": "0x1"\n}' &&
         // Aggregatable Dedup Keys
-        tds[11]?.children[0]?.children[0]?.innerText === '14' &&
-        tds[11]?.children[0]?.children[1]?.innerText === '18'
+        tds[20]?.children[0]?.children[0]?.innerText === '14' &&
+        tds[20]?.children[0]?.children[1]?.innerText === '18'
       ) {
         if (obs) {
           obs.disconnect();
@@ -1454,7 +1454,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
 
     const setTitleIfDone = (_, obs) => {
-      if (table.rows[0]?.cells[1]?.innerText.includes('source-unknown-error')) {
+      if (table.rows[3]?.cells[1]?.innerText.includes('source-unknown-error')) {
         if (obs) {
           obs.disconnect();
         }

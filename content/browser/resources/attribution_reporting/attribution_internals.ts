@@ -14,7 +14,7 @@ import {AttributionSupport} from './attribution.mojom-webui.js';
 import type {AttributionDetailTableElement} from './attribution_detail_table.js';
 import type {HandlerInterface, ObserverInterface, ReportID, ReportStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
 import {Factory, HandlerRemote, ObserverReceiver, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
-import type {AttributionInternalsTableElement, CompareFunc, DataColumn, RenderFunc} from './attribution_internals_table.js';
+import type {AttributionInternalsTableElement, CompareFunc, DataColumn, InitOpts, RenderFunc} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
 import {EventLevelResult} from './event_level_result.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
@@ -256,13 +256,8 @@ function newSource(mojo: WebUISource): Source {
 
 function initSourceTable(panel: HTMLElement):
     AttributionInternalsTableElement<Source> {
-  const t = panel.querySelector<AttributionInternalsTableElement<Source>>(
-      'attribution-internals-table')!;
-
-  const d = panel.querySelector<AttributionDetailTableElement<Source>>(
-      'attribution-detail-table')!;
-
-  t.init(
+  return initPanel(
+      panel,
       [
         valueColumn('Source Event ID', 'sourceEventId', asNumber),
         valueColumn('Status', 'status', asStringOrBool),
@@ -278,31 +273,29 @@ function initSourceTable(panel: HTMLElement):
       {
         getId: source => source.id,
         isSelectable: true,
-      });
-
-  d.init([
-    valueColumn('Priority', 'priority', asNumber),
-    valueColumn('Filter Data', 'filterData', asCode),
-    valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
-    'Event-Level Fields',
-    valueColumn('Max Reports', 'maxEventLevelReports', asNumber),
-    valueColumn(
-        'Epsilon', 'eventLevelEpsilon',
-        asCustomNumber((v: number) => v.toFixed(3))),
-    valueColumn('Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
-    valueColumn('Trigger Specs', 'triggerSpecs', asCode),
-    valueColumn('Dedup Keys', 'dedupKeys', asList(asNumber)),
-    'Aggregatable Fields',
-    valueColumn('Report Window Time', 'aggregatableReportWindowTime', asDate),
-    valueColumn(
-        'Budget Consumed', 'aggregatableBudgetConsumed',
-        asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
-    valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
-    valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),
-  ]);
-
-  bindInternalsAndDetailTables(t, d);
-  return t;
+      },
+      [
+        valueColumn('Priority', 'priority', asNumber),
+        valueColumn('Filter Data', 'filterData', asCode),
+        valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
+        'Event-Level Fields',
+        valueColumn('Max Reports', 'maxEventLevelReports', asNumber),
+        valueColumn(
+            'Epsilon', 'eventLevelEpsilon',
+            asCustomNumber((v: number) => v.toFixed(3))),
+        valueColumn(
+            'Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
+        valueColumn('Trigger Specs', 'triggerSpecs', asCode),
+        valueColumn('Dedup Keys', 'dedupKeys', asList(asNumber)),
+        'Aggregatable Fields',
+        valueColumn(
+            'Report Window Time', 'aggregatableReportWindowTime', asDate),
+        valueColumn(
+            'Budget Consumed', 'aggregatableBudgetConsumed',
+            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+        valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
+        valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),
+      ]);
 }
 
 class Registration {
@@ -327,13 +320,8 @@ class Registration {
 function initRegistrationTableModel<T extends Registration>(
     panel: HTMLElement, contextOriginTitle: string,
     cols: Iterable<DataColumn<T>>): AttributionInternalsTableElement<T> {
-  const t = panel.querySelector<AttributionInternalsTableElement<T>>(
-      'attribution-internals-table')!;
-
-  const d = panel.querySelector<AttributionDetailTableElement<T>>(
-      'attribution-detail-table')!;
-
-  t.init(
+  return initPanel(
+      panel,
       [
         valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
         valueColumn(contextOriginTitle, 'contextOrigin', asUrl),
@@ -343,13 +331,8 @@ function initRegistrationTableModel<T extends Registration>(
             allowingUndefined(asNumber)),
         ...cols,
       ],
-      {isSelectable: true});
-
-  d.init([valueColumn('Registration JSON', 'registrationJson', asCode)]);
-
-  bindInternalsAndDetailTables(t, d);
-
-  return t;
+      {isSelectable: true},
+      [valueColumn('Registration JSON', 'registrationJson', asCode)]);
 }
 
 class Trigger extends Registration {
@@ -507,9 +490,21 @@ class AggregatableReport extends Report {
   }
 }
 
-function bindInternalsAndDetailTables<T>(
-    t: AttributionInternalsTableElement<T>, d: AttributionDetailTableElement<T>,
-    onSelectionChange: (data: T|undefined) => void = () => {}): void {
+function initPanel<T>(
+    panel: HTMLElement, cols: Iterable<DataColumn<T>>, initOpts: InitOpts<T>,
+    detailCols: Iterable<string|DataColumn<T>>,
+    onSelectionChange: (data: T|undefined) => void =
+        () => {}): AttributionInternalsTableElement<T> {
+  const t = panel.querySelector<AttributionInternalsTableElement<T>>(
+      'attribution-internals-table')!;
+
+  t.init(cols, initOpts);
+
+  const d = panel.querySelector<AttributionDetailTableElement<T>>(
+      'attribution-detail-table')!;
+
+  d.init([...cols, ...detailCols]);
+
   t.addEventListener(
       'selection-change', (e: CustomEvent<{data: T | undefined}>) => {
         onSelectionChange(e.detail.data);
@@ -517,18 +512,17 @@ function bindInternalsAndDetailTables<T>(
       });
 
   d.addEventListener('close', () => t.clearSelection());
+
+  return t;
 }
 
 function initReportTable<T extends Report>(
     panel: HTMLElement, handler: HandlerInterface,
     cols: Iterable<DataColumn<T>>): AttributionInternalsTableElement<T> {
-  const t = panel.querySelector<AttributionInternalsTableElement<T>>(
-      'attribution-internals-table')!;
+  const sendReportButton = panel.querySelector('button')!;
 
-  const d = panel.querySelector<AttributionDetailTableElement<T>>(
-      'attribution-detail-table')!;
-
-  t.init(
+  const t = initPanel<T>(
+      panel,
       [
         reportStatusColumn,
         valueColumn('URL', 'reportUrl', asUrl),
@@ -543,18 +537,12 @@ function initReportTable<T extends Report>(
             (report.isPending() || updated) ? report.id.value : undefined,
         isSelectable: true,
       },
-  );
-
-  d.init([valueColumn('Body', 'reportBody', asCode)]);
-
-  const sendReportButton = panel.querySelector('button')!;
+      [valueColumn('Body', 'reportBody', asCode)],
+      (report: T|undefined) => sendReportButton.disabled =
+          !(report?.isPending()));
 
   sendReportButton.addEventListener(
       'click', () => sendReport(t, sendReportButton, handler));
-
-  bindInternalsAndDetailTables(t, d, (report: T|undefined) => {
-    sendReportButton.disabled = !(report?.isPending());
-  });
 
   return t;
 }
@@ -682,25 +670,16 @@ function attributionSuccessDebugReport(mojo: WebUIReport): DebugReport {
 
 function initDebugReportTable(panel: HTMLElement):
     AttributionInternalsTableElement<DebugReport> {
-  const t = panel.querySelector<AttributionInternalsTableElement<DebugReport>>(
-      'attribution-internals-table')!;
-
-  const d = panel.querySelector<AttributionDetailTableElement<DebugReport>>(
-      'attribution-detail-table')!;
-
-  t.init(
+  return initPanel(
+      panel,
       [
         valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
         valueColumn('URL', 'url', asUrl),
         reportStatusColumn,
       ],
-      {isSelectable: true});
-
-  d.init([valueColumn('Body', 'body', asCode)]);
-
-  bindInternalsAndDetailTables(t, d);
-
-  return t;
+      {isSelectable: true}, [
+        valueColumn('Body', 'body', asCode),
+      ]);
 }
 
 // Converts a mojo origin into a user-readable string, omitting default ports.
