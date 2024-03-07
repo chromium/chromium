@@ -1784,7 +1784,7 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
     // document.
     not_restored_reasons->same_origin_details =
         blink::mojom::SameOriginBfcacheNotRestoredDetails::New();
-    not_restored_reasons->same_origin_details->url = url_.spec();
+    not_restored_reasons->same_origin_details->url = url_;
     // Populate the reasons for same-origin frames.
     for (auto& name : GetDocumentResult().GetStringReasons()) {
       blink::mojom::BFCacheBlockingDetailedReasonPtr reason =

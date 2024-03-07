@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_P(
       {MatchesDetailedReason("cache-control-no-store",
                              /*source=*/std::nullopt)},
       MatchesSameOriginDetails(
-          /*url=*/url_a_no_store.spec(),
+          /*url=*/url_a_no_store,
           /*children=*/{}));
   EXPECT_THAT(
       current_frame_host()->NotRestoredReasonsForTesting(),
@@ -972,7 +972,7 @@ IN_PROC_BROWSER_TEST_P(
           {MatchesDetailedReason("cache-control-no-store",
                                  /*source=*/std::nullopt)},
           MatchesSameOriginDetails(
-              /*url=*/url_a_no_store.spec(),
+              /*url=*/url_a_no_store,
               /*children=*/
               {subframe_result})));
 }
