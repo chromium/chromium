@@ -76,7 +76,7 @@ content::WebContents* FindTelemetryExtensionOpenAndSecureAppUi(
   // 1. In a browser that is front-most;
   // 2. In a tab that is active.
   Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (last_active_browser->profile() == profile) {
+  if (last_active_browser && last_active_browser->profile() == profile) {
     content::WebContents* contents =
         last_active_browser->tab_strip_model()->GetActiveWebContents();
     if (contents && IsWebContentsSecureAppUi(pattern_set, contents)) {
