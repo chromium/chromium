@@ -15,7 +15,7 @@
 #include <iterator>
 
 #include "third_party/jni_zero/jni_export.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 
@@ -26,7 +26,7 @@ extern std::atomic<jclass> g_org_jni_1zero_SampleNonProxy_clazz;
 #ifndef org_jni_1zero_SampleNonProxy_clazz_defined
 #define org_jni_1zero_SampleNonProxy_clazz_defined
 inline jclass org_jni_1zero_SampleNonProxy_clazz(JNIEnv* env) {
-  return jni_zero::LazyGetClass(env, kClassPath_org_jni_1zero_SampleNonProxy,
+  return jni_zero::internal::LazyGetClass(env, kClassPath_org_jni_1zero_SampleNonProxy,
       &g_org_jni_1zero_SampleNonProxy_clazz);
 }
 #endif
@@ -156,7 +156,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_SampleNonProxy
       org_jni_1zero_SampleNonProxy_clazz(env),
       kMethods_org_jni_1zero_SampleNonProxy,
       kMethods_org_jni_1zero_SampleNonProxySize) < 0) {
-    jni_zero::HandleRegistrationError(env,
+    jni_zero::internal::HandleRegistrationError(env,
         org_jni_1zero_SampleNonProxy_clazz(env),
         __FILE__);
     return false;

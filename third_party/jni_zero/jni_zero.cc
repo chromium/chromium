@@ -6,10 +6,12 @@
 
 #include <sys/prctl.h>
 
+#include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/logging.h"
 
 namespace jni_zero {
 namespace {
+const int kDefaultLocalFrameCapacity = 16;
 // Until we fully migrate base's jni_android, we will maintain a copy of this
 // global here and will have base set this variable when it sets its own.
 JavaVM* g_jvm = nullptr;
@@ -18,9 +20,9 @@ jclass (*g_class_resolver)(JNIEnv*, const char*, const char*) = nullptr;
 
 void (*g_exception_handler_callback)(JNIEnv*) = nullptr;
 
-ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
-                                            const char* class_name,
-                                            const char* split_name) {
+jclass GetClassInternal(JNIEnv* env,
+                        const char* class_name,
+                        const char* split_name) {
   jclass clazz;
   if (g_class_resolver != nullptr) {
     clazz = g_class_resolver(env, class_name, split_name);
@@ -30,10 +32,25 @@ ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
   if (ClearException(env) || !clazz) {
     JNI_ZERO_FLOG("Failed to find class %s", class_name);
   }
-  return ScopedJavaLocalRef<jclass>(env, clazz);
+  return clazz;
 }
 
-const int kDefaultLocalFrameCapacity = 16;
+jclass LazyGetClassInternal(JNIEnv* env,
+                            const char* class_name,
+                            const char* split_name,
+                            std::atomic<jclass>* atomic_class_id) {
+  jclass ret = nullptr;
+  ScopedJavaGlobalRef<jclass> clazz(
+      env, GetClassInternal(env, class_name, split_name));
+  if (atomic_class_id->compare_exchange_strong(ret, clazz.obj(),
+                                               std::memory_order_acq_rel)) {
+    // We intentionally leak the global ref since we are now storing it as a raw
+    // pointer in |atomic_class_id|.
+    ret = clazz.Release();
+  }
+  return ret;
+}
+
 }  // namespace
 
 ScopedJavaLocalFrame::ScopedJavaLocalFrame(JNIEnv* env) : env_(env) {
@@ -217,56 +234,12 @@ void SetClassResolver(jclass (*resolver)(JNIEnv*, const char*, const char*)) {
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
                                     const char* class_name,
                                     const char* split_name) {
-  return GetClassInternal(env, class_name, split_name);
+  return ScopedJavaLocalRef<jclass>(
+      env, GetClassInternal(env, class_name, split_name));
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {
-  return GetClassInternal(env, class_name, "");
-}
-
-// This is duplicated with LazyGetClass below because these are performance
-// sensitive.
-jclass LazyGetClass(JNIEnv* env,
-                    const char* class_name,
-                    const char* split_name,
-                    std::atomic<jclass>* atomic_class_id) {
-  const jclass value = atomic_class_id->load(std::memory_order_acquire);
-  if (value) {
-    return value;
-  }
-  ScopedJavaGlobalRef<jclass> clazz;
-  clazz.Reset(GetClass(env, class_name, split_name));
-  jclass cas_result = nullptr;
-  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
-                                               std::memory_order_acq_rel)) {
-    // We intentionally leak the global ref since we are now storing it as a raw
-    // pointer in |atomic_class_id|.
-    return clazz.Release();
-  } else {
-    return cas_result;
-  }
-}
-
-// This is duplicated with LazyGetClass above because these are performance
-// sensitive.
-jclass LazyGetClass(JNIEnv* env,
-                    const char* class_name,
-                    std::atomic<jclass>* atomic_class_id) {
-  const jclass value = atomic_class_id->load(std::memory_order_acquire);
-  if (value) {
-    return value;
-  }
-  ScopedJavaGlobalRef<jclass> clazz;
-  clazz.Reset(GetClass(env, class_name));
-  jclass cas_result = nullptr;
-  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
-                                               std::memory_order_acq_rel)) {
-    // We intentionally leak the global ref since we are now storing it as a raw
-    // pointer in |atomic_class_id|.
-    return clazz.Release();
-  } else {
-    return cas_result;
-  }
+  return ScopedJavaLocalRef<jclass>(env, GetClassInternal(env, class_name, ""));
 }
 
 template <MethodID::Type type>
@@ -331,4 +304,26 @@ template jmethodID MethodID::LazyGet<MethodID::TYPE_INSTANCE>(
     const char* jni_signature,
     std::atomic<jmethodID>* atomic_method_id);
 
+namespace internal {
+jclass LazyGetClass(JNIEnv* env,
+                    const char* class_name,
+                    const char* split_name,
+                    std::atomic<jclass>* atomic_class_id) {
+  jclass ret = atomic_class_id->load(std::memory_order_acquire);
+  if (ret == nullptr) {
+    ret = LazyGetClassInternal(env, class_name, split_name, atomic_class_id);
+  }
+  return ret;
+}
+
+jclass LazyGetClass(JNIEnv* env,
+                    const char* class_name,
+                    std::atomic<jclass>* atomic_class_id) {
+  jclass ret = atomic_class_id->load(std::memory_order_acquire);
+  if (ret == nullptr) {
+    ret = LazyGetClassInternal(env, class_name, "", atomic_class_id);
+  }
+  return ret;
+}
+}  // namespace internal
 }  // namespace jni_zero

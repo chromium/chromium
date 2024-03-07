@@ -347,7 +347,8 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool ${REGISTRATION_NAME}(JNIEnv* env) {
       kMethods_${ESCAPED_PROXY_CLASS},
       number_of_methods) < 0) {
 
-    jni_zero::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
+    jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(),
+        __FILE__);
     return false;
   }
 
@@ -484,7 +485,7 @@ def CreateFromDict(options, registration_dict):
 #include <iterator>
 
 #include "third_party/jni_zero/jni_export.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 
@@ -754,7 +755,7 @@ ${NATIVES}\
       ${JAVA_CLASS}_clazz(env),
       ${NAMESPACE}kMethods_${JAVA_CLASS},
       kMethods_${JAVA_CLASS}Size) < 0) {
-    jni_zero::HandleRegistrationError(env,
+    jni_zero::internal::HandleRegistrationError(env,
         ${JAVA_CLASS}_clazz(env),
         __FILE__);
     return false;

@@ -26,7 +26,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass> g_org_jni_1zero_JavapClass_c
 #ifndef org_jni_1zero_JavapClass_clazz_defined
 #define org_jni_1zero_JavapClass_clazz_defined
 inline jclass org_jni_1zero_JavapClass_clazz(JNIEnv* env) {
-  return jni_zero::LazyGetClass(env, kClassPath_org_jni_1zero_JavapClass,
+  return jni_zero::internal::LazyGetClass(env, kClassPath_org_jni_1zero_JavapClass,
       &g_org_jni_1zero_JavapClass_clazz);
 }
 #endif
@@ -62,7 +62,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(JNIEnv*
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env), nullptr);
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_INSTANCE>(
           env,
@@ -86,7 +86,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolea
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env), nullptr);
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_INSTANCE>(
           env,
@@ -110,7 +110,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(JN
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env), nullptr);
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_INSTANCE>(
           env,
@@ -134,7 +134,7 @@ static jint Java_JavapClass_intMethod(JNIEnv* env, const jni_zero::JavaRef<jobje
   CHECK_CLAZZ(env, obj.obj(),
       org_jni_1zero_JavapClass_clazz(env), 0);
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_INSTANCE>(
           env,
@@ -158,7 +158,7 @@ static void Java_JavapClass_needsMangling__String(JNIEnv* env, const jni_zero::J
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env));
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_STATIC>(
           env,
@@ -181,7 +181,7 @@ static void Java_JavapClass_needsMangling__java_util_ArrayList(JNIEnv* env, cons
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env));
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_STATIC>(
           env,
@@ -201,7 +201,7 @@ static void Java_JavapClass_needsMangling__int(JNIEnv* env, JniIntWrapper p0) {
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env));
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_STATIC>(
           env,
@@ -225,7 +225,7 @@ static jni_zero::ScopedJavaLocalRef<jclass> Java_JavapClass_objTest(JNIEnv* env,
   CHECK_CLAZZ(env, obj.obj(),
       org_jni_1zero_JavapClass_clazz(env), nullptr);
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_INSTANCE>(
           env,
@@ -250,7 +250,7 @@ static jint Java_JavapClass_staticIntMethod(JNIEnv* env, const jni_zero::JavaRef
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env), 0);
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_STATIC>(
           env,
@@ -274,7 +274,7 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> Java_JavapClass_staticIntMetho
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_JavapClass_clazz(env), nullptr);
 
-  jni_zero::JniJavaCallContextChecked call_context;
+  jni_zero::internal::JniJavaCallContextChecked call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_STATIC>(
           env,

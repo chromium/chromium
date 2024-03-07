@@ -26,7 +26,8 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass> g_java_lang_String_clazz(nul
 #ifndef java_lang_String_clazz_defined
 #define java_lang_String_clazz_defined
 inline jclass java_lang_String_clazz(JNIEnv* env) {
-  return jni_zero::LazyGetClass(env, kClassPath_java_lang_String, &g_java_lang_String_clazz);
+  return jni_zero::internal::LazyGetClass(env, kClassPath_java_lang_String,
+      &g_java_lang_String_clazz);
 }
 #endif
 

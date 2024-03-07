@@ -237,7 +237,7 @@ template("generate_jni_impl") {
 
       # Depending on the action name to avoid cross-toolchain native deps.
       public_deps = [ ":$_jni_zero_action_target_name($default_toolchain)" ]
-      deps = [ "//third_party/jni_zero:generated_file_helper" ]
+      deps = [ "//third_party/jni_zero" ]
       metadata = {
         shared_libraries_barrier = []
       }
@@ -250,7 +250,7 @@ template("generate_jni_impl") {
       if (defined(invoker.jni_generator_include)) {
         _jni_generator_include = invoker.jni_generator_include
       } else {
-        _jni_generator_include = "//third_party/jni_zero/jni_zero_helper.h"
+        _jni_generator_include = "//third_party/jni_zero/jni_zero_internal.h"
       }
 
       # The sources aren't compiled so don't check their dependencies.
@@ -356,7 +356,6 @@ template("generate_jni_impl") {
     # files included in their executables without explicitly depending on our
     # targets in jni_zero/BUILD.gn.
     group(_final_target_name) {
-      deps = [ "//third_party/jni_zero:generated_file_helper" ]
       public_deps = [ ":$_jni_zero_action_target_name" ]
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (defined(visibility)) {

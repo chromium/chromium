@@ -653,23 +653,6 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass> GetClass(
     JNIEnv* env,
     const char* class_name);
 
-// The method will initialize |atomic_class_id| to contain a global ref to the
-// class. And will return that ref on subsequent calls.  It's the caller's
-// responsibility to release the ref when it is no longer needed.
-// The caller is responsible to zero-initialize |atomic_method_id|.
-// It's fine to simultaneously call this on multiple threads referencing the
-// same |atomic_method_id|.
-JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
-LazyGetClass(JNIEnv* env,
-             const char* class_name,
-             const char* split_name,
-             std::atomic<jclass>* atomic_class_id);
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
-LazyGetClass(JNIEnv* env,
-             const char* class_name,
-             std::atomic<jclass>* atomic_class_id);
-
 // Primary templates for non-Array conversion fuctions. Embedding application
 // can specialize these functions for their own custom types in order to use
 // custom types in @JniType.

@@ -15,7 +15,7 @@
 #include <iterator>
 
 #include "third_party/jni_zero/jni_export.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 

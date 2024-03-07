@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef JNI_ZERO_JNI_ZERO_HELPER_H_
-#define JNI_ZERO_JNI_ZERO_HELPER_H_
+#ifndef JNI_ZERO_JNI_ZERO_INTERNAL_H
+#define JNI_ZERO_JNI_ZERO_INTERNAL_H
 
 #include <jni.h>
 
@@ -33,7 +33,7 @@
 #define JNI_ZERO_ALWAYS_INLINE inline
 #endif
 
-namespace jni_zero {
+namespace jni_zero::internal {
 
 inline void HandleRegistrationError(JNIEnv* env,
                                     jclass clazz,
@@ -43,7 +43,20 @@ inline void HandleRegistrationError(JNIEnv* env,
 
 // A 32 bit number could be an address on stack. Random 64 bit marker on the
 // stack is much less likely to be present on stack.
-constexpr uint64_t kJniStackMarkerValue = 0xbdbdef1bebcade1b;
+inline constexpr uint64_t kJniStackMarkerValue = 0xbdbdef1bebcade1b;
+
+// The method will initialize |atomic_class_id| to contain a global ref to the
+// class. And will return that ref on subsequent calls.
+JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
+LazyGetClass(JNIEnv* env,
+             const char* class_name,
+             const char* split_name,
+             std::atomic<jclass>* atomic_class_id);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
+LazyGetClass(JNIEnv* env,
+             const char* class_name,
+             std::atomic<jclass>* atomic_class_id);
 
 // Context about the JNI call with exception checked to be stored in stack.
 struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
@@ -111,6 +124,6 @@ static_assert(sizeof(JniJavaCallContextChecked) ==
                   sizeof(JniJavaCallContextUnchecked),
               "Stack unwinder cannot work with structs of different sizes.");
 
-}  // namespace jni_zero
+}  // namespace jni_zero::internal
 
-#endif  // JNI_ZERO_JNI_ZERO_HELPER_H_
+#endif  // JNI_ZERO_JNI_ZERO_INTERNAL_H

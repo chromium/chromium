@@ -15,7 +15,7 @@
 #include <iterator>
 
 #include "third_party/jni_zero/jni_export.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 
@@ -26,7 +26,8 @@ extern std::atomic<jclass> g_java_lang_String_clazz;
 #ifndef java_lang_String_clazz_defined
 #define java_lang_String_clazz_defined
 inline jclass java_lang_String_clazz(JNIEnv* env) {
-  return jni_zero::LazyGetClass(env, kClassPath_java_lang_String, &g_java_lang_String_clazz);
+  return jni_zero::internal::LazyGetClass(env, kClassPath_java_lang_String,
+      &g_java_lang_String_clazz);
 }
 #endif
 
@@ -188,7 +189,8 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_this_is_a_package_prefix_J_N
       kMethods_this_is_a_package_prefix_J_N,
       number_of_methods) < 0) {
 
-    jni_zero::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
+    jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(),
+        __FILE__);
     return false;
   }
 

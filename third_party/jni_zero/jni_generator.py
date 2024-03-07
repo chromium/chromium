@@ -467,7 +467,7 @@ const char kClassPath_${JAVA_CLASS}[] = \
 #ifndef ${JAVA_CLASS}_clazz_defined
 #define ${JAVA_CLASS}_clazz_defined
 inline jclass ${JAVA_CLASS}_clazz(JNIEnv* env) {
-  return jni_zero::LazyGetClass(env, kClassPath_${JAVA_CLASS}, \
+  return jni_zero::internal::LazyGetClass(env, kClassPath_${JAVA_CLASS}, \
 ${MAYBE_SPLIT_NAME_ARG}&g_${JAVA_CLASS}_clazz);
 }
 #endif
@@ -1013,7 +1013,7 @@ ${FUNCTION_HEADER}
   CHECK_CLAZZ(env, ${FIRST_PARAM_IN_CALL},
       ${JAVA_CLASS}_clazz(env)${OPTIONAL_ERROR_RETURN});
 
-  jni_zero::JniJavaCallContext${CHECK_EXCEPTION} call_context;
+  jni_zero::internal::JniJavaCallContext${CHECK_EXCEPTION} call_context;
   call_context.Init<
       jni_zero::MethodID::TYPE_${METHOD_ID_TYPE}>(
           env,
