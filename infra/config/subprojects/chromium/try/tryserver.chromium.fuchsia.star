@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient", "siso")
+load("//lib/builders.star", "builders", "os", "reclient", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
@@ -123,6 +123,7 @@ try_.builder(
             "fuchsia_smart_display",
         ],
     ),
+    free_space = builders.free_space.high,
 )
 
 try_.builder(
