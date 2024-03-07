@@ -207,6 +207,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDelayTempStripRemoval,
     &kDragDropIntoOmnibox,
     &kDrawEdgeToEdge,
+    &kDrawEdgeToEdgeInsetsManagement,
     &kDrawNativeEdgeToEdge,
     &kDrawWebEdgeToEdge,
     &kDynamicTopChrome,
@@ -615,6 +616,10 @@ BASE_FEATURE(kDragDropIntoOmnibox,
 BASE_FEATURE(kDrawEdgeToEdge,
              "DrawEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDrawEdgeToEdgeInsetsManagement,
+             "DrawEdgeToEdgeInsetsManagement",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDrawNativeEdgeToEdge,
              "DrawNativeEdgeToEdge",

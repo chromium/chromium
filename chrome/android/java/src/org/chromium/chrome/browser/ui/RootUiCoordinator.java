@@ -1771,7 +1771,7 @@ public class RootUiCoordinator
         if (supportsEdgeToEdge() && EdgeToEdgeControllerFactory.isEnabled()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
-                            activity, activityTabProvider, browserControlsManager);
+                            activity, mWindowAndroid, activityTabProvider, browserControlsManager);
             supplier.set(mEdgeToEdgeController);
         }
     }

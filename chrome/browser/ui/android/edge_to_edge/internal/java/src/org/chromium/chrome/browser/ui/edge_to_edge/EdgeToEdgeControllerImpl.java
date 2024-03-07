@@ -28,8 +28,12 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserver.WindowInsetsConsumer;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Controls use of the Android Edge To Edge feature that allows an App to draw benieth the Status
@@ -44,10 +48,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
 
     private final @NonNull Activity mActivity;
+    private final @NonNull WindowAndroid mWindowAndroid;
     private final @NonNull TabSupplierObserver mTabSupplierObserver;
     private final ObserverList<EdgeToEdgePadAdjuster> mPadAdjusters = new ObserverList<>();
     private final ObserverList<ChangeObserver> mEdgeChangeObservers = new ObserverList<>();
     private final @NonNull TabObserver mTabObserver;
+    private final @Nullable TotallyEdgeToEdge mTotallyEdgeToEdge;
 
     /** Multiplier to convert from pixels to DPs. */
     private final float mPxToDp;
@@ -57,15 +63,17 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private Tab mCurrentTab;
     private WebContentsObserver mWebContentsObserver;
     private boolean mIsActivityToEdge;
-    private @Nullable Insets mSystemInsets;
     private boolean mDidSetDecorAndListener;
-    private final @Nullable TotallyEdgeToEdge mTotallyEdgeToEdge;
+    private InsetObserver mInsetObserver;
+    private @Nullable Insets mSystemInsets;
+    private @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
 
     /**
      * Creates an implementation of the EdgeToEdgeController that will use the Android APIs to allow
      * drawing under the System Gesture Navigation Bar.
      *
      * @param activity The activity to update to allow drawing under System Bars.
+     * @param windowAndroid The current {@link WindowAndroid} to allow drawing under System Bars.
      * @param tabObservableSupplier A supplier for Tab changes so this implementation can adjust
      *     whether to draw under or not for each page.
      * @param edgeToEdgeOSWrapper An optional wrapper for OS calls for testing etc.
@@ -74,10 +82,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      */
     public EdgeToEdgeControllerImpl(
             Activity activity,
+            WindowAndroid windowAndroid,
             ObservableSupplier<Tab> tabObservableSupplier,
             @Nullable EdgeToEdgeOSWrapper edgeToEdgeOSWrapper,
             BrowserControlsStateProvider browserControlsStateProvider) {
         mActivity = activity;
+        mWindowAndroid = windowAndroid;
         mEdgeToEdgeOSWrapper =
                 edgeToEdgeOSWrapper == null ? new EdgeToEdgeOSWrapperImpl() : edgeToEdgeOSWrapper;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
@@ -115,6 +125,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                                                         ? null
                                                         : mCurrentTab.getWebContents()))
                         : null;
+        mInsetObserver = InsetObserverSupplier.getValueOrNullFrom(mWindowAndroid);
     }
 
     @VisibleForTesting
@@ -237,8 +248,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         if (toEdge && mSystemInsets == null && !mDidSetDecorAndListener) {
             mDidSetDecorAndListener = true;
             mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(mActivity.getWindow(), false);
-            mEdgeToEdgeOSWrapper.setOnApplyWindowInsetsListener(
-                    rootView,
+            mWindowInsetsConsumer =
                     (view, windowInsets) -> {
                         Insets newInsets =
                                 windowInsets.getInsets(
@@ -257,7 +267,13 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                             adjustEdges(mIsActivityToEdge, viewId, webContents);
                         }
                         return windowInsets;
-                    });
+                    };
+            if (EdgeToEdgeUtils.isInsetsManagementEnabled()) {
+                mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
+            } else {
+                mEdgeToEdgeOSWrapper.setOnApplyWindowInsetsListener(
+                        rootView, mWindowInsetsConsumer);
+            }
         } else {
             adjustEdges(toEdge, viewId, webContents);
         }
@@ -278,13 +294,13 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // Adjust the bottom padding to reflect whether ToEdge or ToNormal for the Gesture Nav Bar.
         // All the other edges need to be padded to prevent drawing under an edge that we
         // don't want drawn ToEdge (e.g. the Status Bar).
-        int bottomInset = toEdge ? 0 : mSystemInsets.bottom;
+        int bottomPadding = toEdge ? 0 : mSystemInsets.bottom;
         mEdgeToEdgeOSWrapper.setPadding(
                 mActivity.findViewById(viewId),
                 mSystemInsets.left,
                 mSystemInsets.top,
                 mSystemInsets.right,
-                bottomInset);
+                bottomPadding);
 
         for (var adjuster : mPadAdjusters) {
             adjuster.adjustToEdge(toEdge, mSystemInsets.bottom);
@@ -293,7 +309,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
             observer.onToEdgeChange(isToEdge() ? mSystemInsets.bottom : 0);
         }
 
-        if (webContents != null) pushInsetsToBlink(toEdge, webContents);
+        if (EdgeToEdgeUtils.isInsetsManagementEnabled()) {
+            int bottomInsetOnSaveArea = toEdge ? mSystemInsets.bottom : 0;
+            mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSaveArea);
+        } else if (webContents != null) {
+            pushInsetsToBlink(toEdge, webContents);
+        }
     }
 
     /**
@@ -340,6 +361,10 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mTabSupplierObserver.destroy();
         if (mTotallyEdgeToEdge != null) mTotallyEdgeToEdge.destroy();
+        if (mInsetObserver != null) {
+            mInsetObserver.removeInsetsConsumer(mWindowInsetsConsumer);
+            mInsetObserver = null;
+        }
     }
 
     @VisibleForTesting

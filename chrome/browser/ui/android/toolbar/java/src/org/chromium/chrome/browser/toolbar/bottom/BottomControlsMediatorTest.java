@@ -78,7 +78,7 @@ public class BottomControlsMediatorTest {
                         .with(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false)
                         .with(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE, false)
                         .build();
-        mEdgeToEdgeControllerSupplier = new ObservableSupplierImpl(mEdgeToEdgeController);
+        mEdgeToEdgeControllerSupplier = new ObservableSupplierImpl<>(mEdgeToEdgeController);
         mMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
@@ -102,7 +102,7 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        new ObservableSupplierImpl(null));
+                        new ObservableSupplierImpl<>(null));
         assertNull(plainMediator.getEdgeToEdgeChangeObserverForTesting());
     }
 
@@ -132,7 +132,11 @@ public class BottomControlsMediatorTest {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         EdgeToEdgeControllerImpl liveEdgeToEdgeController =
                 new EdgeToEdgeControllerImpl(
-                        activity, mTabObservableSupplier, null, mBrowserControlsStateProvider);
+                        activity,
+                        mWindowAndroid,
+                        mTabObservableSupplier,
+                        null,
+                        mBrowserControlsStateProvider);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
@@ -142,7 +146,7 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        new ObservableSupplierImpl(liveEdgeToEdgeController));
+                        new ObservableSupplierImpl<>(liveEdgeToEdgeController));
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         plainMediator.destroy();
         assertNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
@@ -155,7 +159,11 @@ public class BottomControlsMediatorTest {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         EdgeToEdgeControllerImpl liveEdgeToEdgeController =
                 new EdgeToEdgeControllerImpl(
-                        activity, mTabObservableSupplier, null, mBrowserControlsStateProvider);
+                        activity,
+                        mWindowAndroid,
+                        mTabObservableSupplier,
+                        null,
+                        mBrowserControlsStateProvider);
         new BottomControlsMediator(
                 mWindowAndroid,
                 mModel,
@@ -164,7 +172,7 @@ public class BottomControlsMediatorTest {
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,
                 mOverlayPanelVisibilitySupplier,
-                new ObservableSupplierImpl(liveEdgeToEdgeController));
+                new ObservableSupplierImpl<>(liveEdgeToEdgeController));
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         liveEdgeToEdgeController.setToEdgeForTesting(false);
         int toNormalHeight = mModel.get(ANDROID_VIEW_HEIGHT);

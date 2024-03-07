@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -26,6 +28,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.Looper;
 import android.view.View;
@@ -34,19 +37,21 @@ import android.view.WindowInsets;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -54,46 +59,62 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.components.browser_ui.widget.InsetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserver.WindowInsetsConsumer;
+import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Tests the EdgeToEdgeController code. Ideally this would include {@link EdgeToEdgeController},
  * {@link EdgeToEdgeControllerFactory}, along with {@link EdgeToEdgeControllerImpl}
  */
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(
         sdk = VERSION_CODES.R,
         manifest = Config.NONE,
         shadows = EdgeToEdgeControllerTest.ShadowEdgeToEdgeControllerFactory.class)
 public class EdgeToEdgeControllerTest {
+    @Parameters(name = "InsetManagement_{0}")
+    public static Object[] data() {
+        return new Object[] {false, true};
+    }
+
     @SuppressLint("NewApi")
     private static final Insets SYSTEM_INSETS = Insets.of(0, 113, 0, 59); // Typical.
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private Activity mActivity;
     private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
 
-    private ObservableSupplierImpl mObservableSupplierImpl;
+    private ObservableSupplierImpl<Tab> mTabProvider;
 
     private UserDataHost mTabDataHost = new UserDataHost();
+    private boolean mEnableInsetManagement;
 
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private InsetObserver mInsetObserver;
     @Mock private Tab mTab;
 
     @Mock private WebContents mWebContents;
 
     @Mock private EdgeToEdgeOSWrapper mOsWrapper;
 
-    @Captor private ArgumentCaptor<OnApplyWindowInsetsListener> mWindowInsetsListenerCaptor;
+    @Captor private ArgumentCaptor<WindowInsetsConsumer> mWindowInsetsListenerCaptor;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverArgumentCaptor;
+    @Captor private ArgumentCaptor<Rect> mSafeAreaRectCaptor;
 
     @Mock private View mViewMock;
 
@@ -108,20 +129,28 @@ public class EdgeToEdgeControllerTest {
         }
     }
 
+    // Test with InsetManagement enabled / disabled.
+    public EdgeToEdgeControllerTest(boolean withInsetManagement) {
+        mEnableInsetManagement = withInsetManagement;
+    }
+
     @Before
     public void setUp() {
         ChromeFeatureList.sDrawEdgeToEdge.setForTesting(true);
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(false);
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
+        ChromeFeatureList.sDrawEdgeToEdgeInsetsManagement.setForTesting(mEnableInsetManagement);
 
         MockitoAnnotations.openMocks(this);
+        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
 
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
-        mObservableSupplierImpl = new ObservableSupplierImpl();
+        mTabProvider = new ObservableSupplierImpl<>();
         mEdgeToEdgeControllerImpl =
                 new EdgeToEdgeControllerImpl(
                         mActivity,
-                        mObservableSupplierImpl,
+                        mWindowAndroid,
+                        mTabProvider,
                         mOsWrapper,
                         mBrowserControlsStateProvider);
         assertNotNull(mEdgeToEdgeControllerImpl);
@@ -136,6 +165,16 @@ public class EdgeToEdgeControllerTest {
         doNothing()
                 .when(mOsWrapper)
                 .setOnApplyWindowInsetsListener(any(), mWindowInsetsListenerCaptor.capture());
+        // Setup needed when mEnableInsetManagement = true.
+        doNothing().when(mInsetObserver).addInsetsConsumer(mWindowInsetsListenerCaptor.capture());
+        doAnswer(
+                        invocationOnMock -> {
+                            int bottomInset = invocationOnMock.getArgument(0);
+                            mWebContents.setDisplayCutoutSafeArea(new Rect(0, 0, 0, bottomInset));
+                            return null;
+                        })
+                .when(mInsetObserver)
+                .updateBottomInsetForEdgeToEdge(anyInt());
 
         doReturn(SYSTEM_INSETS)
                 .when(mWindowInsetsMock)
@@ -146,7 +185,7 @@ public class EdgeToEdgeControllerTest {
     public void tearDown() {
         mEdgeToEdgeControllerImpl.destroy();
         mEdgeToEdgeControllerImpl = null;
-        mObservableSupplierImpl = null;
+        mTabProvider = null;
     }
 
     @Test
@@ -170,7 +209,7 @@ public class EdgeToEdgeControllerTest {
     @Test
     public void onObservingDifferentTab_default() {
         when(mTab.isNativePage()).thenReturn(false);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
         assertNoChangeExpectations();
@@ -180,7 +219,7 @@ public class EdgeToEdgeControllerTest {
     public void onObservingDifferentTab_changeToNative() {
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(true);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
         assertToEdgeExpectations();
@@ -191,10 +230,10 @@ public class EdgeToEdgeControllerTest {
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         // For the Tab Switcher we need to switch from some non-null Tab to null.
         when(mTab.isNativePage()).thenReturn(false);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         Tab nullForTabSwitcher = null;
-        mObservableSupplierImpl.set(nullForTabSwitcher);
+        mTabProvider.set(nullForTabSwitcher);
         assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
         assertToEdgeExpectations();
     }
@@ -209,7 +248,7 @@ public class EdgeToEdgeControllerTest {
         // Now test that a Web page causes a transition ToNormal (when Web forcing is disabled).
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         when(mTab.isNativePage()).thenReturn(false);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
         assertToNormalExpectations();
@@ -219,20 +258,22 @@ public class EdgeToEdgeControllerTest {
     public void onObservingDifferentTab_changeToWebEnabled() {
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
         assertToEdgeExpectations();
+        assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
     }
 
     @Test
     public void onObservingDifferentTab_changeToWebEnabled_SetsDecor() {
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
         assertToEdgeExpectations();
+        assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
     }
 
     @Test
@@ -240,10 +281,11 @@ public class EdgeToEdgeControllerTest {
         // Start with web always-enabled.
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
         assertToEdgeExpectations();
+        assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
 
         // Now switch the viewport-fit value of that page back and forth,
         // with web NOT always enabled
@@ -263,11 +305,15 @@ public class EdgeToEdgeControllerTest {
     public void onObservingDifferentTab_osWrapperImpl() {
         // Force a shift ToEdge by enabling all native and saying it is native.
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
+        ChromeFeatureList.sDrawEdgeToEdgeInsetsManagement.setForTesting(false);
         ObservableSupplierImpl liveSupplier = new ObservableSupplierImpl();
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl)
                         EdgeToEdgeControllerFactory.create(
-                                mActivity, liveSupplier, mBrowserControlsStateProvider);
+                                mActivity,
+                                mWindowAndroid,
+                                liveSupplier,
+                                mBrowserControlsStateProvider);
         assertNotNull(liveController);
         liveController.setToEdgeForTesting(false);
         when(mTab.isNativePage()).thenReturn(true);
@@ -285,7 +331,10 @@ public class EdgeToEdgeControllerTest {
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl)
                         EdgeToEdgeControllerFactory.create(
-                                mActivity, liveSupplier, mBrowserControlsStateProvider);
+                                mActivity,
+                                mWindowAndroid,
+                                liveSupplier,
+                                mBrowserControlsStateProvider);
         assertNotNull(liveController);
         liveController.setToEdgeForTesting(true);
         liveController.setSystemInsetsForTesting(SYSTEM_INSETS);
@@ -309,6 +358,7 @@ public class EdgeToEdgeControllerTest {
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
         verify(mOsWrapper, times(0)).setDecorFitsSystemWindows(any(), anyBoolean());
         verify(mOsWrapper, times(0)).setOnApplyWindowInsetsListener(any(), any());
+        verify(mInsetObserver, times(0)).addInsetsConsumer(any());
         // Pad the top and the bottom to keep it all normal.
         verify(mOsWrapper, times(1))
                 .setPadding(
@@ -325,7 +375,7 @@ public class EdgeToEdgeControllerTest {
         // Standard setup of a Web Tab ToEdge
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
 
@@ -379,11 +429,10 @@ public class EdgeToEdgeControllerTest {
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         // For the Tab Switcher we need to switch from some non-null Tab to null.
         when(mTab.isNativePage()).thenReturn(true);
-        mObservableSupplierImpl.set(mTab);
+        mTabProvider.set(mTab);
         verifyInteractions(mTab);
-        verify(mOsWrapper)
-                .setOnApplyWindowInsetsListener(any(), mWindowInsetsListenerCaptor.capture());
         assertToEdgeExpectations();
+        assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
     }
 
     @Test
@@ -419,16 +468,17 @@ public class EdgeToEdgeControllerTest {
     }
 
     void assertToEdgeExpectations() {
+        assertNotNull(mWindowInsetsListenerCaptor.getValue());
         mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
         // Pad the top only, bottom is ToEdge.
         verify(mOsWrapper).setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0), eq(0));
         verify(mOsWrapper).setDecorFitsSystemWindows(any(), eq(false));
-        verify(mOsWrapper).setOnApplyWindowInsetsListener(any(), any());
     }
 
     void assertToNormalExpectations() {
         verify(mOsWrapper, times(0)).setDecorFitsSystemWindows(any(), anyBoolean());
         verify(mOsWrapper, times(0)).setOnApplyWindowInsetsListener(any(), any());
+        verify(mInsetObserver, times(0)).addInsetsConsumer(any());
         // Pad the top and the bottom to keep it all normal.
         verify(mOsWrapper)
                 .setPadding(
@@ -446,6 +496,13 @@ public class EdgeToEdgeControllerTest {
     void verifyInteractions(Tab tab) {
         verify(tab, atLeastOnce()).addObserver(any());
         verify(tab, atLeastOnce()).getWebContents();
+    }
+
+    void assertBottomInsetForSafeArea(int bottomInset) {
+        verify(mWebContents, atLeastOnce()).setDisplayCutoutSafeArea(mSafeAreaRectCaptor.capture());
+        Rect safeAreaRect = mSafeAreaRectCaptor.getValue();
+        assertEquals(
+                "Bottom insets for safe area does not match.", bottomInset, safeAreaRect.bottom);
     }
 
     // TODO: Verify that the value of the updated insets returned from the

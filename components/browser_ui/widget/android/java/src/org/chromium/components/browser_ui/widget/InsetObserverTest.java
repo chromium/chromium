@@ -47,6 +47,15 @@ public class InsetObserverTest {
     /** The rect values if there is no cutout. */
     private static final Rect NO_CUTOUT_RECT = new Rect(0, 0, 0, 0);
 
+    /* Extra bottom inset that will be applied when e2e is enabled. */
+    private static final int EDGE_TO_EDGE_BOTTOM_INSET = 2;
+
+    /** The rect values if the display cutout is present in edge-to-edge mode. */
+    private static final Rect E2E_DISPLAY_CUTOUT_RECT = new Rect(1, 1, 1, 3);
+
+    /** The rect values if there is no cutout. */
+    private static final Rect E2E_NO_CUTOUT_RECT = new Rect(0, 0, 0, 2);
+
     @Mock private InsetObserver.WindowInsetObserver mObserver;
 
     @Mock private WindowInsetsCompat mInsets;
@@ -199,5 +208,35 @@ public class InsetObserverTest {
         setCutout(false);
         mInsetObserver.removeObserver(mObserver);
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void addEdgeToEdgeBottomInset() {
+        setCutout(true);
+        mInsetObserver.updateBottomInsetForEdgeToEdge(EDGE_TO_EDGE_BOTTOM_INSET);
+        verify(mObserver).onSafeAreaChanged(E2E_NO_CUTOUT_RECT);
+
+        reset(mObserver);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        verify(mObserver).onSafeAreaChanged(E2E_DISPLAY_CUTOUT_RECT);
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void addEdgeToEdgeBottomInset_NoCutout() {
+        setCutout(false);
+        mInsetObserver.updateBottomInsetForEdgeToEdge(EDGE_TO_EDGE_BOTTOM_INSET);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        verify(mObserver).onSafeAreaChanged(E2E_NO_CUTOUT_RECT);
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void addEdgeToEdgeBottomInset_NoBottomInset() {
+        setCutout(true);
+        mInsetObserver.updateBottomInsetForEdgeToEdge(0);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        verify(mObserver).onSafeAreaChanged(DISPLAY_CUTOUT_RECT);
     }
 }

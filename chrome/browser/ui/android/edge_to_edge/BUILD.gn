@@ -35,6 +35,7 @@ android_library_factory("factory_java") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/tab:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   # This internal file will be replaced by a generated file so the resulting

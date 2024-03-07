@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Creates an {@link EdgeToEdgeController} used to control drawing using the Android Edge to Edge
@@ -33,7 +34,8 @@ public class EdgeToEdgeControllerFactory {
      * Creates an {@link EdgeToEdgeController} instance using the given activity and {@link
      * ObservableSupplier} for a Tab.
      *
-     * @param activity The Android {@link Activity}
+     * @param activity The Android {@link Activity} to allow drawing under System Bars.
+     * @param windowAndroid The current {@link WindowAndroid} to allow drawing under System Bars.
      * @param tabObservableSupplier Supplies an {@Link Observer} that is notified whenever the Tab
      *     changes.
      * @param browserControlsStateProvider Provides the state of the BrowserControls so we can tell
@@ -43,11 +45,12 @@ public class EdgeToEdgeControllerFactory {
      */
     public static @Nullable EdgeToEdgeController create(
             Activity activity,
+            WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
             BrowserControlsStateProvider browserControlsStateProvider) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         return new EdgeToEdgeControllerImpl(
-                activity, tabObservableSupplier, null, browserControlsStateProvider);
+                activity, windowAndroid, tabObservableSupplier, null, browserControlsStateProvider);
     }
 
     public static EdgeToEdgePadAdjuster createForView(View view) {
