@@ -120,10 +120,17 @@ class WebGLConformanceIntegrationTestBase(
     return serial_globs
 
   def _GetSerialTests(self) -> Set[str]:
-    return {
+    serial_tests = {
         # crbug.com/1347970.
         'conformance/textures/misc/texture-video-transparent.html',
     }
+    if host_information.IsLinux() and host_information.IsNvidiaGpu():
+      serial_tests |= {
+          # crbug.com/328528533. Regularly takes 2-3 minutes to complete on
+          # Linux/NVIDIA/Debug and can flakily hit the 5 minute timeout.
+          'conformance/uniforms/uniform-samplers-test.html',
+      }
+    return serial_tests
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
