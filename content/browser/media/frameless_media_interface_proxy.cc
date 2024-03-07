@@ -68,22 +68,30 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
   mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
       oop_video_decoder;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  if (media::IsOutOfProcessVideoDecodingEnabled()) {
-    if (!render_process_host_) {
-      if (!stable_vd_factory_remote_.is_bound()) {
-        LaunchStableVideoDecoderFactory(
-            stable_vd_factory_remote_.BindNewPipeAndPassReceiver());
-        stable_vd_factory_remote_.reset_on_disconnect();
+  switch (media::GetOutOfProcessVideoDecodingMode()) {
+    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
+      if (!render_process_host_) {
+        if (!stable_vd_factory_remote_.is_bound()) {
+          LaunchStableVideoDecoderFactory(
+              stable_vd_factory_remote_.BindNewPipeAndPassReceiver());
+          stable_vd_factory_remote_.reset_on_disconnect();
+        }
+
+        CHECK(stable_vd_factory_remote_.is_bound());
+
+        stable_vd_factory_remote_->CreateStableVideoDecoder(
+            oop_video_decoder.InitWithNewPipeAndPassReceiver(), /*tracker=*/{});
+      } else {
+        render_process_host_->CreateStableVideoDecoder(
+            oop_video_decoder.InitWithNewPipeAndPassReceiver());
       }
-
-      CHECK(stable_vd_factory_remote_.is_bound());
-
-      stable_vd_factory_remote_->CreateStableVideoDecoder(
-          oop_video_decoder.InitWithNewPipeAndPassReceiver(), /*tracker=*/{});
-    } else {
-      render_process_host_->CreateStableVideoDecoder(
-          oop_video_decoder.InitWithNewPipeAndPassReceiver());
-    }
+      break;
+    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
+      // Well-behaved clients shouldn't call CreateVideoDecoder() in this OOP-VD
+      // mode.
+      break;
+    case media::OOPVDMode::kDisabled:
+      break;
   }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   factory->CreateVideoDecoder(std::move(receiver),

@@ -24,8 +24,15 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kUnknown;
   }
 
-  if (IsOutOfProcessVideoDecodingEnabled()) {
-    return VideoDecoderType::kOutOfProcess;
+  switch (media::GetOutOfProcessVideoDecodingMode()) {
+    case media::OOPVDMode::kEnabledWithGpuProcessAsProxy:
+      return VideoDecoderType::kOutOfProcess;
+    case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
+      // The browser process ensures that this path is never reached for this
+      // OOP-VD mode.
+      NOTREACHED_NORETURN();
+    case media::OOPVDMode::kDisabled:
+      break;
   }
 
 #if BUILDFLAG(USE_VAAPI)
