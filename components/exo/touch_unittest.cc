@@ -524,8 +524,8 @@ TEST_F(TouchTest, DragDropAbort) {
 
   // Make origin into a real window so the touch can click it
   ShellSurface shell_surface(&origin);
-  Buffer buffer(exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
-  origin.Attach(&buffer);
+  auto buffer = exo_test_helper()->CreateBuffer(gfx::Size(10, 10));
+  origin.Attach(buffer.get());
   origin.Commit();
 
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());

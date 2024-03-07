@@ -212,8 +212,7 @@ class TextInputTest : public test::ExoTestBase {
 
 void TextInputTest::TestSurface::SetUp(test::ExoTestHelper* exo_test_helper) {
   gfx::Size buffer_size(32, 32);
-  buffer_ = std::make_unique<Buffer>(
-      exo_test_helper->CreateGpuMemoryBuffer(buffer_size));
+  buffer_ = exo_test_helper->CreateBuffer(buffer_size);
   surface_ = std::make_unique<Surface>();
   shell_surface_ = std::make_unique<ShellSurface>(surface_.get());
 

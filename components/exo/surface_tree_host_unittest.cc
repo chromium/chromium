@@ -152,8 +152,7 @@ TEST_F(SurfaceTreeHostTest,
 
   // Create 25x25 sub surface.
   auto child_surface = std::make_unique<Surface>();
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({25, 25}));
+  auto child_buffer = exo_test_helper()->CreateBuffer(gfx::Size(25, 25));
   auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
@@ -202,8 +201,7 @@ TEST_F(SurfaceTreeHostTest,
 
   // Create 1x1 sub surface.
   auto child_surface = std::make_unique<Surface>();
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({1, 1}));
+  auto child_buffer = exo_test_helper()->CreateBuffer(gfx::Size(1, 1));
   auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
@@ -260,8 +258,7 @@ TEST_F(SurfaceTreeHostTest,
 
   // Create 25x25 sub surface.
   auto child_surface = std::make_unique<Surface>();
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({25, 25}));
+  auto child_buffer = exo_test_helper()->CreateBuffer(gfx::Size(25, 25));
   auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
@@ -444,8 +441,7 @@ TEST_F(SurfaceTreeHostTest, DoesntVerifyVerifiedSyncTokens) {
   raster_interface->ResetSyncTokensCount();
 
   // Create a buffer and attach it to the surface.
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({50, 50}));
+  auto buffer = exo_test_helper()->CreateBuffer(gfx::Size(50, 50));
   surface->Attach(buffer.get());
 
   surface->Commit();
