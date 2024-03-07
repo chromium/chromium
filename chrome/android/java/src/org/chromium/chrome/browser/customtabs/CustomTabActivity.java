@@ -303,7 +303,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             return true;
         } else if (id == R.id.open_history_menu_id) {
             if (ChromeFeatureList.sAppSpecificHistory.isEnabled()) {
-                HistoryManagerUtils.showHistoryManagerForResult(
+                HistoryManagerUtils.showAppSpecificHistoryManager(
                         this,
                         getTabModelSelector().isIncognitoSelected(),
                         getIntentDataProvider().getClientPackageName());

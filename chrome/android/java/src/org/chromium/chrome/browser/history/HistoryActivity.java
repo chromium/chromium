@@ -26,8 +26,10 @@ public class HistoryActivity extends SnackbarActivity {
         boolean isIncognito =
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        boolean isFromCustomTabActivity =
-                getIntent().getBooleanExtra(Intent.EXTRA_RETURN_RESULT, false);
+        boolean appSpecificHistory =
+                getIntent().getBooleanExtra(IntentHandler.EXTRA_APP_SPECIFIC_HISTORY, false);
+        // For now, we only hide the clear data button for app specific history.
+        boolean shouldShowClearData = !appSpecificHistory;
         String clientPackageName =
                 IntentUtils.safeGetStringExtra(getIntent(), Intent.EXTRA_PACKAGE_NAME);
         Profile profile = getProfileProvider().getOriginalProfile();
@@ -40,7 +42,8 @@ public class HistoryActivity extends SnackbarActivity {
                         /* Supplier<Tab>= */ null,
                         new BrowsingHistoryBridge(profile),
                         clientPackageName,
-                        !isFromCustomTabActivity);
+                        shouldShowClearData,
+                        appSpecificHistory);
         setContentView(mHistoryManager.getView());
         BackPressHelper.create(
                 this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);

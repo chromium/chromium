@@ -47,13 +47,14 @@ public class HistoryPage extends BasicNativePage {
         mHistoryManager =
                 new HistoryManager(
                         activity,
-                        false,
+                        /* isSeparateActivity= */ false,
                         snackbarManager,
                         profile,
                         tabSupplier,
                         new BrowsingHistoryBridge(profile.getOriginalProfile()),
                         null,
-                        true);
+                        /* shouldShowClearData= */ true,
+                        /* appSpecificHistory= */ false);
         mTitle = host.getContext().getResources().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());

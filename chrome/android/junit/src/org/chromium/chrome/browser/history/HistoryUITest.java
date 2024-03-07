@@ -163,7 +163,8 @@ public class HistoryUITest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         null,
-                        true);
+                        true,
+                        false);
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
 

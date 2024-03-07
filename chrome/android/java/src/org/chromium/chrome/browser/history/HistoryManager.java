@@ -114,6 +114,7 @@ public class HistoryManager
      * @param historyProvider Provider of methods for querying and managing browsing history.
      * @param clientPackageName Package name of the client the history UI is launched on top of.
      * @param shouldShowClearData Whether the 'Clear browsing data' button should be shown.
+     * @param appSpecificHistory Whether app specific history features should be used.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(
@@ -124,7 +125,8 @@ public class HistoryManager
             @Nullable Supplier<Tab> tabSupplier,
             HistoryProvider historyProvider,
             @Nullable String clientPackageName,
-            boolean shouldShowClearData) {
+            boolean shouldShowClearData,
+            boolean appSpecificHistory) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
@@ -168,7 +170,8 @@ public class HistoryManager
                         mSelectionDelegate,
                         tabSupplier,
                         historyProvider,
-                        clientPackageName);
+                        clientPackageName,
+                        appSpecificHistory);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 

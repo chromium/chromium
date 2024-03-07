@@ -240,6 +240,10 @@ public class IntentHandler {
     /** A boolean to indicate whether the intent should launch the history page in Chrome. */
     public static final String EXTRA_OPEN_HISTORY = "org.chromium.chrome.browser.open_history";
 
+    /** A boolean to indicate whether the intent should launch only app specific history */
+    public static final String EXTRA_APP_SPECIFIC_HISTORY =
+            "org.chromium.chrome.browser.app_specific_history";
+
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;
