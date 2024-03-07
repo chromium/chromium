@@ -2552,8 +2552,6 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(b/328104655): expand the test to other platforms.
-#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTestDeviceManagement, DMTokenDeletion) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
@@ -2569,15 +2567,14 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenDeletion) {
       ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
-  EXPECT_EQ(dm_storage->GetDmToken(), kDMToken);
+  EXPECT_EQ(GetDefaultDMStorage()->GetDmToken(), kDMToken);
 
   // Run a second policy fetch and delete the DM token.
   ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
                                              /*invalidate_token=*/false);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  EXPECT_TRUE(dm_storage->GetDmToken().empty());
+  EXPECT_TRUE(GetDefaultDMStorage()->GetDmToken().empty());
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
@@ -2599,21 +2596,19 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenInvalidation) {
       ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
-  EXPECT_EQ(dm_storage->GetDmToken(), kDMToken);
+  EXPECT_EQ(GetDefaultDMStorage()->GetDmToken(), kDMToken);
 
   // Run a second policy fetch and invalidate the DM token.
   ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
                                              /*invalidate_token=*/true);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  EXPECT_TRUE(dm_storage->IsDeviceDeregistered());
+  EXPECT_TRUE(GetDefaultDMStorage()->IsDeviceDeregistered());
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
-#endif
 
 TEST_F(IntegrationTestDeviceManagement, PublicKeyRotation) {
   ASSERT_NO_FATAL_FAILURE(Install());
