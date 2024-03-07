@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] CSS Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (-1) should be [20deg]
+  assert_equals: expected "20deg " but got "380deg "
+[FAIL] CSS Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (0.125) should be [110deg]
+  assert_equals: expected "110deg " but got "65deg "
+[FAIL] CSS Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (0.875) should be [170deg]
+  assert_equals: expected "170deg " but got "- 145deg "
+[FAIL] CSS Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (1) should be [180deg]
+  assert_equals: expected "180deg " but got "- 180deg "
+[FAIL] CSS Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (2) should be [260deg]
+  assert_equals: expected "260deg " but got "- 460deg "
+[FAIL] Web Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (-1) should be [20deg]
+  assert_equals: expected "20deg " but got "380deg "
+[FAIL] Web Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (0.125) should be [110deg]
+  assert_equals: expected "110deg " but got "65deg "
+[FAIL] Web Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (0.875) should be [170deg]
+  assert_equals: expected "170deg " but got "- 145deg "
+[FAIL] Web Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (1) should be [180deg]
+  assert_equals: expected "180deg " but got "- 180deg "
+[FAIL] Web Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (2) should be [260deg]
+  assert_equals: expected "260deg " but got "- 460deg "
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (-1) should be [20deg]
+  assert_equals: expected "20deg " but got "- 155deg "
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0) should be [100deg]
+  assert_equals: expected "100deg " but got "- 100deg "
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.125) should be [110deg]
+  assert_equals: expected "110deg " but got "- 93.13deg "
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.875) should be [170deg]
+  assert_equals: expected "170deg " but got "- 51.88deg "
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (1) should be [180deg]
+  assert_equals: expected "180deg " but got "- 45deg "
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (2) should be [260deg]
+  assert_equals: expected "260deg " but got "10deg "
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (-1) should be [20deg]
+  assert_equals: expected "20deg " but got "- 155deg "
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0) should be [100deg]
+  assert_equals: expected "100deg " but got "- 100deg "
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.125) should be [110deg]
+  assert_equals: expected "110deg " but got "- 93.13deg "
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.875) should be [170deg]
+  assert_equals: expected "170deg " but got "- 51.88deg "
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (1) should be [180deg]
+  assert_equals: expected "180deg " but got "- 45deg "
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (2) should be [260deg]
+  assert_equals: expected "260deg " but got "10deg "
+Harness: the test ran to completion.
+

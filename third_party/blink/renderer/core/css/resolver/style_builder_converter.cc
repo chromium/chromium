@@ -2678,7 +2678,9 @@ TranslateTransformOperation* StyleBuilderConverter::ConvertTranslate(
       tx, ty, tz, TransformOperation::kTranslate3D);
 }
 
-Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
+Rotation StyleBuilderConverter::ConvertRotation(
+    const CSSLengthResolver& length_resolver,
+    const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     return Rotation(gfx::Vector3dF(0, 0, 1), 0);
@@ -2697,9 +2699,10 @@ Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
     y = axis.Y();
     z = axis.Z();
   }
-  double angle =
-      To<CSSPrimitiveValue>(list.Item(list.length() - 1)).ComputeDegrees();
-  return Rotation(gfx::Vector3dF(x, y, z), angle);
+  const CSSPrimitiveValue& angle =
+      To<CSSPrimitiveValue>(list.Item(list.length() - 1));
+  return Rotation(gfx::Vector3dF(x, y, z),
+                  angle.ComputeDegrees(length_resolver));
 }
 
 RotateTransformOperation* StyleBuilderConverter::ConvertRotate(
@@ -2711,7 +2714,8 @@ RotateTransformOperation* StyleBuilderConverter::ConvertRotate(
   }
 
   return MakeGarbageCollected<RotateTransformOperation>(
-      ConvertRotation(value), TransformOperation::kRotate3D);
+      ConvertRotation(state.CssToLengthConversionData(), value),
+      TransformOperation::kRotate3D);
 }
 
 ScaleTransformOperation* StyleBuilderConverter::ConvertScale(

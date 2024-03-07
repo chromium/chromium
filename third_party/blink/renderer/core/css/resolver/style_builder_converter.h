@@ -315,7 +315,7 @@ class StyleBuilderConverter {
                                                  const CSSValue&);
   template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
   static Length ConvertPositionLength(StyleResolverState&, const CSSValue&);
-  static Rotation ConvertRotation(const CSSValue&);
+  static Rotation ConvertRotation(const CSSLengthResolver&, const CSSValue&);
 
   static const CSSValue& ConvertRegisteredPropertyInitialValue(Document&,
                                                                const CSSValue&);

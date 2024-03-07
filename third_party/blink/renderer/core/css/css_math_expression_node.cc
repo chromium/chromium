@@ -1970,9 +1970,6 @@ void CSSMathExpressionOperation::AccumulateLengthUnitTypes(
 }
 
 bool CSSMathExpressionOperation::IsComputationallyIndependent() const {
-  if (Category() != kCalcLength && Category() != kCalcLengthFunction) {
-    return true;
-  }
   for (const CSSMathExpressionNode* operand : operands_) {
     if (!operand->IsComputationallyIndependent()) {
       return false;
