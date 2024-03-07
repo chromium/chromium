@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
-#include "third_party/blink/renderer/core/layout/line_clamp_data.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/table/table_constraint_space_data.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -751,8 +750,13 @@ class CORE_EXPORT ConstraintSpace final {
     return HasRareData() && rare_data_->is_pushed_by_floats;
   }
 
-  LineClampData GetLineClampData() const {
-    return HasRareData() ? rare_data_->GetLineClampData() : LineClampData();
+  // Return true if this is participating within a -webkit-line-clamp context.
+  bool IsLineClampContext() const {
+    return HasRareData() && rare_data_->is_line_clamp_context;
+  }
+
+  std::optional<int> LinesUntilClamp() const {
+    return HasRareData() ? rare_data_->LinesUntilClamp() : std::nullopt;
   }
 
   // Return true if `text-box-trim` is in effect for the block-start/end.
@@ -888,6 +892,7 @@ class CORE_EXPORT ConstraintSpace final {
     explicit RareData(const BfcOffset bfc_offset)
         : bfc_offset(bfc_offset),
           data_union_type(static_cast<unsigned>(DataUnionType::kNone)),
+          is_line_clamp_context(false),
           is_pushed_by_floats(false),
           is_restricted_block_size_table_cell(false),
           hide_table_cell_if_empty(false),
@@ -921,6 +926,7 @@ class CORE_EXPORT ConstraintSpace final {
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset(other.fragmentainer_offset),
           data_union_type(other.data_union_type),
+          is_line_clamp_context(other.is_line_clamp_context),
           is_pushed_by_floats(other.is_pushed_by_floats),
           is_restricted_block_size_table_cell(
               other.is_restricted_block_size_table_cell),
@@ -1011,6 +1017,7 @@ class CORE_EXPORT ConstraintSpace final {
 
     bool MaySkipLayout(const RareData& other) const {
       if (data_union_type != other.data_union_type ||
+          is_line_clamp_context != other.is_line_clamp_context ||
           is_pushed_by_floats != other.is_pushed_by_floats ||
           is_restricted_block_size_table_cell !=
               other.is_restricted_block_size_table_cell ||
@@ -1059,8 +1066,9 @@ class CORE_EXPORT ConstraintSpace final {
     // Must be kept in sync with members checked within |MaySkipLayout|.
     bool IsInitialForMaySkipLayout() const {
       if (page_name || fragmentainer_block_size != kIndefiniteSize ||
-          fragmentainer_offset || is_pushed_by_floats ||
-          is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
+          fragmentainer_offset || is_line_clamp_context ||
+          is_pushed_by_floats || is_restricted_block_size_table_cell ||
+          hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           is_block_fragmentation_forced_off ||
           is_monolithic_overflow_propagation_disabled ||
@@ -1159,14 +1167,14 @@ class CORE_EXPORT ConstraintSpace final {
       EnsureBlockData()->clearance_offset = clearance_offset;
     }
 
-    LineClampData GetLineClampData() const {
+    std::optional<int> LinesUntilClamp() const {
       return GetDataUnionType() == DataUnionType::kBlockData
-                 ? block_data_.line_clamp_data
-                 : LineClampData();
+                 ? block_data_.lines_until_clamp
+                 : std::nullopt;
     }
 
-    void SetLineClampData(LineClampData value) {
-      EnsureBlockData()->line_clamp_data = value;
+    void SetLinesUntilClamp(int value) {
+      EnsureBlockData()->lines_until_clamp = value;
     }
 
     void SetIsTableCell() { EnsureTableCellData(); }
@@ -1317,6 +1325,7 @@ class CORE_EXPORT ConstraintSpace final {
 
     unsigned data_union_type : 3;
 
+    unsigned is_line_clamp_context : 1;
     unsigned is_pushed_by_floats : 1;
 
     unsigned is_restricted_block_size_table_cell : 1;
@@ -1344,18 +1353,18 @@ class CORE_EXPORT ConstraintSpace final {
    private:
     struct BlockData {
       bool MaySkipLayout(const BlockData& other) const {
-        return line_clamp_data == other.line_clamp_data;
+        return lines_until_clamp == other.lines_until_clamp;
       }
 
       bool IsInitialForMaySkipLayout() const {
-        return line_clamp_data.state == LineClampData::kDisabled;
+        return !lines_until_clamp.has_value();
       }
 
       MarginStrut margin_strut;
       std::optional<LayoutUnit> optimistic_bfc_block_offset;
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
-      LineClampData line_clamp_data;
+      std::optional<int> lines_until_clamp;
     };
 
     struct TableCellData {

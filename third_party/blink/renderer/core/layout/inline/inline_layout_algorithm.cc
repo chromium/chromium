@@ -389,20 +389,6 @@ void InlineLayoutAlgorithm::CheckBoxStates(
 }
 #endif
 
-bool InlineLayoutAlgorithm::ShouldLineClamp(const LineInfo* line_info) const {
-  if (line_info->IsBlockInInline()) {
-    return false;
-  }
-
-  LineClampData line_clamp_data = GetConstraintSpace().GetLineClampData();
-  if (line_clamp_data.IsLineClampContext()) {
-    return line_clamp_data.IsAtClampPoint();
-  } else {
-    return line_info->HasOverflow() &&
-           node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText();
-  }
-}
-
 void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
                                        LineInfo* line_info,
                                        LogicalLineItems* line_box) {
@@ -581,7 +567,11 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   // Truncate the line if:
   //  - 'text-overflow: ellipsis' is set and we *aren't* a line-clamp context.
   //  - If we've reached the line-clamp limit.
-  if (UNLIKELY(ShouldLineClamp(line_info))) {
+  if (UNLIKELY(((line_info->HasOverflow() &&
+                 !GetConstraintSpace().IsLineClampContext() &&
+                 node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) ||
+                GetConstraintSpace().LinesUntilClamp() == 1) &&
+               !line_info->IsBlockInInline())) {
     DCHECK(!line_info->IsBlockInInline());
     LineTruncator truncator(*line_info);
     auto* input =
@@ -1382,7 +1372,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   end_margin_strut_ = constraint_space.GetMarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       constraint_space.GetAdjoiningObjectTypes());
-  lines_until_clamp_ = constraint_space.GetLineClampData().LinesUntilClamp();
+  lines_until_clamp_ = constraint_space.LinesUntilClamp();
 
   // In order to get the correct list of layout opportunities, we need to
   // position any "leading" floats within the exclusion space first.
