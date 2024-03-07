@@ -15,37 +15,17 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
-const base::TimeDelta kDefaultDisableTimeout = base::Milliseconds(1000);
-
 // Simulates a click on an element with the given |id|.
 void ClickElementWithId(content::WebContents* web_contents,
                         const std::string& id) {
-  const int x =
-      content::EvalJs(
-          web_contents,
-          content::JsReplace("const bounds = "
-                             "document.getElementById($1)."
-                             "getBoundingClientRect();"
-                             "Math.floor(bounds.left + bounds.width / 2)",
-                             id))
-          .ExtractInt();
-  const int y =
-      content::EvalJs(
-          web_contents,
-          content::JsReplace("const bounds = "
-                             "document.getElementById($1)."
-                             "getBoundingClientRect();"
-                             "Math.floor(bounds.top + bounds.height / 2)",
-                             id))
-          .ExtractInt();
-
-  content::SimulateMouseClickAt(
-      web_contents, 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(x, y));
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, content::JsReplace("clickById($1)", id)));
 }
 
 }  // namespace
@@ -53,7 +33,10 @@ void ClickElementWithId(content::WebContents* web_contents,
 class PermissionElementBrowserTest : public InProcessBrowserTest {
  public:
   PermissionElementBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kPermissionElement);
+    feature_list_.InitWithFeatures(
+        {features::kPermissionElement,
+         blink::features::kDisablePepcSecurityForTesting},
+        {});
   }
 
   PermissionElementBrowserTest(const PermissionElementBrowserTest&) = delete;
@@ -68,11 +51,6 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
         browser(),
         embedded_test_server()->GetURL("/permissions/permission_element.html"),
         1));
-    // Delay a short time to make sure all <permission> elements are clickable.
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), kDefaultDisableTimeout);
-    run_loop.Run();
   }
 
   content::WebContents* web_contents() {
@@ -95,14 +73,8 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_RequestInvalidPermissionType DISABLED_RequestInvalidPermissionType
-#else
-#define MAYBE_RequestInvalidPermissionType RequestInvalidPermissionType
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       MAYBE_RequestInvalidPermissionType) {
+                       RequestInvalidPermissionType) {
   content::WebContentsConsoleObserver console_observer(web_contents());
   ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(),
@@ -118,16 +90,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
             console_observer.messages()[0].log_level);
 }
 
-// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_RequestPermissionDispatchResolveEvent \
-  DISABLED_RequestPermissionDispatchResolveEvent
-#else
-#define MAYBE_RequestPermissionDispatchResolveEvent \
-  RequestPermissionDispatchResolveEvent
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       MAYBE_RequestPermissionDispatchResolveEvent) {
+                       RequestPermissionDispatchResolveEvent) {
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
@@ -143,16 +107,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   }
 }
 
-// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_RequestPermissionDispatchDismissEvent \
-  DISABLED_RequestPermissionDispatchDismissEvent
-#else
-#define MAYBE_RequestPermissionDispatchDismissEvent \
-  RequestPermissionDispatchDismissEvent
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       MAYBE_RequestPermissionDispatchDismissEvent) {
+                       RequestPermissionDispatchDismissEvent) {
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
@@ -168,16 +124,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   }
 }
 
-// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_ClickingScrimViewDispatchDismissEvent \
-  DISABLED_ClickingScrimViewDispatchDismissEvent
-#else
-#define MAYBE_ClickingScrimViewDispatchDismissEvent \
-  ClickingScrimViewDispatchDismissEvent
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       MAYBE_ClickingScrimViewDispatchDismissEvent) {
+                       ClickingScrimViewDispatchDismissEvent) {
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::NONE);

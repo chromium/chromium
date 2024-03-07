@@ -41,6 +41,7 @@
 #include "sandbox/policy/switches.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
@@ -195,6 +196,10 @@ static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     &chromeos::features::kBlinkExtensionDiagnostics,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    // This flag disables security for the Page Embedded Permission Control, for
+    // testing purposes. Can only be enabled via the command line.
+    &blink::features::kDisablePepcSecurityForTesting,
 };
 
 void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
