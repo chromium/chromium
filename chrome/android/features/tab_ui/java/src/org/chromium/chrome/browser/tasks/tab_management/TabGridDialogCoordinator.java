@@ -239,7 +239,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         return mTabListEditorCoordinator.getController();
     }
 
-    private View.OnClickListener getColorIconClickListener(TabSwitcherResetHandler resetHandler) {
+    private View.OnClickListener getColorIconClickListener(
+            @Nullable TabSwitcherResetHandler resetHandler) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
             return (view) -> {
                 PopupWindow.OnDismissListener onDismissListener =
@@ -252,11 +253,17 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                 mMediator.setSelectedTabGroupColor(
                                         mColorPickerCoordinator.getSelectedColorSupplier().get());
 
-                                // Refresh the TabSwitcher's tab list to reflect the last selected
-                                // color in the color picker when it is dismissed.
-                                resetHandler.resetWithTabList(
-                                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                                        false);
+                                // Only require a refresh of the tab list if accessed from the GTS,
+                                // skip if this is reached from the tab strip as the color will
+                                // refresh upon re-entering the tab switcher.
+                                if (resetHandler != null) {
+                                    // Refresh the TabSwitcher's tab list to reflect the last
+                                    // selected color in the color picker when it is dismissed.
+                                    resetHandler.resetWithTabList(
+                                            (TabGroupModelFilter)
+                                                    mCurrentTabModelFilterSupplier.get(),
+                                            false);
+                                }
                             }
                         };
 
