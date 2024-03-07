@@ -20,9 +20,12 @@ const MAX_FILE_SIZE = 10485760;
 
 export interface SystemAppElement {
   $: {
+    collapseAll: HTMLButtonElement,
+    expandAll: HTMLButtonElement,
+    logTable: HTMLElement,
+    status: HTMLElement,
     tableTitle: HTMLElement,
     title: HTMLElement,
-    status: HTMLElement,
   };
 }
 
@@ -91,6 +94,9 @@ export class SystemAppElement extends PolymerElement {
         false);
     this.eventTracker_.add(
         document.documentElement, 'drop', this.onDrop_.bind(this), false);
+
+    // Dispatch event used by tests.
+    this.dispatchEvent(new CustomEvent('ready-for-testing'));
   }
 
   override disconnectedCallback() {

@@ -22,6 +22,7 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [
+    "about_sys/about_sys_browsertest.cc",
     "access_code_cast/access_code_cast_browsertest.cc",
     "bookmarks/bookmarks_browsertest.cc",
     "chrome_timeticks_browsertest.cc",
@@ -343,6 +344,7 @@ generate_grd("build_grd") {
     ":build_chai_grdp",
     ":build_mocha_grdp",
     ":build_ts",
+    "about_sys:build_grdp",
     "access_code_cast:build_grdp",
     "bookmarks:build_grdp",
     "commerce_internals:build_grdp",
@@ -385,6 +387,7 @@ generate_grd("build_grd") {
   ]
 
   grdp_files = [
+    "$target_gen_dir/about_sys/resources.grdp",
     "$target_gen_dir/access_code_cast/resources.grdp",
     "$target_gen_dir/bookmarks/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",

@@ -8,6 +8,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {SystemLog} from './browser_proxy.js';
 import {getTemplate} from './log_entry.html.js';
 
+export const COLLAPSE_THRESHOLD = 200;
+
 // <if expr="chromeos_ash">
 // Link to markdown doc with documentation for Chrome OS.
 const CROS_MD_DOC_URL =
@@ -59,7 +61,7 @@ export class LogEntryElement extends PolymerElement {
   }
 
   private computeCollabsible_(): boolean {
-    return this.log.statValue.length > 200;
+    return this.log.statValue.length > COLLAPSE_THRESHOLD;
   }
 
   private onButtonClick_() {

@@ -103,14 +103,18 @@
 
 <div id="second-row">
   <h2 id="tableTitle">$i18n{tableTitle}</h2>
-  <button on-click="onExpandAllClick_">$i18n{expandAllBtn}</button>
-  <button on-click="onCollapseAllClick_">$i18n{collapseAllBtn}</button>
+  <button id="expandAll" on-click="onExpandAllClick_">
+    $i18n{expandAllBtn}
+  </button>
+  <button id="collapseAll" on-click="onCollapseAllClick_">
+    $i18n{collapseAllBtn}
+  </button>
 </div>
 
 <p id="status"></p>
 <div id="spinner"></div>
 
-<div>
+<div id="logTable">
   <template is="dom-repeat" items="[[logs_]]">
     <log-entry log="[[item]]" role="row"></log-entry>
   </template>
