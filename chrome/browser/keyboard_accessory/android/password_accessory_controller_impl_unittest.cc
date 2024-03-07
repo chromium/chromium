@@ -126,9 +126,8 @@ MockPasswordGenerationController::MockPasswordGenerationController(
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  explicit MockPasswordManagerClient(
-      PasswordStoreInterface* account_password_store,
-      PasswordStoreInterface* profile_password_store)
+  MockPasswordManagerClient(PasswordStoreInterface* account_password_store,
+                            PasswordStoreInterface* profile_password_store)
       : account_password_store_(account_password_store),
         profile_password_store_(profile_password_store) {}
 
@@ -1407,7 +1406,8 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
 }
 
 class PasswordAccessoryControllerWithTestStoreTest
-    : public PasswordAccessoryControllerTest {
+    : public PasswordAccessoryControllerTest,
+      public testing::WithParamInterface<bool> {
  public:
   TestPasswordStore& test_account_store() { return *test_account_store_; }
   TestPasswordStore& test_profile_store() { return *test_profile_store_; }
@@ -1443,9 +1443,13 @@ class PasswordAccessoryControllerWithTestStoreTest
   scoped_refptr<TestPasswordStore> test_profile_store_;
 };
 
-TEST_F(PasswordAccessoryControllerWithTestStoreTest,
+TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordsForPasswordField) {
-  test_profile_store().AddLogin(MakeSavedPassword());
+  if (GetParam()) {
+    test_account_store().AddLogin(MakeSavedPassword());
+  } else {
+    test_profile_store().AddLogin(MakeSavedPassword());
+  }
   task_environment()->RunUntilIdle();
   CreateSheetController();
 
@@ -1467,9 +1471,13 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
           .Build());
 }
 
-TEST_F(PasswordAccessoryControllerWithTestStoreTest,
+TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordsForUsernameField) {
-  test_profile_store().AddLogin(MakeSavedPassword());
+  if (GetParam()) {
+    test_account_store().AddLogin(MakeSavedPassword());
+  } else {
+    test_profile_store().AddLogin(MakeSavedPassword());
+  }
   task_environment()->RunUntilIdle();
   CreateSheetController();
 
@@ -1491,9 +1499,13 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
           .Build());
 }
 
-TEST_F(PasswordAccessoryControllerWithTestStoreTest,
+TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordForOnlyCryptographicSchemeSites) {
-  test_profile_store().AddLogin(MakeSavedPassword());
+  if (GetParam()) {
+    test_account_store().AddLogin(MakeSavedPassword());
+  } else {
+    test_profile_store().AddLogin(MakeSavedPassword());
+  }
   task_environment()->RunUntilIdle();
   CreateSheetController();
   // `Setup` method sets the URL to https but http is required for this method.
@@ -1514,9 +1526,13 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
           .Build());
 }
 
-TEST_F(PasswordAccessoryControllerWithTestStoreTest,
+TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        HideShowOtherPasswordForLowSecurityLevelSites) {
-  test_profile_store().AddLogin(MakeSavedPassword());
+  if (GetParam()) {
+    test_account_store().AddLogin(MakeSavedPassword());
+  } else {
+    test_profile_store().AddLogin(MakeSavedPassword());
+  }
   task_environment()->RunUntilIdle();
   CreateSheetController(security_state::WARNING);
 
@@ -1535,7 +1551,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
           .Build());
 }
 
-TEST_F(PasswordAccessoryControllerWithTestStoreTest,
+TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        HidesUseOtherPasswordsIfPasswordStoreIsEmpty) {
   CreateSheetController();
 
@@ -1553,3 +1569,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PasswordAccessoryControllerWithTestStoreTest,
+                         ::testing::Bool());
