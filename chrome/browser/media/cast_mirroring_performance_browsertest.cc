@@ -1060,7 +1060,13 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
 };
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, Performance) {
+// TODO(crbug.com/328635249): Test is flaky.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Performance DISABLED_Performance
+#else
+#define MAYBE_Performance Performance
+#endif
+IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, MAYBE_Performance) {
   net::IPEndPoint receiver_end_point = media::cast::test::GetFreeLocalPort();
   VLOG(1) << "Got local UDP endpoint for testing: "
           << receiver_end_point.ToString();
