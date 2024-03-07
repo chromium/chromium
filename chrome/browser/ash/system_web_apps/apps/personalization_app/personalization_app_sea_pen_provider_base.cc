@@ -259,7 +259,9 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
 
 void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
     const mojom::SeaPenFeedbackMetadataPtr metadata) {
-  const std::string hashtag = "#AIWallpaper";
+  const std::string hashtag = metadata->log_id.starts_with("VcBackground")
+                                  ? "#VCBackground"
+                                  : "#AIWallpaper";
   const std::string feedback_type =
       metadata->is_positive ? "Positive" : "Negative";
   CHECK(last_query_);
