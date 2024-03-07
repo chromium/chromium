@@ -8,3 +8,7 @@ per-file cros_audio_config*=ashleydp@google.com
 per-file cros_audio_config*=gavinwill@chromium.org
 per-file cros_audio_config*=michaelcheco@google.com
 per-file cros_audio_config*=zentaro@chromium.org
+per-file cros_audio_config*=zhangwenyu@google.com
+
+# For audio_device_encoding*:
+per-file audio_device_encoding*=zhangwenyu@google.com

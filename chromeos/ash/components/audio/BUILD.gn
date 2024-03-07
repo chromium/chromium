@@ -24,6 +24,8 @@ component("audio") {
   sources = [
     "audio_device.cc",
     "audio_device.h",
+    "audio_device_encoding.cc",
+    "audio_device_encoding.h",
     "audio_devices_pref_handler.h",
     "audio_devices_pref_handler_impl.cc",
     "audio_devices_pref_handler_impl.h",
@@ -74,6 +76,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "audio_device_encoding_unittest.cc",
     "audio_device_selection_generated_unittest.cc",
     "audio_device_selection_test_base.cc",
     "audio_device_selection_test_base.h",

@@ -25,6 +25,7 @@
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device_encoding.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -1210,6 +1211,11 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
                                       : kSystemNotSwitchInputAudioDeviceCount,
                                   input_devices.size(), kMaxAudioDevicesCount);
 
+    // Record the encoded device set.
+    base::UmaHistogramSparse(is_switched ? kSystemSwitchInputAudioDeviceSet
+                                         : kSystemNotSwitchInputAudioDeviceSet,
+                             EncodeAudioDeviceSet(input_devices));
+
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // since only one decision can be made either switching or not switching.
     input_switched_by_system_at_ =
@@ -1233,6 +1239,11 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
                                       ? kSystemSwitchOutputAudioDeviceCount
                                       : kSystemNotSwitchOutputAudioDeviceCount,
                                   output_devices.size(), kMaxAudioDevicesCount);
+
+    // Record the encoded device set.
+    base::UmaHistogramSparse(is_switched ? kSystemSwitchOutputAudioDeviceSet
+                                         : kSystemNotSwitchOutputAudioDeviceSet,
+                             EncodeAudioDeviceSet(output_devices));
 
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // same as above.

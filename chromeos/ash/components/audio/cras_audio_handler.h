@@ -184,6 +184,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   static constexpr char kSystemNotSwitchOutputAudioDeviceCount[] =
       "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceCount";
 
+  // A series of histogram metrics to record the audio device types when the
+  // system selection decision is made after audio device has changed.
+  static constexpr char kSystemSwitchInputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceSet";
+  static constexpr char kSystemNotSwitchInputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceSet";
+  static constexpr char kSystemSwitchOutputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceSet";
+  static constexpr char kSystemNotSwitchOutputAudioDeviceSet[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceSet";
+
   class AudioObserver {
    public:
     AudioObserver(const AudioObserver&) = delete;
