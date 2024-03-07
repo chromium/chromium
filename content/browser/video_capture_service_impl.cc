@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_host_passkeys.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -32,7 +33,48 @@
 namespace content {
 
 namespace {
+
 std::atomic<bool> g_use_safe_mode(false);
+
+}  // namespace
+
+// Helper class to allow access to class-based passkeys.
+class VideoCaptureServiceLauncher {
+ public:
+  static void Launch(
+      mojo::PendingReceiver<video_capture::mojom::VideoCaptureService>
+          receiver) {
+    ServiceProcessHost::Options options;
+    options.WithDisplayName("Video Capture");
+    // TODO(crbug.com/328099369) Remove once gpu client is provided directly.
+    options.WithGpuClient(ServiceProcessHostGpuClient::GetPassKey());
+#if BUILDFLAG(IS_MAC)
+    // On Mac, the service requires a CFRunLoop which is provided by a
+    // UI message loop. See https://crbug.com/834581.
+    options.WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi});
+    if (g_use_safe_mode) {
+      // When safe-mode is enabled, we keep the original entitlements and the
+      // hardened runtime to only load safe DAL plugins and reduce crash risk
+      // from third-party DAL plugins.
+      // As this is not possible to do with unsigned developer builds, we use
+      // an undocumented environment variable that macOS CMIO module checks to
+      // prevent loading any plugins.
+      setenv("CMIO_DAL_Ignore_Standard_PlugIns", "", 1);
+    } else {
+      // On Mac, the service also needs to have a different set of
+      // entitlements, the reason being that some virtual cameras DAL plugins
+      // are not signed or are signed by a different Team ID. Hence,
+      // library validation has to be disabled (see
+      // http://crbug.com/990381#c21).
+      options.WithChildFlags(ChildProcessHost::CHILD_PLUGIN);
+    }
+#endif
+
+    ServiceProcessHost::Launch(std::move(receiver), options.Pass());
+  }
+};
+
+namespace {
 
 video_capture::mojom::VideoCaptureService* g_service_override = nullptr;
 
@@ -114,32 +156,8 @@ video_capture::mojom::VideoCaptureService& GetVideoCaptureService() {
           FROM_HERE,
           base::BindOnce(&BindInProcessInstance, std::move(receiver)));
     } else {
-      ServiceProcessHost::Options options;
-      options.WithDisplayName("Video Capture");
-#if BUILDFLAG(IS_MAC)
-      // On Mac, the service requires a CFRunLoop which is provided by a
-      // UI message loop. See https://crbug.com/834581.
-      options.WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi});
-      if (g_use_safe_mode) {
-        // When safe-mode is enabled, we keep the original entitlements and the
-        // hardened runtime to only load safe DAL plugins and reduce crash risk
-        // from third-party DAL plugins.
-        // As this is not possible to do with unsigned developer builds, we use
-        // an undocumented environment variable that macOS CMIO module checks to
-        // prevent loading any plugins.
-        setenv("CMIO_DAL_Ignore_Standard_PlugIns", "", 1);
-      } else {
-        // On Mac, the service also needs to have a different set of
-        // entitlements, the reason being that some virtual cameras DAL plugins
-        // are not signed or are signed by a different Team ID. Hence,
-        // library validation has to be disabled (see
-        // http://crbug.com/990381#c21).
-        options.WithChildFlags(ChildProcessHost::CHILD_PLUGIN);
-      }
-#endif
-
-      ServiceProcessHost::Launch(std::move(receiver), options.Pass());
-
+      // Launch in a utility service.
+      VideoCaptureServiceLauncher::Launch(std::move(receiver));
 #if !BUILDFLAG(IS_ANDROID)
       // On Android, we do not use automatic service shutdown, because when
       // shutting down the service, we lose caching of the supported formats,
