@@ -635,7 +635,16 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     --pinned_tabs_count_;
   }
 
-  // TODO(b/325423309): Update Tab Groups ranges when detaching.
+  // Update the span of the group containing the detached WebState and the
+  // starting index of all groups located after the detached WebState.
+  for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
+    Range& group_range = group_it->second;
+    if (group_it->first.get() == group) {
+      group_range.contractRight();
+    } else if (group_range.start() > index) {
+      group_range.moveLeft();
+    }
+  }
 
   // Update the active index to prevent observer from seeing an invalid WebState
   // as the active one but only send the WebStateActivatedAt notification after

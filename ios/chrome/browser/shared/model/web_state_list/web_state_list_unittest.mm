@@ -70,7 +70,7 @@ class WebStateListTestObserver : public WebStateListObserver {
   // Returns the number of insertion operations.
   int web_state_inserted_count() const { return web_state_inserted_count_; }
 
-  // Returns the number of insertion operations in groups.
+  // Returns the destination group for the last inserted WebState.
   const TabGroup* web_state_inserted_group() const {
     return web_state_inserted_group_;
   }
@@ -102,6 +102,11 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the number of WebState detached.
   int web_state_detached_count() const { return web_state_detached_count_; }
+
+  // Returns the last group for the last detached WebState.
+  const TabGroup* web_state_detached_group() const {
+    return web_state_detached_group_;
+  }
 
   // Returns whether a WebState was activated.
   bool web_state_activated() const { return web_state_activated_count_ != 0; }
@@ -171,10 +176,13 @@ class WebStateListTestObserver : public WebStateListObserver {
         // The activation is handled after this switch statement.
         break;
       }
-      case WebStateListChange::Type::kDetach:
+      case WebStateListChange::Type::kDetach: {
+        const auto& detach_change = change.As<WebStateListChangeDetach>();
         EXPECT_TRUE(web_state_list->IsMutating());
+        web_state_detached_group_ = detach_change.group();
         ++web_state_detached_count_;
         break;
+      }
       case WebStateListChange::Type::kMove: {
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_moved_count_;
@@ -188,8 +196,7 @@ class WebStateListTestObserver : public WebStateListObserver {
         ++web_state_replaced_count_;
         break;
       case WebStateListChange::Type::kInsert: {
-        const WebStateListChangeInsert& insert_change =
-            change.As<WebStateListChangeInsert>();
+        const auto& insert_change = change.As<WebStateListChangeInsert>();
         web_state_inserted_group_ = insert_change.group();
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_inserted_count_;
@@ -223,6 +230,7 @@ class WebStateListTestObserver : public WebStateListObserver {
   raw_ptr<const TabGroup> web_state_moved_new_group_ = nullptr;
   int web_state_replaced_count_ = 0;
   int web_state_detached_count_ = 0;
+  raw_ptr<const TabGroup> web_state_detached_group_ = nullptr;
   int web_state_activated_count_ = 0;
   int pinned_state_changed_count_ = 0;
   raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
@@ -2115,6 +2123,55 @@ TEST_F(WebStateListTest, InsertWebState_Grouped_Grouped) {
   EXPECT_EQ(1, observer_.web_state_inserted());
   EXPECT_EQ(group0, observer_.web_state_inserted_group());
   EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
+}
+
+// Checks that using `DetachWebStateAt()` on a WebStateList with groups yields
+// the expected result when detaching at different indices.
+TEST_F(WebStateListTest, DetachWebStateAt_Groups) {
+  constexpr std::string_view web_state_list_description_before_detach =
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]";
+  constexpr std::string_view expected_description_for_detach_index[]{
+      "b | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'a'.
+      "a | c [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'b'.
+      "a b | [ 1 d ] e f [ 2 g h ] [ 3 i j k ]",  // Detach 'c'.
+      "a b | c e f [ 2 g h ] [ 3 i j k ]",        // Detach 'd'.
+      "a b | c [ 1 d ] f [ 2 g h ] [ 3 i j k ]",  // Detach 'e'.
+      "a b | c [ 1 d ] e [ 2 g h ] [ 3 i j k ]",  // Detach 'f'.
+      "a b | c [ 1 d ] e f [ 2 h ] [ 3 i j k ]",  // Detach 'g'.
+      "a b | c [ 1 d ] e f [ 2 g ] [ 3 i j k ]",  // Detach 'h'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 j k ]",  // Detach 'i'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i k ]",  // Detach 'j'.
+      "a b | c [ 1 d ] e f [ 2 g h ] [ 3 i j ]",  // Detach 'k'.
+  };
+
+  for (int detach_index = 0;
+       detach_index < std::ssize(expected_description_for_detach_index);
+       ++detach_index) {
+    // Setting up WebStateList and WebState to insert.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_detach));
+    observer_.ResetStatistics();
+    const TabGroup* group_before_detach =
+        web_state_list_.GetGroupOfWebStateAt(detach_index);
+
+    // Detach the WebState at `detach_index`.
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+    web_state_list_.DetachWebStateAt(detach_index);
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after detach."
+        << "\nDetach index: " << detach_index << "\nDescription after detach: "
+        << builder.GetWebStateListDescription(web_state_list_);
+
+    // Check everything is as expected after insertion.
+    EXPECT_EQ(expected_description_for_detach_index[detach_index],
+              builder.GetWebStateListDescription(web_state_list_));
+    EXPECT_EQ(1, observer_.web_state_detached_count());
+    EXPECT_EQ(group_before_detach, observer_.web_state_detached_group());
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  }
 }
 
 // Tests that moving when there are no groups doesn't create any group.
