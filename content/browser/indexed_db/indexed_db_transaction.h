@@ -219,7 +219,8 @@ class CONTENT_EXPORT IndexedDBTransaction
       storage::mojom::WriteBlobToFileResult error);
   void CloseOpenCursors();
   leveldb::Status CommitPhaseTwo();
-  void Timeout();
+  void TimeoutFired();
+  void ResetTimeoutTimer();
 
   const int64_t id_;
   const std::set<int64_t> object_store_ids_;
@@ -316,7 +317,15 @@ class CONTENT_EXPORT IndexedDBTransaction
   // This timer is started after requests have been processed. If no subsequent
   // requests are processed before the timer fires, assume the script is
   // unresponsive and abort to unblock the transaction queue.
-  base::OneShotTimer timeout_timer_;
+  base::RepeatingTimer timeout_timer_;
+  int timeout_strikes_ = 0;
+  // Poll every 20 seconds to see if this transaction is blocking others, and
+  // kill the transaction after 3 strikes. The polling mitigates the fact that
+  // timers may or may not pause when a system is suspended
+  // (crbug.com/40296804). See also crbug.com/40581991.
+  static constexpr base::TimeDelta kInactivityTimeoutPollPeriod =
+      base::Seconds(20);
+  static const int kMaxTimeoutStrikes = 3;
 
   Diagnostics diagnostics_;
 

@@ -142,13 +142,15 @@ class IndexedDBTransactionTestMode
 
 TEST_F(IndexedDBTransactionTest, Timeout) {
   const int64_t id = 0;
-  const std::set<int64_t> scope;
-  const leveldb::Status commit_success = leveldb::Status::OK();
+  const std::set<int64_t> scope{1};
   std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
-  IndexedDBTransaction* transaction =
-      connection->CreateTransaction(mojo::NullAssociatedReceiver(), id, scope,
-                                    blink::mojom::IDBTransactionMode::ReadWrite,
-                                    new FakeTransaction(commit_success));
+  IndexedDBTransaction* transaction = connection->CreateTransaction(
+      mojo::NullAssociatedReceiver(), id, scope,
+      blink::mojom::IDBTransactionMode::ReadWrite,
+      new FakeTransaction(
+          /*phase_two_result=*/leveldb::Status::OK(),
+          blink::mojom::IDBTransactionMode::ReadWrite,
+          bucket_context_->backing_store()->AsWeakPtr()));
   db_->RegisterAndScheduleTransaction(transaction);
 
   // No conflicting transactions, so coordinator will start it immediately:
@@ -168,7 +170,33 @@ TEST_F(IndexedDBTransactionTest, Timeout) {
   RunPostedTasks();
   EXPECT_TRUE(transaction->IsTimeoutTimerRunning());
 
-  transaction->Timeout();
+  // Since the transaction isn't blocking another transaction, it's expected to
+  // do nothing when the timeout fires.
+  transaction->TimeoutFired();
+  EXPECT_EQ(0, transaction->timeout_strikes_);
+  EXPECT_EQ(IndexedDBTransaction::STARTED, transaction->state());
+
+  // Create a second transaction that's blocked on the first.
+  const int64_t id2 = 1;
+  std::unique_ptr<IndexedDBConnection> connection2 = CreateConnection();
+  IndexedDBTransaction* transaction2 = connection2->CreateTransaction(
+      mojo::NullAssociatedReceiver(), id2, scope,
+      blink::mojom::IDBTransactionMode::ReadWrite,
+      new FakeTransaction(
+          /*phase_two_result=*/leveldb::Status::OK(),
+          blink::mojom::IDBTransactionMode::ReadWrite,
+          bucket_context_->backing_store()->AsWeakPtr()));
+  db_->RegisterAndScheduleTransaction(transaction2);
+
+  // Now firing the timeout starts racking up strikes.
+  for (int i = 1; i < IndexedDBTransaction::kMaxTimeoutStrikes; ++i) {
+    transaction->TimeoutFired();
+    EXPECT_EQ(IndexedDBTransaction::STARTED, transaction->state());
+    EXPECT_EQ(i, transaction->timeout_strikes_);
+  }
+
+  // ... and eventually causes the transaction to abort.
+  transaction->TimeoutFired();
   EXPECT_EQ(IndexedDBTransaction::FINISHED, transaction->state());
   EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
@@ -246,39 +274,6 @@ TEST_F(IndexedDBTransactionTest, TimeoutPreemptive) {
   EXPECT_TRUE(transaction->IsTimeoutTimerRunning());
   EXPECT_EQ(1, transaction->diagnostics().tasks_scheduled);
   EXPECT_EQ(1, transaction->diagnostics().tasks_completed);
-}
-
-TEST_F(IndexedDBTransactionTest, NoTimeoutReadOnly) {
-  const int64_t id = 0;
-  const std::set<int64_t> scope;
-  const leveldb::Status commit_success = leveldb::Status::OK();
-  std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
-  IndexedDBTransaction* transaction =
-      connection->CreateTransaction(mojo::NullAssociatedReceiver(), id, scope,
-                                    blink::mojom::IDBTransactionMode::ReadOnly,
-                                    new FakeTransaction(commit_success));
-  db_->RegisterAndScheduleTransaction(transaction);
-
-  // No conflicting transactions, so coordinator will start it immediately:
-  EXPECT_EQ(IndexedDBTransaction::STARTED, transaction->state());
-  EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
-
-  // Schedule a task - timer won't be started until it's processed.
-  transaction->ScheduleTask(
-      base::BindOnce(&IndexedDBTransactionTest::DummyOperation,
-                     base::Unretained(this), leveldb::Status::OK()));
-  EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
-
-  // Transaction is read-only, so no need to time it out.
-  RunPostedTasks();
-  EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
-
-  // Clean up to avoid leaks.
-  transaction->Abort(IndexedDBDatabaseError(
-      IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
-                             "Transaction aborted by user.")));
-  EXPECT_EQ(IndexedDBTransaction::FINISHED, transaction->state());
-  EXPECT_FALSE(transaction->IsTimeoutTimerRunning());
 }
 
 TEST_P(IndexedDBTransactionTestMode, ScheduleNormalTask) {
