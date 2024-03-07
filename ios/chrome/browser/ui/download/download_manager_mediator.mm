@@ -227,17 +227,21 @@ void DownloadManagerMediator::RemoveComplete(bool remove_completed) {
 }
 
 int DownloadManagerMediator::GetDownloadManagerA11yAnnouncement() const {
-  switch (download_task_->GetState()) {
-    case web::DownloadTask::State::kNotStarted:
+  switch (GetDownloadManagerState()) {
+    case kDownloadManagerStateNotStarted:
       return IDS_IOS_DOWNLOAD_MANAGER_REQUESTED_ACCESSIBILITY_ANNOUNCEMENT;
-    case web::DownloadTask::State::kComplete:
-    case web::DownloadTask::State::kFailed:
-    case web::DownloadTask::State::kFailedNotResumable:
-      return download_task_->GetErrorCode()
+    case kDownloadManagerStateSucceeded:
+    case kDownloadManagerStateFailed:
+    case kDownloadManagerStateFailedNotResumable: {
+      bool has_error = download_task_->GetErrorCode();
+      if (!has_error && upload_task_) {
+        has_error = upload_task_->GetError();
+      }
+      return has_error
                  ? IDS_IOS_DOWNLOAD_MANAGER_FAILED_ACCESSIBILITY_ANNOUNCEMENT
                  : IDS_IOS_DOWNLOAD_MANAGER_SUCCEEDED_ACCESSIBILITY_ANNOUNCEMENT;
-    case web::DownloadTask::State::kCancelled:
-    case web::DownloadTask::State::kInProgress:
+    }
+    case kDownloadManagerStateInProgress:
       return -1;
   }
 }
