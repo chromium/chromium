@@ -68,7 +68,6 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kContentInsertion, @"AXInsertStyleGroup"},
       {ax::mojom::Role::kContentInfo, @"AXLandmarkContentInfo"},
       {ax::mojom::Role::kDefinition, @"AXDefinition"},
-      {ax::mojom::Role::kDescriptionListTerm, @"AXTerm"},
       {ax::mojom::Role::kDialog, @"AXApplicationDialog"},
       {ax::mojom::Role::kDocument, @"AXDocument"},
       {ax::mojom::Role::kEmphasis, @"AXEmphasisStyleGroup"},
@@ -403,7 +402,6 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kContentInsertion:
     case ax::mojom::Role::kContentInfo:
     case ax::mojom::Role::kDefinition:
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kDesktop:
     case ax::mojom::Role::kDialog:
     case ax::mojom::Role::kDetails:
@@ -683,6 +681,7 @@ void CollectAncestorRoles(
       // specially by screen readers, can break their ability to find the
       // content window. See http://crbug.com/875843 for more information.
       return NSAccessibilityGroupRole;
+    case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED_NORETURN();

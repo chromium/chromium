@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
 Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] el-dt
-  assert_equals: <dt data-testname="el-dt" data-expectedrole="term" class="ex">x</dt> expected "term" but got "DescriptionListTerm"
 [FAIL] el-form
   assert_equals: <form data-testname="el-form" data-expectedrole="form" class="ex"><input></form> expected "form" but got "Section"
 Harness: the test ran to completion.

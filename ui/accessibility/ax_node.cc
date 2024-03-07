@@ -1844,8 +1844,7 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
     case ax::mojom::Role::kDescriptionList:
       // Only the term for each description list entry should receive posinset
       // and setsize.
-      return item_role == ax::mojom::Role::kDescriptionListTerm ||
-             item_role == ax::mojom::Role::kTerm;
+      return item_role == ax::mojom::Role::kTerm;
     case ax::mojom::Role::kComboBoxSelect:
       // kComboBoxSelect wraps a kMenuListPopUp.
       return item_role == ax::mojom::Role::kMenuListPopup;

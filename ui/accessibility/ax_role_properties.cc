@@ -381,7 +381,6 @@ bool IsItemLike(const ax::mojom::Role role) {
     case ax::mojom::Role::kListBoxOption:
     case ax::mojom::Role::kMenuListOption:
     case ax::mojom::Role::kRadioButton:
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kTerm:
       DCHECK(!IsSetLike(role)) << "Role cannot be both item-like and set-like.";
       return true;
@@ -457,7 +456,6 @@ bool IsList(const ax::mojom::Role role) {
 
 bool IsListItem(const ax::mojom::Role role) {
   switch (role) {
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kDocBiblioEntry:
     case ax::mojom::Role::kDocEndnote:
     case ax::mojom::Role::kListBoxOption:
@@ -832,9 +830,9 @@ bool IsTableHeader(ax::mojom::Role role) {
 
 bool IsTableItem(ax::mojom::Role role) {
   switch (role) {
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kListBoxOption:
     case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kTerm:
     case ax::mojom::Role::kTreeItem:
       return true;
     default:
@@ -926,7 +924,6 @@ bool IsUIAEmbeddedObject(ax::mojom::Role role) {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kDisclosureTriangleGrouped:
@@ -1021,7 +1018,6 @@ bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
     case ax::mojom::Role::kArticle:
     case ax::mojom::Role::kDefinition:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDocument:
     case ax::mojom::Role::kGraphicsDocument:

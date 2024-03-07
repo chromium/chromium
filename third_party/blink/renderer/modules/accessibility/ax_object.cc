@@ -7650,7 +7650,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kContentInsertion:
     case ax::mojom::blink::Role::kDefinition:
     case ax::mojom::blink::Role::kDescriptionList:
-    case ax::mojom::blink::Role::kDescriptionListTerm:
     case ax::mojom::blink::Role::kDetails:
     case ax::mojom::blink::Role::kEmphasis:
     case ax::mojom::blink::Role::kFigcaption:
@@ -7730,6 +7729,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kCaret:
     case ax::mojom::blink::Role::kClient:
     case ax::mojom::blink::Role::kColumn:
+    case ax::mojom::blink::Role::kDescriptionListTermDeprecated:
     case ax::mojom::blink::Role::kDesktop:
     case ax::mojom::blink::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::blink::Role::kKeyboard:

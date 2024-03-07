@@ -1173,7 +1173,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kAudio:
     case ax::mojom::Role::kCode:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kDetails:
     case ax::mojom::Role::kEmphasis:
     case ax::mojom::Role::kFooterAsNonLandmark:

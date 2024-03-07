@@ -2695,8 +2695,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_DESCRIPTION_VALUE;
     case ax::mojom::Role::kDescriptionList:
       return ATK_ROLE_DESCRIPTION_LIST;
-    case ax::mojom::Role::kDescriptionListTerm:
-      return ATK_ROLE_DESCRIPTION_TERM;
     case ax::mojom::Role::kDetails:
       return ATK_ROLE_PANEL;
     case ax::mojom::Role::kDialog:
@@ -3038,6 +3036,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kKeyboard:
     case ax::mojom::Role::kNone:
       return ATK_ROLE_REDUNDANT_OBJECT;
+    case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kPreDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
       NOTREACHED_NORETURN();

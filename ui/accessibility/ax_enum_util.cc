@@ -200,10 +200,10 @@ const char* ToString(ax::mojom::Role role) {
       return "definition";
     case ax::mojom::Role::kDescriptionList:
       return "descriptionList";
+    case ax::mojom::Role::kDescriptionListTermDeprecated:
+      return "descriptionListTermDeprecated";
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
       return "descriptionListDetailsDeprecated";
-    case ax::mojom::Role::kDescriptionListTerm:
-      return "descriptionListTerm";
     case ax::mojom::Role::kDesktop:
       return "desktop";
     case ax::mojom::Role::kDetails:
@@ -628,10 +628,10 @@ ax::mojom::Role StringToRole(const std::string& role) {
     return ax::mojom::Role::kDefinition;
   } else if (role == "kDescriptionList") {
     return ax::mojom::Role::kDescriptionList;
+  } else if (role == "kDescriptionListTermDeprecated") {
+    return ax::mojom::Role::kDescriptionListTermDeprecated;
   } else if (role == "kDescriptionListDetailDeprecated") {
     return ax::mojom::Role::kDescriptionListDetailDeprecated;
-  } else if (role == "kDescriptionListTerm") {
-    return ax::mojom::Role::kDescriptionListTerm;
   } else if (role == "kDesktop") {
     return ax::mojom::Role::kDesktop;
   } else if (role == "kDetails") {

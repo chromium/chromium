@@ -910,10 +910,6 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_ListControlTypeId, L"list"};
 
-    case ax::mojom::Role::kDescriptionListTerm:
-      return {UIALocalizationStrategy::kDeferToControlType,
-              UIA_ListItemControlTypeId, L"listitem"};
-
     case ax::mojom::Role::kDesktop:
       return {UIALocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
               L"document"};
@@ -1454,6 +1450,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kSupply, UIA_PaneControlTypeId,
               L"region"};
 
+    case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED_NORETURN();
@@ -6453,9 +6450,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kDescriptionList:
       return ROLE_SYSTEM_LIST;
 
-    case ax::mojom::Role::kDescriptionListTerm:
-      return ROLE_SYSTEM_LISTITEM;
-
     case ax::mojom::Role::kDesktop:
       return ROLE_SYSTEM_PANE;
 
@@ -6875,6 +6869,7 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kNone:
     case ax::mojom::Role::kUnknown:
       return ROLE_SYSTEM_PANE;
+    case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kPreDeprecated:
       NOTREACHED_NORETURN();

@@ -677,7 +677,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kContentInsertion,
           ax::mojom::blink::Role::kDefinition,
           ax::mojom::blink::Role::kDescriptionList,
-          ax::mojom::blink::Role::kDescriptionListTerm,
           ax::mojom::blink::Role::kDetails,
           ax::mojom::blink::Role::kDialog,
           ax::mojom::blink::Role::kDocAcknowledgments,
@@ -1523,7 +1522,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kTerm;
 
   if (GetNode()->HasTagName(html_names::kDtTag))
-    return ax::mojom::blink::Role::kDescriptionListTerm;
+    return ax::mojom::blink::Role::kTerm;
 
   // Mapping of MathML elements. See https://w3c.github.io/mathml-aam/
   if (auto* element = DynamicTo<MathMLElement>(GetNode())) {
