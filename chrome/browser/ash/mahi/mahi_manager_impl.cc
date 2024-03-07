@@ -67,15 +67,11 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
 }
 
 std::u16string MahiManagerImpl::GetContentTitle() {
-  return u"test content title";
+  return current_page_info_->title;
 }
 
 gfx::ImageSkia MahiManagerImpl::GetContentIcon() {
-  int test_size_px = 128;
-  SkBitmap test_bitmap;
-  test_bitmap.allocN32Pixels(test_size_px, test_size_px);
-  test_bitmap.eraseColor(SK_ColorGREEN);
-  return gfx::ImageSkia::CreateFrom1xBitmap(test_bitmap);
+  return current_page_info_->favicon_image;
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
