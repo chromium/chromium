@@ -60,4 +60,21 @@ void InlineItemResult::Trace(Visitor* visitor) const {
   visitor->Trace(positioned_float);
 }
 
+String InlineItemResult::ToString(const String& ifc_text_content) const {
+  // This is almost same as InlineItem::ToString(), but this shows associated
+  // text precisely.
+  StringBuilder builder;
+  builder.Append("InlineItemResult ");
+  builder.Append(item->InlineItemTypeToString(item->Type()));
+  builder.Append(" ");
+  if (item->Type() == InlineItem::kText) {
+    builder.Append(
+        ifc_text_content.Substring(TextOffset().start, TextOffset().Length())
+            .EncodeForDebugging());
+  } else if (item->GetLayoutObject()) {
+    builder.Append(item->GetLayoutObject()->ToString());
+  }
+  return builder.ToString();
+}
+
 }  // namespace blink

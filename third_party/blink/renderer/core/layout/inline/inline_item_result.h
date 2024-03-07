@@ -89,6 +89,7 @@ struct CORE_EXPORT InlineItemResult {
 #if DCHECK_IS_ON()
   void CheckConsistency(bool allow_null_shape_result = false) const;
 #endif
+  String ToString(const String& ifc_text_content) const;
 
   // The InlineItem and its index.
   const InlineItem* item = nullptr;
