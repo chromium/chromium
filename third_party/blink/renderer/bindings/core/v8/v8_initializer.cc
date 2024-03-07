@@ -683,7 +683,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
           script_state->GetContext(), v8::Local<v8::Module>(),
           v8_import_assertions, /*v8_import_assertions_has_positions=*/false));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state,
       ExceptionContext(ExceptionContextType::kUnknown, "", "import"));
   ScriptPromise promise = resolver->Promise();

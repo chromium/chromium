@@ -428,8 +428,8 @@ TEST_F(WebTransportTest, FailByCSP) {
       ASSERT_NO_EXCEPTION);
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
-  ScriptPromiseTester closed_tester(
-      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
 
   test::RunPendingTasks();
 
@@ -498,8 +498,8 @@ TEST_F(WebTransportTest, FailedConnect) {
       ASSERT_NO_EXCEPTION);
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
-  ScriptPromiseTester closed_tester(
-      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
 
   test::RunPendingTasks();
 
@@ -628,8 +628,8 @@ TEST_F(WebTransportTest, CloseDuringConnect) {
       ASSERT_NO_EXCEPTION);
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
-  ScriptPromiseTester closed_tester(
-      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
 
   test::RunPendingTasks();
 
@@ -653,8 +653,8 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
 
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
-  ScriptPromiseTester closed_tester(
-      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
 
   WebTransportCloseInfo close_info;
   close_info.setCloseCode(42);
@@ -680,8 +680,8 @@ TEST_F(WebTransportTest, CloseWithNull) {
 
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
-  ScriptPromiseTester closed_tester(
-      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
 
   web_transport->close(nullptr);
 
@@ -703,8 +703,8 @@ TEST_F(WebTransportTest, CloseWithReasonOnly) {
 
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
-  ScriptPromiseTester closed_tester(
-      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
 
   WebTransportCloseInfo close_info;
   close_info.setReason("because");
@@ -759,8 +759,8 @@ TEST_F(WebTransportTest, GarbageCollectMojoConnectionError) {
     web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
   }
 
-  ScriptPromiseTester closed_tester(
-      scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester closed_tester(scope.GetScriptState(),
+                                    web_transport->closed());
 
   // Closing the server-side of the pipe causes a mojo connection error.
   client_remote_.reset();
@@ -1938,8 +1938,7 @@ TEST_F(WebTransportTest, OnClosed) {
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromiseTester tester(script_state,
-                             web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester tester(script_state, web_transport->closed());
 
   web_transport->OnClosed(
       network::mojom::blink::WebTransportCloseInfo::New(99, "reason"),
@@ -1967,8 +1966,7 @@ TEST_F(WebTransportTest, OnClosedWithNull) {
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromiseTester tester(script_state,
-                             web_transport->closed(scope.GetScriptState()));
+  ScriptPromiseTester tester(script_state, web_transport->closed());
 
   web_transport->OnClosed(nullptr,
                           network::mojom::blink::WebTransportStats::New());

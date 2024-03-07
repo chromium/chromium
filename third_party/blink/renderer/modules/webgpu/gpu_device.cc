@@ -639,12 +639,10 @@ void GPUDevice::pushErrorScope(const V8GPUErrorFilter& filter) {
   GetProcs().devicePushErrorScope(GetHandle(), AsDawnEnum(filter));
 }
 
-ScriptPromiseTyped<IDLNullable<GPUError>> GPUDevice::popErrorScope(
-    ScriptState* script_state) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<GPUError>>>(
-          script_state);
-  auto promise = resolver->Promise();
+ScriptPromise GPUDevice::popErrorScope(ScriptState* script_state) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
 
   auto* callback =
       MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
@@ -659,13 +657,14 @@ ScriptPromiseTyped<IDLNullable<GPUError>> GPUDevice::popErrorScope(
   return promise;
 }
 
-void GPUDevice::OnPopErrorScopeCallback(
-    ScriptPromiseResolverTyped<IDLNullable<GPUError>>* resolver,
-    WGPUErrorType type,
-    const char* message) {
+void GPUDevice::OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
+                                        WGPUErrorType type,
+                                        const char* message) {
+  v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
+
   switch (type) {
     case WGPUErrorType_NoError:
-      resolver->Resolve(nullptr);
+      resolver->Resolve(v8::Null(isolate));
       break;
     case WGPUErrorType_OutOfMemory:
       resolver->Resolve(MakeGarbageCollected<GPUOutOfMemoryError>(
