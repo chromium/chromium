@@ -19,17 +19,22 @@
         line-height: var(--oobe-default-line-height);
       }
 
+      /* Always add a border to avoid loops in ResizeObserver */
+      .scrollable {
+        border-top: transparent solid 1px;
+        border-bottom: transparent solid 1px;
+      }
       /* Classes can-scroll is-scrolled scrolled-to-bottom are set by
           OobeScrollableBehavior. */
       .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
-        border-bottom: var(--cros-sys-separator) solid 1px;
+        border-bottom-color: var(--cros-sys-separator);
       }
       .scrollable.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
-        border-top: var(--cros-sys-separator) solid 1px;
-        border-bottom: var(--cros-sys-separator) solid 1px;
+        border-top-color: var(--cros-sys-separator);
+        border-bottom-color: var(--cros-sys-separator);
       }
       .scrollable.is-scrolled.scrolled-to-bottom {
-        border-top: var(--cros-sys-separator) solid 1px;
+        border-top-color: var(--cros-sys-separator);
       }
 
       /* Links styles used within OOBE */
