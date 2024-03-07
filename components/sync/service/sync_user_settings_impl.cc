@@ -398,7 +398,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(50 == GetNumModelTypes(),
+  static_assert(51 == GetNumModelTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
   if (prefs_->IsLocalSyncEnabled()) {
@@ -410,6 +410,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
     types.Remove(HISTORY);
     types.Remove(INCOMING_PASSWORD_SHARING_INVITATION);
     types.Remove(OUTGOING_PASSWORD_SHARING_INVITATION);
+    types.Remove(PLUS_ADDRESS);
     types.Remove(SECURITY_EVENTS);
     types.Remove(SEGMENTATION);
     types.Remove(SEND_TAB_TO_SELF);

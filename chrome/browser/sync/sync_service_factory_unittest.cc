@@ -86,7 +86,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(50 == syncer::GetNumModelTypes(),
+    static_assert(51 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -195,6 +195,7 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::WEB_APKS);
     }
 #endif  // BUILDFLAG(IS_ANDROID)
+    // TODO(b/322147254): Add `syncer::PLUS_ADDRESS` once it has a controller.
     return datatypes;
   }
 
