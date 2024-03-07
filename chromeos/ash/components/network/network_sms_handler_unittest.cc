@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -43,11 +42,6 @@ constexpr char kTestGuid1[] = "1";
 constexpr char kTestGuid2[] = "2";
 constexpr char kTestIccid1[] = "000000000000000000";
 constexpr char kTestIccid2[] = "000000000000000001";
-
-struct NetworkSmsHandlerTestCase {
-  std::string test_name;
-  bool use_suppress_text_message_flag;
-};
 
 class TestObserver : public NetworkSmsHandler::Observer {
  public:
@@ -100,9 +94,7 @@ class TestObserver : public NetworkSmsHandler::Observer {
 
 }  // namespace
 
-class NetworkSmsHandlerTest
-    : public testing::Test,
-      public testing::WithParamInterface<NetworkSmsHandlerTestCase> {
+class NetworkSmsHandlerTest : public testing::Test {
  public:
   NetworkSmsHandlerTest()
       : task_environment_(
@@ -111,13 +103,6 @@ class NetworkSmsHandlerTest
   ~NetworkSmsHandlerTest() override = default;
 
   void SetUp() override {
-    auto param = GetParam();
-    if (param.use_suppress_text_message_flag) {
-      features_.InitAndEnableFeature(ash::features::kSuppressTextMessages);
-    } else {
-      features_.InitAndDisableFeature(ash::features::kSuppressTextMessages);
-    }
-
     // Append '--sms-test-messages' to the command line to tell
     // SMSClientStubImpl to generate a series of test SMS messages.
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -143,11 +128,8 @@ class NetworkSmsHandlerTest
     // ShillDeviceClient, ModemMessagingClient and SMSClient.
     network_sms_handler_.reset(new NetworkSmsHandler());
     network_state_handler_ = NetworkStateHandler::InitializeForTest();
-    if (features::IsSuppressTextMessagesEnabled()) {
       network_sms_handler_->Init(network_state_handler_.get());
-    } else {
-      network_sms_handler_->Init();
-    }
+
     test_observer_ = std::make_unique<TestObserver>();
     network_sms_handler_->AddObserver(test_observer_.get());
     network_sms_handler_->RequestUpdate();
@@ -212,18 +194,7 @@ class NetworkSmsHandlerTest
   raw_ptr<FakeSMSClient, DanglingUntriaged> fake_sms_client_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    NetworkSmsHandlerTests,
-    NetworkSmsHandlerTest,
-    testing::ValuesIn<NetworkSmsHandlerTestCase>({
-        {"SuppressTextMessageFlagEnabled", true},
-        {"SuppressTextMessageFlagDisabled", false},
-    }),
-    [](const testing::TestParamInfo<NetworkSmsHandlerTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-TEST_P(NetworkSmsHandlerTest, DbusStub) {
+TEST_F(NetworkSmsHandlerTest, DbusStub) {
   EXPECT_EQ(test_observer_->message_count(), 0);
 
   // Test that no messages have been received yet
@@ -313,7 +284,7 @@ TEST_P(NetworkSmsHandlerTest, DbusStub) {
   EXPECT_EQ(test_observer_->message_count(), 4);
 }
 
-TEST_P(NetworkSmsHandlerTest, DeleteFailure) {
+TEST_F(NetworkSmsHandlerTest, DeleteFailure) {
   EXPECT_EQ(test_observer_->message_count(), 0);
 
   // Test that no messages have been received yet
@@ -411,7 +382,7 @@ TEST_P(NetworkSmsHandlerTest, DeleteFailure) {
             modem_messaging_test_->GetPendingDeleteRequestSmsPath());
 }
 
-TEST_P(NetworkSmsHandlerTest, ReceiveSmsTimeout) {
+TEST_F(NetworkSmsHandlerTest, ReceiveSmsTimeout) {
   EXPECT_EQ(test_observer_->message_count(), 0);
 
   // Test that no messages have been received yet
@@ -462,7 +433,7 @@ TEST_P(NetworkSmsHandlerTest, ReceiveSmsTimeout) {
   EXPECT_TRUE(modem_messaging_test_->GetPendingDeleteRequestSmsPath().empty());
 }
 
-TEST_P(NetworkSmsHandlerTest, EmptyDbusObjectPath) {
+TEST_F(NetworkSmsHandlerTest, EmptyDbusObjectPath) {
   // This test verifies no crash should occur when the device dbus object path
   // is an empty value.
   device_test_->SetDeviceProperty(kCellularDevicePath,
@@ -475,7 +446,7 @@ TEST_P(NetworkSmsHandlerTest, EmptyDbusObjectPath) {
   EXPECT_EQ(test_observer_->message_count(), 0);
 }
 
-TEST_P(NetworkSmsHandlerTest, DeviceObjectPathChange) {
+TEST_F(NetworkSmsHandlerTest, DeviceObjectPathChange) {
   // Fake the SIM being switched to a different SIM.
   device_test_->SetDeviceProperty(
       kCellularDevicePath, shill::kDBusObjectProperty,
@@ -507,19 +478,7 @@ TEST_P(NetworkSmsHandlerTest, DeviceObjectPathChange) {
   EXPECT_TRUE(base::Contains(messages, kMessage1));
 }
 
-class NetworkSmsHandlerSmsSuppressOnlyTest : public NetworkSmsHandlerTest {};
-
-INSTANTIATE_TEST_SUITE_P(
-    NetworkSmsHandlerTests,
-    NetworkSmsHandlerSmsSuppressOnlyTest,
-    testing::ValuesIn<NetworkSmsHandlerTestCase>({
-        {"SuppressTextMessageFlagEnabled", true},
-    }),
-    [](const testing::TestParamInfo<NetworkSmsHandlerTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkGuidTest) {
+TEST_F(NetworkSmsHandlerTest, NetworkGuidTest) {
   // Test that no messages have been received yet
   EXPECT_EQ(test_observer_->message_count(), 0);
 
@@ -564,7 +523,7 @@ TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkGuidTest) {
             test_observer_->messages(kTestGuid1).end());
 }
 
-TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkDelayedActiveNetworkTest) {
+TEST_F(NetworkSmsHandlerTest, NetworkDelayedActiveNetworkTest) {
   SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
                      kTestGuid2, kTestIccid2, shill::kStateIdle);
   base::RunLoop().RunUntilIdle();
@@ -603,8 +562,7 @@ TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkDelayedActiveNetworkTest) {
   EXPECT_EQ(1u, test_observer_->messages(kTestGuid2).size());
 }
 
-TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest,
-       MessageReceivedNeverConnectedNetwork) {
+TEST_F(NetworkSmsHandlerTest, MessageReceivedNeverConnectedNetwork) {
   UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnect);
   SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
                      kTestGuid2, kTestIccid2, shill::kStateDisconnect);

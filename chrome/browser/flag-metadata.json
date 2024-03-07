@@ -7628,11 +7628,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "suppress-text-messages",
-    "owners": [ "fahadmansoor@google.com", "gordonseto@google.com", "ghostbusters@google.com", "cros-connectivity@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "suppress-toolbar-captures",
     "owners": [ "pnoland@google.com", "skym@chromium.org" ],
     "expiry_milestone": 130

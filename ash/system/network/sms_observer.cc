@@ -64,28 +64,21 @@ SmsObserver::SmsObserver() {
   // user (perhaps the owner) to be logged in. If that is the case, then an
   // additional check should be done before subscribing for SMS notifications.
   if (NetworkHandler::IsInitialized()) {
-    if (features::IsSuppressTextMessagesEnabled()) {
       NetworkHandler::Get()->text_message_provider()->AddObserver(this);
-    } else {
-      NetworkHandler::Get()->network_sms_handler()->AddObserver(this);
-    }
   }
 }
 
 SmsObserver::~SmsObserver() {
   if (NetworkHandler::IsInitialized()) {
-    if (features::IsSuppressTextMessagesEnabled()) {
       NetworkHandler::Get()->text_message_provider()->RemoveObserver(this);
-    } else {
-      NetworkHandler::Get()->network_sms_handler()->RemoveObserver(this);
-    }
   }
 }
 
 void SmsObserver::MessageReceived(const std::string& guid,
                                   const TextMessageData& message_data) {
-  CHECK(features::IsSuppressTextMessagesEnabled());
-
+  // TODO(b/328445717): A message might be due to a special "Message Waiting"
+  // state that the message is in. Once SMS handling moves to shill, such
+  // messages should be filtered there so that this check becomes unnecessary.
   if (!message_data.text.has_value() || message_data.text->empty()) {
     NET_LOG(ERROR) << "SMS message contains no or empty content.";
     return;
@@ -105,35 +98,6 @@ void SmsObserver::MessageReceived(const std::string& guid,
         ->text_message_provider()
         ->LogTextMessageNotificationMetrics(guid);
   }
-}
-
-void SmsObserver::MessageReceived(const base::Value::Dict& message) {
-  CHECK(!features::IsSuppressTextMessagesEnabled());
-
-  const std::string* message_text =
-      message.FindString(NetworkSmsHandler::kTextKey);
-  if (!message_text) {
-    NET_LOG(ERROR) << "SMS message contains no content.";
-    return;
-  }
-  // TODO(armansito): A message might be due to a special "Message Waiting"
-  // state that the message is in. Once SMS handling moves to shill, such
-  // messages should be filtered there so that this check becomes unnecessary.
-  if (message_text->empty()) {
-    NET_LOG(DEBUG) << "SMS has empty content text. Ignoring.";
-    return;
-  }
-  const std::string* message_number =
-      message.FindString(NetworkSmsHandler::kNumberKey);
-  if (!message_number) {
-    NET_LOG(DEBUG) << "SMS contains no number. Ignoring.";
-    return;
-  }
-
-  NET_LOG(DEBUG) << "Received SMS from: " << *message_number
-                 << " with text: " << *message_text;
-  message_id_++;
-  ShowNotification(&message, *message_text, *message_number, message_id_);
 }
 
 }  // namespace ash

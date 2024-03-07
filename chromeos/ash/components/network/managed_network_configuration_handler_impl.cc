@@ -991,7 +991,6 @@ bool ManagedNetworkConfigurationHandlerImpl::CanRemoveNetworkConfig(
 
 PolicyTextMessageSuppressionState
 ManagedNetworkConfigurationHandlerImpl::GetAllowTextMessages() const {
-  CHECK(features::IsSuppressTextMessagesEnabled());
   const std::string* allow_text_messages =
       FindGlobalPolicyString(::onc::global_network_config::kAllowTextMessages);
   if (!allow_text_messages) {

@@ -591,7 +591,6 @@ void NetworkMetadataStore::SetReportXdrEventsEnabled(bool enabled) {
 void NetworkMetadataStore::SetUserTextMessageSuppressionState(
     const std::string& network_guid,
     const UserTextMessageSuppressionState& state) {
-  CHECK(features::IsSuppressTextMessagesEnabled());
 
   SetPref(network_guid, kUserTextMessageSuppressionState,
           base::Value(base::to_underlying(state)));
@@ -601,7 +600,6 @@ void NetworkMetadataStore::SetUserTextMessageSuppressionState(
 UserTextMessageSuppressionState
 NetworkMetadataStore::GetUserTextMessageSuppressionState(
     const std::string& network_guid) {
-  CHECK(features::IsSuppressTextMessagesEnabled());
 
   const base::Value* state_value =
       GetPref(network_guid, kUserTextMessageSuppressionState);

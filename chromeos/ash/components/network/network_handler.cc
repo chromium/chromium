@@ -109,9 +109,7 @@ NetworkHandler::NetworkHandler()
   network_activation_handler_.reset(new NetworkActivationHandlerImpl());
   prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
   network_sms_handler_.reset(new NetworkSmsHandler());
-  if (features::IsSuppressTextMessagesEnabled()) {
-    text_message_provider_.reset(new TextMessageProvider());
-  }
+  text_message_provider_.reset(new TextMessageProvider());
   geolocation_handler_.reset(new GeolocationHandler());
   if (ash::features::IsCellularCarrierLockEnabled()) {
     network_3gpp_handler_.reset(new Network3gppHandler());
@@ -224,14 +222,11 @@ void NetworkHandler::Init() {
   prohibited_technologies_handler_->Init(
       managed_network_configuration_handler_.get(),
       network_state_handler_.get(), technology_state_controller_.get());
-  if (features::IsSuppressTextMessagesEnabled()) {
+
     network_sms_handler_->Init(network_state_handler_.get());
 
     text_message_provider_->Init(network_sms_handler_.get(),
                                  managed_network_configuration_handler_.get());
-  } else {
-    network_sms_handler_->Init();
-  }
   geolocation_handler_->Init();
   if (ash::features::IsCellularCarrierLockEnabled()) {
     network_3gpp_handler_->Init();
@@ -286,10 +281,9 @@ void NetworkHandler::InitializePrefServices(
       connection_info_metrics_logger_.get()));
   hidden_network_handler_->SetNetworkMetadataStore(
       network_metadata_store_.get());
-  if (features::IsSuppressTextMessagesEnabled()) {
     text_message_provider_->SetNetworkMetadataStore(
         network_metadata_store_.get());
-  }
+
   if (ephemeral_network_policies_enablement_handler_) {
     ephemeral_network_policies_enablement_handler_->SetDevicePrefs(
         device_prefs);
@@ -305,9 +299,8 @@ void NetworkHandler::ShutdownPrefServices() {
   ui_proxy_config_service_.reset();
   managed_network_configuration_handler_->set_user_prefs(nullptr);
   hidden_network_handler_->SetNetworkMetadataStore(nullptr);
-  if (features::IsSuppressTextMessagesEnabled()) {
     text_message_provider_->SetNetworkMetadataStore(nullptr);
-  }
+
   network_metadata_store_.reset();
 }
 

@@ -2143,9 +2143,6 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AllowTextMessages) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSuppressTextMessages);
-
   EXPECT_TRUE(
       SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
                 "policy/policy_empty_global_network_configuration.onc"));

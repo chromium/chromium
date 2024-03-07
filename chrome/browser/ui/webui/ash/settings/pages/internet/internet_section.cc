@@ -1146,9 +1146,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           ash::features::IsPasspointSettingsEnabled() &&
                               ash::features::IsPasspointARCSupportEnabled());
 
-  html_source->AddBoolean("isSuppressTextMessagesEnabled",
-                          ash::features::IsSuppressTextMessagesEnabled());
-
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
 

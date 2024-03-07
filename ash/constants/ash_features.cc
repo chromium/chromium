@@ -97,11 +97,6 @@ BASE_FEATURE(kAllowScrollSettings,
              "AllowScrollSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the support for suppressing text messages is enabled.
-BASE_FEATURE(kSuppressTextMessages,
-             "SuppressTextMessages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAltClickAndSixPackCustomization,
              "AltClickAndSixPackCustomization",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3871,9 +3866,6 @@ bool IsNewLockScreenReauthLayoutEnabled() {
   return base::FeatureList::IsEnabled(kNewLockScreenReauthLayout);
 }
 
-bool IsSuppressTextMessagesEnabled() {
-  return base::FeatureList::IsEnabled(kSuppressTextMessages);
-}
 
 bool IsSysUiDownloadsIntegrationV2Enabled() {
   return base::FeatureList::IsEnabled(kSysUiDownloadsIntegrationV2);

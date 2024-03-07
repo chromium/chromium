@@ -216,7 +216,6 @@ suite('<settings-internet-detail-subpage>', () => {
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
       showMeteredToggle: true,
-      isSuppressTextMessagesEnabled: false,
     });
 
     mojoApi.resetForTest();
@@ -2058,13 +2057,9 @@ suite('<settings-internet-detail-subpage>', () => {
       assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
     });
 
-    // Syntactic sugar for running test twice with different values for the
-    // suppressTextMessages feature flag.
-    [true, false].forEach(isSuppressTextMessagesEnabled => {
       test(
           'Show/Hide toggle correspondingly to SuppressTextMessages flag',
           async () => {
-            loadTimeData.overrideValues({isSuppressTextMessagesEnabled});
             init();
             mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
             const TEST_ICCID = '11111111111111111';
@@ -2087,16 +2082,11 @@ suite('<settings-internet-detail-subpage>', () => {
             const getSuppressTextMessagesToggle = () =>
                 internetDetailPage.shadowRoot!.querySelector(
                     '#suppressTextMessagesToggle');
-            if (isSuppressTextMessagesEnabled) {
               assertTrue(!!getSuppressTextMessagesToggle());
-            } else {
-              assertNull(getSuppressTextMessagesToggle());
-            }
+
           });
-    });
 
     test('Suppress text messages manually', async () => {
-      loadTimeData.overrideValues({isSuppressTextMessagesEnabled: true});
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
@@ -2138,7 +2128,6 @@ suite('<settings-internet-detail-subpage>', () => {
 
     test(
         'Suppress text messages toggle only shown for active SIM', async () => {
-          loadTimeData.overrideValues({isSuppressTextMessagesEnabled: true});
           init();
           mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
@@ -2168,7 +2157,6 @@ suite('<settings-internet-detail-subpage>', () => {
         });
 
     test('Suppress text messages via policy', async () => {
-      loadTimeData.overrideValues({isSuppressTextMessagesEnabled: true});
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 

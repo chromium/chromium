@@ -295,14 +295,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      isSuppressTextMessagesEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isSuppressTextMessagesEnabled') &&
-              loadTimeData.getBoolean('isSuppressTextMessagesEnabled');
-        },
-      },
-
       isCellularCarrierLockEnabled_: {
         type: Boolean,
         value() {
@@ -412,7 +404,6 @@ export class SettingsInternetDetailPageElement extends
   private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
-  private isSuppressTextMessagesEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
   private isCellularCarrierLockEnabled_: boolean;
   private isPasspointEnabled_: boolean;
@@ -720,8 +711,7 @@ export class SettingsInternetDetailPageElement extends
     this.updateAutoConnectPref_();
     this.updateHiddenPref_();
 
-    if (this.isSuppressTextMessagesEnabled_ &&
-        this.isCellular_(this.managedProperties_) &&
+    if (this.isCellular_(this.managedProperties_) &&
         this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
       this.suppressTextMessagesOverride_ = !!OncMojo.getActiveValue(
           this.managedProperties_!.typeProperties.cellular!.allowTextMessages);
@@ -957,7 +947,7 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private suppressTextMessagesChanged_(e: CustomEvent<{value: boolean}>): void {
-    if (!this.isSuppressTextMessagesEnabled_ || !this.propertiesReceived_ ||
+    if (!this.propertiesReceived_ ||
         !this.isCellular_(this.managedProperties_) ||
         !this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
       return;
@@ -1285,8 +1275,7 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private shouldShowSuppressTextMessagesToggle_(): boolean {
-    if (!this.isSuppressTextMessagesEnabled_ || !this.managedProperties_ ||
-        !this.deviceState_) {
+    if (!this.managedProperties_ || !this.deviceState_) {
       return false;
     }
     const networkState = this.getNetworkState_(this.managedProperties_);

@@ -870,9 +870,6 @@ TEST_F(NetworkMetadataStoreTest, GetPreRevampCustomApnList) {
 }
 
 TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {
-  base::test::ScopedFeatureList enabled_feature_list;
-  enabled_feature_list.InitAndEnableFeature(
-      ash::features::kSuppressTextMessages);
   base::HistogramTester histogram_tester;
   // Case: Suppression state should be Allow when user text message
   // suppression state has never been set.

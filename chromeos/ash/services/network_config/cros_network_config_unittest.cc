@@ -3517,9 +3517,6 @@ TEST_F(CrosNetworkConfigTest, AllowRoaming) {
 
 TEST_F(CrosNetworkConfigTest,
        AllowTextMessagesWithSuppressTextMessagesFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kSuppressTextMessages);
-
   // When never set, allow_text_messages will be true.
   AssertCellularAllowTextMessages(kCellularGuid, /*expected_active_value=*/true,
                                   /*expected_policy_value=*/std::nullopt,
@@ -3578,9 +3575,6 @@ TEST_F(CrosNetworkConfigTest,
 
 TEST_F(CrosNetworkConfigTest,
        AllowTextMessagesPolicyValueWithSuppressTextMessagesFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kSuppressTextMessages);
-
   base::Value::Dict global_config;
 
   // When the policy is explicitly Suppress, the managed boolean policy value
@@ -3634,30 +3628,6 @@ TEST_F(CrosNetworkConfigTest,
 
   AssertCellularAllowTextMessages(kCellularGuid,
                                   /*expected_active_value=*/true,
-                                  /*expected_policy_value=*/std::nullopt,
-                                  mojom::PolicySource::kNone);
-}
-
-TEST_F(CrosNetworkConfigTest,
-       AllowTextMessagesWithSuppressTextMessagesFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kSuppressTextMessages);
-
-  // When never set, this will return undefined.
-  AssertCellularAllowTextMessages(kCellularGuid,
-                                  /*expected_active_value=*/std::nullopt,
-                                  /*expected_policy_value=*/std::nullopt,
-                                  mojom::PolicySource::kNone);
-
-  // When set to any value, will still return undefined.
-  auto config = mojom::ConfigProperties::New();
-  auto cellular_config = mojom::CellularConfigProperties::New();
-  auto new_text_message_state = mojom::TextMessagesAllowState::New();
-
-  new_text_message_state->allow_text_messages = true;
-  cellular_config->text_message_allow_state = std::move(new_text_message_state);
-  AssertCellularAllowTextMessages(kCellularGuid,
-                                  /*expected_active_value=*/std::nullopt,
                                   /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 }

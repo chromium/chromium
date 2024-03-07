@@ -1661,7 +1661,6 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           cellular->sim_lock_type = cellular_device->sim_lock_type();
         }
       }
-      if (features::IsSuppressTextMessagesEnabled()) {
         UserTextMessageSuppressionState state =
             NetworkHandler::Get()
                 ->network_metadata_store()
@@ -1685,7 +1684,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           cellular->allow_text_messages->policy_source = ::chromeos::
               network_config::mojom::PolicySource::kDevicePolicyEnforced;
         }
-      }
+
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewCellular(std::move(cellular));
       break;
@@ -2647,8 +2646,7 @@ void CrosNetworkConfig::SetProperties(const std::string& guid,
     UpdateCustomApnList(network, properties.get());
   }
 
-  if (features::IsSuppressTextMessagesEnabled() &&
-      properties->type_config->is_cellular() &&
+  if (properties->type_config->is_cellular() &&
       properties->type_config->get_cellular()->text_message_allow_state) {
     const bool allow_text_messages =
         properties->type_config->get_cellular()
@@ -3164,7 +3162,6 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
                    result->user_created_network_configurations_are_ephemeral);
   }
 
-  if (features::IsSuppressTextMessagesEnabled()) {
     std::string allow_text_messages_onc =
         GetString(global_policy_dict,
                   ::onc::global_network_config::kAllowTextMessages)
@@ -3177,7 +3174,6 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
     } else {
       result->allow_text_messages = mojom::SuppressionType::kUnset;
     }
-  }
 
   std::move(callback).Run(std::move(result));
 }
