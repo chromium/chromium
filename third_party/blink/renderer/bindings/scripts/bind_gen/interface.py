@@ -1107,11 +1107,10 @@ def make_check_security_of_return_value(cg_context):
 def make_cooperative_scheduling_safepoint(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    node = TextNode("scheduler::CooperativeSchedulingManager::Instance()"
-                    "->Safepoint();")
+    node = TextNode("BINDINGS_COOPERATIVE_SCHEDULING_SAFEPOINT();")
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
+            "third_party/blink/renderer/platform/bindings/cooperative_scheduling_helpers.h"
         ]))
     return node
 
