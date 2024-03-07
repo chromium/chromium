@@ -119,8 +119,8 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
             new_app_id);
     ASSERT_TRUE(os_state.has_value());
-    EXPECT_FALSE(os_state->has_shortcut());
-    EXPECT_FALSE(os_state->run_on_os_login().has_run_on_os_login_mode());
+    EXPECT_TRUE(os_state->has_shortcut());
+    EXPECT_TRUE(os_state->run_on_os_login().has_run_on_os_login_mode());
   }
 
   // Set up the existing shortcuts.

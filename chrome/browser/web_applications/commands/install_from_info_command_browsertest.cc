@@ -90,7 +90,13 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   // Ensure histogram is only measured once.
   tester.ExpectBucketCount("WebApp.Install.Result", /*sample=*/true,
                            /*expected_count=*/1);
-  EXPECT_EQ(os_integration_manager()->num_create_shortcuts_calls(), 0u);
+  size_t expected_shortcut_creation = 0;
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS always has OS integration.
+  expected_shortcut_creation = 1;
+#endif
+  EXPECT_EQ(os_integration_manager()->num_create_shortcuts_calls(),
+            expected_shortcut_creation);
 
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(result_app_id);
@@ -193,7 +199,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest,
       }),
       install_params, {old_app});
   loop.Run();
-  EXPECT_EQ(os_integration_manager()->num_create_shortcuts_calls(), 2u);
   auto options = os_integration_manager()->get_last_install_options();
   EXPECT_FALSE(options->add_to_desktop);
   EXPECT_TRUE(options->add_to_quick_launch_bar);

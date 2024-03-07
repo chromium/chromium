@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -39,11 +40,6 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/base_paths_win.h"
-#include "base/test/scoped_path_override.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 using webapps::AppId;
 using GetAppsCallback =
@@ -179,6 +175,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    web_app::test::UninstallAllWebApps(profile());
     base::ScopedAllowBlockingForTesting allow_blocking;
     override_registration_.reset();
   }
@@ -261,14 +258,6 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
 
   std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
-
-#if BUILDFLAG(IS_WIN)
-  // This is used as a fallback to prevent creating shortcuts in the startup
-  // dir or start menu if tasks are still running when `override_registration_`
-  // is reset.
-  base::ScopedPathOverride override_start_menu_dir_{base::DIR_START_MENU};
-  base::ScopedPathOverride override_startup_dir_{base::DIR_USER_STARTUP};
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 MATCHER_P(MatchAppName, expected_app_name, "") {
@@ -317,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ForceInstalledApp) {
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppInstalled) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+      .Times(testing::AtLeast(1));
   webapps::AppId installed_app_id = InstallTestWebApp();
   page_handler->Wait();
 }
@@ -325,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppInstalled) {
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionLoaded) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)))
+      .Times(testing::AtLeast(1));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   ASSERT_NE(extension, nullptr);
@@ -337,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppUninstall) {
       GetAppHomePageHandler();
 
   // First, install a web app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+      .Times(testing::AtLeast(1));
   webapps::AppId installed_app_id = InstallTestWebApp();
   page_handler->Wait();
 
@@ -353,7 +345,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionUninstall) {
       GetAppHomePageHandler();
 
   // First, install a test extension app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)))
+      .Times(testing::AtLeast(1));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   page_handler->Wait();
@@ -370,7 +363,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, UninstallWebApp) {
       GetAppHomePageHandler();
 
   // First, install a test web app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+      .Times(testing::AtLeast(1));
   webapps::AppId installed_app_id = InstallTestWebApp();
   page_handler->Wait();
 
@@ -380,8 +374,11 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, UninstallWebApp) {
       .Times(testing::AtLeast(1));
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+  web_app::WebAppTestUninstallObserver observer(profile());
+  observer.BeginListening({installed_app_id});
   page_handler->UninstallApp(installed_app_id);
   page_handler->Wait();
+  observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, UninstallExtensionApp) {
@@ -409,7 +406,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ShowWebAppSettings) {
       GetAppHomePageHandler();
 
   // First, install a test web app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+      .Times(testing::AtLeast(1));
   webapps::AppId installed_app_id = InstallTestWebApp();
   page_handler->Wait();
 
@@ -426,7 +424,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateWebAppShortcut) {
       GetAppHomePageHandler();
 
   // First, install a test web app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+      .Times(testing::AtLeast(1));
   webapps::AppId installed_app_id = InstallTestWebApp();
   page_handler->Wait();
 
@@ -454,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
       GetAppHomePageHandler();
 
   // First, install a test extension app for test.
-  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)));
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppNameWithUnsupportedText)))
+      .Times(testing::AtLeast(1));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   page_handler->Wait();
@@ -480,6 +480,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, SetRunOnOsLoginMode) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
+  // Add happens twice, on install & on os integration complete.
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
       .Times(testing::AtLeast(1));
   webapps::AppId installed_app_id = InstallTestWebApp();

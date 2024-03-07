@@ -68,10 +68,6 @@ base::AtomicRefCount& GetSuppressCount() {
   static base::AtomicRefCount g_ref_count;
   return g_ref_count;
 }
-
-bool AreOsHooksSuppressedForTesting() {
-  return !GetSuppressCount().IsZero();
-}
 }  // namespace
 
 bool AreSubManagersExecuteEnabled() {
@@ -133,6 +129,10 @@ InstallOsHooksOptions::InstallOsHooksOptions(
     const InstallOsHooksOptions& other) = default;
 InstallOsHooksOptions& InstallOsHooksOptions::operator=(
     const InstallOsHooksOptions& other) = default;
+
+bool OsIntegrationManager::AreOsHooksSuppressedForTesting() {
+  return !GetSuppressCount().IsZero();
+}
 
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,

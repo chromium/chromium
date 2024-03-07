@@ -612,8 +612,11 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
-  const bool should_install_os_hooks = !finalize_options.bypass_os_hooks;
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS should always have OS integration. In the future we should always
+  // be synchronizing os integration on all platforms too.
+  // https://crbug.com/328524602
+  const bool should_install_os_hooks = true;
 #else
   const bool should_install_os_hooks =
       !finalize_options.bypass_os_hooks &&

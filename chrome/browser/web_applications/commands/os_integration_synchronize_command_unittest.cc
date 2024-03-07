@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
@@ -25,8 +26,11 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/sync/base/time.h"
@@ -73,9 +77,9 @@ class OsIntegrationSynchronizeCommandTest : public WebAppTest {
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON) {
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
-    provider()->scheduler().InstallFromInfoNoIntegrationForTesting(
+    provider()->scheduler().InstallFromInfoWithParams(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/true,
-        source, result.GetCallback());
+        source, result.GetCallback(), WebAppInstallParams());
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
@@ -181,10 +185,9 @@ class OsIntegrationSynchronizeCommandTest : public WebAppTest {
       test_override_;
 };
 
-TEST_F(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-
-  install_info->start_url = kWebAppUrl;
+TEST_F(OsIntegrationSynchronizeCommandTest, ProtocolHandlers) {
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -196,31 +199,58 @@ TEST_F(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
   protocol_handler.protocol = "web+test";
 
   install_info->protocol_handlers = {protocol_handler};
+
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  std::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(current_states.has_value());
-  ASSERT_FALSE(current_states.value().has_protocols_handled());
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  EXPECT_THAT(os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(1));
+  const proto::ProtocolsHandled::Protocol& protocol_handler_state =
+      os_integration_state.protocols_handled().protocols(0);
+  EXPECT_THAT(protocol_handler_state.protocol(),
+              testing::Eq(protocol_handler.protocol));
+  EXPECT_THAT(protocol_handler_state.url(), testing::Eq(protocol_handler.url));
 
+  apps::ProtocolHandlerInfo protocol_handler2;
+  const std::string handler_url2 =
+      std::string(kWebAppUrl.spec()) + "/testing2=%s";
+  protocol_handler2.url = GURL(handler_url);
+  protocol_handler2.protocol = "web+test2";
+
+  // Modify the web app internals to add another protocol handler, and ensure
+  // that synchronize picks this up.
+  {
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
+    WebApp* app = update->UpdateApp(app_id);
+    std::vector<apps::ProtocolHandlerInfo> protocol_handlers =
+        app->protocol_handlers();
+    protocol_handlers.push_back(protocol_handler2);
+    app->SetProtocolHandlers(protocol_handlers);
+  }
   RunSynchronizeCommand(app_id);
 
-  std::optional<proto::WebAppOsIntegrationState> updated_states =
+  state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(updated_states.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state =
-      updated_states.value();
-    EXPECT_THAT(os_integration_state.protocols_handled().protocols_size(),
-                testing::Eq(1));
-    const proto::ProtocolsHandled::Protocol& protocol_handler_state =
-        os_integration_state.protocols_handled().protocols(0);
-    EXPECT_THAT(protocol_handler_state.protocol(),
-                testing::Eq(protocol_handler.protocol));
-    EXPECT_THAT(protocol_handler_state.url(),
-                testing::Eq(protocol_handler.url));
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& new_os_integration_state =
+      state.value();
+  EXPECT_THAT(new_os_integration_state.protocols_handled().protocols_size(),
+              testing::Eq(2));
+  const proto::ProtocolsHandled::Protocol& protocol1 =
+      os_integration_state.protocols_handled().protocols(0);
+  EXPECT_THAT(protocol1.protocol(), testing::Eq(protocol_handler.protocol));
+  EXPECT_THAT(protocol1.url(), testing::Eq(protocol_handler.url));
+  const proto::ProtocolsHandled::Protocol& protocol2 =
+      os_integration_state.protocols_handled().protocols(1);
+  EXPECT_THAT(protocol2.protocol(), testing::Eq(protocol_handler2.protocol));
+  EXPECT_THAT(protocol2.url(), testing::Eq(protocol_handler2.url));
 }
 
-TEST_F(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesFileHandlers) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -243,33 +273,24 @@ TEST_F(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
   install_info->file_handlers = file_handlers;
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  std::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(current_states.has_value());
-  ASSERT_FALSE(current_states.value().has_file_handling());
-
-  RunSynchronizeCommand(app_id);
-
-  std::optional<proto::WebAppOsIntegrationState> updated_states =
-      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(updated_states.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state =
-      updated_states.value();
-    ASSERT_TRUE(os_integration_state.has_file_handling());
-    auto file_handling = os_integration_state.file_handling();
-    EXPECT_EQ(file_handling.file_handlers(0).accept_size(), 1);
-    EXPECT_EQ(file_handling.file_handlers(0).display_name(), "Foo opener");
-    EXPECT_EQ(file_handling.file_handlers(0).action(),
-              "https://app.site/open-foo");
-    EXPECT_EQ(file_handling.file_handlers(0).accept(0).mimetype(),
-              "application/foo");
-    EXPECT_EQ(file_handling.file_handlers(0).accept(0).file_extensions_size(),
-              1);
-    EXPECT_EQ(file_handling.file_handlers(0).accept(0).file_extensions(0),
-              ".foo");
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  ASSERT_TRUE(os_integration_state.has_file_handling());
+  auto file_handling = os_integration_state.file_handling();
+  EXPECT_EQ(file_handling.file_handlers(0).accept_size(), 1);
+  EXPECT_EQ(file_handling.file_handlers(0).display_name(), "Foo opener");
+  EXPECT_EQ(file_handling.file_handlers(0).action(),
+            "https://app.site/open-foo");
+  EXPECT_EQ(file_handling.file_handlers(0).accept(0).mimetype(),
+            "application/foo");
+  EXPECT_EQ(file_handling.file_handlers(0).accept(0).file_extensions_size(), 1);
+  EXPECT_EQ(file_handling.file_handlers(0).accept(0).file_extensions(0),
+            ".foo");
 }
 
-TEST_F(OsIntegrationSynchronizeCommandTest, RunOnOsLoginDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, RunOnOsLogin) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -281,23 +302,26 @@ TEST_F(OsIntegrationSynchronizeCommandTest, RunOnOsLoginDBWrite) {
   std::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(current_states.has_value());
-  ASSERT_FALSE(current_states.value().has_run_on_os_login());
+  ASSERT_TRUE(current_states.value().has_run_on_os_login());
+  const proto::RunOnOsLogin& pre_run_on_os_login =
+      current_states.value().run_on_os_login();
+  EXPECT_THAT(pre_run_on_os_login.run_on_os_login_mode(),
+              testing::Eq(proto::RunOnOsLoginMode::NOT_RUN));
 
   EnableRunOnOsLoginMode(app_id);
 
-  std::optional<proto::WebAppOsIntegrationState> updated_states =
+  std::optional<proto::WebAppOsIntegrationState> states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(updated_states.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state =
-      updated_states.value();
-    ASSERT_TRUE(os_integration_state.has_run_on_os_login());
-    const proto::RunOnOsLogin& run_on_os_login =
-        os_integration_state.run_on_os_login();
-    EXPECT_THAT(run_on_os_login.run_on_os_login_mode(),
-                testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
+  ASSERT_TRUE(states.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = states.value();
+  ASSERT_TRUE(os_integration_state.has_run_on_os_login());
+  const proto::RunOnOsLogin& run_on_os_login =
+      os_integration_state.run_on_os_login();
+  EXPECT_THAT(run_on_os_login.run_on_os_login_mode(),
+              testing::Eq(proto::RunOnOsLoginMode::WINDOWED));
 }
 
-TEST_F(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesShortcutsMenu) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -315,48 +339,40 @@ TEST_F(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
       CreateShortcutMenuItemInfoFromBitmaps(shortcuts_menu_icons);
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  std::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(current_states.has_value());
-  ASSERT_FALSE(current_states.value().has_shortcut_menus());
+  ASSERT_TRUE(states.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = states.value();
+  ASSERT_TRUE(os_integration_state.has_shortcut_menus());
+  EXPECT_THAT(os_integration_state.shortcut_menus().shortcut_menu_info_size(),
+              testing::Eq(1));
+  EXPECT_THAT(
+      os_integration_state.shortcut_menus()
+          .shortcut_menu_info(0)
+          .shortcut_name(),
+      testing::Eq(base::StrCat({"shortcut_name", base::NumberToString(0)})));
 
-  RunSynchronizeCommand(app_id);
-
-  std::optional<proto::WebAppOsIntegrationState> updated_states =
-      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(updated_states.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state =
-      updated_states.value();
-    ASSERT_TRUE(os_integration_state.has_shortcut_menus());
-    EXPECT_THAT(os_integration_state.shortcut_menus().shortcut_menu_info_size(),
-                testing::Eq(1));
-    EXPECT_THAT(
-        os_integration_state.shortcut_menus()
-            .shortcut_menu_info(0)
-            .shortcut_name(),
-        testing::Eq(base::StrCat({"shortcut_name", base::NumberToString(0)})));
-
-    EXPECT_THAT(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(0)
-                    .shortcut_launch_url(),
-                testing::Eq(base::StrCat(
-                    {kWebAppUrl.spec(), base::NumberToString(0)})));
-    EXPECT_EQ(os_integration_state.shortcut_menus()
-                  .shortcut_menu_info(0)
-                  .icon_data_any_size(),
-              1);
-    EXPECT_EQ(os_integration_state.shortcut_menus()
+  EXPECT_THAT(
+      os_integration_state.shortcut_menus()
+          .shortcut_menu_info(0)
+          .shortcut_launch_url(),
+      testing::Eq(base::StrCat({kWebAppUrl.spec(), base::NumberToString(0)})));
+  EXPECT_EQ(os_integration_state.shortcut_menus()
+                .shortcut_menu_info(0)
+                .icon_data_any_size(),
+            1);
+  EXPECT_EQ(os_integration_state.shortcut_menus()
+                .shortcut_menu_info(0)
+                .icon_data_any(0)
+                .icon_size(),
+            icon_size::k64);
+  EXPECT_TRUE(os_integration_state.shortcut_menus()
                   .shortcut_menu_info(0)
                   .icon_data_any(0)
-                  .icon_size(),
-              icon_size::k64);
-    EXPECT_TRUE(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(0)
-                    .icon_data_any(0)
-                    .has_timestamp());
+                  .has_timestamp());
 }
 
-TEST_F(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesShortcuts) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -372,31 +388,23 @@ TEST_F(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
 
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  std::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(current_states.has_value());
-  ASSERT_FALSE(current_states.value().has_shortcut());
+  ASSERT_TRUE(states.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = states.value();
+  ASSERT_TRUE(os_integration_state.has_shortcut());
+  EXPECT_THAT(os_integration_state.shortcut().title(), testing::Eq("Test App"));
 
-  RunSynchronizeCommand(app_id);
-
-  std::optional<proto::WebAppOsIntegrationState> updated_states =
-      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(updated_states.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state =
-      updated_states.value();
-    ASSERT_TRUE(os_integration_state.has_shortcut());
-    EXPECT_THAT(os_integration_state.shortcut().title(),
-                testing::Eq("Test App"));
-
-    for (const proto::ShortcutIconData& icon_time_map_data :
-         os_integration_state.shortcut().icon_data_any()) {
-      EXPECT_THAT(
-          syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
-          testing::IsFalse());
-    }
+  for (const proto::ShortcutIconData& icon_time_map_data :
+       os_integration_state.shortcut().icon_data_any()) {
+    EXPECT_THAT(
+        syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
+        testing::IsFalse());
+  }
 }
 
-TEST_F(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
+TEST_F(OsIntegrationSynchronizeCommandTest,
+       InstallSynchronizesUninstallRegistration) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
 
   install_info->start_url = kWebAppUrl;
@@ -405,25 +413,17 @@ TEST_F(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
       web_app::mojom::UserDisplayMode::kStandalone;
   const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
-  std::optional<proto::WebAppOsIntegrationState> current_states =
+  std::optional<proto::WebAppOsIntegrationState> states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(current_states.has_value());
-  ASSERT_FALSE(current_states.value().has_uninstall_registration());
-
-  RunSynchronizeCommand(app_id);
-
-  std::optional<proto::WebAppOsIntegrationState> updated_states =
-      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-  ASSERT_TRUE(updated_states.has_value());
-  const proto::WebAppOsIntegrationState& os_integration_state =
-      updated_states.value();
-    ASSERT_TRUE(os_integration_state.has_uninstall_registration());
+  ASSERT_TRUE(states.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = states.value();
+  ASSERT_TRUE(os_integration_state.has_uninstall_registration());
 #if BUILDFLAG(IS_WIN)
-    EXPECT_TRUE(
-        os_integration_state.uninstall_registration().registered_with_os());
+  EXPECT_TRUE(
+      os_integration_state.uninstall_registration().registered_with_os());
 #else
-    EXPECT_FALSE(
-        os_integration_state.uninstall_registration().registered_with_os());
+  EXPECT_FALSE(
+      os_integration_state.uninstall_registration().registered_with_os());
 #endif
 }
 

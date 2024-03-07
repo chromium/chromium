@@ -94,6 +94,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
     ScopedSuppressForTesting();
     ~ScopedSuppressForTesting();
   };
+  static bool AreOsHooksSuppressedForTesting();
 
   explicit OsIntegrationManager(
       Profile* profile,

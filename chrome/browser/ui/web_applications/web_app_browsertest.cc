@@ -1686,6 +1686,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, RunOnOsLoginMetrics) {
   base::RunLoop run_loop;
   provider->scheduler().SetRunOnOsLoginMode(
       app_id, RunOnOsLoginMode::kWindowed, base::BindLambdaForTesting([&]() {
+        // Unregister happens before register.
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.RunOnOsLogin.Unregistration.Result"),
+            BucketsAre(base::Bucket(true, 1)));
         EXPECT_THAT(
             tester.GetAllSamples("WebApp.RunOnOsLogin.Registration.Result"),
             BucketsAre(base::Bucket(true, 1)));
@@ -1699,7 +1703,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, RunOnOsLoginMetrics) {
   EXPECT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
       profile(), app_id, provider->registrar_unsafe().GetAppShortName(app_id)));
   EXPECT_THAT(tester.GetAllSamples("WebApp.RunOnOsLogin.Unregistration.Result"),
-              BucketsAre(base::Bucket(true, 1)));
+              BucketsAre(base::Bucket(true, 2)));
 }
 #endif
 

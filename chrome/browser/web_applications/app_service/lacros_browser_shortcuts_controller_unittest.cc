@@ -171,7 +171,7 @@ TEST_F(LacrosBrowserShortcutsControllerTest, PublishShortcuts) {
   AppId local_id_2 = CreateWebAppBasedShortcut(
       GURL("https://www.another-example.com/"), "another shortcut name");
 
-  EXPECT_EQ(fake_publisher()->get_deltas().size(), 2U);
+  EXPECT_EQ(fake_publisher()->get_deltas().size(), 3U);
   EXPECT_EQ(fake_publisher()->get_deltas().back()->local_id, local_id_2);
   EXPECT_EQ(fake_publisher()->get_deltas().back()->host_app_id,
             app_constants::kLacrosAppId);

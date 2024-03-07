@@ -95,6 +95,7 @@ void InstallFromInfoJob::Start(WithAppResources* lock_with_app_resources) {
     options.bypass_os_hooks = true;
   }
 
+  debug_value_->Set("options.bypass_os_hooks", options.bypass_os_hooks);
   lock_with_app_resources_->install_finalizer().FinalizeInstall(
       *install_info_, options,
       base::BindOnce(&InstallFromInfoJob::OnInstallCompleted,
