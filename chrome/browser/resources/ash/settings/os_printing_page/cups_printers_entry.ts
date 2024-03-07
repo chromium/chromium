@@ -69,19 +69,6 @@ export class SettingsCupsPrintersEntryElement extends
       numPrinters: Number,
 
       /**
-       * True when the "printer-settings-printer-status" feature flag is
-       * enabled.
-       */
-      isPrinterSettingsPrinterStatusEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrinterSettingsPrinterStatusEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * True when the "print-preview-discovered-printers" feature flag is
        * enabled.
        */
@@ -102,7 +89,6 @@ export class SettingsCupsPrintersEntryElement extends
   printerStatusReasonCache: Map<string, PrinterStatusReason>;
   numPrinters: number;
   private hasHighSeverityError_: boolean;
-  private isPrinterSettingsPrinterStatusEnabled_: boolean;
   private isPrintPreviewDiscoveredPrintersEnabled_: boolean;
 
   /**
@@ -189,30 +175,6 @@ export class SettingsCupsPrintersEntryElement extends
   private getSetupButtonAria_(): string {
     return loadTimeData.getStringF(
         'setupPrinterAria', this.printerEntry.printerInfo.printerName);
-  }
-
-  // The standard printer icon shows for printer entries classified as nearby
-  // printers. An exception is enterprise printers which display the managed
-  // icon.
-  private showNearbyPrinterIcon_(): boolean {
-    return !this.isSavedPrinter_() && !this.isEnterprisePrinter_();
-  }
-
-  // Printer status icons are only shown for saved printers.
-  private showPrinterStatusIcon_(): boolean {
-    return this.isSavedPrinter_() &&
-        this.isPrinterSettingsPrinterStatusEnabled_;
-  }
-
-  private showPrinterIcon_(): boolean {
-    return this.showNearbyPrinterIcon_() || this.showPrinterStatusIcon_();
-  }
-
-  // True if a printer or managed icon needs to be shown.
-  // TODO(b/278621575): Remove this function once Printer Settings Revamp flag
-  // is enabled because every entry will show either a printer or managed icon.
-  private showAnyIcon_(): boolean {
-    return this.showPrinterIcon_() || this.printerEntry.printerInfo.isManaged;
   }
 
   private getPrinterIcon_(): string {

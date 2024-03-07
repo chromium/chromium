@@ -1184,7 +1184,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipTiltEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipTuckEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrivacyIndicatorsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalPrinterObservingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrinterSettingsPrinterStatusEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrinterPreviewCrosAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrintPreviewDiscoveredPrintersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();

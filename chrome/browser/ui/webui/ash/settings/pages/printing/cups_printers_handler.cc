@@ -1529,7 +1529,6 @@ void CupsPrintersHandler::HandleOpenScanningApp(const base::Value::List& args) {
 
 void CupsPrintersHandler::HandleRequestPrinterStatus(
     const base::Value::List& args) {
-  CHECK(features::IsPrinterSettingsPrinterStatusEnabled());
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();

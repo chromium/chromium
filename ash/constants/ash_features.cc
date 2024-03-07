@@ -4088,10 +4088,6 @@ bool IsPipTuckEnabled() {
   return base::FeatureList::IsEnabled(kPipTuck);
 }
 
-bool IsPrinterSettingsPrinterStatusEnabled() {
-  return true;
-}
-
 bool IsPrinterPreviewCrosAppEnabled() {
   return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
 }
