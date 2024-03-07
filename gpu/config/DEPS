@@ -6,4 +6,5 @@ include_rules = [
   "+third_party/skia",
   "+third_party/vulkan_headers/include/vulkan/vulkan.h",
   "+third_party/dawn/include",
+  "+components/ml/webnn/features.mojom-features.h",
 ]

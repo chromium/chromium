@@ -33,6 +33,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_blocklist.h"
 #include "gpu/config/gpu_crash_keys.h"
@@ -344,6 +345,10 @@ GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
 
 GpuFeatureStatus GetWebNNFeatureStatus(
     const std::set<int>& blocklisted_features) {
+  if (!base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
+    return kGpuFeatureStatusDisabled;
+  }
   if (blocklisted_features.count(GPU_FEATURE_TYPE_WEBNN)) {
     return kGpuFeatureStatusBlocklisted;
   }

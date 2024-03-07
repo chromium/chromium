@@ -681,6 +681,7 @@ export class InfoViewElement extends CustomElement {
           'Direct Rendering Display Compositor',
       'webgpu': 'WebGPU',
       'skia_graphite': 'Skia Graphite',
+      'webnn': 'WebNN',
     };
 
     const statusMap: Record<string, {label: string, class: string}> = {

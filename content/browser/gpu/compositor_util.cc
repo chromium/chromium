@@ -221,6 +221,9 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       "skia_graphite",
       SafeGetFeatureStatus(gpu_feature_info,
                            gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE));
+  features.emplace_back(
+      "webnn",
+      SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_WEBNN));
   return features;
 }
 
@@ -292,7 +295,8 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
           gpu_feature_data.name == "metal" ||
           gpu_feature_data.name == "vulkan" ||
           gpu_feature_data.name == "skia_graphite" ||
-          gpu_feature_data.name == "surface_control") {
+          gpu_feature_data.name == "surface_control" ||
+          gpu_feature_data.name == "webnn") {
         status += "_on";
       }
     }
