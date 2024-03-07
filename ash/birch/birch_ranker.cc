@@ -10,6 +10,12 @@
 #include "base/check.h"
 #include "base/time/time.h"
 
+namespace {
+// How long release notes remain top ranked.
+constexpr base::TimeDelta kMinutesWhereReleaseNotesIsTopRanked =
+    base::Minutes(10);
+}  // namespace
+
 namespace ash {
 
 BirchRanker::BirchRanker(base::Time now) : now_(now) {}
@@ -163,6 +169,28 @@ void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {
 
   // TODO(b/305094126): Figure out how to query the next day's weather and show
   // it in the evenings (8pm to midnight).
+}
+
+void BirchRanker::RankReleaseNotesItems(
+    std::vector<BirchReleaseNotesItem>* items) {
+  for (BirchReleaseNotesItem& item : *items) {
+    item.ranking = GetReleaseNotesItemRanking(item);
+  }
+}
+
+float BirchRanker::GetReleaseNotesItemRanking(
+    const BirchReleaseNotesItem& item) const {
+  const base::TimeDelta elapsed_time = now_ - item.first_seen;
+  if (elapsed_time <= kMinutesWhereReleaseNotesIsTopRanked) {
+    return 3.0f;
+  }
+  if (elapsed_time <= base::Hours(1)) {
+    return 13.0f;
+  }
+  if (elapsed_time <= base::Hours(24)) {
+    return 26.0f;
+  }
+  return 42.0f;
 }
 
 bool BirchRanker::IsMorning() const {

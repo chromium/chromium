@@ -303,4 +303,47 @@ void BirchTabItem::LoadIcon(LoadIconCallback callback) {
   DownloadImageFromUrl(favicon_url, std::move(callback));
 }
 
+BirchReleaseNotesItem::BirchReleaseNotesItem(
+    const std::u16string& release_notes_title,
+    const int milestone,
+    const std::u16string& release_notes_text,
+    const GURL& url,
+    const base::Time first_seen)
+    : BirchItem(release_notes_title),
+      milestone(milestone),
+      release_notes_text(release_notes_text),
+      url(url),
+      first_seen(first_seen) {}
+
+BirchReleaseNotesItem::~BirchReleaseNotesItem() = default;
+
+const char* BirchReleaseNotesItem::GetItemType() const {
+  return kItemType;
+}
+
+std::string BirchReleaseNotesItem::ToString() const {
+  std::stringstream ss;
+  ss << "release_notes_title: " << base::UTF16ToUTF8(title)
+     << ", milestone:" << milestone
+     << ", release_notes_text:" << base::UTF16ToUTF8(release_notes_text)
+     << ", url:" << url << ", ranking: " << ranking
+     << ", first seen: " << first_seen;
+  return ss.str();
+}
+
+void BirchReleaseNotesItem::PerformAction() {
+  if (!url.is_valid()) {
+    LOG(ERROR) << "No valid URL for release notes item";
+    return;
+  }
+
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void BirchReleaseNotesItem::LoadIcon(LoadIconCallback callback) {
+  LOG(ERROR) << "Not implemented";
+}
+
 }  // namespace ash

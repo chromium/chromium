@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
+#include <memory>
+#include <optional>
 
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
@@ -13,20 +15,25 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/release_notes/release_notes_storage.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -49,6 +56,9 @@ constexpr char kExampleURL2[] = "http://www.example.com/2";
 
 constexpr char16_t kTabTitle1[] = u"Tab Title 1";
 constexpr char16_t kTabTitle2[] = u"Tab Title 2";
+
+constexpr int kLastVersionWithReleaseNotes =
+    ash::kLastChromeVersionWithReleaseNotes;
 
 std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
@@ -192,6 +202,12 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     switches::SetIgnoreForestSecretKeyForTest(true);
+
+    feature_list_.InitWithFeatures(
+        {features::kForestFeature,
+         ash::features::kReleaseNotesNotificationAllChannels},
+        {});
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     BrowserWithTestWindowTest::SetUp();
@@ -220,6 +236,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     birch_keyed_service_ = nullptr;
     file_suggest_service_ = nullptr;
     session_sync_service_ = nullptr;
+    release_notes_storage_ = nullptr;
     fake_user_manager_.Reset();
     BrowserWithTestWindowTest::TearDown();
     switches::SetIgnoreForestSecretKeyForTest(false);
@@ -237,6 +254,36 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     return profile_manager()->CreateTestingProfile(profile_name,
                                                    GetTestingFactories());
+  }
+
+  void SetUpReleaseNotesStorage() {
+    release_notes_storage_ =
+        std::make_unique<ReleaseNotesStorage>(GetProfile());
+  }
+
+  void MakePrimaryAccountAvailable() {
+    auto* identity_manager =
+        IdentityManagerFactory::GetForProfile(GetProfile());
+    signin::MakePrimaryAccountAvailable(identity_manager, "user@gmail.com",
+                                        signin::ConsentLevel::kSignin);
+  }
+
+  void ClearReleaseNotesSurfacesTimesLeftToShowPref() {
+    GetProfile()->GetPrefs()->ClearPref(
+        prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
+  }
+
+  void MarkMilestoneUpToDate() {
+    release_notes_storage_->MarkNotificationShown();
+  }
+
+  void MarkReleaseNotesSurfacesTimesLeftToShow(int times_left_to_show) {
+    GetProfile()->GetPrefs()->SetInteger(
+        prefs::kReleaseNotesSuggestionChipTimesLeftToShow, times_left_to_show);
+  }
+
+  int GetCurrentMilestone() {
+    return version_info::GetVersion().components()[0];
   }
 
   TestSessionControllerClient* GetSessionControllerClient() {
@@ -278,7 +325,9 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   MockOpenTabsUIDelegate open_tabs_delegate_;
 
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
+  std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BirchKeyedServiceTest, HasDataProviders) {
@@ -352,6 +401,68 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   EXPECT_EQ(tabs[1].url, GURL(kExampleURL2));
   EXPECT_EQ(tabs[1].session_name, kSessionName2);
   EXPECT_EQ(tabs[1].form_factor, BirchTabItem::DeviceFormFactor::kPhone);
+}
+
+TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  SetUpReleaseNotesStorage();
+  MakePrimaryAccountAvailable();
+
+  EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 0u);
+
+  model->RequestBirchDataFetch(base::DoNothing());
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  task_environment()->RunUntilIdle();
+  auto& release_notes_items = model->GetReleaseNotesItemsForTest();
+
+  ASSERT_EQ(release_notes_items.size(), 1u);
+  EXPECT_EQ(release_notes_items[0].title, u"Welcome to version");
+  EXPECT_EQ(release_notes_items[0].milestone, kLastVersionWithReleaseNotes);
+  EXPECT_EQ(release_notes_items[0].release_notes_text,
+            u"Learn what's new in explore");
+  EXPECT_EQ(release_notes_items[0].url, GURL("chrome://help-app/updates"));
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
+                prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
+            3);
+
+  MarkMilestoneUpToDate();
+  MarkReleaseNotesSurfacesTimesLeftToShow(1);
+  task_environment()->FastForwardBy(base::Hours(23));
+
+  model->RequestBirchDataFetch(base::DoNothing());
+  model->SetCalendarItems({});
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 1u);
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
+                prefs::kHelpAppNotificationLastShownMilestone),
+            GetCurrentMilestone());
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
+                prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
+            1);
+
+  ClearReleaseNotesSurfacesTimesLeftToShowPref();
+
+  model->RequestBirchDataFetch(base::DoNothing());
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 0u);
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
+                prefs::kHelpAppNotificationLastShownMilestone),
+            GetCurrentMilestone());
+  EXPECT_TRUE(
+      GetProfile()
+          ->GetPrefs()
+          ->FindPreference(prefs::kReleaseNotesSuggestionChipTimesLeftToShow)
+          ->IsDefaultValue());
 }
 
 }  // namespace ash

@@ -20,6 +20,7 @@ class Shell;
 class BirchCalendarProvider;
 class BirchFileSuggestProvider;
 class BirchRecentTabsProvider;
+class BirchReleaseNotesProvider;
 
 // A keyed service which is used to manage data providers for the birch feature.
 // Fetched data will be sent to the `BirchModel` to be stored.
@@ -36,6 +37,10 @@ class BirchKeyedService : public KeyedService,
     return file_suggest_provider_.get();
   }
 
+  BirchReleaseNotesProvider* GetReleaseNotesProviderForTest() {
+    return release_notes_provider_.get();
+  }
+
   // ShellObserver:
   void OnShellDestroying() override;
 
@@ -43,6 +48,7 @@ class BirchKeyedService : public KeyedService,
   BirchDataProvider* GetCalendarProvider() override;
   BirchDataProvider* GetFileSuggestProvider() override;
   BirchDataProvider* GetRecentTabsProvider() override;
+  BirchDataProvider* GetReleaseNotesProvider() override;
 
  private:
   void ShutdownBirch();
@@ -55,6 +61,8 @@ class BirchKeyedService : public KeyedService,
   std::unique_ptr<BirchFileSuggestProvider> file_suggest_provider_;
 
   std::unique_ptr<BirchRecentTabsProvider> recent_tabs_provider_;
+
+  std::unique_ptr<BirchReleaseNotesProvider> release_notes_provider_;
 
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };

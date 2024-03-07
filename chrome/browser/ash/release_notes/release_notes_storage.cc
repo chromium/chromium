@@ -25,10 +25,6 @@
 
 namespace {
 
-// This stores the latest milestone with new Release Notes content. If the last
-// milestone the user has seen the notification is before this, a new
-// notification will be shown.
-constexpr int kLastChromeVersionWithReleaseNotes = 122;
 constexpr int kTimesToShowSuggestionChip = 3;
 
 int GetMilestone() {
@@ -73,6 +69,7 @@ bool ShouldShowForCurrentChannel() {
 
 namespace ash {
 
+// Called on every session startup.
 void ReleaseNotesStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
@@ -90,8 +87,9 @@ bool ReleaseNotesStorage::ShouldNotify() {
     return true;
   }
 
-  if (!ShouldShowForCurrentChannel())
+  if (!ShouldShowForCurrentChannel()) {
     return false;
+  }
 
   if (!IsEligibleProfile(profile_))
     return false;

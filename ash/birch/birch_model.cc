@@ -80,6 +80,15 @@ void BirchModel::SetWeatherItems(std::vector<BirchWeatherItem> weather_items) {
   MaybeRespondToDataFetchRequest();
 }
 
+void BirchModel::SetReleaseNotesItems(
+    std::vector<BirchReleaseNotesItem> release_notes_items) {
+  if (release_notes_items != release_notes_items_) {
+    release_notes_items_ = std::move(release_notes_items);
+  }
+  is_release_notes_data_fresh_ = true;
+  MaybeRespondToDataFetchRequest();
+}
+
 void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
   const bool fetch_in_progress = !pending_requests_.empty();
 
@@ -101,12 +110,14 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
   is_files_data_fresh_ = false;
   is_tabs_data_fresh_ = false;
   is_weather_data_fresh_ = false;
+  is_release_notes_data_fresh_ = false;
 
   // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {
     birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
     birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
     birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
+    birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
   }
   if (weather_provider_) {
     weather_provider_->RequestBirchDataFetch();
@@ -122,6 +133,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   ranker.RankFileSuggestItems(&file_suggest_items_);
   ranker.RankRecentTabItems(&recent_tab_items_);
   ranker.RankWeatherItems(&weather_items_);
+  ranker.RankReleaseNotesItems(&release_notes_items_);
 
   for (auto& event : calendar_items_) {
     all_items.push_back(std::make_unique<BirchCalendarItem>(event));
@@ -138,7 +150,10 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   for (auto& weather_item : weather_items_) {
     all_items.push_back(std::make_unique<BirchWeatherItem>(weather_item));
   }
-
+  for (auto& release_notes_item : release_notes_items_) {
+    all_items.push_back(
+        std::make_unique<BirchReleaseNotesItem>(release_notes_item));
+  }
   // Sort items by ranking.
   std::sort(all_items.begin(), all_items.end(),
             [](const auto& item_a, const auto& item_b) {
@@ -170,8 +185,8 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
 
 bool BirchModel::IsDataFresh() {
   return (!birch_client_ ||
-          (is_calendar_data_fresh_ && is_attachment_data_fresh_ &&
-           is_files_data_fresh_ && is_tabs_data_fresh_)) &&
+          (is_calendar_data_fresh_ && is_files_data_fresh_ &&
+           is_tabs_data_fresh_ && is_release_notes_data_fresh_)) &&
          (!weather_provider_ || is_weather_data_fresh_);
 }
 

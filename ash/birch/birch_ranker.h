@@ -6,6 +6,7 @@
 #define ASH_BIRCH_BIRCH_RANKER_H_
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_item.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -34,6 +35,7 @@ class ASH_EXPORT BirchRanker {
   void RankFileSuggestItems(std::vector<BirchFileItem>* items);
   void RankRecentTabItems(std::vector<BirchTabItem>* items);
   void RankWeatherItems(std::vector<BirchWeatherItem>* items);
+  void RankReleaseNotesItems(std::vector<BirchReleaseNotesItem>* items);
 
   // Returns whether `now_` is before noon today. Public for testing.
   bool IsMorning() const;
@@ -47,6 +49,8 @@ class ASH_EXPORT BirchRanker {
 
   // Returns whether `item` is scheduled tomorrow (after midnight tonight).
   bool IsTomorrowEvent(const BirchCalendarItem& item) const;
+
+  float GetReleaseNotesItemRanking(const BirchReleaseNotesItem& item) const;
 
   base::Time now_;
 };

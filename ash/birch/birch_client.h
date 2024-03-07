@@ -17,6 +17,7 @@ class ASH_EXPORT BirchClient {
   virtual BirchDataProvider* GetCalendarProvider() = 0;
   virtual BirchDataProvider* GetFileSuggestProvider() = 0;
   virtual BirchDataProvider* GetRecentTabsProvider() = 0;
+  virtual BirchDataProvider* GetReleaseNotesProvider() = 0;
 
   virtual ~BirchClient() = default;
 };

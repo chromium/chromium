@@ -166,6 +166,36 @@ struct ASH_EXPORT BirchWeatherItem : public BirchItem {
   void LoadIcon(LoadIconCallback callback) override;
 };
 
+struct ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
+  BirchReleaseNotesItem(const std::u16string& release_notes_title,
+                        int milestone,
+                        const std::u16string& release_notes_text,
+                        const GURL& url,
+                        base::Time first_seen);
+  BirchReleaseNotesItem(BirchReleaseNotesItem&&) = default;
+  BirchReleaseNotesItem(const BirchReleaseNotesItem&) = default;
+  BirchReleaseNotesItem& operator=(const BirchReleaseNotesItem&) = delete;
+  bool operator==(const BirchReleaseNotesItem& rhs) const = default;
+  ~BirchReleaseNotesItem() override;
+
+  int milestone;
+  const std::u16string release_notes_text;
+  // The URL that gets launched when the user clicks on the release notes birch
+  // item.
+  const GURL url;
+
+  // the timestamp when the user first sees this item.
+  base::Time first_seen;
+
+  static constexpr char kItemType[] = "ReleaseNotesItem";
+
+  // BirchItem:
+  const char* GetItemType() const override;
+  std::string ToString() const override;
+  void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) override;
+};
+
 }  // namespace ash
 
 #endif  // ASH_BIRCH_BIRCH_ITEM_H_

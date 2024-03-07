@@ -48,6 +48,9 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetRecentTabsProvider() override {
     return &data_provider_;
   }
+  BirchDataProvider* GetReleaseNotesProvider() override {
+    return &data_provider_;
+  }
 
  private:
   StubBirchDataProvider data_provider_;
@@ -142,6 +145,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetAttachmentItems(std::vector<BirchAttachmentItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
   // Make a data fetch request and set fresh tab data.
@@ -159,6 +163,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
 
   // Adding file items sets all data as fresh, notifying consumers.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -180,6 +185,8 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
+
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
@@ -211,6 +218,7 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   model->SetWeatherItems(std::move(weather_items));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -260,6 +268,7 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -317,6 +326,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
 
   // Adding file items sets all data as fresh, notifying consumers.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -337,6 +347,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
@@ -413,10 +424,15 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   std::vector<BirchAttachmentItem> attachment_item_list;
   attachment_item_list.emplace_back(u"Attachment 1");
   model->SetAttachmentItems(std::move(attachment_item_list));
+  std::vector<BirchReleaseNotesItem> release_notes_item_list;
+  release_notes_item_list.emplace_back(u"note", 1, u"explore", GURL("foo.bar"),
+                                       base::Time());
+  model->SetReleaseNotesItems(release_notes_item_list);
+
   EXPECT_TRUE(model->IsDataFresh());
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
-  EXPECT_EQ(model->GetAllItems().size(), 5u);
+  EXPECT_EQ(model->GetAllItems().size(), 6u);
 
   model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
@@ -431,6 +447,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetRecentTabItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetReleaseNotesItems({});
 
   EXPECT_THAT(consumer.items_ready_responses(),
               testing::ElementsAre("0", "1", "2"));
@@ -442,6 +459,13 @@ TEST_F(BirchModelTest, GetAllItems) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert one item of each type.
+  std::vector<BirchWeatherItem> weather_item_list;
+  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  model->SetWeatherItems(std::move(weather_item_list));
+  std::vector<BirchReleaseNotesItem> release_notes_item_list;
+  release_notes_item_list.emplace_back(u"note", 1, u"explore", GURL("foo.bar"),
+                                       base::Time());
+  model->SetReleaseNotesItems(std::move(release_notes_item_list));
   std::vector<BirchCalendarItem> calendar_item_list;
   calendar_item_list.emplace_back(u"Event 1");
   model->SetCalendarItems(std::move(calendar_item_list));
@@ -456,19 +480,17 @@ TEST_F(BirchModelTest, GetAllItems) {
   std::vector<BirchFileItem> file_item_list;
   file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
-  std::vector<BirchWeatherItem> weather_item_list;
-  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
-  model->SetWeatherItems(std::move(weather_item_list));
 
   // Verify that GetAllItems() returns the correct number of items and the
   // code didn't skip a type.
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
-  ASSERT_EQ(all_items.size(), 5u);
-  EXPECT_STREQ(all_items[0]->GetItemType(), BirchCalendarItem::kItemType);
-  EXPECT_STREQ(all_items[1]->GetItemType(), BirchAttachmentItem::kItemType);
-  EXPECT_STREQ(all_items[2]->GetItemType(), BirchTabItem::kItemType);
-  EXPECT_STREQ(all_items[3]->GetItemType(), BirchFileItem::kItemType);
-  EXPECT_STREQ(all_items[4]->GetItemType(), BirchWeatherItem::kItemType);
+  ASSERT_EQ(all_items.size(), 6u);
+  EXPECT_STREQ(all_items[0]->GetItemType(), BirchReleaseNotesItem::kItemType);
+  EXPECT_STREQ(all_items[1]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_STREQ(all_items[2]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_STREQ(all_items[3]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_STREQ(all_items[4]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_STREQ(all_items[5]->GetItemType(), BirchWeatherItem::kItemType);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {

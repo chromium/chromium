@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_recent_tabs_provider.h"
+#include "chrome/browser/ui/ash/birch/birch_release_notes_provider.h"
 
 namespace ash {
 
@@ -20,8 +21,9 @@ BirchKeyedService::BirchKeyedService(Profile* profile)
     : calendar_provider_(std::make_unique<BirchCalendarProvider>(profile)),
       file_suggest_provider_(
           std::make_unique<BirchFileSuggestProvider>(profile)),
-      recent_tabs_provider_(
-          std::make_unique<BirchRecentTabsProvider>(profile)) {
+      recent_tabs_provider_(std::make_unique<BirchRecentTabsProvider>(profile)),
+      release_notes_provider_(
+          std::make_unique<BirchReleaseNotesProvider>(profile)) {
   calendar_provider_->Initialize();
   Shell::Get()->birch_model()->SetClient(this);
   shell_observation_.Observe(Shell::Get());
@@ -45,6 +47,10 @@ BirchDataProvider* BirchKeyedService::GetFileSuggestProvider() {
 
 BirchDataProvider* BirchKeyedService::GetRecentTabsProvider() {
   return recent_tabs_provider_.get();
+}
+
+BirchDataProvider* BirchKeyedService::GetReleaseNotesProvider() {
+  return release_notes_provider_.get();
 }
 
 void BirchKeyedService::ShutdownBirch() {
