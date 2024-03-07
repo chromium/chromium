@@ -9,34 +9,16 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set)",
-        "policies": {},
-        "prefs": {
-          "auth.http_auth_allowed_for_origins": {
-            "default_value": [],
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "AllHttpAuthSchemesAllowedForOrigins": [
-            "*.example.com",
-            "google.com"
-          ]
-        },
-        "prefs": {
-          "auth.http_auth_allowed_for_origins": {
-            "location": "local_state",
-            "value": [
-              "*.example.com",
-              "google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "auth.http_auth_allowed_for_origins",
+      "pref_location": "local_state",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "*.example.com",
+          "google.com"
+        ]
+      ]
+    }
   }
 ]

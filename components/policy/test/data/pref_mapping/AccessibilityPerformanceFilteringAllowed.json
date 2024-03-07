@@ -3,39 +3,14 @@
     "os": [
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "policies": {},
-        "prefs": {
-          "settings.a11y.allow_accessibility_performance_filtering": {
-            "default_value": true,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "AccessibilityPerformanceFilteringAllowed": true
-        },
-        "prefs": {
-          "settings.a11y.allow_accessibility_performance_filtering": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "AccessibilityPerformanceFilteringAllowed": false
-        },
-        "prefs": {
-          "settings.a11y.allow_accessibility_performance_filtering": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.a11y.allow_accessibility_performance_filtering",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

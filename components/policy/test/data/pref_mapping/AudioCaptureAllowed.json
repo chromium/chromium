@@ -8,35 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "hardware.audio_capture_enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "AudioCaptureAllowed": false
-        },
-        "prefs": {
-          "hardware.audio_capture_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "AudioCaptureAllowed": true
-        },
-        "prefs": {
-          "hardware.audio_capture_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "hardware.audio_capture_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

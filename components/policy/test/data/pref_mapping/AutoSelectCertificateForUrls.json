@@ -9,21 +9,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AutoSelectCertificateForUrls": [
-            "{'pattern':'https://example.com','filter':{'ISSUER':{'CN': 'issuer-name'}}}"
-          ]
-        },
-        "prefs": {
-          "profile.managed_auto_select_certificate_for_urls": {
-            "value": [
-              "{'pattern':'https://example.com','filter':{'ISSUER':{'CN': 'issuer-name'}}}"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_auto_select_certificate_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "{'pattern':'https://example.com','filter':{'ISSUER':{'CN': 'issuer-name'}}}"
+        ]
+      ]
+    }
   }
 ]

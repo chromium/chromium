@@ -8,29 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set)",
-        "policies": {},
-        "prefs": {
-          "settings.a11y.enable_accessibility_image_labels": {
-            "default_value": false,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "note": "Check policy value",
-        "policies": {
-          "AccessibilityImageLabelsEnabled": true
-        },
-        "prefs": {
-          "settings.a11y.enable_accessibility_image_labels": {
-            "location": "user_profile",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.a11y.enable_accessibility_image_labels",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

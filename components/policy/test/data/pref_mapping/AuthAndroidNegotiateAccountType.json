@@ -3,18 +3,13 @@
     "os": [
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AuthAndroidNegotiateAccountType": "com.example.spnego"
-        },
-        "prefs": {
-          "auth.android_negotiate_account_type": {
-            "location": "local_state",
-            "value": "com.example.spnego"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "auth.android_negotiate_account_type",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "com.example.spnego"
+      ]
+    }
   }
 ]

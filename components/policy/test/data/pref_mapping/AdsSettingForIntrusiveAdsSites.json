@@ -8,41 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check the default value (no policies set)",
-        "policies": {},
-        "prefs": {
-          "profile.managed_default_content_settings.ads": {
-            "default_value": 0,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "note": "Check the policy value: 1",
-        "policies": {
-          "AdsSettingForIntrusiveAdsSites": 1
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.ads": {
-            "location": "user_profile",
-            "value": 1
-          }
-        }
-      },
-      {
-        "note": "Check the policy value: 2",
-        "policies": {
-          "AdsSettingForIntrusiveAdsSites": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.ads": {
-            "location": "user_profile",
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.ads",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2
+      ]
+    }
   }
 ]

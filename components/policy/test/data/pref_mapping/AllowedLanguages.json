@@ -3,33 +3,15 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Checking default value (no policies set).",
-        "policies": {},
-        "prefs": {
-          "intl.allowed_languages": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "AllowedLanguages": [
-            "en-US",
-            "de"
-          ]
-        },
-        "prefs": {
-          "intl.allowed_languages": {
-            "value": [
-              "en-US",
-              "de"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "intl.allowed_languages",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "en-US",
+          "de"
+        ]
+      ]
+    }
   }
 ]

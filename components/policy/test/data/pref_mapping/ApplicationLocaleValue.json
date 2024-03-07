@@ -4,18 +4,13 @@
     "os": [
       "win"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ApplicationLocaleValue": "fr"
-        },
-        "prefs": {
-          "intl.app_locale": {
-            "location": "local_state",
-            "value": "fr"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "intl.app_locale",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "fr"
+      ]
+    }
   }
 ]

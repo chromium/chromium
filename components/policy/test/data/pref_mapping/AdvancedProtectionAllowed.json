@@ -8,41 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default value (no policies set)",
-        "policies": {},
-        "prefs": {
-          "safebrowsing.advanced_protection_allowed": {
-            "default_value": true,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "note": "Check the policy value: true",
-        "policies": {
-          "AdvancedProtectionAllowed": true
-        },
-        "prefs": {
-          "safebrowsing.advanced_protection_allowed": {
-            "location": "user_profile",
-            "value": true
-          }
-        }
-      },
-      {
-        "note": "Check the policy value: false",
-        "policies": {
-          "AdvancedProtectionAllowed": false
-        },
-        "prefs": {
-          "safebrowsing.advanced_protection_allowed": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "safebrowsing.advanced_protection_allowed",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

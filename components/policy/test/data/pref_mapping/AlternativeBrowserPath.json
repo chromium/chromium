@@ -6,17 +6,12 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AlternativeBrowserPath": "foobarbaz"
-        },
-        "prefs": {
-          "browser_switcher.alternative_browser_path": {
-            "value": "foobarbaz"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser_switcher.alternative_browser_path",
+      "default_value": "",
+      "values_to_test": [
+        "foobarbaz"
+      ]
+    }
   }
 ]

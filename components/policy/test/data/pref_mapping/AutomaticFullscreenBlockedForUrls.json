@@ -9,31 +9,15 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "profile.managed_automatic_fullscreen_blocked_for_urls": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "policies": {
-          "AutomaticFullscreenBlockedForUrls": [
-            "isolated-app://*",
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_automatic_fullscreen_blocked_for_urls": {
-            "value": [
-              "isolated-app://*",
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_automatic_fullscreen_blocked_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "isolated-app://*",
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]

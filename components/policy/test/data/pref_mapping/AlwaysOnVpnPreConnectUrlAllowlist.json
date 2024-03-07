@@ -1,34 +1,18 @@
 [
-    {
-      "os": [
-        "chromeos_ash",
-        "chromeos_lacros"
-      ],
-      "policy_pref_mapping_tests": [
-        {
-          "policies": {},
-          "prefs": {
-            "policy.alwayson_vpn_pre_connect_url_allowlist": {
-              "default_value": []
-            }
-          }
-        },
-        {
-          "policies": {
-            "AlwaysOnVpnPreConnectUrlAllowlist": [
-              "google.com",
-              "example.com"
-            ]
-          },
-          "prefs": {
-            "policy.alwayson_vpn_pre_connect_url_allowlist": {
-              "value": [
-                "google.com",
-                "example.com"
-              ]
-            }
-          }
-        }
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.alwayson_vpn_pre_connect_url_allowlist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "google.com",
+          "example.com"
+        ]
       ]
     }
-  ]
+  }
+]

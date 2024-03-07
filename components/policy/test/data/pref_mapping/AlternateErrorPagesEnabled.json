@@ -2,6 +2,7 @@
   {
     "can_be_recommended": true,
     "os": [
+      "android",
       "win",
       "linux",
       "mac",
@@ -9,32 +10,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Checking default value (no policies set).",
-        "prefs": {
-          "alternate_error_pages.enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "AlternateErrorPagesEnabled": false
-        },
-        "prefs": {
-          "alternate_error_pages.enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
-  },
-  {
-    "os": [
-      "android"
-    ],
-    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "alternate_error_pages.enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

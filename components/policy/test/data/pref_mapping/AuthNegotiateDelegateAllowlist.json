@@ -9,28 +9,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set)",
-        "policies": {},
-        "prefs": {
-          "auth.negotiate_delegate_whitelist": {
-            "default_value": "",
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "AuthNegotiateDelegateAllowlist": "localhost,*.example.com"
-        },
-        "prefs": {
-          "auth.negotiate_delegate_whitelist": {
-            "location": "local_state",
-            "value": "localhost,*.example.com"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "auth.negotiate_delegate_whitelist",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        "localhost,*.example.com"
+      ]
+    }
   }
 ]

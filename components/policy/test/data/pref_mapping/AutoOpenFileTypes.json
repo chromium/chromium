@@ -10,6 +10,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "download.extensions_to_open_by_policy": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "incorrect values are filtered out",
         "policies": {
           "AutoOpenFileTypes": [
             "exe",
