@@ -2789,11 +2789,10 @@ class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
 };
 
 // TODO(crbug.com/1431821): Flaky on many platforms.
-IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, DISABLED_SoftNavigation) {
+IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/false);
 }
 
-// TODO(crbug.com/1505700): Flaky on several platforms.
 IN_PROC_BROWSER_TEST_F(
     SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag,
     DISABLED_SoftNavigation) {
