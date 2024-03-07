@@ -463,8 +463,8 @@ def compile_module(args, extras_args, build_signature):
       if os.path.exists(output):
         os.utime(output)
 
-  if os.path.exists(args.bridge_header):
-    os.utime(args.bridge_header)
+  if os.path.exists(args.header_path):
+    os.utime(args.header_path)
 
   # Generate the depfile.
   generate_depfile(args, output_file_map)
