@@ -1031,8 +1031,7 @@ void ToplevelWindowEventHandler::HandlePinch(aura::Window* target,
       target, window_resizer_->resizer()->GetTarget()->parent(),
       &location_in_parent);
   window_resizer_->resizer()->Pinch(location_in_parent,
-                                    event->details().scale(),
-                                    event->details().pinch_angle());
+                                    event->details().scale());
   event->StopPropagation();
 }
 

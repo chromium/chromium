@@ -1392,11 +1392,6 @@ const char kPipDoubleTapToResizeDescription[] =
     "Enables double-tapping on existing PiP windows to resize "
     "them depending on its current state, such as minimizng or maximizing.";
 
-const char kPipTiltName[] = "Enable tilt for PiP windows";
-const char kPipTiltDescription[] =
-    "Enables window tilting using pinch gesture on existing PiP windows. "
-    "This requires #enable-pip-pinch-to-resize to also be enabled.";
-
 const char kPipTuckName[] = "Enable tuck for PiP windows";
 const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
 

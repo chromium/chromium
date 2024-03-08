@@ -2265,9 +2265,6 @@ BASE_FEATURE(kPipDoubleTapToResize,
              "PipDoubleTapToResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the tilt feature for Picture in Picture.
-BASE_FEATURE(kPipTilt, "PipTilt", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the tuck feature for Picture in Picture.
 BASE_FEATURE(kPipTuck, "PipTuck", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -4093,10 +4090,6 @@ bool IsPinAutosubmitFeatureEnabled() {
 
 bool IsPipDoubleTapToResizeEnabled() {
   return base::FeatureList::IsEnabled(kPipDoubleTapToResize);
-}
-
-bool IsPipTiltEnabled() {
-  return base::FeatureList::IsEnabled(kPipTilt);
 }
 
 bool IsPipTuckEnabled() {

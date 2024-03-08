@@ -1334,10 +1334,7 @@ TEST_F(ToplevelWindowEventHandlerDragTest,
 
 class ToplevelWindowEventHandlerPipPinchToResizeTest : public AshTestBase {
  public:
-  ToplevelWindowEventHandlerPipPinchToResizeTest() {
-    scoped_feature_list_.InitWithFeatureStates({{features::kPipTilt, true}});
-  }
-
+  ToplevelWindowEventHandlerPipPinchToResizeTest() = default;
   ToplevelWindowEventHandlerPipPinchToResizeTest(
       const ToplevelWindowEventHandlerPipPinchToResizeTest&) = delete;
   ToplevelWindowEventHandlerPipPinchToResizeTest& operator=(
@@ -1377,9 +1374,6 @@ class ToplevelWindowEventHandlerPipPinchToResizeTest : public AshTestBase {
     window->Show();
     return window;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
@@ -1406,7 +1400,7 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
     base::RunLoop().RunUntilIdle();
 
     // Verify that PiP window bounds (origin and size) have changed.
-    EXPECT_EQ(gfx::Rect(8, 93, 506, 337), window->bounds());
+    EXPECT_EQ(gfx::Rect(8, 94, 506, 337), window->bounds());
   }
 
   {
@@ -1454,7 +1448,7 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
     base::RunLoop().RunUntilIdle();
 
     // Verify that PiP window did not exceed the maximum size.
-    EXPECT_EQ(gfx::Rect(8, 164, 600, 400), window->bounds());
+    EXPECT_EQ(gfx::Rect(8, 166, 600, 400), window->bounds());
 
     const WMEvent exit_pip(WM_EVENT_NORMAL);
     WindowState::Get(window.get())->OnWMEvent(&exit_pip);

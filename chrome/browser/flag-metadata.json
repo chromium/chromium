@@ -3355,11 +3355,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-pip-tilt",
-    "owners": [ "takise@chromium.org" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "enable-pip-tuck",
     "owners": [ "takise@chromium.org" ],
     "expiry_milestone": 130

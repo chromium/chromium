@@ -50,7 +50,7 @@ class PipWindowResizerTest : public AshTestBase,
                              public ::testing::WithParamInterface<
                                  std::tuple<std::string, std::size_t>> {
  public:
-  PipWindowResizerTest() : scoped_feature_list_(features::kPipTilt) {}
+  PipWindowResizerTest() = default;
 
   PipWindowResizerTest(const PipWindowResizerTest&) = delete;
   PipWindowResizerTest& operator=(const PipWindowResizerTest&) = delete;
@@ -171,7 +171,6 @@ class PipWindowResizerTest : public AshTestBase,
   raw_ptr<FakeWindowState, DanglingUntriaged> test_state_;
   base::HistogramTester histograms_;
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   void UpdateWorkArea(const std::string& bounds) {
     UpdateDisplay(bounds);
@@ -226,7 +225,7 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
   // Pinch zoom in.
   resizer->Pinch(
       CalculateDragPoint(*resizer, location_change.x(), location_change.y()),
-      scale, /*angle=*/0.f);
+      scale);
 
   // Calculate the expected new bounds.
   float left_ratio =
@@ -242,8 +241,7 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
   EXPECT_EQ(expected_bounds, test_state()->last_requested_bounds());
 
   // Pinch zoom out.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.5f,
-                 /*angle=*/0.f);
+  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.5f);
 
   // Calculate the expected new bounds.
   scale *= 0.5f;
@@ -257,37 +255,6 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
                               new_size.width(), new_size.height());
 
   EXPECT_EQ(expected_bounds, test_state()->last_requested_bounds());
-}
-
-TEST_P(PipWindowResizerTest, PipWindowCanTiltWithPinch) {
-  PreparePipWindow(gfx::Rect(200, 200, 120, 80));
-  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
-
-  // The Pinch-to-Resize feature requires that the maximum and
-  // minimum size are set.
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
-  custom_frame->SetMaximumSize(gfx::Size(300, 200));
-  custom_frame->SetMinimumSize(gfx::Size(60, 40));
-  window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
-
-  // Pinch with a positive angle.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/1.f,
-                 /*angle=*/30.f);
-
-  // Confirm that the window has tilt applied with transform.
-  float tilt_angle = base::RadToDeg(std::atan2(window()->transform().rc(1, 0),
-                                               window()->transform().rc(0, 0)));
-  EXPECT_GE(tilt_angle, 3.f);
-
-  // Pinch with a negative angle.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/1.f,
-                 /*angle=*/-60.f);
-  tilt_angle = base::RadToDeg(std::atan2(window()->transform().rc(1, 0),
-                                         window()->transform().rc(0, 0)));
-
-  // Confirm that the window has tilt applied with transform.
-  EXPECT_LE(tilt_angle, -3.f);
 }
 
 TEST_P(PipWindowResizerTest, PipWindowDragIsRestrictedToWorkArea) {
