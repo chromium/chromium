@@ -543,7 +543,7 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
     return;
   }
 
-  MoveWebStateWrapperAt(from_index, to_index);
+  JustMoveWebStateWrapperAt(from_index, to_index);
 
   web::WebState* web_state = GetWebStateAt(to_index);
   // TODO(b/325422914): Support Tab Groups when moving.
@@ -836,7 +836,7 @@ const TabGroup* WebStateList::CreateGroupImpl(
     const TabGroup* old_group = GetGroupOfWebStateAt(index);
     web_state_wrappers_[index]->SetGroup(new_group);
 
-    MoveWebStateWrapperAt(index, to_index);
+    JustMoveWebStateWrapperAt(index, to_index);
 
     // Update the new group range (doing it before updating the old group
     // range in case the groups are the same, to avoid having a negative
@@ -883,7 +883,7 @@ const TabGroup* WebStateList::CreateGroupImpl(
     const TabGroup* old_group = GetGroupOfWebStateAt(index);
     web_state_wrappers_[index]->SetGroup(new_group);
 
-    MoveWebStateWrapperAt(index, to_index);
+    JustMoveWebStateWrapperAt(index, to_index);
 
     // Update the new group range (doing it before updating the old group
     // range in case the groups are the same, to avoid having a negative
@@ -972,7 +972,7 @@ WebStateList::WebStateWrapper* WebStateList::GetWebStateWrapperAt(
   return web_state_wrappers_[index].get();
 }
 
-void WebStateList::MoveWebStateWrapperAt(int from_index, int to_index) {
+void WebStateList::JustMoveWebStateWrapperAt(int from_index, int to_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(from_index));

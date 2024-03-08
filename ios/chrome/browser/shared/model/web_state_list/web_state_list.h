@@ -485,7 +485,9 @@ class WebStateList {
   // i.e. there is no fallback.
   //
   // Assumes that the WebStateList is locked.
-  void MoveWebStateWrapperAt(int from_index, int to_index);
+  // TODO(crbug.com/325435946): Remove this method once CreateGroup doesn't use
+  // it anymore.
+  void JustMoveWebStateWrapperAt(int from_index, int to_index);
 
   // Updates the active index, updates the WebState opener for the old active
   // WebState if exists and brings the new active WebState to the "realized"
