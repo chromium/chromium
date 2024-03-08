@@ -30,7 +30,8 @@ class FakeOrcaService : public ash::orca::mojom::OrcaService {
       mojo::PendingAssociatedReceiver<ash::orca::mojom::EditorClientConnector>
           client_connector,
       mojo::PendingAssociatedReceiver<ash::orca::mojom::EditorEventSink>
-          event_sink) override {
+          event_sink,
+      ash::orca::mojom::EditorConfigPtr editor_config) override {
     logger_->log(logger_, OrcaLogSeverity::ORCA_LOG_SEVERITY_WARNING,
                  "Success");
   }

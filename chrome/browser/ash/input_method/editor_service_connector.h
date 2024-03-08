@@ -13,6 +13,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::input_method {
+
+// TODO(b/328330399): Modify this class to make testing easier and add tests.
 class EditorServiceConnector {
  public:
   EditorServiceConnector();

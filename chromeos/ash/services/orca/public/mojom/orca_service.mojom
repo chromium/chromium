@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module ash.orca.mojom;
 
@@ -106,6 +106,12 @@ struct SurroundingText {
 [Stable]
 struct Context {
   SurroundingText surrounding_text@0;
+};
+
+// Specifies any extra details required to configure the service.
+[Stable]
+struct EditorConfig {
+  array<PresetTextQueryType> allowed_query_types@0;
 };
 
 // The UI uses this interface to talk to the service.
@@ -221,5 +227,6 @@ interface OrcaService {
     pending_associated_remote<SystemActuator> system_actuator,
     pending_associated_remote<TextQueryProvider> text_query_provider,
     pending_associated_receiver<EditorClientConnector> client_connector,
-    pending_associated_receiver<EditorEventSink> event_sink);
+    pending_associated_receiver<EditorEventSink> event_sink,
+    [MinVersion=9] EditorConfig? editor_config);
 };

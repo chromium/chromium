@@ -90,7 +90,8 @@ TEST(OrcaLibrary, BindSharedLibrarySetsUpMojo) {
   remote->BindEditor(system_actuator.InitWithNewEndpointAndPassRemote(),
                      text_query_provider.InitWithNewEndpointAndPassRemote(),
                      client_connector.InitWithNewEndpointAndPassReceiver(),
-                     event_sink.InitWithNewEndpointAndPassReceiver());
+                     event_sink.InitWithNewEndpointAndPassReceiver(),
+                     mojom::EditorConfig::New());
   remote.FlushForTesting();
 
   EXPECT_EQ(log_result, "Success");
