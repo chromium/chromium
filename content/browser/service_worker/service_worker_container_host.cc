@@ -1905,17 +1905,9 @@ ServiceWorkerContainerHost::GetRemoteCacheStorage() {
     return mojo::NullRemote();
   }
 
-  // Clone the COEP reporter if available.
-  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_to_be_passed;
-  if (coep_reporter_) {
-    coep_reporter_->Clone(
-        coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-  }
-
   mojo::PendingRemote<blink::mojom::CacheStorage> remote;
   control->AddReceiver(
-      *coep, std::move(coep_reporter_to_be_passed),
+      *coep, controller_->embedded_worker()->GetCoepReporter(),
       storage::BucketLocator::ForDefaultBucket(controller_->key()),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.InitWithNewPipeAndPassReceiver());

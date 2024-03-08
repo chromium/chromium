@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -302,6 +303,8 @@ void EmbeddedWorkerInstance::Start(
       base::BindOnce(&EmbeddedWorkerInstance::Detach, base::Unretained(this)));
 
   {
+    auto* storage_partition =
+        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
     // Create COEP reporter if COEP value is already available (= this worker is
     // not a worker which is going to be newly registered). The Mojo remote
     // `coep_reporter_` has the onwership of the instance. The `coep_reporter`
@@ -309,42 +312,15 @@ void EmbeddedWorkerInstance::Start(
     // script has not been loaded yet. In that case, it will be bound after the
     // main script is loaded.
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter_for_devtools;
+        coep_reporter_for_devtools = GetCoepReporterInternal(storage_partition);
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter_for_scripts;
+        coep_reporter_for_scripts = GetCoepReporterInternal(storage_partition);
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter_for_subresources;
+        coep_reporter_for_subresources =
+            GetCoepReporterInternal(storage_partition);
 
     network::mojom::ClientSecurityStatePtr client_security_state =
         owner_version_->BuildClientSecurityState();
-    const network::CrossOriginEmbedderPolicy* coep =
-        client_security_state
-            ? &client_security_state->cross_origin_embedder_policy
-            : nullptr;
-
-    if (coep) {
-      mojo::PendingRemote<blink::mojom::ReportingObserver>
-          reporting_observer_remote;
-      owner_version_->set_reporting_observer_receiver(
-          reporting_observer_remote.InitWithNewPipeAndPassReceiver());
-      auto* storage_partition =
-          static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
-      coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-          storage_partition->GetWeakPtr(), params->script_url,
-          coep->reporting_endpoint, coep->report_only_reporting_endpoint,
-          owner_version_->reporting_source(),
-          owner_version_->key()
-              .ToPartialNetIsolationInfo()
-              .network_anonymization_key());
-      coep_reporter_->BindObserver(std::move(reporting_observer_remote));
-
-      coep_reporter_->Clone(
-          coep_reporter_for_devtools.InitWithNewPipeAndPassReceiver());
-      coep_reporter_->Clone(
-          coep_reporter_for_scripts.InitWithNewPipeAndPassReceiver());
-      coep_reporter_->Clone(
-          coep_reporter_for_subresources.InitWithNewPipeAndPassReceiver());
-    }
 
     // Pause initializing global scope (https://crbug.com/1431792).
     if (!pause_initializing_global_scope_) {
@@ -1158,6 +1134,67 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
                           request.bucket, std::move(request.receiver));
   }
   pending_cache_storage_requests_.clear();
+}
+
+mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+EmbeddedWorkerInstance::GetCoepReporter() {
+  if (!owner_version_->context() || !owner_version_->context()->wrapper()) {
+    return mojo::NullRemote();
+  }
+  auto* storage_partition =
+      owner_version_->context()->wrapper()->storage_partition();
+  if (!storage_partition) {
+    return mojo::NullRemote();
+  }
+  return GetCoepReporterInternal(storage_partition);
+}
+
+mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+EmbeddedWorkerInstance::GetCoepReporterInternal(
+    StoragePartitionImpl* storage_partition) {
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      new_coep_reporter;
+  if (coep_reporter_) {
+    if (owner_version_->context() && owner_version_->context()->wrapper() &&
+        owner_version_->context()->wrapper()->storage_partition()) {
+      if (owner_version_->context()->wrapper()->storage_partition() !=
+          storage_partition) {
+        // MockRenderProcessHost::GetStoragePartition() returns a storage
+        // partition generated via the browser context, which is a different
+        // path to obtain the storage partition from the production.
+        // Therefore, the storage partitions mismatches in tests.
+        CHECK_IS_TEST();
+      }
+    }
+    coep_reporter_->Clone(new_coep_reporter.InitWithNewPipeAndPassReceiver());
+    return new_coep_reporter;
+  }
+
+  network::mojom::ClientSecurityStatePtr client_security_state =
+      owner_version_->BuildClientSecurityState();
+  const network::CrossOriginEmbedderPolicy* coep =
+      client_security_state
+          ? &client_security_state->cross_origin_embedder_policy
+          : nullptr;
+
+  if (!coep) {
+    return mojo::NullRemote();
+  }
+  mojo::PendingRemote<blink::mojom::ReportingObserver>
+      reporting_observer_remote;
+  owner_version_->set_reporting_observer_receiver(
+      reporting_observer_remote.InitWithNewPipeAndPassReceiver());
+  coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+      storage_partition->GetWeakPtr(), owner_version_->script_url(),
+      coep->reporting_endpoint, coep->report_only_reporting_endpoint,
+      owner_version_->reporting_source(),
+      owner_version_->key()
+          .ToPartialNetIsolationInfo()
+          .network_anonymization_key());
+  coep_reporter_->BindObserver(std::move(reporting_observer_remote));
+
+  coep_reporter_->Clone(new_coep_reporter.InitWithNewPipeAndPassReceiver());
+  return new_coep_reporter;
 }
 
 EmbeddedWorkerInstance::CacheStorageRequest::CacheStorageRequest(

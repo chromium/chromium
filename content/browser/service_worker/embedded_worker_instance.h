@@ -51,6 +51,7 @@ class RenderProcessHost;
 class ServiceWorkerContentSettingsProxyImpl;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
+class StoragePartitionImpl;
 
 namespace service_worker_new_script_loader_unittest {
 class ServiceWorkerNewScriptLoaderTest;
@@ -266,6 +267,9 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       ContentBrowserClient::URLLoaderFactoryType factory_type,
       const std::string& devtools_worker_token);
 
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+  GetCoepReporter();
+
  private:
   typedef base::ObserverList<Listener>::Unchecked ListenerList;
   struct StartInfo;
@@ -332,6 +336,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle);
 
   void BindCacheStorageInternal();
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+  GetCoepReporterInternal(StoragePartitionImpl* storage_partition);
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
   raw_ptr<ServiceWorkerVersion> owner_version_;
