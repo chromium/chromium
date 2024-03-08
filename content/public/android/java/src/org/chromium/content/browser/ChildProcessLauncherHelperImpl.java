@@ -416,8 +416,7 @@ public final class ChildProcessLauncherHelperImpl {
     /**
      * @see {@link ChildProcessLauncherHelper#warmUp(Context)}.
      */
-    public static void warmUp(final Context context, boolean sandboxed) {
-        assert ThreadUtils.runningOnUiThread();
+    public static void warmUpOnAnyThread(final Context context, boolean sandboxed) {
         LauncherThread.post(
                 new Runnable() {
                     @Override

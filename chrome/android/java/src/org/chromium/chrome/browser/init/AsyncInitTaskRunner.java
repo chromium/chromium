@@ -180,7 +180,8 @@ public abstract class AsyncInitTaskRunner {
             if (mNumPendingSuccesses == 0) {
                 // All tasks succeeded: Finish tasks, call onSuccess(), and reach terminal state.
                 if (mAllocateChildConnection) {
-                    ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), true);
+                    ChildProcessLauncherHelper.warmUpOnAnyThread(
+                            ContextUtils.getApplicationContext(), true);
                 }
                 onSuccess();
                 mNumPendingSuccesses = -1;

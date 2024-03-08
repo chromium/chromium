@@ -391,7 +391,7 @@ public class CustomTabsConnection {
     private static void initializeBrowser(final Context context) {
         ThreadUtils.assertOnUiThread();
         ChromeBrowserInitializer.getInstance().handleSynchronousStartupWithGpuWarmUp();
-        ChildProcessLauncherHelper.warmUp(context, true);
+        ChildProcessLauncherHelper.warmUpOnAnyThread(context, true);
     }
 
     public boolean warmup(long flags) {

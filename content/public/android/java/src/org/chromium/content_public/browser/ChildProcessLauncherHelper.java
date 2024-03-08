@@ -15,11 +15,12 @@ public final class ChildProcessLauncherHelper {
     /**
      * Creates a ready to use sandboxed child process. Should be called early during startup so the
      * child process is created while other startup work is happening.
+     *
      * @param context the application context used for the connection.
      * @param sandboxed Whether the child process is sandboxed.
      */
-    public static void warmUp(Context context, boolean sandboxed) {
-        ChildProcessLauncherHelperImpl.warmUp(context, sandboxed);
+    public static void warmUpOnAnyThread(Context context, boolean sandboxed) {
+        ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context, sandboxed);
     }
 
     /**
