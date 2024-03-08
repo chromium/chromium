@@ -59,9 +59,6 @@ external/wpt/webdriver/tests/bidi/input/set_files/set_files.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/partition.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/get_cookies/invalid.py [ Timeout ]
 
-# Gardener 2024-03-04
-crbug.com/328129675 external/wpt/credential-management/fedcm-button-mode-basics.https.html [ Failure ]
-
 # Gardener 2024-02-08
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/context_destroyed.py [ Failure Timeout ]
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/get_tree/frames.py [ Failure Timeout ]
