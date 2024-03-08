@@ -26,6 +26,7 @@ wallpaper-grid-item.sea-pen-image {
 
 .sea-pen-image[aria-selected='true']::part(item) {
   border-radius: var(--personalization-app-grid-item-border-radius);
+  border-top-left-radius: 0;
 }
 
 .sea-pen-image[aria-selected='true']::part(icon)::before {
