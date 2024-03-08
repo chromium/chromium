@@ -32,12 +32,19 @@ proto_library("proto") {
 }
 
 source_set("internal_structs") {
-  public = [ "session_authz_service.h" ]
+  public = [
+    "logging_service.h",
+    "session_authz_service.h",
+  ]
   sources = [
+    "logging_service.h",
     "session_authz_service.cc",
     "session_authz_service.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//remoting/base:errors",
+  ]
 }
 
 source_set("internal_stubs") {

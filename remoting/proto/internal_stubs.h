@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "remoting/proto/logging_service.h"
 #include "remoting/proto/session_authz_service.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -45,6 +46,7 @@ using VerifySessionTokenRequest = DoNothingProto;
 using VerifySessionTokenResponse = DoNothingProto;
 using ReauthorizeHostRequest = DoNothingProto;
 using ReauthorizeHostResponse = DoNothingProto;
+using ReportSessionDisconnectedRequest = DoNothingProto;
 
 // RemoteAccessHost helpers.
 extern const std::string& GetAuthorizationCode(
@@ -91,6 +93,13 @@ GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&);
 extern std::string GetSendHeartbeatRequestPath();
 extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
     const std::string& host_id);
+
+// LoggingService helpers.
+extern std::string GetReportSessionDisconnectedRequestPath();
+
+extern std::unique_ptr<ReportSessionDisconnectedRequest>
+GetReportSessionDisconnectedRequest(
+    const ReportSessionDisconnectedRequestStruct&);
 
 }  // namespace remoting::internal
 

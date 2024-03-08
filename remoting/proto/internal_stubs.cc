@@ -107,6 +107,16 @@ std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
   return std::make_unique<SendHeartbeatRequest>();
 }
 
+std::string GetReportSessionDisconnectedRequestPath() {
+  return "";
+}
+
+std::unique_ptr<ReportSessionDisconnectedRequest>
+GetReportSessionDisconnectedRequest(
+    const ReportSessionDisconnectedRequestStruct&) {
+  return std::make_unique<ReportSessionDisconnectedRequest>();
+}
+
 std::string DoNothingProto::GetTypeName() const {
   return "";
 }
