@@ -4,6 +4,8 @@
 
 #include "crypto/unexportable_key_metrics.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
@@ -239,9 +241,13 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
     return;
   }
 
+  auto delete_key = [&provider](UnexportableSigningKey* key) {
+    provider->DeleteSigningKey(key->GetWrappedKey());
+    delete key;
+  };
   base::ElapsedTimer key_creation_timer;
-  std::unique_ptr<UnexportableSigningKey> current_key =
-      provider->GenerateSigningKeySlowly(kAllAlgorithms);
+  std::unique_ptr<UnexportableSigningKey, decltype(delete_key)> current_key(
+      provider->GenerateSigningKeySlowly(kAllAlgorithms).release(), delete_key);
   ReportUmaTpmOperation(TPMOperation::kNewKeyCreation, supported_algo,
                         key_creation_timer.Elapsed(), current_key != nullptr);
   if (!current_key) {
@@ -249,8 +255,10 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   }
 
   base::ElapsedTimer wrapped_key_creation_timer;
-  std::unique_ptr<UnexportableSigningKey> wrapped_key =
-      provider->FromWrappedSigningKeySlowly(current_key->GetWrappedKey());
+  std::unique_ptr<UnexportableSigningKey, decltype(delete_key)> wrapped_key(
+      provider->FromWrappedSigningKeySlowly(current_key->GetWrappedKey())
+          .release(),
+      delete_key);
   ReportUmaTpmOperation(TPMOperation::kWrappedKeyCreation, supported_algo,
                         wrapped_key_creation_timer.Elapsed(),
                         wrapped_key != nullptr);

@@ -109,6 +109,13 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   // interfaces to the secure hardware may not be robust. See |GetWrappedKey|.
   virtual std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) = 0;
+
+  // Unexportable key implementations may be stateful. This is the case for
+  // macOS. |DeleteSigningKey| deletes all state associated with a given signing
+  // key on such implementations. For stateless implementations, this is a
+  // no-op.
+  // Returns true on successful deletion, false otherwise.
+  virtual bool DeleteSigningKey(base::span<const uint8_t> wrapped_key) = 0;
 };
 
 // This is an experimental API as it uses an unofficial Windows API.

@@ -8,6 +8,7 @@
 #include "crypto/fake_apple_keychain_v2.h"
 #include "crypto/features.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crypto {
@@ -15,6 +16,8 @@ namespace crypto {
 namespace {
 
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
+constexpr SignatureVerifier::SignatureAlgorithm kAcceptableAlgos[] = {
+    SignatureVerifier::ECDSA_SHA256};
 
 const UnexportableKeyProvider::Config config = {
     .keychain_access_group = kTestKeychainAccessGroup,
@@ -37,6 +40,24 @@ TEST_F(UnexportableKeyMacTest, SecureEnclaveAvailability) {
         available);
     EXPECT_EQ(GetUnexportableKeyProvider(config) != nullptr, available);
   }
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
+  std::unique_ptr<UnexportableKeyProvider> provider =
+      GetUnexportableKeyProvider(config);
+  std::unique_ptr<UnexportableSigningKey> key =
+      provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  ASSERT_TRUE(provider->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_TRUE(provider->DeleteSigningKey(key->GetWrappedKey()));
+  EXPECT_FALSE(provider->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_TRUE(scoped_fake_apple_keychain_.keychain()->items().empty());
+}
+
+TEST_F(UnexportableKeyMacTest, DeleteUnknownSigningKey) {
+  std::unique_ptr<UnexportableKeyProvider> provider =
+      GetUnexportableKeyProvider(config);
+  EXPECT_FALSE(provider->DeleteSigningKey(std::vector<uint8_t>{1, 2, 3}));
 }
 
 }  // namespace

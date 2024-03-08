@@ -29,6 +29,7 @@ class ECSigningKeyProvider : public crypto::UnexportableKeyProvider {
           acceptable_algorithms) override;
   std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override;
+  bool DeleteSigningKey(base::span<const uint8_t> wrapped_key) override;
 };
 
 }  // namespace enterprise_connectors

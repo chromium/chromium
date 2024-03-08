@@ -106,6 +106,11 @@ class SoftwareProvider : public UnexportableKeyProvider {
     }
     return std::make_unique<SoftwareECDSA>(std::move(key));
   }
+
+  bool DeleteSigningKey(base::span<const uint8_t> wrapped_key) override {
+    // Unexportable software keys are stateless.
+    return true;
+  }
 };
 
 }  // namespace

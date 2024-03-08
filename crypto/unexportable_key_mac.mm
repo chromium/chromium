@@ -271,6 +271,20 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
                                                        key_attributes);
   }
 
+  bool DeleteSigningKey(base::span<const uint8_t> wrapped_key) override {
+    NSDictionary* query = @{
+      CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
+      CFToNSPtrCast(kSecAttrKeyType) :
+          CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
+      CFToNSPtrCast(kSecAttrAccessGroup) : keychain_access_group_,
+      CFToNSPtrCast(kSecAttrApplicationLabel) :
+          [NSData dataWithBytes:wrapped_key.data() length:wrapped_key.size()],
+    };
+    OSStatus result =
+        AppleKeychainV2::GetInstance().ItemDelete(NSToCFPtrCast(query));
+    return result == errSecSuccess;
+  }
+
  private:
   NSString* __strong keychain_access_group_;
   NSString* __strong application_tag_;

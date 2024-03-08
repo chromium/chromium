@@ -501,6 +501,11 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
 
     return nullptr;
   }
+
+  bool DeleteSigningKey(base::span<const uint8_t> wrapped) override {
+    // Unexportable keys are stateless on Windows.
+    return true;
+  }
 };
 
 // ECDSASoftwareKey wraps a Credential Guard stored P-256 ECDSA key.
