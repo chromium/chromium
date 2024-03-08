@@ -123,6 +123,8 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  // YES if the Notification item should be included in `allItems`.
+  BOOL _shouldIncludeNotificationItem;
 }
 
 + (instancetype)buildFromPrefs:(PrefService*)prefs
@@ -167,11 +169,14 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   }
 
   // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
-  return [[self alloc] initWithItems:items localState:localState];
+  return [[self alloc] initWithItems:items
+                          localState:localState
+               authenticationService:authService];
 }
 
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
-                   localState:(PrefService*)localState {
+                   localState:(PrefService*)localState
+        authenticationService:(AuthenticationService*)authService {
   self = [super init];
   if (self) {
     _items = items;
@@ -188,6 +193,10 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
         set_up_list_prefs::kFollowItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
+    _shouldIncludeNotificationItem =
+        IsIOSTipsNotificationsEnabled() ||
+        (IsContentPushNotificationsSetUpListEnabled() &&
+         authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   }
   return self;
 }
@@ -211,8 +220,10 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   NSMutableArray* itemTypes = [[NSMutableArray alloc]
       initWithObjects:@(int(SetUpListItemType::kSignInSync)),
                       @(int(SetUpListItemType::kDefaultBrowser)),
-                      @(int(SetUpListItemType::kAutofill)),
-                      @(int(SetUpListItemType::kNotifications)), nil];
+                      @(int(SetUpListItemType::kAutofill)), nil];
+  if (_shouldIncludeNotificationItem) {
+    [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
+  }
   for (SetUpListItem* item in _items) {
     [itemTypes removeObject:@(int(item.type))];
   }

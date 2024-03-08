@@ -34,6 +34,7 @@ class SyncService;
 // store the state of each item and to observe changes to that state.
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
                    localState:(PrefService*)localState
+        authenticationService:(AuthenticationService*)authService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
