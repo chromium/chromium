@@ -688,7 +688,7 @@
 <translation id="4642472735733036929">已停止跟踪价格</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
-<translation id="4652817563047461855">确保您的密码始终安全，检查密码是否遭到泄露，并获取关于如何保障您的在线安全的建议。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="4652817563047461855">确保密码安全，检查密码是否遭到泄露，并了解安全上网的建议。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">保存</translation>
 <translation id="4659194143325814340">{count,plural, =1{您的阅读清单中有 {count} 个页面}other{您的阅读清单中有 {count} 个页面}}</translation>
 <translation id="4659667755519643272">进入标签页切换器</translation>

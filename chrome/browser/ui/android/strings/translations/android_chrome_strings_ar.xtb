@@ -416,7 +416,7 @@
 <translation id="3237087289225714896">التحميل المُسبق العادي:</translation>
 <translation id="3237433641417325993">انتقِل إلى الأسفل للاطّلاع على المقالات المقتَرحة.</translation>
 <translation id="3244271242291266297">الشهر</translation>
-<translation id="3245429137663807393">‏في حال مشاركة تقارير استخدام Chrome أيضًا، ستتضمّن هذه التقارير عناوين URL التي تزورها</translation>
+<translation id="3245429137663807393">‏في حال شاركت أيضًا تقارير استخدام Chrome، ستتضمّن عناوين URL التي تنتقل إليها.</translation>
 <translation id="3250563604907490871">‏ستظهر أوصاف الصور عند الاتصال بشبكة Wi‑Fi.</translation>
 <translation id="3254409185687681395">وضع إشارة على هذه الصفحة</translation>
 <translation id="3259831549858767975">تصغير كامل محتوى الصفحة</translation>
@@ -1104,7 +1104,7 @@
 <translation id="6828070228333235514">إيقاف ميزة تتبُّع السعر</translation>
 <translation id="6830728435402077660">غير آمن</translation>
 <translation id="6831043979455480757">ترجمة</translation>
-<translation id="6833996806551876956">‏الفترة التجريبية لاستخدام ميزة Privacy Sandbox</translation>
+<translation id="6833996806551876956">الفترة التجريبية للاستفادة من "مبادرة حماية الخصوصية"</translation>
 <translation id="6836206421467243968">استعادة مجموعة علامات التبويب <ph name="TITLE_OF_GROUP" /> كمجموعة علامات تبويب جديدة في الخلفية</translation>
 <translation id="6846298663435243399">جارٍ التحميل…</translation>
 <translation id="6850409657436465440">لا يزال التنزيل قيد التقدُّم</translation>
