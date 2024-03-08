@@ -4331,7 +4331,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.DeveloperMetricsRare">
-  <owner>schenney@chromium.org</owner>
+  <owner>foolip@chromium.org</owner>
   <owner>chrome-webdev-metrics@google.com</owner>
   <summary>
     Collects data for a subset of UseCounter features of interest to the Web
@@ -4773,7 +4773,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.HTMLParsing">
-  <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -4921,7 +4920,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.PageLoad">
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     The aggregated time spent in each metric's component from creation of the
@@ -5237,7 +5236,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.UpdateTime">
-  <owner>schenney@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Metrics that measure various update times in Blink. This includes paint,
@@ -11063,7 +11062,6 @@ be describing additional metrics about the same event.
 <event name="Graphics.Smoothness.Latency">
   <owner>animations-dev@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
-  <owner>schenney@chromium.org</owner>
   <summary>
     Tracks the duration of stages in the rendering pipeline while processing a
     single frame. All times are in microseconds.
