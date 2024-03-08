@@ -100,6 +100,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/range/range_f.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view_utils.h"
@@ -2761,9 +2762,12 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
                            &max_right);
   }
 
+  MaybeCenterOverviewItems(rects);
+
   gfx::Vector2dF offset(0, (total_bounds.bottom() - max_bottom) / 2.f);
   for (auto& rect : rects)
     rect += offset;
+
   return rects;
 }
 
@@ -2911,6 +2915,55 @@ bool OverviewGrid::FitWindowRectsInBounds(
     *out_max_right = left;
 
   return true;
+}
+
+void OverviewGrid::MaybeCenterOverviewItems(
+    std::vector<gfx::RectF>& out_window_rects) {
+  if (!features::IsForestFeatureEnabled() || out_window_rects.empty()) {
+    return;
+  }
+
+  gfx::RangeF current_row_union_range(out_window_rects[0].x(),
+                                      out_window_rects[0].right());
+  int current_row_y = out_window_rects[0].y();
+  int current_row_first_item_index = 0;
+
+  // Batch process to center overview items within the same row.
+  auto batch_center_overview_items = [&](size_t end_index) {
+    // Undo the pre-added extra spacing.
+    current_row_union_range.set_end(current_row_union_range.end() -
+                                    kHorizontalSpaceBetweenItemsDp);
+
+    // Calculate the shift amount `current_diff` required to center the overview
+    // items.
+    const float range_center =
+        (current_row_union_range.start() + current_row_union_range.end()) / 2.f;
+    const int center_position = GetGridEffectiveBounds().CenterPoint().x();
+    float current_diff = std::abs(center_position - range_center);
+    for (size_t j = current_row_first_item_index; j < end_index; j++) {
+      out_window_rects[j].Offset(current_diff, 0);
+    }
+  };
+
+  for (size_t i = 0; i < out_window_rects.size(); i++) {
+    gfx::RectF& rect = out_window_rects[i];
+    if (rect.y() != current_row_y) {
+      // As a new row begins processing, batch-shift the previous row's rects
+      // and reset its parameters.
+      batch_center_overview_items(i);
+      current_row_union_range.set_start(rect.x());
+      current_row_y = rect.y();
+      current_row_first_item_index = i;
+    }
+
+    // Extend the range by adding the `rect`'s width and extra in-between items
+    // spacing.
+    current_row_union_range.set_end(rect.right() +
+                                    kHorizontalSpaceBetweenItemsDp);
+  }
+
+  // Post-processing rects in the last row.
+  batch_center_overview_items(out_window_rects.size());
 }
 
 size_t OverviewGrid::GetOverviewItemIndex(OverviewItemBase* item) const {

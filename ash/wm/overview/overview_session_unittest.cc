@@ -124,8 +124,12 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -10755,13 +10759,12 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // -----------------------------------------------------------------------------
-// OverviewWallpaperClipTest:
+// OakTest:
 
-// Test fixture to validate wallpaper clipping behavior during overview
-// transitions.
-class OverviewWallpaperClipTest : public OverviewTestBase {
+// Test fixture to validate overview behavior with forest enabled.
+class OakTest : public OverviewTestBase {
  public:
-  OverviewWallpaperClipTest() {
+  OakTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kForestFeature,
                               features::kFasterSplitScreenSetup,
@@ -10769,12 +10772,9 @@ class OverviewWallpaperClipTest : public OverviewTestBase {
         /*disabled_features=*/{});
     switches::SetIgnoreForestSecretKeyForTest(true);
   }
-  OverviewWallpaperClipTest(const OverviewWallpaperClipTest&) = delete;
-  OverviewWallpaperClipTest& operator=(const OverviewWallpaperClipTest&) =
-      delete;
-  ~OverviewWallpaperClipTest() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
+  OakTest(const OakTest&) = delete;
+  OakTest& operator=(const OakTest&) = delete;
+  ~OakTest() override { switches::SetIgnoreForestSecretKeyForTest(false); }
 
   void SnapOneTestWindow(aura::Window* window,
                          WindowStateType state_type,
@@ -10809,7 +10809,7 @@ class OverviewWallpaperClipTest : public OverviewTestBase {
 
 // Tests that the wallpaper layer is correctly clipped with rounded corners
 // during overview sessions, and fully restored upon exiting overview.
-TEST_F(OverviewWallpaperClipTest, WallpaperClipRectAndRoundedCorners) {
+TEST_F(OakTest, WallpaperClipRectAndRoundedCorners) {
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
   auto* wallpaper_view_layer = GetWallpaperViewLayer();
@@ -10837,7 +10837,7 @@ TEST_F(OverviewWallpaperClipTest, WallpaperClipRectAndRoundedCorners) {
 
 // Tests that the wallpaper is clipped in partial overview mode and adjusts
 // correctly when the snapped window is resized.
-TEST_F(OverviewWallpaperClipTest, PartialOverviewVisualsAndResize) {
+TEST_F(OakTest, PartialOverviewVisualsAndResize) {
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
   auto* wallpaper_view_layer = GetWallpaperViewLayer();
@@ -10878,6 +10878,40 @@ TEST_F(OverviewWallpaperClipTest, PartialOverviewVisualsAndResize) {
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());
   event_generator->ReleaseLeftButton();
+}
+
+TEST_F(OakTest, CenterOverviewItems) {
+  auto window1 = CreateAppWindow(gfx::Rect(0, 0, 100, 50));
+  auto window2 = CreateAppWindow(gfx::Rect(20, 10, 200, 100));
+  auto window3 = CreateAppWindow(gfx::Rect(30, 20, 300, 200));
+  auto window4 = CreateAppWindow(gfx::Rect(40, 30, 400, 300));
+  auto window5 = CreateAppWindow(gfx::Rect(50, 40, 500, 400));
+  auto window6 = CreateAppWindow(gfx::Rect(60, 50, 600, 500));
+  auto window7 = CreateAppWindow(gfx::Rect(70, 60, 700, 600));
+  auto window8 = CreateAppWindow(gfx::Rect(80, 70, 100, 100));
+  auto window9 = CreateAppWindow(gfx::Rect(90, 80, 200, 200));
+  auto window10 = CreateAppWindow(gfx::Rect(100, 90, 300, 300));
+  auto window11 = CreateAppWindow(gfx::Rect(110, 100, 500, 500));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& overview_items = overview_grid->window_list();
+  ASSERT_EQ(overview_items.size(), 11u);
+
+  // If the middle of the bounding box which contains the bounds of the overview
+  // items is aligned with the middle of the grid, then the overview items are
+  // centered.
+  gfx::RectF union_bounds;
+  for (const auto& overview_item : overview_items) {
+    union_bounds.Union(overview_item->target_bounds());
+  }
+
+  EXPECT_NEAR(overview_grid->GetGridEffectiveBounds().CenterPoint().x(),
+              union_bounds.CenterPoint().x(), 1);
 }
 
 }  // namespace ash

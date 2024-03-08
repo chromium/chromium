@@ -565,6 +565,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
       int* out_min_right,
       int* out_max_right);
 
+  // Maybe modify `out_window_rects` to center the overview items.
+  void MaybeCenterOverviewItems(std::vector<gfx::RectF>& out_window_rects);
+
   // Returns the index of `item` in `item_list_`.
   size_t GetOverviewItemIndex(OverviewItemBase* item) const;
 
