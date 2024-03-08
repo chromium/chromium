@@ -216,6 +216,16 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 
   ash_shell_init_ = std::make_unique<AshShellInit>();
+  ash::Shell::Get()
+      ->login_unlock_throughput_recorder()
+      ->post_login_deferred_task_runner()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     &session_manager::SessionManager::
+                         HandleUserSessionStartUpTaskCompleted,
+                     // Safe because SessionManager singleton will be destroyed
+                     // after message loops stops.
+                     base::Unretained(session_manager::SessionManager::Get())));
 
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateChromeos>();

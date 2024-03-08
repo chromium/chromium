@@ -45,6 +45,13 @@ class SessionManagerObserver : public base::CheckedObserver {
   // failed unlock attempt.
   virtual void OnUnlockScreenAttempt(const bool success,
                                      const UnlockType unlock_type) {}
+
+  // Invoked when the tasks to make a user session work are completed.
+  // Currently following ones are considered as critical tasks:
+  // - Login state update.
+  // - Shelf Icon loading.
+  // - Browser window restoration.
+  virtual void OnUserSessionStartUpTaskCompleted() {}
 };
 
 }  // namespace session_manager

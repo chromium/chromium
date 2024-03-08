@@ -66,6 +66,10 @@ bool SessionManager::IsSessionStarted() const {
   return session_started_;
 }
 
+bool SessionManager::IsUserSessionStartUpTaskCompleted() const {
+  return user_session_start_up_task_completed_;
+}
+
 void SessionManager::SessionStarted() {
   TRACE_EVENT0("login", "SessionManager::SessionStarted");
   session_started_ = true;
@@ -126,6 +130,13 @@ void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
     return;
   user_manager->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
                              is_child);
+}
+
+void SessionManager::HandleUserSessionStartUpTaskCompleted() {
+  user_session_start_up_task_completed_ = true;
+  for (auto& observer : observers_) {
+    observer.OnUserSessionStartUpTaskCompleted();
+  }
 }
 
 // static
