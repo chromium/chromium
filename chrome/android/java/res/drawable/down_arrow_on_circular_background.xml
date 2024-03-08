@@ -17,6 +17,6 @@ found in the LICENSE file.
     <group>
         <path
             android:pathData="M15.4 11.2H16.6V18.5L19.95 15.15L20.8 16L16 20.8L11.2 16L12.05 15.15L15.4 18.5V11.2Z"
-            android:fillColor="@macro/default_icon_color" />
+            android:fillColor="@color/default_icon_color_dark" />
     </group>
 </vector>
