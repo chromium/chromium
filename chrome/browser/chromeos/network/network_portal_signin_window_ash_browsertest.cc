@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -42,6 +43,16 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   // Showing the window should generate a DidFinishNavigation event which should
   // trigger a corresponding captive portal detection request.
   EXPECT_EQ(network_portal_detector()->captive_portal_detection_requested(), 1);
+
+  // The popup window sets the |is_captive_portal_popup| param which should
+  // set the |CaptivePortalTabHelper::is_captive_portal_window| property.
+  content::WebContents* web_contents =
+      NetworkPortalSigninWindow::Get()->GetWebContentsForTesting();
+  ASSERT_TRUE(web_contents);
+  captive_portal::CaptivePortalTabHelper* helper =
+      captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents);
+  ASSERT_TRUE(helper);
+  EXPECT_TRUE(helper->is_captive_portal_window());
 }
 
 }  // namespace chromeos

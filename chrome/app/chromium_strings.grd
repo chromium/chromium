@@ -373,13 +373,13 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
         </message>
       </if>
-      <if expr="not chromeos_ash and not is_macosx">
+      <if expr="not is_chromeos and not is_macosx">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
           <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Network Sign-in - Chromium
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
           Chromium - Network Sign-in - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>

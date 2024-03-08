@@ -14,6 +14,10 @@
 class Browser;
 class NetworkPortalSigninWindowLacrosBrowserTest;
 
+namespace content {
+class WebContents;
+}
+
 namespace chromeos {
 
 // Class controlling the captive portal signin window used in Ash and Lacros
@@ -32,6 +36,7 @@ class NetworkPortalSigninWindow {
   void Show(const GURL& url);
 
   Browser* GetBrowserForTesting();
+  content::WebContents* GetWebContentsForTesting();
 
  protected:
   friend class base::NoDestructor<NetworkPortalSigninWindow>;
