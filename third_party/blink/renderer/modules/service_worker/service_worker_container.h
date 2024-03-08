@@ -59,6 +59,7 @@ class ExecutionContext;
 class ExceptionState;
 class LocalDOMWindow;
 class ServiceWorkerErrorForUpdate;
+class ServiceWorkerRegistration;
 
 class MODULES_EXPORT ServiceWorkerContainer final
     : public EventTarget,
@@ -88,11 +89,15 @@ class MODULES_EXPORT ServiceWorkerContainer final
   ScriptPromiseTyped<ServiceWorkerRegistration> ready(ScriptState*,
                                                       ExceptionState&);
 
-  ScriptPromise registerServiceWorker(ScriptState*,
-                                      const String& pattern,
-                                      const RegistrationOptions*);
-  ScriptPromise getRegistration(ScriptState*, const String& document_url);
-  ScriptPromise getRegistrations(ScriptState*);
+  ScriptPromiseTyped<ServiceWorkerRegistration> registerServiceWorker(
+      ScriptState*,
+      const String& pattern,
+      const RegistrationOptions*);
+  ScriptPromiseTyped<ServiceWorkerRegistration> getRegistration(
+      ScriptState*,
+      const String& document_url);
+  ScriptPromiseTyped<IDLSequence<ServiceWorkerRegistration>> getRegistrations(
+      ScriptState*);
 
   void startMessages();
 

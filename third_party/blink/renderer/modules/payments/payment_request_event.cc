@@ -143,10 +143,12 @@ PaymentRequestEvent::shippingOptions() const {
   return shipping_options_;
 }
 
-ScriptPromise PaymentRequestEvent::openWindow(ScriptState* script_state,
-                                              const String& url) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLNullable<ServiceWorkerWindowClient>>
+PaymentRequestEvent::openWindow(ScriptState* script_state, const String& url) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<ServiceWorkerWindowClient>>>(
+      script_state);
+  auto promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   if (!isTrusted()) {
@@ -165,7 +167,7 @@ ScriptPromise PaymentRequestEvent::openWindow(ScriptState* script_state,
 
   if (!context->GetSecurityOrigin()->IsSameOriginWith(
           SecurityOrigin::Create(parsed_url_to_open).get())) {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+    resolver->Resolve(nullptr);
     return promise;
   }
 

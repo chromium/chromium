@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -22,6 +23,7 @@
 namespace blink {
 
 class NavigatorBase;
+class SmartCardContext;
 
 class MODULES_EXPORT SmartCardResourceManager final
     : public ScriptWrappable,
@@ -44,19 +46,21 @@ class MODULES_EXPORT SmartCardResourceManager final
   void Trace(Visitor*) const override;
 
   // SmartCardResourceManager idl
-  ScriptPromise establishContext(ScriptState* script_state,
-                                 ExceptionState& exception_state);
+  ScriptPromiseTyped<SmartCardContext> establishContext(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
  private:
   void EnsureServiceConnection();
   void CloseServiceConnection();
 
   void OnCreateContextDone(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<SmartCardContext>*,
       device::mojom::blink::SmartCardCreateContextResultPtr);
 
   HeapMojoRemote<mojom::blink::SmartCardService> service_;
-  HeapHashSet<Member<ScriptPromiseResolver>> create_context_promises_;
+  HeapHashSet<Member<ScriptPromiseResolverTyped<SmartCardContext>>>
+      create_context_promises_;
 };
 
 }  // namespace blink

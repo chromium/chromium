@@ -67,9 +67,9 @@ class MODULES_EXPORT Serial final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
   ScriptPromiseTyped<IDLSequence<SerialPort>> getPorts(ScriptState*,
                                                        ExceptionState&);
-  ScriptPromise requestPort(ScriptState*,
-                            const SerialPortRequestOptions*,
-                            ExceptionState&);
+  ScriptPromiseTyped<SerialPort> requestPort(ScriptState*,
+                                             const SerialPortRequestOptions*,
+                                             ExceptionState&);
 
   void OpenPort(
       const base::UnguessableToken& token,
@@ -91,7 +91,8 @@ class MODULES_EXPORT Serial final : public EventTarget,
   SerialPort* GetOrCreatePort(mojom::blink::SerialPortInfoPtr);
   void OnGetPorts(ScriptPromiseResolverTyped<IDLSequence<SerialPort>>*,
                   Vector<mojom::blink::SerialPortInfoPtr>);
-  void OnRequestPort(ScriptPromiseResolver*, mojom::blink::SerialPortInfoPtr);
+  void OnRequestPort(ScriptPromiseResolverTyped<SerialPort>*,
+                     mojom::blink::SerialPortInfoPtr);
 
   HeapMojoRemote<mojom::blink::SerialService> service_;
   HeapMojoReceiver<mojom::blink::SerialServiceClient, Serial> receiver_;

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_WINDOW_CLIENT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -13,7 +14,6 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT ServiceWorkerWindowClient final
@@ -25,7 +25,7 @@ class MODULES_EXPORT ServiceWorkerWindowClient final
       void(bool, mojom::blink::ServiceWorkerClientInfoPtr, const String&)>;
 
   static ResolveWindowClientCallback CreateResolveWindowClientCallback(
-      ScriptPromiseResolver*);
+      ScriptPromiseResolverTyped<IDLNullable<ServiceWorkerWindowClient>>*);
 
   explicit ServiceWorkerWindowClient(
       const mojom::blink::ServiceWorkerClientInfo&);
@@ -34,8 +34,10 @@ class MODULES_EXPORT ServiceWorkerWindowClient final
   // WindowClient.idl
   String visibilityState() const;
   bool focused() const { return is_focused_; }
-  ScriptPromise focus(ScriptState*);
-  ScriptPromise navigate(ScriptState*, const String& url);
+  ScriptPromiseTyped<ServiceWorkerWindowClient> focus(ScriptState*);
+  ScriptPromiseTyped<IDLNullable<ServiceWorkerWindowClient>> navigate(
+      ScriptState*,
+      const String& url);
 
   void Trace(Visitor*) const override;
 

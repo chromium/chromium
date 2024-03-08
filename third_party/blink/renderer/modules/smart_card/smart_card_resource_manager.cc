@@ -76,15 +76,16 @@ void SmartCardResourceManager::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-ScriptPromise SmartCardResourceManager::establishContext(
+ScriptPromiseTyped<SmartCardContext> SmartCardResourceManager::establishContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (ShouldBlockSmartCardServiceCall(GetExecutionContext(), exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<SmartCardContext>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<SmartCardContext>>(
+          script_state, exception_state.GetContext());
   create_context_promises_.insert(resolver);
 
   EnsureServiceConnection();
@@ -112,7 +113,7 @@ void SmartCardResourceManager::EnsureServiceConnection() {
 }
 
 void SmartCardResourceManager::OnCreateContextDone(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<SmartCardContext>* resolver,
     device::mojom::blink::SmartCardCreateContextResultPtr result) {
   DCHECK(create_context_promises_.Contains(resolver));
   create_context_promises_.erase(resolver);

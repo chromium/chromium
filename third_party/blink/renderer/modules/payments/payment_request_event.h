@@ -29,6 +29,7 @@ class PaymentRequestDetailsUpdate;
 class RespondWithObserver;
 class ScriptState;
 class ScriptValue;
+class ServiceWorkerWindowClient;
 
 class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   DEFINE_WRAPPERTYPEINFO();
@@ -69,7 +70,9 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   std::optional<HeapVector<Member<PaymentShippingOption>>> shippingOptions()
       const;
 
-  ScriptPromise openWindow(ScriptState*, const String& url);
+  ScriptPromiseTyped<IDLNullable<ServiceWorkerWindowClient>> openWindow(
+      ScriptState*,
+      const String& url);
   ScriptPromiseTyped<IDLNullable<PaymentRequestDetailsUpdate>>
   changePaymentMethod(ScriptState*,
                       const String& method_name,

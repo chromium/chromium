@@ -86,20 +86,26 @@ void SharedStorageWorklet::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
-                                              const String& module_url,
-                                              const WorkletOptions* options,
-                                              ExceptionState& exception_state) {
-  return AddModuleHelper(script_state, module_url, options, exception_state,
-                         /*resolve_to_worklet=*/false);
-}
-
-ScriptPromise SharedStorageWorklet::AddModuleHelper(
+ScriptPromiseTyped<IDLUndefined> SharedStorageWorklet::addModule(
     ScriptState* script_state,
     const String& module_url,
     const WorkletOptions* options,
-    ExceptionState& exception_state,
-    bool resolve_to_worklet) {
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  AddModuleHelper(script_state, resolver, module_url, options, exception_state,
+                  /*resolve_to_worklet=*/false);
+  return promise;
+}
+
+void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
+                                           ScriptPromiseResolver* resolver,
+                                           const String& module_url,
+                                           const WorkletOptions* options,
+                                           ExceptionState& exception_state,
+                                           bool resolve_to_worklet) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -107,20 +113,17 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return ScriptPromise();
+    resolver->Reject(exception_state);
+    return;
   }
 
   KURL script_source_url = execution_context->CompleteURL(module_url);
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
 
   if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                            *resolver)) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return promise;
+    return;
   }
 
   if (!script_source_url.IsValid()) {
@@ -129,7 +132,7 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
         "The module script url is invalid."));
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return promise;
+    return;
   }
 
   scoped_refptr<SecurityOrigin> script_security_origin =
@@ -143,7 +146,7 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
         "Only same origin module script is allowed."));
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return promise;
+    return;
   }
 
   if (worklet_host_) {
@@ -152,7 +155,7 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
         "addModule() can only be invoked once per worklet."));
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return promise;
+    return;
   }
 
   const String& credentials = options->credentials();
@@ -201,15 +204,14 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
                     base::TimeTicks::Now() - start_time);
 
                 if (resolve_to_worklet) {
-                  resolver->Resolve(shared_storage_worklet);
+                  resolver->DowncastTo<SharedStorageWorklet>()->Resolve(
+                      shared_storage_worklet);
                 } else {
                   resolver->Resolve();
                 }
               },
               WrapPersistent(resolver), WrapPersistent(this), start_time,
               resolve_to_worklet));
-
-  return promise;
 }
 
 // This C++ overload is called by JavaScript:

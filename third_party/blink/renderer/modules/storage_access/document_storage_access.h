@@ -5,14 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_ACCESS_DOCUMENT_STORAGE_ACCESS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_ACCESS_DOCUMENT_STORAGE_ACCESS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class Document;
-class ScriptPromise;
 class ScriptState;
+class StorageAccessHandle;
 class StorageAccessTypes;
 
 class DocumentStorageAccess final
@@ -22,7 +23,7 @@ class DocumentStorageAccess final
   static const char kSupplementName[];
   static const char kNoAccessRequested[];
   static DocumentStorageAccess& From(Document& document);
-  static ScriptPromise requestStorageAccess(
+  static ScriptPromiseTyped<StorageAccessHandle> requestStorageAccess(
       ScriptState* script_state,
       Document& document,
       const StorageAccessTypes* storage_access_types);
@@ -32,7 +33,7 @@ class DocumentStorageAccess final
   explicit DocumentStorageAccess(Document& document);
   void Trace(Visitor*) const override;
 
-  ScriptPromise requestStorageAccess(
+  ScriptPromiseTyped<StorageAccessHandle> requestStorageAccess(
       ScriptState* script_state,
       const StorageAccessTypes* storage_access_types);
   ScriptPromise hasUnpartitionedCookieAccess(ScriptState* script_state);

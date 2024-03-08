@@ -18,5 +18,5 @@ enum ContextFrameType {
     readonly attribute VisibilityState visibilityState;
     readonly attribute boolean focused;
     [CallWith=ScriptState] Promise<WindowClient> focus();
-    [CallWith=ScriptState] Promise<WindowClient> navigate(USVString url);
+    [CallWith=ScriptState] Promise<WindowClient?> navigate(USVString url);
 };

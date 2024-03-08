@@ -105,7 +105,8 @@ mojom::blink::ServiceWorkerUpdateViaCache ParseUpdateViaCache(
 class GetRegistrationCallback : public WebServiceWorkerProvider::
                                     WebServiceWorkerGetRegistrationCallbacks {
  public:
-  explicit GetRegistrationCallback(ScriptPromiseResolver* resolver)
+  explicit GetRegistrationCallback(
+      ScriptPromiseResolverTyped<ServiceWorkerRegistration>* resolver)
       : resolver_(resolver) {}
 
   GetRegistrationCallback(const GetRegistrationCallback&) = delete;
@@ -135,7 +136,7 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
   }
 
  private:
-  Persistent<ScriptPromiseResolver> resolver_;
+  Persistent<ScriptPromiseResolverTyped<ServiceWorkerRegistration>> resolver_;
 };
 
 }  // namespace
@@ -215,13 +216,14 @@ void ServiceWorkerContainer::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-ScriptPromise ServiceWorkerContainer::registerServiceWorker(
+ScriptPromiseTyped<ServiceWorkerRegistration>
+ServiceWorkerContainer::registerServiceWorker(
     ScriptState* script_state,
     const String& url,
     const RegistrationOptions* options) {
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverTyped<ServiceWorkerRegistration>>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   auto callbacks = std::make_unique<CallbackPromiseAdapter<
       ServiceWorkerRegistration, ServiceWorkerErrorForUpdate>>(resolver);
 
@@ -379,11 +381,12 @@ void ServiceWorkerContainer::RegisterServiceWorkerInternal(
       std::move(fetch_client_settings_object), std::move(callbacks));
 }
 
-ScriptPromise ServiceWorkerContainer::getRegistration(
-    ScriptState* script_state,
-    const String& document_url) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<ServiceWorkerRegistration>
+ServiceWorkerContainer::getRegistration(ScriptState* script_state,
+                                        const String& document_url) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<ServiceWorkerRegistration>>(script_state);
+  auto promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
@@ -433,12 +436,12 @@ ScriptPromise ServiceWorkerContainer::getRegistration(
   return promise;
 }
 
-ScriptPromise ServiceWorkerContainer::getRegistrations(
-    ScriptState* script_state) {
+ScriptPromiseTyped<IDLSequence<ServiceWorkerRegistration>>
+ServiceWorkerContainer::getRegistrations(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverTyped<IDLSequence<ServiceWorkerRegistration>>>(
       script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (!provider_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

@@ -317,18 +317,19 @@ ScriptPromise SmartCardConnection::disconnect(
   return resolver->Promise();
 }
 
-ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
-                                            const DOMArrayPiece& send_buffer,
-                                            SmartCardTransmitOptions* options,
-                                            ExceptionState& exception_state) {
+ScriptPromiseTyped<DOMArrayBuffer> SmartCardConnection::transmit(
+    ScriptState* script_state,
+    const DOMArrayPiece& send_buffer,
+    SmartCardTransmitOptions* options,
+    ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<DOMArrayBuffer>();
   }
 
   if (send_buffer.IsDetached() || send_buffer.IsNull()) {
     exception_state.ThrowTypeError("Invalid send buffer.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<DOMArrayBuffer>();
   }
 
   device::mojom::blink::SmartCardProtocol protocol = active_protocol_;
@@ -339,11 +340,12 @@ ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
   if (protocol == device::mojom::blink::SmartCardProtocol::kUndefined) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "No active protocol.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<DOMArrayBuffer>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMArrayBuffer>>(
+          script_state, exception_state.GetContext());
   SetOperationInProgress(resolver);
 
   Vector<uint8_t> send_vector;
@@ -378,17 +380,19 @@ ScriptPromiseTyped<SmartCardConnectionStatus> SmartCardConnection::status(
   return resolver->Promise();
 }
 
-ScriptPromise SmartCardConnection::control(ScriptState* script_state,
-                                           uint32_t control_code,
-                                           const DOMArrayPiece& data,
-                                           ExceptionState& exception_state) {
+ScriptPromiseTyped<DOMArrayBuffer> SmartCardConnection::control(
+    ScriptState* script_state,
+    uint32_t control_code,
+    const DOMArrayPiece& data,
+    ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<DOMArrayBuffer>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMArrayBuffer>>(
+          script_state, exception_state.GetContext());
   SetOperationInProgress(resolver);
 
   Vector<uint8_t> data_vector;
@@ -408,17 +412,18 @@ ScriptPromise SmartCardConnection::control(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise SmartCardConnection::getAttribute(
+ScriptPromiseTyped<DOMArrayBuffer> SmartCardConnection::getAttribute(
     ScriptState* script_state,
     uint32_t tag,
     ExceptionState& exception_state) {
   if (!smart_card_context_->EnsureNoOperationInProgress(exception_state) ||
       !EnsureConnection(exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<DOMArrayBuffer>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMArrayBuffer>>(
+          script_state, exception_state.GetContext());
   SetOperationInProgress(resolver);
 
   connection_->GetAttrib(
@@ -600,7 +605,7 @@ void SmartCardConnection::OnPlainResult(
 }
 
 void SmartCardConnection::OnDataResult(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<DOMArrayBuffer>* resolver,
     device::mojom::blink::SmartCardDataResultPtr result) {
   ClearOperationInProgress(resolver);
 

@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
-
+class ScriptPromiseResolver;
 class SharedStorageUrlWithMetadata;
 class SharedStorageRunOperationMethodOptions;
 class WorkletOptions;
@@ -36,10 +36,10 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
 
   // shared_storage_worklet.idl
   // addModule() imports ES6 module scripts.
-  ScriptPromise addModule(ScriptState*,
-                          const String& module_url,
-                          const WorkletOptions* options,
-                          ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> addModule(ScriptState*,
+                                             const String& module_url,
+                                             const WorkletOptions* options,
+                                             ExceptionState&);
   ScriptPromiseTyped<V8SharedStorageResponse> selectURL(
       ScriptState*,
       const String& name,
@@ -59,11 +59,12 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
 
   // Helper implementation method for `sharedStorage.worklet.addModule()` and
   // for `sharedStorage.createWorklet()`.
-  ScriptPromise AddModuleHelper(ScriptState*,
-                                const String& module_url,
-                                const WorkletOptions* options,
-                                ExceptionState&,
-                                bool resolve_to_worklet);
+  void AddModuleHelper(ScriptState*,
+                       ScriptPromiseResolver*,
+                       const String& module_url,
+                       const WorkletOptions* options,
+                       ExceptionState&,
+                       bool resolve_to_worklet);
 
  private:
   // Set when addModule() was called and passed early renderer checks.

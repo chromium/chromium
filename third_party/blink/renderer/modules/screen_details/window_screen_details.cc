@@ -26,7 +26,7 @@ WindowScreenDetails::WindowScreenDetails(LocalDOMWindow* window)
       permission_service_(window) {}
 
 // static
-ScriptPromise WindowScreenDetails::getScreenDetails(
+ScriptPromiseTyped<ScreenDetails> WindowScreenDetails::getScreenDetails(
     ScriptState* script_state,
     LocalDOMWindow& window,
     ExceptionState& exception_state) {
@@ -55,13 +55,13 @@ WindowScreenDetails* WindowScreenDetails::From(LocalDOMWindow* window) {
   return supplement;
 }
 
-ScriptPromise WindowScreenDetails::GetScreenDetails(
+ScriptPromiseTyped<ScreenDetails> WindowScreenDetails::GetScreenDetails(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<ScreenDetails>();
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -75,8 +75,9 @@ ScriptPromise WindowScreenDetails::GetScreenDetails(
 
   auto permission_descriptor = CreatePermissionDescriptor(
       mojom::blink::PermissionName::WINDOW_MANAGEMENT);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<ScreenDetails>>(
+          script_state, exception_state.GetContext());
   const bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame());
   auto callback =
@@ -100,7 +101,7 @@ ScriptPromise WindowScreenDetails::GetScreenDetails(
 }
 
 void WindowScreenDetails::OnPermissionInquiryComplete(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<ScreenDetails>* resolver,
     bool permission_requested,
     mojom::blink::PermissionStatus status) {
   if (!resolver->GetScriptState()->ContextIsValid())

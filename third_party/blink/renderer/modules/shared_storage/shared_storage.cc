@@ -774,15 +774,21 @@ ScriptPromise SharedStorage::run(
                                      exception_state);
 }
 
-ScriptPromise SharedStorage::createWorklet(ScriptState* script_state,
-                                           const String& module_url,
-                                           const WorkletOptions* options,
-                                           ExceptionState& exception_state) {
+ScriptPromiseTyped<SharedStorageWorklet> SharedStorage::createWorklet(
+    ScriptState* script_state,
+    const String& module_url,
+    const WorkletOptions* options,
+    ExceptionState& exception_state) {
   SharedStorageWorklet* worklet = SharedStorageWorklet::Create(
       script_state, /*cross_origin_script_allowed=*/true);
-  return worklet->AddModuleHelper(script_state, module_url, options,
-                                  exception_state,
-                                  /*resolve_to_worklet=*/true);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<SharedStorageWorklet>>(
+          script_state);
+  auto promise = resolver->Promise();
+  worklet->AddModuleHelper(script_state, resolver, module_url, options,
+                           exception_state,
+                           /*resolve_to_worklet=*/true);
+  return promise;
 }
 
 SharedStorageWorklet* SharedStorage::worklet(ScriptState* script_state,

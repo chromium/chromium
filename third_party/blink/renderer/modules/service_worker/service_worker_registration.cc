@@ -34,7 +34,7 @@ namespace blink {
 
 namespace {
 
-void DidUpdate(ScriptPromiseResolver* resolver,
+void DidUpdate(ScriptPromiseResolverTyped<ServiceWorkerRegistration>* resolver,
                ServiceWorkerRegistration* registration,
                mojom::ServiceWorkerErrorType error,
                const String& error_msg) {
@@ -271,7 +271,7 @@ void ServiceWorkerRegistration::SetNavigationPreloadHeader(
       WTF::BindOnce(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
 }
 
-ScriptPromise ServiceWorkerRegistration::update(
+ScriptPromiseTyped<ServiceWorkerRegistration> ServiceWorkerRegistration::update(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!GetExecutionContext()) {
@@ -279,7 +279,7 @@ ScriptPromise ServiceWorkerRegistration::update(
         DOMExceptionCode::kInvalidStateError,
         "Failed to update a ServiceWorkerRegistration: No associated provider "
         "is available.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<ServiceWorkerRegistration>();
   }
 
   auto* execution_context = ExecutionContext::From(script_state);
@@ -297,7 +297,8 @@ ScriptPromise ServiceWorkerRegistration::update(
           ? blink::mojom::InsecureRequestsPolicy::kUpgrade
           : blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<ServiceWorkerRegistration>>(script_state);
 
   // Defer update() from a prerendered page until page activation.
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-service-workers
@@ -404,7 +405,7 @@ void ServiceWorkerRegistration::UpdateFound() {
 
 void ServiceWorkerRegistration::UpdateInternal(
     mojom::blink::FetchClientSettingsObjectPtr mojom_settings_object,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<ServiceWorkerRegistration>* resolver) {
   if (!host_.is_bound()) {
     return;
   }
