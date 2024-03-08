@@ -46,10 +46,11 @@
 #import "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 using base::apple::CFCast;
+using base::apple::CFToNSOwnershipCast;
 using base::apple::CFToNSPtrCast;
-using base::apple::GetValueFromDictionary;
 using base::apple::NSToCFOwnershipCast;
 using base::apple::NSToCFPtrCast;
+using base::apple::ObjCCast;
 using base::apple::ScopedCFTypeRef;
 
 namespace blink {
@@ -240,24 +241,21 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
 
     int candidate_traits = kCTNormalTraitsValue;
     int candidate_weight = kNormalWeightValue;
-    ScopedCFTypeRef<CFDictionaryRef> traits_dict(CFCast<CFDictionaryRef>(
-        CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute)));
-    if (traits_dict) {
-      CFNumberRef candidate_symbolic_traits_num =
-          GetValueFromDictionary<CFNumberRef>(traits_dict.get(),
-                                              kCTFontSymbolicTrait);
-      if (candidate_symbolic_traits_num) {
-        CFNumberGetValue(candidate_symbolic_traits_num, kCFNumberIntType,
-                         &candidate_traits);
+    ScopedCFTypeRef<CFTypeRef> traits_ref(
+        CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute));
+    NSDictionary* traits =
+        CFToNSPtrCast(CFCast<CFDictionaryRef>(traits_ref.get()));
+    if (traits) {
+      NSNumber* candidate_traits_num =
+          ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontSymbolicTrait)]);
+      if (candidate_traits_num) {
+        candidate_traits = candidate_traits_num.intValue;
       }
 
-      CFNumberRef candidate_weight_num = GetValueFromDictionary<CFNumberRef>(
-          traits_dict.get(), kCTFontWeightTrait);
+      NSNumber* candidate_weight_num =
+          ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontWeightTrait)]);
       if (candidate_weight_num) {
-        float candidate_ct_weight;
-        CFNumberGetValue(candidate_weight_num, kCFNumberFloatType,
-                         &candidate_ct_weight);
-        candidate_weight = ToCSSFontWeight(candidate_ct_weight);
+        candidate_weight = ToCSSFontWeight(candidate_weight_num.floatValue);
       }
     }
 
@@ -333,44 +331,38 @@ void ClampVariationValuesToFontAcceptableRange(
     ScopedCFTypeRef<CTFontRef> ct_font,
     FontSelectionValue& weight,
     FontSelectionValue& width) {
-  ScopedCFTypeRef<CFArrayRef> all_axes(CTFontCopyVariationAxes(ct_font.get()));
+  NSArray* all_axes =
+      CFToNSOwnershipCast(CTFontCopyVariationAxes(ct_font.get()));
   if (!all_axes) {
     return;
   }
-  for (CFIndex i = 0; i < CFArrayGetCount(all_axes.get()); ++i) {
-    CFDictionaryRef axis =
-        CFCast<CFDictionaryRef>(CFArrayGetValueAtIndex(all_axes.get(), i));
+
+  for (id id_axis in all_axes) {
+    NSDictionary* axis = ObjCCast<NSDictionary>(id_axis);
     if (!axis) {
       continue;
     }
 
-    CFNumberRef axis_id = GetValueFromDictionary<CFNumberRef>(
-        axis, kCTFontVariationAxisIdentifierKey);
+    NSNumber* axis_id = ObjCCast<NSNumber>(
+        axis[CFToNSPtrCast(kCTFontVariationAxisIdentifierKey)]);
     if (!axis_id) {
       continue;
     }
-    int axis_id_value;
-    if (!CFNumberGetValue(axis_id, kCFNumberIntType, &axis_id_value)) {
-      continue;
-    }
+    int axis_id_value = axis_id.intValue;
 
-    CFNumberRef axis_min_number = GetValueFromDictionary<CFNumberRef>(
-        axis, kCTFontVariationAxisMinimumValueKey);
-    double axis_min_value = 0.0;
-    if (!axis_min_number ||
-        !CFNumberGetValue(axis_min_number, kCFNumberDoubleType,
-                          &axis_min_value)) {
+    NSNumber* axis_min_number = ObjCCast<NSNumber>(
+        axis[CFToNSPtrCast(kCTFontVariationAxisMinimumValueKey)]);
+    if (!axis_min_number) {
       continue;
     }
+    double axis_min_value = axis_min_number.doubleValue;
 
-    CFNumberRef axis_max_number = GetValueFromDictionary<CFNumberRef>(
-        axis, kCTFontVariationAxisMaximumValueKey);
-    double axis_max_value = 0.0;
-    if (!axis_max_number ||
-        !CFNumberGetValue(axis_max_number, kCFNumberDoubleType,
-                          &axis_max_value)) {
+    NSNumber* axis_max_number = ObjCCast<NSNumber>(
+        axis[CFToNSPtrCast(kCTFontVariationAxisMaximumValueKey)]);
+    if (!axis_max_number) {
       continue;
     }
+    double axis_max_value = axis_max_number.doubleValue;
 
     FontSelectionRange capabilities_range({FontSelectionValue(axis_min_value),
                                            FontSelectionValue(axis_max_value)});
@@ -416,33 +408,20 @@ ScopedCFTypeRef<CTFontRef> MatchSystemUIFont(FontSelectionValue desired_weight,
   ClampVariationValuesToFontAcceptableRange(ct_font, desired_weight,
                                             desired_width);
 
-  ScopedCFTypeRef<CFMutableDictionaryRef> variations(CFDictionaryCreateMutable(
-      kCFAllocatorDefault, 2, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
+  NSMutableDictionary* variations = [NSMutableDictionary dictionary];
+  if (desired_weight != kNormalWeightValue) {
+    variations[@(kWeightTag)] = @(static_cast<float>(desired_weight));
+  }
+  if (desired_width != kNormalWidthValue) {
+    variations[@(kWidthTag)] = @(static_cast<float>(desired_width));
+  }
 
-  auto add_axis_to_variations = [&variations](const FourCharCode tag,
-                                              float desired_value,
-                                              float normal_value) {
-    if (desired_value != normal_value) {
-      ScopedCFTypeRef<CFNumberRef> tag_number(
-          CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &tag));
-      ScopedCFTypeRef<CFNumberRef> value_number(CFNumberCreate(
-          kCFAllocatorDefault, kCFNumberFloatType, &desired_value));
-      CFDictionarySetValue(variations.get(), tag_number.get(),
-                           value_number.get());
-    }
+  NSDictionary* attributes = @{
+    CFToNSPtrCast(kCTFontVariationAttribute) : variations,
   };
-  add_axis_to_variations(kWeightTag, desired_weight, kNormalWeightValue);
-  add_axis_to_variations(kWidthTag, desired_width, kNormalWidthValue);
-
-  ScopedCFTypeRef<CFMutableDictionaryRef> attributes(CFDictionaryCreateMutable(
-      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(attributes.get(), kCTFontVariationAttribute,
-                       variations.get());
 
   ScopedCFTypeRef<CTFontDescriptorRef> var_font_desc(
-      CTFontDescriptorCreateWithAttributes(attributes.get()));
+      CTFontDescriptorCreateWithAttributes(NSToCFPtrCast(attributes)));
 
   return ScopedCFTypeRef<CTFontRef>(CTFontCreateCopyWithAttributes(
       ct_font.get(), size, nullptr, var_font_desc.get()));

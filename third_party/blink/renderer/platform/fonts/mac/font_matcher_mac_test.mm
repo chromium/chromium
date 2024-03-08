@@ -6,7 +6,9 @@
 
 #import <AppKit/AppKit.h>
 #import <CoreText/CoreText.h>
+#include <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,9 +18,10 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
-using base::apple::CFCast;
-using base::apple::GetValueFromDictionary;
+using base::apple::CFToNSOwnershipCast;
+using base::apple::CFToNSPtrCast;
 using base::apple::NSToCFOwnershipCast;
+using base::apple::ObjCCast;
 using base::apple::ScopedCFTypeRef;
 
 namespace blink {
@@ -182,11 +185,10 @@ TEST(FontMatcherMacTest, MatchSystemFontItalic) {
   ScopedCFTypeRef<CTFontRef> font = MatchSystemUIFont(
       kNormalWeightValue, kItalicSlopeValue, kNormalWidthValue, 11);
   EXPECT_TRUE(font);
-  ScopedCFTypeRef<CFDictionaryRef> traits(CTFontCopyTraits(font.get()));
-  CFNumberRef slant_num =
-      GetValueFromDictionary<CFNumberRef>(traits.get(), kCTFontSlantTrait);
-  float slant;
-  CFNumberGetValue(slant_num, kCFNumberFloatType, &slant);
+  NSDictionary* traits = CFToNSOwnershipCast(CTFontCopyTraits(font.get()));
+  NSNumber* slant_num =
+      ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontSlantTrait)]);
+  float slant = slant_num.floatValue;
   EXPECT_NE(slant, 0.0);
 }
 
@@ -195,21 +197,18 @@ TEST(FontMatcherMacTest, MatchSystemFontWithWeightVariations) {
   int min_weight = 1;
   int max_weight = 1000;
   FourCharCode wght_tag = 'wght';
-  ScopedCFTypeRef<CFNumberRef> wght_tag_num(
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &wght_tag));
   for (int weight = min_weight - 1; weight <= max_weight + 1; weight += 50) {
     if (weight != kNormalWeightValue) {
       ScopedCFTypeRef<CTFontRef> font = MatchSystemUIFont(
           FontSelectionValue(weight), kNormalSlopeValue, kNormalWidthValue, 11);
       EXPECT_TRUE(font);
-      ScopedCFTypeRef<CFDictionaryRef> variations(
-          CTFontCopyVariation(font.get()));
-      CFNumberRef actual_weight_cf_num = CFCast<CFNumberRef>(
-          CFDictionaryGetValue(variations.get(), wght_tag_num.get()));
-      EXPECT_TRUE(actual_weight_cf_num);
-      float actual_weight = 0.0;
-      CFNumberGetValue(actual_weight_cf_num, kCFNumberFloatType,
-                       &actual_weight);
+
+      NSDictionary* variations =
+          CFToNSOwnershipCast(CTFontCopyVariation(font.get()));
+      NSNumber* actual_weight_num = ObjCCast<NSNumber>(variations[@(wght_tag)]);
+      EXPECT_TRUE(actual_weight_num);
+
+      float actual_weight = actual_weight_num.floatValue;
       float expected_weight =
           std::max(min_weight, std::min(max_weight, weight));
       EXPECT_EQ(actual_weight, expected_weight);
@@ -224,8 +223,6 @@ TEST(FontMatcherMacTest, MatchSystemFontWithWidthVariations) {
     int min_width = 30;
     int max_width = 150;
     FourCharCode wdth_tag = 'wdth';
-    ScopedCFTypeRef<CFNumberRef> wdth_tag_num(
-        CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &wdth_tag));
     for (int width = min_width - 10; width <= max_width + 10; width += 10) {
       if (width != kNormalWidthValue) {
         ScopedCFTypeRef<CTFontRef> font =
@@ -233,15 +230,13 @@ TEST(FontMatcherMacTest, MatchSystemFontWithWidthVariations) {
                               FontSelectionValue(width), 11);
         EXPECT_TRUE(font);
 
-        ScopedCFTypeRef<CFDictionaryRef> variations(
-            CTFontCopyVariation(font.get()));
-        CFNumberRef actual_width_cf_num = CFCast<CFNumberRef>(
-            CFDictionaryGetValue(variations.get(), wdth_tag_num.get()));
-        EXPECT_TRUE(actual_width_cf_num);
+        NSDictionary* variations =
+            CFToNSOwnershipCast(CTFontCopyVariation(font.get()));
+        NSNumber* actual_width_num =
+            ObjCCast<NSNumber>(variations[@(wdth_tag)]);
+        EXPECT_TRUE(actual_width_num);
 
-        float actual_width = 0.0;
-        CFNumberGetValue(actual_width_cf_num, kCFNumberFloatType,
-                         &actual_width);
+        float actual_width = actual_width_num.floatValue;
         float expected_width = std::max(min_width, std::min(max_width, width));
         EXPECT_EQ(actual_width, expected_width);
       }
@@ -418,11 +413,11 @@ TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
     ScopedCFTypeRef<CTFontRef> font =
         MatchCTFontFamily(family_name, FontSelectionValue(weight),
                           kNormalSlopeValue, kNormalWidthValue, 11);
-    ScopedCFTypeRef<CFDictionaryRef> traits_dict(CTFontCopyTraits(font.get()));
-    CFNumberRef actual_weight_num = GetValueFromDictionary<CFNumberRef>(
-        traits_dict.get(), kCTFontWeightTrait);
-    float actual_ct_weight;
-    CFNumberGetValue(actual_weight_num, kCFNumberFloatType, &actual_ct_weight);
+    NSDictionary* traits = CFToNSOwnershipCast(CTFontCopyTraits(font.get()));
+    NSNumber* actual_weight_num =
+        ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontWeightTrait)]);
+
+    float actual_ct_weight = actual_weight_num.floatValue;
     int actual_weight = ToCSSFontWeight(actual_ct_weight);
     EXPECT_EQ(actual_weight, weight);
   }

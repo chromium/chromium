@@ -34,6 +34,7 @@
 #import <AppKit/AppKit.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
+#include <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -56,9 +57,10 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
+using base::apple::CFToNSOwnershipCast;
 using base::apple::CFToNSPtrCast;
-using base::apple::GetValueFromDictionary;
 using base::apple::NSToCFOwnershipCast;
+using base::apple::NSToCFPtrCast;
 using base::apple::ScopedCFTypeRef;
 
 // Forward declare Mac SPIs.
@@ -86,18 +88,6 @@ ScopedCFTypeRef<CTFontRef> CreateCopyWithTraitsAndWeightFromFont(
     CTFontSymbolicTraits traits,
     float weight,
     float size) {
-  ScopedCFTypeRef<CFNumberRef> traits_num(
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &traits));
-  ScopedCFTypeRef<CFNumberRef> weight_num(
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &weight));
-
-  const CFStringRef traits_keys[] = {kCTFontSymbolicTrait, kCTFontWeightTrait};
-  const CFTypeRef traits_values[] = {traits_num.get(), weight_num.get()};
-  ScopedCFTypeRef<CFDictionaryRef> traits_dict(CFDictionaryCreate(
-      kCFAllocatorDefault, (const void**)traits_keys,
-      (const void**)traits_values, 2, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
-
   ScopedCFTypeRef<CFStringRef> family_name(CTFontCopyFamilyName(font));
   // Some broken fonts may lack a postscript name (nameID="6"), full font
   // name (nameId="4") or family name (nameID="1") in the 'name' font table, see
@@ -107,16 +97,19 @@ ScopedCFTypeRef<CTFontRef> CreateCopyWithTraitsAndWeightFromFont(
   if (!family_name) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
-  const CFStringRef attribute_keys[] = {kCTFontFamilyNameAttribute,
-                                        kCTFontTraitsAttribute};
-  const CFTypeRef attribute_values[] = {family_name.get(), traits_dict.get()};
-  ScopedCFTypeRef<CFDictionaryRef> attributes(CFDictionaryCreate(
-      kCFAllocatorDefault, (const void**)attribute_keys,
-      (const void**)attribute_values, 2, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
+
+  NSDictionary* traits_dict = @{
+    CFToNSPtrCast(kCTFontSymbolicTrait) : @(traits),
+    CFToNSPtrCast(kCTFontWeightTrait) : @(weight),
+  };
+  NSDictionary* attributes = @{
+    CFToNSPtrCast(kCTFontFamilyNameAttribute) :
+        CFToNSPtrCast(family_name.get()),
+    CFToNSPtrCast(kCTFontTraitsAttribute) : traits_dict,
+  };
 
   ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
-      CTFontDescriptorCreateWithAttributes(attributes.get()));
+      CTFontDescriptorCreateWithAttributes(NSToCFPtrCast(attributes)));
   // When we try to find the substitute font of "Menlo Regular" with italic
   // traits attribute for the selected code point using
   // `CTFontCreateCopyWithAttributes`, it gives us the same "Menlo Regular" font
@@ -178,13 +171,14 @@ const FontPlatformData* GetAlternateFontPlatformData(
   }
 
   auto get_ct_font_weight = [](CTFontRef font) -> float {
-    ScopedCFTypeRef<CFDictionaryRef> font_traits(CTFontCopyTraits(font));
+    NSDictionary* font_traits = CFToNSOwnershipCast(CTFontCopyTraits(font));
+
     float weight = kCTNormalWeightValue;
     if (font_traits) {
-      CFNumberRef weight_num = GetValueFromDictionary<CFNumberRef>(
-          font_traits.get(), kCTFontWeightTrait);
+      NSNumber* weight_num = base::apple::ObjCCast<NSNumber>(
+          font_traits[CFToNSPtrCast(kCTFontWeightTrait)]);
       if (weight_num) {
-        CFNumberGetValue(weight_num, kCFNumberFloatType, &weight);
+        weight = weight_num.floatValue;
       }
     }
     return weight;
@@ -407,9 +401,8 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
                           !IsAppKitFontWeightBold(substitute_font_weight);
 
     alternate_font = FontPlatformDataFromCTFont(
-        base::apple::NSToCFPtrCast(substitute_font),
-        font_description.EffectiveFontSize(), font_description.SpecifiedSize(),
-        synthetic_bold,
+        NSToCFPtrCast(substitute_font), font_description.EffectiveFontSize(),
+        font_description.SpecifiedSize(), synthetic_bold,
         (traits & NSFontItalicTrait) &&
             !(substitute_font_traits & NSFontItalicTrait),
         font_description.TextRendering(), ResolvedFontFeatures(),
