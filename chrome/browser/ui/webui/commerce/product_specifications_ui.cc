@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -13,6 +16,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/webui/shopping_service_handler.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -53,9 +57,34 @@ void ProductSpecificationsUI::BindInterface(
       web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(ProductSpecificationsUI)
+void ProductSpecificationsUI::BindInterface(
+    mojo::PendingReceiver<
+        shopping_service::mojom::ShoppingServiceHandlerFactory> receiver) {
+  shopping_service_factory_receiver_.reset();
+  shopping_service_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ProductSpecificationsUI::CreateShoppingServiceHandler(
+    mojo::PendingRemote<shopping_service::mojom::Page> page,
+    mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
+        receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  feature_engagement::Tracker* const tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  shopping_service_handler_ =
+      std::make_unique<commerce::ShoppingServiceHandler>(
+          std::move(page), std::move(receiver), bookmark_model,
+          shopping_service, profile->GetPrefs(), tracker,
+          g_browser_process->GetApplicationLocale(), nullptr);
+}
 
 ProductSpecificationsUI::~ProductSpecificationsUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ProductSpecificationsUI)
 
 ProductSpecificationsUIConfig::ProductSpecificationsUIConfig()
     : WebUIConfig(content::kChromeUIScheme, kChromeUICompareHost) {}
