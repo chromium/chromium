@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-
+class Blob;
 class ExceptionState;
 class ImageBitmap;
 class ImageCaptureFrameGrabber;
@@ -62,7 +62,7 @@ class MODULES_EXPORT ImageCapture final
 
   ScriptPromiseTyped<PhotoCapabilities> getPhotoCapabilities(ScriptState*);
   ScriptPromiseTyped<PhotoSettings> getPhotoSettings(ScriptState*);
-  ScriptPromise takePhoto(ScriptState*, const PhotoSettings*);
+  ScriptPromiseTyped<Blob> takePhoto(ScriptState*, const PhotoSettings*);
   ScriptPromiseTyped<ImageBitmap> grabFrame(ScriptState*);
 
   bool CheckAndApplyMediaTrackConstraintsToSettings(

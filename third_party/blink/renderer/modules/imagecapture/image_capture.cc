@@ -1534,13 +1534,15 @@ ScriptPromiseTyped<PhotoSettings> ImageCapture::getPhotoSettings(
   return promise;
 }
 
-ScriptPromise ImageCapture::takePhoto(ScriptState* script_state,
-                                      const PhotoSettings* photo_settings) {
+ScriptPromiseTyped<Blob> ImageCapture::takePhoto(
+    ScriptState* script_state,
+    const PhotoSettings* photo_settings) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "ImageCapture::takePhoto");
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<Blob>>(script_state);
+  auto promise = resolver->Promise();
 
   if (TrackIsInactive(*stream_track_)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -2514,7 +2516,7 @@ void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolver* resolver,
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, "platform error"));
   } else {
-    resolver->Resolve(
+    resolver->DowncastTo<Blob>()->Resolve(
         Blob::Create(blob->data.data(), blob->data.size(), blob->mime_type));
   }
   service_requests_.erase(resolver);

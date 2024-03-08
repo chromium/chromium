@@ -18,24 +18,16 @@ LockScreenData::LockScreenData(LocalDOMWindow& window)
 
 LockScreenData::~LockScreenData() = default;
 
-ScriptPromise LockScreenData::getLockScreenData(ScriptState* script_state,
-                                                LocalDOMWindow& window) {
+ScriptPromiseTyped<LockScreenData> LockScreenData::getLockScreenData(
+    ScriptState* script_state,
+    LocalDOMWindow& window) {
   LockScreenData* supplement =
       Supplement<LocalDOMWindow>::From<LockScreenData>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<LockScreenData>(window);
     ProvideTo(window, supplement);
   }
-  return supplement->GetLockScreenData(script_state);
-}
-
-ScriptPromise LockScreenData::GetLockScreenData(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  resolver->Resolve(this);
-  return promise;
+  return ToResolvedPromise<LockScreenData>(script_state, supplement);
 }
 
 ScriptPromiseTyped<IDLSequence<IDLString>> LockScreenData::getKeys(

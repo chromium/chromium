@@ -391,11 +391,13 @@ ScriptPromise HIDDevice::sendFeatureReport(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise HIDDevice::receiveFeatureReport(ScriptState* script_state,
-                                              uint8_t report_id) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<DOMDataView> HIDDevice::receiveFeatureReport(
+    ScriptState* script_state,
+    uint8_t report_id) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMDataView>>(
+          script_state);
+  auto promise = resolver->Promise();
   if (!EnsureNoDeviceChangeInProgress(resolver) ||
       !EnsureDeviceIsNotForgotten(resolver)) {
     return promise;
@@ -538,7 +540,7 @@ void HIDDevice::FinishSendFeatureReport(ScriptPromiseResolver* resolver,
 }
 
 void HIDDevice::FinishReceiveFeatureReport(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<DOMDataView>* resolver,
     bool success,
     const std::optional<Vector<uint8_t>>& data) {
   MarkRequestComplete(resolver);

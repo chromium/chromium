@@ -26,8 +26,8 @@ class LockScreenData final : public ScriptWrappable,
   static const char kSupplementName[];
   explicit LockScreenData(LocalDOMWindow&);
   ~LockScreenData() override;
-  static ScriptPromise getLockScreenData(ScriptState*, LocalDOMWindow&);
-  ScriptPromise GetLockScreenData(ScriptState*);
+  static ScriptPromiseTyped<LockScreenData> getLockScreenData(ScriptState*,
+                                                              LocalDOMWindow&);
 
   // IDL Interface:
   ScriptPromiseTyped<IDLSequence<IDLString>> getKeys(ScriptState*);

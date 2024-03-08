@@ -16,6 +16,7 @@ namespace blink {
 
 class ExecutionContext;
 class HandwritingModelConstraint;
+class HandwritingRecognizer;
 class HandwritingRecognizerQueryResult;
 class ScriptState;
 
@@ -30,7 +31,7 @@ class HandwritingRecognitionService final
   static HandwritingRecognitionService& From(Navigator&);
 
   // IDL Interface:
-  static ScriptPromise createHandwritingRecognizer(
+  static ScriptPromiseTyped<HandwritingRecognizer> createHandwritingRecognizer(
       ScriptState*,
       Navigator&,
       const HandwritingModelConstraint*,
@@ -49,9 +50,10 @@ class HandwritingRecognitionService final
   // detached) and an exception will be thrown.
   // Otherwise returns true.
   bool BootstrapMojoConnectionIfNeeded(ScriptState*, ExceptionState&);
-  ScriptPromise CreateHandwritingRecognizer(ScriptState*,
-                                            const HandwritingModelConstraint*,
-                                            ExceptionState&);
+  ScriptPromiseTyped<HandwritingRecognizer> CreateHandwritingRecognizer(
+      ScriptState*,
+      const HandwritingModelConstraint*,
+      ExceptionState&);
 
   ScriptPromiseTyped<IDLNullable<HandwritingRecognizerQueryResult>>
   QueryHandwritingRecognizer(ScriptState*,

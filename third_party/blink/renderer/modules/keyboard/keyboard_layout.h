@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/keyboard/keyboard_layout_map.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -15,7 +16,6 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromiseResolver;
 
 class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
                              public ExecutionContextClient {
@@ -27,7 +27,8 @@ class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
 
   virtual ~KeyboardLayout() = default;
 
-  ScriptPromise GetKeyboardLayoutMap(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<KeyboardLayoutMap> GetKeyboardLayoutMap(ScriptState*,
+                                                             ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -38,10 +39,11 @@ class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
   // Returns true if |service_| is initialized and ready to be called.
   bool EnsureServiceConnected();
 
-  void GotKeyboardLayoutMap(ScriptPromiseResolver*,
+  void GotKeyboardLayoutMap(ScriptPromiseResolverTyped<KeyboardLayoutMap>*,
                             mojom::blink::GetKeyboardLayoutMapResultPtr);
 
-  Member<ScriptPromiseResolver> script_promise_resolver_;
+  Member<ScriptPromiseResolverTyped<KeyboardLayoutMap>>
+      script_promise_resolver_;
 
   HeapMojoRemote<mojom::blink::KeyboardLockService> service_;
 };

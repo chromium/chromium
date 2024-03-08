@@ -24,7 +24,7 @@ namespace {
 
 void OnCreateHandwritingRecognizer(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<HandwritingRecognizer>* resolver,
     handwriting::mojom::blink::CreateHandwritingRecognizerResult result,
     mojo::PendingRemote<handwriting::mojom::blink::HandwritingRecognizer>
         pending_remote) {
@@ -87,7 +87,8 @@ HandwritingRecognitionService& HandwritingRecognitionService::From(
 }
 
 // static
-ScriptPromise HandwritingRecognitionService::createHandwritingRecognizer(
+ScriptPromiseTyped<HandwritingRecognizer>
+HandwritingRecognitionService::createHandwritingRecognizer(
     ScriptState* script_state,
     Navigator& navigator,
     const HandwritingModelConstraint* constraint,
@@ -119,16 +120,18 @@ bool HandwritingRecognitionService::BootstrapMojoConnectionIfNeeded(
   return true;
 }
 
-ScriptPromise HandwritingRecognitionService::CreateHandwritingRecognizer(
+ScriptPromiseTyped<HandwritingRecognizer>
+HandwritingRecognitionService::CreateHandwritingRecognizer(
     ScriptState* script_state,
     const HandwritingModelConstraint* blink_model_constraint,
     ExceptionState& exception_state) {
   if (!BootstrapMojoConnectionIfNeeded(script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<HandwritingRecognizer>();
   }
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<HandwritingRecognizer>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   auto mojo_model_constraint =

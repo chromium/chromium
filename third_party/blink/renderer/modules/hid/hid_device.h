@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/hid/hid.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_report_item.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -26,10 +27,9 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
+class DOMDataView;
 class ExecutionContext;
 class HIDCollectionInfo;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT HIDDevice
@@ -84,7 +84,8 @@ class MODULES_EXPORT HIDDevice
   ScriptPromise sendFeatureReport(ScriptState*,
                                   uint8_t report_id,
                                   const DOMArrayPiece& data);
-  ScriptPromise receiveFeatureReport(ScriptState*, uint8_t report_id);
+  ScriptPromiseTyped<DOMDataView> receiveFeatureReport(ScriptState*,
+                                                       uint8_t report_id);
 
   // ExecutionContextLifecycleObserver:
   void ContextDestroyed() override;
@@ -115,7 +116,7 @@ class MODULES_EXPORT HIDDevice
                            uint8_t report_id,
                            const std::optional<Vector<uint8_t>>&);
   void FinishSendFeatureReport(ScriptPromiseResolver*, bool success);
-  void FinishReceiveFeatureReport(ScriptPromiseResolver*,
+  void FinishReceiveFeatureReport(ScriptPromiseResolverTyped<DOMDataView>*,
                                   bool success,
                                   const std::optional<Vector<uint8_t>>&);
 

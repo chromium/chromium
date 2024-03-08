@@ -28,8 +28,9 @@ void Keyboard::unlock(ScriptState* state) {
   keyboard_lock_->unlock(state);
 }
 
-ScriptPromise Keyboard::getLayoutMap(ScriptState* state,
-                                     ExceptionState& exception_state) {
+ScriptPromiseTyped<KeyboardLayoutMap> Keyboard::getLayoutMap(
+    ScriptState* state,
+    ExceptionState& exception_state) {
   return keyboard_layout_->GetKeyboardLayoutMap(state, exception_state);
 }
 
