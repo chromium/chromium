@@ -13271,7 +13271,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PlzDedicatedWorker"
+                        "PlzDedicatedWorker",
+                        "ServiceWorkerClientIdAlignedWithSpec"
                     ]
                 }
             ]
