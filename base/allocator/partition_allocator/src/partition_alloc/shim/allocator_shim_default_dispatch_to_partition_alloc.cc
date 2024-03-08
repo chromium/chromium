@@ -582,6 +582,15 @@ void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   allocator_shim::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
 }
 #endif  // BUILDFLAG(USE_STARSCAN)
+
+void AdjustDefaultAllocatorForForeground() {
+  Allocator()->AdjustForForeground();
+}
+
+void AdjustDefaultAllocatorForBackground() {
+  Allocator()->AdjustForBackground();
+}
+
 }  // namespace allocator_shim
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {

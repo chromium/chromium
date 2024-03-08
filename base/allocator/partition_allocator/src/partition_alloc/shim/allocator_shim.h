@@ -127,6 +127,9 @@ void ConfigurePartitions(
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void AdjustDefaultAllocatorForForeground();
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void AdjustDefaultAllocatorForBackground();
+
 #if BUILDFLAG(USE_STARSCAN)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);

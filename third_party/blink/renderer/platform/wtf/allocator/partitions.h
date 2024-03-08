@@ -102,6 +102,10 @@ class WTF_EXPORT Partitions {
 
   static void HandleOutOfMemory(size_t size);
 
+  // Adjusts the size of the partitions based on process state.
+  static void AdjustPartitionsForForeground();
+  static void AdjustPartitionsForBackground();
+
  private:
   ALWAYS_INLINE static partition_alloc::PartitionRoot* FastMallocPartition() {
     DCHECK(initialized_);

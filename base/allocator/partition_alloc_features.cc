@@ -110,7 +110,11 @@ MIRACLE_PARAMETER_FOR_INT(
 
 BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
              "PartitionAllocLargeEmptySlotSpanRing",
+#if BUILDFLAG(IS_MAC)
+             FEATURE_ENABLED_BY_DEFAULT);
+#else
              FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
              "PartitionAllocSchedulerLoopQuarantine",
@@ -498,6 +502,14 @@ void MakeFreeNoOp(WhenFreeBecomesNoOp callsite) {
   }
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
+
+BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
+             "PartitionAllocAdjustSizeWhenInForeground",
+#if BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 }  // namespace features
 }  // namespace base

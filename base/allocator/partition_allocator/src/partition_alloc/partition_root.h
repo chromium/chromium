@@ -395,6 +395,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // pool and cause tests to fail.
   void DestructForTesting();
 
+  void DecommitEmptySlotSpansForTesting();
+
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
   void EnableMac11MallocSizeHackIfNeeded();
   void EnableMac11MallocSizeHackForTesting();
@@ -605,7 +607,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   void EnableLargeEmptySlotSpanRing() {
     ::partition_alloc::internal::ScopedGuard locker{
         internal::PartitionRootLock(this)};
-    global_empty_slot_span_ring_size = internal::kMaxFreeableSpans;
+    global_empty_slot_span_ring_size = internal::kMinFreeableSpans;
   }
 
   void DumpStats(const char* partition_name,
@@ -855,6 +857,22 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE bool uses_configurable_pool() const {
     return settings.use_configurable_pool;
+  }
+
+  void AdjustForForeground() {
+    max_empty_slot_spans_dirty_bytes_shift = 2;
+    ::partition_alloc::internal::ScopedGuard guard{
+        internal::PartitionRootLock(this)};
+    global_empty_slot_span_ring_size = internal::kMaxFreeableSpans;
+  }
+
+  void AdjustForBackground() {
+    max_empty_slot_spans_dirty_bytes_shift = 3;
+    // ShrinkEmptySlotSpansRing() will iterate through kMaxFreeableSpans, so
+    // no need to for this to free any empty pages now.
+    ::partition_alloc::internal::ScopedGuard guard{
+        internal::PartitionRootLock(this)};
+    global_empty_slot_span_ring_size = internal::kMinFreeableSpans;
   }
 
   // To make tests deterministic, it is necessary to uncap the amount of memory

@@ -159,6 +159,10 @@ BLINK_EXPORT bool IsIsolatedContext();
 BLINK_EXPORT void SetCorsExemptHeaderList(
     const WebVector<WebString>& web_cors_exempt_header_list);
 
+// Notification the process hosting blink is in the foreground/background.
+BLINK_EXPORT void OnProcessForegrounded();
+BLINK_EXPORT void OnProcessBackgrounded();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
