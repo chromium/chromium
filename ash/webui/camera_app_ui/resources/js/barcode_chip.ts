@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertExists} from './assert.js';
+import {assert, assertExists, checkEnumVariant} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Flag} from './flag.js';
@@ -23,6 +23,13 @@ import {
   ErrorLevel,
   ErrorType,
 } from './type.js';
+
+enum SupportedWifiSecurityType {
+  EAP = 'WPA2-EAP',
+  NONE = 'nopass',
+  WEP = 'WEP',
+  WPA = 'WPA',
+}
 
 const QR_CODE_ESCAPE_CHARS = ['\\', ';', ',', ':'];
 
@@ -96,7 +103,8 @@ function isSafeUrl(s: string): boolean {
  * return `WifiConfig` and if not, return null.
  */
 function parseWifi(s: string): WifiConfig|null {
-  let securityType = 'nopass';
+  let securityType: SupportedWifiSecurityType|null =
+      SupportedWifiSecurityType.NONE;
   let ssid = null;
   let password = null;
   let eapMethod = null;
@@ -149,7 +157,9 @@ function parseWifi(s: string): WifiConfig|null {
             ssid = val;
             break;
           case 'T':
-            securityType = val;
+            securityType = checkEnumVariant(SupportedWifiSecurityType, val);
+            sendBarcodeDetectedEvent(
+                {contentType: BarcodeContentType.WIFI}, val);
             break;
           default:
             return null;
@@ -166,11 +176,9 @@ function parseWifi(s: string): WifiConfig|null {
   if (ssid === null) {
     return null;
   }
-  sendBarcodeDetectedEvent(
-      {contentType: BarcodeContentType.WIFI}, securityType);
-  if (!['WEP', 'WPA', 'WPA2-EAP', 'nopass'].includes(securityType)) {
+  if (securityType === null) {
     return null;
-  } else if (securityType === 'nopass') {
+  } else if (securityType === SupportedWifiSecurityType.NONE) {
     return {
       ssid: ssid,
       security: WifiSecurityType.kNone,
@@ -182,7 +190,7 @@ function parseWifi(s: string): WifiConfig|null {
     };
   } else if (password === null) {
     return null;
-  } else if (securityType === 'WEP') {
+  } else if (securityType === SupportedWifiSecurityType.WEP) {
     return {
       ssid: ssid,
       security: WifiSecurityType.kWep,
@@ -192,7 +200,7 @@ function parseWifi(s: string): WifiConfig|null {
       eapIdentity: null,
       eapAnonymousIdentity: null,
     };
-  } else if (securityType === 'WPA') {
+  } else if (securityType === SupportedWifiSecurityType.WPA) {
     return {
       ssid: ssid,
       security: WifiSecurityType.kWpa,
