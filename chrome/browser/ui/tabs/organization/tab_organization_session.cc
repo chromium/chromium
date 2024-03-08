@@ -109,6 +109,9 @@ TabOrganizationSession::~TabOrganizationSession() {
 
   if (request_) {
     request_->LogResults(this);
+    // The request may contain a callback which should happen before the
+    // destructor goes out of scope
+    request_.reset();
   }
 }
 
