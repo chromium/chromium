@@ -500,8 +500,9 @@
       case ContentSuggestionsModuleType::kParcelTracking:
         if (IsIOSParcelTrackingEnabled() &&
             !IsParcelTrackingDisabled(
-                GetApplicationContext()->GetLocalState())) {
-            [magicStackOrder addObject:moduleNumber];
+                GetApplicationContext()->GetLocalState()) &&
+            _parcelTrackingMediator.parcelTrackingItemToShow) {
+          [magicStackOrder addObject:moduleNumber];
         }
         break;
       default:

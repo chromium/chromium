@@ -227,7 +227,9 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
     [self runningStateChanged:_safetyCheckState.runningState];
   } else if (preferenceName ==
              safety_check_prefs::kSafetyCheckInMagicStackDisabledPref) {
-    [self.delegate removeSafetyCheckModule];
+    if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
+      [self.delegate removeSafetyCheckModule];
+    }
   }
 }
 
