@@ -1,4 +1,5 @@
 include_rules = [
+  '+components/android_autofill',
   '+components/plus_addresses',
   '+components/webauthn',
   '+third_party/libaddressinput/chromium/addressinput_util.h',

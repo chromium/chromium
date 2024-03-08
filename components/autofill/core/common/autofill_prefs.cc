@@ -301,18 +301,5 @@ void ClearSyncTransportOptIns(PrefService* prefs) {
   prefs->SetDict(prefs::kAutofillSyncTransportOptIn, base::Value::Dict());
 }
 
-bool UsesVirtualViewStructureForAutofill(const PrefService* prefs) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVirtualViewStructureAndroid)) {
-    return false;
-  }
-
-  return prefs->GetBoolean(kAutofillUsingVirtualViewStructure);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 }  // namespace prefs
 }  // namespace autofill

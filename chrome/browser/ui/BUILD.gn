@@ -49,6 +49,10 @@ static_library("ui") {
 
     # All other app_list/ files go under is_chromeos_ash below.
     "autofill/autofill_bubble_handler.h",
+    "autofill/autofill_client_provider.cc",
+    "autofill/autofill_client_provider.h",
+    "autofill/autofill_client_provider_factory.cc",
+    "autofill/autofill_client_provider_factory.h",
     "autofill/autofill_keyboard_accessory_adapter.cc",
     "autofill/autofill_keyboard_accessory_adapter.h",
     "autofill/autofill_popup_controller.h",
@@ -993,6 +997,7 @@ static_library("ui") {
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/android/toolbar:jni_headers",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
+      "//components/android_autofill/browser:android",
       "//components/autofill/android:payments_autofill_cc",
       "//components/autofill/android:payments_jni_headers",
       "//components/browser_ui/accessibility/android",
