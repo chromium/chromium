@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -80,6 +81,7 @@ PermissionToggleRowView::PermissionToggleRowView(
   int settings_text_id = 0, settings_link_id = 0;
   if (delegate->ShouldShowSettingsLinkForPermission(
           permission.type, &settings_text_id, &settings_link_id)) {
+    permission_disabled_on_system_level_ = true;
     std::u16string settings_text_for_link =
         l10n_util::GetStringUTF16(settings_link_id);
     size_t offset;
@@ -94,6 +96,12 @@ PermissionToggleRowView::PermissionToggleRowView(
     label->AddStyleRange(
         gfx::Range(offset, offset + settings_text_for_link.length()),
         views::StyledLabel::RangeStyleInfo::CreateForLink(clicked));
+
+    // When permission is blocked on the system level, all control elements are
+    // disabled. The permission row's title should match color with disabled
+    // control elements.
+    row_view_->title()->SetEnabledColorId(
+        kColorPageInfoPermissionBlockedOnSystemLevelDisabled);
   }
 
   if (permission.source == content_settings::SETTING_SOURCE_USER) {
@@ -199,6 +207,9 @@ void PermissionToggleRowView::InitForUserSource(
     views::InstallCircleHighlightPathGenerator(subpage_button.get());
     subpage_button->SetMinimumImageSize({icon_size, icon_size});
     subpage_button->SetFlipCanvasOnPaintForRTLUI(false);
+    if (permission_disabled_on_system_level_) {
+      subpage_button->SetEnabled(false);
+    }
     row_view_->AddControl(std::move(subpage_button));
   } else {
     // If there is a permission that supports one time grants, offset all other
@@ -240,10 +251,12 @@ void PermissionToggleRowView::InitForManagedSource(
 
 void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
   // Change the permission icon to reflect the selected setting.
-  row_view_->SetIcon(PageInfoViewFactory::GetPermissionIcon(permission_));
+  row_view_->SetIcon(PageInfoViewFactory::GetPermissionIcon(
+      permission_, permission_disabled_on_system_level_));
 
   // Update toggle state if it is used.
   if (toggle_button_) {
+    toggle_button_->SetEnabled(!permission_disabled_on_system_level_);
     toggle_button_->AnimateIsOn(PageInfoUI::IsToggleOn(permission_));
   }
 

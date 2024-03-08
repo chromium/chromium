@@ -1637,7 +1637,6 @@ void PageSpecificContentSettings::StartBlockedIndicatorTimer(
 void PageSpecificContentSettings::ResetMediaBlockedState(
     ContentSettingsType type,
     bool update_indicators) {
-  LOG(ERROR) << "message";
   media_blocked_indicator_timer_.erase(type);
 
   if (type == ContentSettingsType::MEDIASTREAM_MIC) {

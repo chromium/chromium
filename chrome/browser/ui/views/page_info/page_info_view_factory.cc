@@ -251,7 +251,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
-    const PageInfo::PermissionInfo& info) {
+    const PageInfo::PermissionInfo& info,
+    bool blocked_on_system_level) {
   ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
                                ? info.default_setting
                                : info.setting;
@@ -408,6 +409,12 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     // If there is no ChromeRefreshIcon currently defined, continue to the rest
     // of the function.
     if (icon != nullptr) {
+      if (blocked_on_system_level) {
+        return ui::ImageModel::FromVectorIcon(
+            *icon, kColorPageInfoPermissionBlockedOnSystemLevelDisabled,
+            GetIconSize());
+      }
+
       if (info.is_in_use && !show_blocked_badge) {
         return ui::ImageModel::FromVectorIcon(
             *icon, kColorPageInfoPermissionUsedIcon, GetIconSize());

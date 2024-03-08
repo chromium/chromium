@@ -81,7 +81,8 @@ class PageInfoViewFactory {
   // current setting is CONTENT_SETTING_DEFAULT, it will return the icon for
   // |info|'s default setting.
   static const ui::ImageModel GetPermissionIcon(
-      const PageInfo::PermissionInfo& info);
+      const PageInfo::PermissionInfo& info,
+      bool blocked_on_system_level = false);
 
   // Returns the icon for the given object |info|.
   static const ui::ImageModel GetChosenObjectIcon(

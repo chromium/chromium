@@ -455,6 +455,11 @@ class PageSpecificContentSettings
   void OnPermissionRequestCleanupStart() { freeze_indicators_ = true; }
   void OnPermissionRequestCleanupEnd() { freeze_indicators_ = false; }
 
+  // This method resets a media blocked state for `type`. If `update_indicators`
+  // is true, then it will try to update activity indicators in the location
+  // bar.
+  void ResetMediaBlockedState(ContentSettingsType type, bool update_indicators);
+
   void set_media_stream_access_origin_for_testing(const GURL& url) {
     media_stream_access_origin_ = url;
   }
@@ -495,11 +500,6 @@ class PageSpecificContentSettings
   // This method is called when a camera and/or mic blocked indicator is
   // displayed.
   void StartBlockedIndicatorTimer(ContentSettingsType type);
-
-  // This method resets a media blocked state for `type`. If `update_indicators`
-  // is true, then it will try to update activity indicators in the location
-  // bar.
-  void ResetMediaBlockedState(ContentSettingsType type, bool update_indicators);
 
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,

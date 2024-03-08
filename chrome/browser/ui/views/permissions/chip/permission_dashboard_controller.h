@@ -82,6 +82,7 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   // `false` - is used for a collapsed (not verbose) state that includes only an
   // icon. It appears without animation.
   bool is_verbose_ = false;
+  bool blocked_on_system_level_ = false;
   views::ViewTracker page_info_bubble_tracker_;
   base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
       observation_{this};

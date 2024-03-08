@@ -52,6 +52,8 @@ class RichControlsContainerView : public views::FlexLayoutView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
+  views::Label* title() { return title_; }
+
   const std::u16string& GetTitleForTesting();
   const ui::ImageModel GetIconImageModelForTesting();
 

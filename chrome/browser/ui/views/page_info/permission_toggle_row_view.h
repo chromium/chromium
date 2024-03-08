@@ -62,6 +62,7 @@ class PermissionToggleRowView : public views::View {
   void UpdateUiOnPermissionChanged();
 
   PageInfo::PermissionInfo permission_;
+  bool permission_disabled_on_system_level_ = false;
 
   raw_ptr<RichControlsContainerView, DanglingUntriaged> row_view_ = nullptr;
   raw_ptr<views::Label, DanglingUntriaged> state_label_ = nullptr;

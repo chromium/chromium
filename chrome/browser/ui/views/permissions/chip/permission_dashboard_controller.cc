@@ -140,6 +140,7 @@ bool PermissionDashboardController::Update(
 
   indicator_chip->SetChipIcon(indicator_model->icon());
 
+  blocked_on_system_level_ = indicator_model->blocked_on_system_level();
   if (indicator_model->is_blocked()) {
     indicator_chip->SetTheme(
         indicator_model->blocked_on_system_level()
@@ -240,6 +241,33 @@ void PermissionDashboardController::HideIndicators() {
     permission_dashboard_view_->SetVisible(false);
   }
 
+  // If blocked on the system level, then the indicators will not be shown as
+  // blocked in PSCS. Reset them manually.
+  if (blocked_on_system_level_) {
+    content_settings::PageSpecificContentSettings* pscs =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
+    if (!pscs) {
+      return;
+    }
+
+    if (pscs->GetMicrophoneCameraState().Has(
+            content_settings::PageSpecificContentSettings::kCameraAccessed)) {
+      pscs->OnPermissionIndicatorHidden(
+          ContentSettingsType::MEDIASTREAM_CAMERA);
+      pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_CAMERA,
+                                   /*update_indicators=*/false);
+    }
+
+    if (pscs->GetMicrophoneCameraState().Has(
+            content_settings::PageSpecificContentSettings::
+                kMicrophoneAccessed)) {
+      pscs->OnPermissionIndicatorHidden(ContentSettingsType::MEDIASTREAM_MIC);
+      pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                                   /*update_indicators=*/false);
+    }
+  }
+
   UpdateIndicatorsVisibilityFlags(location_bar_view_);
 }
 
@@ -291,6 +319,25 @@ std::u16string PermissionDashboardController::GetIndicatorTitle(
 
   content_settings::PageSpecificContentSettings::MicrophoneCameraState state =
       content_settings->GetMicrophoneCameraState();
+
+  if (model->blocked_on_system_level()) {
+    if (state.Has(content_settings::PageSpecificContentSettings::
+                      kMicrophoneAccessed) &&
+        state.Has(
+            content_settings::PageSpecificContentSettings::kCameraAccessed)) {
+      return l10n_util::GetStringUTF16(IDS_CAMERA_MICROPHONE_CANNOT_ACCESS);
+    }
+
+    if (state.Has(
+            content_settings::PageSpecificContentSettings::kCameraAccessed)) {
+      return l10n_util::GetStringUTF16(IDS_CAMERA_CANNOT_ACCESS);
+    }
+
+    if (state.Has(content_settings::PageSpecificContentSettings::
+                      kMicrophoneAccessed)) {
+      return l10n_util::GetStringUTF16(IDS_MICROPHONE_CANNOT_ACCESS);
+    }
+  }
 
   if (model->is_blocked()) {
     if (state.Has(content_settings::PageSpecificContentSettings::
