@@ -53,6 +53,7 @@ class OverviewItemBase;
 class OverviewSession;
 class SavedDeskSaveDeskButton;
 class SavedDeskLibraryView;
+class ScopedOverviewWallpaperClipper;
 class SplitViewController;
 
 // An instance of this class is created during the initialization of an overview
@@ -84,6 +85,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   OverviewGrid& operator=(const OverviewGrid&) = delete;
 
   ~OverviewGrid() override;
+
+  const gfx::Rect& bounds() const { return bounds_; }
 
   // Exits overview mode.
   void Shutdown(OverviewEnterExitType exit_type);
@@ -201,12 +204,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Sets the window dragging state on |split_view_drag_indicators_|.
   void SetSplitViewDragIndicatorsWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState window_dragging_state);
-
-  // Clips wallpaper and adds `wallpaper_mask_layer_` upon overview entry.
-  // Updates the bounds of clip rect and `wallpaper_mask_layer_` when grid
-  // bounds change. Restores the wallpaper to its original state upon overview
-  // exit.
-  void RefreshClipWallpaper();
 
   // Updates the desks bar widget bounds if necessary.
   // Returns true if the desks widget's bounds have been updated.
@@ -728,6 +725,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Window that is being dragged from the shelf or during tab dragging.
   raw_ptr<aura::Window> dragged_window_ = nullptr;
+
+  //  A scoped object responsible for managing wallpaper clipping transitions
+  //  during overview mode.
+  std::unique_ptr<ScopedOverviewWallpaperClipper>
+      scoped_overview_wallpaper_clipper_;
 
   // The widget that contains the view for all saved desks.
   std::unique_ptr<views::Widget> saved_desk_library_widget_;
