@@ -87,12 +87,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSearchField) {
   RunTest("cr_elements/cr_search_field_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSearchableDropDown) {
-  RunTest("cr_elements/cr_searchable_drop_down_test.js", "mocha.run()");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSlider) {
   RunTest("cr_elements/cr_slider_test.js", "mocha.run()");
 }

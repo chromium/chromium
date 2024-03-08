@@ -61,11 +61,6 @@ build_webui("build") {
       "policy/cr_tooltip_icon.ts",
     ]
 
-    if (is_chromeos) {
-      web_component_files +=
-          [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
-    }
-
     icons_html_files = [
       "icons.html",
       "mwb_shared_icons.html",

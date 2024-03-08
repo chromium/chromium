@@ -223,7 +223,7 @@ suite('DestinationDialogCrosTest', function() {
 
         const pendingPrintServerId =
             nativeLayerCros.whenCalled('choosePrintServers');
-        dialog.shadowRoot!.querySelector('cr-searchable-drop-down')!.value =
+        dialog.shadowRoot!.querySelector('searchable-drop-down-cros')!.value =
             'Print Server 2';
         flush();
 

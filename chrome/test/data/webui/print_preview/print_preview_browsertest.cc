@@ -84,6 +84,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettingsTest) {
 }
 #endif
 
+// Test is flaky on LaCros, see crbug.com/328690296
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SearchableDropDownCrosTest) {
+  RunTest("print_preview/searchable_drop_down_cros_test.js", "mocha.run()");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixinTest) {
   RunTest("print_preview/select_mixin_test.js", "mocha.run()");
 }

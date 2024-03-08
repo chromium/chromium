@@ -56,6 +56,7 @@ build_webui("build") {
       "ui/printer_setup_info_cros.ts",
       "ui/provisional_destination_resolver.ts",
       "ui/destination_dialog_cros.ts",
+      "ui/searchable_drop_down_cros.ts",
     ]
   } else {
     web_component_files += [

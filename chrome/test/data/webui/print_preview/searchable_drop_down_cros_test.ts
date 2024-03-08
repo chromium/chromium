@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
+import 'chrome://print/print_preview.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import type {CrSearchableDropDownElement} from 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
+import type {CrInputElement, SearchableDropDownCrosElement} from 'chrome://print/print_preview.js';
 import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 suite('cr-searchable-drop-down', function() {
-  let dropDown: CrSearchableDropDownElement;
+  let dropDown: SearchableDropDownCrosElement;
   let outsideElement: HTMLElement;
   let searchInput: CrInputElement;
 
@@ -85,10 +84,10 @@ suite('cr-searchable-drop-down', function() {
   setup(function() {
     document.body.innerHTML = getTrustedHTML`
       <p id="outside">Nothing to see here</p>
-      <cr-searchable-drop-down label="test drop down">
-      </cr-searchable-drop-down>
+      <searchable-drop-down-cros label="test drop down">
+      </searchable-drop-down-cros>
     `;
-    dropDown = document.querySelector('cr-searchable-drop-down')!;
+    dropDown = document.querySelector('searchable-drop-down-cros')!;
     outsideElement = document.querySelector<HTMLElement>('#outside')!;
     searchInput = dropDown.$.search;
     flush();

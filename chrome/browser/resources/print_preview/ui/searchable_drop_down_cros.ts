@@ -13,34 +13,37 @@
  * The |invalid| property tracks whether the user's current text input in the
  * dropdown matches the previously saved dropdown value. This property can be
  * used to disable certain user actions when the dropdown is invalid.
+ *
+ * Note: Since this element uses iron-dropdown, it is not permitted on
+ * non-CrOS platforms. DO NOT add new uses of this element in non-CrOS Print
+ * Preview.
  */
-import '../cr_input/cr_input.js';
-import '../cr_hidden_style.css.js';
-import '../icons.html.js';
-import '../cr_shared_style.css.js';
-import '../cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import type {IronDropdownElement} from '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CrInputElement} from '../cr_input/cr_input.js';
+import {getTemplate} from './searchable_drop_down_cros.html.js';
 
-import {getTemplate} from './cr_searchable_drop_down.html.js';
-
-export interface CrSearchableDropDownElement {
+export interface SearchableDropDownCrosElement {
   $: {
     search: CrInputElement,
     dropdown: IronDropdownElement,
   };
 }
 
-export class CrSearchableDropDownElement extends PolymerElement {
+export class SearchableDropDownCrosElement extends PolymerElement {
   static get is() {
-    return 'cr-searchable-drop-down';
+    return 'searchable-drop-down-cros';
   }
 
   static get template() {
@@ -480,9 +483,9 @@ export class CrSearchableDropDownElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-searchable-drop-down': CrSearchableDropDownElement;
+    'searchable-drop-down-cros': SearchableDropDownCrosElement;
   }
 }
 
 customElements.define(
-    CrSearchableDropDownElement.is, CrSearchableDropDownElement);
+    SearchableDropDownCrosElement.is, SearchableDropDownCrosElement);
