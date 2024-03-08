@@ -107,19 +107,20 @@ bool OpenExtensionApplicationWindow(Profile* profile,
   return tab_in_app_window != nullptr || ::CanLaunchViaEvent(app);
 }
 
-bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id) {
+content::WebContents* OpenExtensionApplicationTab(Profile* profile,
+                                                  const std::string& app_id) {
   apps::LaunchContainer launch_container;
   const extensions::Extension* app;
   if (!GetAppLaunchContainer(profile, app_id, &app, &launch_container))
-    return false;
+    return nullptr;
 
   // If the user doesn't want to open a tab, fail.
   if (launch_container != apps::LaunchContainer::kLaunchContainerTab)
-    return false;
+    return nullptr;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (OpenDeprecatedApplicationPrompt(profile, app_id)) {
-    return false;
+    return nullptr;
   }
 #endif
 
@@ -130,7 +131,7 @@ bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id) {
       apps::AppLaunchParams(app_id, apps::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             apps::LaunchSource::kFromCommandLine));
-  return app_tab != nullptr;
+  return app_tab;
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

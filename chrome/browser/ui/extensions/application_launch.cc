@@ -408,6 +408,18 @@ WebContents* OpenEnabledApplication(Profile* profile,
   return OpenEnabledApplicationHelper(profile, params, *extension);
 }
 
+Browser* FindBrowserForApp(Profile* profile, const std::string& app_id) {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    std::string browser_app_id =
+        web_app::GetAppIdFromApplicationName(browser->app_name());
+    if (profile == browser->profile() && browser->is_type_app() &&
+        app_id == browser_app_id) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 WebContents* OpenApplication(Profile* profile, apps::AppLaunchParams&& params) {
@@ -549,18 +561,25 @@ void LaunchAppWithCallback(
     base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
         callback) {
   apps::LaunchContainer container;
+  Browser* app_browser = nullptr;
   if (apps::OpenExtensionApplicationWindow(profile, app_id, command_line,
                                            current_directory)) {
     container = apps::LaunchContainer::kLaunchContainerWindow;
-  } else if (apps::OpenExtensionApplicationTab(profile, app_id)) {
-    container = apps::LaunchContainer::kLaunchContainerTab;
+    app_browser = FindBrowserForApp(profile, app_id);
   } else {
-    // Open an empty browser window as the app_id is invalid.
-    apps::CreateBrowserWithNewTabPage(profile);
-    container = apps::LaunchContainer::kLaunchContainerNone;
+    content::WebContents* app_tab =
+        apps::OpenExtensionApplicationTab(profile, app_id);
+    if (app_tab) {
+      container = apps::LaunchContainer::kLaunchContainerTab;
+      app_browser = chrome::FindBrowserWithTab(app_tab);
+    } else {
+      // Open an empty browser window as the app_id is invalid.
+      app_browser = apps::CreateBrowserWithNewTabPage(profile);
+      container = apps::LaunchContainer::kLaunchContainerNone;
+    }
   }
-  std::move(callback).Run(BrowserList::GetInstance()->GetLastActive(),
-                          container);
+
+  std::move(callback).Run(app_browser, container);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
