@@ -2718,7 +2718,10 @@ class PdfOcrServiceTest
 
     ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
     ASSERT_NE(nullptr, paragraph_node);
-    ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
+    ASSERT_EQ((is_ocr_service_started_before_pdf_loads && !create_empty_results)
+                  ? ax::mojom::Role::kGenericContainer
+                  : ax::mojom::Role::kParagraph,
+              paragraph_node->GetRole());
     ASSERT_EQ(2u, paragraph_node->GetChildCount());
 
     ui::AXNode* first_node = paragraph_node->GetChildAtIndex(0);
@@ -3359,7 +3362,7 @@ TEST_F(PdfOcrTest, TestTransformFromOnOcrDataReceived) {
 
   paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
-  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, paragraph_node->GetRole());
   ASSERT_EQ(1u, paragraph_node->GetChildCount());
 
   ui::AXNode* region_node = paragraph_node->GetChildAtIndex(0);

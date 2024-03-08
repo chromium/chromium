@@ -203,12 +203,13 @@ constexpr char kExpectedHelloWorldPDFAXTreeWithOcrResults[] =
     "      staticText 'This PDF is inaccessible. Text extracted, powered by "
     "Google AI'\n"
     "  region 'Page 1'\n"
-    "    paragraph\n"
+    "    genericContainer\n"
     "      region\n"
     "        banner\n"
     "          staticText 'Start of extracted text'\n"
-    "        staticText 'Hello, world!'\n"
-    "          inlineTextBox 'Hello, world! '\n"
+    "        paragraph\n"
+    "          staticText 'Hello, world!'\n"
+    "            inlineTextBox 'Hello, world! '\n"
     "        contentInfo\n"
     "          staticText 'End of extracted text'\n";
 

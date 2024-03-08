@@ -487,8 +487,6 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   // by their index in the container of line boxes. Use std::map to sort both
   // text blocks and the line boxes that belong to each one, both operations
   // having an O(n * log(n)) complexity.
-  // TODO(accessibility): Create separate paragraphs based on the blocks'
-  // spacing.
   // TODO(accessibility): Determine reading order based on visual positioning of
   // text blocks, not on the order of their block IDs.
   std::map<int32_t, std::map<int32_t, int>> blocks_to_lines_map;
@@ -510,9 +508,13 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     formatting_context_count += 4;
   }
 
-  std::vector<ui::AXNodeData> nodes(
-      rootnodes_count + visual_annotation.ui_component().size() +
-      visual_annotation.lines().size() + formatting_context_count);
+  // There are the same number of paragraphs as blocks.
+  size_t paragraph_count = blocks_to_lines_map.size();
+
+  std::vector<ui::AXNodeData> nodes(rootnodes_count +
+                                    visual_annotation.ui_component().size() +
+                                    visual_annotation.lines().size() +
+                                    paragraph_count + formatting_context_count);
 
   size_t index = 0u;
 
@@ -554,6 +556,15 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     begin_node_wrapper.child_ids.push_back(begin_node.id);
 
     for (const auto& block_to_lines_pair : blocks_to_lines_map) {
+      // TODO(crbug.com/327298772): Create separate paragraphs based on the
+      // blocks' spacing (e.g. by utilizing heuristics found in
+      // PdfAccessibilityTree). Blocks as returned by the OCR engine are still
+      // too small.
+      ui::AXNodeData& paragraph_node = nodes[index++];
+      paragraph_node.role = ax::mojom::Role::kParagraph;
+      paragraph_node.id = GetNextNegativeNodeID();
+      page_node.child_ids.push_back(paragraph_node.id);
+
       for (const auto& line_sequence_number_to_index_pair :
            block_to_lines_pair.second) {
         const chrome_screen_ai::LineBox& line_box =
@@ -562,7 +573,13 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
         // more inline text boxes, each one  representing a formatting context.
         // If the line is not of a textual role, only one node is initialized
         // having a more specific role such as `ax::mojom::Role::kImage`.
-        index += SerializeLineBox(line_box, index, page_node, nodes);
+        index += SerializeLineBox(line_box, index, paragraph_node, nodes);
+
+        // Accumulate bounds of all lines for the paragraph.
+        auto& bounding_box = line_box.bounding_box();
+        paragraph_node.relative_bounds.bounds.Union(
+            gfx::RectF(bounding_box.x(), bounding_box.y(), bounding_box.width(),
+                       bounding_box.height()));
       }
     }
 
