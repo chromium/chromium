@@ -14,7 +14,6 @@
 #include "components/media_message_center/notification_theme.h"
 
 class MediaItemUIDeviceSelectorDelegate;
-class MediaItemUIDeviceSelectorView;
 class Profile;
 
 namespace content {
@@ -22,6 +21,7 @@ class BrowserContext;
 }  // namespace content
 
 namespace global_media_controls {
+class MediaItemUIDeviceSelector;
 class MediaItemUIFooter;
 }  // namespace global_media_controls
 
@@ -50,8 +50,10 @@ std::optional<media_router::MediaRoute> GetSessionRoute(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     content::BrowserContext* context);
 
-// Returns a nullptr if any of the parameters are invalid.
-std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
+// Returns the MediaItemUIDeviceSelector for a media item or returns a nullptr
+// if any of the parameters is invalid.
+std::unique_ptr<global_media_controls::MediaItemUIDeviceSelector>
+BuildDeviceSelector(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     global_media_controls::mojom::DeviceService* device_service,

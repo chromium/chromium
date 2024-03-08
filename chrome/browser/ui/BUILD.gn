@@ -5385,6 +5385,8 @@ static_library("ui") {
       "views/fullscreen_control/fullscreen_control_host.h",
       "views/global_error_bubble_view.cc",
       "views/global_error_bubble_view.h",
+      "views/global_media_controls/cast_device_selector_view.cc",
+      "views/global_media_controls/cast_device_selector_view.h",
       "views/global_media_controls/media_dialog_view.cc",
       "views/global_media_controls/media_dialog_view.h",
       "views/global_media_controls/media_dialog_view_observer.h",

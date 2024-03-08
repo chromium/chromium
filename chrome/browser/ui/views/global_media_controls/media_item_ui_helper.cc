@@ -21,7 +21,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/media_session.h"
 #include "media/base/media_switches.h"
-#include "ui/color/material_ui_color_mixer.h"
+#include "ui/color/color_id.h"
 
 namespace {
 
@@ -131,7 +131,8 @@ std::optional<media_router::MediaRoute> GetSessionRoute(
   return std::nullopt;
 }
 
-std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
+std::unique_ptr<global_media_controls::MediaItemUIDeviceSelector>
+BuildDeviceSelector(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     global_media_controls::mojom::DeviceService* device_service,
@@ -250,8 +251,8 @@ media_message_center::MediaColorTheme GetMediaColorTheme() {
   theme.paused_progress_foreground_color_id = ui::kColorSysPrimary;
   theme.paused_progress_background_color_id = ui::kColorSysPrimaryContainer;
 
-  theme.background_color_id = ui::kColorSysOmniboxContainer;
-  theme.separator_color_id = ui::kColorIcon;
+  theme.background_color_id = ui::kColorSysSurface2;
+  theme.device_selector_background_color_id = ui::kColorSysSurface5;
   theme.error_foreground_color_id = ui::kColorSysError;
   theme.error_container_color_id = ui::kColorSysErrorContainer;
   theme.focus_ring_color_id = ui::kColorSysStateFocusRing;
