@@ -269,6 +269,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.PageZoom.MainFrameZoomFactor"
+    units="zoom factor %" expires_after="2024-08-30">
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the zoom factor when visual properties of the main frame are updated.
+    This will be recorded each time the properties change. The value can be
+    recorded multiple times for a single frame, for example as a user is
+    changing zoom value with the slider on Android.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.Android.PageZoom.SettingsDefaultZoomLevelChanged"
     enum="Boolean" expires_after="2024-06-30">

@@ -11,6 +11,7 @@ blink_core_sources_accessibility = [
   "axid.h",
   "blink_ax_event_intent.cc",
   "blink_ax_event_intent.h",
+  "histogram_macros.h",
   "scoped_blink_ax_event_intent.cc",
   "scoped_blink_ax_event_intent.h",
 ]
