@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
@@ -35,8 +36,7 @@ bool GetNativeWindow(const Browser* browser, gfx::NativeWindow* native_window) {
 
 }  // namespace
 
-BrowserActivationWaiter::BrowserActivationWaiter(const Browser* browser)
-    : browser_(browser->AsWeakPtr()) {
+BrowserActivationWaiter::BrowserActivationWaiter(const Browser* browser) {
   // When the active browser closes, the next "last active browser" in the
   // BrowserList might not be immediately activated. So we need to wait for the
   // "last active browser" to actually be active.
@@ -44,7 +44,9 @@ BrowserActivationWaiter::BrowserActivationWaiter(const Browser* browser)
     observed_ = true;
     return;
   }
-  BrowserList::AddObserver(this);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  browser_view->frame()->AddObserver(this);
 }
 
 BrowserActivationWaiter::~BrowserActivationWaiter() = default;
@@ -59,13 +61,14 @@ void BrowserActivationWaiter::WaitForActivation() {
   run_loop_.Run();
 }
 
-void BrowserActivationWaiter::OnBrowserSetLastActive(Browser* browser) {
-  if (browser != browser_.get()) {
+void BrowserActivationWaiter::OnWidgetActivationChanged(views::Widget* widget,
+                                                        bool active) {
+  if (!active) {
     return;
   }
 
   observed_ = true;
-  BrowserList::RemoveObserver(this);
+  widget->RemoveObserver(this);
   if (run_loop_.running()) {
     run_loop_.Quit();
   }

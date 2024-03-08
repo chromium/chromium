@@ -1407,6 +1407,11 @@ void BrowserView::Close() {
 }
 
 void BrowserView::Activate() {
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Update the list managed by `BrowserList` synchronously the same way
+  // `BrowserView::Show()` does.
+  BrowserList::SetLastActive(browser());
+#endif
   frame_->Activate();
 }
 
