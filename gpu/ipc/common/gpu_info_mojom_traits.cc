@@ -536,7 +536,6 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
          data.ReadDirectRenderingVersion(&out->direct_rendering_version) &&
 #if BUILDFLAG(IS_WIN)
          data.ReadOverlayInfo(&out->overlay_info) &&
-         data.ReadDxDiagnostics(&out->dx_diagnostics) &&
 #endif
          data.ReadVideoDecodeAcceleratorSupportedProfiles(
              &out->video_decode_accelerator_supported_profiles) &&

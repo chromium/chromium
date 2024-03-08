@@ -47,7 +47,6 @@ GPU_EXPORT bool CollectContextGraphicsInfo(GPUInfo* gpu_info);
 
 #if BUILDFLAG(IS_WIN)
 // Collect the DirectX Disagnostics information about the attached displays.
-GPU_EXPORT bool GetDxDiagnostics(DxDiagNode* output);
 GPU_EXPORT void GetGpuSupportedD3D12Version(
     uint32_t& d3d12_feature_level,
     uint32_t& highest_shader_model_version);

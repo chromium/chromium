@@ -85,28 +85,6 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
   source->AddResourcePath("", IDR_GPU_GPU_INTERNALS_HTML);
 }
 
-#if BUILDFLAG(IS_WIN)
-// Output DxDiagNode tree as nested array of {description,value} pairs
-base::Value::List DxDiagNodeToList(const gpu::DxDiagNode& node) {
-  base::Value::List list;
-  for (std::map<std::string, std::string>::const_iterator it =
-      node.values.begin();
-      it != node.values.end();
-      ++it) {
-    list.Append(display::BuildGpuInfoEntry(it->first, it->second));
-  }
-
-  for (std::map<std::string, gpu::DxDiagNode>::const_iterator it =
-      node.children.begin();
-      it != node.children.end();
-      ++it) {
-    base::Value sublist(DxDiagNodeToList(it->second));
-    list.Append(display::BuildGpuInfoEntry(it->first, std::move(sublist)));
-  }
-  return list;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   std::string vendor = base::StringPrintf("0x%04x", gpu.vendor_id);
   if (!gpu.vendor_string.empty())
@@ -315,13 +293,6 @@ base::Value::Dict GetGpuInfo() {
   base::Value::List basic_info =
       GetBasicGpuInfo(gpu_info, gpu_feature_info, gpu_extra_info);
   info.Set("basicInfo", std::move(basic_info));
-
-#if BUILDFLAG(IS_WIN)
-  base::Value::List dx_info;
-  if (gpu_info.dx_diagnostics.children.size())
-    dx_info = DxDiagNodeToList(gpu_info.dx_diagnostics);
-  info.Set("diagnostics", std::move(dx_info));
-#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gpu_info.vulkan_info) {
@@ -804,10 +775,9 @@ void GpuMessageHandler::HandleGetGpuInfo(const base::Value::List& args) {
 
   // Tell GpuDataManager it should have full GpuInfo. If the
   // Gpu process has not run yet, this will trigger its launch.
-  GpuDataManagerImpl::GetInstance()
-      ->RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
-          GpuDataManagerImpl::kGpuInfoRequestAll,
-          /*delayed=*/false);
+  GpuDataManagerImpl::GetInstance()->RequestDx12VulkanVideoGpuInfoIfNeeded(
+      GpuDataManagerImpl::kGpuInfoRequestAll,
+      /*delayed=*/false);
 
   // Send current snapshot of gpu info. Any future updates will be communicated
   // via the OnGpuInfoUpdate() callback.

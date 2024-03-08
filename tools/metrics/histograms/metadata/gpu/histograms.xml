@@ -1002,16 +1002,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Memory.Device" units="MB" expires_after="2024-08-30">
-  <owner>cduvall@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    The GPU memory reported by the system as the
-    &quot;szDisplayMemoryEnglish&quot; property from DxDiagnostics. This is only
-    reported on Windows after a 2 minute delay after startup.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.Metal.ReadWriteTextureSupport"
     enum="MetalReadWriteTextureSupportTier" expires_after="2024-09-01">
   <owner>cwallez@chromium.org</owner>

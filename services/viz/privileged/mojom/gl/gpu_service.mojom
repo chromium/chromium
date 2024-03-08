@@ -19,7 +19,6 @@ import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 import "gpu/ipc/common/device_perf_info.mojom";
-import "gpu/ipc/common/dx_diag_node.mojom";
 import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";

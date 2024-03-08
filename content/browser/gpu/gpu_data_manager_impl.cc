@@ -97,11 +97,11 @@ bool GpuDataManagerImpl::GpuAccessAllowed(std::string* reason) {
   return private_->GpuAccessAllowed(reason);
 }
 
-void GpuDataManagerImpl::RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
+void GpuDataManagerImpl::RequestDx12VulkanVideoGpuInfoIfNeeded(
     GpuInfoRequest request,
     bool delayed) {
   base::AutoLock auto_lock(lock_);
-  private_->RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(request, delayed);
+  private_->RequestDx12VulkanVideoGpuInfoIfNeeded(request, delayed);
 }
 
 bool GpuDataManagerImpl::IsEssentialGpuInfoAvailable() {
@@ -164,12 +164,6 @@ void GpuDataManagerImpl::UpdateGpuInfo(
 }
 
 #if BUILDFLAG(IS_WIN)
-void GpuDataManagerImpl::UpdateDxDiagNode(
-    const gpu::DxDiagNode& dx_diagnostics) {
-  base::AutoLock auto_lock(lock_);
-  private_->UpdateDxDiagNode(dx_diagnostics);
-}
-
 void GpuDataManagerImpl::UpdateDx12Info(uint32_t d3d12_feature_level) {
   base::AutoLock auto_lock(lock_);
   private_->UpdateDx12Info(d3d12_feature_level);
@@ -194,11 +188,6 @@ void GpuDataManagerImpl::UpdateOverlayInfo(
 void GpuDataManagerImpl::UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
   base::AutoLock auto_lock(lock_);
   private_->UpdateDXGIInfo(std::move(dxgi_info));
-}
-
-void GpuDataManagerImpl::UpdateDxDiagNodeRequestStatus(bool request_continues) {
-  base::AutoLock auto_lock(lock_);
-  private_->UpdateDxDiagNodeRequestStatus(request_continues);
 }
 
 void GpuDataManagerImpl::UpdateDx12RequestStatus(bool request_continues) {

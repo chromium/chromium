@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
-#include "gpu/ipc/common/dx_diag_node_mojom_traits.h"
 #include "gpu/ipc/common/gpu_info.mojom.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -376,10 +375,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-  static const gpu::DxDiagNode& dx_diagnostics(const gpu::GPUInfo& input) {
-    return input.dx_diagnostics;
-  }
-
   static uint32_t d3d12_feature_level(const gpu::GPUInfo& input) {
     return input.d3d12_feature_level;
   }

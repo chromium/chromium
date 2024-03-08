@@ -132,8 +132,6 @@ source_set("config_sources") {
   sources = [
     "device_perf_info.cc",
     "device_perf_info.h",
-    "dx_diag_node.cc",
-    "dx_diag_node.h",
     "gpu_blocklist.cc",
     "gpu_blocklist.h",
     "gpu_control_list.cc",
@@ -235,10 +233,7 @@ source_set("config_sources") {
     sources += [ "gpu_info_collector_android.cc" ]
   }
   if (is_win) {
-    sources += [
-      "gpu_dx_diagnostics_win.cc",
-      "gpu_info_collector_win.cc",
-    ]
+    sources += [ "gpu_info_collector_win.cc" ]
     libs = [
       "dxgi.lib",
       "dxguid.lib",

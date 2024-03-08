@@ -5,15 +5,10 @@
 module viz.mojom;
 
 import "gpu/ipc/common/device_perf_info.mojom";
-import "gpu/ipc/common/dx_diag_node.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 
 // This InfoCollectionGpuService is provided by the info-collection GPU process.
 interface InfoCollectionGpuService {
-  // Requests DX diagnostic data on Windows for about:gpu.
-  [EnableIf=is_win]
-  RequestDxDiagNodeInfo() => (gpu.mojom.DxDiagNode dx_diagnostics);
-
   // Requests DX12 version and device performance info on Windows.
   // Returning whether DX12 are supported, and if yes, the supported feature
   // level, together with a few metrics related to the device's performance for

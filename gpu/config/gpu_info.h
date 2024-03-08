@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "gpu/config/dx_diag_node.h"
 #include "gpu/gpu_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/geometry/size.h"
@@ -463,9 +462,6 @@ struct GPU_EXPORT GPUInfo {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-  // The information returned by the DirectX Diagnostics Tool.
-  DxDiagNode dx_diagnostics;
-
   // The supported d3d feature level in the gpu driver;
   uint32_t d3d12_feature_level = 0;
 

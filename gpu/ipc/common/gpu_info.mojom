@@ -5,7 +5,6 @@
 // gpu/config/gpu_info.h
 module gpu.mojom;
 
-import "gpu/ipc/common/dx_diag_node.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -188,8 +187,6 @@ struct GpuInfo {
   [EnableIf=is_mac]
   uint32 macos_specific_texture_target;
 
-  [EnableIf=is_win]
-  DxDiagNode dx_diagnostics;
   [EnableIf=is_win]
   uint32 d3d12_feature_level;
   [EnableIf=is_win]

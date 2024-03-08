@@ -37,8 +37,6 @@ class VIZ_SERVICE_EXPORT InfoCollectionGpuServiceImpl
 
   ~InfoCollectionGpuServiceImpl() override;
 
-  void RequestDxDiagNodeInfo(RequestDxDiagNodeInfoCallback callback) override;
-
   void GetGpuSupportedDx12VersionAndDevicePerfInfo(
       GetGpuSupportedDx12VersionAndDevicePerfInfoCallback callback) override;
 
@@ -49,7 +47,6 @@ class VIZ_SERVICE_EXPORT InfoCollectionGpuServiceImpl
   void BindOnIO(
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver);
 
-  void RequestDxDiagNodeInfoOnMain(RequestDxDiagNodeInfoCallback callback);
 
   void GetGpuSupportedDx12VersionAndDevicePerfInfoOnMain(
       GetGpuSupportedDx12VersionAndDevicePerfInfoCallback callback);

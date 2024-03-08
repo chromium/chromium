@@ -35,11 +35,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 
  private:
   // TraitsTestService:
-  void EchoDxDiagNode(const DxDiagNode& d,
-                      EchoDxDiagNodeCallback callback) override {
-    std::move(callback).Run(d);
-  }
-
   void EchoGpuDevice(const GPUInfo::GPUDevice& g,
                      EchoGpuDeviceCallback callback) override {
     std::move(callback).Run(g);
@@ -91,18 +86,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 };
 
 }  // namespace
-
-TEST_F(StructTraitsTest, DxDiagNode) {
-  gpu::DxDiagNode input;
-  input.values["abc"] = "123";
-  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
-  gpu::DxDiagNode output;
-  remote->EchoDxDiagNode(input, &output);
-
-  gpu::DxDiagNode test_dx_diag_node;
-  test_dx_diag_node.values["abc"] = "123";
-  EXPECT_EQ(test_dx_diag_node.values, output.values);
-}
 
 TEST_F(StructTraitsTest, GPUDevice) {
   gpu::GPUInfo::GPUDevice input;
@@ -173,7 +156,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const bool supports_overlays = true;
   const OverlaySupport yuy2_overlay_support = OverlaySupport::kScaling;
   const OverlaySupport nv12_overlay_support = OverlaySupport::kNone;
-  const DxDiagNode dx_diagnostics;
 #endif
   const VideoDecodeAcceleratorSupportedProfiles
       video_decode_accelerator_supported_profiles;
@@ -212,7 +194,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.overlay_info.supports_overlays = supports_overlays;
   input.overlay_info.yuy2_overlay_support = yuy2_overlay_support;
   input.overlay_info.nv12_overlay_support = nv12_overlay_support;
-  input.dx_diagnostics = dx_diagnostics;
 #endif
   input.video_decode_accelerator_supported_profiles =
       video_decode_accelerator_supported_profiles;
@@ -275,7 +256,6 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(supports_overlays, output.overlay_info.supports_overlays);
   EXPECT_EQ(yuy2_overlay_support, output.overlay_info.yuy2_overlay_support);
   EXPECT_EQ(nv12_overlay_support, output.overlay_info.nv12_overlay_support);
-  EXPECT_EQ(dx_diagnostics.values, output.dx_diagnostics.values);
 #endif
   for (size_t i = 0; i < video_decode_accelerator_supported_profiles.size();
        i++) {

@@ -333,7 +333,6 @@ mojom("interfaces") {
     "capabilities.mojom",
     "context_result.mojom",
     "device_perf_info.mojom",
-    "dx_diag_node.mojom",
     "gpu_disk_cache_type.mojom",
     "gpu_feature_info.mojom",
     "gpu_info.mojom",
@@ -418,16 +417,6 @@ mojom("interfaces") {
       ]
       traits_sources = [ "device_perf_info_mojom_traits.cc" ]
       traits_headers = [ "device_perf_info_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.DxDiagNode"
-          cpp = "::gpu::DxDiagNode"
-        },
-      ]
-      traits_sources = [ "dx_diag_node_mojom_traits.cc" ]
-      traits_headers = [ "dx_diag_node_mojom_traits.h" ]
     },
     {
       types = [
