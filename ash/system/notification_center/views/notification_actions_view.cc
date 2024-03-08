@@ -20,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -121,9 +122,8 @@ void NotificationActionsView::ReplyButtonPressed(
   inline_reply_container_->SetVisible(true);
   buttons_container_->SetVisible(false);
 
-  message_center_utils::FadeOutView(
-      this,
-      base::BindOnce(
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(
           [](base::WeakPtr<views::View> parent, views::View* buttons_container,
              views::View* inline_reply_container) {
             if (!parent) {
@@ -133,10 +133,10 @@ void NotificationActionsView::ReplyButtonPressed(
             inline_reply_container->SetVisible(true);
           },
           weak_factory_.GetWeakPtr(), buttons_container_,
-          inline_reply_container_),
-      /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs,
-      gfx::Tween::LINEAR,
-      "Ash.NotificationView.ActionButtonsRow.FadeOut.AnimationSmoothness");
+          inline_reply_container_))
+      .Once()
+      .SetDuration(base::Milliseconds(kActionButtonsFadeOutAnimationDurationMs))
+      .SetOpacity(this, 0.0);
 
   message_center_utils::FadeInView(
       this, kActionButtonsFadeOutAnimationDurationMs,
