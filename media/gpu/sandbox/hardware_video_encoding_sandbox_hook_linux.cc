@@ -94,8 +94,7 @@ bool HardwareVideoEncodingPreSandboxHook(
   }
 
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
-      command_set, permissions, sandbox::policy::SandboxLinux::PreSandboxHook(),
-      options);
+      command_set, permissions, options);
 
   // TODO(b/248528896): the hardware video encoding sandbox is really only
   // useful when building with VA-API or V4L2 (otherwise, we're not really doing

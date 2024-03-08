@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/process/set_process_title.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -665,21 +664,11 @@ sandbox::syscall_broker::BrokerCommandSet CommandSetForGPU(
   return command_set;
 }
 
-bool BrokerProcessPreSandboxHook(
-    sandbox::policy::SandboxLinux::Options options) {
-  // Oddly enough, we call back into gpu to invoke this service manager
-  // method, since it is part of the embedder component, and the service
-  // mananger's sandbox component is a lower layer that can't depend on it.
-  base::SetProcessTitleFromCommandLine(nullptr);
-  return true;
-}
-
 }  // namespace
 
 bool GpuPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
-      CommandSetForGPU(options), FilePermissionsForGpu(options),
-      base::BindOnce(BrokerProcessPreSandboxHook), options);
+      CommandSetForGPU(options), FilePermissionsForGpu(options), options);
 
   if (!LoadLibrariesForGpu(options))
     return false;

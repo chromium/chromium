@@ -241,8 +241,7 @@ bool HardwareVideoDecodingPreSandboxHook(
   // TODO(b/210759684): should this still be called if |command_set| or
   // |permissions| is empty?
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
-      command_set, permissions, sandbox::policy::SandboxLinux::PreSandboxHook(),
-      options);
+      command_set, permissions, options);
   return true;
 }
 

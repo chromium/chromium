@@ -73,9 +73,7 @@ bool SpeechRecognitionPreSandboxHook(
                                    sandbox::syscall_broker::COMMAND_READLINK,
                                    sandbox::syscall_broker::COMMAND_STAT,
                                }),
-                               GetSodaFilePermissions(),
-                               sandbox::policy::SandboxLinux::PreSandboxHook(),
-                               options);
+                               GetSodaFilePermissions(), options);
   instance->EngageNamespaceSandboxIfPossible();
 
   return true;

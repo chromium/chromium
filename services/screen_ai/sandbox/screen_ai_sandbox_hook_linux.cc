@@ -73,7 +73,7 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   instance->StartBrokerProcess(
       MakeBrokerCommandSet({sandbox::syscall_broker::COMMAND_ACCESS,
                             sandbox::syscall_broker::COMMAND_OPEN}),
-      permissions, sandbox::policy::SandboxLinux::PreSandboxHook(), options);
+      permissions, options);
   instance->EngageNamespaceSandboxIfPossible();
 
   return true;

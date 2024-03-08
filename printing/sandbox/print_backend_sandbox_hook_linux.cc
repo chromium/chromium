@@ -87,9 +87,8 @@ bool PrintBackendPreSandboxHook(
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
 
-  instance->StartBrokerProcess(
-      GetPrintBackendBrokerCommandSet(), GetPrintBackendFilePermissions(),
-      sandbox::policy::SandboxLinux::PreSandboxHook(), options);
+  instance->StartBrokerProcess(GetPrintBackendBrokerCommandSet(),
+                               GetPrintBackendFilePermissions(), options);
 
   instance->EngageNamespaceSandboxIfPossible();
   return true;

@@ -69,9 +69,7 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
                                    sandbox::syscall_broker::COMMAND_RENAME,
                                    sandbox::syscall_broker::COMMAND_UNLINK,
                                }),
-                               GetImeFilePermissions(),
-                               sandbox::policy::SandboxLinux::PreSandboxHook(),
-                               options);
+                               GetImeFilePermissions(), options);
 
   // Try to load IME decoder shared library.
   // TODO(crbug.com/1217513): This is not ideal, as it means rule-based

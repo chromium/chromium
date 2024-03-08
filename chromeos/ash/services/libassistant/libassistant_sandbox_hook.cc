@@ -69,9 +69,8 @@ bool LibassistantPreSandboxHook(
   LibassistantLoaderImpl::GetInstance()->LoadBlocking(kLibAssistantDlcRootPath);
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
-  instance->StartBrokerProcess(
-      GetLibassistantBrokerCommandSet(), GetLibassistantFilePermissions(),
-      sandbox::policy::SandboxLinux::PreSandboxHook(), options);
+  instance->StartBrokerProcess(GetLibassistantBrokerCommandSet(),
+                               GetLibassistantFilePermissions(), options);
 
   return true;
 }

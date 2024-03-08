@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/process/set_process_title.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
@@ -123,7 +124,6 @@ base::ScopedFD OpenProc(int proc_fd) {
 }
 
 bool UpdateProcessTypeAndEnableSandbox(
-    SandboxLinux::PreSandboxHook broker_side_hook,
     SandboxLinux::Options options,
     const syscall_broker::BrokerSandboxConfig& policy) {
   base::CommandLine::StringVector exec =
@@ -145,8 +145,10 @@ bool UpdateProcessTypeAndEnableSandbox(
           << new_process_type;
   command_line->AppendSwitchASCII(switches::kProcessType, new_process_type);
 
-  if (broker_side_hook)
-    CHECK(std::move(broker_side_hook).Run(options));
+  // Update the process title. The argv was already cached by the call to
+  // SetProcessTitleFromCommandLine in content_main_runner.cc, so we can pass
+  // NULL here (we don't have the original argv at this point).
+  base::SetProcessTitleFromCommandLine(nullptr);
 
   return SandboxSeccompBPF::StartSandboxWithExternalPolicy(
       std::make_unique<BrokerProcessPolicy>(policy.allowed_command_set),
@@ -557,7 +559,6 @@ bool SandboxLinux::LimitAddressSpace(int* error) {
 void SandboxLinux::StartBrokerProcess(
     const syscall_broker::BrokerCommandSet& allowed_command_set,
     std::vector<syscall_broker::BrokerFilePermission> permissions,
-    PreSandboxHook broker_side_hook,
     const Options& options) {
   // Use EACCES as the policy's default error number to remain consistent with
   // other LSMs like AppArmor and Landlock. Some userspace code, such as
@@ -572,9 +573,8 @@ void SandboxLinux::StartBrokerProcess(
 
   // The initialization callback will perform generic initialization and then
   // call broker_sandboxer_callback.
-  CHECK(broker_process_->Fork(base::BindOnce(&UpdateProcessTypeAndEnableSandbox,
-                                             std::move(broker_side_hook),
-                                             options)));
+  CHECK(broker_process_->Fork(
+      base::BindOnce(&UpdateProcessTypeAndEnableSandbox, options)));
 }
 
 bool SandboxLinux::ShouldBrokerHandleSyscall(int sysno) const {
