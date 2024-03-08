@@ -363,9 +363,9 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
   if (displays_configured_callback_)
     displays_configured_callback_.Run();
 
-  const bool test_only =
-      !modeset_flags.Has(display::ModesetFlag::kCommitModeset);
-  if (!test_only && config_success) {
+  const bool is_commit =
+      modeset_flags.Has(display::ModesetFlag::kCommitModeset);
+  if (is_commit && config_success) {
     for (const auto& controller : controllers_to_configure)
       FindDisplay(controller.display_id)->SetOrigin(controller.origin);
   }
