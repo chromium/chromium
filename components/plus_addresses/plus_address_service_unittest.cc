@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -33,6 +34,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
@@ -70,7 +73,7 @@ auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
 namespace plus_addresses {
 
 class PlusAddressServiceTest : public ::testing::Test {
- protected:
+ private:
   // Not used directly, but required for `IdentityTestEnvironment` to work.
   base::test::TaskEnvironment task_environment_;
 };
@@ -176,53 +179,63 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
 // Tests the PlusAddressService ability to make network requests.
 class PlusAddressServiceRequestsTest : public ::testing::Test {
  public:
-  explicit PlusAddressServiceRequestsTest() {
+  explicit PlusAddressServiceRequestsTest()
+      : kPlusProfilesEndpoint(
+            kServerUrl.Resolve(kServerPlusProfileEndpoint).spec()),
+        kReservePlusAddressEndpoint(
+            kServerUrl.Resolve(kServerReservePlusAddressEndpoint).spec()),
+        kCreatePlusAddressEndpoint(
+            kServerUrl.Resolve(kServerCreatePlusAddressEndpoint).spec()),
+        test_shared_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kFeature, GetFieldTrialParams());
-    test_shared_loader_factory =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory);
-    plus_profiles_endpoint =
-        server_url.Resolve(kServerPlusProfileEndpoint).spec();
-    reserve_plus_address_endpoint =
-        server_url.Resolve(kServerReservePlusAddressEndpoint).spec();
-    confirm_plus_address_endpoint =
-        server_url.Resolve(kServerCreatePlusAddressEndpoint).spec();
+    identity_env().MakeAccountAvailable(kSigninAccount,
+                                        {signin::ConsentLevel::kSignin});
+    identity_env().SetAutomaticIssueOfAccessTokens(true);
   }
 
  protected:
-  base::FieldTrialParams GetFieldTrialParams() {
-    return {{"server-url", server_url.spec()},
+  static constexpr std::string_view kSigninAccount = "plus@plus.plus";
+
+  // Constants that cannot be created at compile time:
+  const GURL kServerUrl = GURL("https://server.example");
+  const std::string kPlusProfilesEndpoint;
+  const std::string kReservePlusAddressEndpoint;
+  const std::string kCreatePlusAddressEndpoint;
+
+  base::FieldTrialParams GetFieldTrialParams() const {
+    return {{"server-url", kServerUrl.spec()},
             {"oauth-scope", "scope.example"}};
   }
 
-  const GURL server_url = GURL("https://server.example");
-  signin::AccessTokenInfo eternal_access_token_info =
-      signin::AccessTokenInfo("auth-token", base::Time::Max(), "");
-  network::TestURLLoaderFactory test_url_loader_factory;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory;
-  std::string plus_profiles_endpoint;
-  std::string reserve_plus_address_endpoint;
-  std::string confirm_plus_address_endpoint;
+  signin::IdentityTestEnvironment& identity_env() { return identity_test_env_; }
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env_.identity_manager();
+  }
+  const scoped_refptr<network::SharedURLLoaderFactory>&
+  shared_loader_factory() {
+    return test_shared_loader_factory_;
+  }
+  network::TestURLLoaderFactory& url_loader_factory() {
+    return test_url_loader_factory_;
+  }
 
  private:
-  // Required for `IdentityTestEnvironment` and `InProcessDataDecoder` to work.
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   data_decoder::test::InProcessDataDecoder decoder_;
 };
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), nullptr,
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -234,8 +247,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
 
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint,
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint,
       test::MakeCreationResponse(PlusProfile({.facet = site,
                                               .plus_address = plus_address,
                                               .is_confirmed = false})));
@@ -247,16 +260,10 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), nullptr,
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -268,8 +275,8 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
 
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint,
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint,
       test::MakeCreationResponse(PlusProfile({.facet = site,
                                               .plus_address = plus_address,
                                               .is_confirmed = true})));
@@ -281,16 +288,10 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), nullptr,
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
 
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
@@ -302,23 +303,17 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
 
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint, "", net::HTTP_BAD_REQUEST);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint, "", net::HTTP_BAD_REQUEST);
   ASSERT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().has_value());
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), nullptr,
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -331,8 +326,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
 
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint,
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint,
       test::MakeCreationResponse(PlusProfile({.facet = site,
                                               .plus_address = plus_address,
                                               .is_confirmed = true})));
@@ -352,16 +347,10 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), nullptr,
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   std::string plus_address = "plus+remote@plus.plus";
   ASSERT_FALSE(service.IsPlusAddress(plus_address));
 
@@ -373,8 +362,8 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
 
   // Check that the future callback is still blocked, and unblock it.
   ASSERT_FALSE(future.IsReady());
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint, "", net::HTTP_BAD_REQUEST);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, "", net::HTTP_BAD_REQUEST);
   ASSERT_TRUE(future.IsReady());
 
   // An error is propagated from the callback and plus_address is not saved.
@@ -386,48 +375,41 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryAccountCleared_TogglesPlusAddressCreationOff) {
-  // Setup state where the PlusAddressService would create a PlusAddress.
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakePrimaryAccountAvailable("plus@plus.plus",
-                                                signin::ConsentLevel::kSignin);
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), nullptr,
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
   const std::string plus_address = "plus+remote@plus.plus";
   // Toggle creation off by removing the primary account.
-  identity_test_env.ClearPrimaryAccount();
+  identity_env().ClearPrimaryAccount();
 
   // Verify that Plus Address creation doesn't occur.
   service.ReservePlusAddress(test_origin, base::DoNothing());
   service.ConfirmPlusAddress(test_origin, plus_address, base::DoNothing());
-  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Toggle creation back on by signing in again.
-  identity_test_env.MakePrimaryAccountAvailable("plus@plus.plus",
-                                                signin::ConsentLevel::kSignin);
+  identity_env().MakePrimaryAccountAvailable("plus@plus.plus",
+                                             signin::ConsentLevel::kSignin);
 
   // Verify that Plus Address creation occurs and makes a network request.
   base::test::TestFuture<const PlusProfileOrError&> reserve;
   service.ReservePlusAddress(test_origin, reserve.GetCallback());
-  EXPECT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint,
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint,
       test::MakeCreationResponse(
           PlusProfile({.facet = site, .plus_address = plus_address})));
   EXPECT_EQ(reserve.Get()->plus_address, plus_address);
 
   base::test::TestFuture<const PlusProfileOrError&> confirm;
   service.ConfirmPlusAddress(test_origin, plus_address, confirm.GetCallback());
-  EXPECT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint,
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint,
       test::MakeCreationResponse(
           PlusProfile({.facet = site, .plus_address = plus_address})));
   EXPECT_EQ(confirm.Get()->plus_address, plus_address);
@@ -436,52 +418,47 @@ TEST_F(PlusAddressServiceRequestsTest,
 
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryRefreshTokenError_TogglesPlusAddressCreationOff) {
-  // Setup state where the PlusAddressService would create a PlusAddress.
-  signin::IdentityTestEnvironment identity_test_env;
-  AccountInfo primary_account = identity_test_env.MakePrimaryAccountAvailable(
-      "plus@plus.plus", signin::ConsentLevel::kSignin);
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  CoreAccountInfo primary_account =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  PlusAddressService service(identity_manager(), nullptr,
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
   const std::string plus_address = "plus+remote@plus.plus";
 
   // Toggle creation off by triggering an error for the primary refresh token.
-  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+  identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   // Verify that Plus Address creation doesn't occur.
   service.ReservePlusAddress(test_origin, base::DoNothing());
   service.ConfirmPlusAddress(test_origin, plus_address, base::DoNothing());
-  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Toggle creation back on by removing the error.
-  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+  identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE));
 
   // Verify that Plus Address creation occurs and makes a network request.
   base::test::TestFuture<const PlusProfileOrError&> reserve;
   service.ReservePlusAddress(test_origin, reserve.GetCallback());
-  EXPECT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint,
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint,
       test::MakeCreationResponse(
           PlusProfile({.facet = site, .plus_address = plus_address})));
   EXPECT_EQ(reserve.Get()->plus_address, plus_address);
 
   base::test::TestFuture<const PlusProfileOrError&> confirm;
   service.ConfirmPlusAddress(test_origin, plus_address, confirm.GetCallback());
-  EXPECT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint,
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint,
       test::MakeCreationResponse(
           PlusProfile({.facet = site, .plus_address = plus_address})));
   EXPECT_EQ(confirm.Get()->plus_address, plus_address);
@@ -491,20 +468,16 @@ class PlusAddressHttpForbiddenResponseTest
     : public PlusAddressServiceRequestsTest {
  public:
   PlusAddressHttpForbiddenResponseTest()
-      : service_(identity_test_env_.identity_manager(),
+      : service_(identity_manager(),
                  nullptr,
                  std::make_unique<PlusAddressHttpClientImpl>(
-                     identity_test_env_.identity_manager(),
-                     test_shared_loader_factory),
+                     identity_manager(),
+                     shared_loader_factory()),
                  /*webdata_service=*/nullptr) {
     base::FieldTrialParams params =
         PlusAddressServiceRequestsTest::GetFieldTrialParams();
     params[features::kDisableForForbiddenUsers.name] = "true";
     features_.InitAndEnableFeatureWithParameters(features::kFeature, params);
-
-    identity_test_env_.MakeAccountAvailable("plus@plus.plus",
-                                            {signin::ConsentLevel::kSignin});
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
  protected:
@@ -512,7 +485,6 @@ class PlusAddressHttpForbiddenResponseTest
 
  private:
   base::test::ScopedFeatureList features_;
-  signin::IdentityTestEnvironment identity_test_env_;
   PlusAddressService service_;
 };
 
@@ -527,15 +499,15 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, RepeatedHttpForbiddenFromConfirm) {
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_TRUE(service().is_enabled());
 
   // A second `HTTP_FORBIDDEN` responses disables it.
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_FALSE(service().is_enabled());
 }
 
@@ -556,15 +528,15 @@ TEST_F(PlusAddressHttpForbiddenResponseTest,
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_TRUE(service().is_enabled());
 
   // A second `HTTP_FORBIDDEN` responses disables it.
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_TRUE(service().is_enabled());
 }
 
@@ -579,20 +551,20 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, OtherErrorsHaveNoEffect) {
 
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
   service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_TRUE(service().is_enabled());
 
   // A failure that is not `HTTP_FORBIDDEN` does not disable the service.
   service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint, "", net::HTTP_REQUEST_TIMEOUT));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint, "", net::HTTP_REQUEST_TIMEOUT));
   EXPECT_TRUE(service().is_enabled());
 
   // But a second `HTTP_FORBIDDEN` does.
   service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      reserve_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_FALSE(service().is_enabled());
 }
 
@@ -610,15 +582,15 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
   EXPECT_TRUE(service().is_enabled());
 
   // After a single successful call ...
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
-  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-      confirm_plus_address_endpoint,
+  ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kCreatePlusAddressEndpoint,
       test::MakeCreationResponse(PlusProfile({.facet = "test.example",
                                               .plus_address = kPlusAddress,
                                               .is_confirmed = true}))));
@@ -630,8 +602,8 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
     // But a second `HTTP_FORBIDDEN` does.
     service().ConfirmPlusAddress(kOtherOrigin, kOtherPlusAddress,
                                  base::DoNothing());
-    ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
-        confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+    ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+        kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
     EXPECT_TRUE(service().is_enabled());
   }
 }
@@ -659,29 +631,23 @@ class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
 // TODO: b/305696884 - Make this test simulate timer firing instead of
 // directly calling SyncPlusAddressMapping.
 TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(
-      identity_test_env.identity_manager(), prefs(),
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), prefs(),
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   // Unblock the initial polling request.
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint, test::MakeListResponse({}));
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint, test::MakeListResponse({}));
 
   EXPECT_FALSE(service.IsPlusAddress("plus+foo@plus.plus"));
   EXPECT_FALSE(service.IsPlusAddress("plus+bar@plus.plus"));
 
   service.SyncPlusAddressMapping();
   // Note: The above call blocks until we provide a response to the request.
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint,
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint,
       test::MakeListResponse(
           {PlusProfile{.facet = "foo.com",
                        .plus_address = "plus+foo@plus.plus"},
@@ -705,28 +671,23 @@ TEST_F(PlusAddressServicePolling,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kFeature, {
-                              {"server-url", server_url.spec()},
+                              {"server-url", kServerUrl.spec()},
                               {"oauth-scope", "scope.example"},
                               {"sync-with-server", "true"},
                               {"disable-for-forbidden-users", "true"},
                           });
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(
-      identity_test_env.identity_manager(), prefs(),
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), prefs(),
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
-  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint, "", net::HTTP_NOT_FOUND);
+  ASSERT_EQ(url_loader_factory().NumPending(), 1);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint, "", net::HTTP_NOT_FOUND);
   EXPECT_TRUE(service.is_enabled());
 }
 
@@ -735,34 +696,30 @@ TEST_F(PlusAddressServicePolling,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kFeature, {
-                              {"server-url", server_url.spec()},
+                              {"server-url", kServerUrl.spec()},
                               {"oauth-scope", "scope.example"},
                               {"sync-with-server", "true"},
                               {"disable-for-forbidden-users", "true"},
+
                           });
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(
-      identity_test_env.identity_manager(), prefs(),
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), prefs(),
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
-  ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint, "", net::HTTP_FORBIDDEN);
+  ASSERT_EQ(url_loader_factory().NumPending(), 1);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
   // Simulate failed responses for the successive retry requests
   for (int i = 0; i < PlusAddressService::kMaxHttpForbiddenResponses; i++) {
     EXPECT_TRUE(service.is_enabled());
-    ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
-    test_url_loader_factory.SimulateResponseForPendingRequest(
-        plus_profiles_endpoint, "", net::HTTP_FORBIDDEN);
+    ASSERT_EQ(url_loader_factory().NumPending(), 1);
+    url_loader_factory().SimulateResponseForPendingRequest(
+        kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
   }
   // Service is finally disabled once retries are exhausted.
   EXPECT_FALSE(service.is_enabled());
@@ -770,57 +727,44 @@ TEST_F(PlusAddressServicePolling,
 
 TEST_F(PlusAddressServicePolling,
        DisableForForbiddenUsers_Disabled_403DoesntRetryOrDisableFeature) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
   // The service starts the timer on construction and issues a request to
   // poll.
-  PlusAddressService service(
-      identity_test_env.identity_manager(), prefs(),
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), prefs(),
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   EXPECT_TRUE(service.is_enabled());
   // Unblock the initial polling request.
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint, "", net::HTTP_FORBIDDEN);
-  EXPECT_EQ(test_url_loader_factory.NumPending(), 0);
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
   EXPECT_TRUE(service.is_enabled());
 }
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
-  // Setup state where the PlusAddressService begins polling on creation.
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakePrimaryAccountAvailable("plus1@plus.plus",
-                                                signin::ConsentLevel::kSignin);
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), prefs(),
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+  PlusAddressService service(identity_manager(), prefs(),
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   // Unblock initial poll.
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint, test::MakeListResponse({}));
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint, test::MakeListResponse({}));
 
-  identity_test_env.ClearPrimaryAccount();
+  identity_env().ClearPrimaryAccount();
   service.SyncPlusAddressMapping();
   // The above doesn't block since it doesn't make network requests in this
   // state.
 
   // Toggle polling back on by signing into a primary account.
-  identity_test_env.MakePrimaryAccountAvailable("plus2@plus.plus",
-                                                signin::ConsentLevel::kSignin);
+  identity_env().MakePrimaryAccountAvailable("plus2@plus.plus",
+                                             signin::ConsentLevel::kSignin);
   service.SyncPlusAddressMapping();
   // TODO: b/305696884 - Remove above call to verify that observing
   // OnPrimaryAccountChanged will trigger this via CreateAndStartTimer().
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint,
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint,
       test::MakeListResponse({PlusProfile{
           .facet = "foo.com", .plus_address = "plus+foo@plus.plus"}}));
   url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
@@ -831,24 +775,18 @@ TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
-  // Setup state where the PlusAddressService begins polling on creation.
-  signin::IdentityTestEnvironment identity_test_env;
   CoreAccountInfo primary_account =
-      identity_test_env.MakePrimaryAccountAvailable(
-          "plus1@plus.plus", signin::ConsentLevel::kSignin);
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
-
-  PlusAddressService service(
-      identity_test_env.identity_manager(), prefs(),
-      std::make_unique<PlusAddressHttpClientImpl>(
-          identity_test_env.identity_manager(), test_shared_loader_factory),
-      /*webdata_service=*/nullptr);
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  PlusAddressService service(identity_manager(), prefs(),
+                             std::make_unique<PlusAddressHttpClientImpl>(
+                                 identity_manager(), shared_loader_factory()),
+                             /*webdata_service=*/nullptr);
   // Unblock initial poll.
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint, test::MakeListResponse({}));
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint, test::MakeListResponse({}));
 
   // Toggle creation off by triggering an error for the primary refresh token.
-  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+  identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   service.SyncPlusAddressMapping();
@@ -856,14 +794,14 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
   // state.
 
   // Toggle creation back on by removing the error.
-  identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
+  identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE));
   service.SyncPlusAddressMapping();
   // TODO: b/305696884 - Remove above call to verify that observing
   // OnPrimaryAccountChanged will trigger this via CreateAndStartTimer().
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint,
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kPlusProfilesEndpoint,
       test::MakeListResponse({PlusProfile{
           .facet = "foo.com", .plus_address = "plus+foo@plus.plus"}}));
   url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
