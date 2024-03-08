@@ -1503,8 +1503,8 @@ bypass any signature checking by binplanting a DLL, or just by performing
 whatever changes they like on the system, so is outside the threat model.
 
 #### Telemetry
-A ping with the value `kEventAppCommandBegin` = `40` is sent if usagestats are
-enabled when an app command is launched.
+A ping with the value `kEventAppCommandComplete` = `41` is sent if usagestats
+are enabled after an app command completes execution.
 
 ### Policy Status API
 The feature allows Chrome and other applications to query the policies that are
