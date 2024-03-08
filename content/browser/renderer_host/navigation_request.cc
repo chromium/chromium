@@ -7603,6 +7603,17 @@ void NavigationRequest::SetNavigationClient(
 }
 
 bool NavigationRequest::NeedsUrlLoader() {
+#if BUILDFLAG(IS_ANDROID)
+  // If the navigation is for a PDF file, Chrome on Android will render it with
+  // a Java NativePage object and the navigation will always be main frame. The
+  // NativePage is responsible for reading the file and thus no URLLoader is
+  // needed. If NativePage is not enabled for PDF, |is_pdf_| should never be
+  // true.
+  if (is_pdf_) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   bool is_mhtml_subframe_loaded_from_achive =
       IsForMhtmlSubframe() &&
       // Unlike all other MHTML subframe URLs, data-url are loaded via the

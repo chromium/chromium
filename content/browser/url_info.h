@@ -188,7 +188,8 @@ struct CONTENT_EXPORT UrlInfo {
   std::optional<WebExposedIsolationInfo> web_exposed_isolation_info;
 
   // Indicates that the URL directs to PDF content, which should be isolated
-  // from other types of content.
+  // from other types of content.  On Android, this can only be true when a PDF
+  // NativePage is created for a main frame navigation.
   bool is_pdf = false;
 
   // If set, indicates that this UrlInfo is for a document that sets either

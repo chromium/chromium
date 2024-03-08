@@ -1189,6 +1189,22 @@ bool NewProcessUsedForNavigationWhenSameSiteProcessExists(
   return false;
 }
 
+// Check if the document is loaded without URLLoaderClient.
+bool IsDocumentLoadedWithoutUrlLoaderClient(
+    NavigationRequest* navigation_request,
+    GURL url,
+    bool is_same_document,
+    bool is_mhtml_subframe) {
+#if BUILDFLAG(IS_ANDROID)
+  if (navigation_request->GetUrlInfo().is_pdf) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  return is_mhtml_subframe || is_same_document ||
+         url.SchemeIs(url::kDataScheme) || !IsURLHandledByNetworkStack(url);
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -10388,8 +10404,9 @@ void RenderFrameHostImpl::CommitNavigation(
   // A |response| and a |url_loader_client_endpoints| must always be provided,
   // except for edge cases, where another way to load the document exist.
   DCHECK((response_head && url_loader_client_endpoints) ||
-         common_params->url.SchemeIs(url::kDataScheme) || is_same_document ||
-         !IsURLHandledByNetworkStack(common_params->url) || is_mhtml_subframe);
+         IsDocumentLoadedWithoutUrlLoaderClient(
+             navigation_request, common_params->url, is_same_document,
+             is_mhtml_subframe));
 
   // All children of MHTML documents must be MHTML documents.
   // As a defensive measure, crash the browser if something went wrong.
@@ -10593,8 +10610,10 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 
 #if BUILDFLAG(IS_ANDROID)
-    if (effective_scheme == url::kContentScheme) {
-      // Only content:// URLs can load content:// subresources
+    if (effective_scheme == url::kContentScheme &&
+        !navigation_request->GetUrlInfo().is_pdf) {
+      // Only non-PDF content:// URLs can load content:// subresources. PDF URIs
+      // shouldn't load other content URIs.
       non_network_factories.emplace(url::kContentScheme,
                                     ContentURLLoaderFactory::Create());
     }

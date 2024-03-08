@@ -2594,7 +2594,9 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest.
   std::vector<ConsoleMessage> console_messages_;
 
-  // Indicates that this navigation is for PDF content in a renderer.
+  // Indicates that this navigation is for PDF content in a renderer. On
+  // Android, this can only be true when a PDF NativePage is created for
+  // a main frame navigation.
   bool is_pdf_ = false;
 
   // Indicates that this navigation is an embedder-initiated navigation of a
