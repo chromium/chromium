@@ -5,6 +5,8 @@
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 
 export class LensOverlayAppElement extends PolymerElement {
   static get is() {
@@ -13,6 +15,12 @@ export class LensOverlayAppElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  private onCloseButtonClick_() {
+    this.browserProxy_.handler.closeRequestedByOverlay();
   }
 }
 

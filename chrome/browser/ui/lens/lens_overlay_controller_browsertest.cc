@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/lens/lens_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/controls/webview/webview.h"
@@ -17,7 +18,15 @@ namespace {
 
 using State = LensOverlayController::State;
 
-class LensOverlayControllerBrowserTest : public InProcessBrowserTest {};
+class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
+ public:
+  LensOverlayControllerBrowserTest() {
+    feature_list_.InitAndEnableFeature(lens::features::kLensOverlay);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   // State should start in off.
