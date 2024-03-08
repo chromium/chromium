@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 
@@ -56,6 +57,13 @@ void SetAutofillWalletSpecificsFromMaskedIban(
     const Iban& iban,
     sync_pb::AutofillWalletSpecifics* wallet_specifics,
     bool enforce_utf8 = false);
+
+// Sets the fields of the `wallet_specifics` based on the specified
+// `benefit`. If `enforce_utf8`, ids are encoded into UTF-8.
+void SetAutofillWalletSpecificsFromCardBenefit(
+    const CreditCardBenefit& benefit,
+    bool enforce_utf8,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics);
 
 // Sets the field of the `wallet_usage_specifics` based on the specified
 // `wallet_usage_data`.
@@ -128,6 +136,13 @@ void PopulateWalletTypesFromSyncData(
 // operators and does not care about the order of items in the dataset.
 template <class Item>
 bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
+                          const std::vector<Item>& new_data);
+
+// A helper function to compare two sets of data. Returns true if there is any
+// difference. It uses the comparison operators of the Item class, and does
+// not care about the order of items in the dataset.
+template <class Item>
+bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
                           const std::vector<Item>& new_data);
 
 // Returns whether the Virtual Card Usage Data |specifics| is valid data.

@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/functional/overloaded.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -82,6 +83,27 @@ const char* CardNetworkFromWalletCardType(
   }
 }
 
+sync_pb::CardBenefit::CategoryBenefitType
+CategoryBenefitTypeFromBenefitCategory(
+    const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
+  switch (benefit_category) {
+    case CreditCardCategoryBenefit::BenefitCategory::kSubscription:
+      return sync_pb::CardBenefit::SUBSCRIPTION;
+    case CreditCardCategoryBenefit::BenefitCategory::kFlights:
+      return sync_pb::CardBenefit::FLIGHTS;
+    case CreditCardCategoryBenefit::BenefitCategory::kDining:
+      return sync_pb::CardBenefit::DINING;
+    case CreditCardCategoryBenefit::BenefitCategory::kEntertainment:
+      return sync_pb::CardBenefit::ENTERTAINMENT;
+    case CreditCardCategoryBenefit::BenefitCategory::kStreaming:
+      return sync_pb::CardBenefit::STREAMING;
+    case CreditCardCategoryBenefit::BenefitCategory::kGroceryStores:
+      return sync_pb::CardBenefit::GROCERY_STORES;
+    case CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory:
+      return sync_pb::CardBenefit::CATEGORY_BENEFIT_TYPE_UNKNOWN;
+  }
+}
+
 // Creates a CreditCard from the specified `card` specifics.
 CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   CreditCard result(CreditCard::RecordType::kMaskedServerCard, card.id());
@@ -108,8 +130,9 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   result.set_card_issuer(issuer);
   result.set_issuer_id(card.card_issuer().issuer_id());
 
-  if (!card.nickname().empty())
+  if (!card.nickname().empty()) {
     result.SetNickname(base::UTF8ToUTF16(card.nickname()));
+  }
   result.set_instrument_id(card.instrument_id());
 
   CreditCard::VirtualCardEnrollmentState state;
@@ -153,8 +176,9 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
     result.set_virtual_card_enrollment_type(virtual_card_enrollment_type);
   }
 
-  if (!card.card_art_url().empty())
+  if (!card.card_art_url().empty()) {
     result.set_card_art_url(GURL(card.card_art_url()));
+  }
 
   result.set_product_description(base::UTF8ToUTF16(card.product_description()));
 
@@ -345,11 +369,16 @@ void SetAutofillWalletSpecificsFromServerCard(
     wallet_card->set_virtual_card_enrollment_type(virtual_card_enrollment_type);
   }
 
-  if (!card.card_art_url().is_empty())
+  if (!card.card_art_url().is_empty()) {
     wallet_card->set_card_art_url(card.card_art_url().spec());
+  }
 
   wallet_card->set_product_description(
       base::UTF16ToUTF8(card.product_description()));
+
+  if (!card.product_terms_url().is_empty()) {
+    wallet_card->set_product_terms_url(card.product_terms_url().spec());
+  }
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(
@@ -403,6 +432,54 @@ void SetAutofillWalletSpecificsFromMaskedIban(
   masked_iban->set_prefix(base::UTF16ToUTF8(iban.prefix()));
   masked_iban->set_suffix(base::UTF16ToUTF8(iban.suffix()));
   masked_iban->set_length(iban.length());
+}
+
+void SetAutofillWalletSpecificsFromCardBenefit(
+    const CreditCardBenefit& benefit,
+    bool enforce_utf8,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics) {
+  sync_pb::CardBenefit* wallet_benefit =
+      wallet_specifics.mutable_masked_card()->add_card_benefit();
+  const CreditCardBenefitBase& benefit_base = absl::visit(
+      [](const auto& a) -> const CreditCardBenefitBase& { return a; }, benefit);
+  if (enforce_utf8) {
+    wallet_benefit->set_benefit_id(
+        base::Base64Encode(benefit_base.benefit_id().value()));
+  } else {
+    wallet_benefit->set_benefit_id(benefit_base.benefit_id().value());
+  }
+  wallet_benefit->set_benefit_description(
+      base::UTF16ToUTF8(benefit_base.benefit_description()));
+  if (!benefit_base.start_time().is_min()) {
+    wallet_benefit->set_start_time_unix_epoch_milliseconds(
+        benefit_base.start_time().InMillisecondsSinceUnixEpoch());
+  }
+  if (!benefit_base.expiry_time().is_max()) {
+    wallet_benefit->set_end_time_unix_epoch_milliseconds(
+        benefit_base.expiry_time().InMillisecondsSinceUnixEpoch());
+  }
+  absl::visit(
+      base::Overloaded{
+          [&wallet_benefit](const CreditCardFlatRateBenefit&) {
+            wallet_benefit->mutable_flat_rate_benefit();
+          },
+          [&wallet_benefit](const CreditCardCategoryBenefit& category_benefit) {
+            wallet_benefit->mutable_category_benefit()
+                ->set_category_benefit_type(
+                    CategoryBenefitTypeFromBenefitCategory(
+                        category_benefit.benefit_category()));
+          },
+          [&wallet_benefit](const CreditCardMerchantBenefit& merchant_benefit) {
+            sync_pb::CardBenefit_MerchantBenefit* wallet_merchant_benefit =
+                wallet_benefit->mutable_merchant_benefit();
+            for (const url::Origin& merchant_origin :
+                 merchant_benefit.merchant_domains()) {
+              wallet_merchant_benefit->add_merchant_domain(
+                  merchant_origin.Serialize());
+            }
+          },
+      },
+      benefit);
 }
 
 void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
@@ -755,6 +832,19 @@ template bool AreAnyItemsDifferent<>(
 template bool AreAnyItemsDifferent<>(
     const std::vector<std::unique_ptr<BankAccount>>&,
     const std::vector<BankAccount>&);
+
+template <class Item>
+bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
+                          const std::vector<Item>& new_data) {
+  if (old_data.size() != new_data.size()) {
+    return true;
+  }
+
+  return base::MakeFlatSet<Item>(old_data) != base::MakeFlatSet<Item>(new_data);
+}
+
+template bool AreAnyItemsDifferent<>(const std::vector<CreditCardBenefit>&,
+                                     const std::vector<CreditCardBenefit>&);
 
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   // A valid offer has a non-empty id.
