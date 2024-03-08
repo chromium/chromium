@@ -33,6 +33,8 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout.h"
@@ -60,6 +62,9 @@ constexpr int kHeaderRowSpacing = 8;
 constexpr int kButtonTextfieldSpacing = 16;
 constexpr int kButtonImageLabelSpacing = 4;
 constexpr int kButtonBorderThickness = 1;
+constexpr int kTextfieldContainerSpacing = 8;
+constexpr int kInputContainerCornerRadius = 8;
+constexpr gfx::Insets kTextfieldButtonPadding = gfx::Insets::VH(0, 8);
 
 }  // namespace
 
@@ -131,17 +136,7 @@ MahiMenuView::MahiMenuView() {
                               views::LayoutAlignment::kStart);
   summary_button_ = AddChildView(std::move(summary_button));
 
-  auto textfield = std::make_unique<views::Textfield>();
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  textfield->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER));
-  textfield->SetProperty(views::kFlexBehaviorKey,
-                         views::FlexSpecification(views::FlexSpecification(
-                             views::MinimumFlexSizeRule::kPreferred,
-                             views::MaximumFlexSizeRule::kUnbounded)));
-  textfield->SetProperty(views::kMarginsKey,
-                         gfx::Insets::TLBR(kButtonTextfieldSpacing, 0, 0, 0));
-  AddChildView(std::move(textfield));
+  AddChildView(CreateInputContainer());
 }
 
 MahiMenuView::~MahiMenuView() = default;
@@ -187,6 +182,55 @@ void MahiMenuView::OnSummaryButtonPressed() {
   ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
       display.id(), ::mahi::ButtonType::kSummary,
       /*question=*/std::u16string());
+}
+
+std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
+  auto container = std::make_unique<views::FlexLayoutView>();
+  container->SetOrientation(views::LayoutOrientation::kHorizontal);
+  container->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysHoverOnSubtle, kInputContainerCornerRadius));
+  container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  container->SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(kButtonTextfieldSpacing, 0, 0, 0));
+  auto* textfield =
+      container->AddChildView(std::make_unique<views::Textfield>());
+  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  textfield->SetPlaceholderText(
+      l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER));
+  textfield->SetProperty(views::kFlexBehaviorKey,
+                         views::FlexSpecification(views::FlexSpecification(
+                             views::LayoutOrientation::kHorizontal,
+                             views::MinimumFlexSizeRule::kPreferred,
+                             views::MaximumFlexSizeRule::kUnbounded)));
+  textfield->SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(0, kTextfieldContainerSpacing, 0,
+                                           kTextfieldContainerSpacing));
+  textfield->SetBackgroundEnabled(false);
+  textfield->SetBorder(nullptr);
+
+  auto* button = container->AddChildView(
+      views::Builder<views::ImageButton>()
+          .SetImageModel(
+              views::Button::STATE_NORMAL,
+              ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon))
+          .Build());
+  button->SetProperty(views::kMarginsKey, kTextfieldButtonPadding);
+
+  // Focus ring insets need to be negative because we want the focus rings to
+  // exceed the textfield bounds horizontally to cover the entire `container`.
+  int focus_ring_left_inset = -1 * (kTextfieldContainerSpacing);
+  int focus_ring_right_inset =
+      -1 * (kTextfieldContainerSpacing + kTextfieldButtonPadding.width() +
+            button->GetPreferredSize().width());
+
+  views::FocusRing::Install(textfield);
+  views::FocusRing::Get(textfield)->SetColorId(cros_tokens::kCrosSysFocusRing);
+  views::InstallRoundRectHighlightPathGenerator(
+      textfield,
+      gfx::Insets::TLBR(0, focus_ring_left_inset, 0, focus_ring_right_inset),
+      kInputContainerCornerRadius);
+
+  return container;
 }
 
 BEGIN_METADATA(MahiMenuView)

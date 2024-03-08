@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
+class FlexLayoutView;
 class ImageButton;
 class LabelButton;
 class UniqueWidgetPtr;
@@ -46,6 +47,8 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
  private:
   // Button callback.
   void OnSummaryButtonPressed();
+
+  std::unique_ptr<views::FlexLayoutView> CreateInputContainer();
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::LabelButton> summary_button_ = nullptr;
