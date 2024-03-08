@@ -388,9 +388,10 @@ void GameDashboardContext::MaybeShowWelcomeDialog() {
   show_welcome_dialog_ = false;
   auto view = std::make_unique<GameDashboardWelcomeDialog>();
   GameDashboardWelcomeDialog* welcome_dialog_view = view.get();
+  // Activatable for accessibility screen reader.
   welcome_dialog_widget_ = CreateTransientChildWidget(
       game_window_, "GameDashboardWelcomeDialog", std::move(view),
-      /*activatable=*/views::Widget::InitParams::Activatable::kNo);
+      /*activatable=*/views::Widget::InitParams::Activatable::kDefault);
   welcome_dialog_widget_->AddObserver(this);
   MaybeUpdateWelcomeDialogBounds();
   welcome_dialog_widget_->Show();
