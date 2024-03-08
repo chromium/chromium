@@ -11,6 +11,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_settings.h"
 #include "ash/shelf/shelf.h"
+#include "ash/style/pill_button.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -142,8 +143,10 @@ void BirchBarView::AddChip(
                   .SetPreferredSize(chip_size_)
                   .Build();
   if (button_title.has_value() && button_callback.has_value()) {
-    chip->SetActionButton(button_title.value(),
-                          std::move(button_callback.value()));
+    auto* button = chip->SetAddon(
+        std::make_unique<PillButton>(std::move(*button_callback), *button_title,
+                                     PillButton::Type::kPrimaryWithoutIcon));
+    button->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 16));
   }
 
   // Attach the chip to the secondary row if it is not empty, otherwise, to the

@@ -12,7 +12,7 @@
 #include "ui/views/metadata/view_factory.h"
 
 namespace views {
-class BoxLayout;
+class FlexLayout;
 class ImageView;
 class Label;
 }  // namespace views
@@ -46,8 +46,13 @@ class BirchChipButton : public views::Button,
   void SetIconImage(const ui::ImageModel& icon_image);
   void SetTitleText(const std::u16string& title);
   void SetSubtitleText(const std::u16string& subtitle);
-  void SetActionButton(const std::u16string& label,
-                       views::Button::PressedCallback action);
+
+  template <typename T>
+  T* SetAddon(std::unique_ptr<T> addon_view) {
+    T* ptr = addon_view.get();
+    SetAddonInternal(std::move(addon_view));
+    return ptr;
+  }
 
   void SetDelegate(Delegate* delegate);
 
@@ -60,15 +65,17 @@ class BirchChipButton : public views::Button,
  private:
   class RemovalChipMenuController;
 
+  void SetAddonInternal(std::unique_ptr<views::View> addon_view);
+
   // The callback when the removal button or removal panel is pressed.
   void OnRemoveComponentPressed();
 
   // The components owned by the chip view.
-  raw_ptr<views::BoxLayout> box_layout_ = nullptr;
+  raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
-  raw_ptr<PillButton> action_button_ = nullptr;
+  raw_ptr<views::View> addon_view_ = nullptr;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
@@ -80,10 +87,8 @@ BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, views::Button)
 VIEW_BUILDER_PROPERTY(const ui::ImageModel&, IconImage)
 VIEW_BUILDER_PROPERTY(const std::u16string&, TitleText)
 VIEW_BUILDER_PROPERTY(const std::u16string&, SubtitleText)
+VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, Addon)
 VIEW_BUILDER_PROPERTY(BirchChipButton::Delegate*, Delegate)
-VIEW_BUILDER_METHOD(SetActionButton,
-                    const std::u16string&,
-                    views::Button::PressedCallback)
 END_VIEW_BUILDER
 
 }  // namespace ash

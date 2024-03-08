@@ -5,7 +5,6 @@
 #include "ash/wm/overview/birch/birch_chip_button.h"
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -21,8 +20,10 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -31,16 +32,15 @@ namespace ash {
 namespace {
 
 // The color and layout parameters of the chip.
-constexpr int kBetweenChildSpacing = 8;
-constexpr gfx::Insets kBorderInsetsWithoutActionButton(12);
-constexpr gfx::Insets kBorderInsetsWithActionButton =
-    gfx::Insets::TLBR(12, 12, 12, 8);
+constexpr gfx::Insets kInteriorMarginsNoAddon =
+    gfx::Insets::TLBR(12, 0, 12, 20);
+constexpr gfx::Insets kInteriorMarginsWithAddon = gfx::Insets::VH(12, 0);
 constexpr int kRoundedCornerRadius = 12;
 constexpr ui::ColorId kBackgroundColorId =
     cros_tokens::kCrosSysSystemOnBaseOpaque;
 
 // The layout parameters of icon.
-constexpr gfx::Insets kIconMargins = gfx::Insets::TLBR(0, 2, 0, 14);
+constexpr gfx::Insets kIconMargins = gfx::Insets::VH(0, 12);
 
 // The colors and fonts of title and subtitle.
 constexpr int kTitleSpacing = 2;
@@ -100,21 +100,18 @@ class BirchChipButton::RemovalChipMenuController
 BirchChipButton::BirchChipButton()
     : removal_chip_menu_controller_(
           std::make_unique<RemovalChipMenuController>(this)) {
-  auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      kBorderInsetsWithoutActionButton, kBetweenChildSpacing,
-      /*collapse_margins_spacing=*/true);
-  box_layout_ = box_layout.get();
-  box_layout_->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  box_layout_->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  auto flex_layout = std::make_unique<views::FlexLayout>();
+  flex_layout_ = flex_layout.get();
+  flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetInteriorMargin(kInteriorMarginsNoAddon);
 
   raw_ptr<views::BoxLayoutView> titles_container = nullptr;
 
   // Build up the chip's contents.
   views::Builder<views::Button>(this)
-      .SetLayoutManager(std::move(box_layout))
+      .SetLayoutManager(std::move(flex_layout))
       .SetBorder(std::make_unique<views::HighlightBorder>(
           kRoundedCornerRadius,
           views::HighlightBorder::Type::kHighlightBorderNoShadow))
@@ -129,6 +126,10 @@ BirchChipButton::BirchChipButton()
           // Title and subtitle.
           views::Builder<views::BoxLayoutView>()
               .CopyAddressTo(&titles_container)
+              .SetProperty(views::kFlexBehaviorKey,
+                           views::FlexSpecification(
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded))
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .SetBetweenChildSpacing(kTitleSpacing)
               .AddChildren(views::Builder<views::Label>()
@@ -142,9 +143,6 @@ BirchChipButton::BirchChipButton()
                                .SetEnabledColorId(kSubtitleColorId)
                                .SetHorizontalAlignment(gfx::ALIGN_LEFT)))
       .BuildChildren();
-
-  // Make the titles fit in the free space.
-  box_layout_->SetFlexForView(titles_container, /*flex=*/1);
 
   // Stylize the titles.
   auto* typography_provider = TypographyProvider::Get();
@@ -174,14 +172,6 @@ void BirchChipButton::SetSubtitleText(const std::u16string& subtitle) {
   subtitle_->SetText(subtitle);
 }
 
-void BirchChipButton::SetActionButton(const std::u16string& label,
-                                      views::Button::PressedCallback action) {
-  CHECK(!action_button_);
-  box_layout_->set_inside_border_insets(kBorderInsetsWithActionButton);
-  action_button_ = AddChildView(std::make_unique<PillButton>(
-      std::move(action), label, PillButton::Type::kPrimaryWithoutIcon));
-}
-
 void BirchChipButton::SetDelegate(Delegate* delegate) {
   CHECK(!delegate_);
   delegate_ = delegate;
@@ -200,6 +190,16 @@ void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {
 void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   // Remove the chip when the option is selected in the removal panel.
   OnRemoveComponentPressed();
+}
+
+void BirchChipButton::SetAddonInternal(
+    std::unique_ptr<views::View> addon_view) {
+  if (addon_view_) {
+    RemoveChildViewT(addon_view_);
+  } else {
+    flex_layout_->SetInteriorMargin(kInteriorMarginsWithAddon);
+  }
+  addon_view_ = AddChildView(std::move(addon_view));
 }
 
 void BirchChipButton::OnRemoveComponentPressed() {
