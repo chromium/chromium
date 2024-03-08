@@ -80,6 +80,12 @@ config("xnnpack_config") {
     # to ensure JIT can be used safely is not in place yet.
     "XNN_ENABLE_JIT=0",
 
+    # TODO: b/327013106 - Before enabling this and removing
+    # --define=xnn_enable_avx512amx=false from the generation script, ensure
+    # the detection has been updated to remove use of syscall() or that the
+    # function has been allowed in the sandbox.
+    "XNN_ENABLE_AVX512AMX=0",
+
     "XNN_ENABLE_ASSEMBLY=1",
     "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
     "XNN_ENABLE_MEMOPT=1",
@@ -519,6 +525,7 @@ def GenerateObjectBuilds(cpu):
     'mnemonic("CppCompile", filter("//:", deps(:xnnpack_for_tflite)))',
     '--define',
     'xnn_enable_jit=false',
+    '--define=xnn_enable_avx512amx=false',
     "--output=jsonproto",
   ])
   logging.info('parsing actions from bazel aquery...')

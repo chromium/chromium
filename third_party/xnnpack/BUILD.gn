@@ -35,6 +35,12 @@ config("xnnpack_config") {
     # to ensure JIT can be used safely is not in place yet.
     "XNN_ENABLE_JIT=0",
 
+    # TODO: b/327013106 - Before enabling this and removing
+    # --define=xnn_enable_avx512amx=false from the generation script, ensure
+    # the detection has been updated to remove use of syscall() or that the
+    # function has been allowed in the sandbox.
+    "XNN_ENABLE_AVX512AMX=0",
+
     "XNN_ENABLE_ASSEMBLY=1",
     "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
     "XNN_ENABLE_MEMOPT=1",
@@ -55,13 +61,13 @@ config("xnnpack_config") {
 if (current_cpu == "x64" || current_cpu == "x86") {
   xnnpack_deps = [
     ":amalgam_avx-no-avx2-no-f16c-no-fma",
-    ":amalgam_avx2-avxvnni-fma",
+    ":amalgam_avx2-avxvnni-f16c-fma",
     ":amalgam_avx512f",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-fma",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-fma",
     ":amalgam_f16c-fma-avx2",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni",
     ":amalgam_f16c-fma-no-avx2",
     ":amalgam_f16c-no-avx2-no-fma",
     ":amalgam_sse2-no-sse3",
@@ -78,13 +84,13 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
   xnnpack_standalone_deps = [
     ":amalgam_avx-no-avx2-no-f16c-no-fma_standalone",
-    ":amalgam_avx2-avxvnni-fma_standalone",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-fma_standalone",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-fma_standalone",
-    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
+    ":amalgam_avx2-avxvnni-f16c-fma_standalone",
     ":amalgam_avx512f_standalone",
     ":amalgam_f16c-fma-avx2_standalone",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni_standalone",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni_standalone",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
     ":amalgam_f16c-fma-no-avx2_standalone",
     ":amalgam_f16c-no-avx2-no-fma_standalone",
     ":amalgam_sse2-no-sse3_standalone",
@@ -300,7 +306,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("amalgam_avx2-avxvnni-fma") {
+  source_set("amalgam_avx2-avxvnni-f16c-fma") {
     cflags = [
       "-mavx2",
       "-mavxvnni",
@@ -325,7 +331,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("amalgam_avx2-avxvnni-fma_standalone") {
+  source_set("amalgam_avx2-avxvnni-f16c-fma_standalone") {
     cflags = [
       "-mavx2",
       "-mavxvnni",
@@ -396,249 +402,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
-    cflags = [
-      "-mf16c",
-      "-mfma",
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vl",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512skx.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vl",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512skx.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
-  source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vbmi",
-      "-mavx512vl",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512vbmi.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set(
-      "amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vbmi",
-      "-mavx512vl",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512vbmi.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
-  source_set(
-      "amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-fma") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512vnni.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set(
-      "amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-fma_standalone") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512vnni.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
-  source_set(
-      "amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-fma") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-      "-mgfni",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512vnnigfni.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set(
-      "amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-fma_standalone") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-      "-mgfni",
-    ]
-
-    sources = [ "src/src/amalgam/gen/avx512vnnigfni.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
   source_set("amalgam_f16c-fma-avx2") {
     cflags = [
       "-mavx2",
@@ -671,6 +434,257 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ]
 
     sources = [ "src/src/amalgam/gen/avx2.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool:pthreadpool_standalone",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+
+    if (!(is_android && use_order_profiling)) {
+      assert_no_deps = [ "//base" ]
+    }
+  }
+
+  source_set("amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512skx.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512skx.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool:pthreadpool_standalone",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+
+    if (!(is_android && use_order_profiling)) {
+      assert_no_deps = [ "//base" ]
+    }
+  }
+
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vbmi",
+      "-mavx512vl",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512vbmi.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vbmi",
+      "-mavx512vl",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512vbmi.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool:pthreadpool_standalone",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+
+    if (!(is_android && use_order_profiling)) {
+      assert_no_deps = [ "//base" ]
+    }
+  }
+
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mavx512vnni",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512vnni.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni_standalone") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mavx512vnni",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512vnni.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool:pthreadpool_standalone",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+
+    if (!(is_android && use_order_profiling)) {
+      assert_no_deps = [ "//base" ]
+    }
+  }
+
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mavx512vnni",
+      "-mf16c",
+      "-mfma",
+      "-mgfni",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512vnnigfni.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni_standalone") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mavx512vnni",
+      "-mf16c",
+      "-mfma",
+      "-mgfni",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512vnnigfni.c" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -1329,6 +1343,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
       "src/src/subgraph/scaled-dot-product-attention.c",
@@ -1400,6 +1415,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
       "src/src/subgraph/scaled-dot-product-attention.c",
@@ -3370,6 +3386,7 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
       "src/src/subgraph/scaled-dot-product-attention.c",
@@ -3441,6 +3458,7 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/multiply2.c",
       "src/src/subgraph/negate.c",
       "src/src/subgraph/prelu.c",
+      "src/src/subgraph/reshape-2d.c",
       "src/src/subgraph/reshape-helpers.c",
       "src/src/subgraph/rope.c",
       "src/src/subgraph/scaled-dot-product-attention.c",
