@@ -4,12 +4,14 @@
 
 #include "cc/metrics/event_latency_tracing_recorder.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -221,6 +223,13 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
                                          viz_breakdown);
   }
   event_metrics->tracing_recorded();
+}
+
+// static
+bool EventLatencyTracingRecorder::IsEventLatencyTracingEnabled() {
+  return IsTracingEnabled() ||
+         !base::FeatureList::IsEnabled(
+             ::features::kMetricsTracingCalculationReduction);
 }
 
 void EventLatencyTracingRecorder::RecordEventLatencyTraceEventInternal(

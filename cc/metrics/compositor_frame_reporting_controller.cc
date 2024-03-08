@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/dropped_frame_counter.h"
+#include "cc/metrics/event_latency_tracing_recorder.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
@@ -599,21 +600,24 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     reporter->TerminateFrame(termination_status,
                              details.presentation_feedback.timestamp);
 
-    base::TimeDelta latency_prediction_deviation_threshold =
-        details.presentation_feedback.interval.is_zero()
-            ? kDefaultLatencyPredictionDeviationThreshold
-            : (details.presentation_feedback.interval) / 2;
-    switch (reporter->get_reporter_type()) {
-      case CompositorFrameReporter::ReporterType::kImpl:
-        reporter->CalculateCompositorLatencyPrediction(
-            previous_latency_predictions_impl_,
-            latency_prediction_deviation_threshold);
-        break;
-      case CompositorFrameReporter::ReporterType::kMain:
-        reporter->CalculateCompositorLatencyPrediction(
-            previous_latency_predictions_main_,
-            latency_prediction_deviation_threshold);
-        break;
+    base::TimeDelta latency_prediction_deviation_threshold;
+    if (EventLatencyTracingRecorder::IsEventLatencyTracingEnabled()) {
+      latency_prediction_deviation_threshold =
+          details.presentation_feedback.interval.is_zero()
+              ? kDefaultLatencyPredictionDeviationThreshold
+              : (details.presentation_feedback.interval) / 2;
+      switch (reporter->get_reporter_type()) {
+        case CompositorFrameReporter::ReporterType::kImpl:
+          reporter->CalculateCompositorLatencyPrediction(
+              previous_latency_predictions_impl_,
+              latency_prediction_deviation_threshold);
+          break;
+        case CompositorFrameReporter::ReporterType::kMain:
+          reporter->CalculateCompositorLatencyPrediction(
+              previous_latency_predictions_main_,
+              latency_prediction_deviation_threshold);
+          break;
+      }
     }
 
     // If the page was transitioned from invisible to visible, need to throw
@@ -632,10 +636,13 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     }
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
-      // TODO(crbug.com/1334827): Consider using a separate container to
-      // differentiate event predictions with and without a main dispatch stage.
-      reporter->CalculateEventLatencyPrediction(
-          event_latency_predictions_, latency_prediction_deviation_threshold);
+      if (EventLatencyTracingRecorder::IsEventLatencyTracingEnabled()) {
+        // TODO(crbug.com/1334827): Consider using a separate container to
+        // differentiate event predictions with and without a main dispatch
+        // stage.
+        reporter->CalculateEventLatencyPrediction(
+            event_latency_predictions_, latency_prediction_deviation_threshold);
+      }
 
       // For presented frames, if `reporter` was cloned from another reporter,
       // and the original reporter is still alive, then check whether the cloned
