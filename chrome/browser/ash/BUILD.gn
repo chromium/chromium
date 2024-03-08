@@ -109,6 +109,8 @@ source_set("ash") {
     "android_sms/connection_manager.h",
     "android_sms/fcm_connection_establisher.cc",
     "android_sms/fcm_connection_establisher.h",
+    "app_list/apps_collections_util.cc",
+    "app_list/apps_collections_util.h",
     "app_list/search/local_image_search/local_image_search_service.cc",
     "app_list/search/local_image_search/local_image_search_service.h",
     "app_list/search/local_image_search/local_image_search_service_factory.cc",

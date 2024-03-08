@@ -132,6 +132,8 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   bool is_new_install() const { return metadata_->is_new_install; }
 
+  AppCollection collection_id() const { return metadata_->collection_id; }
+
   // Sets the `is_new_install` metadata field and notifies observers.
   void SetIsNewInstall(bool is_new_install);
 

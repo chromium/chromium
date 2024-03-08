@@ -77,6 +77,7 @@ class ChromeAppListItem {
   const std::string accessible_name() const {
     return metadata_->accessible_name;
   }
+  ash::AppCollection collection_id() const { return metadata_->collection_id; }
 
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);
   std::unique_ptr<ash::AppListItemMetadata> CloneMetadata() const;
@@ -102,6 +103,7 @@ class ChromeAppListItem {
   void SetChromeName(const std::string& name);
   void SetChromePosition(const syncer::StringOrdinal& position);
   void SetIsEphemeral(bool is_ephemeral);
+  void SetCollectionId(ash::AppCollection collection);
 
   // Checks whether the item is for a promise app.
   bool IsPromiseApp() const;

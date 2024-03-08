@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -290,6 +291,10 @@ void ChromeAppListItem::SetChromePosition(
 
 void ChromeAppListItem::SetIsEphemeral(bool is_ephemeral) {
   metadata_->is_ephemeral = is_ephemeral;
+}
+
+void ChromeAppListItem::SetCollectionId(ash::AppCollection collection_id) {
+  metadata_->collection_id = collection_id;
 }
 
 bool ChromeAppListItem::IsPromiseApp() const {

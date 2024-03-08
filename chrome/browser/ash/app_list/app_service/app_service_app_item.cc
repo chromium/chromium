@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_context_menu.h"
+#include "chrome/browser/ash/app_list/apps_collections_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
@@ -126,6 +127,8 @@ AppServiceAppItem::AppServiceAppItem(
   if (package_id.has_value()) {
     SetPromisePackageId(package_id.value().ToString());
   }
+
+  SetCollectionId(apps_util::GetCollectionIdForAppId(app_update.AppId()));
 
   const bool is_new_install =
       (!sync_item || sync_item->is_new) && IsNewInstall(app_update);

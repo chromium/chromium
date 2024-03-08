@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
+#include "chrome/browser/ash/app_list/apps_collections_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -242,6 +243,26 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
     histograms.ExpectTotalCount(
         "Apps.TimeBetweenAppInstallAndLaunch.TabletMode", 1);
   }
+}
+
+// Test app collection name is set for item in the launcher.
+IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
+                       AppCollectionIsPassedToLauncher) {
+  apps::AppPtr app = std::make_unique<apps::App>(
+      apps::AppType::kUnknown, apps_util::kTestAppIdWithCollection);
+  app->readiness = apps::Readiness::kReady;
+  app->show_in_launcher = true;
+
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
+      std::move(apps), apps::AppType::kUnknown,
+      false /* should_notify_initialized */);
+
+  ash::AppListItem* item = GetAppListItem(apps_util::kTestAppIdWithCollection);
+  ASSERT_TRUE(item);
+
+  EXPECT_EQ(item->collection_id(), ash::AppCollection::kEssentials);
 }
 
 class AppServiceSystemWebAppItemBrowserTest
