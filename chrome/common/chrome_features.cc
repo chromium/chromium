@@ -263,7 +263,7 @@ BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
 // Controls the enablement of structured metrics on Windows, Linux, and Mac.
 BASE_FEATURE(kChromeStructuredMetrics,
              "ChromeStructuredMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for Controlled Frame. This is enabled by default but is only
 // tested to ensure it's enabled before proceeding with the rest of the feature

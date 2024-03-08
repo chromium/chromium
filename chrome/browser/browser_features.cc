@@ -66,7 +66,7 @@ BASE_FEATURE(kDevToolsTabTarget,
 // impressions and interactions.
 BASE_FEATURE(kDevToolsVeLogging,
              "DevToolsVeLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Let the DevTools front-end query an AIDA endpoint for explanations and
 // insights regarding console (error) messages.
