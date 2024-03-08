@@ -147,7 +147,8 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
         PriceTrackingEmailDialogCoordinator(anchor).Show(web_contents, profile,
                                                          base::DoNothing());
       },
-      web_contents, profile, anchor_view);
+      // TODO(crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+      base::UnsafeDanglingUntriaged(web_contents), profile, anchor_view);
 
   return base::BindOnce(
       [](Profile* profile, const bookmarks::BookmarkNode* node,
