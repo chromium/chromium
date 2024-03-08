@@ -117,6 +117,7 @@
 #include <sstream>
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -134,6 +135,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -495,6 +497,21 @@ void HeuristicClassificationTests::SetUp() {
 TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::FilePath input_file = GetParam();
   SCOPED_TRACE(::testing::Message() << input_file);
+
+  if (input_file.DirName().BaseName().MaybeAsASCII() == "internal") {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            "run-internal-tests")) {
+      GTEST_SKIP()
+          << "You have internal tests in your checkout but they are skipped by "
+             "default because they are expensive to execute. Start the "
+             "components_unittests with "
+             "--run-internal-tests --test-launcher-timeout 100000 "
+             "to execute these tests.";
+    }
+    ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)
+        << "This is a long-running test; you must specify "
+           "--test-launcher-timeout to have a value of at least 100000.";
+  }
 
   // Read input file.
   std::string input_json_text;
