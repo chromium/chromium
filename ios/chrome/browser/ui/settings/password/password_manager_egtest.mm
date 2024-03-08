@@ -1558,11 +1558,11 @@ void OpenPasswordManagerWidgetPromoInstructions() {
         performAction:TurnTableViewSwitchOn(!expected_state)];
 
     // Check that the switch has been modified.
-    [EarlGrey selectElementWithMatcher:
-                  grey_allOf(chrome_test_util::TableViewSwitchCell(
-                                 kPasswordSettingsSavePasswordSwitchTableViewId,
-                                 !expected_state),
-                             grey_sufficientlyVisible(), nil)];
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::TableViewSwitchCell(
+                       kPasswordSettingsSavePasswordSwitchTableViewId,
+                       !expected_state)]
+        assertWithMatcher:grey_sufficientlyVisible()];
 
     // Close settings submenu.
     [[EarlGrey
