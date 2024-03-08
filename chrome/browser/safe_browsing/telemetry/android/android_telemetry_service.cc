@@ -107,6 +107,7 @@ void AndroidTelemetryService::OnDownloadCreated(download::DownloadItem* item) {
   }
 
   item->AddObserver(this);
+  FillReferrerChain(item);
 }
 
 void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
@@ -168,11 +169,16 @@ const PrefService* AndroidTelemetryService::GetPrefs() {
   return profile_->GetPrefs();
 }
 
-void AndroidTelemetryService::FillReferrerChain(
-    content::WebContents* web_contents,
-    content::RenderFrameHost* rfh,
-    ClientSafeBrowsingReportRequest* report) {
+void AndroidTelemetryService::FillReferrerChain(download::DownloadItem* item) {
   using enum ApkDownloadTelemetryIncompleteReason;
+
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(item);
+  content::RenderFrameHost* rfh =
+      content::DownloadItemUtils::GetRenderFrameHost(item);
+  if (!rfh && web_contents) {
+    rfh = web_contents->GetPrimaryMainFrame();
+  }
 
   SafeBrowsingNavigationObserverManager* observer_manager =
       web_contents
@@ -199,12 +205,12 @@ void AndroidTelemetryService::FillReferrerChain(
 
   RecordApkDownloadTelemetryIncompleteReason(
       ApkDownloadTelemetryIncompleteReason::COMPLETE);
+  auto referrer_chain = std::make_unique<ReferrerChain>();
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       observer_manager->IdentifyReferrerChainByRenderFrameHost(
-          rfh, kAndroidTelemetryUserGestureLimit,
-          report->mutable_referrer_chain());
+          rfh, kAndroidTelemetryUserGestureLimit, referrer_chain.get());
 
-  size_t referrer_chain_length = report->referrer_chain().size();
+  size_t referrer_chain_length = referrer_chain->size();
   UMA_HISTOGRAM_COUNTS_100(
       "SafeBrowsing.ReferrerURLChainSize.ApkDownloadTelemetry",
       referrer_chain_length);
@@ -219,7 +225,12 @@ void AndroidTelemetryService::FillReferrerChain(
                          profile_, profile_->GetPrefs(), result)
                : 0u;
   observer_manager->AppendRecentNavigations(recent_navigations_to_collect,
-                                            report->mutable_referrer_chain());
+                                            referrer_chain.get());
+
+  item->SetUserData(ReferrerChainData::kDownloadReferrerChainDataKey,
+                    std::make_unique<ReferrerChainData>(
+                        std::move(referrer_chain), referrer_chain_length,
+                        recent_navigations_to_collect));
 }
 
 std::unique_ptr<ClientSafeBrowsingReportRequest>
@@ -233,16 +244,12 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   report->set_url(item->GetOriginalUrl().spec());
   report->set_page_url(item->GetTabUrl().spec());
 
-  // Fill referrer chain.
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(item);
-  content::RenderFrameHost* rfh =
-      content::DownloadItemUtils::GetRenderFrameHost(item);
-  if (!rfh && web_contents) {
-    rfh = web_contents->GetPrimaryMainFrame();
+  auto* referrer_chain_data = static_cast<ReferrerChainData*>(
+      item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey));
+  if (referrer_chain_data) {
+    *report->mutable_referrer_chain() =
+        *referrer_chain_data->GetReferrerChain();
   }
-
-  FillReferrerChain(web_contents, rfh, report.get());
 
   // Fill DownloadItemInfo
   ClientSafeBrowsingReportRequest::DownloadItemInfo*

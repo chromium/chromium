@@ -19,11 +19,6 @@
 class Profile;
 class PrefService;
 
-namespace content {
-class RenderFrameHost;
-class WebContents;
-}
-
 namespace safe_browsing {
 
 // Enumerates the possibilities for whether the CSBRR report was sent (or not).
@@ -88,11 +83,9 @@ class AndroidTelemetryService
   // mode, or extended reporting opt-in status,
   bool CanSendPing(download::DownloadItem* item);
 
-  // Fill the referrer chain in |report| with the actual referrer chain for the
-  // given |rfh|, as well as recent navigations.
-  void FillReferrerChain(content::WebContents* web_contents,
-                         content::RenderFrameHost* rfh,
-                         ClientSafeBrowsingReportRequest* report);
+  // Populates the `ReferrerChainData` on `item` so that we can use it during
+  // report construction.
+  void FillReferrerChain(download::DownloadItem* item);
 
   // Sets the relevant fields in an instance of
   // |ClientSafeBrowsingReportRequest| proto and returns that proto.
