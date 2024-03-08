@@ -62,7 +62,7 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
   // Set the external callbacks.
   completed_callback_ = std::move(completed_callback);
   aborted_callback_ = std::move(aborted_callback);
-  restarted_callback_ = restarted_callback;
+  restarted_callback_ = std::move(restarted_callback);
 
   // Save the params for creating the tutorial to be used when restarting.
   running_tutorial_creation_params_ =
@@ -159,6 +159,7 @@ bool TutorialService::RestartTutorial() {
   running_tutorial_->Start();
 
   restarted_callback_.Run();
+
   return true;
 }
 
