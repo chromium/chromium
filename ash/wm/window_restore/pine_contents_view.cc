@@ -105,23 +105,23 @@ PineContentsView::PineContentsView() {
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .AddChildren(
                       views::Builder<PillButton>()
-                          .CopyAddressTo(&restore_button_for_testing_)
-                          .SetCallback(base::BindRepeating(
-                              &PineContentsView::OnRestoreButtonPressed,
-                              weak_ptr_factory_.GetWeakPtr()))
-                          .SetPillButtonType(
-                              PillButton::Type::kPrimaryWithoutIcon)
-                          .SetTextWithStringId(
-                              IDS_ASH_PINE_DIALOG_RESTORE_BUTTON),
-                      views::Builder<PillButton>()
                           .CopyAddressTo(&cancel_button_for_testing_)
                           .SetCallback(base::BindRepeating(
                               &PineContentsView::OnCancelButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()))
                           .SetPillButtonType(
-                              PillButton::Type::kSecondaryWithoutIcon)
+                              PillButton::Type::kDefaultLargeWithoutIcon)
                           .SetTextWithStringId(
-                              IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON)),
+                              IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON),
+                      views::Builder<PillButton>()
+                          .CopyAddressTo(&restore_button_for_testing_)
+                          .SetCallback(base::BindRepeating(
+                              &PineContentsView::OnRestoreButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr()))
+                          .SetPillButtonType(
+                              PillButton::Type::kPrimaryLargeWithoutIcon)
+                          .SetTextWithStringId(
+                              IDS_ASH_PINE_DIALOG_RESTORE_BUTTON)),
               views::Builder<views::View>().CopyAddressTo(&spacer),
               views::Builder<views::ImageButton>(
                   views::CreateVectorImageButtonWithNativeTheme(
