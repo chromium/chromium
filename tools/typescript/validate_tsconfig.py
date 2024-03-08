@@ -273,14 +273,6 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
   exceptions = [
       # ChromeOS cases
       'ash/webui/color_internals/mojom',
-      # TODO(b/315150183): Migrate A11y code to use path mappings.
-      'chrome/browser/resources/chromeos/accessibility/accessibility_common',
-      'chrome/browser/resources/chromeos/accessibility/braille_ime',
-      'chrome/browser/resources/chromeos/accessibility/chromevox',
-      'chrome/browser/resources/chromeos/accessibility/common',
-      'chrome/browser/resources/chromeos/accessibility/enhanced_network_tts',
-      'chrome/browser/resources/chromeos/accessibility/select_to_speak',
-      'chrome/browser/resources/chromeos/accessibility/switch_access',
   ]
 
   if target_path in exceptions:
