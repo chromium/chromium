@@ -67,7 +67,6 @@ class CryptoResultImpl::Resolver final : public ScriptPromiseResolver {
  public:
   static Resolver* Create(ScriptState* script_state, CryptoResultImpl* result) {
     Resolver* resolver = MakeGarbageCollected<Resolver>(script_state, result);
-    resolver->KeepAliveWhilePending();
     return resolver;
   }
 
@@ -104,9 +103,6 @@ ExceptionCode WebCryptoErrorToExceptionCode(WebCryptoErrorType error_type) {
     case kWebCryptoErrorTypeType:
       return ToExceptionCode(ESErrorType::kTypeError);
   }
-
-  NOTREACHED();
-  return 0;
 }
 
 CryptoResultImpl::CryptoResultImpl(ScriptState* script_state)

@@ -626,7 +626,7 @@ ScriptPromise AudioContext::setSinkId(
   }
 
   SetSinkIdResolver* resolver =
-      SetSinkIdResolver::Create(script_state, *this, *v8_sink_id);
+      MakeGarbageCollected<SetSinkIdResolver>(script_state, *this, *v8_sink_id);
   ScriptPromise promise = resolver->Promise();
 
   set_sink_id_resolvers_.push_back(resolver);

@@ -150,19 +150,6 @@ void ScriptPromiseResolver::Detach() {
   state_ = kDetached;
   resolver_.Clear();
   value_.Reset();
-  keep_alive_.Clear();
-}
-
-void ScriptPromiseResolver::KeepAliveWhilePending() {
-  // keepAliveWhilePending() will be called twice if the resolver
-  // is created in a suspended execution context and the resolver
-  // is then resolved/rejected while in that suspended state.
-  if (state_ == kDetached || keep_alive_)
-    return;
-
-  // Keep |this| around while the promise is Pending;
-  // see detach() for the dual operation.
-  keep_alive_ = this;
 }
 
 void ScriptPromiseResolver::NotifyResolveOrReject() {

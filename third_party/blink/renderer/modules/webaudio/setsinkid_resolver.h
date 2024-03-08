@@ -17,9 +17,6 @@ class V8UnionAudioSinkOptionsOrString;
 
 class SetSinkIdResolver : public ScriptPromiseResolver {
  public:
-  static SetSinkIdResolver* Create(ScriptState*,
-                                   AudioContext&,
-                                   const V8UnionAudioSinkOptionsOrString&);
   SetSinkIdResolver(ScriptState*,
                     AudioContext&,
                     const V8UnionAudioSinkOptionsOrString&);

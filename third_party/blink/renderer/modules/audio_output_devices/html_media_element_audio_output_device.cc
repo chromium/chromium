@@ -41,18 +41,11 @@ DOMException* ToException(WebSetSinkIdError error) {
     case WebSetSinkIdError::kNotSupported:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Operation not supported");
-    default:
-      NOTREACHED();
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                                "Invalid error code");
   }
 }
 
 class SetSinkIdResolver : public ScriptPromiseResolver {
  public:
-  static SetSinkIdResolver* Create(ScriptState*,
-                                   HTMLMediaElement&,
-                                   const String& sink_id);
   SetSinkIdResolver(ScriptState*, HTMLMediaElement&, const String& sink_id);
 
   SetSinkIdResolver(const SetSinkIdResolver&) = delete;
@@ -74,15 +67,6 @@ class SetSinkIdResolver : public ScriptPromiseResolver {
   String sink_id_;
 };
 
-SetSinkIdResolver* SetSinkIdResolver::Create(ScriptState* script_state,
-                                             HTMLMediaElement& element,
-                                             const String& sink_id) {
-  SetSinkIdResolver* resolver =
-      MakeGarbageCollected<SetSinkIdResolver>(script_state, element, sink_id);
-  resolver->KeepAliveWhilePending();
-  return resolver;
-}
-
 SetSinkIdResolver::SetSinkIdResolver(ScriptState* script_state,
                                      HTMLMediaElement& element,
                                      const String& sink_id)
@@ -96,7 +80,7 @@ void SetSinkIdResolver::StartAsync() {
     return;
   context->GetTaskRunner(TaskType::kInternalMedia)
       ->PostTask(FROM_HERE, WTF::BindOnce(&SetSinkIdResolver::DoSetSinkId,
-                                          WrapWeakPersistent(this)));
+                                          WrapPersistent(this)));
 }
 
 void SetSinkIdResolver::Start() {
@@ -107,7 +91,7 @@ void SetSinkIdResolver::Start() {
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
     if (window->document()->IsPrerendering()) {
       window->document()->AddPostPrerenderingActivationStep(
-          WTF::BindOnce(&SetSinkIdResolver::Start, WrapWeakPersistent(this)));
+          WTF::BindOnce(&SetSinkIdResolver::Start, WrapPersistent(this)));
       return;
     }
   }
@@ -139,12 +123,6 @@ void SetSinkIdResolver::DoSetSinkId() {
 
   ExecutionContext* context = GetExecutionContext();
   if (!context) {
-    // Detached contexts shouldn't be playing audio. Note that despite this
-    // explicit Reject(), any associated JS callbacks will never be called
-    // because the context is already detached...
-    Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kSecurityError,
-        "Impossible to authorize device for detached context"));
     return;
   }
 
@@ -157,7 +135,6 @@ void SetSinkIdResolver::DoSetSinkId() {
     Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
         "Impossible to authorize device if there is no frame"));
-    return;
   }
 }
 
@@ -215,8 +192,8 @@ ScriptPromise HTMLMediaElementAudioOutputDevice::setSinkId(
     ScriptState* script_state,
     HTMLMediaElement& element,
     const String& sink_id) {
-  SetSinkIdResolver* resolver =
-      SetSinkIdResolver::Create(script_state, element, sink_id);
+  auto* resolver =
+      MakeGarbageCollected<SetSinkIdResolver>(script_state, element, sink_id);
   ScriptPromise promise = resolver->Promise();
   resolver->Start();
   return promise;

@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
@@ -177,10 +176,6 @@ class CORE_EXPORT ScriptPromiseResolver
 #endif
   }
 
-  // Once this function is called this resolver stays alive while the
-  // promise is pending and the associated ExecutionContext isn't stopped.
-  void KeepAliveWhilePending();
-
   void Trace(Visitor*) const override;
 
  protected:
@@ -304,10 +299,6 @@ class CORE_EXPORT ScriptPromiseResolver
   TraceWrapperV8Reference<v8::Value> value_;
   const ExceptionContext exception_context_;
   String script_url_;
-
-  // To support keepAliveWhilePending(), this object needs to keep itself
-  // alive while in that state.
-  SelfKeepAlive<ScriptPromiseResolver> keep_alive_;
 
 #if DCHECK_IS_ON()
   bool suppress_detach_check_ = false;

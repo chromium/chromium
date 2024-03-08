@@ -52,7 +52,6 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
                              const MIDIOptions* options) {
     MIDIAccessInitializer* resolver =
         MakeGarbageCollected<MIDIAccessInitializer>(script_state, options);
-    resolver->KeepAliveWhilePending();
     return resolver->Start();
   }
 

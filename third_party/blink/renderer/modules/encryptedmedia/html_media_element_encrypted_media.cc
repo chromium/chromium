@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/content_decryption_module_result.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -58,6 +59,9 @@ class SetMediaKeysHandler : public ScriptPromiseResolver {
   Member<HTMLMediaElement> element_;
   Member<MediaKeys> new_media_keys_;
   bool made_reservation_;
+  // Timer uses weak reference, so keep ourselves alive explicitly
+  // while timer is pending.
+  SelfKeepAlive<SetMediaKeysHandler> keep_alive_;
   HeapTaskRunnerTimer<SetMediaKeysHandler> timer_;
 };
 
@@ -136,7 +140,6 @@ ScriptPromise SetMediaKeysHandler::Create(ScriptState* script_state,
                                           MediaKeys* media_keys) {
   SetMediaKeysHandler* handler = MakeGarbageCollected<SetMediaKeysHandler>(
       script_state, element, media_keys);
-  handler->KeepAliveWhilePending();
   return handler->Promise();
 }
 
@@ -147,6 +150,7 @@ SetMediaKeysHandler::SetMediaKeysHandler(ScriptState* script_state,
       element_(element),
       new_media_keys_(media_keys),
       made_reservation_(false),
+      keep_alive_(this),
       timer_(ExecutionContext::From(script_state)
                  ->GetTaskRunner(TaskType::kMiscPlatformAPI),
              this,
@@ -160,6 +164,7 @@ SetMediaKeysHandler::SetMediaKeysHandler(ScriptState* script_state,
 SetMediaKeysHandler::~SetMediaKeysHandler() = default;
 
 void SetMediaKeysHandler::TimerFired(TimerBase*) {
+  keep_alive_.Clear();
   ClearExistingMediaKeys();
 }
 

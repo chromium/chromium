@@ -218,7 +218,6 @@ ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunNextSteps(
   DCHECK(!pending_promise_resolver_);
   pending_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
-  pending_promise_resolver_->KeepAliveWhilePending();
   auto promise = pending_promise_resolver_->Promise();
   GetNextIterationResult();
   return promise.Then(on_fulfilled_function_, on_rejected_function_);
@@ -297,7 +296,6 @@ ScriptPromiseTyped<IDLAny> AsyncIterationSourceBase::RunReturnSteps(
   DCHECK(!pending_promise_resolver_);
   pending_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
-  pending_promise_resolver_->KeepAliveWhilePending();
   auto promise = pending_promise_resolver_->Promise();
   AsyncIteratorReturn(value);
   return promise;
