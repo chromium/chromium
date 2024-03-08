@@ -122,14 +122,21 @@ void NativeThemeFluent::PaintScrollbarThumb(
   };
   // TODO(crbug.com/891944): Adjust extra param `thumb_color` based on `state`.
   const SkColor thumb_color = extra_params.thumb_color.value_or(get_color());
-  const SkRRect rrect =
-      SkRRect::MakeRectXY(gfx::RectToSkRect(rect), kFluentScrollbarPartsRadius,
-                          kFluentScrollbarPartsRadius);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(thumb_color);
-  canvas->drawRRect(rrect, flags);
+  SkRect sk_rect = gfx::RectToSkRect(rect);
+  if (extra_params.is_web_test) {
+    // Web tests draw the thumb as a square to avoid issues that come with the
+    // differences in calculation of anti-aliasing and rounding in different
+    // platforms.
+    canvas->drawRect(sk_rect, flags);
+  } else {
+    canvas->drawRRect(SkRRect::MakeRectXY(sk_rect, kFluentScrollbarPartsRadius,
+                                          kFluentScrollbarPartsRadius),
+                      flags);
+  }
 }
 
 void NativeThemeFluent::PaintScrollbarCorner(

@@ -301,6 +301,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     // element-specific web platform CSS.
     std::optional<SkColor> thumb_color;
     bool is_thumb_minimal_mode = false;
+    bool is_web_test = false;
   };
 
 #if BUILDFLAG(IS_APPLE)

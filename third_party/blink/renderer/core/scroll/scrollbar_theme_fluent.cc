@@ -180,6 +180,7 @@ ScrollbarThemeFluent::BuildScrollbarThumbExtraParams(
   }
   scrollbar_thumb.is_thumb_minimal_mode =
       scrollbar.IsFluentOverlayScrollbarMinimalMode();
+  scrollbar_thumb.is_web_test = WebTestSupport::IsRunningWebTest();
   return scrollbar_thumb;
 }
 

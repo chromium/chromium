@@ -177,6 +177,7 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
       native_scrollbar_thumb.thumb_color = scrollbar_thumb.thumb_color;
       native_scrollbar_thumb.is_thumb_minimal_mode =
           scrollbar_thumb.is_thumb_minimal_mode;
+      native_scrollbar_thumb.is_web_test = scrollbar_thumb.is_web_test;
       return ui::NativeTheme::ExtraParams(native_scrollbar_thumb);
     }
     case WebThemeEngine::kPartScrollbarDownArrow:
