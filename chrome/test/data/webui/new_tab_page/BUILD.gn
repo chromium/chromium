@@ -4,7 +4,6 @@
 
 import("../build_webui_tests.gni")
 import("./modules/modules.gni")
-import("./realbox/realbox.gni")
 
 build_webui_tests("build") {
   files = [
@@ -29,7 +28,7 @@ build_webui_tests("build") {
             "transparency_test_support.ts",
             "utils_test.ts",
             "voice_search_overlay_test.ts",
-          ] + modules_test_files + realbox_test_files
+          ] + modules_test_files
 
   ts_path_mappings =
       [ "chrome://new-tab-page/*|" +

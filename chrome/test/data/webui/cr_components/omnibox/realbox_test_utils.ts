@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import type {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 export function createAutocompleteMatch(): AutocompleteMatch {
   return {
@@ -35,13 +33,12 @@ export function createAutocompleteMatch(): AutocompleteMatch {
   };
 }
 
-export class TestRealboxBrowserProxy extends TestBrowserProxy {
-  handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
-  callbackRouter: PageCallbackRouter;
-
-  constructor() {
-    super([]);
-    this.handler = TestMock.fromClass(PageHandlerRemote);
-    this.callbackRouter = new PageCallbackRouter();
-  }
+/**
+ * Asserts the computed style value for an element.
+ * @param name The name of the style to assert.
+ * @param expected The expected style value.
+ */
+export function assertStyle(element: Element, name: string, expected: string) {
+  const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
+  assertEquals(expected, actual);
 }
