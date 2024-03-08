@@ -263,10 +263,10 @@
     Tab hover preview card
   </message>
   <message name="IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES" desc="Label for the toggle which enables or disables showing image previews for tab hovercards.">
-    Show images
+    Show tab preview images
   </message>
   <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards.">
-    Show memory usage
+    Show tab memory usage
   </message>
   <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE_STANDALONE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards. This longer string is shown when then toggle is in it's own row without a title to indicate the setting is to do with tab hovercards.">
     Show memory usage on tab hover preview card
