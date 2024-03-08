@@ -58,6 +58,10 @@ class CSSTokenizerInputStream {
 
   double GetDouble(unsigned start, unsigned end) const;
 
+  // Like GetDouble(), but only for the case where the number matches
+  // [0-9]+ (no decimal point, no exponent, no sign), and is faster.
+  double GetNaturalNumberAsDouble(unsigned start, unsigned end) const;
+
   template <bool characterPredicate(UChar)>
   unsigned SkipWhilePredicate(unsigned offset) {
     if (string_.Is8Bit()) {
