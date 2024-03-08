@@ -6,6 +6,9 @@ source_set("error_dialog") {
   sources = [
     "autofill_error_dialog_coordinator.h",
     "autofill_error_dialog_coordinator.mm",
+    "autofill_error_dialog_mediator.h",
+    "autofill_error_dialog_mediator.mm",
+    "autofill_error_dialog_mediator_delegate.h",
   ]
   deps = [
     "//base:base",
