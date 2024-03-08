@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 source_set("app_list") {
   sources = [
+    "app_collections_constants.cc",
+    "app_collections_constants.h",
     "app_list_badge_controller.cc",
     "app_list_badge_controller.h",
     "app_list_bubble_event_filter.cc",
@@ -79,6 +81,8 @@ source_set("app_list") {
     "views/app_list_view.h",
     "views/app_list_view_util.cc",
     "views/app_list_view_util.h",
+    "views/apps_collection_section_view.cc",
+    "views/apps_collection_section_view.h",
     "views/apps_container_view.cc",
     "views/apps_container_view.h",
     "views/apps_grid_context_menu.cc",
@@ -297,6 +301,7 @@ source_set("unit_tests") {
     "views/app_list_nudge_controller_unittest.cc",
     "views/app_list_search_view_unittest.cc",
     "views/app_list_view_unittest.cc",
+    "views/apps_collection_section_view_unittest.cc",
     "views/apps_container_view_unittest.cc",
     "views/apps_grid_view_unittest.cc",
     "views/assistant/assistant_dialog_plate_unittest.cc",

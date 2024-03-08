@@ -13,6 +13,7 @@
 #include "ash/app_list/grid_index.h"
 #include "ash/app_list/model/app_icon_load_helper.h"
 #include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/app_list/views/apps_collection_section_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/memory/raw_ptr.h"
@@ -73,7 +74,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
     kAppsGridView,
 
     // The item is shown in the RecentAppsView.
-    kRecentAppsView
+    kRecentAppsView,
+
+    // The item is shown in AppsCollectionView.
+    kAppsCollection
   };
 
   // Describes the app list item view drag state.
@@ -350,6 +354,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
  private:
   class FolderIconView;
 
+  friend class AppsCollectionSectionViewTest;
   friend class AppListFolderViewTest;
   friend class AppListItemViewTest;
   friend class AppListMainViewTest;

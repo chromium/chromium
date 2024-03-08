@@ -158,6 +158,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
 
+  friend class AppsCollectionSectionViewTest;
   friend class AppListBadgeController;
   friend class AppListItemList;
   friend class AppListItemListTest;
@@ -174,6 +175,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   // Sets the name to be used as the accessible name for the item.
   void SetAccessibleName(const std::string& accessible_name);
+
+  // Sets the app collection id for this item.
+  void SetAppCollectionId(AppCollection collection_id);
 
   // Updates whether the notification badge is shown on the view.
   void UpdateNotificationBadge(bool has_badge);

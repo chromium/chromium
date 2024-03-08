@@ -1291,6 +1291,7 @@ void AppListItemView::OnContextMenuModelReceived(
   AppLaunchedMetricParams metric_params;
   switch (context_) {
     case Context::kAppsGridView:
+    case Context::kAppsCollection:
       app_type = AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID;
       metric_params.launched_from = AppListLaunchedFrom::kLaunchedFromGrid;
       metric_params.launch_type = AppListLaunchType::kApp;
@@ -1784,7 +1785,7 @@ bool AppListItemView::IsShowingAppMenu() const {
 }
 
 bool AppListItemView::IsItemDraggable() const {
-  return context_ != Context::kRecentAppsView;
+  return context_ == Context::kAppsGridView;
 }
 
 bool AppListItemView::IsNotificationIndicatorShownForTest() const {

@@ -32,6 +32,7 @@ class AppListNudgeController;
 // Does not include the search box, which is owned by a parent view.
 class ASH_EXPORT AppListBubbleAppsCollectionsPage
     : public AppListToastContainerView::Delegate,
+      public AppListModelProvider::Observer,
       public views::View {
   METADATA_HEADER(AppListBubbleAppsCollectionsPage, views::View)
 
@@ -58,6 +59,10 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   // AppListToastContainerView::Delegate:
   void OnNudgeRemoved() override;
 
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
+
   // Which layer animates is an implementation detail.
   ui::Layer* GetPageAnimationLayerForTest();
 
@@ -67,13 +72,20 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   views::ScrollView* scroll_view() { return scroll_view_; }
 
  private:
+  friend class AppListTestHelper;
+
   // A callback invoked to update the visibility of the page contents after an
   // animation is done.
   void SetVisibilityAfterAnimation(bool visible);
 
+  void PopulateCollections(AppListModel* model);
+
+  const raw_ptr<AppListViewDelegate> view_delegate_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<RoundedScrollBar> scroll_bar_ = nullptr;
   raw_ptr<AppListToastContainerView> toast_container_ = nullptr;
+  raw_ptr<views::View> sections_container_ = nullptr;
+  const raw_ptr<AppListConfig> app_list_config_;
 
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
 

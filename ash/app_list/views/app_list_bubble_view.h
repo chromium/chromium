@@ -173,7 +173,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Called when the show animation ends or aborts.
   void OnShowAnimationEnded(const gfx::Rect& layer_bounds);
 
-  // Called when the hide animation ends or aborts.
+  // Called when the hide animation ends or aborts.v
   void OnHideAnimationEnded(const gfx::Rect& layer_bounds);
 
   // Hides the folder view if it's currently shown. It can be called if the

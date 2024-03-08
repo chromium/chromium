@@ -170,6 +170,7 @@ class AppListTestHelper {
   ContinueSectionView* GetBubbleContinueSectionView();
   RecentAppsView* GetBubbleRecentAppsView();
   ScrollableAppsGridView* GetScrollableAppsGridView();
+  views::View* GetAppCollectionsSectionsContainer();
   AppListBubbleSearchPage* GetBubbleSearchPage();
   SearchResultPageAnchoredDialog* GetBubbleSearchPageDialog();
   AppListBubbleAssistantPage* GetBubbleAssistantPage();
