@@ -2073,6 +2073,7 @@ static_library("ui") {
       "//components/keep_alive_registry",
       "//components/manta",
       "//components/manta/proto",
+      "//components/media_effects:media_effects",
       "//components/media_router/common/mojom:media_router",
       "//components/network_session_configurator/common",
       "//components/omnibox/browser:mojo_bindings",

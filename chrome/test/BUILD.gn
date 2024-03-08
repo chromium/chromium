@@ -8271,6 +8271,7 @@ test("unit_tests") {
       "//components/lens:buildflags",
       "//components/lens:lens_mojo",
       "//components/manta",
+      "//components/media_effects/test:test_support",
       "//components/media_message_center:test_support",
       "//components/media_router/common:test_support",
       "//components/permissions:test_support",
