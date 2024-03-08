@@ -77,7 +77,8 @@ extern PageCharacteristics page_characteristics;
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
-namespace partition_alloc::internal {
+namespace partition_alloc {
+namespace internal {
 
 // Forward declaration, implementation below
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
@@ -178,6 +179,13 @@ SystemPageBaseMask() {
 constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
 constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;
 
-}  // namespace partition_alloc::internal
+}  // namespace internal
+
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
+SystemPageSize() {
+  return internal::SystemPageSize();
+}
+
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_CONSTANTS_H_
