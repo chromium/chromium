@@ -2263,8 +2263,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(
       prefs::kSupervisedUserApprovedExtensions,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kSupervisedUserLocallyParentApprovedExtensions);
 #endif  // #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if !BUILDFLAG(IS_MAC)

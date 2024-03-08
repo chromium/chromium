@@ -53,14 +53,6 @@ enum class FirstTimeInterstitialBannerState : int {
   kUnknown = 2,
 };
 
-// Whether the migration of existing extensions to parent-approved needs to be
-// executed, when the feature
-// `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` becomes enabled.
-enum class LocallyParentApprovedExtensionsMigrationState : int {
-  kNeedToRun = 0,
-  kComplete = 1,
-};
-
 // Converts FamilyRole enum to string format.
 std::string FamilyRoleToString(kids_chrome_management::FamilyRole role);
 

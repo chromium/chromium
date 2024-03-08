@@ -153,15 +153,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kFirstTimeInterstitialBannerState,
       static_cast<int>(FirstTimeInterstitialBannerState::kUnknown));
   registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
-#if BUILDFLAG(ENABLE_EXTENSIONS) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-  registry->RegisterIntegerPref(
-      prefs::kLocallyParentApprovedExtensionsMigrationState,
-      static_cast<int>(
-          supervised_user::LocallyParentApprovedExtensionsMigrationState::
-              kNeedToRun));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
 }
 
 void EnableParentalControls(PrefService& pref_service) {
