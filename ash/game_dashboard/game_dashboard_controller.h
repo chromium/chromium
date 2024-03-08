@@ -67,11 +67,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Represents the start of the `context`'s game window capture session.
   // Sets `context` as the `active_recording_context_`, and requests
   // `CaptureModeController` to start a capture session for the `context`'s game
-  // window. If `record_instantly` is true, instantly starts the capture
-  // session, skipping the countdown timer UI. The session ends when
-  // `OnRecordingEnded` or `OnRecordingStartAborted` is called.
-  void StartCaptureSession(GameDashboardContext* context,
-                           bool record_instantly = false);
+  // window. The session ends when `OnRecordingEnded` or
+  // `OnRecordingStartAborted` is called.
+  void StartCaptureSession(GameDashboardContext* context);
 
   // Shows the compat mode resize toggle menu for the given `window`.
   void ShowResizeToggleMenu(aura::Window* window);

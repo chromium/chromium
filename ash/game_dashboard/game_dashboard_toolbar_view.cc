@@ -352,8 +352,7 @@ void GameDashboardToolbarView::OnRecordButtonPressed() {
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kGameToolbarStopRecordingButton);
   } else {
-    GameDashboardController::Get()->StartCaptureSession(
-        context_, /*record_instantly=*/true);
+    GameDashboardController::Get()->StartCaptureSession(context_);
   }
 }
 

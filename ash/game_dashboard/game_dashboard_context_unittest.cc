@@ -948,6 +948,7 @@ TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
   const auto* record_game_button = test_api_->GetToolbarRecordGameButton();
   ASSERT_TRUE(record_game_button);
   LeftClickOn(record_game_button);
+  ClickOnStartRecordingButtonInCaptureModeBarView();
 
   // Get timer and verify it's running.
   const auto& timer = test_api_->GetRecordingTimer();
@@ -1878,10 +1879,6 @@ TEST_P(GameTypeGameDashboardContextTest,
   // runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
   ClickOnStartRecordingButtonInCaptureModeBarView();
-  // Clicking on the record game tile closes the main menu, and asynchronously
-  // starts the capture session. Run until idle to ensure that the posted task
-  // runs synchronously and completes before proceeding.
-  base::RunLoop().RunUntilIdle();
   VerifyStartRecordingHistogram(histograms,
                                 std::vector<int>{/*kMainMenu=*/1, 0});
   // Stop recording.
@@ -1890,6 +1887,7 @@ TEST_P(GameTypeGameDashboardContextTest,
 
   // Start recording from the toolbar.
   LeftClickOn(test_api_->GetToolbarRecordGameButton());
+  ClickOnStartRecordingButtonInCaptureModeBarView();
   VerifyStartRecordingHistogram(histograms,
                                 std::vector<int>{1, /*kToolbar=*/1});
 }
@@ -1966,7 +1964,6 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
     // starts the capture session. Run until idle to ensure that the posted task
     // runs synchronously and completes before proceeding.
     base::RunLoop().RunUntilIdle();
-    ClickOnStartRecordingButtonInCaptureModeBarView();
   } else {
     // Retrieve the record game button from the toolbar.
     CHECK(!test_api_->GetToolbarView());
@@ -1978,6 +1975,7 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
     // Start the video recording from the toolbar.
     LeftClickOn(record_game_button);
   }
+  ClickOnStartRecordingButtonInCaptureModeBarView();
 
   EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
   EXPECT_TRUE(timer.IsRunning());
