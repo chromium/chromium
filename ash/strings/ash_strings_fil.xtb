@@ -35,6 +35,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1111021433905331574">Puwede mong baguhin ang kulay ng backlight ng iyong keyboard sa Mga Setting &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">I-toggle ang mobile data. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Awtomatikong itago ang shelf</translation>
+<translation id="1129383337808748948">I-refresh ang <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Mga pinakabagong larawan</translation>
 <translation id="114221662579355151">Pinapayagan nito ang access sa camera para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa camera. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="1148499908455722006">Buksan ang dialog ng impormasyon para sa <ph name="USER_NAME" /></translation>
@@ -173,7 +174,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1647986356840967552">Nakaraang page</translation>
 <translation id="1651914502370159744">Buksan ang page ng History</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
-<translation id="1662667383227796099">Hanapin ang iyong mga file, app, at higit pa sa Launcher. Puwede ka ring makakuha ng mga sagot sa iyong mga tanong tungkol sa Chromebook mo.</translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
 <translation id="1675844249244994876">I-update ang kanang window</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
@@ -467,7 +467,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2965227184985674128">I-on ang access sa mikropono?</translation>
 <translation id="296762781903199866">Hindi ma-download ang mga <ph name="LANGUAGE" /> na speech file</translation>
 <translation id="2970920913501714344">Mag-install ng mga app, extension, at tema</translation>
-<translation id="2977098646659697261">Nasa Shelf ang iyong mga naka-pin at nakabukas na app. Para mag-pin ng app sa Shelf, mag-right click sa isang app o i-tap ang iyong touchpad gamit ang dalawang daliri.</translation>
 <translation id="2977598380246111477">Susunod na numero</translation>
 <translation id="2985148236010982088">Tingnan ang lahat ng app</translation>
 <translation id="2992327365391326550">Naka-off ang button ng mikropono ng device.</translation>
@@ -776,7 +775,6 @@ Isaksak ang iyong device.</translation>
 <translation id="4123259114412175274">Para i-unlock ang iyong Chromebook, tiyaking naka-on ang Bluetooth ng iyong telepono</translation>
 <translation id="4125970834901680537">Hindi maka-stream ng mga app sa tablet mode. Subukan ulit sa laptop mode.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C - Kasalukuyang bilis: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">May mga kasamang built-in na app ang iyong Chromebook para tulungan kang makatapos ng mga bagay-bagay. Hanapin ang iyong mga app sa Launcher.</translation>
 <translation id="4136724716305260864">Naka-on hanggang pagsikat ng araw</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + pakanang arrow</translation>
 <translation id="4146671046252289537">Pumunta sa dulo ng susunod na salita</translation>
@@ -808,7 +806,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Naka-install na App, Naka-pause</translation>
 <translation id="4228078597006700451">Hindi naka-set up ang mga kontrol</translation>
 <translation id="4231053948789591973">Kasalukuyang naka-pause ang pag-cast. Puwede mong ituloy ang pag-cast o ihinto ang pag-cast ng iyong screen sa anumang oras.</translation>
-<translation id="423685346499232137">Hindi makopya o ma-paste ang content sa ngayon</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
@@ -820,7 +817,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4269883910223712419">May kakayahan ang admin ng device na ito na:</translation>
 <translation id="4274537685965975248">Nagbago ang keyboard shortcut na Ctrl + Alt + Pababang Arrow. Para magamit ang End key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pakanang Arrow.</translation>
 <translation id="4275283744500212192">Buksan ang mga opsyon sa layout ng window</translation>
-<translation id="4278138729651139331">I-customize at i-personalize ang iyong Chromebook sa Mga Setting. Subukang palitan ang iyong wallpaper o magtakda ng screen saver.</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
 <translation id="4280601795273309128">Natapos na ang mga update sa seguridad. I-upgrade ang iyong device.</translation>
 <translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
@@ -1136,7 +1132,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="550391772491508736">Ipagpatuloy ang pag-cast</translation>
 <translation id="5506975627792768506">I-on o i-off ang magnifier</translation>
 <translation id="5512042095225963688">I-delete ang nakaraang salita</translation>
-<translation id="5518068085000130971">Iyon ang mga pangunahing kaalaman! Magpatuloy sa Explore, ang aming built-in na app para sa mga tip at tulong. Makakakita ka ng mga tip para sa pagsisimula, mga inirerekomendang app, mga espesyal na alok, at mga pinakabagong feature ng Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5520909879404821039">Hi sa French</translation>
@@ -1522,7 +1517,6 @@ Kaka-install lang</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">Permanenteng made-delete ang lahat ng file at lokal na data na nauugnay sa user na ito kapag inalis na ang user na ito.</translation>
 <translation id="6984028004251196682">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Ginawang <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga nakaraang setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Mabilis na mag-tour para matuto kung paano i-explore ang iyong Chromebook. Makapagsimula sa 6 na hakbang.</translation>
 <translation id="7000027735917578303">Mga setting ng mga window at desk</translation>
 <translation id="7004910047186208204">Kumonekta sa mobile data</translation>
 <translation id="7005239792648594238">Magbukas ng app para magsimula</translation>
@@ -1588,7 +1582,6 @@ Kaka-install lang</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Nire-reset ng iyong administrator ang eSIM mo. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="7313193732017069507">Palawakin ang camera</translation>
-<translation id="7316261577130609484">Magdagdag ng bagong gawain</translation>
 <translation id="7330397557116570022">Pumunta sa isang field ng text para magamit ang Dictation</translation>
 <translation id="7331646370422660166">alt + pababang arrow</translation>
 <translation id="7340731148882810149">Menu ng mga awtomatikong pag-click</translation>
@@ -1653,7 +1646,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7557816257942363084">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong mikropono</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
 <translation id="7564874036684306347">Kapag inilipat ang mga window sa isa pang desktop, maaari itong magresulta sa hindi inaasahang gawi. Maaaring hatiin ang mga susunod na notification, window, at dialog sa pagitan ng mga desktop.</translation>
-<translation id="7567950130372125778">Kumusta. Medyo naiiba ang Chromebook.</translation>
 <translation id="7569509451529460200">Na-enable ang Braille at ChromeVox</translation>
 <translation id="7569886975397378678">I-dismiss ang pag-set up sa pagtingin sa mga notification at app ng iyong telepono</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% ng baterya | <ph name="TIME" /> na natitira</translation>
@@ -1834,6 +1826,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, App</translation>
 <translation id="8255234195843591763">I-reset para i-update</translation>
+<translation id="8257510091797044096">I-set up ang iyong device</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8262312463845990408">I-toggle ang pag-playback</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ibalik sa nakaraang bersyon ang device sa loob ng isang oras}one{Ibalik sa nakaraang bersyon ang device sa loob ng # oras}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na oras}}</translation>

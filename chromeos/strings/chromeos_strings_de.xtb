@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Seitengröße</translation>
 <translation id="1082009148392559545">Bildschirmschoner wird herunterladen</translation>
 <translation id="1094693127011229778">IP-Adresse ist nicht verfügbar</translation>
+<translation id="1100902271996134409">Bilder werden erstellt…</translation>
 <translation id="1116694919640316211">Über</translation>
 <translation id="1118572504348554005">Wir leiten über dieses Formular gesendetes Feedback möglicherweise an unsere Partner weiter, um Fehler und andere Probleme zu beheben, die du uns meldest. Gib keine vertraulichen Daten wie Passwörter an.</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
 <translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1274654146705270731">Orangen</translation>
+<translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1300115153046603471">APN hat den Typ „Standard“ und „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
 <translation id="2276999893457278469">Häufig gelesene Hilfeartikel</translation>
 <translation id="2279051792571591988">Standardeinstellungen wiederherstellen</translation>
+<translation id="2286454467119466181">Einfach</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Zuletzt verwendete Hintergründe, die auf Google AI basieren</translation>
 <translation id="4320904097188876154">neonrosa</translation>
 <translation id="4333390807948134856">Die Taste „<ph name="KEY_NAME" />“ wird gedrückt</translation>
-<translation id="4341897648462347919">Blaugrün</translation>
 <translation id="4354430579665871434">Taste</translation>
 <translation id="4361257691546579041">APN-Typ ist „Standard“.</translation>
 <translation id="437294888293595148">Alle Tastenkombinationen zurücksetzen</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">Vorhandenes Foto von der Kamera oder als Datei</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Profilbild</translation>
-<translation id="7171665330126595869">Höhle</translation>
 <translation id="7171919371520438592">Fenster an kleinerem Teil des Bildschirms fixieren (<ph name="DIRECTION" />)</translation>
 <translation id="7172721935181587524">1 Bild</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Erstellen</translation>
 <translation id="7528507600602050979">Hilfeinhalte nicht verfügbar</translation>
-<translation id="753556296624075801">Powered by Google</translation>
 <translation id="7535791657097741517">Helles Design einschalten</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7551123448725492271">Das Gerät ist ein Audiogerät.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">Tastaturbereiche</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> von <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
-<translation id="8923267550422472772">Tag des Monats zum Zurücksetzen</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Drahtlos</translation>

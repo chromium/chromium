@@ -2382,7 +2382,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2764920001292228569">Inserisci un nome per il profilo</translation>
 <translation id="2765100602267695013">Contatta il tuo operatore di telefonia mobile</translation>
 <translation id="2765217105034171413">Piccola</translation>
-<translation id="2765606672116865966">Quando fai clic o digiti nella barra degli indirizzi o nella casella di ricerca, vengono visualizzati suggerimenti del tuo motore di ricerca predefinito. Questa funzionalità è disattivata in incognito.</translation>
 <translation id="2766006623206032690">In&amp;colla e vai</translation>
 <translation id="2766161002040448006">Rivolgiti a un genitore</translation>
 <translation id="2767077837043621282">Impossibile aggiornare Chromebook. Riprova più tardi.</translation>
@@ -2446,7 +2445,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2806372837663997957">Il dispositivo con cui stai tentando di condividere il file non ha accettato</translation>
 <translation id="2806891468525657116">Scorciatoia già presente</translation>
 <translation id="2807517655263062534">I file scaricati vengono mostrati qui</translation>
-<translation id="2808714658215073920">Connessione alla rete Wi-Fi in corso…</translation>
 <translation id="2809586584051668049">e altre <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Account</translation>
 <translation id="2812049959647166806">Thunderbolt non è supportato</translation>
@@ -2538,7 +2536,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="288042212351694283">Accesso ai tuoi dispositivi Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Quando fai clic sull'estensione</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> verrà riavviato e ripristinato tra poco</translation>
-<translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Testa batteria, CPU, memoria, connettività e altro ancora</translation>
 <translation id="2885129935310217435">Esiste un pulsante con lo stesso nome. Scegline un altro.</translation>
 <translation id="2885378588091291677">Task Manager</translation>
@@ -2737,7 +2734,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3027296729579831126">Attiva Condivisione nelle vicinanze</translation>
 <translation id="3027644380269727216">In base alla tua attività svolta su un sito. Questa impostazione è attiva.</translation>
 <translation id="3028445648481691885">Download annullato</translation>
-<translation id="3029276696788198026">Nessun precaricamento</translation>
 <translation id="3029466929721441205">Mostrare strumenti stilo nella barra delle app</translation>
 <translation id="3029808567601324798">Tempo di blocco</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede il download di un aggiornamento oggi stesso. L'aggiornamento verrà scaricato automaticamente quando ti connetterai a Internet.}other{<ph name="MANAGER" /> richiede il download di un aggiornamento prima della scadenza. L'aggiornamento verrà scaricato automaticamente quando ti connetterai a Internet.}}</translation>
@@ -4298,6 +4294,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4261429981378979799">Autorizzazioni per le estensioni</translation>
 <translation id="4262004481148703251">Ignora avviso</translation>
 <translation id="4263223596040212967">Controlla il layout della tastiera e riprova.</translation>
+<translation id="4265096510956307240">Verifica la tua identità</translation>
 <translation id="4265301768135164545">Puoi anche configurare un profilo eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" />.</translation>
 <translation id="426564820080660648">Per verificare la disponibilità di aggiornamenti, utilizza una rete Ethernet, Wi-Fi o dati mobili.</translation>
 <translation id="426652736638196239">Questo IBAN verrà salvato soltanto su questo dispositivo</translation>
@@ -4349,6 +4346,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4297813521149011456">Rotazione del display</translation>
 <translation id="4298660926525614540">Nomi dispositivi di archiviazione rimovibili</translation>
 <translation id="4299022904780065004">Nuova finestra di navigazione in &amp;incognito</translation>
+<translation id="4300272766492248925">Apri app</translation>
 <translation id="4301671483919369635">Questa pagina è autorizzata a modificare i file</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contatto non disponibile. Per usare <ph name="FEATURE_NAME" /> con questa persona, aggiungi ai tuoi contatti l'indirizzo email associato al suo Account Google.}other{# contatti non disponibili. Per usare <ph name="FEATURE_NAME" /> con queste persone, aggiungi ai tuoi contatti gli indirizzi email associati ai loro Account Google.}}</translation>
 <translation id="4303079906735388947">Configura un nuovo PIN per il token di sicurezza</translation>
@@ -4909,6 +4907,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="473936925429402449">Contenuti aggiuntivi selezionati <ph name="CURRENT_ELEMENT" /> di <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Richieste</translation>
+<translation id="4740546261986864539">Aperta di recente</translation>
 <translation id="4742334355511750246">Non possono mostrare immagini</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Scopri come aggiornare le applicazioni<ph name="END_LINK" /></translation>
@@ -5106,6 +5105,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="488785315393301722">Mostra dettagli</translation>
 <translation id="488862352499217187">Crea nuova cartella</translation>
 <translation id="4890292359366636311">Attiva automaticamente la funzionalità Picture in picture, in modo da poterla utilizzare sopra altre schede e finestre.</translation>
+<translation id="4890399733764921729">Impossibile connettersi. Bloccato da un altro operatore mobile.</translation>
 <translation id="4890773143211625964">Mostra impostazioni avanzate della stampante</translation>
 <translation id="4891089016822695758">Forum per la versione Beta</translation>
 <translation id="4892229439761351791">Il sito può usare il Bluetooth</translation>
@@ -5315,7 +5315,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5068553687099139861">mostrare le password</translation>
 <translation id="506886127401228110">Attiva le app web isolate</translation>
 <translation id="5068919226082848014">Pizza</translation>
-<translation id="506934332411950286">Trasferimento credenziali Wi-Fi dal tuo smartphone Android in corso…</translation>
 <translation id="5070773577685395116">Non hai ricevuto la notifica?</translation>
 <translation id="5071295820492622726">Torna ai download recenti</translation>
 <translation id="5071892329440114717">Mostra dettagli della protezione standard</translation>
@@ -5333,7 +5332,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5079699784114005398">Una volta attivata l'impostazione, le tue app saranno disponibili su qualsiasi dispositivo ChromeOS dopo aver eseguito l'accesso con il tuo Account Google. Le app web installate dal browser Chrome verranno sincronizzate anche se la sincronizzazione del browser è disattivata.</translation>
 <translation id="508059534790499809">Aggiorna una richiesta di Kerberos</translation>
 <translation id="5081124414979006563">&amp;Apri profilo ospite</translation>
-<translation id="5081960376148623587">Scegli se precaricare o meno le pagine</translation>
 <translation id="5083035541015925118">Ctrl + Alt + Freccia su</translation>
 <translation id="5084328598860513926">Il flusso di provisioning è stato interrotto. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">I siti hanno maggiori probabilità di funzionare come previsto</translation>
@@ -7039,7 +7037,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6438475350605608554">Stai già importando le password in un'altra scheda</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Riproduzione audio in corso</translation>
 <translation id="6440081841023333832">Controllo e riprogrammazione dei tuoi dispositivi MIDI non consentito</translation>
-<translation id="6440291723980579689">Le pagine si caricano solo una volta aperte</translation>
 <translation id="6441377161852435370">Aggiungi scheda all'elenco di lettura</translation>
 <translation id="6442187272350399447">Strepitoso</translation>
 <translation id="6442445294758185945">Impossibile scaricare l'aggiornamento. Riprova più tardi.</translation>
@@ -8342,6 +8339,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7465778193084373987">URL di revoca certificato Netscape</translation>
 <translation id="7466431077154602932">Visualizzazione compatta</translation>
 <translation id="746861123368584540">Estensione caricata</translation>
+<translation id="7470131554696493512">Impedisci agli accessori Thunderbolt o USB4 di accedere alla memoria (RAM) e di condividerla</translation>
 <translation id="7470424110735398630">Possono accedere agli appunti</translation>
 <translation id="747114903913869239">Errore: impossibile decodificare l'estensione</translation>
 <translation id="7471520329163184433">Più lenta</translation>
@@ -8832,6 +8830,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7824665136384946951">La tua organizzazione ha disattivato Navigazione sicura</translation>
 <translation id="7824864914877854148">Impossibile completare il backup a causa di un errore.</translation>
 <translation id="782590969421016895">Usa pagine correnti</translation>
+<translation id="7825973332242257878">Gruppi di schede</translation>
 <translation id="7826039927887234077">Tema IA recente <ph name="INDEX" /> di <ph name="SUBJECT" />, con stato d'animo <ph name="MOOD" />.</translation>
 <translation id="7826174860695147464">Supporto dei browser precedenti (LBS) - Interni</translation>
 <translation id="7826249772873145665">Debug ADB disattivato</translation>
@@ -8948,6 +8947,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7912080627461681647">La password è stata modificata sul server. Esci e accedi nuovamente.</translation>
 <translation id="791247712619243506">Annulla configurazione</translation>
 <translation id="7912974581251770345">Traduzione</translation>
+<translation id="7914399737746719723">App installata</translation>
 <translation id="7915457674565721553">Connettiti a Internet per configurare il Controllo genitori</translation>
 <translation id="7916364730877325865">La tua organizzazione non ti consente di attivare la sincronizzazione con questo account</translation>
 <translation id="7918257978052780342">Registrati</translation>
@@ -10699,7 +10699,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="93766956588638423">Ripara estensione</translation>
 <translation id="938623846785894166">File insolito</translation>
 <translation id="939401694733344652">Al momento questi account non vengono utilizzati con le app per Android. Se selezioni un account da utilizzare con questa app per Android, l'account può essere utilizzato anche con altre app per Android. Puoi modificare l'accesso alle app per Android in <ph name="LINK_BEGIN" />Impostazioni &gt; Account<ph name="LINK_END" />.</translation>
-<translation id="939553663881639126">Scegli se ricevere o meno altri suggerimenti di ricerca</translation>
 <translation id="939598580284253335">Inserisci passphrase</translation>
 <translation id="939736085109172342">Nuova cartella</translation>
 <translation id="940212040923880623">&amp;Trova e modifica</translation>

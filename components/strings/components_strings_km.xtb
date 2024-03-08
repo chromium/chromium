@@ -222,7 +222,6 @@
 <translation id="1386623374109090026">ចំណារ</translation>
 <translation id="1391625539203220400">រក្សាទុក IBAN ទៅក្នុងឧបករណ៍នេះឬ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> មិនបានផ្ញើទិន្នន័យណាមួយទេ</translation>
-<translation id="1397811292916898096">ស្វែងរក​ដោយ​ប្រើ <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">បៃតងខ្ចី</translation>
 <translation id="1406500794671479665">កំពុងផ្ទៀងផ្ទាត់...</translation>
 <translation id="1406812885827747674">អនុញ្ញាត​លើកនេះ</translation>
@@ -2665,6 +2664,7 @@
 <translation id="6195371403461054755">ភូគព្ភសាស្ត្រ</translation>
 <translation id="6195418151868446719">គ្រឿង​អេឡិចត្រូនិក​ប្រើប្រាស់</translation>
 <translation id="6196640612572343990">រារាំង​ខូគី​ភាគី​ទីបី</translation>
+<translation id="6197467523841310553">ចុចម៉ៅស៍​ខាងស្ដាំ ដើម្បីបំពេញ​ព័ត៌មានដែលអ្នកបានរក្សាទុក​នៅក្នុង​ទម្រង់បែបបទ​លើអ៊ីនធឺណិត​ដោយវាយបញ្ចូលកាន់តែតិច</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">ថេបកាត់ពេញ</translation>
 <translation id="6203231073485539293">ពិនិត្យការភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក</translation>

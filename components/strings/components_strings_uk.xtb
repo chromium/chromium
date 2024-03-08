@@ -221,7 +221,6 @@
 <translation id="1386623374109090026">Примітки</translation>
 <translation id="1391625539203220400">Зберегти номер IBAN на цьому пристрої?</translation>
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> не надіслав дані.</translation>
-<translation id="1397811292916898096">Шукати в <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Світло-зелений</translation>
 <translation id="1406500794671479665">Перевірка...</translation>
 <translation id="1406812885827747674">Дозволити цього разу</translation>
@@ -2247,7 +2246,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш годинник відстає", "Ваш годинник спішить" або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5380953781541843508">у порядку зростання</translation>
-<translation id="5381318171304904246">Продовживши, ви перейдете на вебсайт банку. Після підтвердження вас буде автоматично переадресовано на сторінку, де ви зможете завершити покупку.</translation>
+<translation id="5381318171304904246">Продовживши, ви перейдете на вебсайт банку. Після підтвердження ви автоматично повернетеся на сторінку, де зможете завершити покупку.</translation>
 <translation id="5383478552402031184">Покриття для підлоги</translation>
 <translation id="5385857628869214740">Гумор</translation>
 <translation id="5385966243497224160">Неможливо переглянути URL-адресу, яка не використовує протокол HTTPS</translation>

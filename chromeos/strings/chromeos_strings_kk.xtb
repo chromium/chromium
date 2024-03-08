@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Бет өлшемі</translation>
 <translation id="1082009148392559545">Скринсейверді жүктеп алу</translation>
 <translation id="1094693127011229778">IP мекенжайы жоқ.</translation>
+<translation id="1100902271996134409">Суреттер жасалып жатыр...</translation>
 <translation id="1116694919640316211">Мәлімет</translation>
 <translation id="1118572504348554005">Қателерді және сіз бізге хабарлаған басқа мәселелерді шешу үшін осы үлгі арқылы жіберілген пікірді серіктестерімізбен бөлісуіміз мүмкін. Құпия сөздер сияқты құпия ақпаратты қоспаңыз.</translation>
 <translation id="1119447706177454957">Ішкі қате</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS кідірісі</translation>
 <translation id="1270369111467284986">Адаптивті портал болуы мүмкін.</translation>
 <translation id="1274654146705270731">апельсиндер</translation>
+<translation id="1275718070701477396">Таңдалған</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
 <translation id="1300115153046603471">APN түрі — әдепкі және <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">Қараңғы режим кестесі</translation>
 <translation id="2276999893457278469">Үздік анықтамалық контент</translation>
 <translation id="2279051792571591988">Бастапқы параметрлерді қалпына келтіру</translation>
+<translation id="2286454467119466181">Қарапайым</translation>
 <translation id="2287186687001756809">Қолжетімді суреттер жоқ. Суреттер қосу үшін <ph name="LINK" /> сайтына өтіңіз.</translation>
 <translation id="2307344026739914387">Ағымдағы кілттер жұбын пайдалану</translation>
 <translation id="2320295602967756579">Жарық режимді қосу</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Google AI жасаған соңғы тұсқағаздар</translation>
 <translation id="4320904097188876154">неон қызғылт</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> пернесі басылды.</translation>
-<translation id="4341897648462347919">көкшіл жасыл</translation>
 <translation id="4354430579665871434">перне</translation>
 <translation id="4361257691546579041">APN әдепкі.</translation>
 <translation id="437294888293595148">Барлық таңбашаны қайта орнату</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">Камерадан немесе файлдан алынған бар суреттер</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Профиль суреті</translation>
-<translation id="7171665330126595869">үңгір</translation>
 <translation id="7171919371520438592">Терезені экранның <ph name="DIRECTION" /> кішірек бөлігіне бекіту</translation>
 <translation id="7172721935181587524">1 сурет</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Жасау</translation>
 <translation id="7528507600602050979">Анықтамалық контент қолжетімсіз</translation>
-<translation id="753556296624075801">Google ұсынған</translation>
 <translation id="7535791657097741517">Жарық режимді қосу</translation>
 <translation id="7550715992156305117">Диагностикалық режим</translation>
 <translation id="7551123448725492271">Бұл — аудио құрылғы.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">Пернетақта аймақтары</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> иелік ететін <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>
-<translation id="8923267550422472772">Бастапқы күйге қайтару күні</translation>
 <translation id="8928727111548978589">Сәтсіз: қағаз бітіп қалды</translation>
 <translation id="8930521118335213258">құрылғы</translation>
 <translation id="8930622219860340959">Сымсыз</translation>

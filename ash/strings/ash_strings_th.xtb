@@ -173,7 +173,6 @@
 <translation id="1647986356840967552">หน้าที่แล้ว</translation>
 <translation id="1651914502370159744">เปิดหน้าประวัติการเข้าชม</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
-<translation id="1662667383227796099">ค้นหาไฟล์ แอป และอื่นๆ ใน Launcher คุณยังหาคำตอบสำหรับคำถามเกี่ยวกับ Chromebook ได้ด้วย</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
 <translation id="1675844249244994876">อัปเดตหน้าต่างด้านขวา</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@
 <translation id="2965227184985674128">เปิดการเข้าถึงไมโครโฟนใช่ไหม</translation>
 <translation id="296762781903199866">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่สำเร็จ</translation>
 <translation id="2970920913501714344">ติดตั้งแอป ส่วนขยาย และธีม</translation>
-<translation id="2977098646659697261">แอปที่ปักหมุดและเปิดไว้จะอยู่ในแถบ หากต้องการปักหมุดแอปในแถบ ให้คลิกขวาที่แอปหรือใช้ 2 นิ้วแตะทัชแพด</translation>
 <translation id="2977598380246111477">ตัวเลขถัดไป</translation>
 <translation id="2985148236010982088">ดูแอปทั้งหมด</translation>
 <translation id="2992327365391326550">ปุ่มไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
@@ -772,7 +770,6 @@
 <translation id="4123259114412175274">หากต้องการปลดล็อก Chromebook ให้ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
 <translation id="4125970834901680537">สตรีมแอปในโหมดแท็บเล็ตไม่ได้ โปรดลองอีกครั้งในโหมดแล็ปท็อป</translation>
 <translation id="4131973331381812765">อุณหภูมิ: <ph name="TEMPERATURE" />°C - ความเร็วในปัจจุบัน: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">Chromebook มาพร้อมกับแอปในตัวที่จะช่วยคุณทำสิ่งต่างๆ ให้เสร็จ หาแอปต่างๆ ได้ใน Launcher</translation>
 <translation id="4136724716305260864">เปิดจนถึงพระอาทิตย์ขึ้น</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขวา</translation>
 <translation id="4146671046252289537">ย้ายไปยังจุดสิ้นสุดของคำถัดไป</translation>
@@ -803,7 +800,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, หยุดชั่วคราว</translation>
 <translation id="4228078597006700451">ยังไม่ได้ตั้งค่าการควบคุม</translation>
 <translation id="4231053948789591973">การแคสต์หยุดอยู่ชั่วคราวในขณะนี้ คุณแคสต์ต่อหรือหยุดการแคสต์หน้าจอได้ทุกเมื่อ</translation>
-<translation id="423685346499232137">คัดลอกหรือวางเนื้อหาไม่ได้ในขณะนี้</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">โหมดภาพรวม</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
@@ -815,7 +811,6 @@
 <translation id="4269883910223712419">ผู้ดูแลระบบของอุปกรณ์เครื่องนี้ทำสิ่งต่อไปนี้ได้</translation>
 <translation id="4274537685965975248">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรลง หากต้องการใช้แป้น End ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขวา</translation>
 <translation id="4275283744500212192">เปิดตัวเลือกเลย์เอาต์หน้าต่าง</translation>
-<translation id="4278138729651139331">ปรับแต่งและปรับเปลี่ยน Chromebook ในแบบของคุณในการตั้งค่า ลองเปลี่ยนวอลเปเปอร์หรือตั้งค่าภาพพักหน้าจอ</translation>
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
 <translation id="4280601795273309128">การอัปเดตความปลอดภัยสิ้นสุดแล้ว โปรดอัปเกรดอุปกรณ์</translation>
 <translation id="4283888303416325161">ป้อนรหัสผ่านเพื่อความปลอดภัยมากขึ้น</translation>
@@ -1131,7 +1126,6 @@
 <translation id="550391772491508736">แคสต์ต่อ</translation>
 <translation id="5506975627792768506">เปิดหรือปิดแว่นขยาย</translation>
 <translation id="5512042095225963688">ลบคำก่อนหน้า</translation>
-<translation id="5518068085000130971">นี่คือข้อมูลเบื้องต้น ดูต่อใน "สำรวจ" ซึ่งเป็นแอปในตัวที่มาพร้อมกับเคล็ดลับและความช่วยเหลือ คุณจะพบเคล็ดลับในการเริ่มต้นใช้งาน แอปที่แนะนำ ข้อเสนอพิเศษ และฟีเจอร์ใหม่ล่าสุดของ Chromebook</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ผู้ดูแลระบบได้นำโปรไฟล์ eSIM ทั้งหมดออก ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5520909879404821039">"สวัสดี" ภาษาฝรั่งเศส</translation>
@@ -1517,7 +1511,6 @@
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="698231206551913481">ระบบจะลบไฟล์ทั้งหมดและข้อมูลในเครื่องที่เชื่อมโยงกับผู้ใช้รายนี้ออกอย่างถาวรหลังจากนำผู้ใช้รายนี้ออกแล้ว</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ความละเอียดเปลี่ยนเป็น <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) แล้ว คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="6989752354829085073">ดูการแนะนำสั้นๆ เพื่อเรียนรู้วิธีการไปยังส่วนต่างๆ ของ Chromebook เริ่มต้นใช้งานได้ใน 6 ขั้นตอน</translation>
 <translation id="7000027735917578303">การตั้งค่า Windows และเดสก์</translation>
 <translation id="7004910047186208204">เชื่อมต่ออินเทอร์เน็ตมือถือ</translation>
 <translation id="7005239792648594238">เปิดแอปเพื่อเริ่มต้นใช้งาน</translation>
@@ -1584,7 +1577,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
-<translation id="7316261577130609484">เพิ่มงานใหม่</translation>
 <translation id="7330397557116570022">ไปที่ช่องข้อความเพื่อใช้การพิมพ์ตามคําบอก</translation>
 <translation id="7331646370422660166">Alt + ลูกศรลง</translation>
 <translation id="7340731148882810149">เมนูการคลิกอัตโนมัติ</translation>
@@ -1649,7 +1641,6 @@
 <translation id="7557816257942363084">"<ph name="APP_NAME" />" กำลังใช้ไมโครโฟน</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
-<translation id="7567950130372125778">สวัสดี Chromebook มีความแตกต่างเล็กน้อย</translation>
 <translation id="7569509451529460200">เปิดใช้เบรลล์และ ChromeVox แล้ว</translation>
 <translation id="7569886975397378678">ปิดการตั้งค่าการดูการแจ้งเตือนและแอปของโทรศัพท์</translation>
 <translation id="7571361473021531288">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />% | ใช้ได้อีก <ph name="TIME" /></translation>

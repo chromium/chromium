@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Имејл је послата.</translation>
 <translation id="1582732959743469162">На тај начин ћете потпуно зауставити тренутно преузимање.</translation>
 <translation id="158591023028013564">{count,plural, =1{Страница је додата на листу за читање}one{{count} страница је додата на листу за читање}few{{count} странице су додате на листу за читање}other{{count} страница је додато на листу за читање}}</translation>
+<translation id="1587629076612412684">Персонализујте Google услуге</translation>
 <translation id="1594034544529347967">Почиње</translation>
 <translation id="160275202205869636">Када је укључено, користите и чувајте податке на Google налогу. Када је искључено, подаци се чувају само на овом уређају.</translation>
 <translation id="1605405588277479165">Искључено – Не препоручује се</translation>
@@ -1385,6 +1386,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8027581147000338959">Отвори у новом прозору</translation>
 <translation id="8032569120109842252">Пратите</translation>
 <translation id="8040207962129315716">Питај ме сваки пут</translation>
+<translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Историја претраге<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други облици активности<ph name="END_LINK" /> могу да буду сачувани на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.</translation>
 <translation id="804427445359061970">Овде ћете пронаћи картице са других уређаја</translation>
 <translation id="8044568254381073661">Сачувајте без шифровања</translation>
@@ -1604,6 +1606,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9106655997975673326">Са телефона <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Траже угрожене лозинке</translation>
 <translation id="9109699888944026290">{count,plural, =1{Нова лозинка за овај сајт}one{Нова лозинка за овај сајт}few{Нове лозинке за овај сајт}other{Нове лозинке за овај сајт}}</translation>
+<translation id="9110489518258031250">Контролишите како синхронизована историја прегледања може да се користи за персонализацију других Google услуга</translation>
 <translation id="9120217828624527905">Пређите на превод целе странице</translation>
 <translation id="9124387962554796433">Google може да користи историју за персонализацију Претраге и других Google услуга.</translation>
 <translation id="9137526406337347448">Google услуге</translation>

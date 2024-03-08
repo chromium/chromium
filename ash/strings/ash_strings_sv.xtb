@@ -173,7 +173,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1647986356840967552">Föregående sida</translation>
 <translation id="1651914502370159744">Öppna sidan Historik</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
-<translation id="1662667383227796099">Sök efter filer, appar med mera i Appstartaren. Du kan även få svar på frågor om Chromebook.</translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
 <translation id="1675844249244994876">Uppdatera det högra fönstret</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
@@ -467,7 +466,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2965227184985674128">Vill du aktivera mikrofonåtkomst?</translation>
 <translation id="296762781903199866">Det gick inte att ladda ned filer för taligenkänning på <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Installera appar, tillägg och teman</translation>
-<translation id="2977098646659697261">Dina fästa och öppna appar finns på hyllan. Om du vill fästa en app på hyllan kan du högerklicka på appen eller trycka på styrplattan med två fingrar.</translation>
 <translation id="2977598380246111477">Nästa nummer</translation>
 <translation id="2985148236010982088">Visa alla appar</translation>
 <translation id="2992327365391326550">Enhetens mikrofon är avstängd.</translation>
@@ -776,7 +774,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4123259114412175274">Kontrollera att Bluetooth är aktiverat på telefonen om du vill låsa upp Chromebook</translation>
 <translation id="4125970834901680537">Det går inte att streama appar i surfplatteläge. Försök igen i laptopläge.</translation>
 <translation id="4131973331381812765">Temperatur: <ph name="TEMPERATURE" /> °C – Aktuell hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">I Chromebook finns inbyggda appar som hjälper dig att få saker gjorda. Hitta dina appar i Appstartaren.</translation>
 <translation id="4136724716305260864">På till soluppgången</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + högerpil</translation>
 <translation id="4146671046252289537">Flytta till slutet av nästa ord</translation>
@@ -808,7 +805,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
 <translation id="4228078597006700451">Kontrollerna har inte ställts in</translation>
 <translation id="4231053948789591973">Castingen har pausats. Du kan återuppta castingen eller sluta casta skärmen när du vill.</translation>
-<translation id="423685346499232137">Det går inte att kopiera eller klistra in innehåll just nu</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Översiktsläge</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
@@ -820,7 +816,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
 <translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
 <translation id="4275283744500212192">Öppna alternativ för fönsterlayout</translation>
-<translation id="4278138729651139331">Anpassa din Chromebook i inställningarna. Testa att ändra bakgrund eller ställa in en skärmsläckare.</translation>
 <translation id="4279490309300973883">Spegling</translation>
 <translation id="4280601795273309128">Säkerhetsuppdateringar har avslutats. Uppgradera enheten.</translation>
 <translation id="4283888303416325161">Ange lösenordet för ökad säkerhet</translation>
@@ -1136,7 +1131,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="550391772491508736">Återuppta castingen</translation>
 <translation id="5506975627792768506">Aktivera och inaktivera skärmförstoraren</translation>
 <translation id="5512042095225963688">Radera föregående ord</translation>
-<translation id="5518068085000130971">Det var grunderna. Fortsätt i vår inbyggda app Utforska för tips och hjälp. Där hittar du tips för att komma igång, rekommenderade appar, specialerbjudanden och de senaste Chromebook-funktionerna.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratören har tagit bort alla eSIM-profiler. Kontakta administratören för mer information.</translation>
 <translation id="5520909879404821039">Hej på franska</translation>
@@ -1522,7 +1516,6 @@ Nyligen installerad</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="698231206551913481">Alla filer inklusive lokal data som tillhör den här användaren tas bort permanent när användaren tas bort.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplösningen har ändrats till <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Ta en snabbtitt på hur du navigerar på Chromebook. Kom igång i sex steg.</translation>
 <translation id="7000027735917578303">Inställningar för fönster och skrivbord</translation>
 <translation id="7004910047186208204">Anslut till mobildata</translation>
 <translation id="7005239792648594238">Öppna en app för att komma igång</translation>
@@ -1589,7 +1582,6 @@ Nyligen installerad</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">eSIM-kortet återställs av administratören. Det kan ta några minuter.</translation>
 <translation id="7313193732017069507">Utöka kameran</translation>
-<translation id="7316261577130609484">Lägg till ny uppgift</translation>
 <translation id="7330397557116570022">Öppna ett textfält om du vill använda diktering</translation>
 <translation id="7331646370422660166">alt + nedåtpil</translation>
 <translation id="7340731148882810149">Meny för automatiska klick</translation>
@@ -1654,7 +1646,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> använder just nu mikrofonen</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7564874036684306347">Om du flyttar fönster till ett annat skrivbord kan det leda till oväntat beteende. Efterföljande meddelanden, fönster och dialogrutor kan delas upp mellan skrivborden.</translation>
-<translation id="7567950130372125778">Hej! Chromebook är lite speciellt.</translation>
 <translation id="7569509451529460200">Punktskrift och ChromeVox har aktiverats</translation>
 <translation id="7569886975397378678">Ställ in visning av aviseringar och appar på telefonen</translation>
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> kvar</translation>

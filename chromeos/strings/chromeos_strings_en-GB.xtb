@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Page size</translation>
 <translation id="1082009148392559545">Downloading the screen saver</translation>
 <translation id="1094693127011229778">IP address is unavailable</translation>
+<translation id="1100902271996134409">Creating images…</translation>
 <translation id="1116694919640316211">About</translation>
 <translation id="1118572504348554005">We may share feedback submitted via this form with our partners to troubleshoot bugs and other issues that you report to us. Don’t include sensitive information such as passwords.</translation>
 <translation id="1119447706177454957">Internal error</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS latency</translation>
 <translation id="1270369111467284986">Captive portal suspected</translation>
 <translation id="1274654146705270731">oranges</translation>
+<translation id="1275718070701477396">Selected</translation>
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1300115153046603471">APN is type default and <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -109,6 +111,7 @@
 <translation id="1611649489706141841">forward</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Run charge test</translation>
+<translation id="1622402072367425417">glowing bubbles</translation>
 <translation id="1626590945318984973">Shortcut not available. Press a new shortcut without using function and <ph name="META_KEY" /> keys.</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1641857168437328880">Document feeder (one-sided)</translation>
@@ -159,6 +162,7 @@
 <translation id="183675228220305365">realist</translation>
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="1840474674287087346">Desktop colour</translation>
+<translation id="1846318329111865304">Dreamscapes</translation>
 <translation id="1851218745569890714">Video conferencing</translation>
 <translation id="1852934301711881861">Install Chrome OS Flex</translation>
 <translation id="1854156910036166007">sloths</translation>
@@ -218,6 +222,7 @@
 <translation id="2189104374785738357">Edit APN details</translation>
 <translation id="2201758491318984023">bicycle</translation>
 <translation id="2203222757805818543">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. To automatically update the dark mode schedule, <ph name="BEGIN_LINK" />turn on location access<ph name="END_LINK" /></translation>
+<translation id="2203272733515928691">hot spring</translation>
 <translation id="2203642483788377106">cliff</translation>
 <translation id="2208388655216963643">impressionist</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
@@ -237,7 +242,9 @@
 <translation id="2271469253353559191">Dark mode schedule</translation>
 <translation id="2276999893457278469">Top help content</translation>
 <translation id="2279051792571591988">Restore defaults</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
+<translation id="2305172810646967500">black</translation>
 <translation id="2307344026739914387">Use current keypair</translation>
 <translation id="2320295602967756579">Enable Light theme</translation>
 <translation id="2323506179655536734">SKIPPED</translation>
@@ -281,6 +288,7 @@
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2561093647892030937">lemons</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
+<translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
 <translation id="2586146417912237930">blue and indigo</translation>
 <translation id="2597774443162333062">Files will be sent to Google for debugging</translation>
@@ -340,8 +348,10 @@
 <translation id="3091839911843451378">Failed – Stopped</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3122614491980756867">pools</translation>
 <translation id="3124039320086536031">Device is connected.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{Remove page {PAGE_NUMBER}?}other{Remove page {PAGE_NUMBER}?}}</translation>
+<translation id="3140130301071865159">snow</translation>
 <translation id="3146655726035122603">Exclusive to <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
@@ -379,9 +389,11 @@
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
 <translation id="3373141842870501561">Earth flow wallpaper</translation>
+<translation id="33736539805963175"><ph name="LETTERS_COLOR" /> background with the letter <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
+<translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3435896845095436175">Enable</translation>
@@ -394,11 +406,13 @@
 <translation id="3484914941826596830">While the firmware is updating, do not unplug this external device or shut down your computer. You can minimise this window. This update may take a few minutes and your external device may not work during this time.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Partially activated</translation>
+<translation id="3492882532495507361">A <ph name="OFFICE_STYLE" /> office with <ph name="OFFICE_COLOR" /> tones</translation>
 <translation id="3502426834823382181">view all apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />performance trace data<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS update</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
+<translation id="3533790840489634638">swimming pool</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Local identity (optional)</translation>
 <translation id="3565064564551103223">Allowed IPs</translation>
@@ -444,6 +458,7 @@
 <translation id="3858860766373142691">Name</translation>
 <translation id="3862598938296403232">Description is required</translation>
 <translation id="386280020966669610">Inspire me</translation>
+<translation id="3864554910039562428">coral reef</translation>
 <translation id="3865289341173661845">Help content isn't available.</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="3866249974567520381">Description</translation>
@@ -507,6 +522,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">You need at least 500 MB free to run a Memory test. To free up space, go to Settings &gt; Storage management.</translation>
 <translation id="4250229828105606438">Screenshot</translation>
+<translation id="4251839292699800785">Stylish office</translation>
 <translation id="4258281355379922695">HTTP latency</translation>
 <translation id="4266143281602681663">yarn</translation>
 <translation id="4271957103967917607">View full screen</translation>
@@ -521,7 +537,6 @@
 <translation id="4310735698903592804">Recent wallpapers powered by Google AI</translation>
 <translation id="4320904097188876154">neon pink</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> key pressed</translation>
-<translation id="4341897648462347919">teal</translation>
 <translation id="4354430579665871434">key</translation>
 <translation id="4361257691546579041">APN is type default.</translation>
 <translation id="437294888293595148">Reset all shortcuts</translation>
@@ -541,10 +556,12 @@
 <translation id="4429881212383817840">Kerberos ticket expires soon</translation>
 <translation id="4431821876790500265">See report</translation>
 <translation id="4443192710976771874">red</translation>
+<translation id="4448096106102522892">island</translation>
 <translation id="445059817448385655">Old password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Scan to</translation>
 <translation id="4456812688969919973">Save APN button is now disabled</translation>
+<translation id="4460905888685975163">Use this APN is now disabled</translation>
 <translation id="4469288414739283461">Earth flow screen saver</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
@@ -573,6 +590,7 @@
 <translation id="4646949265910132906">Secure Wi-Fi connection</translation>
 <translation id="4650608062294027130">Right shift</translation>
 <translation id="4654549501020883054">Change daily</translation>
+<translation id="4661249927038176904">Surreal</translation>
 <translation id="4664651912255946953">fur</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Passwords do not match</translation>
@@ -627,6 +645,7 @@
 <translation id="4930320165497208503">To set up or update a connection, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> has been updated to version <ph name="VERSION" /></translation>
+<translation id="4950893758552030541">tree tunnel</translation>
 <translation id="4965703485264574128">For an approximate result, multiply the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Split</translation>
 <translation id="4972592110715526173">mode change</translation>
@@ -660,6 +679,7 @@
 <translation id="5160857336552977725">Sign in to your <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Battery health</translation>
 <translation id="5170568018924773124">Show in folder</translation>
+<translation id="5180108905184566358">baobab trees</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Relive your favourite memories. To add or edit albums, go to <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -671,6 +691,7 @@
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Your administrator has set up ‘<ph name="APP_NAME" />’ to start automatically every time you log in.}=2{Your administrator has set up ‘<ph name="APP_NAME" />’ and one other app to start automatically every time you log in.}other{Your administrator has set up ‘<ph name="APP_NAME" />’ and # other apps to start automatically every time you log in.}}</translation>
 <translation id="5248419081947706722">blue</translation>
 <translation id="5252456968953390977">Roaming</translation>
+<translation id="5254600740122644523">A <ph name="SIMPLE_STYLE" /> bookshelf in a <ph name="SIMPLE_TONE" /> room</translation>
 <translation id="5257811368506016604">Enable light colour mode</translation>
 <translation id="5264277876637023664">Run CPU test</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
@@ -716,6 +737,7 @@
 <translation id="550600468576850160">meadow</translation>
 <translation id="551689408806449779">Device has been disconnected. Try reconnecting to test</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5534900277405737921">Terrain</translation>
 <translation id="554067135846762198">coral and tan</translation>
 <translation id="5543701552415191873">locked</translation>
 <translation id="554517032089923082">GTC</translation>
@@ -724,6 +746,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescan</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5588233547254916455">Letters</translation>
 <translation id="5595623927872580850">grey</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> key tested</translation>
 <translation id="5620281292257375798">Internal only</translation>
@@ -737,6 +760,7 @@
 <translation id="5662240986744577912">toggle privacy screen</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5680504961595602662">A surreal <ph name="SURREAL_LANDSCAPE" /> with <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">cherries</translation>
 <translation id="5691511426247308406">Family</translation>
 <translation id="5695599963893094957">Type any key on your keyboard. You can press up to four keys at the same time.</translation>
@@ -804,6 +828,7 @@
 <translation id="6075872808778243331">(Android) HTTP Latency</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
 <translation id="6091080061796993741">yellow</translation>
+<translation id="610371409726072606">Camera background powered by Google AI</translation>
 <translation id="6104112872696127344">Scanning has been cancelled</translation>
 <translation id="6106186594183574873">To finish, enter your old password</translation>
 <translation id="6108689792487843350">Gateway is unreachable</translation>
@@ -854,6 +879,7 @@
 <translation id="6352210854422428614">different planet</translation>
 <translation id="6359706544163531585">Disable Light theme</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
+<translation id="6373461326814131011">pond</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Test your keyboard</translation>
 <translation id="6382182670717268353">Screen saver preview</translation>
@@ -921,6 +947,7 @@
 <translation id="672609503628871915">See what's new</translation>
 <translation id="6740695858234317715">cream and orange</translation>
 <translation id="6741823073189174383">boat</translation>
+<translation id="674276385369049081">Recent camera backgrounds powered by Google AI</translation>
 <translation id="6744441848304920043">jungle</translation>
 <translation id="6747215703636344499">Stopped – output full</translation>
 <translation id="6749473226660745022">Photos</translation>
@@ -943,13 +970,16 @@
 <translation id="6905724422583748843">Back to <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">The scanner’s cover is open. Close the cover and try again.</translation>
 <translation id="6911383237894364323">Unable to connect to media servers</translation>
+<translation id="6939766318048400022">Cafe</translation>
 <translation id="6943893908656559156">Remote identity (optional)</translation>
 <translation id="6953137545147683679">gold</translation>
 <translation id="6957231940976260713">Service name</translation>
 <translation id="695776212669661671">arrow right</translation>
+<translation id="6957792699151067488">flower</translation>
 <translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Device</translation>
+<translation id="6975620886940770104">A <ph name="GLOWSCAPES_LANDSCAPE" /> with a glowing <ph name="GLOWSCAPES_FEATURE" /></translation>
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="6981982820502123353">Accessibility</translation>
@@ -986,7 +1016,6 @@
 <translation id="7155171745945906037">Existing photo from camera or file</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Profile picture</translation>
-<translation id="7171665330126595869">cave</translation>
 <translation id="7171919371520438592">Dock window on the <ph name="DIRECTION" /> smaller portion of the screen</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
@@ -1049,8 +1078,8 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Create</translation>
 <translation id="7528507600602050979">Help content isn't available</translation>
-<translation id="753556296624075801">Powered by Google</translation>
 <translation id="7535791657097741517">Turn Light theme on</translation>
+<translation id="7544126681856613971">misty forest</translation>
 <translation id="7550715992156305117">Diagnostic routines</translation>
 <translation id="7551123448725492271">Device is an audio device.</translation>
 <translation id="7559239713112547082">Preview screenshot</translation>
@@ -1097,6 +1126,7 @@
 <translation id="7819831665603418705">Use a template</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7824219488248240180">post-impressionist</translation>
+<translation id="7828503206075800057">A <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> cafe</translation>
 <translation id="7841134249932030522">Enable dark mode</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7849030488395653706">northern lights</translation>
@@ -1108,6 +1138,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
 <translation id="7882501334836096755">Public key</translation>
+<translation id="7897043345768902965">walkway</translation>
 <translation id="7903695460270716054">Choose curated artwork and images</translation>
 <translation id="7915220255123750251">Manage network APN settings. APNs establish a connection between a mobile network and the Internet.</translation>
 <translation id="7936303884198020182">No name servers found</translation>
@@ -1168,6 +1199,7 @@
 <translation id="8294431847097064396">Source</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8312330582793120272">play media</translation>
+<translation id="8317819321190319496">Use this APN is now enabled</translation>
 <translation id="8318753676953949627">No images</translation>
 <translation id="8320910311642849813">forest</translation>
 <translation id="8329018942023753850">calculator app</translation>
@@ -1245,6 +1277,7 @@
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8820457400746201697">Move the blue touch point to an action. Select the associated key to customise.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8833620912470026819">cactus forest</translation>
 <translation id="8834539327799336565">Currently connected</translation>
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8849799913685544685">lighthouse</translation>
@@ -1265,8 +1298,8 @@
 <translation id="8910721771319628100">Default network above latency threshold</translation>
 <translation id="8912306040879976619">Keyboard zones</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
+<translation id="8918813738569491921">salt rock</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
-<translation id="8923267550422472772">Day of month for reset</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

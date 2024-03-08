@@ -173,7 +173,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1647986356840967552">Forrige side</translation>
 <translation id="1651914502370159744">Åpne loggsiden</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
-<translation id="1662667383227796099">Søk etter filer, apper med mer i appoversikten. Du kan også få svar på spørsmål om Chromebooken din.</translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
 <translation id="1675844249244994876">Oppdater vinduet til høyre</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
@@ -467,7 +466,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2965227184985674128">Vil du slå på mikrofontilgang?</translation>
 <translation id="296762781903199866">Kunne ikke laste ned talefiler for <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">installere apper, utvidelser og temaer</translation>
-<translation id="2977098646659697261">De festede og åpne appene dine er på hyllen. For å feste en app på hyllen, høyreklikk på appen eller trykk på styreflaten med to fingre.</translation>
 <translation id="2977598380246111477">Neste nummer</translation>
 <translation id="2985148236010982088">Se alle appene</translation>
 <translation id="2992327365391326550">Enhetens mikrofonknapp er slått av.</translation>
@@ -776,7 +774,6 @@ Koble enheten til strøm.</translation>
 <translation id="4123259114412175274">For å låse opp Chromebooken, sørg for at Bluetooth er påslått på telefonen</translation>
 <translation id="4125970834901680537">Kan ikke strømme apper i nettbrettmodus. Prøv på nytt i laptopmodus.</translation>
 <translation id="4131973331381812765">Temperatur: <ph name="TEMPERATURE" /> °C – Nåværende hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook leveres med innebygde apper som gjør det enklere å få ting gjort. Du finner appene i appoversikten.</translation>
 <translation id="4136724716305260864">Påslått til soloppgang</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + høyrepil</translation>
 <translation id="4146671046252289537">Flytt til slutten av neste ord</translation>
@@ -808,7 +805,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installert app, satt på pause</translation>
 <translation id="4228078597006700451">Kontrollene er ikke konfigurert</translation>
 <translation id="4231053948789591973">Castingen er satt på pause. Du kan når som helst gjenoppta eller stoppe castingen av skjermen.</translation>
-<translation id="423685346499232137">Kan ikke kopiere eller lime inn innhold akkurat nå</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oversiktsmodus</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
@@ -820,7 +816,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
 <translation id="4274537685965975248">Hurtigtasten Ctrl + Alt + nedoverpil er endret. For å bruke End-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + høyrepilen.</translation>
 <translation id="4275283744500212192">Åpne alternativene for vindusoppsett</translation>
-<translation id="4278138729651139331">Tilpass og gi Chromebooken din personlig preg i Innstillinger. Prøv å endre bakgrunnen eller angi en skjermsparer.</translation>
 <translation id="4279490309300973883">Speiling</translation>
 <translation id="4280601795273309128">Sikkerhetsoppdateringer er avsluttet. Oppgrader enheten.</translation>
 <translation id="4283888303416325161">Oppgi passordet for høyere sikkerhet</translation>
@@ -1136,7 +1131,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="550391772491508736">Gjenoppta castingen</translation>
 <translation id="5506975627792768506">Slå på forstørreren av eller på</translation>
 <translation id="5512042095225963688">Slett forrige ord</translation>
-<translation id="5518068085000130971">Det var det grunnleggende. Fortsett i utforsk – den innebygde appen vår for tips og hjelp. Her finner du tips for å komme i gang, anbefalte apper, spesialtilbud og de nyeste Chromebook-funksjonene.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratoren din har fjernet alle eSIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5520909879404821039">«Hei» på fransk</translation>
@@ -1522,7 +1516,6 @@ Nylig installert</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="698231206551913481">Alle filer og lokale data som er tilknyttet denne brukeren, slettes permanent når brukeren fjernes.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Få en rask innføring i hvordan du finner frem på Chromebooken. Kom i gang på seks trinn.</translation>
 <translation id="7000027735917578303">Innstillinger for vinduer og skrivebord</translation>
 <translation id="7004910047186208204">Koble til mobildata</translation>
 <translation id="7005239792648594238">Åpne en app for å komme i gang</translation>
@@ -1589,7 +1582,6 @@ Nylig installert</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7313193732017069507">Vis kameraet</translation>
-<translation id="7316261577130609484">Legg til et nytt gjøremål</translation>
 <translation id="7330397557116570022">Gå til et tekstfelt for å bruke diktering</translation>
 <translation id="7331646370422660166">alt + nedoverpil</translation>
 <translation id="7340731148882810149">Automatisk klikk-meny</translation>
@@ -1654,7 +1646,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7557816257942363084"><ph name="APP_NAME" /> bruker mikrofonen din for øyeblikket</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
 <translation id="7564874036684306347">Flytting av vinduer til et annet skrivebord kan føre til uventet atferd. Følgende varsler, vinduer og dialogbokser kan bli delt mellom skrivebordene.</translation>
-<translation id="7567950130372125778">Hei! Chromebook er litt annerledes.</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er slått på</translation>
 <translation id="7569886975397378678">Lukk konfigurering av visning av varsler og apper fra telefonen din</translation>
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> igjen</translation>

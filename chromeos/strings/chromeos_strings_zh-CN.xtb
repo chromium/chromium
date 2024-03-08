@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">页面大小</translation>
 <translation id="1082009148392559545">正在下载屏保</translation>
 <translation id="1094693127011229778">IP 地址缺失</translation>
+<translation id="1100902271996134409">正在生成图像…</translation>
 <translation id="1116694919640316211">关于</translation>
 <translation id="1118572504348554005">我们可能会与合作伙伴分享通过本表单提交的反馈，以便排查您向我们报告的错误和其他问题。请勿包含密码等敏感信息。</translation>
 <translation id="1119447706177454957">内部错误</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS 延迟</translation>
 <translation id="1270369111467284986">疑似存在强制门户</translation>
 <translation id="1274654146705270731">橙子</translation>
+<translation id="1275718070701477396">已选择</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1300115153046603471">APN 是默认<ph name="ATTACH" />类型。</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2276999893457278469">热门帮助内容</translation>
 <translation id="2279051792571591988">恢复默认设置</translation>
+<translation id="2286454467119466181">简单</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">由 Google AI 提供支持的近期壁纸</translation>
 <translation id="4320904097188876154">荧光粉</translation>
 <translation id="4333390807948134856">已按下<ph name="KEY_NAME" />键</translation>
-<translation id="4341897648462347919">蓝绿色</translation>
 <translation id="4354430579665871434">键</translation>
 <translation id="4361257691546579041">APN 是 default 类型。</translation>
 <translation id="437294888293595148">重置所有快捷键</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">相机或文件中的现有照片</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7170236477717446850">个人资料照片</translation>
-<translation id="7171665330126595869">洞穴</translation>
 <translation id="7171919371520438592">将窗口固定在屏幕<ph name="DIRECTION" />的较小区域</translation>
 <translation id="7172721935181587524">1 张图片</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">创建</translation>
 <translation id="7528507600602050979">帮助内容不可用</translation>
-<translation id="753556296624075801">由 Google 提供支持</translation>
 <translation id="7535791657097741517">开启浅色主题</translation>
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7551123448725492271">设备类型是音频设备。</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">键盘区域</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
-<translation id="8923267550422472772">每月重置流量使用情况的日期</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>

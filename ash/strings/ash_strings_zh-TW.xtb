@@ -173,7 +173,6 @@
 <translation id="1647986356840967552">上一頁</translation>
 <translation id="1651914502370159744">開啟歷史記錄頁面</translation>
 <translation id="1654477262762802994">啟動語音查詢</translation>
-<translation id="1662667383227796099">你可以在啟動器中搜尋檔案、應用程式等內容，也可以尋找與 Chromebook 問題的解答。</translation>
 <translation id="1668469839109562275">內建 VPN</translation>
 <translation id="1675844249244994876">更新右側視窗</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
@@ -467,7 +466,6 @@
 <translation id="2965227184985674128">要允許存取麥克風嗎？</translation>
 <translation id="296762781903199866">無法下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="2970920913501714344">安裝應用程式、擴充功能和主題</translation>
-<translation id="2977098646659697261">檔案櫃會顯示已固定及開啟的應用程式。如要將應用程式固定到檔案櫃，請在應用程式上按一下滑鼠右鍵，或在觸控板上用兩指輕觸應用程式。</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
 <translation id="2985148236010982088">查看所有應用程式</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
@@ -774,7 +772,6 @@
 <translation id="4123259114412175274">如要解鎖 Chromebook，請確認手機的藍牙已開啟</translation>
 <translation id="4125970834901680537">無法在平板電腦模式下串流應用程式，請改用筆記型電腦模式再試一次。</translation>
 <translation id="4131973331381812765">溫度：<ph name="TEMPERATURE" />°C - 目前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">Chromebook 內建各式應用程式，可協助你完成大小工作。現在就透過啟動器尋找你要的應用程式吧！</translation>
 <translation id="4136724716305260864">開啟，直到日出</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + 向右鍵</translation>
 <translation id="4146671046252289537">移至下一個字詞的結尾</translation>
@@ -805,7 +802,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安裝的應用程式，已暫停</translation>
 <translation id="4228078597006700451">未設定控制選項</translation>
 <translation id="4231053948789591973">目前已暫停投放。你隨時可以繼續或停止投放螢幕畫面。</translation>
-<translation id="423685346499232137">目前無法複製或貼上內容</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">總覽模式</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -817,7 +813,6 @@
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下鍵」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右鍵。</translation>
 <translation id="4275283744500212192">開啟視窗版面配置選項</translation>
-<translation id="4278138729651139331">你可以使用「設定」應用程式自訂 Chromebook，不妨試著變更桌布或設定螢幕保護程式。</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4280601795273309128">安全性更新已終止，請升級裝置。</translation>
 <translation id="4283888303416325161">基於安全考量，請輸入密碼</translation>
@@ -1133,7 +1128,6 @@
 <translation id="550391772491508736">繼續投放</translation>
 <translation id="5506975627792768506">開啟或關閉放大鏡</translation>
 <translation id="5512042095225963688">刪除上一個字詞</translation>
-<translation id="5518068085000130971">這些都是基本概念！如需其他使用訣竅和說明，歡迎使用內建的「探索」應用程式，瞭解新手入門秘訣、推薦應用程式、特價優惠和最新的 Chromebook 功能。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">你的管理員已移除所有 eSIM 卡設定檔。如需更多資訊，請向管理員洽詢。</translation>
 <translation id="5520909879404821039">法文的「你好」</translation>
@@ -1518,7 +1512,6 @@
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="698231206551913481">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。</translation>
 <translation id="6984028004251196682">「<ph name="DISPLAY_NAME" />」不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解析度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)。如要保留變更，請按一下「確認」。系統會在 <ph name="TIMEOUT_SECONDS" />後還原到先前的設定。</translation>
-<translation id="6989752354829085073">請觀看快速導覽，瞭解如何操作 Chromebook。只要 6 個步驟就能開始運作。</translation>
 <translation id="7000027735917578303">Windows 和桌面設定</translation>
 <translation id="7004910047186208204">連線至行動數據網路</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>
@@ -1585,7 +1578,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
-<translation id="7316261577130609484">新增工作</translation>
 <translation id="7330397557116570022">必須點選文字欄位，才能使用語音輸入功能</translation>
 <translation id="7331646370422660166">alt + 向下鍵</translation>
 <translation id="7340731148882810149">自動點擊選單</translation>
@@ -1650,7 +1642,6 @@
 <translation id="7557816257942363084">「<ph name="APP_NAME" />」正在使用你的麥克風</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致未預期的行為。後續的通知、視窗和對話方塊可能會分開顯示在不同桌面上。</translation>
-<translation id="7567950130372125778">你好！Chromebook 的操作方式略有不同。</translation>
 <translation id="7569509451529460200">點字模式和 ChromeVox 已啟用</translation>
 <translation id="7569886975397378678">取消以下設定：查看手機的通知和應用程式</translation>
 <translation id="7571361473021531288">電池電量：<ph name="BATTERY_PERCENTAGE" />% | 還可使用 <ph name="TIME" /></translation>

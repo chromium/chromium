@@ -174,7 +174,6 @@
 <translation id="1647986356840967552">الصفحة السابقة</translation>
 <translation id="1651914502370159744">فتح صفحة "السجلّ"</translation>
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
-<translation id="1662667383227796099">‏يمكنك من هنا البحث عن ملفاتك وتطبيقاتك وغيرها في "مشغِّل التطبيقات". بإمكانك أيضًا الحصول على إجابات عن الأسئلة حول Chromebook.</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
 <translation id="1675844249244994876">تعديل النافذة اليسرى</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
@@ -468,7 +467,6 @@
 <translation id="2965227184985674128">هل تريد السماح بالوصول إلى الميكروفون؟</translation>
 <translation id="296762781903199866">يتعذّر تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
 <translation id="2970920913501714344">تثبيت التطبيقات والإضافات والتصاميم</translation>
-<translation id="2977098646659697261">تطبيقاتك المثبَّتة والمفتوحة معروضة هنا على الرف. لتثبيت تطبيق في الرف، انقر بزر الماوس الأيمن عليه أو انقر بإصبعين على لوحة اللمس.</translation>
 <translation id="2977598380246111477">الرقم التالي</translation>
 <translation id="2985148236010982088">عرض كل التطبيقات</translation>
 <translation id="2992327365391326550">زر ميكروفون الجهاز غير مفعَّل.</translation>
@@ -778,7 +776,6 @@
 <translation id="4123259114412175274">‏يجب تفعيل البلوتوث على هاتفك لفتح قفل جهاز Chromebook.</translation>
 <translation id="4125970834901680537">لا يمكن بث محتوى التطبيقات في وضع الجهاز اللوحي. يُرجى إعادة المحاولة في وضع الكمبيوتر المحمول.</translation>
 <translation id="4131973331381812765">درجة الحرارة: <ph name="TEMPERATURE" /> درجة مئوية - السرعة الحالية: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> غيغاهرتز</translation>
-<translation id="4132502210362661715">‏تتوفّر في جهاز Chromebook تطبيقات مدمَجة لمساعدتك في إنجاز المهام. يمكنك العثور على التطبيقات المطلوبة في "مشغِّل التطبيقات".</translation>
 <translation id="4136724716305260864">تفعيل الميزة حتى شروق الشمس</translation>
 <translation id="4141710407113804517">‫<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين</translation>
 <translation id="4146671046252289537">نقل إلى نهاية الكلمة التالية</translation>
@@ -810,7 +807,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />، تطبيق مثبّت ومتوقف مؤقتًا</translation>
 <translation id="4228078597006700451">لم يتم إعداد عناصر التحكّم.</translation>
 <translation id="4231053948789591973">تم إيقاف البث مؤقتًا. يمكنك استئناف بث المحتوى المعروض على الشاشة أو إيقافه متى شئت.</translation>
-<translation id="423685346499232137">يتعذّر نسخ المحتوى أو لصقه في الوقت الحالي.</translation>
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
 <translation id="4240486403425279990">وضع "النظرة العامة"</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -822,7 +818,6 @@
 <translation id="4269883910223712419">يمتلك مشرف هذا الجهاز القدرة على ما يلي:</translation>
 <translation id="4274537685965975248">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأسفل". لاستخدام مفتاح End، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين".</translation>
 <translation id="4275283744500212192">فتح خيارات تنسيق النوافذ</translation>
-<translation id="4278138729651139331">‏لاختيار الإعدادات التي تناسبك، انتقِل إلى "الإعدادات" على Chromebook. يمكنك مثلاً تغيير الخلفية أو ضبط شاشة استراحة.</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
 <translation id="4280601795273309128">انتهت تحديثات الأمان المتوفّرة لهذا الجهاز. يُرجى ترقية الجهاز.</translation>
 <translation id="4283888303416325161">أدخِل كلمة المرور لزيادة مستوى الأمان</translation>
@@ -1138,7 +1133,6 @@
 <translation id="550391772491508736">استئناف البث</translation>
 <translation id="5506975627792768506">تفعيل المكبِّر أو إيقافه</translation>
 <translation id="5512042095225963688">حذف الكلمة السابقة</translation>
-<translation id="5518068085000130971">‏كانت هذه هي أهم أساسيات الاستخدام. يمكنك معرفة المزيد من خلال تطبيق "استكشاف"، وهو تطبيق مضمَّن لتزويدك بالنصائح حول بدء الاستخدام وإطلاعك على التطبيقات المقترَحة والعروض الخاصة وأحدث الميزات على Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">‏أزال المشرف جميع الملفات الشخصية لشريحة eSIM. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5520909879404821039">كلمة "مرحبًا" باللغة الفرنسية</translation>
@@ -1524,7 +1518,6 @@
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="698231206551913481">سيتم حذف جميع الملفات والبيانات المحلية المرتبطة بهذا المستخدم نهائيًا بمجرد إزالة هذا المستخدم.</translation>
 <translation id="6984028004251196682">لا يوفِّر <ph name="DISPLAY_NAME" /> درجة الدقة <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز). ولذلك تم تغييرها إلى <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> هرتز). يُرجى النقر على "تأكيد" لحفظ التغييرات. وستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">‏يمكنك إجراء جولة سريعة للتعرّف على طريقة استخدام جهاز Chromebook. ابدأ باستخدام جهازك باتّباع 6 خطوات.</translation>
 <translation id="7000027735917578303">إعدادات النوافذ وأسطح المكتب</translation>
 <translation id="7004910047186208204">الاتصال بشبكة بيانات الجوّال</translation>
 <translation id="7005239792648594238">للبدء، افتح تطبيقًا.</translation>
@@ -1592,7 +1585,6 @@
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
 <translation id="7312210124139670355">‏المشرف يعيد ضبط شريحة eSIM حاليًا. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="7313193732017069507">توسيع الكاميرا</translation>
-<translation id="7316261577130609484">إضافة مَهمة جديدة</translation>
 <translation id="7330397557116570022">انتقِل إلى حقل نصي لاستخدام ميزة "إملاء".</translation>
 <translation id="7331646370422660166">‏‫alt + السهم المتّجه للأسفل</translation>
 <translation id="7340731148882810149">قائمة النقرات التلقائية</translation>
@@ -1657,7 +1649,6 @@
 <translation id="7557816257942363084">يستخدم "<ph name="APP_NAME" />" الميكروفون حاليًا.</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="7564874036684306347">قد ينتج عن نقل النوافذ إلى سطح مكتب آخر سلوك غير متوقع. من الممكن أن يتم تقسيم مربعات الحوار والنوافذ والإشعارات المتتالية بين سطحَي المكتب.</translation>
-<translation id="7567950130372125778">‏مرحبًا. يختلف جهاز Chromebook قليلاً عن باقي الأجهزة.</translation>
 <translation id="7569509451529460200">‏تم تفعيل Braille وChromeVox</translation>
 <translation id="7569886975397378678">عدم إعداد ميزة عرض الإشعارات والتطبيقات في هاتفك</translation>
 <translation id="7571361473021531288">مستوى شحن البطارية: %<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي: <ph name="TIME" /></translation>

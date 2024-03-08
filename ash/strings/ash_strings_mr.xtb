@@ -173,7 +173,6 @@
 <translation id="1647986356840967552">मागील पेज</translation>
 <translation id="1651914502370159744">इतिहास पेज उघडा</translation>
 <translation id="1654477262762802994">व्हॉइस क्वेरी सुरू करा</translation>
-<translation id="1662667383227796099">लाँचर मध्ये तुमच्या फाइल, अ‍ॅप्स आणि आणखी बरेच काही शोधा. तुम्ही तुमच्या Chromebook संबंधित प्रश्नांची उत्तरेदेखील मिळवू शकता.</translation>
 <translation id="1668469839109562275">बिल्ट-इन VPN</translation>
 <translation id="1675844249244994876">उजवी विंडो अपडेट करा</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
@@ -467,7 +466,6 @@
 <translation id="2965227184985674128">मायक्रोफोनचा अ‍ॅक्सेस सुरू करायचा आहे का?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत</translation>
 <translation id="2970920913501714344">ॲप्स, एक्स्टेंशन आणि थीम इंस्टॉल करा</translation>
-<translation id="2977098646659697261">तुमची पिन केलेली आणि उघडलेली ॲप्स शेल्फ वर आहेत. एखादे ॲप शेल्फ वर पिन करण्यासाठी, ॲपवर राइट-क्लिक करा किंवा तुमच्या टचपॅडवर दोन बोटांनी टॅप करा.</translation>
 <translation id="2977598380246111477">पुढील नंबर</translation>
 <translation id="2985148236010982088">सर्व अ‍ॅप्स पहा</translation>
 <translation id="2992327365391326550">डिव्हाइसच्या मायक्रोफोनचे बटण बंद केले आहे.</translation>
@@ -776,7 +774,6 @@
 <translation id="4123259114412175274">तुमचे Chromebook अनलॉक करण्यासाठी, तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा</translation>
 <translation id="4125970834901680537">टॅबलेट मोडमध्ये ॲप्स स्ट्रीम करू शकत नाही. लॅपटॉप मोडमध्ये पुन्हा प्रयत्न करा.</translation>
 <translation id="4131973331381812765">तापमान: <ph name="TEMPERATURE" />°C - सध्याचा वेग: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">कामे पूर्ण करण्यात तुम्हाला मदत करण्यासाठी तुमचे Chromebook बिल्ट-इन अ‍ॅप्ससह येते. लाँचर मध्ये तुमची अ‍ॅप्स शोधा.</translation>
 <translation id="4136724716305260864">सूर्योदयापर्यंत सुरू</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + right arrow</translation>
 <translation id="4146671046252289537">पुढील शब्दाच्या समाप्तीवर जा</translation>
@@ -808,7 +805,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप, थांबवले आहे</translation>
 <translation id="4228078597006700451">नियंत्रणे सेट केलेली नाहीत</translation>
 <translation id="4231053948789591973">कास्ट करणे सध्या थांबले आहे. तुम्ही तुमची स्क्रीन कास्ट करणे कधीही पुन्हा सुरू करू शकता किंवा थांबवू शकता.</translation>
-<translation id="423685346499232137">यावेळी आशय कॉपी किंवा पेस्ट करू शकत नाही</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">अवलोकन मोड</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
@@ -820,7 +816,6 @@
 <translation id="4269883910223712419">या डिव्हाइसचे प्रशासन पुढील गोष्टी करू शकते:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. एंड की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + राइट अ‍ॅरो प्रेस करा.</translation>
 <translation id="4275283744500212192">विंडो लेआउट पर्याय उघडा</translation>
-<translation id="4278138729651139331">Settings मध्ये तुमचे Chromebook कस्टमाइझ आणि पर्सनलाइझ करा. तुमचा वॉलपेपर बदलून पहा किंवा स्क्रीन सेव्हर सेट करा.</translation>
 <translation id="4279490309300973883">मिररिंग</translation>
 <translation id="4280601795273309128">सुरक्षा अपडेट पूर्ण झाली आहेत. तुमचे डिव्हाइस अपग्रेड करा.</translation>
 <translation id="4283888303416325161">आणखी सुरक्षिततेसाठी पासवर्ड एंटर करा</translation>
@@ -1136,7 +1131,6 @@
 <translation id="550391772491508736">कास्ट करणे पुन्हा सुरू करा</translation>
 <translation id="5506975627792768506">मॅग्निफायर सुरू किंवा बंद करा</translation>
 <translation id="5512042095225963688">मागील शब्द हटवा</translation>
-<translation id="5518068085000130971">हे मूलभूत आहेत! टिपा आणि मदतीसाठी Explore या आमच्या बिल्ट-इन अ‍ॅपमध्ये पुढे सुरू ठेवा. तुम्हाला सुरुवात करण्यासाठी टिपा, शिफारस केलेली अ‍ॅप्स, विशेष ऑफर आणि नवीनतम Chromebook वैशिष्ट्ये तुम्हाला आढळतील.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">तुमच्या अ‍ॅडमिनिस्ट्रेटरने सर्व eSIM प्रोफाइल काढून टाकल्या आहेत. अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="5520909879404821039">फ्रेंचमध्ये हाय म्हणणे</translation>
@@ -1522,7 +1516,6 @@
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="698231206551913481">एकदा हा वापरकर्ता काढल्यानंतर या वापरकर्त्याशी संबद्ध सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) वर बदलले. बदल राखण्यासाठी कन्फर्म करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
-<translation id="6989752354829085073">तुमच्या Chromebook वर सुरुवात कशी करावी हे जाणून घेण्यासाठी झटपट फेरफटका मारा. ६ पायऱ्या वापरून सुरुवात करा.</translation>
 <translation id="7000027735917578303">Windows आणि डेस्‍क सेटिंग्ज</translation>
 <translation id="7004910047186208204">मोबाइल डेटाशी कनेक्ट करा</translation>
 <translation id="7005239792648594238">सुरुवात करण्यासाठी अ‍ॅप उघडा</translation>
@@ -1589,7 +1582,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="7313193732017069507">कॅमेराचा विस्तार करा</translation>
-<translation id="7316261577130609484">नवीन टास्क जोडा</translation>
 <translation id="7330397557116570022">डिक्टेशन वापरण्यासाठी मजकूर फील्डवर जा</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7340731148882810149">ऑटोमॅटिक क्लिक मेनू</translation>
@@ -1654,7 +1646,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> हे सध्या तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
 <translation id="7564874036684306347">दुसऱ्या डेस्कटॉपवर विंडो हलवण्याने अनपेक्षित वर्तन घडू शकते. नंतर येणाऱ्या सूचना, विंडो आणि डायलॉग हे डेस्कटॉपच्या दरम्यान विभाजित केले जाऊ शकतात.</translation>
-<translation id="7567950130372125778">हाय. Chromebook हे थोडे वेगळे आहे.</translation>
 <translation id="7569509451529460200">ब्रेल आणि ChromeVox सुरू केलेले आहेत</translation>
 <translation id="7569886975397378678">तुमच्या फोनमधील सूचना आणि अ‍ॅप्स पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="7571361473021531288">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | बॅटरी शिल्लक आहे <ph name="TIME" /></translation>

@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">පිටු තරම</translation>
 <translation id="1082009148392559545">තිර සුරැකුම බාගැනීම</translation>
 <translation id="1094693127011229778">IP ලිපිනය ලබා ගත නොහැකිය</translation>
+<translation id="1100902271996134409">රූප තනමින්...</translation>
 <translation id="1116694919640316211">ගැන</translation>
 <translation id="1118572504348554005">ඔබ අප වෙත වාර්තා කරන දෝෂ සහ වෙනත් ගැටලු නිරාකරණය කිරීම සඳහා අපි මෙම පෝරමය හරහා ඉදිරිපත් කරන ලද ප්‍රතිපෝෂණ අපගේ හවුල්කරුවන් සමග බෙදා ගත හැක. මුරපද වැනි සංවේදී තොරතුරු ඇතුළත් නොකරන්න.</translation>
 <translation id="1119447706177454957">අභ්‍යන්තර දෝෂය</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS පමාව</translation>
 <translation id="1270369111467284986">පිවිසුම් දොරටුව සැක කරන ලදි</translation>
 <translation id="1274654146705270731">දොඩම්</translation>
+<translation id="1275718070701477396">තෝරාගත්</translation>
 <translation id="1290331692326790741">දුර්වල සංඥාව</translation>
 <translation id="1300115153046603471">APN වර්ගය පෙරනිමි සහ <ph name="ATTACH" /> වේ.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -169,6 +171,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">සමනලුන්</translation>
 <translation id="188114911237521550">අඳුරු ප්‍රකාරය ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="188268299367474594">පවතින APNs වලින් තෝරා ගන්න</translation>
 <translation id="1885577615937958993">වේගයෙන් ඉදිරියට මාධ්‍ය</translation>
 <translation id="1887850431809612466">දෘඨාංග සංශෝධනය</translation>
 <translation id="189221451253258459">නියෝන් කොළ</translation>
@@ -236,6 +239,7 @@
 <translation id="2271469253353559191">අඳුරු ප්‍රකාර කාල සටහන</translation>
 <translation id="2276999893457278469">ඉහළම උදවු අන්තර්ගතය</translation>
 <translation id="2279051792571591988">පෙරනිමි ප්‍රතිසාධන කරන්න</translation>
+<translation id="2286454467119466181">සරල</translation>
 <translation id="2287186687001756809">රූප නැත. ඡායාරූප එක් කිරීමට, <ph name="LINK" /> වෙත යන්න</translation>
 <translation id="2307344026739914387">වත්මන් යතුරු යුගල භාවිත කරන්න</translation>
 <translation id="2320295602967756579">ආලෝක තේමාව සබල කරන්න</translation>
@@ -271,6 +275,7 @@
 <translation id="2512979179176933762">කවුළු පෙන්වන්න</translation>
 <translation id="2513396635448525189">පුරන රූපය</translation>
 <translation id="2517472476991765520">ස්කෑන් කරන්න</translation>
+<translation id="2520213071283358374">මෙම APN භාවිතා කරන්න</translation>
 <translation id="2521835766824839541">පෙර ඛණ්ඩය</translation>
 <translation id="2526590354069164005">ඩෙස්ක්ටොප්</translation>
 <translation id="253029298928638905">යළි ආරම්භ කරමින්...</translation>
@@ -519,7 +524,6 @@
 <translation id="4310735698903592804">Google AI මගින් බල ගැන්වෙන මෑත වෝල්පේපර</translation>
 <translation id="4320904097188876154">නියෝන් රෝස</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
-<translation id="4341897648462347919">හරිත නිල්</translation>
 <translation id="4354430579665871434">යතුර</translation>
 <translation id="4361257691546579041">APN වර්ගය පෙරනිමි වේ.</translation>
 <translation id="437294888293595148">සියලු කෙටිමං යළි සකසන්න</translation>
@@ -984,7 +988,6 @@
 <translation id="7155171745945906037">කැමරාව හෝ ගොනුව වෙතින් පවතින ඡායාරූප</translation>
 <translation id="7162487448488904999">ගැලරිය</translation>
 <translation id="7170236477717446850">පැතිකඩ පින්තූරය</translation>
-<translation id="7171665330126595869">ගුහාව</translation>
 <translation id="7171919371520438592">කවුළුව තිරයෙහි <ph name="DIRECTION" /> කුඩා කොටසෙහි ඈඳන්න</translation>
 <translation id="7172721935181587524">රූප 1</translation>
 <translation id="7177485034254901881">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි. පරිපාලකයින්ට උපාංගය දුරස්ථව වින්‍යාස කිරීමට හැකිය.</translation>
@@ -1047,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">නිර්මාණය කරන්න</translation>
 <translation id="7528507600602050979">උදවු අන්තර්ගතය නොමැත</translation>
-<translation id="753556296624075801">Google මඟින් බලගැන්වේ</translation>
 <translation id="7535791657097741517">ආලෝක තේමාව ක්‍රියාත්මක කරන්න</translation>
 <translation id="7550715992156305117">දෝෂ නිර්ණ දින චර්යා</translation>
 <translation id="7551123448725492271">උපාංගය ශ්‍රව්‍ය උපාංගයකි.</translation>
@@ -1134,6 +1136,7 @@
 <translation id="8075838845814659848">ඉතිරි ආරෝපණය</translation>
 <translation id="8076492880354921740">පටිති</translation>
 <translation id="8079860070590459552">මල් වත්ත</translation>
+<translation id="8081553043098820199">වලංගු නොවන APNs ඔබේ ජංගම සම්බන්ධතාවය අබල කිරීමට හේතු විය හැක. ඔබේ ජංගම සැපයුම්කරු හෝ පරිපාලක විසින් සපයන ලද APN පමණක් සකසන්න.</translation>
 <translation id="8082366717211101304">Android යෙදුම් වෙතින් DNS විසඳිය නොහැකිය</translation>
 <translation id="8082644724189923105">යතුරු පුවරු කලාපය</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
@@ -1263,7 +1266,6 @@
 <translation id="8912306040879976619">යතුරු පුවරු කලාප</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ගේ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">අසාර්ථක විය - තැටිය මගහැරී ඇත</translation>
-<translation id="8923267550422472772">යළි සැකසීම සඳහා මාසයේ දිනය</translation>
 <translation id="8928727111548978589">අසාර්ථක විය - කඩදාසි නැත</translation>
 <translation id="8930521118335213258">සාමානයා</translation>
 <translation id="8930622219860340959">නොරැහැන්</translation>

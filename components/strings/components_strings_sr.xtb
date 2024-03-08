@@ -221,7 +221,6 @@
 <translation id="1386623374109090026">Напомене</translation>
 <translation id="1391625539203220400">Желите да сачувате IBAN на овом уређају?</translation>
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> није послао никакве податке.</translation>
-<translation id="1397811292916898096">Претражите помоћу: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1406500794671479665">Верификовање...</translation>
 <translation id="1406812885827747674">Дозволи овај пут</translation>
@@ -2660,6 +2659,7 @@
 <translation id="6195371403461054755">Геологија</translation>
 <translation id="6195418151868446719">Апарати за домаћинство</translation>
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
+<translation id="6197467523841310553">Кликните десним тастером да бисте попунили сачуване информације у било ком онлајн обрасцу уз мање куцања</translation>
 <translation id="6197648101609735209">89×89 mm</translation>
 <translation id="6198480336395236519">Потпуно изрезане картице</translation>
 <translation id="6203231073485539293">Проверите интернет везу</translation>

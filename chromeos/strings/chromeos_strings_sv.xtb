@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Sidstorlek</translation>
 <translation id="1082009148392559545">Laddar ned skärmsläckaren</translation>
 <translation id="1094693127011229778">IP-adress är inte tillgänglig</translation>
+<translation id="1100902271996134409">Skapar bilder …</translation>
 <translation id="1116694919640316211">Om</translation>
 <translation id="1118572504348554005">Vi kan dela feedback som skickas via det här formuläret med våra partners för att felsöka problem som du rapporterar till oss. Ange inte känsliga uppgifter somlösenord.</translation>
 <translation id="1119447706177454957">Internt fel</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS-fördröjning</translation>
 <translation id="1270369111467284986">Misstänkt infångstportal</translation>
 <translation id="1274654146705270731">apelsiner</translation>
+<translation id="1275718070701477396">Markerad</translation>
 <translation id="1290331692326790741">svag signal</translation>
 <translation id="1300115153046603471">APN är standardtypen och <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">Schema för mörkt läge</translation>
 <translation id="2276999893457278469">Populärt hjälpinnehåll</translation>
 <translation id="2279051792571591988">Återställ standardinställningar</translation>
+<translation id="2286454467119466181">Enkel</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Använd nuvarande nyckelpar</translation>
 <translation id="2320295602967756579">Aktivera ljust tema</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">De senaste bakgrunderna som drivs av Googles AI</translation>
 <translation id="4320904097188876154">neonrosa</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> har tryckts ned</translation>
-<translation id="4341897648462347919">blågrönt</translation>
 <translation id="4354430579665871434">tangent</translation>
 <translation id="4361257691546579041">APN är av typen standard.</translation>
 <translation id="437294888293595148">Återställ alla genvägar</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">Befintligt foto från kamera eller fil</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Profilbild</translation>
-<translation id="7171665330126595869">en grotta</translation>
 <translation id="7171919371520438592">Docka fönstret på den <ph name="DIRECTION" />, mindre delen av skärmen</translation>
 <translation id="7172721935181587524">1 bild</translation>
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Skapa</translation>
 <translation id="7528507600602050979">Hjälpinnehållet är inte tillgängligt</translation>
-<translation id="753556296624075801">Tillhandahålls av Google</translation>
 <translation id="7535791657097741517">Aktivera ljust tema</translation>
 <translation id="7550715992156305117">Diagnostikrutiner</translation>
 <translation id="7551123448725492271">Enheten är en ljudenhet.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">Tangentbordszoner</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
-<translation id="8923267550422472772">Dag i månaden för återställning</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Trådlöst</translation>

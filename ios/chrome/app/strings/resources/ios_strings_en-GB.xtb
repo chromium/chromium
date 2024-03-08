@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Mail sent.</translation>
 <translation id="1582732959743469162">This will stop all progress for your current download.</translation>
 <translation id="158591023028013564">{count,plural, =1{Page added to your reading list}other{{count} Pages added to your reading list}}</translation>
+<translation id="1587629076612412684">Personalise Google services</translation>
 <translation id="1594034544529347967">Starts</translation>
 <translation id="160275202205869636">When on, use and save data in your Google Account. When off, data is saved only to this device.</translation>
 <translation id="1605405588277479165">Off – Not recommended</translation>
@@ -207,7 +208,7 @@
 <translation id="2050196510205866090">{count,plural, =1{{count} saved payment method available above your keyboard.}other{{count} saved payment methods available above your keyboard.}}</translation>
 <translation id="2055515971416882518">Open "Settings."</translation>
 <translation id="2059166748188874810">Municipality</translation>
-<translation id="2062410130322589403">A guide of your privacy choices</translation>
+<translation id="2062410130322589403">A guide to your privacy choices</translation>
 <translation id="20638360198452347">Unit type selector</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
@@ -517,6 +518,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3631443864840848029">Make sure that you're saving your current password for this site.</translation>
 <translation id="3638472932233958418">Pre-load Web Pages</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} password is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
+<translation id="3659297405161482746">No payment methods found</translation>
 <translation id="3661160521073045932">Configuration profile available</translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3680970647557344817">Hide Edit Bookmark</translation>
@@ -1013,6 +1015,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6196207969502475924">Voice Search</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="6210079381482819663">Tabs not used for <ph name="THRESHOLD" /> days or more are moved here. You can change this at any time in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
+<translation id="6213281885682386884">No addresses found</translation>
 <translation id="6213567400989743524">Dismissed warnings</translation>
 <translation id="6219550825416862075">Welcome back</translation>
 <translation id="6219688215832490856">Never translate</translation>
@@ -1385,6 +1388,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8027581147000338959">Open in new window</translation>
 <translation id="8032569120109842252">Following</translation>
 <translation id="8040207962129315716">Ask me every time</translation>
+<translation id="8041089156583427627">Send Feedback</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
 <translation id="8044568254381073661">Save Without Encryption</translation>
@@ -1604,6 +1608,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9106655997975673326">From "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Check for compromised passwords</translation>
 <translation id="9109699888944026290">{count,plural, =1{New Password For This Site}other{New Passwords For This Site}}</translation>
+<translation id="9110489518258031250">Control how your synced browsing history can be used to personalise other Google services</translation>
 <translation id="9120217828624527905">Switch to full-page translation</translation>
 <translation id="9124387962554796433">Google may use your history to personalise Search and other Google services.</translation>
 <translation id="9137526406337347448">Google Services</translation>

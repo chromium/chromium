@@ -11,7 +11,9 @@
 <translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="161042844686301425">निळसर</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टॅब गटबद्ध केले आहेत</translation>
 <translation id="1657719826150349398">टॅब खाली हलवा</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टॅब गटबद्ध केला आहे</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बुकमार्क करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बुकमार्क करा}}</translation>
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>

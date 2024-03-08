@@ -1090,7 +1090,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="6518133107902771759">Verifica</translation>
 <translation id="6524918542306337007">El mode d'incògnit no està disponible</translation>
 <translation id="6527303717912515753">Comparteix</translation>
-<translation id="6530992499366869131">Rep un advertiment si les contrasenyes queden exposades en l'àmbit d'una violació de les dades</translation>
+<translation id="6530992499366869131">Rep un advertiment si les contrasenyes queden exposades en una violació de les dades</translation>
 <translation id="6537746030088321027">exemple.cat</translation>
 <translation id="6550675742724504774">Opcions</translation>
 <translation id="6550891580932862748">No et protegeix contra baixades, extensions ni llocs web perillosos. La configuració de Navegació segura en altres productes de Google no es veurà afectada.</translation>
@@ -1385,6 +1385,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8027581147000338959">Obre en una finestra nova</translation>
 <translation id="8032569120109842252">Seguint</translation>
 <translation id="8040207962129315716">Pregunta-m'ho cada vegada</translation>
+<translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="804225253087497565">És possible que l'<ph name="BEGIN_LINK" />historial de cerques<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="804427445359061970">Trobaràs les teves pestanyes d'altres dispositius aquí</translation>
 <translation id="8044568254381073661">Desa sense encriptació</translation>

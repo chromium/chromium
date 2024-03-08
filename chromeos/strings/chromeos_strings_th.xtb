@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">ขนาดหน้า</translation>
 <translation id="1082009148392559545">กำลังดาวน์โหลดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="1094693127011229778">ที่อยู่ IP ไม่พร้อมใช้งาน</translation>
+<translation id="1100902271996134409">กำลังสร้างรูปภาพ...</translation>
 <translation id="1116694919640316211">เกี่ยวกับ</translation>
 <translation id="1118572504348554005">เราอาจแชร์ความคิดเห็นที่ส่งมาทางแบบฟอร์มนี้กับพาร์ทเนอร์เพื่อแก้ไขข้อบกพร่องและปัญหาอื่นๆ ที่คุณรายงานให้ทราบ อย่าใส่ข้อมูลที่ละเอียดอ่อน เช่น รหัสผ่าน</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
 <translation id="1274654146705270731">ส้ม</translation>
+<translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
 <translation id="1300115153046603471">APN เป็นแบบ Default และ <ph name="ATTACH" /></translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">กำหนดเวลาโหมดมืด</translation>
 <translation id="2276999893457278469">เนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="2279051792571591988">คืนค่าเริ่มต้น</translation>
+<translation id="2286454467119466181">ง่าย</translation>
 <translation id="2287186687001756809">ไม่มีรูปภาพ ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
 <translation id="2307344026739914387">ใช้คู่คีย์ปัจจุบัน</translation>
 <translation id="2320295602967756579">เปิดใช้ธีมสว่าง</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">วอลเปเปอร์ล่าสุดที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="4320904097188876154">ชมพูนีออน</translation>
 <translation id="4333390807948134856">กดปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
-<translation id="4341897648462347919">น้ำเงินอมเขียว</translation>
 <translation id="4354430579665871434">แป้น</translation>
 <translation id="4361257691546579041">APN เป็นแบบ Default</translation>
 <translation id="437294888293595148">รีเซ็ตทางลัดทั้งหมด</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">รูปภาพที่มีอยู่จากกล้องหรือไฟล์</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7170236477717446850">รูปโปรไฟล์</translation>
-<translation id="7171665330126595869">ถ้ำ</translation>
 <translation id="7171919371520438592">ตรึงหน้าต่างไว้กับส่วนที่เล็กกว่าทางด้าน<ph name="DIRECTION" />ของหน้าจอ</translation>
 <translation id="7172721935181587524">1 ภาพ</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">สร้าง</translation>
 <translation id="7528507600602050979">เนื้อหาช่วยเหลือไม่พร้อมใช้งาน</translation>
-<translation id="753556296624075801">ขับเคลื่อนโดย Google</translation>
 <translation id="7535791657097741517">เปิดธีมสว่าง</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
 <translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">โซนแป้นพิมพ์</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ของ <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">ไม่สำเร็จ - ไม่มีถาด</translation>
-<translation id="8923267550422472772">วันที่จะรีเซ็ตในแต่ละเดือน</translation>
 <translation id="8928727111548978589">ไม่สำเร็จ - กระดาษหมด</translation>
 <translation id="8930521118335213258">รายการเทียบเท่า</translation>
 <translation id="8930622219860340959">ไร้สาย</translation>

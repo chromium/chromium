@@ -221,7 +221,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1386623374109090026">Annotációk</translation>
 <translation id="1391625539203220400">Menti az IBAN-t erre az eszközre?</translation>
 <translation id="139305205187523129">A(z) <ph name="HOST_NAME" /> nem küldött adatokat.</translation>
-<translation id="1397811292916898096">Keresőmotor: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Világoszöld</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
 <translation id="1406812885827747674">Egyszeri engedélyezés</translation>
@@ -2659,6 +2658,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6195371403461054755">Geológia</translation>
 <translation id="6195418151868446719">Szórakoztató elektronika</translation>
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
+<translation id="6197467523841310553">Kattintson a jobb egérgombbal, és töltse ki kevesebb gépeléssel a mentett adatokat bármilyen online űrlapon</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Teljes hosszban kivágott fülek</translation>
 <translation id="6203231073485539293">Ellenőrizze az internetkapcsolatot</translation>

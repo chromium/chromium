@@ -173,7 +173,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1647986356840967552">Pagina precedente</translation>
 <translation id="1651914502370159744">Apri la pagina Cronologia</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
-<translation id="1662667383227796099">Cerca i file, le app e altro ancora in Avvio app. Inoltre puoi ricevere risposte alle domande relative a Chromebook.</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
 <translation id="1675844249244994876">Aggiorna la finestra destra</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
@@ -467,7 +466,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2965227184985674128">Vuoi attivare l'accesso al microfono?</translation>
 <translation id="296762781903199866">Impossibile scaricare i file di contenuti vocali per la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Installare app, estensioni e temi.</translation>
-<translation id="2977098646659697261">Le app bloccate e aperte si trovano nella barra delle app. Per bloccare un'app sulla barra delle app, fai clic con il tasto destro del mouse su un'app o tocca il touchpad con due dita.</translation>
 <translation id="2977598380246111477">Numero successivo</translation>
 <translation id="2985148236010982088">Mostra tutte le app</translation>
 <translation id="2992327365391326550">Il pulsante del microfono del dispositivo è disattivato.</translation>
@@ -773,7 +771,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4123259114412175274">Per sbloccare Chromebook, assicurati che il Bluetooth del telefono sia attivo</translation>
 <translation id="4125970834901680537">Impossibile riprodurre app in streaming in modalità tablet. Riprova in modalità laptop.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C - Velocità attuale: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook è dotato di app integrate che ti aiutano a svolgere le tue attività. Puoi trovare le tue app in Avvio app.</translation>
 <translation id="4136724716305260864">Funzionalità attiva fino all'alba</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + Freccia destra</translation>
 <translation id="4146671046252289537">Sposta alla fine della parola successiva</translation>
@@ -805,7 +802,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app installata, messa in pausa</translation>
 <translation id="4228078597006700451">Controlli non configurati</translation>
 <translation id="4231053948789591973">La trasmissione è attualmente in pausa. Puoi riprendere la trasmissione dello schermo o interromperla in qualsiasi momento.</translation>
-<translation id="423685346499232137">Al momento non è possibile copiare o incollare contenuti</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modalità panoramica</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
@@ -817,7 +813,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
 <translation id="4275283744500212192">Apri le opzioni di layout delle finestre</translation>
-<translation id="4278138729651139331">Personalizza e adatta il tuo Chromebook nelle Impostazioni. Prova a cambiare lo sfondo o a impostare un salvaschermo.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Aggiornamenti della sicurezza terminati. Aggiorna il tuo dispositivo.</translation>
 <translation id="4283888303416325161">Inserisci la password per una maggior sicurezza</translation>
@@ -1133,7 +1128,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="550391772491508736">Riprendi la trasmissione</translation>
 <translation id="5506975627792768506">Attiva o disattiva la lente d'ingrandimento</translation>
 <translation id="5512042095225963688">Elimina parola precedente</translation>
-<translation id="5518068085000130971">Queste erano le informazioni di base. Continua in Esplora, la nostra app integrata di guida e suggerimenti. Troverai suggerimenti per iniziare, app consigliate, offerte speciali e le ultime funzionalità di Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5520909879404821039">Ciao in francese</translation>
@@ -1519,7 +1513,6 @@ Nuova installazione</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="698231206551913481">Tutti i file e i dati locali associati a questo utente verranno eliminati definitivamente in seguito alla rimozione dell'utente.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> non supporta <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La risoluzione è stata modificata in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Fai un rapido tour per scoprire come usare il tuo Chromebook. Puoi iniziare a usarlo in 6 passaggi.</translation>
 <translation id="7000027735917578303">Impostazioni di finestre e scrivanie</translation>
 <translation id="7004910047186208204">Connettiti ai dati mobili</translation>
 <translation id="7005239792648594238">Apri un'app per iniziare</translation>
@@ -1586,7 +1579,6 @@ Nuova installazione</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="7313193732017069507">Espandi fotocamera</translation>
-<translation id="7316261577130609484">Aggiungi nuova attività</translation>
 <translation id="7330397557116570022">Vai a un campo di testo per utilizzare la dettatura</translation>
 <translation id="7331646370422660166">Alt + Freccia giù</translation>
 <translation id="7340731148882810149">Menu Clic automatici</translation>
@@ -1651,7 +1643,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sta usando il microfono</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
-<translation id="7567950130372125778">Un saluto da Google. Il Chromebook è un po' diverso.</translation>
 <translation id="7569509451529460200">Braille e ChromeVox attivati</translation>
 <translation id="7569886975397378678">Chiudi la configurazione della visualizzazione di app e notifiche dello smartphone</translation>
 <translation id="7571361473021531288">Batteria: <ph name="BATTERY_PERCENTAGE" />% | Tempo rimanente: <ph name="TIME" /></translation>

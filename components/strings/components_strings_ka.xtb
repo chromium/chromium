@@ -221,7 +221,6 @@
 <translation id="1386623374109090026">ანოტაციები</translation>
 <translation id="1391625539203220400">გსურთ, შეინახოთ IBAN ამ მოწყობილობაზე?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />-ს არ გამოუგზავნია მონაცემები.</translation>
-<translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-ით ძიება</translation>
 <translation id="1405567553485452995">ღია მწვანე</translation>
 <translation id="1406500794671479665">გადამოწმება…</translation>
 <translation id="1406812885827747674">ამჯერად დაშვება</translation>
@@ -2661,6 +2660,7 @@
 <translation id="6195371403461054755">გეოლოგია</translation>
 <translation id="6195418151868446719">საყოფაცხოვრებო ელექტრონიკა</translation>
 <translation id="6196640612572343990">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
+<translation id="6197467523841310553">გამოიყენეთ მარჯვენა დაწკაპუნება, რომ ნებისმიერი ონლაინ-ფორმა შეავსოთ თქვენი შენახული ინფორმაციით და ნაკლებად მოგიწიოთ ტექსტის აკრეფა</translation>
 <translation id="6197648101609735209">89 x 89 მმ</translation>
 <translation id="6198480336395236519">სრულად ამოჭრილი ჩანართები</translation>
 <translation id="6203231073485539293">შეამოწმეთ თქვენი ინტერნეტ კავშირი</translation>

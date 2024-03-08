@@ -173,7 +173,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1647986356840967552">Aurreko orria</translation>
 <translation id="1651914502370159744">Ireki Historia orria</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
-<translation id="1662667383227796099">Bilatu fitxategiak, aplikazioak eta beste Exekutatzeko tresnan. Gainera, Chromebook-ari buruzko galderetarako erantzunak aurki ditzakezu.</translation>
 <translation id="1668469839109562275">VPN integratua</translation>
 <translation id="1675844249244994876">Eguneratu eskuineko leihoa</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> geratzen dira</translation>
@@ -467,7 +466,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2965227184985674128">Mikrofonoa erabiltzeko baimena aktibatu nahi duzu?</translation>
 <translation id="296762781903199866">Ezin izan dira deskargatu hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
 <translation id="2970920913501714344">Instalatu aplikazioak, luzapenak eta gaiak</translation>
-<translation id="2977098646659697261">Aplikazio ainguratuak eta irekiak apalean daude. Aplikazio bat apalean ainguratzeko, egin klik bertan eskuineko botoiarekin edo sakatu ukipen-panela bi hatzekin.</translation>
 <translation id="2977598380246111477">Hurrengo zenbakia</translation>
 <translation id="2985148236010982088">Ikusi aplikazio guztiak</translation>
 <translation id="2992327365391326550">Gailuaren mikrofonoaren botoia desaktibatuta dago.</translation>
@@ -777,7 +775,6 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="4123259114412175274">Chromebook-a desblokeatzeko, ziurtatu telefonoaren Bluetootha aktibatuta dagoela</translation>
 <translation id="4125970834901680537">Ezin dira zuzenean exekutatu aplikazioak tableta moduan. Saiatu berriro ordenagailu eramangarriaren modua erabilita.</translation>
 <translation id="4131973331381812765">Tenperatura: <ph name="TEMPERATURE" /> °C - Oraingo abiadura: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Zure Chromebook-ak produktibitatea areagotzen duten aplikazio integratuak dauzka. Aplikazioak bilatzeko, erabili Exekutatzeko tresna.</translation>
 <translation id="4136724716305260864">Aktibatuta egunsentira arte</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + eskuinera egiteko gezi-tekla</translation>
 <translation id="4146671046252289537">Joan hurrengo hitzaren amaierara</translation>
@@ -809,7 +806,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalatutako aplikazioa, pausatuta</translation>
 <translation id="4228078597006700451">Kontrolatzeko aukerak ez dira konfiguratu</translation>
 <translation id="4231053948789591973">Igorpena pausatuta dago. Nahi duzunean berrekin edo utz diezaiokezu pantaila igortzeari.</translation>
-<translation id="423685346499232137">Une honetan, ezin da kopiatu edo itsatsi edukirik</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Ikuspegi orokorreko modua</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
@@ -821,7 +817,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4269883910223712419">Gailuaren administratzaileak honako hauek egin ditzake:</translation>
 <translation id="4274537685965975248">Ktrl + Alt + behera egiteko gezi-tekla lasterbidea aldatu egin da. Amaiera tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + eskuinera egiteko gezi-tekla.</translation>
 <translation id="4275283744500212192">Ireki leihoaren diseinuaren aukerak</translation>
-<translation id="4278138729651139331">Pertsonalizatu Chromebook-a ezarpenetan. Adibidez, aldatu horma-papera edo pantaila-babeslea.</translation>
 <translation id="4279490309300973883">Islatzen</translation>
 <translation id="4280601795273309128">Amaitu dira segurtasun-eguneratzeak. Bertsio-berritu gailua.</translation>
 <translation id="4283888303416325161">Segurtasuna areagotzeko, idatzi pasahitza</translation>
@@ -1137,7 +1132,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="550391772491508736">Berrekin igortzeari</translation>
 <translation id="5506975627792768506">Aktibatu edo desaktibatu lupa</translation>
 <translation id="5512042095225963688">Ezabatu aurreko hitza</translation>
-<translation id="5518068085000130971">Horiek ziren oinarriak! Aurrera egiteko, joan Arakatu aplikazio integratura, aholkuak eta laguntza jasotzeko. Erabiltzen hasteko aholkuak, aplikazio gomendatuak, eskaintza bereziak eta Chromebook-aren azken eginbideak aurkituko dituzu bertan.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratzaileak eSIMaren profil guztiak kendu ditu. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="5520909879404821039">"Kaixo" frantsesez</translation>
@@ -1523,7 +1517,6 @@ Berriki instalatu da</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="698231206551913481">Erabiltzailea kentzen denean, harekin erlazionatutako fitxategi eta gailuko datu guztiak betiko ezabatuko dira.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" />-ko bereizmena (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). <ph name="FALLBACK_RESOLUTION" />-ko bereizmenera (<ph name="FALLBACK_REFRESH_RATE" /> Hz) aldatu da. Aldaketak gordetzeko, sakatu Berretsi. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
-<translation id="6989752354829085073">Egin txango bizkor bat Chromebook-a erabiltzeko argibideak lortzeko. Izan dena prest 6 urratsetan.</translation>
 <translation id="7000027735917578303">Leihoen eta lan-eremuen ezarpenak</translation>
 <translation id="7004910047186208204">Erabili datu-konexioa</translation>
 <translation id="7005239792648594238">Erabiltzen hasteko, ireki aplikazio bat</translation>
@@ -1590,7 +1583,6 @@ Berriki instalatu da</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administratzailea zure eSIM txartela berrezartzen ari da. Agian minutu batzuk beharko dira.</translation>
 <translation id="7313193732017069507">Zabaldu kamera</translation>
-<translation id="7316261577130609484">Gehitu beste zeregin bat</translation>
 <translation id="7330397557116570022">Diktaketa erabiltzeko, joan testu-eremu batera</translation>
 <translation id="7331646370422660166">Alt + behera egiteko gezi-tekla</translation>
 <translation id="7340731148882810149">Klik automatikoen menua</translation>
@@ -1655,7 +1647,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
 <translation id="7564874036684306347">Leihoak beste mahaigain batera eramaten badira, baliteke ustekabeko portaerak izatea. Aurrerantzeko jakinarazpenak, baliteke leihoak eta elkarrizketa-koadroak bi mahaigainen artean banatuta agertzea.</translation>
-<translation id="7567950130372125778">Kaixo: Chromebook pixka bat ezberdina da.</translation>
 <translation id="7569509451529460200">Braillea eta ChromeVox gaituta daude</translation>
 <translation id="7569886975397378678">Baztertu telefonoko jakinarazpenak eta aplikazioak ikusteko aukera konfiguratzeko prozesua</translation>
 <translation id="7571361473021531288">Bateria: % <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> gelditzen zaio</translation>

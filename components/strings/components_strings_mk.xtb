@@ -221,7 +221,6 @@
 <translation id="1386623374109090026">Прибелешки</translation>
 <translation id="1391625539203220400">Да се зачува IBAN на уредов?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> не испрати податоци.</translation>
-<translation id="1397811292916898096">Пребарувајте со <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1406500794671479665">Се проверува…</translation>
 <translation id="1406812885827747674">Дозволи овој пат</translation>
@@ -1866,7 +1865,7 @@
 <translation id="46128681529823442">Опрема за фудбал</translation>
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
 <translation id="4622292761762557753">Сепак префрли</translation>
-<translation id="4622647778991854660">Овозможете ги известувањата во „Центарот за известувања“. Одете во <ph name="LINK" />.</translation>
+<translation id="4622647778991854660">Овозможете ги известувањата во Notification Center. Одете во <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Правилово не може да се постави на ниво на профил на Chrome и ќе се игнорира.</translation>
 <translation id="4628678854894591460">Понуди за одмор</translation>
 <translation id="4628948037717959914">Фотографија</translation>
@@ -3204,7 +3203,7 @@
 <translation id="7234112195906418665">Патување и транспорт</translation>
 <translation id="7236417832106250253">Завршено: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подароци и ставки за специјални настани</translation>
-<translation id="7237454422623102448">Поставки на системот</translation>
+<translation id="7237454422623102448">System Settings</translation>
 <translation id="7237492777898608035">Не покажувај ја поракава повторно за сајтов</translation>
 <translation id="7240120331469437312">Алтернативно име на предмет на сертификат</translation>
 <translation id="7241863998525879494">Што може да очекувате</translation>

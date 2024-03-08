@@ -3089,18 +3089,6 @@ Apparaten kunnen tijdens de opgegeven perioden niet automatisch controleren op u
       Als dit beleid niet is ingesteld of geen tijdsintervallen bevat:
 Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar deze kunnen wel worden geblokkeerd door andere beleidsregels.
       Tot M88 is dit beleid alleen toegepast op <ph name="PRODUCT_OS_NAME" />-apparaten die zijn ingesteld als kiosken die automatisch worden gestart. Andere apparaten worden niet beperkt door dit beleid. Vanaf M89 is dit beleid echter toegepast op alle <ph name="PRODUCT_OS_NAME" />-apparaten.</translation>
-<translation id="3457921137261127955">De X.509-sleutelgebruiksextensie definieert hoe de sleutel in een certificaat kan worden gebruikt. Zulke instructies zorgen ervoor dat certificaten niet worden gebruikt in een onbedoelde context, wat bescherming biedt tegen een klasse van cross-protocol-aanvallen op HTTPS en andere protocollen. Hiervoor moeten HTTPS-clients nagaan of de servercertificaten overeenkomen met de TLS-parameters van de verbinding.
-
-Als je dit beleid toepast, voert <ph name="PRODUCT_NAME" /> deze controle uit.
-Zo wordt voorkomen dat aanvallers de browser manipuleren om een sleutel te interpreteren op een manier die de eigenaar van het certificaat niet bedoelde.
-
-Als je dit beleid niet toepast, slaat <ph name="PRODUCT_NAME" /> deze controle over voor HTTPS-verbindingen die zowel via TLS 1.2 onderhandelen als een RSA-certificaat gebruiken dat is gekoppeld aan een lokaal vertrouwensanker. Voorbeelden van lokale vertrouwensankers zijn door het beleid geleverde of door de gebruiker geïnstalleerde rootcertificaten. In alle andere gevallen wordt de controle onafhankelijk van de instelling van dit beleid uitgevoerd.
-
-Als het beleid niet is ingesteld, gedraagt <ph name="PRODUCT_NAME" /> zich alsof het beleid niet wordt toegepast.
-
-Dit beleid is beschikbaar voor beheerders om een voorbeeld van het gedrag van een toekomstige release weer te geven. Hierdoor wordt deze controle standaard aangezet. Vanaf dat moment blijft dit beleid tijdelijk beschikbaar voor beheerders die meer tijd nodig hebben om te updaten.
-
-Verbindingen die niet door deze controle komen, krijgen de fout ERR_SSL_KEY_USAGE_INCOMPATIBLE. Sites met deze fout hebben waarschijnlijk een verkeerd ingesteld certificaat. Moderne ECDHE_RSA cipher suites gebruiken de sleutelgebruiksoptie 'digitalSignature', terwijl verouderde cipher suites voor RSA-ontsleuteling de sleutelgebruiksoptie 'keyEncipherment' gebruiken. Als beheerders niet zeker weten welke wordt gebruikt, moeten ze beide opnemen in RSA-certificaten die zijn bedoeld voor HTTPS.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
 <translation id="3460485593332210712">Chrome for Testing toestaan</translation>
 <translation id="3461279434465463233">Voedingsstatus rapporteren</translation>
@@ -4123,9 +4111,6 @@ In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor ins
 
 In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd, via MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4329095223358818804">'Snelle antwoorden' toegang tot geselecteerde content geven</translation>
-<translation id="4330328220729237210">Met dit beleid kan <ph name="PRODUCT_NAME" /> verouderde onveilige hashes gebruiken tijdens het TLS-handshakeproces.
-
-      Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces om onveilige hashes te verbieden. Als je het beleid toepast, staat <ph name="PRODUCT_NAME" /> toe dat onveilige hashes door een server worden gebruikt tijdens de onderhandeling over een TLS-handshake. Als je het beleid niet toepast, staat <ph name="PRODUCT_NAME" /> niet toe dat onveilige hashes door een server worden gebruikt tijdens de onderhandeling over een TLS-handshake. Dit beleid wordt verwijderd in 123.</translation>
 <translation id="4330908525441222205">Standaard AppCache-gedrag gebruiken</translation>
 <translation id="4331357743227845302">Met dit beleid kunnen beheerders bluetooth-services instellen waarmee <ph name="PRODUCT_OS_NAME" /> verbinding mag maken.
 

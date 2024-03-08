@@ -166,14 +166,12 @@
 <translation id="390528597099634151">‏<ph name="EXISTING_USER" /> اس Chromium پروفائل میں پہلے سے سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کیلئے، Chromium آپ کیلئے آپ کی ذاتی پروفائل تخلیق کر سکتا ہے۔</translation>
 <translation id="3909353120217047026">‏یہ ایکسٹینشن Chrome ویب اسٹور کی پالیسی کی خلاف ورزی کرتی ہے اور غیر محفوظ ہو سکتی ہے۔ اسے Chromium سے ہٹا دیں تاکہ یہ آپ کی ذاتی معلومات سمیت آپ کی ملاحظہ کردہ سائٹس پر آپ کا ڈیٹا مزید دیکھ اور تبدیل نہ کر سکے۔</translation>
 <translation id="391789666908693569">‏<ph name="MANAGER_NAME" /> آپ کے اکاؤنٹ کا نظم کرتا ہے۔ آپ کا منتظم اس Chromium براؤزر کی پروفائل اور اس کا ڈیٹا جیسے بُک مارکس، سرگزشت اور پاس ورڈز دیکھ اور ان میں ترمیم کر سکتا ہے۔</translation>
-<translation id="3922825997980843979">‏جیسے ہی آپ ٹائپ کرتے ہیں Chromium ایڈریس بار یا تلاش باکس کا مواد آپ کے ڈیفالٹ سرچ انجن کو بھیجتا ہے</translation>
 <translation id="3941890832296813527">انسٹال سے متعلق خرابی: انسٹالر فائل کا نام غلط یا غیر تعاون یافتہ ہے۔</translation>
 <translation id="3945058413678539331">‏Chromium پاس ورڈز کاپی کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="3962647064319009959">‏جانیں کہ Chromium آپ کو کیسے محفوظ رکھتا ہے</translation>
 <translation id="3975724895399328945">‏&amp;Google Chrome for Testing کے بارے میں</translation>
 <translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>
 <translation id="4019629340646866719">‏ChromiumOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
-<translation id="4028143804911941282">‏آف ہونے پر بھی آپ کو وہ تجاویز نظر آئیں گی جو Chromium مقامی طور پر فراہم کرتا ہے</translation>
 <translation id="4036079820698952681">‏<ph name="BEGIN_LINK" />موجودہ ترتیبات<ph name="END_LINK" /> کی اطلاع دے کر Chromium کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4050175100176540509">اہم سیکیورٹی اصلاحات اور نئی خصوصیات تازہ ترین ورژن میں دستیاب ہیں۔</translation>
 <translation id="4055805654398742145">پاس ورڈ مینیجر</translation>
@@ -285,7 +283,6 @@
 <translation id="6145820983052037069">‏آپ یہاں Chromium پروفائلز کے درمیان سوئچ کر سکتے ہیں</translation>
 <translation id="615103374448673771">‏اگر آپ کوکیز کی اجازت دیتے ہیں تو Chromium پیشگی لوڈنگ کے دوران ان کا استعمال کر سکتا ہے</translation>
 <translation id="6174920971222007286">‏یہ فائل خطرناک ہو سکتی ہے<ph name="LINE_BREAK" />اگر آپ پاس ورڈ فراہم کرتے ہیں تو Chromium آپ کے لیے اس ڈاؤن لوڈ کو چیک کر سکتا ہے۔ فائل کے بارے میں معلومات Google محفوظ براؤزنگ کو بھیجی جاتی ہے، لیکن فائل کا مواد اور پاس ورڈ آپ کے آلے پر رہتا ہے۔</translation>
-<translation id="6175304430031192654">‏آپ کی ترتیبات پر منحصر ہے، Chromium کوکیز اور آپ کا موجودہ URL بھی بھیج سکتا ہے</translation>
 <translation id="6182736845697986886">اپ ڈیٹ سرور کی اندرونی خرابی کی وجہ سے انسٹالیشن ناکام ہو گئی۔</translation>
 <translation id="6183079672144801177">‏یقینی بنائیں کہ آپ اپنے <ph name="TARGET_DEVICE_NAME" /> پر Chromium میں سائن ان ہیں اور پھر دوبارہ بھیج کر دیکھیں۔</translation>
 <translation id="6212496753309875659">‏اس کمپیوٹر پر Chromium کا ایک مزید حالیہ ورژن پہلے سے ہے۔ اگر سافٹ ویئر کام نہیں کر رہا ہے تو براہ کرم Chromium کو ان انسٹال کریں اور دوبارہ کوشش کریں۔</translation>

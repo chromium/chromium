@@ -11,7 +11,9 @@
 <translation id="1499635324672558517">Да се затворат сите картички „Инкогнито“?</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="161042844686301425">Тиркизна</translation>
+<translation id="1645759014353344461">Создадена е група со <ph name="TABS_COUNT_MANY" /> картички</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
+<translation id="1828808367831369073">Создадена е група со <ph name="TABS_COUNT_ONE" /> картичка</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Обележи <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Обележи <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Обележи <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="2118649612461486615">Информации за продавницата</translation>
@@ -85,7 +87,7 @@
 <translation id="6856809498882026482">Скриј го режимот на повеќекратен избор</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Сподели ја картичката}one{Сподели ги картичките}other{Сподели ги картичките}}</translation>
 <translation id="7129458170538955174">Информациите за продавницава се отворени на половина екран</translation>
-<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Затвори ја групата „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_ONE" /> картичка.}one{Затвори ја групата „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картичка.}other{Затвори ја групата „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Затвори ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_ONE" /> картичка.}one{Затвори ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картичка.}other{Затвори ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
 <translation id="7204204600596740190">Режим на повеќекратен избор</translation>
 <translation id="731648547091221002">Избрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Погледнете ја политиката за враќање производи и друго</translation>

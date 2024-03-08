@@ -173,7 +173,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1647986356840967552">Önceki sayfa</translation>
 <translation id="1651914502370159744">Geçmiş sayfasını aç</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
-<translation id="1662667383227796099">Başlatıcı'da dosyalarınızı, uygulamalarınızı ve diğer öğelerinizi arayın. Chromebook'unuzla ilgili sorularınıza da yanıt alabilirsiniz.</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1675844249244994876">Sağdaki pencereyi güncelleyin</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2965227184985674128">Mikrofon erişimi açılsın mı?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> konuşma dosyaları indirilemedi</translation>
 <translation id="2970920913501714344">Uygulama, uzantı ve tema yükleme</translation>
-<translation id="2977098646659697261">Sabitlenen ve açık olan uygulamalarınız rafta bulunur. Bir uygulamayı rafa sabitlemek için ilgili uygulamayı sağ tıklayın veya dokunmatik alana iki parmağınızla dokunun.</translation>
 <translation id="2977598380246111477">Sonraki sayı</translation>
 <translation id="2985148236010982088">Tüm uygulamaları göster</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düğmesi kapalı.</translation>
@@ -776,7 +774,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4123259114412175274">Chromebook'unuzun kilidini açmak için telefonunuzun Bluetooth'unun açık olduğundan emin olun</translation>
 <translation id="4125970834901680537">Tablet modunda uygulama yayınlanamaz. Dizüstü bilgisayar modunda tekrar deneyin.</translation>
 <translation id="4131973331381812765">Sıcaklık: <ph name="TEMPERATURE" /> °C - Mevcut hız: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook'unuzda işlerinizi halletmenize yardımcı olacak yerleşik uygulamalar yüklüdür. Uygulamalarınızı Başlatıcı'da bulabilirsiniz.</translation>
 <translation id="4136724716305260864">Gün doğumuna kadar açık</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + sağ ok</translation>
 <translation id="4146671046252289537">Sonraki kelimenin sonuna git</translation>
@@ -808,7 +805,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Yüklü Uygulama, Duraklatıldı</translation>
 <translation id="4228078597006700451">Kontroller ayarlanmadı</translation>
 <translation id="4231053948789591973">Yayın şu anda duraklatılmış durumda. İstediğiniz zaman ekranınızı yayınlamayı devam ettirebilir veya durdurabilirsiniz.</translation>
-<translation id="423685346499232137">Şu anda içerik kopyalama veya yapıştırma işlemi yapılamıyor</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Genel bakış modu</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
@@ -820,7 +816,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ok klavye kısayolu değişti. End tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sağ Ok tuşlarına basın.</translation>
 <translation id="4275283744500212192">Pencere düzeni seçeneklerini açın</translation>
-<translation id="4278138729651139331">Ayarlar'a giderek Chromebook'unuzu özelleştirin ve kişiselleştirin. Duvar kağıdınızı değiştirmeyi veya ekran koruyucu ayarlamayı deneyin.</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
 <translation id="4280601795273309128">Artık güvenlik güncellemeleri alınmayacak. Cihazınızı yeni sürüme geçirin.</translation>
 <translation id="4283888303416325161">Daha fazla güvenlik için şifre girin</translation>
@@ -1136,7 +1131,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="550391772491508736">Yayını devam ettir</translation>
 <translation id="5506975627792768506">Büyüteci açın veya kapatın</translation>
 <translation id="5512042095225963688">Önceki kelimeyi sil</translation>
-<translation id="5518068085000130971">Temel bilgileri verdik. İpuçları ve yardım için yerleşik uygulamamız olan Keşfet'e giderek daha fazlasını öğrenebilirsiniz. Bu uygulamada, başlamanıza yardımcı olacak ipuçları, önerilen uygulamalar, özel teklifler ve en yeni Chromebook özelliklerine göz atabilirsiniz.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Yöneticiniz tüm eSIM profillerini kaldırdı. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="5520909879404821039">Fransızca "merhaba" nasıl denir?</translation>
@@ -1522,7 +1516,6 @@ Yeni yüklenmiş</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="698231206551913481">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) çözünürlüğü desteklemiyor. Çözünürlük, <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
-<translation id="6989752354829085073">Chromebook'unuzu nasıl kullanacağınızı öğrenmek için kısa turumuza katılın. Cihazınızı 6 adımda kullanmaya başlayın.</translation>
 <translation id="7000027735917578303">Pencere ve masa ayarları</translation>
 <translation id="7004910047186208204">Hücresel veri bağlantısı kurma</translation>
 <translation id="7005239792648594238">Başlamak için bir uygulama açın</translation>
@@ -1589,7 +1582,6 @@ Yeni yüklenmiş</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Yöneticiniz eSIM'inizi sıfırlıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="7313193732017069507">Kamerayı genişlet</translation>
-<translation id="7316261577130609484">Yeni görev ekle</translation>
 <translation id="7330397557116570022">Dikte özelliğini kullanmak için bir metin alanına gidin</translation>
 <translation id="7331646370422660166">alt + aşağı ok</translation>
 <translation id="7340731148882810149">Otomatik tıklamalar menüsü</translation>
@@ -1654,7 +1646,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7557816257942363084"><ph name="APP_NAME" /> şu anda mikrofonunuzu kullanıyor</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
-<translation id="7567950130372125778">Merhaba, Chromebook biraz farklıdır.</translation>
 <translation id="7569509451529460200">Braille ve ChromeVox etkinleştirildi</translation>
 <translation id="7569886975397378678">Telefonunuzdaki bildirimleri ve uygulamaları görme seçeneğini ayarlamayı kapatın</translation>
 <translation id="7571361473021531288">%<ph name="BATTERY_PERCENTAGE" /> pil | <ph name="TIME" /> kaldı</translation>

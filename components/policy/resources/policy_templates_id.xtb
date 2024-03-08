@@ -3195,38 +3195,6 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
       Jika kebijakan ini tidak disetel atau tidak berisi interval waktu:
       Tidak ada pemeriksaan update otomatis yang akan diblokir oleh kebijakan ini, tetapi pemeriksaan tersebut dapat diblokir oleh kebijakan lain.
       Sampai M88, fitur ini hanya diaktifkan di perangkat <ph name="PRODUCT_OS_NAME" /> yang dikonfigurasi sebagai kios dengan peluncuran otomatis. Perangkat lain tidak akan dibatasi oleh kebijakan ini. Namun, mulai dari M89, kebijakan ini akan diaktifkan di semua perangkat <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3457921137261127955">Ekstensi penggunaan kunci X.509 mendeklarasikan cara penggunaan kunci dalam
-sertifikat. Petunjuk tersebut memastikan sertifikat tidak digunakan dalam konteks
-yang tidak diinginkan, yang melindungi dari sekelompok serangan lintas protokol pada HTTPS dan
-protokol lain. Agar perilaku ini berfungsi, klien HTTPS harus memeriksa bahwa sertifikat
-server cocok dengan parameter TLS koneksi.
-
-Jika kebijakan ini disetel ke aktif,
-<ph name="PRODUCT_NAME" /> akan melakukan pemeriksaan ini.
-Hal ini membantu mencegah serangan yang memungkinkan penyerang memanipulasi browser
-untuk menafsirkan kunci dengan cara yang tidak diinginkan oleh pemilik sertifikat.
-
-Jika kebijakan ini disetel ke nonaktif,
-<ph name="PRODUCT_NAME" /> akan melewati pemeriksaan ini pada
-koneksi HTTPS yang menegosiasikan TLS 1.2 dan menggunakan sertifikat RSA yang
-terikat ke trust anchor lokal. Contoh trust anchor lokal mencakup
-root certificate yang disediakan oleh kebijakan atau yang diinstal pengguna. Dalam semua kasus lain,
-pemeriksaan dilakukan secara terpisah dari setelan kebijakan ini.
-
-Jika kebijakan ini tidak dikonfigurasi,
-<ph name="PRODUCT_NAME" /> akan berperilaku seolah-olah
-kebijakan dinonaktifkan.
-
-Kebijakan ini tersedia bagi administrator untuk melihat pratinjau perilaku
-rilis mendatang, yang akan mengaktifkan pemeriksaan ini secara default. Setelahnya, kebijakan
-ini akan tetap tersedia untuk sementara bagi administrator yang memerlukan lebih banyak
-waktu untuk melakukan update.
-
-Koneksi yang gagal dalam pemeriksaan ini akan gagal dengan error
-ERR_SSL_KEY_USAGE_INCOMPATIBLE. Situs yang gagal dengan error ini kemungkinan memiliki sertifikat yang salah dikonfigurasi. Cipher suite ECDHE_RSA modern menggunakan
-opsi penggunaan kunci "digitalSignature", sedangkan cipher suite dekripsi RSA lama
-menggunakan opsi penggunaan kunci "keyEncipherment". Jika tidak yakin, administrator harus
-menyertakan keduanya di sertifikat RSA yang ditujukan untuk HTTPS.</translation>
 <translation id="3459509316159669723">Pencetakan</translation>
 <translation id="3460485593332210712">Mengizinkan Chrome for Testing</translation>
 <translation id="3461279434465463233">Laporkan status daya.</translation>
@@ -4284,9 +4252,6 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4329095223358818804">Mengizinkan Jawaban Cepat untuk mengakses konten yang dipilih</translation>
-<translation id="4330328220729237210">Kebijakan ini memungkinkan <ph name="PRODUCT_NAME" /> menggunakan hash lama yang tidak aman selama proses TLS handshake.
-
-      Jika kebijakan ini tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk melarang hash yang tidak aman. Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" /> akan mengizinkan penggunaan hash yang tidak aman oleh server saat menegosiasikan TLS handshake. Jika kebijakan ini disetel ke nonaktif, <ph name="PRODUCT_NAME" /> akan melarang penggunaan hash yang tidak aman oleh server saat menegosiasikan TLS handshake. Kebijakan ini akan dihapus di 123.</translation>
 <translation id="4330908525441222205">Gunakan perilaku AppCache default</translation>
 <translation id="4331357743227845302">Kebijakan ini memungkinkan admin mengonfigurasi layanan Bluetooth yang diizinkan untuk terhubung ke <ph name="PRODUCT_OS_NAME" />.
 

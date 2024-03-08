@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Taille de page</translation>
 <translation id="1082009148392559545">Téléchargement de l'économiseur d'écran</translation>
 <translation id="1094693127011229778">Adresse IP indisponible</translation>
+<translation id="1100902271996134409">Création d'images...</translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Les commentaires que vous transmettez via ce formulaire peuvent être partagés avec nos partenaires afin de résoudre des bugs et d'autres problèmes que vous nous signalez. N'incluez pas d'informations sensibles, comme un mot de passe.</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">Latence des requêtes HTTPS</translation>
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1274654146705270731">oranges</translation>
+<translation id="1275718070701477396">Sélectionnée</translation>
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1300115153046603471">Le type d'APN est "par défaut" et "<ph name="ATTACH" />".</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -169,6 +171,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">papillons</translation>
 <translation id="188114911237521550">Annuler le mode sombre</translation>
+<translation id="188268299367474594">Choisir parmi les APN disponibles</translation>
 <translation id="1885577615937958993">faire une avance rapide sur le contenu multimédia</translation>
 <translation id="1887850431809612466">Version du matériel</translation>
 <translation id="189221451253258459">vert fluo</translation>
@@ -236,6 +239,7 @@
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2276999893457278469">Contenu d'aide populaire</translation>
 <translation id="2279051792571591988">Rétablir les paramètres par défaut</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">Aucune image disponible. Pour ajouter des photos, accédez à <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Utiliser la paire de clés actuelle</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
@@ -271,6 +275,7 @@
 <translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
 <translation id="2517472476991765520">Scanner</translation>
+<translation id="2520213071283358374">Utiliser cet APN</translation>
 <translation id="2521835766824839541">piste précédente</translation>
 <translation id="2526590354069164005">Bureau</translation>
 <translation id="253029298928638905">Redémarrage…</translation>
@@ -519,7 +524,6 @@
 <translation id="4310735698903592804">Fonds d'écran récents optimisés par l'IA de Google</translation>
 <translation id="4320904097188876154">rose fluo</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> appuyée</translation>
-<translation id="4341897648462347919">bleu canard</translation>
 <translation id="4354430579665871434">touche</translation>
 <translation id="4361257691546579041">Le type d'APN est "par défaut".</translation>
 <translation id="437294888293595148">Réinitialiser tous les raccourcis</translation>
@@ -984,7 +988,6 @@
 <translation id="7155171745945906037">Photo existante au niveau de l'appareil photo ou dans les fichiers</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Photo de profil</translation>
-<translation id="7171665330126595869">grotte</translation>
 <translation id="7171919371520438592">Épingler la fenêtre sur la plus petite partie <ph name="DIRECTION" /> de l'écran</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
@@ -1047,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Créer</translation>
 <translation id="7528507600602050979">Le contenu d'aide n'est pas disponible</translation>
-<translation id="753556296624075801">Fourni par Google</translation>
 <translation id="7535791657097741517">Appliquer le thème clair</translation>
 <translation id="7550715992156305117">Routines de diagnostics</translation>
 <translation id="7551123448725492271">L'appareil est de type audio.</translation>
@@ -1072,7 +1074,7 @@
 <translation id="7683228889864052081">teinte du clavier</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7696506367342213250">collines d'argile</translation>
-<translation id="7701040980221191251">Rien</translation>
+<translation id="7701040980221191251">Aucun</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">lumière du clavier</translation>
@@ -1134,6 +1136,7 @@
 <translation id="8075838845814659848">Niveau de charge</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8079860070590459552">champ de fleurs</translation>
+<translation id="8081553043098820199">Des APN non valides pourraient entraîner la désactivation de votre connexion mobile. Définissez uniquement les APN fournis par votre opérateur mobile ou votre administrateur.</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS depuis les applis Android</translation>
 <translation id="8082644724189923105">zone du clavier</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
@@ -1263,7 +1266,6 @@
 <translation id="8912306040879976619">Zones du clavier</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>
-<translation id="8923267550422472772">Jour du mois de la réinitialisation</translation>
 <translation id="8928727111548978589">Échec – À court de papier</translation>
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>

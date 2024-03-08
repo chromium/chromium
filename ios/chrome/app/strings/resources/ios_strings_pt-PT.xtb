@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Correio enviado.</translation>
 <translation id="1582732959743469162">Esta ação vai interromper totalmente o progresso da transferência atual.</translation>
 <translation id="158591023028013564">{count,plural, =1{Página adicionada à sua Lista de leitura}other{{count} páginas adicionadas à sua Lista de leitura}}</translation>
+<translation id="1587629076612412684">Personalizar serviços Google</translation>
 <translation id="1594034544529347967">Início</translation>
 <translation id="160275202205869636">Quando esta opção está ativada, use e guarde os dados na sua Conta Google. Quando está desativada, os dados são guardados apenas neste dispositivo.</translation>
 <translation id="1605405588277479165">Desativada – Não recomendado</translation>
@@ -1385,6 +1386,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8027581147000338959">Abrir numa Nova Janela</translation>
 <translation id="8032569120109842252">A seguir</translation>
 <translation id="8040207962129315716">Perguntar-me sempre</translation>
+<translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="804225253087497565">O <ph name="BEGIN_LINK" />histórico de pesquisas<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser guardados na sua Conta Google quando tem sessão iniciada. Pode eliminá-los em qualquer altura.</translation>
 <translation id="804427445359061970">Os seus separadores de outros dispositivos serão apresentados aqui</translation>
 <translation id="8044568254381073661">Guarde sem encriptação</translation>
@@ -1604,6 +1606,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Verifique a existência de palavras-passe comprometidas.</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nova palavra-passe para este site}other{Novas palavras-passe para este site}}</translation>
+<translation id="9110489518258031250">Controle a forma como o seu histórico de navegação sincronizado pode ser usado para personalizar outros serviços Google</translation>
 <translation id="9120217828624527905">Mudar para a Tradução da página inteira</translation>
 <translation id="9124387962554796433">A Google pode utilizar o seu histórico para personalizar a Pesquisa e outros serviços Google.</translation>
 <translation id="9137526406337347448">Serviços Google</translation>

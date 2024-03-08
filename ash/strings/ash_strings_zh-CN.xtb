@@ -173,7 +173,6 @@
 <translation id="1647986356840967552">上一页</translation>
 <translation id="1651914502370159744">打开“历史记录”页</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
-<translation id="1662667383227796099">您可在启动器中搜索文件、应用和其他内容，也可查阅 Chromebook 相关问题的解答。</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
 <translation id="1675844249244994876">更新右侧窗口</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@
 <translation id="2965227184985674128">开启麦克风使用权限？</translation>
 <translation id="296762781903199866">无法下载<ph name="LANGUAGE" />语音识别结果文件</translation>
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
-<translation id="2977098646659697261">您已固定的应用和已打开的应用会显示在任务栏上。若要将某个应用固定到任务栏，请右键点击该应用或用双指点按触控板。</translation>
 <translation id="2977598380246111477">下一个代码</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
@@ -776,7 +774,6 @@
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
 <translation id="4125970834901680537">无法在平板电脑模式下流式传输应用。请在笔记本电脑模式下重试。</translation>
 <translation id="4131973331381812765">温度：<ph name="TEMPERATURE" />°C - 当前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">Chromebook 带有内置应用，可协助您处理各种事务。请在启动器中查找您要使用的应用。</translation>
 <translation id="4136724716305260864">保持开启状态，直到日出</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />键 + 向右键</translation>
 <translation id="4146671046252289537">移动到下一个字词的末尾</translation>
@@ -807,7 +804,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>
 <translation id="4228078597006700451">尚未设置控件</translation>
 <translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
-<translation id="423685346499232137">目前无法复制或粘贴内容</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -819,7 +815,6 @@
 <translation id="4269883910223712419">此设备的管理员能够：</translation>
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4275283744500212192">打开窗口布局选项</translation>
-<translation id="4278138729651139331">您可在“设置”中对 Chromebook 进行自定义和个性化设置。不妨尝试更换壁纸或设置屏保。</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
@@ -1134,7 +1129,6 @@
 <translation id="550391772491508736">继续投放</translation>
 <translation id="5506975627792768506">开启或关闭放大镜</translation>
 <translation id="5512042095225963688">删除上一个字词</translation>
-<translation id="5518068085000130971">您刚才看到的只是基本操作！您可继续使用内置的“探索”应用来获取各种提示和帮助：入门提示、推荐的应用、特别优惠以及最新的 Chromebook 功能，一应俱全。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">您的管理员已移除所有 eSIM 卡配置文件。如需了解详情，请与您的管理员联系。</translation>
 <translation id="5520909879404821039">用法语说“你好”</translation>
@@ -1520,7 +1514,6 @@
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="698231206551913481">移除该用户后，与其关联的所有文件和本地数据都会被永久删除。</translation>
 <translation id="6984028004251196682">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> 赫兹）。分辨率已更改为 <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" /> 赫兹）。点击“确认”可保留更改。系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
-<translation id="6989752354829085073">不妨观看快速导览，了解如何玩转 Chromebook。只需 6 步，即可启动并运行。</translation>
 <translation id="7000027735917578303">窗口和桌面设置</translation>
 <translation id="7004910047186208204">连接到移动数据网络</translation>
 <translation id="7005239792648594238">打开一款应用即可开始使用</translation>
@@ -1587,7 +1580,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7313193732017069507">展开相机</translation>
-<translation id="7316261577130609484">添加新任务</translation>
 <translation id="7330397557116570022">需要选择一个文本字段才能使用语音输入</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7340731148882810149">“自动点击”菜单</translation>
@@ -1652,7 +1644,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />正在使用您的麦克风</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
-<translation id="7567950130372125778">您好！Chromebook 有点小变化。</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
 <translation id="7569886975397378678">取消设置查看手机中的通知和应用</translation>
 <translation id="7571361473021531288">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>

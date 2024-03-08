@@ -869,6 +869,7 @@
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
 <translation id="7600126690270271294">Σερβικά</translation>
 <translation id="7603724359189955920">Πλέγματα</translation>
+<translation id="7624010287655004652">Κλειδωμένο από άλλον πάροχο κινητής τηλεφωνίας</translation>
 <translation id="7627790789328695202">Ωχ! Το αρχείο <ph name="FILE_NAME" /> υπάρχει ήδη. Μετονομάστε το και δοκιμάστε ξανά.</translation>
 <translation id="7628656427739290098">Ολοκληρώθηκε <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
@@ -896,9 +897,9 @@
 <translation id="7774365994322694683">Πουλί</translation>
 <translation id="7780322752056734036">Έγινε επαναφορά <ph name="NUMBER_OF_ITEMS" /> στοιχείων</translation>
 <translation id="7781829728241885113">Χθες</translation>
-<translation id="7788080748068240085">Για να αποθηκεύσετε το "<ph name="FILE_NAME" />" εκτός σύνδεσης, θα πρέπει να απελευθερώσετε επιπλέον <ph name="TOTAL_FILE_SIZE" /> χώρο:<ph name="MARKUP_1" />
+<translation id="7788080748068240085">Για να αποθηκεύσετε το "<ph name="FILE_NAME" />" εκτός σύνδεσης, θα πρέπει να αποδεσμεύσετε επιπλέον <ph name="TOTAL_FILE_SIZE" /> χώρο:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ξεκαρφιτσώστε αρχεία στα οποία δεν χρειάζεται πλέον να έχετε πρόσβαση<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />διαγράψτε αρχεία από το φάκελο "Λήψεις"<ph name="MARKUP_5" /></translation>
+    <ph name="MARKUP_4" />διαγράψτε αρχεία από τον φάκελο "Λήψεις"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Μορφοποίηση συσκευής</translation>
 <translation id="7799329977874311193">Έγγραφο HTML</translation>
 <translation id="7801354353640549019">Chromebook</translation>

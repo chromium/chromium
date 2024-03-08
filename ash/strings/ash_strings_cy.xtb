@@ -173,7 +173,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1647986356840967552">Tudalen flaenorol</translation>
 <translation id="1651914502370159744">Agor y dudalen Hanes</translation>
 <translation id="1654477262762802994">Dechrau ymholiad llais</translation>
-<translation id="1662667383227796099">Chwiliwch am eich ffeiliau, eich apiau a rhagor yn y Lansiwr. Gallwch hefyd gael atebion i gwestiynau am eich Chromebook.</translation>
 <translation id="1668469839109562275">VPN integredig</translation>
 <translation id="1675844249244994876">Diweddaru'r ffenestr ar y dde</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ar ôl</translation>
@@ -467,7 +466,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2965227184985674128">Troi mynediad meicroffon ymlaen?</translation>
 <translation id="296762781903199866">Methu â lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Gosod apiau, estyniadau, a themâu</translation>
-<translation id="2977098646659697261">Mae eich apiau sydd ar agor ac sydd wedi'u pinio yn ymddangos ar y Silff. I binio ap i'r Silff, de-gliciwch ap nau tapiwch eich pad cyffwrdd gyda dau fys.</translation>
 <translation id="2977598380246111477">Rhif nesaf</translation>
 <translation id="2985148236010982088">Gweld pob ap</translation>
 <translation id="2992327365391326550">Mae botwm meicroffon y ddyfais wedi'i ddiffodd.</translation>
@@ -776,7 +774,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4123259114412175274">I ddatgloi eich Chromebook, gwnewch yn siŵr bod Bluetooth eich ffôn ymlaen</translation>
 <translation id="4125970834901680537">Methu â ffrydio apiau yn y modd llechen. Rhowch gynnig arall arni yn y modd gliniadur.</translation>
 <translation id="4131973331381812765">Tymheredd: <ph name="TEMPERATURE" />°C - Cyflymder presennol: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">Mae eich Chromebook yn dod gydag apiau integredig i'ch helpu i orffen pethau. Dewch o hyd i'ch apiau yn y Lansiwr.</translation>
 <translation id="4136724716305260864">Ymlaen tan godiad haul</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + saeth dde</translation>
 <translation id="4146671046252289537">Symud i ddiwedd y gair nesaf</translation>
@@ -808,7 +805,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Gosodwyd Ap, Seibiwyd</translation>
 <translation id="4228078597006700451">Rheolyddion heb eu gosod</translation>
 <translation id="4231053948789591973">Mae castio wedi'i oedi ar hyn o bryd. Gallwch barhau â chastio neu stopio castio'ch sgrîn unrhyw bryd.</translation>
-<translation id="423685346499232137">Methu â chopïo na gludo cynnwys ar hyn o bryd</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modd trosolwg</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
@@ -820,7 +816,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4269883910223712419">Gall gweinyddwr y ddyfais hon:</translation>
 <translation id="4274537685965975248">Mae'r llwybr byr bysellfwrdd Ctrl + Alt + Saeth i lawr wedi newid. I ddefnyddio'r fysell End, pwysywch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth dde.</translation>
 <translation id="4275283744500212192">Agor yr opsiynau cynllun ffenestr</translation>
-<translation id="4278138729651139331">Addasu a phersonoli'ch Chromebook yn y Gosodiadau. Rhowch gynnig ar newid eich papur wal neu osod arbedwr sgrîn.</translation>
 <translation id="4279490309300973883">Adlewyrchu</translation>
 <translation id="4280601795273309128">Daeth diweddariadau diogelwch i ben. Uwchraddio'ch dyfais.</translation>
 <translation id="4283888303416325161">Rhowch gyfrinair i gael rhagor o ddiogelwch</translation>
@@ -1136,7 +1131,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="550391772491508736">Parhau â chastio</translation>
 <translation id="5506975627792768506">Troi'r chwyddwydr ymlaen neu ei ddiffodd</translation>
 <translation id="5512042095225963688">Dileu'r gair blaenorol</translation>
-<translation id="5518068085000130971">Dyna oedd yr hanfodion! Parhewch yn Explore, ein hap integredig i gael awgrymiadau a chymorth. Byddwch yn gweld awgrymiadau ar gyfer dechrau arni, apiau a argymhellir, cynigion arbennig, a'r nodweddion Chromebook diweddaraf.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Mae eich gweinyddwr wedi tynnu eich proffiliau eSIM. Cysylltwch â'ch gweinyddwr am ragor o wybodaeth.</translation>
 <translation id="5520909879404821039">Helo yn Ffrangeg</translation>
@@ -1522,7 +1516,6 @@ Gosodiad newydd</translation>
 <translation id="6981982820502123353">Hygyrchedd</translation>
 <translation id="698231206551913481">Bydd yr holl ffeiliau a data lleol sy'n gysylltiedig â'r defnyddiwr hwn yn cael eu dileu'n barhaol unwaith y bydd y defnyddiwr hwn wedi'i dynnu.</translation>
 <translation id="6984028004251196682">Nid yw <ph name="DISPLAY_NAME" /> yn cefnogi <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Newidiwyd yr eglurdeb i <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Cliciwch Gadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Ewch ar daith gyflym i ddysgu sut i lywio'ch Chromebook. Gallwch gychwyn arni mewn 6 cam.</translation>
 <translation id="7000027735917578303">Gosodiadau ffenestri a desgiau</translation>
 <translation id="7004910047186208204">Cysylltu â data symudol</translation>
 <translation id="7005239792648594238">Agorwch ap i gychwyn arni</translation>
@@ -1589,7 +1582,6 @@ Gosodiad newydd</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Mae eich gweinyddwr yn ailosod eich eSIM. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="7313193732017069507">Ehangu'r camera</translation>
-<translation id="7316261577130609484">Ychwanegu tasg newydd</translation>
 <translation id="7330397557116570022">Ewch i faes testun i ddefnyddio Arddweud</translation>
 <translation id="7331646370422660166">alt + saeth i lawr</translation>
 <translation id="7340731148882810149">Dewislen cliciau awtomatig</translation>
@@ -1654,7 +1646,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7557816257942363084">Mae <ph name="APP_NAME" /> yn defnyddio'ch meicroffon ar hyn o bryd</translation>
 <translation id="7561982940498449837">Cau'r ddewislen</translation>
 <translation id="7564874036684306347">Gall symud ffenestri i fwrdd gwaith arall arwain at ymddygiad annisgwyl. Gellir rhannu hysbysiadau, ffenestri a deialogau dilynol rhwng byrddau gwaith.</translation>
-<translation id="7567950130372125778">Helo. Mae Chromebook ychydig yn wahanol.</translation>
 <translation id="7569509451529460200">Mae Braille a ChromeVox wedi'u galluogi</translation>
 <translation id="7569886975397378678">Diystyru gosod gweld hysbysiadau ac apiau eich ffôn</translation>
 <translation id="7571361473021531288">Batri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ar ôl</translation>

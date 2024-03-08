@@ -173,7 +173,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1647986356840967552">Eelmine leht</translation>
 <translation id="1651914502370159744">Lehe Ajalugu avamine</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
-<translation id="1662667383227796099">Otsige käivitajast faile, rakendusi ja muud. Samuti võite siit leida vastuseid küsimustele Chromebooki kohta.</translation>
 <translation id="1668469839109562275">Sisseehitatud VPN</translation>
 <translation id="1675844249244994876">Värskenda paremat akent</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tühjenemiseni</translation>
@@ -467,7 +466,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2965227184985674128">Kas lülitada sisse juurdepääs mikrofonile?</translation>
 <translation id="296762781903199866">Kõnefaile <ph name="LANGUAGE" /> keeles ei õnnestunud alla laadida</translation>
 <translation id="2970920913501714344">Installige rakendusi, laiendusi ja teemasid</translation>
-<translation id="2977098646659697261">Teie kinnitatud ja avatud rakendused on riiulil. Rakenduse riiulile kinnitamiseks paremklõpsake sellel või puudutage puuteplaati kahe sõrmega.</translation>
 <translation id="2977598380246111477">Järgmine number</translation>
 <translation id="2985148236010982088">Vaadake kõiki rakendusi</translation>
 <translation id="2992327365391326550">Seadme mikrofoninupp on välja lülitatud.</translation>
@@ -777,7 +775,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4123259114412175274">Chromebooki avamiseks veenduge, et telefoni Bluetooth oleks sisse lülitatud</translation>
 <translation id="4125970834901680537">Ei saa rakendusi tahvelarvutirežiimis voogesitada. Proovige uuesti sülearvutirežiimis.</translation>
 <translation id="4131973331381812765">Temperatuur: <ph name="TEMPERATURE" />°C – Praegune kiirus: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">Teie Chromebookil on eelinstallitud rakendused, mille abil saate teha vajalikke toiminguid. Rakendused leiate käivitajast.</translation>
 <translation id="4136724716305260864">Päikesetõusuni sisse lülitatud</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + paremnool</translation>
 <translation id="4146671046252289537">Järgmise sõna lõppu teisaldamine</translation>
@@ -809,7 +806,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installitud rakendus, ajutiselt peatatud</translation>
 <translation id="4228078597006700451">Juhtelemente pole seadistatud</translation>
 <translation id="4231053948789591973">Ülekandmine on praegu lõpetatud. Saate oma ekraani ülekandmist igal ajal jätkata või lõpetada.</translation>
-<translation id="423685346499232137">Ei saa praegu sisu kopeerida ega kleepida</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Ülevaaterežiim</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
@@ -821,7 +817,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4269883910223712419">Selle seadme administraator saab teha järgmist.</translation>
 <translation id="4274537685965975248">Klaviatuuri otseteed Ctrl + Alt + allanool on muudetud. Lõpuklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + paremnoolt.</translation>
 <translation id="4275283744500212192">Ava akna paigutuse valikud</translation>
-<translation id="4278138729651139331">Seadetes saate Chromebooki kohandada ja isikupärastada. Proovige muuta taustapilti või seadistada ekraanisäästjat.</translation>
 <translation id="4279490309300973883">Peegeldamine</translation>
 <translation id="4280601795273309128">Turvavärskenduste saatmine lõppes. Viige seade üle uuemale versioonile.</translation>
 <translation id="4283888303416325161">Sisestage tugevama turvalisuse jaoks parool</translation>
@@ -1137,7 +1132,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="550391772491508736">Jätka ülekandmist</translation>
 <translation id="5506975627792768506">Lülita luup sisse või välja</translation>
 <translation id="5512042095225963688">Eelmise sõna kustutamine</translation>
-<translation id="5518068085000130971">See oli põhiteave. Jätkake meie sisseehitatud rakenduses Avastamine, et saada nõuandeid ja abi. Leiate sealt nõuandeid alustamiseks, soovitatud rakendusi, eripakkumisi ja uusimaid Chromebooki funktsioone.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Teie administraator on kõik eSIM-i profiilid eemaldanud. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="5520909879404821039">Tere prantsuse keeles</translation>
@@ -1523,7 +1517,6 @@ Uus installimine</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="698231206551913481">Kõik selle kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui see kasutaja eemaldatakse.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
-<translation id="6989752354829085073">Vaadake kiiret tutvustust Chromebookis navigeerimise kohta. Kuue toiminguga saate tööd alustada.</translation>
 <translation id="7000027735917578303">Akende ja töölaudade seaded</translation>
 <translation id="7004910047186208204">Looge ühendus mobiilse andmesidega</translation>
 <translation id="7005239792648594238">Alustamiseks avage rakendus</translation>
@@ -1590,7 +1583,6 @@ Uus installimine</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administraator lähtestab teie eSIM-i. See võib võtta mõne minuti.</translation>
 <translation id="7313193732017069507">Kaamera laiendamine</translation>
-<translation id="7316261577130609484">Lisa uus ülesanne</translation>
 <translation id="7330397557116570022">Dikteerimise kasutamiseks minge järgmisele väljale</translation>
 <translation id="7331646370422660166">alt + allanool</translation>
 <translation id="7340731148882810149">Automaatsete klikkide menüü</translation>
@@ -1655,7 +1647,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7557816257942363084"><ph name="APP_NAME" /> kasutab praegu teie mikrofoni</translation>
 <translation id="7561982940498449837">Sule menüü</translation>
 <translation id="7564874036684306347">Kui teisaldate aknad teisele töölauale, võib tagajärjeks olla ootamatu käitumine. Järgmised märguanded, aknad ja dialoogid võivad jaguneda eri töölaudade vahel.</translation>
-<translation id="7567950130372125778">Tere! Chromebook on veidi teistsugune.</translation>
 <translation id="7569509451529460200">Punktkiri ja ChromeVox on lubatud</translation>
 <translation id="7569886975397378678">Teie telefoni märguannete ja rakenduste kuvamise seadistamisest loobumine</translation>
 <translation id="7571361473021531288">Aku laetuse tase: <ph name="BATTERY_PERCENTAGE" />% | järelejäänud aeg: <ph name="TIME" /></translation>

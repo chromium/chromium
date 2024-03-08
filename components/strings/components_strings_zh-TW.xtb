@@ -221,7 +221,6 @@
 <translation id="1386623374109090026">註解</translation>
 <translation id="1391625539203220400">要將 IBAN 儲存到這部裝置嗎？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未傳送任何資料。</translation>
-<translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406500794671479665">驗證中...</translation>
 <translation id="1406812885827747674">這次允許</translation>
@@ -2245,7 +2244,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「你的時鐘時間過慢」、「你的時鐘時間過快」或 「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5380953781541843508">依遞增順序排列</translation>
-<translation id="5381318171304904246">如果繼續進行，系統就會將你導向銀行網站。驗證後會自動返回，以完成購買程序。</translation>
+<translation id="5381318171304904246">如果繼續操作，系統會將你導向銀行網站。驗證後會自動返回，完成購買程序。</translation>
 <translation id="5383478552402031184">地板修護</translation>
 <translation id="5385857628869214740">幽默趣味</translation>
 <translation id="5385966243497224160">無法預覽非 HTTPS 網址</translation>

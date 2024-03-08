@@ -11,7 +11,9 @@
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="161042844686301425">سماوي</translation>
+<translation id="1645759014353344461">عدد علامات التبويب المجمَّعة: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
+<translation id="1828808367831369073">تم تجميع علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{وضع إشارة على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) محدَّدة}zero{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{وضع إشارة على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) محدَّدتين}few{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{وضع إشارة على <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>
 <translation id="2118649612461486615">معلومات المتجر</translation>

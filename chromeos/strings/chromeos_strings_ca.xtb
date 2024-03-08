@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Mida de la pàgina</translation>
 <translation id="1082009148392559545">S'està baixant l'estalvi de pantalla</translation>
 <translation id="1094693127011229778">L'adreça IP no està disponible</translation>
+<translation id="1100902271996134409">S'estan creant les imatges...</translation>
 <translation id="1116694919640316211">Informació</translation>
 <translation id="1118572504348554005">És possible que compartim amb els nostres partners els comentaris que enviïs a través d'aquest formulari per resoldre els errors i altres problemes de què ens informis. No incloguis informació sensible, com ara contrasenyes.</translation>
 <translation id="1119447706177454957">Error intern</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">Latència d'HTTPS</translation>
 <translation id="1270369111467284986">Possible portal captiu</translation>
 <translation id="1274654146705270731">taronges</translation>
+<translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1300115153046603471">L'APN és de tipus predeterminat i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">Programació del mode fosc</translation>
 <translation id="2276999893457278469">Contingut d'ajuda principal</translation>
 <translation id="2279051792571591988">Restaura els valors predeterminats</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">No hi ha cap imatge disponible. Per afegir fotos, ves a <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Utilitza el parell de claus actual</translation>
 <translation id="2320295602967756579">Activa el tema clar</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Fons de pantalla recents amb la tecnologia de la IA de Google</translation>
 <translation id="4320904097188876154">rosa neó</translation>
 <translation id="4333390807948134856">S'ha premut la tecla <ph name="KEY_NAME" /></translation>
-<translation id="4341897648462347919">verd blavós</translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">L'APN és de tipus predeterminat.</translation>
 <translation id="437294888293595148">Restableix totes les dreceres</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>
-<translation id="7171665330126595869">una cova</translation>
 <translation id="7171919371520438592">Ancora la finestra a la part <ph name="DIRECTION" /> més petita de la pantalla</translation>
 <translation id="7172721935181587524">1 imatge</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7528507600602050979">El contingut d'ajuda no està disponible</translation>
-<translation id="753556296624075801">Amb la tecnologia de Google</translation>
 <translation id="7535791657097741517">Activa el tema clar</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
 <translation id="7551123448725492271">El dispositiu és un dispositiu d'àudio.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">Zones del teclat</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
-<translation id="8923267550422472772">Dia del mes per al restabliment</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
 <translation id="8930521118335213258">Aplicació semblant</translation>
 <translation id="8930622219860340959">Sense fil</translation>

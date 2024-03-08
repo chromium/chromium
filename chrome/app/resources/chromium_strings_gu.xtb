@@ -166,14 +166,12 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> આ Chromium પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chromium તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
 <translation id="3909353120217047026">આ એક્સ્ટેન્શન Chrome વેબ સ્ટોર પૉલિસીનું ઉલ્લંઘન કરે છે અને તે અસુરક્ષિત હોઈ શકે છે. તેને Chromiumમાંથી કાઢી નાખો જેથી તે હવેથી તમારી વ્યક્તિગત માહિતી સહિત તમે મુલાકાત લો તે સાઇટ પરનો તમારો ડેટા જોઈ કે બદલી શકે નહીં.</translation>
 <translation id="391789666908693569"><ph name="MANAGER_NAME" /> દ્વારા તમારું એકાઉન્ટ મેનેજ કરવામાં આવે છે. તમારા ઍડમિનિસ્ટ્રેટર આ Chromium બ્રાઉઝરની પ્રોફાઇલ અને બુકમાર્ક, ઇતિહાસ તથા પાસવર્ડ જેવો તેનો ડેટા જોઈ શકે છે અને તેમાં ફેરફાર કરી શકે છે.</translation>
-<translation id="3922825997980843979">જેમ-જેમ તમે ટાઇપ કરો, તેમ-તેમ Chromium ઍડ્રેસ બાર અથવા શોધ બૉક્સનું કન્ટેન્ટ તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે</translation>
 <translation id="3941890832296813527">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલરની ફાઇલનું નામ અમાન્ય અથવા અનસપોર્ટેડ છે.</translation>
 <translation id="3945058413678539331">Chromium પાસવર્ડની કૉપિ કરવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="3962647064319009959">Chromiumની તમને સલામત રાખવાની રીત વિશે જાણો</translation>
 <translation id="3975724895399328945">Google Chrome for Testing વિશે</translation>
 <translation id="3997429360543082038">ChromiumOS વિશે</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromiumOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
-<translation id="4028143804911941282">બંધ હોય ત્યારે, તે હજી પણ સૂચનો જોશો જે Chromium સ્થાનિક રીતે પ્રદાન કરે છે</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -285,7 +283,6 @@
 <translation id="6145820983052037069">તમે અહીં એક Chromium પ્રોફાઇલથી બીજી Chromium પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
 <translation id="615103374448673771">જો તમે કુકીને મંજૂરી આપો, તો Chromium પહેલેથી લોડ કરતી વખતે તેનો ઉપયોગ કરી શકે છે</translation>
 <translation id="6174920971222007286">આ ફાઇલ જોખમી હોઈ શકે છે<ph name="LINE_BREAK" />જો તમે પાસવર્ડ પ્રદાન કરો છો, તો Chromium તમારા માટે આ ડાઉનલોડને તપાસી શકે છે. ફાઇલ વિશેની માહિતી Google Safe Browsingને મોકલવામાં આવે છે, પરંતુ ફાઇલનું કન્ટેન્ટ અને પાસવર્ડ તમારા ડિવાઇસમાં જ રહે છે.</translation>
-<translation id="6175304430031192654">તમારા સેટિંગને આધારે, Chromium તમને કુકી અને તમારા વર્તમાન URL પણ મોકલી શકે છે</translation>
 <translation id="6182736845697986886">કોઈ અપડેટ સર્વરની આંતરિક ભૂલને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="6183079672144801177">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromiumમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
 <translation id="6212496753309875659">આ કમ્પ્યુટર પર પહેલાંથી જ Chromiumનું સૌથી તાજેતરનું વર્ઝન છે. જો સૉફ્ટવેર કાર્ય કરી રહ્યું નથી, તો કૃપા કરીને Chromiumને અનઇન્સ્ટૉલ કરો અને ફરીથી પ્રયાસ કરો.</translation>

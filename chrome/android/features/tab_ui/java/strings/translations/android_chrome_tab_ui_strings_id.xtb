@@ -11,7 +11,9 @@
 <translation id="1499635324672558517">Tutup semua tab Samaran?</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="161042844686301425">Sian</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab dikelompokkan</translation>
 <translation id="1657719826150349398">Pindahkan tab ke bawah</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab dikelompokkan</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bookmark <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="2118649612461486615">Info toko</translation>

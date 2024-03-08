@@ -173,7 +173,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1647986356840967552">Page précédente</translation>
 <translation id="1651914502370159744">Ouvrir la page Historique</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
-<translation id="1662667383227796099">Recherchez vos fichiers, vos applications et bien plus encore dans le lanceur. Vous pouvez également obtenir des réponses aux questions concernant votre Chromebook.</translation>
 <translation id="1668469839109562275">RPV intégré</translation>
 <translation id="1675844249244994876">Mettre à jour la fenêtre de droite</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
@@ -467,7 +466,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2965227184985674128">Activer l'accès au microphone?</translation>
 <translation id="296762781903199866">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
-<translation id="2977098646659697261">Vos applications épinglées et ouvertes sont sur l'étagère. Pour épingler une application sur l'étagère, faites un clic droit sur une application ou touchez votre pavé tactile avec deux doigts.</translation>
 <translation id="2977598380246111477">Prochain numéro</translation>
 <translation id="2985148236010982088">Afficher toutes les applications</translation>
 <translation id="2992327365391326550">Le bouton du microphone de l'appareil est désactivé.</translation>
@@ -776,7 +774,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4123259114412175274">Pour déverrouiller votre Chromebook, assurez-vous que le Bluetooth de votre téléphone est activé</translation>
 <translation id="4125970834901680537">Impossible de diffuser le contenu des applications en mode tablette. Réessayez en mode ordinateur portable.</translation>
 <translation id="4131973331381812765">Température : <ph name="TEMPERATURE" /> °C – Vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Votre Chromebook est doté d'applications intégrées pour vous aider à accomplir vos tâches. Trouvez vos applications dans le lanceur.</translation>
 <translation id="4136724716305260864">Activée jusqu'à l'aube</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite</translation>
 <translation id="4146671046252289537">Aller à la fin du mot suivant</translation>
@@ -807,7 +804,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, application installée, en pause</translation>
 <translation id="4228078597006700451">Commandes non configurées</translation>
 <translation id="4231053948789591973">La diffusion est actuellement en pause. Vous pouvez reprendre la diffusion ou arrêter la diffusion de votre écran à tout moment.</translation>
-<translation id="423685346499232137">Impossible de copier ni de coller du contenu pour le moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode Aperçu</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -819,7 +815,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci-clavier Ctrl+Alt+flèche vers le bas a changé. Pour utiliser la touche Fin, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite.</translation>
 <translation id="4275283744500212192">Ouvrir les options de mise en page des fenêtres</translation>
-<translation id="4278138729651139331">Personnalisez votre Chromebook dans les paramètres. Essayez de modifier votre fond d'écran ou de définir un écran de veille.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4280601795273309128">Les mises à jour de sécurité sont terminées. Améliorer votre appareil.</translation>
 <translation id="4283888303416325161">Entrez le mot de passe pour plus de sécurité</translation>
@@ -1135,7 +1130,6 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="550391772491508736">Reprendre la diffusion</translation>
 <translation id="5506975627792768506">Activer ou désactiver la loupe</translation>
 <translation id="5512042095225963688">Supprimer le mot précédent</translation>
-<translation id="5518068085000130971">Ce sont là les éléments de base! Continuez dans Explorer, notre application intégrée, pour obtenir des conseils et de l'aide. Vous y trouverez des conseils pour faire vos premiers pas, des applications recommandées, des offres spéciales et les dernières fonctionnalités du Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Votre administrateur a retiré tous les profils eSIM. Pour en savoir plus, communiquez avec votre administrateur.</translation>
 <translation id="5520909879404821039">Salut en anglais</translation>
@@ -1521,7 +1515,6 @@ Nouvelle installation</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) sera utilisée à la place. Cliquez sur Confirmer pour conserver les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Regardez une présentation rapide pour vous familiariser avec votre Chromebook. Configurez votre appareil en six étapes.</translation>
 <translation id="7000027735917578303">Paramètres des fenêtres et des bureaux</translation>
 <translation id="7004910047186208204">Se connecter à un réseau de données cellulaires</translation>
 <translation id="7005239792648594238">Ouvrez une application pour commencer</translation>
@@ -1588,7 +1581,6 @@ Nouvelle installation</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Votre administrateur est en train de réinitialiser votre carte eSIM. Cette opération peut prendre quelques minutes.</translation>
 <translation id="7313193732017069507">Développer le bouton caméra</translation>
-<translation id="7316261577130609484">Ajouter une tâche</translation>
 <translation id="7330397557116570022">Accédez à un champ de texte pour utiliser la dictée</translation>
 <translation id="7331646370422660166">alt+flèche vers le bas</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>
@@ -1653,7 +1645,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre microphone</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
-<translation id="7567950130372125778">Bonjour. Le Chromebook est un peu différent.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7569886975397378678">Ignorer la configuration de l'affichage des notifications et des applications de votre téléphone</translation>
 <translation id="7571361473021531288">Pile à <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> d'autonomie</translation>

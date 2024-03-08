@@ -173,7 +173,6 @@
 <translation id="1647986356840967552">صفحه قبلی</translation>
 <translation id="1651914502370159744">باز کردن صفحه سابقه</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
-<translation id="1662667383227796099">‏فایل‌ها، برنامه‌ها، و موارد دیگر را در «راه‌انداز» جستجو کنید. همچنین می‌توانید پاسخ سؤالات مربوط به Chromebook را دریافت کنید.</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
 <translation id="1675844249244994876">به‌روزرسانی پنجره راست</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
@@ -467,7 +466,6 @@
 <translation id="2965227184985674128">دسترسی به میکروفون روشن شود؟</translation>
 <translation id="296762781903199866">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری نشد</translation>
 <translation id="2970920913501714344">نصب برنامه‌ها، افزونه‌ها و طرح‌های زمینه</translation>
-<translation id="2977098646659697261">برنامه‌های سنجاق‌شده و باز در «قفسه» قرار دارد. برای سنجاق کردن برنامه به «قفسه»، روی برنامه کلیک راست کنید یا با دو انگشت روی صفحه لمسی ضربه بزنید.</translation>
 <translation id="2977598380246111477">عدد بعدی</translation>
 <translation id="2985148236010982088">دیدن همه برنامه‌ها</translation>
 <translation id="2992327365391326550">دکمه میکروفون دستگاه خاموش است.</translation>
@@ -776,7 +774,6 @@
 <translation id="4123259114412175274">‏برای باز کردن قفل Chromebook، از روشن بودن بلوتوث تلفن مطمئن شوید</translation>
 <translation id="4125970834901680537">جاری‌سازی برنامه در حالت رایانه لوحی ممکن نیست. در حالت رایانه کیفی دوباره امتحان کنید.</translation>
 <translation id="4131973331381812765">دما: <ph name="TEMPERATURE" /> درجه سانتی‌گراد - سرعت فعلی: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> گیگاهرتز</translation>
-<translation id="4132502210362661715">‏Chromebook با برنامه‌های داخلی ارائه می‌شود تا در انجام کارها به شما کمک شود. برنامه‌ها را در «راه‌انداز» پیدا کنید.</translation>
 <translation id="4136724716305260864">روشن تا طلوع آفتاب</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + راست‌بَر</translation>
 <translation id="4146671046252289537">انتقال به انتهای کلمه بعدی</translation>
@@ -808,7 +805,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />، برنامه نصب‌شده، موقتاً متوقف‌شده</translation>
 <translation id="4228078597006700451">کنترل‌ها راه‌اندازی نشده است</translation>
 <translation id="4231053948789591973">پخش محتوا موقتاً متوقف شده است. هرزمان بخواهید می‌توانید پخش محتوای صفحه‌نمایش را ازسر بگیرید یا متوقف کنید.</translation>
-<translation id="423685346499232137">کپی و جای‌گذاری کردن محتوا در این لحظه امکان‌پذیر نیست</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">حالت نمای کلی</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
@@ -820,7 +816,6 @@
 <translation id="4269883910223712419">سرپرست این دستگاه می‌تواند:</translation>
 <translation id="4274537685965975248">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای پایین» تغییر کرده است. برای استفاده از کلید «پایان»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای راست» را فشار دهید.</translation>
 <translation id="4275283744500212192">باز کردن گزینه‌های طرح‌بندی پنجره</translation>
-<translation id="4278138729651139331">‏Chromebook را در «تنظیمات» سفارشی‌سازی و شخصی‌سازی کنید. کاغذدیواری را عوض کنید یا محافظ صفحه تنظیم کنید.</translation>
 <translation id="4279490309300973883">بازتاب می‌شود</translation>
 <translation id="4280601795273309128">به‌روزرسانی‌های امنیتی به‌پایان رسیده است. دستگاهتان را ارتقا دهید.</translation>
 <translation id="4283888303416325161">برای ایمنی بیشتر، گذرواژه را وارد کنید</translation>
@@ -1136,7 +1131,6 @@
 <translation id="550391772491508736">ازسرگیری پخش محتوا</translation>
 <translation id="5506975627792768506">روشن یا خاموش کردن ذره‌بین</translation>
 <translation id="5512042095225963688">حذف واژه قبلی</translation>
-<translation id="5518068085000130971">‏این اصول اولیه بود! کارتان را در «کاوش»، برنامه داخلی ما برای نکته‌ها و راهنمایی، ادامه دهید. نکته‌هایی برای شروع، برنامه‌های توصیه‌شده، پیشنهادهای ویژه، و جدیدترین ویژگی‌های Chromebook را خواهید دید.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">سرپرستتان همه نمایه‌های سیم‌کارت داخلی را برداشته است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5520909879404821039">سلام به فرانسوی</translation>
@@ -1522,7 +1516,6 @@
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="698231206551913481">اگر کاربر حذف شود، همه فایل‌ها و داده‌های محلی مربوط به او به‌طور دائم حذف خواهند شد.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز) پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> هرتز) تغییر کرد. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
-<translation id="6989752354829085073">‏برای آشنایی با نحوه گشت‌وگذار در Chromebook، بازدید کوتاهی خواهیم داشت. در ۶ مرحله کارتان را شروع می‌کنید.</translation>
 <translation id="7000027735917578303">تنظیمات پنجره‌ها و میزکارها</translation>
 <translation id="7004910047186208204">اتصال به شبکه داده تلفن همراه</translation>
 <translation id="7005239792648594238">برای شروع کار، برنامه‌ای را باز کنید</translation>
@@ -1589,7 +1582,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7313193732017069507">گسترده کردن دوربین</translation>
-<translation id="7316261577130609484">افزودن تکلیف جدید</translation>
 <translation id="7330397557116570022">برای استفاده از «دیکته» به فیلد نوشتاری بروید</translation>
 <translation id="7331646370422660166">دگرساز + پایین‌بر</translation>
 <translation id="7340731148882810149">منوی کلیک‌های خودکار</translation>
@@ -1654,7 +1646,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> درحال استفاده از میکروفون است</translation>
 <translation id="7561982940498449837">بستن منو</translation>
 <translation id="7564874036684306347">انتقال پنجره‌ها به میز کار دیگر می‌تواند به رفتار غیرمنتظره منجر شود. اعلان‌ها، پنجره‌ها و کادرهای گفتگوی بعدی ممکن است بین میز کارها تقسیم شوند.</translation>
-<translation id="7567950130372125778">‏سلام. ‫Chromebook کمی تفاوت دارد.</translation>
 <translation id="7569509451529460200">‏بریل و ChromeVox فعال هستند</translation>
 <translation id="7569886975397378678">بستن راه‌اندازی مشاهده اعلان‌ها و برنامه‌های تلفن</translation>
 <translation id="7571361473021531288">شارژ <ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> باقی مانده است</translation>
@@ -1710,7 +1701,7 @@
 <translation id="7769299611924763557">‏فایل GIF شما به‌زودی آماده خواهد شد</translation>
 <translation id="7773536009433685931">‏روشن کردن Wi-Fi</translation>
 <translation id="7780094051999721182">میان‌برها</translation>
-<translation id="7780159184141939021">چرخش صفحه</translation>
+<translation id="7780159184141939021">چرخاندن صفحه</translation>
 <translation id="7792590255364786396">نمایان</translation>
 <translation id="7796735576426975947">اعلان جدید پنهان شده است</translation>
 <translation id="7798302898096527229">‏برای لغو کردن، Search یا Shift را فشار دهید.</translation>

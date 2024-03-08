@@ -173,7 +173,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1647986356840967552">Fyrri síða</translation>
 <translation id="1651914502370159744">Opna síðu ferils</translation>
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
-<translation id="1662667383227796099">Leitaðu að skrám, forritum og fleiru í ræsiforritinu. Þú getur einnig fengið svör við spurningum um Chromebook-tækið þitt.</translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
 <translation id="1675844249244994876">Uppfæra hægri glugga</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
@@ -467,7 +466,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2965227184985674128">Kveikja á hljóðnemaaðgangi?</translation>
 <translation id="296762781903199866">Ekki tókst að sækja <ph name="LANGUAGE" /> talskrár</translation>
 <translation id="2970920913501714344">Sett upp forrit, viðbætur og þemu</translation>
-<translation id="2977098646659697261">Festu og opnu forritin eru á hillunni. Til að festa forrit á hilluna skaltu hægrismella á forrit eða ýttu á snertiflötinn með tveimur fingrum.</translation>
 <translation id="2977598380246111477">Næsta tala</translation>
 <translation id="2985148236010982088">Sjá öll forrit</translation>
 <translation id="2992327365391326550">Slökkt er á hljóðnemahnappi tækisins.</translation>
@@ -776,7 +774,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4123259114412175274">Til að taka Chromebook úr lás skaltu ganga úr skugga um að kveikt sé á Bluetooth í símanum</translation>
 <translation id="4125970834901680537">Ekki hægt að streyma forritum í spjaldtölvustillingu. Reyndu aftur í fartölvustillingu.</translation>
 <translation id="4131973331381812765">Hitastig: <ph name="TEMPERATURE" />°C – núverandi hraði: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook-tölvunni fylgja innbyggð forrit sem aðstoða þig við að koma hlutum í verk. Þú getur fundið forritin í ræsiforritinu.</translation>
 <translation id="4136724716305260864">Kveikt til sólarupprásar</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + ör til hægri</translation>
 <translation id="4146671046252289537">Fara að enda næsta orðs</translation>
@@ -808,7 +805,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4221957499226645091"><ph name="APP_NAME" />, uppsett forrit, í bið</translation>
 <translation id="4228078597006700451">Stýringar ekki uppsettar</translation>
 <translation id="4231053948789591973">Hlé var gert á vörpun. Þú getur haldið áfram að varpa skjánum eða hætt því hvenær sem er.</translation>
-<translation id="423685346499232137">Ekki hægt að afrita og líma efni eins og stendur</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Yfirlitsstilling</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
@@ -820,7 +816,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4269883910223712419">Stjórnandi þessa tækis getur:</translation>
 <translation id="4274537685965975248">Flýtilyklinum „Ctrl + Alt + ör niður“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör til hægri til að nota End-lykilinn.</translation>
 <translation id="4275283744500212192">Opna valkosti fyrir uppsetningu glugga</translation>
-<translation id="4278138729651139331">Sérsníddu Chromebook-tækið þitt í stillingunum. Prófaðu að skipta um veggfóður eða stilla skjávara.</translation>
 <translation id="4279490309300973883">Speglun</translation>
 <translation id="4280601795273309128">Öryggisuppfærslum er lokið. Uppfærðu tækið þitt.</translation>
 <translation id="4283888303416325161">Sláðu inn aðgangsorð til að auka öryggið</translation>
@@ -1136,7 +1131,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="550391772491508736">Halda vörpun áfram</translation>
 <translation id="5506975627792768506">Kveikja eða slökkva á stækkunargleri</translation>
 <translation id="5512042095225963688">Eyða fyrra orði</translation>
-<translation id="5518068085000130971">Þetta voru grunnatriðin! Frekari upplýsingar og aðstoð er að finna í innbyggða forritinu okkar „Kanna“. Þar finnurðu ábendingar til að hefjast handa, forrit sem mælt er með, sértilboð og nýjustu Chromebook-eiginleikana.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Kerfisstjórinn hefur fjarlægt alla eSIM-prófíla. Hafðu samband við kerfisstjórann til að fá frekari upplýsingar.</translation>
 <translation id="5520909879404821039">Hæ á frönsku</translation>
@@ -1522,7 +1516,6 @@ Ný uppsetning</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
 <translation id="698231206551913481">Öllum skrám og staðbundnum gögnum sem tengjast notandanum verður varanlega eytt þegar notandinn er fjarlægður.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Veldu „Staðfesta“ til að halda breytingunum. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Horfðu á stutta kynningu til að læra á grunnatriði Chromebook. Komdu þér á rétta braut í 6 skrefum.</translation>
 <translation id="7000027735917578303">Stillingar glugga og skrifborðs</translation>
 <translation id="7004910047186208204">Tengjast við farsímagögn</translation>
 <translation id="7005239792648594238">Opnaðu forrit til að hefjast handa</translation>
@@ -1589,7 +1582,6 @@ Ný uppsetning</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Stjórnandinn er að endurstilla eSIM. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="7313193732017069507">Stækka myndavél</translation>
-<translation id="7316261577130609484">Bæta við nýju verkefni</translation>
 <translation id="7330397557116570022">Farðu í textareit til að nota raddinnslátt</translation>
 <translation id="7331646370422660166">alt + ör niður</translation>
 <translation id="7340731148882810149">Valmynd sjálfvirkra smella</translation>
@@ -1654,7 +1646,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7557816257942363084"><ph name="APP_NAME" /> er að nota hljóðnemann</translation>
 <translation id="7561982940498449837">Loka valmynd</translation>
 <translation id="7564874036684306347">Ef gluggar eru færðir á annað skjáborð getur það valdið óvæntri hegðun. Frekari tilkynningum, gluggum og svargluggum verður hugsanlega deilt á milli skjáborða.</translation>
-<translation id="7567950130372125778">Hæ. Chromebook er örlítið frábrugðin.</translation>
 <translation id="7569509451529460200">Kveikt á blindraletri og ChromeVox</translation>
 <translation id="7569886975397378678">Hafna að setja upp skoðun tilkynninga og forrita símans</translation>
 <translation id="7571361473021531288">Rafhlaða <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> eftir</translation>

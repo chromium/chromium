@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">పేజీ సైజ్‌</translation>
 <translation id="1082009148392559545">స్క్రీన్ సేవర్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="1094693127011229778">IP అడ్రస్ అందుబాటులో లేదు</translation>
+<translation id="1100902271996134409">ఇమేజ్‌లు క్రియేట్ అవుతున్నాయి...</translation>
 <translation id="1116694919640316211">గురించి</translation>
 <translation id="1118572504348554005">ఈ ఫారమ్ ద్వారా మీరు సబ్‌మిట్ చేసిన ఫీడ్‌బ్యాక్‌ను మా పార్ట్‌నర్‌లతో షేర్ చేసే అవకాశం ఉంది. బగ్‌లను, ఇతర సమస్యలను పరిష్కరించడానికి మీ ఫీడ్‌బ్యాక్ ఉపయోగపడవచ్చు. పాస్‌వర్డ్‌ల వంటి గోప్యమైన సమాచారాన్ని ఇవ్వకండి.</translation>
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="1270369111467284986">క్యాప్టివ్ పోర్టల్ అనుమానించబడింది</translation>
 <translation id="1274654146705270731">నారింజలు</translation>
+<translation id="1275718070701477396">ఎంచుకోబడింది</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1300115153046603471">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం, <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">డార్క్ మోడ్ షెడ్యూల్</translation>
 <translation id="2276999893457278469">టాప్ సహాయక కంటెంట్</translation>
 <translation id="2279051792571591988">ఆటోమేటిక్ సెట్టింగ్‌లను రీస్టోర్ చేయండి</translation>
+<translation id="2286454467119466181">సరళం</translation>
 <translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
 <translation id="2307344026739914387">ప్రస్తుత కీపెయిర్‌ను ఉపయోగించండి</translation>
 <translation id="2320295602967756579">లేత రంగు రూపాన్ని ఎనేబుల్ చేయండి</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">ఇటీవలి వాల్‌పేపర్‌లు Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతున్నాయి</translation>
 <translation id="4320904097188876154">నియాన్ గులాబి రంగు</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> కీని నొక్కారు</translation>
-<translation id="4341897648462347919">నీలి పచ్చ రంగు</translation>
 <translation id="4354430579665871434">కీ</translation>
 <translation id="4361257691546579041">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం.</translation>
 <translation id="437294888293595148">అన్ని షార్ట్‌కట్‌లను రీసెట్ చేయండి</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">కెమెరా లేదా ఫైల్‌లో ఉన్న ఫోటో</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">ప్రొఫైల్ ఫోటో</translation>
-<translation id="7171665330126595869">గుహ</translation>
 <translation id="7171919371520438592">స్క్రీన్ యొక్క <ph name="DIRECTION" /> వైపున గల చిన్నగా ఉన్న భాగంలో విండోను డాక్ చేయండి</translation>
 <translation id="7172721935181587524">1 ఇమేజ్</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7528507600602050979">సహాయక కంటెంట్ అందుబాటులో లేదు</translation>
-<translation id="753556296624075801">Google అందిస్తోంది</translation>
 <translation id="7535791657097741517">లేత రంగు రూపాన్ని ఆన్ చేయండి</translation>
 <translation id="7550715992156305117">సమస్య విశ్లేషణ రొటీన్‌లు</translation>
 <translation id="7551123448725492271">పరికరం రకం ఆడియో పరికరం.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">కీబోర్డ్ జోన్‌లు</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />కు చెందిన <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>
-<translation id="8923267550422472772">రీసెట్ కోసం నెలలో రోజు</translation>
 <translation id="8928727111548978589">విఫలమైంది - పేపర్ లేదు</translation>
 <translation id="8930521118335213258">బెంచ్‌మార్క్</translation>
 <translation id="8930622219860340959">వైర్‌లెస్</translation>

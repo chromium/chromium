@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">စာမျက်နှာ အရွယ်အစား</translation>
 <translation id="1082009148392559545">စခရင်နားချိန်ပုံ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="1094693127011229778">IP လိပ်စာ မရနိုင်ပါ</translation>
+<translation id="1100902271996134409">ပုံများကို ပြုလုပ်နေသည်…</translation>
 <translation id="1116694919640316211">အကြောင်း</translation>
 <translation id="1118572504348554005">သင်အကြောင်းကြားသော ချွတ်ယွင်းမှုနှင့် အခြားပြဿနာများကို ရှာဖွေဖြေရှင်းရန် ဤဖောင်ဖြင့် ပေးပို့ထားသည့် အကြံပြုချက်ကို ကျွန်ုပ်တို့ပါတနာများနှင့် မျှဝေနိုင်ပါသည်။ စကားဝှက်ကဲ့သို့ သတိထားရမည့် အချက်အလက်များ မထည့်ပါနှင့်။</translation>
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS တုံ့ပြန်ချိန်</translation>
 <translation id="1270369111467284986">စတင်ဝင်ရန်စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1274654146705270731">လိမ္မော်သီး</translation>
+<translation id="1275718070701477396">ရွေးထား</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1300115153046603471">APN သည် အမျိုးအစားမူရင်းဖြစ်ပြီး <ph name="ATTACH" /> ဖြစ်သည်။</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">အမှောင်မုဒ် အချိန်ဇယား</translation>
 <translation id="2276999893457278469">ထိပ်တန်းအကူအညီ အကြောင်းအရာ</translation>
 <translation id="2279051792571591988">မူရင်းအခြေအနေ ပြန်ပြောင်းရန်</translation>
+<translation id="2286454467119466181">ရိုးရိုး</translation>
 <translation id="2287186687001756809">ပုံမရရှိနိုင်ပါ။ ဓာတ်ပုံများ ထည့်ရန် <ph name="LINK" /> သို့သွားပါ</translation>
 <translation id="2307344026739914387">လက်ရှိကီးအတွဲကို သုံးရန်</translation>
 <translation id="2320295602967756579">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Google AI က ပံ့ပိုးထားသော မကြာသေးမီက နောက်ခံများ</translation>
 <translation id="4320904097188876154">နီယွန်ပန်းရောင်</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ခလုတ် နှိပ်လိုက်သည်</translation>
-<translation id="4341897648462347919">စိမ်းပြာရင့်</translation>
 <translation id="4354430579665871434">ကီး</translation>
 <translation id="4361257691546579041">APN သည် အမျိုးအစား မူရင်းဖြစ်သည်။</translation>
 <translation id="437294888293595148">ဖြတ်လမ်းလင့်ခ်အားလုံး ပြင်ဆင်သတ်မှတ်ရန်</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">ကင်မရာ သို့မဟုတ် ဖိုင်မှ လက်ရှိပုံ</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
 <translation id="7170236477717446850">ပရိုဖိုင် ပုံ</translation>
-<translation id="7171665330126595869">ဂူ</translation>
 <translation id="7171919371520438592">စခရင်၏ <ph name="DIRECTION" /> ပိုသေးသောအခြမ်းတွင် ဝင်းဒိုးနေရာချရန်</translation>
 <translation id="7172721935181587524">1 ပုံ</translation>
 <translation id="7177485034254901881">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်။ စီမံခန့်ခွဲသူများက စက်ပစ္စည်းကို အဝေးမှ စီစဉ်သတ်မှတ်နိုင်သည်။</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">ပြုလုပ်ရန်</translation>
 <translation id="7528507600602050979">အကူအညီ အကြောင်းအရာ မရနိုင်ပါ</translation>
-<translation id="753556296624075801">Google က ပံ့ပိုးသည်</translation>
 <translation id="7535791657097741517">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="7550715992156305117">အမှားရှာဖွေမှု ပုံမှန်အစီအစဉ်များ</translation>
 <translation id="7551123448725492271">ကိရိယာသည် အသံစက်ပစ္စည်းဖြစ်သည်။</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">ကီးဘုတ်ဇုန်များ</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> ၏ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">မအောင်မြင်ပါ - ဗန်းမရှိပါ</translation>
-<translation id="8923267550422472772">တစ်လတာတွင် ပြင်ဆင်သတ်မှတ်မည့်နေ့</translation>
 <translation id="8928727111548978589">မအောင်မြင်ပါ - စာရွက်ကုန်နေသည်</translation>
 <translation id="8930521118335213258">အမျိုးအစားတူ</translation>
 <translation id="8930622219860340959">ကြိုးမဲ့</translation>

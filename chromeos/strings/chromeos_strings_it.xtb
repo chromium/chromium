@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Dimensioni pagina</translation>
 <translation id="1082009148392559545">Download del salvaschermo in corso…</translation>
 <translation id="1094693127011229778">Indirizzo IP non disponibile</translation>
+<translation id="1100902271996134409">Creazione di immagini in corso…</translation>
 <translation id="1116694919640316211">Informazioni</translation>
 <translation id="1118572504348554005">Potremmo condividere il feedback inviato tramite questo modulo con i nostri partner per risolvere bug e altri problemi che ci segnali. Non includere informazioni sensibili come password.</translation>
 <translation id="1119447706177454957">Errore interno</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">Latenza HTTPS</translation>
 <translation id="1270369111467284986">Il sistema sospetta la presenza di un captive portal</translation>
 <translation id="1274654146705270731">arance</translation>
+<translation id="1275718070701477396">Selezionato</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1300115153046603471">APN è di tipo predefinito e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">Programmazione modalità Buio</translation>
 <translation id="2276999893457278469">Contenuti Help principali</translation>
 <translation id="2279051792571591988">Ripristina predefinite</translation>
+<translation id="2286454467119466181">Semplice</translation>
 <translation id="2287186687001756809">Nessuna immagine disponibile. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Utilizza coppia di chiavi corrente</translation>
 <translation id="2320295602967756579">Abilita il tema chiaro</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Sfondi recenti IA di Google integrata</translation>
 <translation id="4320904097188876154">rosa neon</translation>
 <translation id="4333390807948134856">Tasto <ph name="KEY_NAME" /> premuto</translation>
-<translation id="4341897648462347919">verde acqua</translation>
 <translation id="4354430579665871434">chiave</translation>
 <translation id="4361257691546579041">L'APN è predefinito</translation>
 <translation id="437294888293595148">Reimposta tutte le scorciatoie</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7170236477717446850">Immagine del profilo</translation>
-<translation id="7171665330126595869">una grotta</translation>
 <translation id="7171919371520438592">Aggancia la finestra alla parte più piccola <ph name="DIRECTION" /> dello schermo</translation>
 <translation id="7172721935181587524">1 immagine</translation>
 <translation id="7177485034254901881">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />. Gli amministratori possono configurarlo da remoto.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7528507600602050979">Contenuti della guida non disponibili</translation>
-<translation id="753556296624075801">Powered by Google</translation>
 <translation id="7535791657097741517">Attiva il tema chiaro</translation>
 <translation id="7550715992156305117">Routine diagnostiche</translation>
 <translation id="7551123448725492271">Il dispositivo è un dispositivo audio.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">Zone tastiera</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> di <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Operazione non riuscita - Vassoio mancante</translation>
-<translation id="8923267550422472772">Giorno del mese per la reimpostazione</translation>
 <translation id="8928727111548978589">Operazione non riuscita - Carta esaurita</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

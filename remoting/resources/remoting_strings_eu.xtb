@@ -12,7 +12,7 @@
 <translation id="1697532407822776718">Prest zaude!</translation>
 <translation id="1742469581923031760">Konektatzen…</translation>
 <translation id="177040763384871009">Urruneko gailuko estekaren batean klik eginez gero hura arakatzailean irekitzeko baimena eman nahi baduzu, "<ph name="URL_FORWARDER_NAME" />" ezarri behar duzu sistemaren web-arakatzaile gisa.</translation>
-<translation id="177096447311351977">Bezeroaren kanalaren IDa: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
+<translation id="177096447311351977">Bezeroaren kanalaren IPa: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Ezabatu</translation>
 <translation id="2009755455353575666">Ezin izan da konektatu</translation>
 <translation id="2038229918502634450">Ostalaria berrabiarazten ari da, gidalerroen aldaketa bat kontuan hartzeko.</translation>

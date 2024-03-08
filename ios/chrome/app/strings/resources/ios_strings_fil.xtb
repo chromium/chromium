@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Naipadala na ang mail.</translation>
 <translation id="1582732959743469162">Ihihinto nito ang lahat ng progreso para sa iyong kasalukuyang pag-download.</translation>
 <translation id="158591023028013564">{count,plural, =1{Naidagdag ang page sa iyong listahan ng babasahin}one{Naidagdag ang {count} Page sa iyong listahan ng babasahin}other{Naidagdag ang {count} na Page sa iyong listahan ng babasahin}}</translation>
+<translation id="1587629076612412684">I-personalize: Google Services</translation>
 <translation id="1594034544529347967">Magsisimula sa</translation>
 <translation id="160275202205869636">Kapag naka-on, gagamitin at ise-save ang data sa Google Account mo. Kapag naka-off, ise-save lang ang data sa device na ito.</translation>
 <translation id="1605405588277479165">Naka-off - Hindi inirerekomenda</translation>
@@ -517,6 +518,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3631443864840848029">Tiyaking sine-save mo ang iyong kasalukuyang password para sa site na ito.</translation>
 <translation id="3638472932233958418">Mag-preload ng Mga Webpage</translation>
 <translation id="3643338347976071250">{count,plural, =1{Mase-save lang ang {count} password sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account na {email}.}one{Mase-save lang ang {count} password sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na {email}.}other{Mase-save lang ang {count} na password sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na {email}.}}</translation>
+<translation id="3659297405161482746">Walang nakitang paraan ng pagbabayad</translation>
 <translation id="3661160521073045932">Available ang Profile ng Configuration</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3680970647557344817">I-hide ang I-edit ang Bookmark</translation>
@@ -1013,6 +1015,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6196207969502475924">Paghahanap gamit ang boses</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Isara ang {COUNT} Tab}one{Isara ang {COUNT} Tab}other{Isara ang {COUNT} na Tab}}</translation>
 <translation id="6210079381482819663">Ililipat dito ang mga tab na hindi ginamit sa loob ng <ph name="THRESHOLD" /> (na) araw o higit pa. Puwede mo itong baguhin anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
+<translation id="6213281885682386884">Walang nakitang address</translation>
 <translation id="6213567400989743524">Mga Na-dismiss na Babala</translation>
 <translation id="6219550825416862075">Maligayang Pagbabalik</translation>
 <translation id="6219688215832490856">Huwag Kailanman I-translate</translation>
@@ -1385,6 +1388,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8027581147000338959">Buksan sa Bagong Window</translation>
 <translation id="8032569120109842252">Sinusubaybayan</translation>
 <translation id="8040207962129315716">Tanungin Ako Palagi</translation>
+<translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="804225253087497565">Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK" />history ng paghahanap<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />iba pang anyo ng aktibidad<ph name="END_LINK" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="804427445359061970">Makikita mo rito ang iyong mga tab mula sa iba pang device</translation>
 <translation id="8044568254381073661">I-save Nang Walang Pag-encrypt</translation>
@@ -1604,6 +1608,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9106655997975673326">Mula sa "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Tingnan kung may mga nakompromisong password</translation>
 <translation id="9109699888944026290">{count,plural, =1{Bagong Password Para Sa Site Na Ito}one{Mga Bagong Password Para Sa Site Na Ito}other{Mga Bagong Password Para Sa Site Na Ito}}</translation>
+<translation id="9110489518258031250">Kontrolin kung paano magagamit ang iyong naka-sync na history ng pag-browse para i-personalize ang iba pang serbisyo ng Google</translation>
 <translation id="9120217828624527905">Lumipat sa Pagsasalin ng Buong Page</translation>
 <translation id="9124387962554796433">Puwedeng gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>

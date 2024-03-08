@@ -173,7 +173,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1647986356840967552">Trang trước</translation>
 <translation id="1651914502370159744">Mở trang Nhật ký</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
-<translation id="1662667383227796099">Tìm kiếm tệp, ứng dụng, v.v. trong Trình chạy. Bạn cũng có thể tìm được câu trả lời cho các câu hỏi về Chromebook của mình.</translation>
 <translation id="1668469839109562275">VPN tích hợp sẵn</translation>
 <translation id="1675844249244994876">Cập nhật cửa sổ bên phải</translation>
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2965227184985674128">Cho phép truy cập micrô?</translation>
 <translation id="296762781903199866">Không thể tải các tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
-<translation id="2977098646659697261">Các ứng dụng bạn đang mở và đã ghim sẽ xuất hiện trên Kệ. Để ghim một ứng dụng vào Kệ, nhấp chuột phải vào ứng dụng đó hoặc dùng hai ngón tay nhấn lên bàn di chuột.</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
 <translation id="2985148236010982088">Xem tất cả ứng dụng</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
@@ -776,7 +774,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="4123259114412175274">Để mở khoá Chromebook, hãy nhớ bật Bluetooth trên điện thoại</translation>
 <translation id="4125970834901680537">Không thể phát trực tuyến nội dung trên ứng dụng ở chế độ máy tính bảng. Hãy thử lại ở chế độ máy tính xách tay.</translation>
 <translation id="4131973331381812765">Nhiệt độ: <ph name="TEMPERATURE" />°C – Tốc độ hiện tại: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook tích hợp nhiều ứng dụng nhằm giúp bạn hoàn thành công việc. Bạn có thể tìm ứng dụng của mình trong Trình chạy.</translation>
 <translation id="4136724716305260864">Bật cho đến bình minh</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + mũi tên phải</translation>
 <translation id="4146671046252289537">Di chuyển đến cuối của từ kế tiếp</translation>
@@ -808,7 +805,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã tạm dừng</translation>
 <translation id="4228078597006700451">Chưa thiết lập các nút điều khiển</translation>
 <translation id="4231053948789591973">Quá trình truyền đang tạm dừng. Bạn có thể tiếp tục hoặc ngừng truyền màn hình của mình bất cứ lúc nào.</translation>
-<translation id="423685346499232137">Không thể sao chép hoặc dán nội dung vào lúc này</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Chế độ tổng quan</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
@@ -820,7 +816,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>
 <translation id="4274537685965975248">Phím tắt Ctrl + Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím End, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên phải.</translation>
 <translation id="4275283744500212192">Mở tuỳ chọn bố cục cửa sổ</translation>
-<translation id="4278138729651139331">Tuỳ chỉnh và cá nhân hoá Chromebook trong phần Cài đặt. Hãy thử thay đổi hình nền hoặc thiết lập trình bảo vệ màn hình.</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
 <translation id="4280601795273309128">Đã ngừng cập nhật bảo mật. Nâng cấp thiết bị của bạn.</translation>
 <translation id="4283888303416325161">Hãy nhập mật khẩu để tăng cường bảo mật</translation>
@@ -1136,7 +1131,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="550391772491508736">Tiếp tục truyền</translation>
 <translation id="5506975627792768506">Bật hoặc tắt kính lúp</translation>
 <translation id="5512042095225963688">Xoá từ trước</translation>
-<translation id="5518068085000130971">Đó mới chỉ là thông tin cơ bản! Hãy tiếp tục tìm hiểu trong Khám phá, ứng dụng tích hợp sẵn chuyên cung cấp các mẹo và thông tin trợ giúp của chúng tôi. Trong ứng dụng này, bạn sẽ tìm thấy các mẹo giúp bạn bắt đầu, ứng dụng được đề xuất, ưu đãi đặc biệt và tính năng mới nhất của Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Quản trị viên của bạn đã xóa tất cả hồ sơ eSIM. Hãy liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
 <translation id="5520909879404821039">Xin chào bằng tiếng Pháp</translation>
@@ -1522,7 +1516,6 @@ Mới cài đặt</translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="698231206551913481">Tất cả các tệp và dữ liệu cục bộ liên quan tới người dùng này sẽ bị xóa vĩnh viễn sau khi người dùng này bị xóa.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Độ phân giải đã được đổi thành <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Hãy nhấp vào nút xác nhận để lưu các thay đổi. Các chế độ cài đặt trước đó sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
-<translation id="6989752354829085073">Xem hướng dẫn nhanh để biết cách thao tác trên Chromebook. Thiết lập và sử dụng trong 6 bước.</translation>
 <translation id="7000027735917578303">Chế độ cài đặt cửa sổ và không gian làm việc</translation>
 <translation id="7004910047186208204">Kết nối với dữ liệu di động</translation>
 <translation id="7005239792648594238">Mở một ứng dụng để bắt đầu</translation>
@@ -1589,7 +1582,6 @@ Mới cài đặt</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7313193732017069507">Mở rộng máy ảnh</translation>
-<translation id="7316261577130609484">Thêm việc mới cần làm</translation>
 <translation id="7330397557116570022">Vào một trường văn bản để dùng tính năng Nhập bằng giọng nói</translation>
 <translation id="7331646370422660166">alt + mũi tên xuống</translation>
 <translation id="7340731148882810149">Trình đơn nhấp tự động</translation>
@@ -1654,7 +1646,6 @@ Mới cài đặt</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> hiện đang sử dụng micrô của bạn</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
-<translation id="7567950130372125778">Chào bạn, Chromebook mới có vài thay đổi nhỏ.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
 <translation id="7569886975397378678">Loại bỏ việc thiết lập tính năng xem thông báo và ứng dụng có trên điện thoại</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% pin | Còn <ph name="TIME" /></translation>

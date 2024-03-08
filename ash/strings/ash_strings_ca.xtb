@@ -173,7 +173,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1647986356840967552">Pàgina anterior</translation>
 <translation id="1651914502370159744">Obre la pàgina de l'historial</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
-<translation id="1662667383227796099">Cerca fitxers, aplicacions i més al menú d'aplicacions. També hi pots obtenir respostes a preguntes sobre el teu Chromebook.</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1675844249244994876">Actualitza la finestra dreta</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2965227184985674128">Vols activar l'accés al micròfon?</translation>
 <translation id="296762781903199866">No s'han pogut baixar els fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
-<translation id="2977098646659697261">Les aplicacions fixades i les obertes es troben al prestatge. Per fixar una aplicació al prestatge, fes-hi clic amb el botó dret o toca el ratolí tàctil amb dos dits.</translation>
 <translation id="2977598380246111477">Número següent</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
@@ -596,7 +594,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3455468639467374593">Plantilla <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Hi ha 1 dispositiu connectat al punt d'accés Wi-Fi de <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Restableix el nivell de zoom</translation>
-<translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confiïs.</translation>
+<translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confies.</translation>
 <translation id="3465356146291925647">Gestionada per l'administrador</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> i després <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control+Maj+espai</translation>
@@ -776,7 +774,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4123259114412175274">Per desbloquejar el Chromebook, comprova que el Bluetooth del telèfon estigui activat</translation>
 <translation id="4125970834901680537">No es poden reproduir aplicacions en continu en mode de tauleta. Torna-ho a provar en mode de portàtil.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C - Velocitat actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">El Chromebook inclou aplicacions integrades que t'ajuden a enllestir tasques. Troba les aplicacions al menú d'aplicacions.</translation>
 <translation id="4136724716305260864">Activada fins a l'alba</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+fletxa dreta</translation>
 <translation id="4146671046252289537">Ves al final de la paraula següent</translation>
@@ -808,7 +805,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
 <translation id="4228078597006700451">Els controls no s'han configurat</translation>
 <translation id="4231053948789591973">Actualment l'emissió està en pausa. Pots reprendre o aturar l'emissió de la pantalla en qualsevol moment.</translation>
-<translation id="423685346499232137">En aquests moments no es pot copiar ni enganxar contingut</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode de visió general</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
@@ -820,7 +816,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4269883910223712419">L'administrador d'aquest dispositiu pot dur a terme les accions següents:</translation>
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
 <translation id="4275283744500212192">Obre les opcions de disseny de la finestra</translation>
-<translation id="4278138729651139331">Personalitza el Chromebook a Configuració. Prova de canviar el fons de pantalla o d'establir un estalvi de pantalla.</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
 <translation id="4280601795273309128">Les actualitzacions de seguretat han finalitzat. Actualitza el dispositiu.</translation>
 <translation id="4283888303416325161">Introdueix la contrasenya per augmentar la seguretat</translation>
@@ -1136,7 +1131,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="550391772491508736">Reprèn l'emissió</translation>
 <translation id="5506975627792768506">Activa o desactiva la lupa</translation>
 <translation id="5512042095225963688">Suprimeix la paraula anterior</translation>
-<translation id="5518068085000130971">Aquests són els conceptes bàsics. Continua a Explora, la nostra aplicació integrada, per obtenir consells i ajuda. Hi trobaràs consells per començar, aplicacions recomanades, ofertes especials i les funcions més recents del Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'administrador ha suprimit tots els perfils d'eSIM. Contacta amb l'administrador per obtenir més informació.</translation>
 <translation id="5520909879404821039">Hola en francès</translation>
@@ -1522,7 +1516,6 @@ Instal·lació nova</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Per conservar els canvis, fes clic a Confirma. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Aprèn a navegar pel Chromebook amb una visita guiada ràpida. Posa't en marxa en 6 passos.</translation>
 <translation id="7000027735917578303">Configuració de finestres i d'escriptoris</translation>
 <translation id="7004910047186208204">Cal connectar-se a dades mòbils</translation>
 <translation id="7005239792648594238">Obre una aplicació per començar</translation>
@@ -1589,7 +1582,6 @@ Instal·lació nova</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">L'administrador està restablint l'eSIM. Aquest procés pot tardar uns minuts.</translation>
 <translation id="7313193732017069507">Desplega la càmera</translation>
-<translation id="7316261577130609484">Afegeix una tasca nova</translation>
 <translation id="7330397557116570022">Ves a un camp de text per utilitzar el dictat</translation>
 <translation id="7331646370422660166">Alt+fletxa avall</translation>
 <translation id="7340731148882810149">Menú de clics automàtics</translation>
@@ -1654,7 +1646,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7557816257942363084"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
-<translation id="7567950130372125778">Hola! Chromebook és una mica diferent.</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7569886975397378678">Ignora la configuració de visualització de les notificacions i de les aplicacions del telèfon</translation>
 <translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | Temps restant: <ph name="TIME" /></translation>

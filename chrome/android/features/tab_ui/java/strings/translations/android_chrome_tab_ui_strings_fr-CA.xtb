@@ -11,7 +11,9 @@
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée?</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="161042844686301425">Cyan</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> onglets groupés</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet groupé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné aux favoris}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné aux favoris}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés aux favoris}}</translation>
 <translation id="2118649612461486615">Renseignements sur le magasin</translation>

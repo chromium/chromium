@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">حجم الصفحة</translation>
 <translation id="1082009148392559545">جارٍ تنزيل شاشة الاستراحة</translation>
 <translation id="1094693127011229778">‏عنوان IP غير متوفّر.</translation>
+<translation id="1100902271996134409">جارٍ إنشاء الصور...</translation>
 <translation id="1116694919640316211">لمحة</translation>
 <translation id="1118572504348554005">قد نشارك مع شركائنا الملاحظات التي يتم إرسالها من خلال هذا النموذج، وذلك لتحديد وحلّ المشاكل والأخطاء التي يتم الإبلاغ عنها، لذا يُرجى عدم إدراج معلومات حساسة، مثل كلمات المرور.</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">‏وقت استجابة بروتوكول HTTPS</translation>
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1274654146705270731">برتقال</translation>
+<translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1300115153046603471">اسم نقطة الوصول من النوع التلقائي و<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">الجدول الزمني للوضع المُعتِم</translation>
 <translation id="2276999893457278469">أهم مقالات المحتوى المساعِد ذات الصلة</translation>
 <translation id="2279051792571591988">استعادة الإعدادات التلقائية</translation>
+<translation id="2286454467119466181">بسيطة</translation>
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">‏أحدث الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="4320904097188876154">وردي نيون</translation>
 <translation id="4333390807948134856">تم الضغط على المفتاح <ph name="KEY_NAME" />.</translation>
-<translation id="4341897648462347919">الأزرق المخضر</translation>
 <translation id="4354430579665871434">مفتاح</translation>
 <translation id="4361257691546579041">إنّ اسم نقطة الوصول من النوع التلقائي.</translation>
 <translation id="437294888293595148">إعادة ضبط جميع الاختصارات</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">صورة حالية من الكاميرا أو الملف</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
 <translation id="7170236477717446850">صورة الملف الشخصي</translation>
-<translation id="7171665330126595869">كهف</translation>
 <translation id="7171919371520438592">إرساء النافذة على الجانب <ph name="DIRECTION" /> الأصغر من الشاشة</translation>
 <translation id="7172721935181587524">صورة واحدة</translation>
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">إنشاء</translation>
 <translation id="7528507600602050979">المحتوى المساعِد غير متوفّر.</translation>
-<translation id="753556296624075801">‏بواسطة Google</translation>
 <translation id="7535791657097741517">تشغيل المظهر الفاتح</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">أجزاء لوحة المفاتيح</translation>
 <translation id="8918637186205009138">جهاز <ph name="DEVICE_TYPE" /> الخاص بـ <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>
-<translation id="8923267550422472772">إعادة الضبط في يوم محدَّد من الشهر</translation>
 <translation id="8928727111548978589">تعذَّرت الطباعة - نفد الورق</translation>
 <translation id="8930521118335213258">الند</translation>
 <translation id="8930622219860340959">شبكة لاسلكية</translation>

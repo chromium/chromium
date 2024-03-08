@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Sayfa boyutu</translation>
 <translation id="1082009148392559545">Ekran koruyucu indiriliyor</translation>
 <translation id="1094693127011229778">IP adresi kullanılamıyor</translation>
+<translation id="1100902271996134409">Resimler üretiliyor...</translation>
 <translation id="1116694919640316211">Hakkında</translation>
 <translation id="1118572504348554005">Bize bildirdiğiniz hataları ve diğer sorunları gidermek için bu form üzerinden gönderilen geri bildirimleri iş ortaklarımızla paylaşabiliriz. Şifreler gibi hassas bilgileri eklemeyin.</translation>
 <translation id="1119447706177454957">Dahili hata</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
 <translation id="1274654146705270731">portakallar</translation>
+<translation id="1275718070701477396">Seçildi</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1300115153046603471">APN, varsayılan ve <ph name="ATTACH" /> türünde.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -169,6 +171,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">kelebekler</translation>
 <translation id="188114911237521550">Koyu modu kapat</translation>
+<translation id="188268299367474594">Mevcut APN'ler arasından seçim yapın</translation>
 <translation id="1885577615937958993">medyayı ileri sar</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
 <translation id="189221451253258459">neon yeşil</translation>
@@ -236,6 +239,7 @@
 <translation id="2271469253353559191">Koyu mod programı</translation>
 <translation id="2276999893457278469">En çok görüntülenen yardım içeriği</translation>
 <translation id="2279051792571591988">Varsayılanları geri yükle</translation>
+<translation id="2286454467119466181">Basit</translation>
 <translation id="2287186687001756809">Resim yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>
 <translation id="2307344026739914387">Mevcut anahtar çiftini kullanın</translation>
 <translation id="2320295602967756579">Açık temayı etkinleştir</translation>
@@ -271,6 +275,7 @@
 <translation id="2512979179176933762">pencereleri göster</translation>
 <translation id="2513396635448525189">Giriş resmi</translation>
 <translation id="2517472476991765520">Tara</translation>
+<translation id="2520213071283358374">Bu APN'yi kullan</translation>
 <translation id="2521835766824839541">önceki parça</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
 <translation id="253029298928638905">Yeniden başlatılıyor…</translation>
@@ -519,7 +524,6 @@
 <translation id="4310735698903592804">Google Yapay Zeka destekli son duvar kağıtları</translation>
 <translation id="4320904097188876154">neon pembe</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tuşuna basıldı</translation>
-<translation id="4341897648462347919">turkuaz</translation>
 <translation id="4354430579665871434">anahtar</translation>
 <translation id="4361257691546579041">APN, varsayılan erişim noktası adıdır.</translation>
 <translation id="437294888293595148">Tüm kısayolları sıfırla</translation>
@@ -984,7 +988,6 @@
 <translation id="7155171745945906037">Kameradan veya dosyadan mevcut fotoğraf</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Profil resmi</translation>
-<translation id="7171665330126595869">mağara</translation>
 <translation id="7171919371520438592">Pencereyi, ekranın daha küçük olan <ph name="DIRECTION" /> tarafına sabitleyin</translation>
 <translation id="7172721935181587524">1 Resim</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
@@ -1047,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Oluştur</translation>
 <translation id="7528507600602050979">Yardım içeriği kullanılamıyor</translation>
-<translation id="753556296624075801">Google Destekli</translation>
 <translation id="7535791657097741517">Açık temayı aç</translation>
 <translation id="7550715992156305117">Teşhis Rutinleri</translation>
 <translation id="7551123448725492271">Cihazın türü ses sistemi.</translation>
@@ -1134,6 +1136,7 @@
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
 <translation id="8079860070590459552">çiçek tarlası</translation>
+<translation id="8081553043098820199">Geçersiz APN'ler, mobil bağlantınızın devre dışı bırakılmasına neden olabilir. Yalnızca mobil sağlayıcınız veya yöneticiniz tarafından sağlanan APN'leri ayarlayın.</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
 <translation id="8082644724189923105">klavye bölgesi</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
@@ -1263,7 +1266,6 @@
 <translation id="8912306040879976619">Klavye bölgeleri</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı kişinin <ph name="DEVICE_TYPE" /> cihazı</translation>
 <translation id="8919837981463578619">İşlem başarısız - Tepsi yok</translation>
-<translation id="8923267550422472772">Aylık sıfırlama günü</translation>
 <translation id="8928727111548978589">İşlem başarısız - Kağıt yok</translation>
 <translation id="8930521118335213258">Eş</translation>
 <translation id="8930622219860340959">WiFi (Kablosuz)</translation>

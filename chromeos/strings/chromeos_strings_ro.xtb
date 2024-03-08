@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Dimensiunea paginii</translation>
 <translation id="1082009148392559545">Se descarcă screensaverul</translation>
 <translation id="1094693127011229778">Adresa IP nu este disponibilă</translation>
+<translation id="1100902271996134409">Se creează imaginile…</translation>
 <translation id="1116694919640316211">Despre</translation>
 <translation id="1118572504348554005">Este posibil să le trimitem feedback primit prin intermediul acestui formular partenerilor noștri pentru a remedia erorile și alte probleme pe care ni le raportezi. Nu include informații sensibile, cum ar fi parolele.</translation>
 <translation id="1119447706177454957">Eroare internă</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">Latență a solicitărilor HTTPS</translation>
 <translation id="1270369111467284986">Posibil portal captiv</translation>
 <translation id="1274654146705270731">portocale</translation>
+<translation id="1275718070701477396">Selectat</translation>
 <translation id="1290331692326790741">Semnal slab</translation>
 <translation id="1300115153046603471">APN-ul este de tip prestabilit și <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">Programul modului întunecat</translation>
 <translation id="2276999893457278469">Conținutul de ajutor principal</translation>
 <translation id="2279051792571591988">Restabilește valorile prestabilite</translation>
+<translation id="2286454467119466181">Simplă</translation>
 <translation id="2287186687001756809">Nicio imagine disponibilă. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Folosește perechea de chei actuală</translation>
 <translation id="2320295602967756579">Activează tema luminoasă</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Imagini de fundal recente bazate pe Google AI</translation>
 <translation id="4320904097188876154">roz neon</translation>
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
-<translation id="4341897648462347919">verde-albăstrui</translation>
 <translation id="4354430579665871434">tastă</translation>
 <translation id="4361257691546579041">APN este tipul prestabilit.</translation>
 <translation id="437294888293595148">Resetează toate comenzile rapide</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Fotografie de profil</translation>
-<translation id="7171665330126595869">peșteră</translation>
 <translation id="7171919371520438592">Andochează fereastra pe porțiunea <ph name="DIRECTION" /> mai mică a ecranului</translation>
 <translation id="7172721935181587524">O imagine</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Creați</translation>
 <translation id="7528507600602050979">Conținutul de ajutor nu este disponibil</translation>
-<translation id="753556296624075801">Un produs Google</translation>
 <translation id="7535791657097741517">Activează tema luminoasă</translation>
 <translation id="7550715992156305117">Rutine de diagnosticare</translation>
 <translation id="7551123448725492271">Dispozitivul este un dispozitiv audio.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">Zone de pe tastatură</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> utilizatorului <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
-<translation id="8923267550422472772">Ziua din lună pentru resetare</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Məktub göndərildi.</translation>
 <translation id="1582732959743469162">Bu cari endirmə üçün bütün gedişatı dayandıracaq.</translation>
 <translation id="158591023028013564">{count,plural, =1{Səhifə oxu siyahısına əlavə edildi}other{{count} səhifə oxu siyahısına əlavə edildi}}</translation>
+<translation id="1587629076612412684">Google xidmətlərini fərdiləşdirin</translation>
 <translation id="1594034544529347967">Başlayır</translation>
 <translation id="160275202205869636">Aktiv olduqda datanı Google Hesabında istifadə edə və yadda saxlaya bilərsiniz. Deaktiv olduqda data yalnız bu cihazda yadda saxlanır.</translation>
 <translation id="1605405588277479165">Deaktiv - Tövsiyə edilmir</translation>
@@ -1385,6 +1386,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8027581147000338959">Yeni Pəncərədə Açın</translation>
 <translation id="8032569120109842252">İzlənilir</translation>
 <translation id="8040207962129315716">Hər dəfə soruşulsun</translation>
+<translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Axtarış tarixçəsi<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />digər fəaliyyət formaları<ph name="END_LINK" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.</translation>
 <translation id="804427445359061970">Digər cihazlardan tabları burada tapa bilərsiniz</translation>
 <translation id="8044568254381073661">Şifrələmədən yadda saxlayın</translation>
@@ -1604,6 +1606,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9106655997975673326">Buradan: "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Oğurlanmış parolların olub-olmadığını yoxlayın</translation>
 <translation id="9109699888944026290">{count,plural, =1{Bu sayt üçün yeni parol}other{Bu sayt üçün yeni parollar}}</translation>
+<translation id="9110489518258031250">Sinxronlaşdırılmış brauzer tarixçəsinin digər Google xidmətlərini fərdiləşdirmək üçün necə istifadə olunacağını idarə edin</translation>
 <translation id="9120217828624527905">Tam səhifə tərcüməsinə dəyişin</translation>
 <translation id="9124387962554796433">Google Axtarış və digər Google xidmətlərini fərdiləşdirmək üçün tarixçənizi istifadə edə bilər.</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>

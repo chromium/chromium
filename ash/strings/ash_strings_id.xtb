@@ -173,7 +173,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1647986356840967552">Halaman sebelumnya</translation>
 <translation id="1651914502370159744">Buka halaman Histori</translation>
 <translation id="1654477262762802994">Mulai kueri suara</translation>
-<translation id="1662667383227796099">Telusuri file, aplikasi, dan lainnya di Peluncur. Anda juga bisa mendapatkan jawaban atas pertanyaan tentang Chromebook.</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
 <translation id="1675844249244994876">Perbarui jendela kanan</translation>
 <translation id="1677472565718498478">Sisa waktu <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2965227184985674128">Aktifkan akses mikrofon?</translation>
 <translation id="296762781903199866">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>
-<translation id="2977098646659697261">Aplikasi yang disematkan dan terbuka ada di Rak. Untuk menyematkan aplikasi ke Rak, klik kanan aplikasi atau ketuk touchpad menggunakan dua jari.</translation>
 <translation id="2977598380246111477">Nomor berikutnya</translation>
 <translation id="2985148236010982088">Lihat semua aplikasi</translation>
 <translation id="2992327365391326550">Tombol mikrofon perangkat dinonaktifkan.</translation>
@@ -776,7 +774,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4123259114412175274">Untuk membuka kunci Chromebook, pastikan Bluetooth ponsel Anda aktif</translation>
 <translation id="4125970834901680537">Mode tablet tidak mendukung streaming aplikasi. Coba lagi dengan mode laptop.</translation>
 <translation id="4131973331381812765">Suhu: <ph name="TEMPERATURE" />°C - Kecepatan saat ini: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook Anda dilengkapi aplikasi bawaan untuk membantu Anda menyelesaikan berbagai hal. Temukan aplikasi Anda di Peluncur.</translation>
 <translation id="4136724716305260864">Aktif sampai matahari terbit</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + panah kanan</translation>
 <translation id="4146671046252289537">Pindah ke akhir kata berikutnya</translation>
@@ -808,7 +805,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Aplikasi Terinstal, Dijeda</translation>
 <translation id="4228078597006700451">Kontrol belum disiapkan</translation>
 <translation id="4231053948789591973">Transmisi saat ini dijeda. Anda dapat melanjutkan transmisi atau menghentikan transmisi layar kapan saja.</translation>
-<translation id="423685346499232137">Saat ini tidak dapat menyalin atau menempelkan konten</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode ringkasan</translation>
 <translation id="4242533952199664413">Buka setelan</translation>
@@ -820,7 +816,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4269883910223712419">Admin perangkat ini memiliki kemampuan untuk:</translation>
 <translation id="4274537685965975248">Pintasan keyboard Ctrl + Alt + Panah Bawah telah diubah. Untuk menggunakan tombol End, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Kanan.</translation>
 <translation id="4275283744500212192">Buka opsi tata letak jendela</translation>
-<translation id="4278138729651139331">Sesuaikan dan personalisasi Chromebook Anda di Setelan. Coba ubah wallpaper atau setel screensaver.</translation>
 <translation id="4279490309300973883">Mencerminkan</translation>
 <translation id="4280601795273309128">Update keamanan telah berakhir. Upgrade perangkat Anda.</translation>
 <translation id="4283888303416325161">Masukkan sandi untuk keamanan tambahan</translation>
@@ -1136,7 +1131,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="550391772491508736">Lanjutkan transmisi</translation>
 <translation id="5506975627792768506">Aktifkan atau nonaktifkan kaca pembesar</translation>
 <translation id="5512042095225963688">Hapus kata sebelumnya</translation>
-<translation id="5518068085000130971">Itu adalah dasar-dasarnya. Lanjutkan di Jelajahi, aplikasi bawaan kami untuk mendapatkan tips dan bantuan. Anda akan menemukan tips untuk memulai, aplikasi yang direkomendasikan, penawaran spesial, dan fitur Chromebook terbaru.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator Anda telah menghapus semua profil eSIM. Hubungi administrator untuk mendapatkan info selengkapnya.</translation>
 <translation id="5520909879404821039">Hai dalam bahasa Prancis</translation>
@@ -1522,7 +1516,6 @@ Baru diinstal</translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
 <translation id="698231206551913481">Semua file dan data lokal yang dikaitkan ke pengguna ini akan dihapus secara permanen setelah pengguna ini dihapus.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> tidak mendukung <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Resolusi diubah ke <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Ikuti tur singkat untuk mempelajari cara mengoperasikan Chromebook Anda. Siap digunakan dalam 6 langkah.</translation>
 <translation id="7000027735917578303">Setelan Windows dan desktop virtual</translation>
 <translation id="7004910047186208204">Hubungkan ke data seluler</translation>
 <translation id="7005239792648594238">Buka aplikasi untuk memulai</translation>
@@ -1589,7 +1582,6 @@ Baru diinstal</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator sedang mereset eSIM Anda. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="7313193732017069507">Luaskan kamera</translation>
-<translation id="7316261577130609484">Tambahkan tugas baru</translation>
 <translation id="7330397557116570022">Buka kolom teks untuk menggunakan Dikte</translation>
 <translation id="7331646370422660166">alt + panah bawah</translation>
 <translation id="7340731148882810149">Menu klik otomatis</translation>
@@ -1654,7 +1646,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sedang menggunakan mikrofon Anda</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Memindahkan jendela ke desktop lain dapat mengakibatkan perilaku tak terduga. Notifikasi, jendela, dan dialog berikutnya dapat terpisah antardesktop.</translation>
-<translation id="7567950130372125778">Halo. Chromebook sedikit berbeda.</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox diaktifkan</translation>
 <translation id="7569886975397378678">Tutup penyiapan untuk melihat notifikasi dan aplikasi ponsel Anda</translation>
 <translation id="7571361473021531288">Baterai <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> lagi</translation>

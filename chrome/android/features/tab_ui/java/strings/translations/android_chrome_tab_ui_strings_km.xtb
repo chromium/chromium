@@ -11,7 +11,9 @@
 <translation id="1499635324672558517">បិទ​ផ្ទាំងឯកជន​ទាំងអស់ឬ?</translation>
 <translation id="1555130319947370107">ខៀវ</translation>
 <translation id="161042844686301425">បៃតងខ្ចី</translation>
+<translation id="1645759014353344461">បានដាក់ <ph name="TABS_COUNT_MANY" /> ផ្ទាំងជាក្រុម</translation>
 <translation id="1657719826150349398">ផ្លាស់ទី​ផ្ទាំង​ចុះក្រោម</translation>
+<translation id="1828808367831369073">បានដាក់ <ph name="TABS_COUNT_ONE" /> ផ្ទាំងជាក្រុម</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{ផ្ទាំង <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ចំណាំ​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{ចំណាំ​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="2118649612461486615">ព័ត៌មានអំពីហាង</translation>

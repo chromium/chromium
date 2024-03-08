@@ -444,7 +444,7 @@
 <translation id="3235242129752692527">عدِّل تفاصيل الحدث وانقر على "حفظ".</translation>
 <translation id="3240426699337459095">تم نسخ الرابط</translation>
 <translation id="3244271242291266297">الشهر</translation>
-<translation id="3245429137663807393">‏في حال مشاركة تقارير استخدام Chrome أيضًا، ستتضمّن هذه التقارير عناوين URL التي تزورها</translation>
+<translation id="3245429137663807393">‏في حال شاركت أيضًا تقارير استخدام Chrome، ستتضمّن عناوين URL التي تنتقل إليها.</translation>
 <translation id="3245744387817103524">تعذَّر حفظ التغيير.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، و<ph name="ADDITIONAL_INFO" />، و<ph name="INDEX" /> من <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">الملء التلقائي لكلمات المرور</translation>
@@ -605,7 +605,7 @@
 <translation id="4120936477286528673">يحاول هذا الموقع الإلكتروني فتح تطبيق آخر بشكل متكرر.</translation>
 <translation id="4121993058175073134">لإرسال بيانات تصدير الشبكة، يُرجى إعداد حساب بريدك الإلكتروني في التطبيق "الإعدادات".</translation>
 <translation id="4124987746317609294">النطاق الزمني</translation>
-<translation id="4133265950310064865">حماية مُحسّنة</translation>
+<translation id="4133265950310064865">الحماية المحسَّنة</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4148023517926189160">يطلب هذا الموقع الإلكتروني تنزيل ملف وإضافته إلى تقويمك.</translation>
 <translation id="4152011295694446843">ستظهر الإشارات المرجعية هنا</translation>
@@ -1387,6 +1387,7 @@
 <translation id="8027581147000338959">الفتح في نافذة جديدة</translation>
 <translation id="8032569120109842252">المواقع التي تتابعها</translation>
 <translation id="8040207962129315716">طرح السؤال في كلّ مرة</translation>
+<translation id="8041089156583427627">إرسال ملاحظات</translation>
 <translation id="804225253087497565">‏قد يتم حفظ <ph name="BEGIN_LINK" />سجلّ البحث<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="804427445359061970">ستظهر لك علامات التبويب من الأجهزة الأخرى هنا</translation>
 <translation id="8044568254381073661">الحفظ بدون تشفير</translation>

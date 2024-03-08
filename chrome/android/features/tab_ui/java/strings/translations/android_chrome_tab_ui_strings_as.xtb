@@ -11,7 +11,9 @@
 <translation id="1499635324672558517">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিবনে?</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="161042844686301425">চাইয়ান</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />টা টেব এক গোট কৰা হৈছে</translation>
 <translation id="1657719826150349398">টেবটো তললৈ নিয়ক</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />টা টেব এক গোট কৰা হৈছে</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{বাছনি কৰা <ph name="TABS_COUNT_ONE" /> টা টেব বুকমাৰ্ক কৰক}one{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেব বুকমাৰ্ক কৰক}other{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেব বুকমাৰ্ক কৰক}}</translation>
 <translation id="2118649612461486615">ষ্ট’ৰৰ তথ্য</translation>

@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">ಪುಟದ ಗಾತ್ರ</translation>
 <translation id="1082009148392559545">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1094693127011229778">IP ವಿಳಾಸ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="1100902271996134409">ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1116694919640316211">ಕುರಿತು</translation>
 <translation id="1118572504348554005">ನೀವು ನಮಗೆ ವರದಿ ಮಾಡುವ ದೋಷಗಳು ಮತ್ತು ಇತರ ಸಮಸ್ಯೆಗಳನ್ನು ಟ್ರಬಲ್‌ಶೂಟ್ ಮಾಡಲು ನಮ್ಮ ಪಾಲುದಾರರೊಂದಿಗೆ ಈ ಫಾರ್ಮ್ ಮೂಲಕ ಸಲ್ಲಿಸಿದ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಾವು ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಪಾಸ್‌ವರ್ಡ್‌ಗಳಂತಹ ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಬೇಡಿ.</translation>
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">HTTPS ವಿಳಂಬ</translation>
 <translation id="1270369111467284986">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್ ಸಂಶಯಾಸ್ಪದವಾಗಿದೆ</translation>
 <translation id="1274654146705270731">ಕಿತ್ತಳೆಗಳು</translation>
+<translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1290331692326790741">ದುರ್ಬಲ ಸಿಗ್ನಲ್</translation>
 <translation id="1300115153046603471">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಮತ್ತು <ph name="ATTACH" /> ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">ಕತ್ತಲೆ ಮೋಡ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="2276999893457278469">ಟಾಪ್ ಸಹಾಯ ಕಂಟೆಂಟ್</translation>
 <translation id="2279051792571591988">ಡೀಫಾಲ್ಟ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
+<translation id="2286454467119466181">ಸರಳ</translation>
 <translation id="2287186687001756809">ಯಾವುದೇ ಚಿತ್ರ ಲಭ್ಯವಿಲ್ಲ. ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು, <ph name="LINK" /> ಗೆ ಹೋಗಿ</translation>
 <translation id="2307344026739914387">ಪ್ರಸ್ತುತ ಕೀ ಜೋಡಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2320295602967756579">ಲೈಟ್ ಥೀಮ್‌ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Google AI ನಿಂದ ಚಾಲಿತವಾಗಿರುವ ಇತ್ತೀಚಿನ ವಾಲ್‌ಪೇಪರ್‌ಗಳು</translation>
 <translation id="4320904097188876154">ನಿಯಾನ್ ಗುಲಾಬಿ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ಕೀ ಒತ್ತಲಾಗಿದೆ</translation>
-<translation id="4341897648462347919">ಗಾಢ ಹಸಿರು-ನೀಲಿ</translation>
 <translation id="4354430579665871434">ಕೀ</translation>
 <translation id="4361257691546579041">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="437294888293595148">ಎಲ್ಲಾ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">ಕ್ಯಾಮರಾ ಅಥವಾ ಫೈಲ್‌ನಿಂದ ಪ್ರಸ್ತುತ ಫೋಟೋ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">ಪ್ರೊಫೈಲ್‌ ಚಿತ್ರ</translation>
-<translation id="7171665330126595869">ಗುಹೆ</translation>
 <translation id="7171919371520438592">ಸ್ಕ್ರೀನ್‌ನ <ph name="DIRECTION" /> ನಲ್ಲಿನ ಸಣ್ಣ ಭಾಗದಲ್ಲಿ ವಿಂಡೋ ಡಾಕ್ ಮಾಡಿ</translation>
 <translation id="7172721935181587524">1 ಚಿತ್ರ</translation>
 <translation id="7177485034254901881">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ನಿರ್ವಾಹಕರು ರಿಮೋಟ್ ಆಗಿ ಸಾಧನವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">ರಚಿಸಿ</translation>
 <translation id="7528507600602050979">ಸಹಾಯ ಕಂಟೆಂಟ್‌ ಲಭ್ಯವಿಲ್ಲ</translation>
-<translation id="753556296624075801">Google ನಿಂದ ಪ್ರಾಯೋಜಿತವಾಗಿದೆ</translation>
 <translation id="7535791657097741517">ಲೈಟ್ ಥೀಮ್‌ ಆನ್ ಮಾಡಿ</translation>
 <translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
 <translation id="7551123448725492271">ಸಾಧನವು ಆಡಿಯೋ ಸಾಧನವಾಗಿದೆ.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">ಕೀಬೋರ್ಡ್ ವಲಯಗಳು</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ನ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ವಿಫಲವಾಗಿದೆ - ಟ್ರೇ ಕಾಣೆಯಾಗಿದೆ</translation>
-<translation id="8923267550422472772">ರೀಸೆಟ್ ಮಾಡಬೇಕಾಗಿರುವ ತಿಂಗಳಿನ ದಿನ</translation>
 <translation id="8928727111548978589">ವಿಫಲವಾಗಿದೆ - ಕಾಗದ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8930521118335213258">ಪೀಯರ್</translation>
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>

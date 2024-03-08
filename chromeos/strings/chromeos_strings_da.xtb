@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1082009148392559545">Downloader pauseskærmen</translation>
 <translation id="1094693127011229778">IP-adresse er ikke tilgængelig</translation>
+<translation id="1100902271996134409">Opretter af billeder…</translation>
 <translation id="1116694919640316211">Om</translation>
 <translation id="1118572504348554005">Vi deler muligvis feedback, der indsendes via denne formular, med vores partnere for at finde og rette fejl samt løse andre problemer, du rapporterer til os. Medtag ikke følsomme oplysninger som f.eks. adgangskoder.</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
@@ -47,6 +48,7 @@
 <translation id="1238612778414822719">HTTPS-forsinkelse</translation>
 <translation id="1270369111467284986">Der blev muligvis registreret en loginportal</translation>
 <translation id="1274654146705270731">appelsiner</translation>
+<translation id="1275718070701477396">Valgt</translation>
 <translation id="1290331692326790741">Svagt signal</translation>
 <translation id="1300115153046603471">APN er typestandard og <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -166,6 +168,7 @@
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">sommerfugle</translation>
 <translation id="188114911237521550">Deaktiver mørk tilstand</translation>
+<translation id="188268299367474594">Vælg mellem tilgængelige APN'er</translation>
 <translation id="1885577615937958993">spol frem i mediet</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
 <translation id="189221451253258459">neongrøn</translation>
@@ -233,6 +236,7 @@
 <translation id="2271469253353559191">Tidsplan for mørk tilstand</translation>
 <translation id="2276999893457278469">Mest populære indhold i Hjælp</translation>
 <translation id="2279051792571591988">Gendan standarder</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">Der er ingen tilgængelige billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Brug aktuelt nøglepar</translation>
 <translation id="2320295602967756579">Aktivér Lyst tema</translation>
@@ -268,6 +272,7 @@
 <translation id="2512979179176933762">se vinduer</translation>
 <translation id="2513396635448525189">Loginbillede</translation>
 <translation id="2517472476991765520">Scan</translation>
+<translation id="2520213071283358374">Brug dette APN</translation>
 <translation id="2521835766824839541">forrige nummer</translation>
 <translation id="2526590354069164005">Skrivebord</translation>
 <translation id="253029298928638905">Genstarter...</translation>
@@ -971,7 +976,6 @@
 <translation id="7155171745945906037">Eksisterende billede fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7170236477717446850">Profilbillede</translation>
-<translation id="7171665330126595869">en grotte</translation>
 <translation id="7171919371520438592">Fastgør vinduet på den mindste del af skærmen (<ph name="DIRECTION" />)</translation>
 <translation id="7172721935181587524">1 billede</translation>
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
@@ -1034,7 +1038,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Opret</translation>
 <translation id="7528507600602050979">Indholdet i Hjælp er ikke tilgængeligt</translation>
-<translation id="753556296624075801">Leveret af Google</translation>
 <translation id="7535791657097741517">Aktivér Lyst tema</translation>
 <translation id="7550715992156305117">Diagnostikrutiner</translation>
 <translation id="7551123448725492271">Enheden er en lydenhed.</translation>
@@ -1119,6 +1122,7 @@
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8079860070590459552">en blomstereng</translation>
+<translation id="8081553043098820199">Ugyldige APN'er kan medføre, at din mobilforbindelse deaktiveres. Angiv kun APN'er fra dit mobilselskab eller din administrator.</translation>
 <translation id="8082366717211101304">Der kan ikke udføres DNS-oversættelse fra Android-apps</translation>
 <translation id="8082644724189923105">tastaturzone</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
@@ -1248,7 +1252,6 @@
 <translation id="8912306040879976619">Tastaturzoner</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> tilhørende <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
-<translation id="8923267550422472772">Dag i måneden, hvor der nulstilles</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Trådløs</translation>

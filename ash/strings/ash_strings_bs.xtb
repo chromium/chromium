@@ -173,7 +173,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1647986356840967552">Prethodna stranica</translation>
 <translation id="1651914502370159744">Otvaranje stranice Historija</translation>
 <translation id="1654477262762802994">Započni glasovni upit</translation>
-<translation id="1662667383227796099">Pretražite fajlove, aplikacije i još mnogo toga u Pokretaču. Također možete pronaći odgovore na pitanja o Chromebooku.</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
 <translation id="1675844249244994876">Ažuriranje desnog prozora</translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2965227184985674128">Uključiti pristup mikrofonu?</translation>
 <translation id="296762781903199866">Preuzimanje fajlova govora na jeziku <ph name="LANGUAGE" /> nije uspjelo</translation>
 <translation id="2970920913501714344">Instalirati aplikacije, ekstenzije i teme</translation>
-<translation id="2977098646659697261">Zakačene i otvorene aplikacije su na polici. Da zakačite aplikaciju na policu, kliknite na aplikaciju desnom tipkom ili dodirnite dodirnu podlogu s dva prsta.</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
 <translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
 <translation id="2992327365391326550">Dugme za mikrofon uređaja je isključeno.</translation>
@@ -776,7 +774,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4123259114412175274">Da otključate Chromebook, provjerite je li Bluetooth na telefonu uključen</translation>
 <translation id="4125970834901680537">Nije moguće prenositi aplikacije u načinu rada tableta. Pokušajte ponovo u načinu rada laptopa.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C – trenutna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook se isporučuje s ugrađenim aplikacijama da lakše obavljate svoje poslove. Pronađite aplikacije u Pokretaču.</translation>
 <translation id="4136724716305260864">Uključeno do izlaska sunca</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> i strelica udesno</translation>
 <translation id="4146671046252289537">Premjesti na kraj sljedeće riječi</translation>
@@ -808,7 +805,6 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4221957499226645091">Aplikacija <ph name="APP_NAME" /> je instalirana i pauzirana</translation>
 <translation id="4228078597006700451">Kontrole nisu postavljene</translation>
 <translation id="4231053948789591973">Emitiranje je trenutno pauzirano. Možete u svakom trenutku nastaviti ili zaustaviti emitiranje ekrana.</translation>
-<translation id="423685346499232137">Trenutno nije moguće kopirati i zalijepiti sadržaj</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Način rada za pregled</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
@@ -820,7 +816,6 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4274537685965975248">Prečica na tastaturi Ctrl + Alt + strelica nadolje je promijenjena. Da koristite tipku End, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu udesno.</translation>
 <translation id="4275283744500212192">Otvori opcije rasporeda prozora</translation>
-<translation id="4278138729651139331">Prilagodite i personalizirajte Chromebook u Postavkama. Pokušajte promijeniti pozadinsku sliku ili postaviti čuvar ekrana.</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4280601795273309128">Sigurnosna ažuriranja su se završila. Nadogradite uređaj.</translation>
 <translation id="4283888303416325161">Unesite lozinku radi veće sigurnosti</translation>
@@ -1136,7 +1131,6 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="550391772491508736">Nastavi s emitiranjem</translation>
 <translation id="5506975627792768506">Uključite ili isključite povećalo</translation>
 <translation id="5512042095225963688">Brisanje prethodne riječi</translation>
-<translation id="5518068085000130971">To su bile osnove! Nastavite u aplikaciji Istražite, našoj ugrađenoj aplikaciji za savjete i pomoć. Pronaći ćete savjete za početak, preporučene aplikacije, posebne ponude i najnovije funkcije Chromebooka.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Vaš administrator je uklonio sve eSIM profile. Kontaktirajte administratora da dobijete više informacija.</translation>
 <translation id="5520909879404821039">Zdravo na francuskom</translation>
@@ -1522,7 +1516,6 @@ Nova instalacija</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Nakon što se ukloni ovaj korisnik, trajno će se izbrisati svi fajlovi i lokalni podaci povezani s njim.</translation>
 <translation id="6984028004251196682">Ekran <ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezolucija je promijenjena u <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Kliknite na Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Krenite u kratki obilazak da saznate kako se kretati Chromebookom. Izvršite pokretanje u šest koraka.</translation>
 <translation id="7000027735917578303">Postavke prozora i radnih površina</translation>
 <translation id="7004910047186208204">Povežite se s prijenosom podataka na mobilnoj mreži</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da započnete</translation>
@@ -1589,7 +1582,6 @@ Nova instalacija</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Vaš administrator vraća vaš eSIM na zadano. To može potrajati nekoliko minuta.</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
-<translation id="7316261577130609484">Dodaj novi zadatak</translation>
 <translation id="7330397557116570022">Odlazak u tekstualno polje radi korištenja diktiranja</translation>
 <translation id="7331646370422660166">Alt i strelica nadolje</translation>
 <translation id="7340731148882810149">Meni automatskih klikova</translation>
@@ -1654,7 +1646,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7557816257942363084">Aplikacija <ph name="APP_NAME" /> trenutno koristi vaš mikrofon</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
 <translation id="7564874036684306347">Pomjeranje prozora na drugu radnu površinu može uzrokovati neočekivano ponašanje. Naknadna obavještenja, prozori i dijalozi mogu biti podijeljeni između ekrana.</translation>
-<translation id="7567950130372125778">Zdravo. Chromebook je malo drugačiji.</translation>
 <translation id="7569509451529460200">Braillevo pismo i ChromeVox su omogućeni</translation>
 <translation id="7569886975397378678">Odbacivanje postavljanja pregledanja obavještenja i aplikacija telefona</translation>
 <translation id="7571361473021531288">Preostalo je <ph name="BATTERY_PERCENTAGE" />% baterije | još <ph name="TIME" /></translation>

@@ -2382,7 +2382,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2764920001292228569">Geef een profielnaam op</translation>
 <translation id="2765100602267695013">Neem contact op met je mobiele provider</translation>
 <translation id="2765217105034171413">Klein</translation>
-<translation id="2765606672116865966">Als je op de adresbalk of het zoekvak klikt of typt, zie je suggesties van je standaard zoekmachine. Dit staat uit in de incognitomodus.</translation>
 <translation id="2766006623206032690">Pla&amp;kken en gaan</translation>
 <translation id="2766161002040448006">Aan een ouder vragen</translation>
 <translation id="2767077837043621282">Kan je Chromebook niet updaten. Probeer het later opnieuw.</translation>
@@ -2446,7 +2445,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
 <translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Gedownloade bestanden zie je hier</translation>
-<translation id="2808714658215073920">Verbinding maken met wifi…</translation>
 <translation id="2809586584051668049">en <ph name="NUMBER_ADDITIONAL_DISABLED" /> meer</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt wordt niet ondersteund</translation>
@@ -2538,7 +2536,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="288042212351694283">Toegang tot je Universal 2nd Factor-apparaten</translation>
 <translation id="2881076733170862447">Wanneer je op de extensie klikt</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> wordt zo meteen opnieuw gestart en opnieuw ingesteld.</translation>
-<translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Test onder meer je batterij, CPU, geheugen en connectiviteit</translation>
 <translation id="2885129935310217435">Er is al een knop met dezelfde naam. Kies een andere naam.</translation>
 <translation id="2885378588091291677">Taakbeheer</translation>
@@ -2737,7 +2734,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3027296729579831126">Dichtbij delen aanzetten</translation>
 <translation id="3027644380269727216">Gebaseerd op je activiteit op een site. Deze instelling staat aan.</translation>
 <translation id="3028445648481691885">Download is geannuleerd</translation>
-<translation id="3029276696788198026">Niet vooraf laden</translation>
 <translation id="3029466929721441205">Stylustools in plank bekijken</translation>
 <translation id="3029808567601324798">Tijd voor vergrendeling</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}other{<ph name="MANAGER" /> vereist dat je vóór de deadline een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}}</translation>
@@ -4297,6 +4293,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4261429981378979799">Extensierechten</translation>
 <translation id="4262004481148703251">Waarschuwing sluiten</translation>
 <translation id="4263223596040212967">Controleer je toetsenbordindeling en probeer het opnieuw.</translation>
+<translation id="4265096510956307240">Verifiëren dat jij het bent</translation>
 <translation id="4265301768135164545">Je kunt ook <ph name="BEGIN_LINK" />handmatig<ph name="END_LINK" /> een e-simkaartprofiel instellen.</translation>
 <translation id="426564820080660648">Gebruik ethernet, wifi of mobiele data om op updates te controleren.</translation>
 <translation id="426652736638196239">Dit IBAN-nummer wordt alleen op dit apparaat opgeslagen</translation>
@@ -4348,6 +4345,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4297813521149011456">Schermrotatie</translation>
 <translation id="4298660926525614540">Namen verwijderbare opslagapparaten</translation>
 <translation id="4299022904780065004">Nieuw &amp;incognitovenster</translation>
+<translation id="4300272766492248925">App openen</translation>
 <translation id="4301671483919369635">Deze pagina heeft toestemming om bestanden te bewerken</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contact is niet beschikbaar. Als je <ph name="FEATURE_NAME" /> met deze persoon wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.}other{# contacten zijn niet beschikbaar. Als je <ph name="FEATURE_NAME" /> met deze personen wilt gebruiken, voeg je de e-mailadressen die bij hun Google-accounts horen aan je contacten toe.}}</translation>
 <translation id="4303079906735388947">Stel een nieuwe pincode in voor je beveiligingssleutel</translation>
@@ -5315,7 +5313,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5068553687099139861">wachtwoorden tonen</translation>
 <translation id="506886127401228110">Geïsoleerde web-apps aanzetten</translation>
 <translation id="5068919226082848014">Pizza</translation>
-<translation id="506934332411950286">Wifi overzetten vanaf je Android-telefoon</translation>
 <translation id="5070773577685395116">Niet gekregen?</translation>
 <translation id="5071295820492622726">Terug naar recente downloads</translation>
 <translation id="5071892329440114717">Details van standaardbeveiliging bekijken</translation>
@@ -5333,7 +5330,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5079699784114005398">Als je dit hebt aangezet, zijn je apps beschikbaar op alle ChromeOS-apparaten nadat je inlogt met je Google-account. Web-apps die zijn geïnstalleerd vanuit de Chrome-browser worden gesynchroniseerd, ook als browsersynchronisatie uitstaat.</translation>
 <translation id="508059534790499809">Een Kerberos-ticket vernieuwen</translation>
 <translation id="5081124414979006563">&amp;Gastprofiel openen</translation>
-<translation id="5081960376148623587">Kiezen of pagina's vooraf worden geladen</translation>
 <translation id="5083035541015925118">ctrl + alt + pijl-omhoog</translation>
 <translation id="5084328598860513926">Het instelproces is onderbroken. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Sites werken waarschijnlijk zoals verwacht</translation>
@@ -7038,7 +7034,6 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6438475350605608554">Je importeert al wachtwoorden op een ander tabblad.</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: audio wordt afgespeeld</translation>
 <translation id="6440081841023333832">Geen toestemming om je MIDI-apparaten te bedienen en te herprogrammeren</translation>
-<translation id="6440291723980579689">Pagina's worden pas geladen nadat je ze opent</translation>
 <translation id="6441377161852435370">Tabblad toevoegen aan leeslijst</translation>
 <translation id="6442187272350399447">Supercool</translation>
 <translation id="6442445294758185945">Kan de update niet downloaden. Probeer het later opnieuw.</translation>
@@ -8828,6 +8823,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7824665136384946951">Je organisatie heeft Safe Browsing uitgezet</translation>
 <translation id="7824864914877854148">Back-up kan niet worden voltooid vanwege een fout</translation>
 <translation id="782590969421016895">Huidige pagina's gebruiken</translation>
+<translation id="7825973332242257878">Tabbladgroepen</translation>
 <translation id="7826039927887234077">Recent AI-thema <ph name="INDEX" /> van <ph name="SUBJECT" />, met de stemming <ph name="MOOD" />.</translation>
 <translation id="7826174860695147464">Ondersteuning voor oudere browsers (LBS): intern</translation>
 <translation id="7826249772873145665">ADB-foutopsporing staat uit</translation>
@@ -8944,6 +8940,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7912080627461681647">Je wachtwoord is gewijzigd op de server. Log uit en weer in.</translation>
 <translation id="791247712619243506">Instellen annuleren</translation>
 <translation id="7912974581251770345">Vertaling</translation>
+<translation id="7914399737746719723">App geïnstalleerd</translation>
 <translation id="7915457674565721553">Maak verbinding met internet om ouderlijk toezicht in te stellen</translation>
 <translation id="7916364730877325865">Je organisatie staat niet toe dat je synchronisatie met dit account aanzet</translation>
 <translation id="7918257978052780342">Aanmelden</translation>
@@ -10696,7 +10693,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="93766956588638423">Extensie repareren</translation>
 <translation id="938623846785894166">Ongebruikelijk bestand</translation>
 <translation id="939401694733344652">Deze accounts worden momenteel niet met Android-apps gebruikt. Als je een account selecteert dat je met deze Android-app wilt gebruiken, kan het account ook worden gebruikt met andere Android-apps. Je kunt de toegang tot Android-apps wijzigen in <ph name="LINK_BEGIN" />Instellingen &gt; Accounts<ph name="LINK_END" />.</translation>
-<translation id="939553663881639126">Geef aan of je aanvullende zoeksuggesties wilt krijgen</translation>
 <translation id="939598580284253335">Wachtwoordzin opgeven</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
 <translation id="940212040923880623">&amp;Zoeken en bewerken</translation>

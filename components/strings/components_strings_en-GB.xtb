@@ -221,7 +221,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1386623374109090026">Annotations</translation>
 <translation id="1391625539203220400">Save IBAN to this device?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> didn’t send any data.</translation>
-<translation id="1397811292916898096">Search with <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Light green</translation>
 <translation id="1406500794671479665">Verifying...</translation>
 <translation id="1406812885827747674">Allow this time</translation>
@@ -2661,6 +2660,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6195371403461054755">Geology</translation>
 <translation id="6195418151868446719">Consumer electronics</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
+<translation id="6197467523841310553">Right-click to fill in your saved info in any online form with less typing</translation>
 <translation id="6197648101609735209">89 mm x 89 mm</translation>
 <translation id="6198480336395236519">Full-cut tabs</translation>
 <translation id="6203231073485539293">Check your Internet connection</translation>

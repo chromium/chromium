@@ -221,7 +221,6 @@
 <translation id="1386623374109090026">Σχολιασμοί</translation>
 <translation id="1391625539203220400">Αποθήκευση IBAN σε αυτήν τη συσκευή;</translation>
 <translation id="139305205187523129">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν έστειλε δεδομένα.</translation>
-<translation id="1397811292916898096">Αναζήτηση με <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Ανοιχτό πράσινο</translation>
 <translation id="1406500794671479665">Επαλήθευση…</translation>
 <translation id="1406812885827747674">Να επιτραπεί αυτήν τη φορά</translation>
@@ -3876,7 +3875,7 @@
 <translation id="8483229036294884935">Η συγκεκριμένη διεύθυνση θα διαγραφεί από τον Λογαριασμό σας Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Ισχύει για</translation>
 <translation id="8490137692873530638">Μονάδα στοίβαξης 10</translation>
-<translation id="8493948351860045254">Απελευθερώστε χώρο</translation>
+<translation id="8493948351860045254">Αποδεσμεύστε χώρο</translation>
 <translation id="8498891568109133222">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> άργησε πολύ να ανταποκριθεί.</translation>
 <translation id="8502023382441452707">Γενέθλια και ονομαστικές εορτές</translation>
 <translation id="8502972004418241366">Για να χρησιμοποιήσετε την άδεια <ph name="PERMISSION" /> σε αυτόν τον ιστότοπο, θα πρέπει να παραχωρήσετε πρόσβαση στο Chrome</translation>

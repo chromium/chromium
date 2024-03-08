@@ -353,6 +353,11 @@ Fakat, bu politika için kaynakları eşleşen kalıplar "/path" ya da "@query" 
 <translation id="1272798957154751008">Chromad cihazların bulut yönetimine taşınmasını etkinleştir</translation>
 <translation id="1274997165432133392">Çerezler ve diğer site verileri</translation>
 <translation id="1277411517984768103"><ph name="BOREALIS_NAME" /> politikasının, kullanıcı için çalıştırılmasına izin ver</translation>
+<translation id="1277489612460516394">Politikayı ayarlamak, pop-up'ları açabilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="1280005879732594593">Bu politika, <ph name="PRODUCT_NAME" /> hizmetinin TLS'de kuantum sonrası anahtar anlaşması algoritması olan Kyber'ı sunup sunmayacağını yapılandırır. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
 
 Bu politika etkinleştirilirse <ph name="PRODUCT_NAME" />, TLS bağlantılarında Kyber'ı sunar. TLS bağlantıları, TLS el sıkışması sırasında Kyber'ı seçen uyumlu sunucularla iletişim kurarken Kyber anahtar anlaşmasıyla korunur.
@@ -1663,6 +1668,12 @@ Kullanıcının daha önce oluşturduğu bir kısayolla çakışma olması durum
 
       Politikayı False (Yanlış) değerine ayarlamak veya ayarlamadan bırakmak, düğme görüntülenmeyecek anlamına gelir.</translation>
 <translation id="2294382669900758280">Bu politika <ph name="TRUE" /> seçeneğine ayarlansa bile Android uygulamalarında video oynatma dikkate alınmaz.</translation>
+<translation id="2296600623052658741">Bu politikayı ayarlayarak, site pano iznini kullanabilecek siteleri belirten URL kalıplarını listeleyebilirsiniz. Kalıplarla eşleşen kaynaklardaki tüm pano işlemleri bu kapsama girmez. Örneğin, site pano izni tarafından denetlenmediğinden klavye kısayollarını kullanarak yapıştırma işlevi engellenmez.
+
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_CLIPBOARD_SETTING" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="2299220924812062390">Etkinleştirilmiş eklentilerin listesini belirt</translation>
 <translation id="2299815818824242485">Daha yüksek korumalı proxy kullanan aramalara izin verme</translation>
 <translation id="2303795211377219696">Kredi kartları için Otomatik Doldurma özelliğini etkinleştirme</translation>
@@ -1717,6 +1728,11 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, ekran görü
 
       Önceden false (yanlış) olan bu politikanın varsayılan değeri, <ph name="PRODUCT_NAME" /> 81 sürümünde true (doğru) olarak değiştirildi. Etkilenen proxy'lerin ERR_TLS13_DOWNGRADE_DETECTED hata kodu göstererek bağlantı kuramaması beklenir. Etkilenen proxy'leri yeni sürüme geçirmek için daha fazla zamana ihtiyacı olan yöneticiler, bu politikayı kullanarak bu güvenlik özelliğini geçici olarak devre dışı bırakabilirler. Bu politika sürüm 86'da kaldırıldı.
       </translation>
+<translation id="2334744362022255283">Engellenebilir (ör. etkin) karma içeriği (ör. HTTPS sitelerindeki HTTP içeriği) görüntülemesine izin verilen sitelerin belirtildiği ve isteğe bağlı olarak engellenebilir karma içerik yükseltmelerinin devre dışı bırakılacağı bir URL kalıpları listesini ayarlamanıza olanak tanır.
+
+          Bu politika ayarlanmadan bırakılırsa engellenebilir karma içerik engellenir ve isteğe bağlı olarak engellenebilir karma içerik yükseltilir, ayrıca kullanıcıların belirli sitelerde buna izin vermek üzere istisnalar ayarlamasına izin verilir.
+
+          Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="2336822410658374491">Varsayılan arama sağlayıcısı içerik menüsüne erişimi devre dışı bırak</translation>
 <translation id="2337859888277013371">Geri-ileri önbelleğin kullanılmasına izin verme</translation>
 <translation id="2341509917222115272">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcıların bağlantı zamanında istemcileri ve ana makineleri eşlemelerine izin verilir. Bu durumda, her defasında PIN girme gereği ortadan kalkar.
@@ -1763,6 +1779,11 @@ Politika, devre dışı değerine ayarlanırsa uyumluluk sorunları bulunması d
 <translation id="2376151922689284770">Yükleyicinin kullanıcı arayüzünde gösterilecek ad (ör. Mutlu Sanal Makine). Ayarlanmadan bırakılırsa
 yedek ad gösterilir. Bu ad, BruschettaVMConfiguration politikasındaki
 ilk (gösterilme sırasına göre) girişten türetilebilir veya bu başarısız olursa genel bir ad kullanılabilir.</translation>
+<translation id="2376278121995306084">Politikayı ayarlamak bildirimleri görüntüleyebilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="2377109572344699022">Direct Sockets API'nin kullanımını kontrol et</translation>
 <translation id="2382672620906337383">JavaScript setTimeout(), daha yüksek bir iç içe yerleştirme eşiğine ulaşılana kadar zaman aşımına uğramaz.</translation>
 <translation id="2384233438419344179">Politikanın Etkin değerine ayarlanması tarayıcının adres çubuğundaki alan adına ait olmayan web sayfası öğelerinin çerez yerleştirmesini engeller. Politikanın Devre Dışı değerine ayarlanması bu öğelerin çerez yerleştirmesine izin verir ve kullanıcıların bu ayarı değiştirmelerini önler.
@@ -2044,6 +2065,11 @@ NOT: Bu politikanın varsayılan değeri M117 dokümanında hatalı bir şekilde
 
       Politika ayarlanmadan bırakılırsa <ph name="PRINTERS_ALLOW_ALL" /> uygulanır.</translation>
 <translation id="2581338546762479588">Güncellemelerden sonra otomatik yeniden başlatmaya izin ver</translation>
+<translation id="2581374691851317168">Politikayı ayarlamak, JavaScript çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="2586117300379904732">Güç yönetimi için uyanık kalma kilitlerine izin ver</translation>
 <translation id="2586231026319371211">Zaman, 24 saatlik yerel duvar saati biçiminde değerlendirilir.</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> ürününü varsayılan tarayıcım olarak ayarla</translation>
@@ -2188,6 +2214,11 @@ Politika veya kullanıcı ayarları tarafından belirtilmeyen kaynakların bu AP
 <translation id="2716623398185506073">Politika Etkin değerine ayarlanırsa kayıtlı cihazlar güçle ilgili donanım istatistiklerini ve tanımlayıcıları bildirir.
 
       Politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar güç istatistiklerini bildirmez.</translation>
+<translation id="2716930334159519261">Bu politikayı ayarlayarak, site pano iznini kullanamayacak siteleri belirten URL kalıplarını listeleyebilirsiniz. Kalıplarla eşleşen kaynaklardaki tüm pano işlemleri bu kapsama girmez. Örneğin, site pano izni tarafından denetlenmediğinden klavye kısayollarını kullanarak yapıştırma işlevi engellenmez.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_CLIPBOARD_SETTING" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="2717628606602248727">Bu politika varsayılan olarak Etkin değerine ayarlıdır. Bellek hakkında bilgi verecek kayıtlı cihazları kontrol eder.
 
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar bellek hakkında bilgi vermez.
@@ -2895,6 +2926,11 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
 <translation id="3264793472749429012">Varsayılan arama sağlayıcı kodlamaları</translation>
 <translation id="3265952988644972779">Ürün içi anketleri devre dışı bırak</translation>
 <translation id="3269198556438453775">Kurumsal yöneticilerin bu makineye uzaktan destek bağlantıları yapmasını engelle</translation>
+<translation id="3271741247922321334">Engellenebilir (ör. etkin) karma içeriği (ör. HTTPS sitelerindeki HTTP içeriği) görüntülemelerine izin verilmeyen sitelerin belirtildiği ve isteğe bağlı olarak engellenebilir (ör. pasif) karma içeriğin yükseltileceği bir URL kalıpları listesini ayarlamanıza olanak tanır.
+
+          Bu politika ayarlanmadan bırakılırsa engellenebilir karma içerik engellenir ve isteğe bağlı olarak engellenebilir karma içerik yükseltilir, ancak kullanıcıların belirli sitelerde buna izin vermek üzere istisnalar ayarlamasına izin verilir.
+
+          Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="3273221114520206906">Varsayılan JavaScript ayarı</translation>
 <translation id="3278042410658310805">Giriş ekranında sözlü geri bildirimi devre dışı bırak ve kullanıcının bunu geçici olarak etkinleştirmesine izin ver</translation>
 <translation id="328347261792478720">Varsayılan olarak tarayıcı, kullanıcıya göre kişiselleştirilmiş medya önerileri gösterir. Bu politika Devre Dışı değerine ayarlanırsa bu öneriler kullanıcıdan gizlenir. Bu politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcıya medya önerileri gösterilir.</translation>
@@ -3101,39 +3137,6 @@ Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
       Bu politika ayarlanmazsa veya herhangi bir zaman aralığı içermezse:
       Hiçbir otomatik güncelleme kontrolü bu politika tarafından engellenmez, ancak kontroller diğer politikalar tarafından engellenebilir.
       Bu özellik, M88 sürümüne kadar yalnızca otomatik başlatma kioskları olarak yapılandırılan <ph name="PRODUCT_OS_NAME" /> cihazlarda etkindir. Bu politika diğer cihazları kısıtlamak için kullanılamaz. Ancak bu politika, M89 sürümünden itibaren tüm <ph name="PRODUCT_OS_NAME" /> cihazlarda etkindir.</translation>
-<translation id="3457921137261127955">X.509 anahtarı kullanma uzantısı, bir sertifikadaki anahtarın nasıl kullanılabileceğini
-açıklar. Bu tür talimatlar, sertifikaların amaçlanmayan bir bağlamda kullanılmamasını
-sağlar. Bu da HTTPS ve diğer protokolleri, protokoller arası saldırılara karşı
-korur. Bunun çalışması için HTTPS istemcilerinin, sunucu sertifikaları ile
-bağlantının TLS parametrelerinin eşleşip eşleşmediğini kontrol etmesi gerekir.
-
-Bu politika, Etkin değerine ayarlanırsa
-<ph name="PRODUCT_NAME" /> bu kontrolü gerçekleştirir.
-Bu sayede, saldırganların bir anahtarı sahibi tarafından amaçlanmayan
-şekilde yorumlamak için tarayıcıda değişiklik yaptığı saldırılar önlenebilir.
-
-Bu politika Devre Dışı dışı değerine ayarlanırsa
-<ph name="PRODUCT_NAME" />, hem TLS 1.2 ile ilgili pazarlık
-yapan hem de yerel bir güven çapasıyla zincir oluşturan RSA sertifikası kullanan HTTPS
-bağlantılarında bu kontrolü atlar. Yerel güven çapalarına örnek olarak politika tarafından
-sağlanan veya kullanıcı tarafından yüklenen kök sertifikalar verilebilir. Diğer tüm durumlardaki kontrol,
-bu politikanın ayarından bağımsız olarak gerçekleştirilir.
-
-Politika yapılandırılmazsa
-<ph name="PRODUCT_NAME" />, politika devre dışıymış
-gibi davranır.
-
-Bu politika, yöneticilere gelecekteki bir sürümün davranışını önizleme imkanı
-sunarak bu kontrolün varsayılan olarak etkinleştirilmesini sağlar. Bu noktada,
-güncelleme için daha fazla zamana ihtiyacı olan yöneticiler bu politikayı geçici olarak
-kullanabilir.
-
-Bu kontrolde başarısız olan bağlantılar
-ERR_SSL_KEY_USAGE_INCOMPATIBLE hatası döndürerek başarısız olur. Bu hatayı alarak başarısız olan sitelerin sertifikası yanlış
-yapılandırılmış olabilir. Modern ECDHE_RSA şifre paketlerinde
-"digitalSignature" anahtarı kullanma seçeneği mevcutken eski RSA şifre çözme
-şifre paketlerinde "keyEncipherment" anahtarı kullanma seçeneği mevcuttur. Yöneticiler, emin olmadıkları durumlarda
-HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3460485593332210712">Chrome for Testing'e izin ver</translation>
 <translation id="3461279434465463233">Güç durumunu bildir</translation>
@@ -4181,9 +4184,6 @@ Politikayı ayarlamadan bırakırsanız <ph name="ASK_GEOLOCATION_POLICY_NAME" /
 
 <ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="4329095223358818804">Hızlı Yanıtlar'ın seçilen içeriğe erişmesine izin verir</translation>
-<translation id="4330328220729237210">Bu politika, <ph name="PRODUCT_NAME" /> ürününün, TLS el sıkışma işlemi sırasında güvenli olmayan eski karmaları kullanmasına izin verir.
-
-      Politika yapılandırılmazsa <ph name="PRODUCT_NAME" />, güvenli olmayan karmalara izin verilmediği varsayılan kullanıma sunma işlemini uygular. Politika etkinleştirilirse <ph name="PRODUCT_NAME" />, TLS el sıkışması pazarlık sürecinde güvenli olmayan karmaların bir sunucu tarafından kullanılmasına izin verir. Politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, TLS el sıkışması pazarlık sürecinde güvenli olmayan karmaların bir sunucu tarafından kullanılmasına izin vermez. Bu politika 123 sürümünde kaldırılacaktır.</translation>
 <translation id="4330908525441222205">Varsayılan AppCache davranışını kullan</translation>
 <translation id="4331357743227845302">Bu politika, yöneticilerin <ph name="PRODUCT_OS_NAME" /> ürününün bağlantı kurmasına izin verilen Bluetooth hizmetlerini yapılandırmalarına olanak tanır.
 
@@ -4546,6 +4546,14 @@ Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uyg
 <translation id="4624417808625504735">Bu sitelerde JavaScript'in JIT kullanmasını engelle</translation>
 <translation id="46321462262887935">Üst sıradaki tuşlara işlev tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> için listelenen içerik türlerini işlemeye izin ver</translation>
+<translation id="4633746046264469461">JIT (Just In Time) derleyicisi etkinken JavaScript çalıştırmasına izin verilen sitelerin belirtildiği bir site URL kalıpları listesini ayarlamanıza olanak tanır.
+
+          Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+          JavaScript JIT politika istisnaları yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
+          Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript JIT etkin olur. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript JIT etkin ayarını kullanır.
+
+          Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript JIT site için etkinleştirilir.</translation>
 <translation id="4636354638176939375">Gözetimli kullanıcı oluşturmayı devre dışı bırak</translation>
 <translation id="46383668315040154">Bu cihazın kilitlenmesi gereken yayın kanalını belirtir.
 
@@ -5594,6 +5602,11 @@ Bu politika, M112 sürümünde kaldırılmıştır.</translation>
 <translation id="5519619299971727565">Linux uygulamaları kullanım raporlamasını devre dışı bırak</translation>
 <translation id="5521035900165046997">Cihazın Bluetooth bilgileri raporlamasını etkinleştir</translation>
 <translation id="5521875416764302911">Kullanıcıların <ph name="PRODUCT_NAME" /> oturumu açmasını engelle</translation>
+<translation id="5524944713447898270">Politikayı ayarlamak pop-up'ları açamayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="5526184558582921522">Quirks Sunucusu'nu sorgulamaya ve donanıma özgü yapılandırma dosyalarını içerebilecek indirmelere izin ver</translation>
 <translation id="5526701598901867718">Hepsi (güvenli değil)</translation>
 <translation id="5534079385061985566">Tam geri yükleme özelliğini etkinleştir.</translation>
@@ -6716,6 +6729,13 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa CN
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">İndirilen tüm dosyalarda Güvenli Tarama kontrolleri gerçekleştir</translation>
 <translation id="6426899507714989471">Grafik hızlandırmayı devre dışı bırak</translation>
+<translation id="6430793593318487825">Politikayı ayarlamak, hareket ve ışık sensörleri gibi sensörlere erişemeyen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Aynı URL kalıbı hem bu politikada hem de <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME" /> politikasında yer alıyorsa bu politikaya öncelik verilir ve hareket ya da ışık sensörlerine erişim engellenir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="6433697627431665375"><ph name="PRODUCT_NAME" /> verilerinin yedeklere dahil edilmesini engelle</translation>
 <translation id="6436052172226685535">Eski Tarayıcı Desteği için varsayılan davranış.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" />, mümkün olduğunda bazı gezinme özelliklerini HTTP'den HTTPS'ye yükseltmeye çalışır. Bu politika bu davranışı devre dışı bırakmak için kullanılabilir. Bu politika "true" değerine ayarlanır veya ayarlanmadan bırakılırsa
@@ -6755,6 +6775,11 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa SAML şifresi, chrome://password-change adresinde değiştirilemez ve SAML şifrelerinin süresinin bitmesi yakınlaştığında herhangi bir bildirim gösterilmez.</translation>
 <translation id="6457477291648119596">Type42</translation>
+<translation id="6457901822929629835">Politikayı ayarlamak, JavaScript çalıştırabilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="6458361632497500815">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> ve <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> politikalarının hepsi Etkin değerine ayarlandığı sürece tüm kullanıcıların <ph name="PRODUCT_CROSTINI_NAME" /> kullanmasına izin verilir. Politika Devre Dışı değerine ayarlanırsa bağlı olmayan kullanıcılar <ph name="PRODUCT_CROSTINI_NAME" /> kullanamaz. Politika Devre Dışı olarak değiştirilirse halihazırda çalışan kapsayıcılara değil, başlatılan yeni <ph name="PRODUCT_CROSTINI_NAME" /> kapsayıcılarına uygulanmaya başlar.</translation>
 <translation id="6462604655173570082">Politika ayarlanmadan bırakılır veya Etkin değerine ayarlanırsa kullanıcıların, yeni sekme sayfasındaki arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesini görüntüleyip kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, yeni sekme sayfasındaki arama kutusunda <ph name="GOOGLE_LENS_PRODUCT_NAME" /> düğmesini görmez.</translation>
 <translation id="6464074037294098618">Adresleri otomatik doldurmayı etkinleştir</translation>
@@ -8061,6 +8086,13 @@ Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel 
 <translation id="7443356543619955157">Politika ayarlanırsa bir <ph name="PRODUCT_OS_NAME" /> cihazın tüm kullanıcıları için ağ yapılandırması aktarılabilir. Ağ yapılandırması, Açık Ağ Yapılandırması biçimiyle tanımlanmış JSON biçimli bir dizedir.</translation>
 <translation id="7446978687387327623">Güvenli Tarama Proxy Kullanan Gerçek Zamanlı Kontrollere İzin Ver</translation>
 <translation id="7448430478749155471">Giriş ekranında seç ve dinle özelliğini etkinleştir</translation>
+<translation id="7453470801190369311">Politikayı ayarlamak, resimleri görüntüleyemeyen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_IMAGE_SETTING_ENABLED_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+       Bu politikanın önceden Android'de hatalı bir şekilde etkinleştirildiğini, ancak bu işlevin Android'de hiçbir zaman tam olarak desteklenmediğini unutmayın.</translation>
 <translation id="7455912144588577399">Politika "Doğru" değerine ayarlandığında kullanıcılar, metin okuma sürecini
 kullanarak uygun web sayfalarının sesli okunmasını sağlayabilir. Bu işlem, sunucu tarafı içerik
 ayrıştırma ve ses sentezi ile gerçekleştirilir. Politika "Yanlış" değerine
@@ -8230,6 +8262,13 @@ Politika ayarlanmadan bırakılırsa <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POL
 <translation id="7585312329612243723">Yönetilen Tarayıcılarda URL listesi için <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> onay akışını etkinleştir</translation>
 <translation id="7587345076013230465">Otomatik seçim politikası, oturum açma ekranında birden fazla sertifikayla eşleştiğinde kullanıcıdan istemci sertifikasını seçmesini iste</translation>
 <translation id="7587921466180902617">Family Link kullanıcıları için Ekran Kaydı test sürümünü etkinleştir</translation>
+<translation id="7595074040612182185">Politikayı ayarlayarak, görselleri olan siteleri belirten URL kalıplarının listesini oluşturabilirsiniz.
+
+      Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+      Bu politikanın önceden Android'de hatalı bir şekilde etkinleştirildiğini, ancak bu işlevin Android'de hiçbir zaman tam olarak desteklenmediğini unutmayın.</translation>
 <translation id="759957074386651883">Güvenli Tarama ayarları</translation>
 <translation id="7602621823177962064">Cihazın bellek bilgileri raporlamasını devre dışı bırak</translation>
 <translation id="7604169113182304895">Android uygulamaları, kendi tercihleriyle bu listeye uymaya karar verebilir. Bu uygulamaları listeye uymaya zorlayamazsınız.</translation>
@@ -8380,6 +8419,11 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
        Proxy politikalarının ayarlanmasıyla ilgili olarak başka bir mod seçtiyseniz bu politikayı ayarlamadan bırakın.
 
       Not: Ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="7716587310609820801">Politikayı ayarlamak, bildirimleri görüntüleyemeyen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="7717938661004793600"><ph name="PRODUCT_OS_NAME" /> erişilebilirlik özelliklerini yapılandır.</translation>
 <translation id="7718127720248642697">Bu politika varsayılan olarak Etkin değerine ayarlıdır. Depolama cihazlarına ait tanımlayıcıları ve donanım istatistiklerini bildirecek kayıtlı cihazları kontrol eder.
 
@@ -9900,6 +9944,13 @@ Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında old
       Bu politika devre dışı bırakılır veya ayarlanmazsa, kayıt kimliğinin yüklenme durumu ne olursa olsun cihazın powerwash işlevi uzaktan tetiklenmez.
 
       Bu denetim, giriş ekranı her yüklendiğinde tetiklenir. Cihazda giriş ekranı açık kalırsa denetim saatte bir yeniden tetiklenir. Böylece, taşıma işlemi kullanıcı oturumunun ortasında başlamaz ve son kullanıcıların bundan dolayı sorun yaşama ihtimali ortadan kalkar.</translation>
+<translation id="8995019632040507706">Politikayı ayarlamak, hareket ve ışık sensörleri gibi sensörlere erişebilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Aynı URL kalıbı hem bu politikada hem de <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> politikasında yer alıyorsa ikincisine öncelik verilir ve hareket ya da ışık sensörlerine erişim engellenir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="9003823644527627017"><ph name="PRODUCT_OS_NAME" /> hizmetindeki Bruschetta sanal makinelerini yapılandır</translation>
 <translation id="9004469022085379212">Politikanın Etkin değerine ayarlanması cihazın, <ph name="PRODUCT_OS_NAME" /> işletim sistemi üstünde sanal makineleri çalıştırmasına olanak tanır. <ph name="PRODUCT_CROSTINI_NAME" /> kullanılabilmesi için <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> ve <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> politikalarının Etkin değerine ayarlanması gerekir. Politika, Devre Dışı değerine ayarlanırsa cihaz, sanal makineleri çalıştıramaz. Politika, Devre Dışı olarak değiştirilirse halihazırda çalışan sanal makinelere değil, başlatılan yeni sanal makinelere uygulanmaya başlar.
 
@@ -10123,6 +10174,16 @@ Bu politika yalnızca <ph name="FULL_RESTORE_ENABLED_NAME" /> politikası doğru
       <ph name="URL_LABEL" /> içindeki web uygulaması normal şekilde yüklenir.
 
       Uygulamaları <ph name="PRODUCT_OS_NAME" /> rafına sabitlemek için <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> politikasına bakın.</translation>
+<translation id="9128095645860384292">JIT (Just In Time) derleyicisi etkinken JavaScript çalıştırmasına izin verilmeyen sitelerin belirtildiği bir site URL kalıpları listesini ayarlamanıza olanak tanır.
+
+          JavaScript JIT'in devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının, web içeriğini daha yavaş oluşturabileceği, ayrıca JavaScript'in WebAssembly gibi bazı bölümlerini devre dışı bırakabileceği anlamına gelir. JavaScript JIT'in devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının, web içeriğini daha güvenli bir konfigürasyonda oluşturmasına imkan sağlayabilir.
+
+          Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+          JavaScript JIT politika istisnaları yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
+          Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript JIT devre dışı bırakılır. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript JIT etkin ayarını kullanır.
+
+          Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript JIT site için etkinleştirilir.</translation>
 <translation id="9129169595075460149">Politika Etkin değerine ayarlanırsa Google Arama'da Güvenli Arama her zaman etkin olur ve kullanıcılar bu ayarı değiştiremezler.
 
       Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa Google Arama'da Güvenli Arama uygulanmaz.</translation>

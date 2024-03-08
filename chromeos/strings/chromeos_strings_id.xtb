@@ -18,6 +18,7 @@
 <translation id="1075811647922107217">Ukuran halaman</translation>
 <translation id="1082009148392559545">Mendownload screensaver</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
+<translation id="1100902271996134409">Membuat gambar...</translation>
 <translation id="1116694919640316211">Tentang</translation>
 <translation id="1118572504348554005">Kami mungkin membagikan masukan yang dikirim melalui formulir ini kepada partner kami untuk memecahkan masalah bug dan masalah lain yang Anda laporkan kepada kami. Jangan sertakan informasi sensitif seperti sandi.</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
@@ -48,6 +49,7 @@
 <translation id="1238612778414822719">Latensi HTTPS</translation>
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1274654146705270731">jeruk</translation>
+<translation id="1275718070701477396">Dipilih</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1300115153046603471">APN adalah jenis default dan <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -237,6 +239,7 @@
 <translation id="2271469253353559191">Jadwal mode gelap</translation>
 <translation id="2276999893457278469">Konten bantuan teratas</translation>
 <translation id="2279051792571591988">Pulihkan default</translation>
+<translation id="2286454467119466181">Sederhana</translation>
 <translation id="2287186687001756809">Foto tidak tersedia. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
@@ -521,7 +524,6 @@
 <translation id="4310735698903592804">Wallpaper terbaru yang didukung teknologi AI Google</translation>
 <translation id="4320904097188876154">merah muda neon</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
-<translation id="4341897648462347919">hijau kebiruan</translation>
 <translation id="4354430579665871434">tombol</translation>
 <translation id="4361257691546579041">APN adalah jenis default.</translation>
 <translation id="437294888293595148">Reset semua pintasan</translation>
@@ -986,7 +988,6 @@
 <translation id="7155171745945906037">Foto yang sudah ada dari kamera atau file</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Gambar profil</translation>
-<translation id="7171665330126595869">gua</translation>
 <translation id="7171919371520438592">Kaitkan jendela di bagian <ph name="DIRECTION" /> layar yang lebih kecil</translation>
 <translation id="7172721935181587524">1 Gambar</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
@@ -1049,7 +1050,6 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Buat</translation>
 <translation id="7528507600602050979">Konten bantuan tidak tersedia</translation>
-<translation id="753556296624075801">Dengan teknologi Google</translation>
 <translation id="7535791657097741517">Aktifkan tema terang</translation>
 <translation id="7550715992156305117">Rutinitas Diagnostik</translation>
 <translation id="7551123448725492271">Perangkat adalah perangkat audio.</translation>
@@ -1266,7 +1266,6 @@
 <translation id="8912306040879976619">Zona keyboard</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>
-<translation id="8923267550422472772">Tanggal reset</translation>
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Nirkabel</translation>

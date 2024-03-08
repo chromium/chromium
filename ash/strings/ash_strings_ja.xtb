@@ -173,7 +173,6 @@
 <translation id="1647986356840967552">前のページ</translation>
 <translation id="1651914502370159744">[履歴] ページを開く</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
-<translation id="1662667383227796099">ランチャーではファイルやアプリなどを検索できます。Chromebook に関する質問の回答を見ることもできます。</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
 <translation id="1675844249244994876">右側のウィンドウを更新する</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
@@ -467,7 +466,6 @@
 <translation id="2965227184985674128">マイクへのアクセスをオンにしますか？</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" />の音声ファイルをダウンロードできませんでした</translation>
 <translation id="2970920913501714344">アプリ、拡張機能、テーマをインストールする</translation>
-<translation id="2977098646659697261">シェルフには、固定したアプリまたは開いているアプリが表示されます。アプリをシェルフに固定するには、アプリを右クリックするか、2 本の指でタッチパッドをタップします。</translation>
 <translation id="2977598380246111477">次の番号</translation>
 <translation id="2985148236010982088">アプリをすべて表示</translation>
 <translation id="2992327365391326550">デバイスのマイクボタンはオフになっています。</translation>
@@ -776,7 +774,6 @@
 <translation id="4123259114412175274">Chromebook のロックを解除するには、スマートフォンの Bluetooth がオンになっていることをご確認ください</translation>
 <translation id="4125970834901680537">タブレット モードでアプリをストリーミングできません。ノートパソコン モードでもう一度お試しください。</translation>
 <translation id="4131973331381812765">温度: <ph name="TEMPERATURE" />°C - 現在の速度: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook には、作業効率化に役立つアプリが組み込まれています。ランチャーでアプリを探してみてください。</translation>
 <translation id="4136724716305260864">日の出までオン</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+右矢印</translation>
 <translation id="4146671046252289537">次の単語の末尾に移動</translation>
@@ -808,7 +805,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />、インストール済みアプリ、一時停止中</translation>
 <translation id="4228078597006700451">コントロールが設定されていません</translation>
 <translation id="4231053948789591973">キャストは現在一時停止しています。いつでも画面のキャストを再開または停止できます。</translation>
-<translation id="423685346499232137">現時点では、コンテンツのコピーや貼り付けはできません</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">複数画面モード</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -820,7 +816,6 @@
 <translation id="4269883910223712419">このデバイスの管理者は以下を行うことができます。</translation>
 <translation id="4274537685965975248">キーボード ショートカット「Ctrl+Alt+下矢印」が変更されました。End キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+右矢印キーを押してください。</translation>
 <translation id="4275283744500212192">ウィンドウ レイアウトのオプションを開く</translation>
-<translation id="4278138729651139331">[設定] で Chromebook をカスタマイズできます。壁紙を変更したり、スクリーン セーバーを設定したりしてみてください。</translation>
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4280601795273309128">セキュリティ アップデートが終了しました。デバイスをアップグレードしてください。</translation>
 <translation id="4283888303416325161">セキュリティ強化のためパスワードを入力してください</translation>
@@ -1136,7 +1131,6 @@
 <translation id="550391772491508736">キャストを再開</translation>
 <translation id="5506975627792768506">拡大鏡をオンまたはオフにします</translation>
 <translation id="5512042095225963688">前の単語を削除する</translation>
-<translation id="5518068085000130971">基本的なことは以上です。より詳しい情報をご覧になりたい場合は、組み込みのアプリ「使い方・ヒント」をご活用ください。ご利用のヒント、おすすめのアプリ、スペシャル オファー、Chromebook の最新機能を紹介しています。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">管理者によって eSIM プロファイルがすべて削除されています。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5520909879404821039">フランス語でこんにちは</translation>
@@ -1522,7 +1516,6 @@
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="698231206551913481">このユーザーを削除すると、このユーザーに関連付けられているファイルとローカルデータもすべて完全に削除されます。</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> Hz）に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" /> Hz）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
-<translation id="6989752354829085073">Chromebook について学べるクイックツアーをお試しください。6 つのステップでご利用を開始できます。</translation>
 <translation id="7000027735917578303">ウィンドウとデスクの設定</translation>
 <translation id="7004910047186208204">モバイルデータに接続する</translation>
 <translation id="7005239792648594238">開始するにはアプリを開きます</translation>
@@ -1589,7 +1582,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
 <translation id="7313193732017069507">カメラを展開</translation>
-<translation id="7316261577130609484">新しいタスクを追加</translation>
 <translation id="7330397557116570022">音声入力を使用するには、テキスト フィールドに移動してください</translation>
 <translation id="7331646370422660166">Alt+下矢印</translation>
 <translation id="7340731148882810149">自動クリックのメニュー</translation>
@@ -1655,7 +1647,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> がマイクを使用しています</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
-<translation id="7567950130372125778">平素より Google をご利用いただきありがとうございます。Chromebook はこれまでのパソコンとは一味違います。</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
 <translation id="7569886975397378678">スマートフォンの通知とアプリの表示の設定を行わない</translation>
 <translation id="7571361473021531288">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 残り使用時間 <ph name="TIME" /></translation>

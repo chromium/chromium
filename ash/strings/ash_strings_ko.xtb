@@ -173,7 +173,6 @@
 <translation id="1647986356840967552">이전 페이지</translation>
 <translation id="1651914502370159744">방문 기록 페이지 열기</translation>
 <translation id="1654477262762802994">음성 검색 시작</translation>
-<translation id="1662667383227796099">런처에서 파일, 앱 등을 검색해 보세요. Chromebook에 대한 질문의 답변을 얻을 수도 있습니다.</translation>
 <translation id="1668469839109562275">기본 제공 VPN</translation>
 <translation id="1675844249244994876">오른쪽 창 업데이트</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
@@ -467,7 +466,6 @@
 <translation id="2965227184985674128">마이크 액세스를 사용 설정하시겠습니까?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> 음성 파일을 다운로드할 수 없음</translation>
 <translation id="2970920913501714344">앱, 확장 프로그램 및 테마 설치</translation>
-<translation id="2977098646659697261">앱 표시줄에 고정된 앱과 열려 있는 앱이 있습니다. 앱 표시줄에 앱을 고정하려면 앱을 마우스 오른쪽 버튼으로 클릭하거나 두 손가락으로 터치패드를 탭합니다.</translation>
 <translation id="2977598380246111477">다음 번호</translation>
 <translation id="2985148236010982088">앱 모두 보기</translation>
 <translation id="2992327365391326550">기기의 마이크 버튼이 사용 중지되어 있습니다.</translation>
@@ -776,7 +774,6 @@
 <translation id="4123259114412175274">Chromebook을 잠금 해제하려면 휴대전화의 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="4125970834901680537">태블릿 모드에서는 앱을 스트리밍할 수 없습니다. 노트북 모드에서 다시 시도하세요.</translation>
 <translation id="4131973331381812765">온도: <ph name="TEMPERATURE" />°C - 현재 속도: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">Chromebook에는 작업을 처리하는 데 도움이 되는 앱이 내장되어 있습니다. 런처에서 앱을 찾으세요.</translation>
 <translation id="4136724716305260864">일출까지 켜기</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + 오른쪽 화살표</translation>
 <translation id="4146671046252289537">다음 단어의 끝으로 이동</translation>
@@ -808,7 +805,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, 설치된 앱, 일시중지됨</translation>
 <translation id="4228078597006700451">컨트롤이 설정되지 않음</translation>
 <translation id="4231053948789591973">현재 전송이 일시중지되어 있습니다. 언제든지 화면 전송을 재개하거나 중지할 수 있습니다.</translation>
-<translation id="423685346499232137">현재 콘텐츠를 복사하거나 붙여넣을 수 없습니다.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">전체보기 모드</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -820,7 +816,6 @@
 <translation id="4269883910223712419">이 기기의 관리자는 다음과 같은 작업을 할 수 있습니다.</translation>
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="4275283744500212192">창 레이아웃 옵션 열기</translation>
-<translation id="4278138729651139331">설정에서 Chromebook을 맞춤설정할 수 있습니다. 배경화면을 변경하거나 화면 보호기를 설정해 보세요.</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4280601795273309128">보안 업데이트가 종료되었습니다. 기기를 업그레이드하세요.</translation>
 <translation id="4283888303416325161">보안 강화를 위해 비밀번호 입력</translation>
@@ -1136,7 +1131,6 @@
 <translation id="550391772491508736">전송 재개</translation>
 <translation id="5506975627792768506">돋보기 사용 설정 또는 사용 중지</translation>
 <translation id="5512042095225963688">이전 단어 삭제</translation>
-<translation id="5518068085000130971">기본 앱입니다. 팁과 도움말은 기본 제공되는 앱인 살펴보기를 참고하세요. 시작 도움말, 추천 앱, 특별 이벤트, 최신 Chromebook 기능을 확인할 수 있습니다.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">관리자가 모든 eSIM 프로필을 삭제했습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="5520909879404821039">프랑스어로 안녕</translation>
@@ -1522,7 +1516,6 @@
 <translation id="6981982820502123353">접근성</translation>
 <translation id="698231206551913481">이 사용자를 제거하면 해당 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />(<ph name="SPECIFIED_REFRESH_RATE" />Hz) 해상도를 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(<ph name="FALLBACK_REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 변경사항을 적용하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
-<translation id="6989752354829085073">Chromebook을 사용하는 방법을 간단히 둘러보세요. 6단계만에 간편하게 설정하고 시작할 수 있습니다.</translation>
 <translation id="7000027735917578303">창 및 데스크 설정</translation>
 <translation id="7004910047186208204">모바일 데이터에 연결</translation>
 <translation id="7005239792648594238">시작하려면 앱을 여세요.</translation>
@@ -1589,7 +1582,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7313193732017069507">카메라 펼치기</translation>
-<translation id="7316261577130609484">새 할 일 추가</translation>
 <translation id="7330397557116570022">음성기록을 사용하려면 텍스트 필드로 이동하세요.</translation>
 <translation id="7331646370422660166">Alt + 아래쪽 화살표</translation>
 <translation id="7340731148882810149">자동 클릭 메뉴</translation>
@@ -1654,7 +1646,6 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
 <translation id="7564874036684306347">창을 다른 데스크톱으로 이동하면 예기치 못한 동작이 나타날 수 있습니다. 이후의 알림, 창, 대화상자가 데스크톱 간에 분할될 수 있습니다.</translation>
-<translation id="7567950130372125778">안녕하세요. Chromebook은 다릅니다.</translation>
 <translation id="7569509451529460200">점자와 ChromeVox가 사용 설정되었습니다.</translation>
 <translation id="7569886975397378678">휴대전화 알림 및 앱 보기 설정 닫기</translation>
 <translation id="7571361473021531288">배터리 <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> 남음</translation>

@@ -35,6 +35,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1111021433905331574">Kolor podświetlenia klawiatury możesz zmienić, klikając Ustawienia &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Przełącz mobilną transmisję danych. <ph name="STATE" /></translation>
 <translation id="112308213915226829">Autoukrywanie półki</translation>
+<translation id="1129383337808748948">Odśwież: <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Najnowsze zdjęcia</translation>
 <translation id="114221662579355151">Zezwala na dostęp do kamery aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="1148499908455722006">Otwórz okno informacyjne dla konta <ph name="USER_NAME" /></translation>
@@ -173,7 +174,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1647986356840967552">Poprzednia strona</translation>
 <translation id="1651914502370159744">Otwórz stronę Historia</translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
-<translation id="1662667383227796099">W Menu z aplikacjami możesz wyszukiwać pliki, aplikacje i inne rzeczy, a nawet zadawać pytania na temat Chromebooka.</translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
 <translation id="1675844249244994876">Zaktualizuj okno po prawej stronie</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
@@ -467,7 +467,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2965227184985674128">Włączyć dostęp do mikrofonu?</translation>
 <translation id="296762781903199866">Nie udało się pobrać plików z mową w języku: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">instalować aplikacje, rozszerzenia i motywy;</translation>
-<translation id="2977098646659697261">Przypięte i otwarte aplikacje są widoczne na półce. Aby przypiąć aplikację do półki, kliknij ją prawym przyciskiem myszy lub dotknij touchpada 2 palcami.</translation>
 <translation id="2977598380246111477">Następny numer</translation>
 <translation id="2985148236010982088">Zobacz wszystkie aplikacje</translation>
 <translation id="2992327365391326550">Przycisk mikrofonu urządzenia jest wyłączony.</translation>
@@ -776,7 +775,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4123259114412175274">Aby odblokować Chromebooka, sprawdź, czy na telefonie jest włączony Bluetooth</translation>
 <translation id="4125970834901680537">W trybie tabletu nie można strumieniować aplikacji. Spróbuj ponownie w trybie laptopa.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – aktualna szybkość: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
-<translation id="4132502210362661715">Chromebook ma wbudowane aplikacje ułatwiające pracę. Przeglądaj aplikacje w Menu z aplikacjami.</translation>
 <translation id="4136724716305260864">Włączone do wschodu słońca</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + strzałka w prawo</translation>
 <translation id="4146671046252289537">Przejdź na koniec następnego słowa</translation>
@@ -808,7 +806,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4221957499226645091"><ph name="APP_NAME" />, zainstalowana aplikacja, wstrzymana</translation>
 <translation id="4228078597006700451">Elementy sterujące nie są skonfigurowane</translation>
 <translation id="4231053948789591973">Przesyłanie jest obecnie wstrzymane. Przesyłanie ekranu możesz w każdej chwili wznowić lub zakończyć.</translation>
-<translation id="423685346499232137">W tej chwili nie można kopiować ani wklejać treści</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Tryb przeglądu</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
@@ -820,7 +817,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4269883910223712419">Administrator tego urządzenia może:</translation>
 <translation id="4274537685965975248">Skrót klawiszowy Ctrl + Alt + strzałka w dół został zmieniony. Aby użyć klawisza End, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w prawo.</translation>
 <translation id="4275283744500212192">Otwórz opcje układu okna</translation>
-<translation id="4278138729651139331">Jeśli chcesz spersonalizować swojego Chromebooka, otwórz Ustawienia. Możesz na przykład zmienić tapetę albo ustawić wygaszacz ekranu.</translation>
 <translation id="4279490309300973883">Odbicie lustrzane</translation>
 <translation id="4280601795273309128">Dobiegły końca aktualizacje zabezpieczeń. Zmień urządzenie na nowsze.</translation>
 <translation id="4283888303416325161">Dla większego bezpieczeństwa wpisz hasło</translation>
@@ -1136,7 +1132,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="550391772491508736">Wznów przesyłanie</translation>
 <translation id="5506975627792768506">Włącz lub wyłącz lupę</translation>
 <translation id="5512042095225963688">Usuń poprzednie słowo</translation>
-<translation id="5518068085000130971">To były podstawy. Jeśli potrzebujesz bardziej szczegółowych wskazówek i instrukcji, skorzystaj z wbudowanej aplikacji Odkrywaj. Znajdziesz w niej porady na początek, listę polecanych aplikacji, oferty specjalne oraz opis najnowszych funkcji Chromebooka.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator usunął wszystkie profile eSIM. Aby dowiedzieć się więcej, skontaktuj się z administratorem.</translation>
 <translation id="5520909879404821039">Cześć po francusku</translation>
@@ -1521,7 +1516,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="698231206551913481">Usunięcie tego użytkownika spowoduje trwałe usunięcie wszystkich związanych z nim plików i danych lokalnych.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> nie obsługuje rozdzielczości <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Kliknij „Potwierdź”, aby zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="6989752354829085073">Obejrzyj krótką prezentację, aby dowiedzieć się, jak korzystać z Chromebooka. Zacznij w 6 krokach.</translation>
 <translation id="7000027735917578303">Ustawienia okien i biurek</translation>
 <translation id="7004910047186208204">Połącz z siecią komórkową</translation>
 <translation id="7005239792648594238">Aby rozpocząć, otwórz aplikację</translation>
@@ -1588,7 +1582,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7313193732017069507">Otwórz aparat</translation>
-<translation id="7316261577130609484">Dodaj nowe zadanie</translation>
 <translation id="7330397557116570022">Aby używać dyktowania, przejdź do pola tekstowego</translation>
 <translation id="7331646370422660166">Alt + strzałka w dół</translation>
 <translation id="7340731148882810149">Menu automatycznego klikania</translation>
@@ -1653,7 +1646,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7557816257942363084"><ph name="APP_NAME" /> używa teraz mikrofonu</translation>
 <translation id="7561982940498449837">Zamknij menu</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
-<translation id="7567950130372125778">Cześć, Chromebook wygląda trochę inaczej.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
 <translation id="7569886975397378678">Zamknij konfigurację wyświetlania powiadomień i aplikacji z telefonu</translation>
 <translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | Zostało: <ph name="TIME" /></translation>
@@ -1834,6 +1826,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, bateria telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacja</translation>
 <translation id="8255234195843591763">Zresetuj, aby zaktualizować</translation>
+<translation id="8257510091797044096">Skonfiguruj urządzenie</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8262312463845990408">Włącz lub wyłącz odtwarzanie</translation>
 <translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>

@@ -173,7 +173,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1647986356840967552">Avvalgi sahifa</translation>
 <translation id="1651914502370159744">Tarix sahifasini ochish</translation>
 <translation id="1654477262762802994">Ovozli qidiruvni boshlash</translation>
-<translation id="1662667383227796099">Launcherda fayllar va ilovalarni qidiring. Shuningdek, Chromebook haqidagi savollaringizga javob olishingiz mumkin.</translation>
 <translation id="1668469839109562275">Ichki oʻrnatilgan VPN</translation>
 <translation id="1675844249244994876">Oʻng oynani yangilash</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qoldi</translation>
@@ -467,7 +466,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2965227184985674128">Mikrofondan foydalanishga ruxsat berilsinmi?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> nutq fayllari yuklab olinmadi</translation>
 <translation id="2970920913501714344">Ilovalar, kengaytmalar va mavzularni oʻrnating</translation>
-<translation id="2977098646659697261">Qadalgan va ochiq ilovalaringiz panelda Ilovani panelga qadash uchun ilova ustida oʻng tugmani bosing yoki sensorli panelni ikki barmoq bilan bosing.</translation>
 <translation id="2977598380246111477">Keyingi raqam</translation>
 <translation id="2985148236010982088">Barcha ilovalar</translation>
 <translation id="2992327365391326550">Qurilmaning mikrofon tugmasi faolsizlantirildi.</translation>
@@ -776,7 +774,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4123259114412175274">Chromebook qurilmangiz qulfini ochish uchun telefoningizda Bluetooth yoniqligini. tekshiring</translation>
 <translation id="4125970834901680537">Planshet rejimida ilovalar translatsiyasi ishlamaydi. Laptop rejimida qaytadan urining.</translation>
 <translation id="4131973331381812765">Harorat: <ph name="TEMPERATURE" />°C - Joriy tezlik: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GGs</translation>
-<translation id="4132502210362661715">Chromebook ichki oʻrnatilgan foydali ilovalar bilan sotiladi. Ilovalarni Launcherda topish mumkin.</translation>
 <translation id="4136724716305260864">Quyosh botishigacha yoniq</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + oʻngga strelka</translation>
 <translation id="4146671046252289537">Keyingi soʻz oxiriga oʻtish</translation>
@@ -808,7 +805,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Oʻrnatilgan ilova, Pauzada</translation>
 <translation id="4228078597006700451">Parametrlar sozlanmadi</translation>
 <translation id="4231053948789591973">Translatsiya hozir pauzada. Ekran translatsiyasini instalgan vaqt davom ettirish yoki tugatish mumkin.</translation>
-<translation id="423685346499232137">Ayni vaqtda kontentni nusxalash yoki joylash imkonsiz</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Umumiy axborot rejimi</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
@@ -820,7 +816,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4269883910223712419">Bu qurilma administratorining vakolatlari:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Pastga strelka tezkor tugmasi oʻzgardi. End tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Oʻngga strelkani bosing.</translation>
 <translation id="4275283744500212192">Sahifa maketi parametrlarini oching</translation>
-<translation id="4278138729651139331">Sozlamalar orqali Chromebook qurilmangizni sozlang va moslashtiring. Fon rasmini oʻzgartiring yoki ekran lavhasini oʻrnating.</translation>
 <translation id="4279490309300973883">Ekran nusxasini boshqa ekranga uzatish</translation>
 <translation id="4280601795273309128">Xavfsizlikka oid yangilanishlar tugadi. Qurilmani yangilang.</translation>
 <translation id="4283888303416325161">Xavfsizlikni oshirish uchun parol kiriting</translation>
@@ -1136,7 +1131,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="550391772491508736">Translatsiyaga qaytish</translation>
 <translation id="5506975627792768506">Lupani yoqish yoki oʻchirish</translation>
 <translation id="5512042095225963688">Avvalgi soʻzni oʻchirish</translation>
-<translation id="5518068085000130971">Bular asosiy narsalar! Maslahatlar va yordam uchun oldindan oʻrnatilgan ilovamiz Exploreʼda davom eting. Boshlash uchun maslahatlar, tavsiya etilgan ilovalar, maxsus takliflar va eng yangi Chromebook funksiyalarini topasiz.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator barcha eSIM profillarni olib tashladi. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5520909879404821039">Fransuz tilida Salom</translation>
@@ -1522,7 +1516,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
 <translation id="698231206551913481">Bu foydalanuvchiga tegishli barcha fayllar va mahalliy ma’lumotlar foydalanuvchi olib tashlanganda butunlay o‘chib ketadi.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) tiniqlikda ishlamaydi. Tasvir <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) tiniqligiga qaytarildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
-<translation id="6989752354829085073">Chromebook qurilmasidan qanday foydalanishni oʻrganish uchun tezkor tanishtiruvdan foydalaning. 6 ta bosqichda hammasi bilan tanishing.</translation>
 <translation id="7000027735917578303">Oynalar va ish stoli sozlamalari</translation>
 <translation id="7004910047186208204">Mobil internetga ulanish</translation>
 <translation id="7005239792648594238">Boshlash uchun ilovani oching</translation>
@@ -1589,7 +1582,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator eSIM kartangizni tiklamoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="7313193732017069507">Kamera tugmasini chiqarish</translation>
-<translation id="7316261577130609484">Yangi vazifa kiritish</translation>
 <translation id="7330397557116570022">Ovoz bilan yozishdan foydalanish uchun matn maydoniga oʻting</translation>
 <translation id="7331646370422660166">alt + pastga strelka</translation>
 <translation id="7340731148882810149">Avtomatik kliklar menyusi</translation>
@@ -1654,7 +1646,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7557816257942363084"><ph name="APP_NAME" /> hozir mikrofondan foydalanmoqda</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="7564874036684306347">Oynalarni boshqa ish stoliga ko‘chirish oqibatida kutilmagan xatti-harakatlar sodir bo‘lishi mumkin. Bildirishnomalar va muloqot oynalari turli ekranlarda ko‘rsatiladi.</translation>
-<translation id="7567950130372125778">Salom. Chromebook biroz boshqacha.</translation>
 <translation id="7569509451529460200">Brayl yozuvi va ChromeVox yoqildi</translation>
 <translation id="7569886975397378678">Telefondagi bildirishnoma va ilovalarni koʻrishni sozlash oynasini yopish</translation>
 <translation id="7571361473021531288">Batareya: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> qoldi</translation>
