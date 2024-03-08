@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,6 +40,40 @@
 
 namespace autofill {
 
+namespace {
+
+AutofillBubbleBase* ShowSaveBubble(
+    const AutofillProfile& profile,
+    bool is_migration_to_account,
+    content::WebContents* web_contents,
+    bool shown_by_user_gesture,
+    base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
+  auto controller = std::make_unique<SaveAddressBubbleController>(
+      delegate, web_contents, profile, is_migration_to_account);
+  return chrome::FindBrowserWithTab(web_contents)
+      ->window()
+      ->GetAutofillBubbleHandler()
+      ->ShowSaveAddressProfileBubble(web_contents, std::move(controller),
+                                     shown_by_user_gesture);
+}
+
+AutofillBubbleBase* ShowUpdateBubble(
+    const AutofillProfile& profile,
+    const AutofillProfile& original_profile,
+    content::WebContents* web_contents,
+    bool shown_by_user_gesture,
+    base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
+  auto update_controller = std::make_unique<UpdateAddressBubbleController>(
+      delegate, web_contents, profile, original_profile);
+  return chrome::FindBrowserWithTab(web_contents)
+      ->window()
+      ->GetAutofillBubbleHandler()
+      ->ShowUpdateAddressProfileBubble(
+          web_contents, std::move(update_controller), shown_by_user_gesture);
+}
+
+}  // namespace
+
 AddressBubblesController::AddressBubblesController(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
@@ -54,6 +89,7 @@ AddressBubblesController::~AddressBubblesController() {
   DCHECK(address_profile_save_prompt_callback_.is_null());
 }
 
+// static
 void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
@@ -61,9 +97,18 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
     AutofillClient::SaveAddressProfilePromptOptions options,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   AddressBubblesController::CreateForWebContents(web_contents);
-  AddressBubblesController::FromWebContents(web_contents)
-      ->SetUpAndShowBubble(profile, original_profile, options,
-                           std::move(callback));
+  auto* controller = AddressBubblesController::FromWebContents(web_contents);
+  auto show_bubble_view_impl =
+      !original_profile
+          // Save address bubble.
+          ? base::BindRepeating(ShowSaveBubble, profile,
+                                options.is_migration_to_account)
+          // Update address bubble.
+          : base::BindRepeating(ShowUpdateBubble, profile, *original_profile);
+
+  controller->SetUpAndShowBubble(std::move(show_bubble_view_impl), profile,
+                                 original_profile, options,
+                                 std::move(callback));
 }
 
 void AddressBubblesController::OnUserDecision(
@@ -145,30 +190,13 @@ PageActionIconType AddressBubblesController::GetPageActionIconType() {
 }
 
 void AddressBubblesController::DoShowBubble() {
-  DCHECK(!bubble_view());
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  // TODO(b/325440757): Move the view factory defining outside this class.
-  if (IsSaveBubble()) {
-    auto save_controller = std::make_unique<SaveAddressBubbleController>(
-        GetWeakPtr(), web_contents(), address_profile_.value(),
-        is_migration_to_account_);
-    set_bubble_view(browser->window()
-                        ->GetAutofillBubbleHandler()
-                        ->ShowSaveAddressProfileBubble(
-                            web_contents(), std::move(save_controller),
-                            shown_by_user_gesture_));
-  } else {
-    // This is an update prompt.
-    auto update_controller = std::make_unique<UpdateAddressBubbleController>(
-        GetWeakPtr(), web_contents(), address_profile_.value(),
-        original_profile_.value());
-    set_bubble_view(browser->window()
-                        ->GetAutofillBubbleHandler()
-                        ->ShowUpdateAddressProfileBubble(
-                            web_contents(), std::move(update_controller),
-                            shown_by_user_gesture_));
-  }
-  DCHECK(bubble_view());
+  CHECK(!bubble_view());
+  CHECK(show_bubble_view_callback_);
+
+  set_bubble_view(show_bubble_view_callback_.Run(
+      web_contents(), shown_by_user_gesture_, GetWeakPtr()));
+
+  CHECK(bubble_view());
 }
 
 bool AddressBubblesController::IsSaveBubble() const {
@@ -176,6 +204,7 @@ bool AddressBubblesController::IsSaveBubble() const {
 }
 
 void AddressBubblesController::SetUpAndShowBubble(
+    ShowBubbleViewCallback show_bubble_view_callback,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
     AutofillClient::SaveAddressProfilePromptOptions options,
@@ -200,6 +229,7 @@ void AddressBubblesController::SetUpAndShowBubble(
         .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
   }
 
+  show_bubble_view_callback_ = std::move(show_bubble_view_callback);
   address_profile_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =

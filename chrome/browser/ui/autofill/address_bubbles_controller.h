@@ -7,9 +7,10 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
-#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -75,6 +76,11 @@ class AddressBubblesController
   void DoShowBubble() override;
 
  private:
+  using ShowBubbleViewCallback = base::RepeatingCallback<AutofillBubbleBase*(
+      content::WebContents*,
+      /*shown_by_user_gesture=*/bool,
+      base::WeakPtr<AddressBubbleControllerDelegate>)>;
+
   explicit AddressBubblesController(
       content::WebContents* web_contents);
   friend class content::WebContentsUserData<
@@ -83,6 +89,7 @@ class AddressBubblesController
   bool IsSaveBubble() const;
 
   void SetUpAndShowBubble(
+      ShowBubbleViewCallback show_bubble_view_callback,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
       AutofillClient::SaveAddressProfilePromptOptions options,
@@ -109,6 +116,12 @@ class AddressBubblesController
 
   // Whether the bubble prompts to save (migrate) the profile into account.
   bool is_migration_to_account_ = false;
+
+  // The callback to create and show the bubble. It defines the appearance of
+  // the bubble and contains some specific logic. The controller doesn't take
+  // the ownership of the instance returned (it only hides the bubble),
+  // the hosting widget is expected to be the owner.
+  ShowBubbleViewCallback show_bubble_view_callback_;
 
   std::string app_locale_;
 
