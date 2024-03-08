@@ -63,9 +63,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
-  void LoadCreditCards() override;
-  void LoadCreditCardCloudTokenData() override;
-  void LoadIbans() override;
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;

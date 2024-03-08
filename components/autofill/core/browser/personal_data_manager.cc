@@ -1176,34 +1176,6 @@ void PersonalDataManager::SetCreditCards(
   payments_data_manager_->SetCreditCards(credit_cards);
 }
 
-void PersonalDataManager::LoadCreditCards() {
-  payments_data_manager_->LoadCreditCards();
-}
-
-void PersonalDataManager::LoadCreditCardCloudTokenData() {
-  payments_data_manager_->LoadCreditCardCloudTokenData();
-}
-
-void PersonalDataManager::LoadIbans() {
-  payments_data_manager_->LoadIbans();
-}
-
-void PersonalDataManager::LoadAutofillOffers() {
-  payments_data_manager_->LoadAutofillOffers();
-}
-
-void PersonalDataManager::LoadVirtualCardUsageData() {
-  payments_data_manager_->LoadVirtualCardUsageData();
-}
-
-void PersonalDataManager::LoadCreditCardBenefits() {
-  payments_data_manager_->LoadCreditCardBenefits();
-}
-
-void PersonalDataManager::LoadPaymentsCustomerData() {
-  payments_data_manager_->LoadPaymentsCustomerData();
-}
-
 bool PersonalDataManager::SaveCardLocallyIfNew(
     const CreditCard& imported_card) {
   CHECK(!imported_card.number().empty());

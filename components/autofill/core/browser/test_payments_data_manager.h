@@ -27,6 +27,11 @@ class TestPaymentsDataManager : public PaymentsDataManager {
 
   ~TestPaymentsDataManager() override;
 
+  // PaymentsDataManager:
+  void LoadCreditCards() override;
+  void LoadCreditCardCloudTokenData() override;
+  void LoadIbans() override;
+
   // Clears |local_credit_cards_| and |server_credit_cards_|.
   void ClearCreditCards();
 

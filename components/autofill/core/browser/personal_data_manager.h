@@ -735,27 +735,6 @@ class PersonalDataManager : public KeyedService,
   virtual const AutofillProfileUpdateStrikeDatabase*
   GetProfileUpdateStrikeDatabase() const;
 
-  // Loads the saved credit cards from the web database.
-  virtual void LoadCreditCards();
-
-  // Loads the saved credit card cloud token data from the web database.
-  virtual void LoadCreditCardCloudTokenData();
-
-  // Loads the saved IBANs from the web database.
-  virtual void LoadIbans();
-
-  // Loads the payments customer data from the web database.
-  virtual void LoadPaymentsCustomerData();
-
-  // Loads the autofill offer data from the web database.
-  virtual void LoadAutofillOffers();
-
-  // Loads the virtual card usage data from the web database.
-  virtual void LoadVirtualCardUsageData();
-
-  // Loads the credit card benefits from the web database.
-  virtual void LoadCreditCardBenefits();
-
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;

@@ -249,19 +249,20 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // TODO(b/322170538): Remove dependency.
   friend class PersonalDataManager;
   friend class PersonalDataManagerTestApi;
+  friend class TestPaymentsDataManager;
   friend class TestPersonalDataManager;
 
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
 
   // Loads the saved credit cards from the web database.
-  void LoadCreditCards();
+  virtual void LoadCreditCards();
 
   // Loads the saved credit card cloud token data from the web database.
-  void LoadCreditCardCloudTokenData();
+  virtual void LoadCreditCardCloudTokenData();
 
   // Loads the saved IBANs from the web database.
-  void LoadIbans();
+  virtual void LoadIbans();
 
   // Loads the masked bank accounts from the web database.
   void LoadMaskedBankAccounts();

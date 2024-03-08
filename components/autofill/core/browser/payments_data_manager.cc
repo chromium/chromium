@@ -404,16 +404,16 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
 }
 
 void PaymentsDataManager::Refresh() {
-  pdm_->LoadCreditCards();
-  pdm_->LoadCreditCardCloudTokenData();
-  pdm_->LoadIbans();
+  LoadCreditCards();
+  LoadCreditCardCloudTokenData();
+  LoadIbans();
   if (AreBankAccountsSupported()) {
     LoadMaskedBankAccounts();
   }
-  pdm_->LoadPaymentsCustomerData();
-  pdm_->LoadAutofillOffers();
-  pdm_->LoadVirtualCardUsageData();
-  pdm_->LoadCreditCardBenefits();
+  LoadPaymentsCustomerData();
+  LoadAutofillOffers();
+  LoadVirtualCardUsageData();
+  LoadCreditCardBenefits();
 }
 
 const Iban* PaymentsDataManager::GetIbanByGUID(const std::string& guid) const {
