@@ -149,16 +149,6 @@ tast_disabled_tests_from_lacros_all = [
 ]
 
 if (!is_official_build) {
-  # b/317733179 skylab builders lack of feature to pass runtime variables.
-  tast_disabled_tests_from_chrome_all += [
-    "login.AuthError",
-    "login.Offline",
-    "wmp.AdminTemplatesLaunch",
-    "wmp.DesksTemplatesBasic",
-    "wmp.DesksTemplatesLaunch",
-    "wmp.SavedDeskDelete",
-  ]
-
   # b/315373487 the team working on the fix on CrOS side
   tast_disabled_tests_from_chrome_all +=
       [ "ui.ChromeCrashLoopV2.crashpad_mock_consent@jacuzzi" ]
