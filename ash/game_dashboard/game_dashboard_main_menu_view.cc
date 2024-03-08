@@ -309,8 +309,9 @@ class ScreenSizeRow : public views::Button {
 
     const std::u16string title = l10n_util::GetStringUTF16(
         IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE);
-    SetAccessibleName(title);
     SetTooltipText(tooltip ? l10n_util::GetStringUTF16(tooltip) : title);
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_BUTTON_A11Y_LABEL));
 
     auto* layout =
         ConfigureFeatureRowLayout(this, kScreenSizeRowCorners, enabled);
@@ -366,10 +367,8 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
         game_dashboard_utils::GetGameControlsFlag(GetGameWindow());
     CHECK(flags);
 
-    const auto title = l10n_util::GetStringUTF16(
-        IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE);
-    SetAccessibleName(title);
-    SetTooltipText(title);
+    SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_ASH_GAME_DASHBOARD_GC_CONTROLS_DETAILS_BUTTON_TOOLTIP));
 
     const bool is_available = game_dashboard_utils::IsFlagSet(
         *flags, ArcGameControlsFlag::kAvailable);
@@ -378,7 +377,9 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
 
     // Add header.
     header_ = AddChildView(std::make_unique<FeatureHeader>(
-        /*is_enabled=*/is_available, kGdGameControlsIcon, title));
+        /*is_enabled=*/is_available, kGdGameControlsIcon,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
     // Flex `header_` to fill the empty space.
     layout->SetFlexForView(header_, /*flex=*/1);
 
@@ -411,12 +412,13 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
           AddChildView(std::make_unique<Switch>(base::BindRepeating(
               &GameControlsDetailsRow::OnFeatureSwitchButtonPressed,
               base::Unretained(this))));
-      // TODO(b/279117180): Update the accessibility name.
-      feature_switch_->SetAccessibleName(
-          l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
       feature_switch_->SetProperty(views::kMarginsKey,
                                    gfx::Insets::TLBR(0, 8, 0, 18));
       feature_switch_->SetIsOn(is_feature_enabled);
+      feature_switch_->SetTooltipText(l10n_util::GetStringUTF16(
+          feature_switch_->GetIsOn()
+              ? IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_OFF
+              : IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_ON));
       // Add arrow icon.
       AddChildView(
           std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -461,6 +463,10 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
                 /*enable_flag=*/ArcGameControlsFlag::kEnabled |
                 ArcGameControlsFlag::kHint),
             is_toggled));
+    feature_switch_->SetTooltipText(l10n_util::GetStringUTF16(
+        feature_switch_->GetIsOn()
+            ? IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_OFF
+            : IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_ON));
 
     main_menu_->UpdateGameControlsTile();
   }
@@ -575,6 +581,10 @@ void GameDashboardMainMenuView::OnToolbarTilePressed() {
           ? l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_VISIBLE_STATUS)
           : l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HIDDEN_STATUS));
   toolbar_tile_->SetToggled(toolbar_visible);
+  toolbar_tile_->SetTooltipText(l10n_util::GetStringUTF16(
+      toolbar_tile_->IsToggled()
+          ? IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_HIDE_TOOLBAR
+          : IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_SHOW_TOOLBAR));
 }
 
 void GameDashboardMainMenuView::OnRecordGameTilePressed() {
@@ -716,6 +726,10 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
           ? l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_VISIBLE_STATUS)
           : l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HIDDEN_STATUS)));
   toolbar_tile_->SetToggled(toolbar_visible);
+  toolbar_tile_->SetTooltipText(l10n_util::GetStringUTF16(
+      toolbar_tile_->IsToggled()
+          ? IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_HIDE_TOOLBAR
+          : IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_SHOW_TOOLBAR));
 
   MaybeAddGameControlsTile(container);
 
@@ -737,7 +751,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
         GameDashboardController::Get()->active_recording_context() == context_);
   }
 
-  container->AddChildView(CreateFeatureTile(
+  auto* screenshot_tile = container->AddChildView(CreateFeatureTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnScreenshotTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/true, FeatureTile::TileType::kCompact,
@@ -745,6 +759,8 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
       /*sub_label=*/std::nullopt));
+  // `screenshot_tile` is treated as a button instead of toggle button here.
+  screenshot_tile->SetAccessibleRole(ax::mojom::Role::kButton);
 }
 
 void GameDashboardMainMenuView::MaybeAddArcFeatureRows() {
@@ -830,11 +846,13 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
   auto* empty_view = container->AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(empty_view, /*flex=*/1);
 
-  container->AddChildView(CreateIconButton(
+  auto* help_button = container->AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardMainMenuView::OnHelpButtonPressed,
                           base::Unretained(this)),
       VIEW_ID_GD_HELP_BUTTON, kGdHelpIcon,
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP)));
+  help_button->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HELP_BUTTON_A11Y_LABEL));
   container->AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardMainMenuView::OnSettingsButtonPressed,
                           base::Unretained(this)),
@@ -886,6 +904,10 @@ void GameDashboardMainMenuView::UpdateRecordGameTile(
   }
   record_game_tile_->SetSubLabelVisibility(is_recording_game_window);
   record_game_tile_->SetToggled(is_recording_game_window);
+  record_game_tile_->SetTooltipText(l10n_util::GetStringUTF16(
+      record_game_tile_->IsToggled()
+          ? IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_STOP
+          : IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_START));
 }
 
 void GameDashboardMainMenuView::MaybeDecorateSetupButton(bool is_o4c) {

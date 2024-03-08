@@ -7505,8 +7505,17 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE" desc="The default title of the Game Dashboard button.">
         Game dashboard
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_HELP_BUTTON_A11Y_LABEL" translateable="false" desc="Help button a11y label. Spoken by screen readers when the help button gets focus but not visually rendered.">
+        Get help
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_HIDDEN_STATUS" translateable="false" desc="The hidden state for compact Game Dashboard tile sub-labels.">
         Hidden
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_START" translateable="false" desc="The tooltips for record game tile when recording has not yet started.">
+        Record game
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_STOP" translateable="false" desc="The tooltips for record game tile when recording is in progress.">
+        Stop recording
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard record game tile.">
         Record game
@@ -7516,6 +7525,9 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard screenshot tile.">
         Take screenshot
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_BUTTON_A11Y_LABEL" translateable="false" desc="Screen size settings button a11y label. Spoken by screen readers when the screen size settings button button gets focus but not visually rendered.">
+        Edit screen size
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE" translateable="false" desc="The display name for the Game Dashboard screen size settings.">
         Screen size
@@ -7538,6 +7550,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_TILE_ON" desc="The label for enabled Game Dashboard tiles.">
         On
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_HIDE_TOOLBAR" translateable="false" desc="The tooltips for toolbar tile when the toolbar is visible.">
+        Hide toolbar
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_SHOW_TOOLBAR" translateable="false" desc="The tooltips for toolbar tile when the toolbar is not visible.">
+        Show toolbar
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard toolbar tile.">
         Toolbar
       </message>
@@ -7552,6 +7570,15 @@ To shut down the device, press and hold the power button on the device again.
       </message>
 
       <!-- Game Dashboard / Game Controls strings -->
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_CONTROLS_DETAILS_BUTTON_TOOLTIP" desc="Tooltip for the game controls details row.">
+        Edit game controls
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_OFF" desc="The tooltips for game controls feature switch when game controls is enabled.">
+        Turn off game controls
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_FEATURE_SWITCH_TOOLTIPS_ON" desc="The tooltips for game controls feature switch when game controls is disabled.">
+        Turn on game controls
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_GC_TILE_VISIBLE" desc="The sub-label for Game Controls tile when input mapping hint is visible.">
         Visible
       </message>
