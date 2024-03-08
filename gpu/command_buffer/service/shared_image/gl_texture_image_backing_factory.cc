@@ -168,8 +168,9 @@ bool GLTextureImageBackingFactory::IsSupported(
   // This is not beneficial on iOS. The main purpose of this is a multi-gpu
   // support.
   if (!support_all_metal_usages_) {
-    if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    if ((gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+         gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) ||
+        emulate_using_angle_metal_for_testing_) {
       constexpr uint32_t kMetalInvalidUsages =
           SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
           SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
@@ -205,8 +206,14 @@ bool GLTextureImageBackingFactory::IsSupported(
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
 }
 
-void GLTextureImageBackingFactory::EnableSupportForAllMetalUsagesForTesting() {
-  support_all_metal_usages_ = true;
+void GLTextureImageBackingFactory::EnableSupportForAllMetalUsagesForTesting(
+    bool enable) {
+  support_all_metal_usages_ = enable;
+}
+
+void GLTextureImageBackingFactory::ForceSetUsingANGLEMetalForTesting(
+    bool value) {
+  emulate_using_angle_metal_for_testing_ = value;
 }
 
 std::unique_ptr<SharedImageBacking>

@@ -91,7 +91,8 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
   SharedImageBackingType GetBackingType() override;
 
-  void EnableSupportForAllMetalUsagesForTesting();
+  void EnableSupportForAllMetalUsagesForTesting(bool enable);
+  void ForceSetUsingANGLEMetalForTesting(bool value);
 
  private:
   std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(
@@ -112,6 +113,7 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
   // IOSurface backing. IOSurface backings are much better suited for cross-API
   // or cross-GPU usages.
   bool support_all_metal_usages_;
+  bool emulate_using_angle_metal_for_testing_ = false;
 };
 
 }  // namespace gpu

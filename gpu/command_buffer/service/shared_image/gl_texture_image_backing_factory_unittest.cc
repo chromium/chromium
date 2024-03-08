@@ -86,8 +86,12 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
             &progress_reporter_, for_cpu_upload_usage);
-    backing_factory->EnableSupportForAllMetalUsagesForTesting();
+    backing_factory->EnableSupportForAllMetalUsagesForTesting(true);
     backing_factory_ = std::move(backing_factory);
+  }
+
+  GLTextureImageBackingFactory* backing_factory() {
+    return static_cast<GLTextureImageBackingFactory*>(backing_factory_.get());
   }
 
   bool IsFormatSupport(viz::SharedImageFormat format) const {
@@ -177,6 +181,32 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
       usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
       GrContextType::kGL, {});
   EXPECT_FALSE(supported);
+}
+
+TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithANGLEMetal) {
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(256, 256);
+
+  for (uint32_t metal_invalid_usage :
+       {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_GLES2_READ,
+        SHARED_IMAGE_USAGE_GLES2_WRITE,
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT}) {
+    bool supported = backing_factory_->CanCreateSharedImage(
+        metal_invalid_usage, format, size, /*thread_safe=*/false,
+        gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+    EXPECT_TRUE(supported) << metal_invalid_usage;
+
+    backing_factory()->ForceSetUsingANGLEMetalForTesting(true);
+    backing_factory()->EnableSupportForAllMetalUsagesForTesting(false);
+
+    supported = backing_factory_->CanCreateSharedImage(
+        metal_invalid_usage, format, size, /*thread_safe=*/false,
+        gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+    EXPECT_FALSE(supported) << metal_invalid_usage;
+
+    backing_factory()->ForceSetUsingANGLEMetalForTesting(false);
+    backing_factory()->EnableSupportForAllMetalUsagesForTesting(true);
+  }
 }
 
 // Ensures that GLTextureImageBacking registers it's estimated size
@@ -508,6 +538,31 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialDataWrongSize) {
       /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL,
       initial_data_large);
   EXPECT_FALSE(supported);
+}
+
+TEST_F(GLTextureImageBackingFactoryWithUploadTest, InvalidUsageWithANGLEMetal) {
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(256, 256);
+
+  // NOTE: SCANOUT is not supported by GLTextureImageBackingFactory at all
+  // unless SHARED_IMAGE_USAGE_CPU_UPLOAD is also specified.
+  uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
+  EXPECT_TRUE(supported) << usage;
+
+  backing_factory()->ForceSetUsingANGLEMetalForTesting(true);
+  backing_factory()->EnableSupportForAllMetalUsagesForTesting(false);
+
+  supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, {});
+  EXPECT_FALSE(supported) << usage;
+
+  backing_factory()->ForceSetUsingANGLEMetalForTesting(false);
+  backing_factory()->EnableSupportForAllMetalUsagesForTesting(true);
 }
 
 TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
