@@ -1236,7 +1236,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = 31)
-    public void testTabMove_CloseChromeWindowIfEmpty_closed() {
+    public void testCloseChromeWindowIfEmpty_closed() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Create an empty instance before asking it to close. The flag that provides permission to
@@ -1247,16 +1247,41 @@ public class MultiInstanceManagerApi31UnitTest {
         // Action
         mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
 
-        // Verify moveTabAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(1))
                 .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
     }
 
     @Test
     @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
+        ChromeFeatureList.DRAG_DROP_TAB_TEARING
+    })
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = 31)
-    public void testTabMove_CloseChromeWindowIfEmpty_notClosed() {
+    public void testCloseChromeWindowIfEmpty_tabTearing() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        MultiWindowTestUtils.enableMultiInstance();
+        // Create an empty instance before asking it to close. The flag that provides permission to
+        // close is enabled.
+        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Action
+        mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
+
+        verify(mMultiInstanceManager, times(1))
+                .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
+    }
+
+    @Test
+    @UiThreadTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
+        ChromeFeatureList.DRAG_DROP_TAB_TEARING
+    })
+    @Config(sdk = 31)
+    public void testCloseChromeWindowIfEmpty_notClosed() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Create an empty instance before asking it to close. The flag that provides permission to
@@ -1267,7 +1292,6 @@ public class MultiInstanceManagerApi31UnitTest {
         // Action
         mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
 
-        // Verify moveTabAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(0)).closeInstance(anyInt(), anyInt());
     }
 }

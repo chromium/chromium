@@ -988,8 +988,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     private boolean canCloseChromeWindow(int instanceId) {
         // Close the source instance window after reparenting if permitted by the feature flag and
         // the source instance is known.
+        if (instanceId == INVALID_INSTANCE_ID) return false;
+
         return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
-                && instanceId != INVALID_INSTANCE_ID;
+                || TabUiFeatureUtilities.isTabTearingEnabled();
     }
 
     /**
