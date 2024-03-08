@@ -3303,6 +3303,9 @@ extern const char kAshEnableUnifiedDesktopDescription[];
 extern const char kAshModifierSplitName[];
 extern const char kAshModifierSplitDescription[];
 
+extern const char kAshModifierSplitFeatureKeyName[];
+extern const char kAshModifierSplitFeatureKeyDescription[];
+
 extern const char kAshPickerName[];
 extern const char kAshPickerDescription[];
 

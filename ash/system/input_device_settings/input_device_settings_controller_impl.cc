@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/events/peripheral_customization_event_rewriter.h"
 #include "ash/public/cpp/accelerators_util.h"
@@ -33,10 +34,12 @@
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -566,6 +569,18 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
 }
 
 void InputDeviceSettingsControllerImpl::Init() {
+  if (features::IsModifierSplitEnabled()) {
+    const std::string debug_key_hash = base::SHA1HashString(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            ash::switches::kModifierSplitFeatureKey));
+
+    const std::string hash =
+        "\xFC\xEF\x09\x7D\x01\x39\x86\x6A\x57\x08\x7C\x22\x5F\x1C\xEF\x8A\x3B"
+        "\x7E\x10\x99";
+    // If key fails to match, crash chrome.
+    CHECK_EQ(debug_key_hash, hash);
+  }
+
   Shell::Get()->session_controller()->AddObserver(this);
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->AddObserver(this);

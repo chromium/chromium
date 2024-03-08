@@ -902,6 +902,9 @@ const char kForceBrowserDataMigrationForTesting[] =
 // Determines the URL to be used when calling the backend.
 const char kMarketingOptInUrl[] = "marketing-opt-in-url";
 
+// Supply secret key for modifier split feature.
+const char kModifierSplitFeatureKey[] = "modifier-split-feature-key";
+
 // Enables natural scroll by default.
 const char kNaturalScrollDefault[] = "enable-natural-scroll-default";
 

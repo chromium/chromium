@@ -10869,13 +10869,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshPickerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPicker)},
 
+    {"ash-picker-feature-key", flag_descriptions::kAshPickerFeatureKeyName,
+     flag_descriptions::kAshPickerFeatureKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kPickerFeatureKey, "")},
+
     {"ash-modifier-split", flag_descriptions::kAshModifierSplitName,
      flag_descriptions::kAshModifierSplitDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kModifierSplit)},
 
-    {"ash-picker-feature-key", flag_descriptions::kAshPickerFeatureKeyName,
-     flag_descriptions::kAshPickerFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kPickerFeatureKey, "")},
+    {"ash-modifier-split-feature-key",
+     flag_descriptions::kAshModifierSplitFeatureKeyName,
+     flag_descriptions::kAshModifierSplitFeatureKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kModifierSplitFeatureKey, "")},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"pwm-shadow-dom-support",
