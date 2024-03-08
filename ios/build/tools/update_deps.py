@@ -196,7 +196,7 @@ def add_missing_deps(srcdir, target, deps):
             target_name = target_name[:-len(suffix)]
             break
 
-    target_rule = re.compile("\s*[a-z_]*\(\"%s\"\) {" % target_name)
+    target_rule = re.compile(r"\s*[a-z_]*\(\"%s\"\) {" % target_name)
     with open(build_gn_file, "r") as build_gn:
         all_lines = build_gn.readlines()
         for line_index, line in enumerate(all_lines):
