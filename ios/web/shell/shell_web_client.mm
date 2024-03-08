@@ -84,4 +84,8 @@ bool ShellWebClient::EnableLongPressUIContextMenu() const {
   return true;
 }
 
+bool ShellWebClient::EnableWebInspector(BrowserState* browser_state) const {
+  return true;
+}
+
 }  // namespace web

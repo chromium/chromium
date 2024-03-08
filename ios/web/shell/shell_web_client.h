@@ -11,6 +11,7 @@
 #import "ios/web/public/web_client.h"
 
 namespace web {
+class BrowserState;
 class ShellBrowserState;
 class ShellWebMainParts;
 
@@ -34,6 +35,7 @@ class ShellWebClient : public WebClient {
       WebState* web_state,
       mojo::GenericPendingReceiver receiver) override;
   bool EnableLongPressUIContextMenu() const override;
+  bool EnableWebInspector(BrowserState* browser_state) const override;
 
   ShellBrowserState* browser_state() const;
 
