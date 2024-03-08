@@ -209,6 +209,28 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithANGLEMetal) {
   }
 }
 
+// Tests that GLTextureImageBackingFactory will not create SharedImages with
+// Skia usages when Skia is using Graphite (as in that case Skia is not
+// necessarily using GL).
+TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithGraphite) {
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(256, 256);
+
+  for (uint32_t graphite_invalid_usage :
+       {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_DISPLAY_WRITE,
+        SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_RASTER_WRITE}) {
+    bool supported = backing_factory_->CanCreateSharedImage(
+        graphite_invalid_usage, format, size, /*thread_safe=*/false,
+        gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+    EXPECT_TRUE(supported) << graphite_invalid_usage;
+
+    supported = backing_factory_->CanCreateSharedImage(
+        graphite_invalid_usage, format, size, /*thread_safe=*/false,
+        gfx::EMPTY_BUFFER, GrContextType::kGraphiteDawn, {});
+    EXPECT_FALSE(supported) << graphite_invalid_usage;
+  }
+}
+
 // Ensures that GLTextureImageBacking registers it's estimated size
 // with memory tracker.
 TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
