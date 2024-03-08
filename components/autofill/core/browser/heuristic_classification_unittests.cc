@@ -615,9 +615,22 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   }
 }
 
+// Maps a test file name to a short string that is used in the test name.
+// E.g. a file "internal/DE.json" becomes "DE" such that the test is called
+// AllForms/HeuristicClassificationTests.EndToEnd/DE.
+std::string GenerateTestName(
+    const testing::TestParamInfo<base::FilePath>& info) {
+  std::string name = info.param.BaseName()
+                         .ReplaceExtension(FILE_PATH_LITERAL(""))
+                         .MaybeAsASCII();
+  base::ranges::replace_if(name, [](char c) { return !std::isalnum(c); }, '_');
+  return name;
+}
+
 INSTANTIATE_TEST_SUITE_P(AllForms,
                          HeuristicClassificationTests,
-                         testing::ValuesIn(GetTestFiles()));
+                         testing::ValuesIn(GetTestFiles()),
+                         GenerateTestName);
 
 }  // namespace
 }  // namespace autofill
