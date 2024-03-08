@@ -303,18 +303,43 @@ void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
   if (!node)
     return;
 
-  // Fire CHILDREN_CHANGED events when the list of children updates.
   // Internally we store inline text box nodes as children of a static text
   // node or a line break node, which enables us to determine character bounds
   // and line layout. We don't expose those to platform APIs, though, so
   // suppress CHILDREN_CHANGED events on static text nodes.
-  if (new_node_data.child_ids != old_node_data.child_ids && !node->IsText()) {
-    if (node->IsIgnored()) {
-      AXNode* unignored_parent = node->GetUnignoredParent();
-      if (unignored_parent)
-        AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
-      return;
-    }
+  if (node->IsText()) {
+    return;
+  }
+
+  bool was_ignored = old_node_data.IsIgnored();
+  bool is_ignored = new_node_data.IsIgnored();
+
+  if (was_ignored != is_ignored) {
+    // The ignored state is changing, which cause the current node to be added
+    // or removed to the unignored ancestor. Therefore, a children changed event
+    // must be fired on the unignored ancestor. The node data may not have
+    // changed in this case, because the ignored state can change based on
+    // focus, which is in tree data. Therefore, firing Event::CHILDREN_CHANGED
+    // when ignored changes is is handled in OnIgnoredChanged().
+    return;
+  }
+
+  if (new_node_data.child_ids == old_node_data.child_ids) {
+    // If the child ids remained the same, then children changed doesn't need to
+    // be fired.
+    return;
+  }
+
+  if (is_ignored) {
+    // Node remained ignored. If its child ids changed, that means
+    // the unignored parent's children changed.
+    AXNode* unignored_parent = node->GetUnignoredParent();
+    DUMP_WILL_BE_CHECK(unignored_parent)
+        << "The root cannot be ignored, so an unignored parent is always "
+           "found.";
+    AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
+  } else {
+    // Node remained unignored. Fire a children changed event on it.
     AddEvent(node, Event::CHILDREN_CHANGED);
   }
 }
@@ -332,9 +357,13 @@ void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
                                         AXNode* node,
                                         bool is_ignored_new_value) {
   DCHECK_EQ(tree_, tree);
+
   AXNode* unignored_parent = node->GetUnignoredParent();
-  if (unignored_parent)
-    AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
+  DUMP_WILL_BE_CHECK(unignored_parent)
+      << "The root cannot be ignored, so an unignored parent is always "
+         "found.";
+  AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
+
   AddEvent(node, Event::IGNORED_CHANGED);
   if (!is_ignored_new_value)
     AddEvent(node, Event::SUBTREE_CREATED);
