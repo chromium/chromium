@@ -77,6 +77,12 @@ class PreinstalledWebAppsBrowserTest : public WebAppControllerBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  if (GetParam() == test::CrosapiParam::kDisabled) {
+    // TODO(http://crbug.com/328691719): Test is flaky on CHROMEOS.
+    return;
+  }
+#endif
   base::AutoReset<bool> scope =
       SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
