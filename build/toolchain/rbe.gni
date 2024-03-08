@@ -30,8 +30,6 @@ declare_args() {
   if (host_os == "linux") {
     rbe_py_cfg_file =
         rebase_path(rbe_cfg_dir, root_build_dir) + "/python/rewrapper_linux.cfg"
-    rbe_py_large_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
-                            "/python/rewrapper_linux_large.cfg"
     rbe_cc_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
                       "/chromium-browser-clang/rewrapper_linux.cfg"
     rbe_link_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
@@ -39,16 +37,12 @@ declare_args() {
   } else if (host_os == "win") {
     rbe_py_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
                       "/python/rewrapper_windows.cfg"
-    rbe_py_large_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
-                            "/python/rewrapper_windows_large.cfg"
     rbe_cc_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
                       "/chromium-browser-clang/rewrapper_windows.cfg"
     rbe_link_cfg_file = ""
   } else if (host_os == "mac") {
     rbe_py_cfg_file =
         rebase_path(rbe_cfg_dir, root_build_dir) + "/python/rewrapper_mac.cfg"
-    rbe_py_large_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
-                            "/python/rewrapper_mac_large.cfg"
     rbe_cc_cfg_file = rebase_path(rbe_cfg_dir, root_build_dir) +
                       "/chromium-browser-clang/rewrapper_mac.cfg"
     rbe_link_cfg_file = ""
