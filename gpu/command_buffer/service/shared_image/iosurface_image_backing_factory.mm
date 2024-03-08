@@ -365,18 +365,15 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   if (!base::Contains(supported_formats_, format)) {
-    LOG(ERROR) << "CreateSharedImage: SCANOUT shared images unavailable. "
-                  "Format= "
+    LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
                << format.ToString();
     return nullptr;
   }
 
   if (format.is_multi_plane() && !pixel_data.empty()) {
-    LOG(ERROR)
-        << "CreateSharedImage: Creation from pixel data for SCANOUT is not "
-           "supported for multiplanar formats. "
-           "Format= "
-        << format.ToString();
+    LOG(ERROR) << "CreateSharedImage: Creation from pixel data is not "
+                  "supported for multiplanar format "
+               << format.ToString();
     return nullptr;
   }
 
