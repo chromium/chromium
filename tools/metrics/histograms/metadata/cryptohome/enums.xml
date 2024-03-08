@@ -171,6 +171,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Cannot Set Xattr To Migrated">
     Cannot set the xattr to &quot;migrated&quot;
   </int>
+  <int value="8" label="Reappeared">
+    Folder ~/MyFiles/Downloads is already marked as &quot;migrated&quot;, but a
+    new ~/Downloads folder somehow reappeared
+  </int>
 </enum>
 
 <enum name="CryptohomeError">
