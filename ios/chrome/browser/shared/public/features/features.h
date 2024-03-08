@@ -360,6 +360,9 @@ BASE_DECLARE_FEATURE(kIOSExternalActionURLs);
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
 
+// Feature flag to enable color icons in the Omnibox.
+BASE_DECLARE_FEATURE(kOmniboxColorIcons);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];

@@ -93,6 +93,7 @@ source_set("symbols") {
     "//ios/chrome/browser/shared/ui/symbols/resources:top_omnibox_option",
     "//ios/chrome/browser/shared/ui/symbols/resources:translate",
     "//ios/chrome/browser/shared/ui/symbols/resources:tuner",
+    "//ios/chrome/browser/shared/ui/symbols/resources:voice",
     "//ios/chrome/common/ui/colors",
     ios_branded_icons,
   ]

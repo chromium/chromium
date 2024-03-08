@@ -45,6 +45,7 @@ extern NSString* const kPasswordSymbol;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 extern NSString* const kMulticolorPasswordSymbol;
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
+extern NSString* const kVoiceSymbol;
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
 extern NSString* const kUpTrendSymbol;

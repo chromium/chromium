@@ -58,9 +58,12 @@ void ConfigureSearchHintLabel(UILabel* search_hint_label,
 // Configure the `voice_search_button`, adding it to the `search_tab_target` and
 // constraining it.
 void ConfigureVoiceSearchButton(UIButton* voice_search_button,
-                                UIView* search_tab_target);
+                                UIView* search_tab_target,
+                                BOOL use_color_icon);
 // Configure the `lens_button` appearance.
-void ConfigureLensButtonAppearance(UIButton* lens_button, BOOL use_new_badge);
+void ConfigureLensButtonAppearance(UIButton* lens_button,
+                                   BOOL use_new_badge,
+                                   BOOL use_color_icon);
 
 // Returns the nearest ancestor of `view` that is kind of `of_class`.
 UIView* NearestAncestor(UIView* view, Class of_class);
