@@ -1223,6 +1223,12 @@ int QuicChromiumClientSession::TryCreateStream(StreamRequest* request) {
     return OK;
   }
 
+  // Calling CanOpenNextOutgoingBidirectionalStream() could close the
+  // connection.
+  if (!connection()->connected()) {
+    return ERR_CONNECTION_CLOSED;
+  }
+
   request->pending_start_time_ = tick_clock_->NowTicks();
   stream_requests_.push_back(request);
   UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumPendingStreamRequests",
