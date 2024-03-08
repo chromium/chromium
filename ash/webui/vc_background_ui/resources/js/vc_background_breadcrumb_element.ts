@@ -195,7 +195,7 @@ export class VcBackgroundBreadcrumbElement extends
       // with new path.
       const breadcrumb = e.target as HTMLElement;
       breadcrumb.blur();
-      SeaPenRouterElement.instance().goToRoute(newPath as SeaPenPaths);
+      this.goBackToRoute_(newPath as SeaPenPaths);
     }
     // If the user clicks the last breadcrumb and the sea pen dropdown is
     // present, open the dropdown.
@@ -255,6 +255,14 @@ export class VcBackgroundBreadcrumbElement extends
   private getAriaSelected_(templateId: string, seaPenTemplateId: string):
       'true'|'false' {
     return templateId === seaPenTemplateId ? 'true' : 'false';
+  }
+
+  // Helper method to apply back transition style when navigating to path.
+  private goBackToRoute_(path: SeaPenPaths) {
+    document.documentElement.classList.add('back-transition');
+    SeaPenRouterElement.instance().goToRoute(path)?.finally(() => {
+      document.documentElement.classList.remove('back-transition');
+    });
   }
 }
 

@@ -304,7 +304,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         // with new path.
         const breadcrumb = e.target as HTMLElement;
         breadcrumb.blur();
-        PersonalizationRouterElement.instance().goToRoute(newPath as Paths);
+        this.goBackToRoute_(newPath as Paths);
       }
     }
     // If the user clicks the last breadcrumb and the sea pen dropdown is
@@ -372,7 +372,15 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
   }
 
   private onHomeIconClick_() {
-    PersonalizationRouterElement.instance().goToRoute(Paths.ROOT);
+    this.goBackToRoute_(Paths.ROOT);
+  }
+
+  // Helper method to apply back transition style when navigating to path.
+  private goBackToRoute_(path: Paths) {
+    document.documentElement.classList.add('back-transition');
+    PersonalizationRouterElement.instance().goToRoute(path)?.finally(() => {
+      document.documentElement.classList.remove('back-transition');
+    });
   }
 }
 

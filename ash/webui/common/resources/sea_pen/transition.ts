@@ -12,7 +12,7 @@ export function setTransitionsEnabled(enabled: boolean) {
 
 export async function maybeDoPageTransition(func: () => void): Promise<void> {
   if (transitionsEnabled) {
-    return document.startViewTransition(func).updateCallbackDone;
+    return document.startViewTransition(func).finished;
   }
   func();
 }
