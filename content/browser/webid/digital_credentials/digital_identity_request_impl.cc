@@ -10,10 +10,12 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/digital_credentials/digital_identity_provider_utils.h"
 #include "content/browser/webid/flags.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 using base::Value;
@@ -142,6 +144,19 @@ void DigitalIdentityRequestImpl::Request(
   }
 
   callback_ = std::move(callback);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForDigitalIdentity)) {
+    // Post delayed task to enable testing abort.
+    GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                       weak_ptr_factory_.GetWeakPtr(), "fake_test_token",
+                       RequestStatusForMetrics::kSuccess),
+        base::Milliseconds(1));
+    return;
+  }
+
   // provider_ is not destroyed after a successful wallet request so we need to
   // have the nullcheck to avoid duplicated creation.
   if (!provider_) {

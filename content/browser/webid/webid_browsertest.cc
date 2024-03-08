@@ -1099,25 +1099,6 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
             ExtractJsError(RunDigitalIdentityValidRequest(shell())));
 }
 
-// Test that the digital identity promise is rejected when the page aborts the
-// request.
-IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, PageAbortsRequest) {
-  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-
-  std::string script = base::StringPrintf(
-      R"(
-     const abortController = new AbortController();
-     const getDict = %s;
-     getDict.signal = abortController.signal;
-     const getPromise = navigator.credentials.get(getDict);
-     abortController.abort("abort_reason_details");
-     await getPromise;
-     )",
-      BuildDigitalIdentityValidJsRequestDictionary().c_str());
-  EXPECT_EQ("abort_reason_details",
-            ExtractJsError(EvalJsAndReturnToken(shell(), script)));
-}
-
 // Test that Blink.DigitalIdentityRequest.Status UMA metric is recorded when
 // digital identity request completes.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,

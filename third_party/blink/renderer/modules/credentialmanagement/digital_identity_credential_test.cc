@@ -29,13 +29,6 @@ namespace blink {
 
 namespace {
 
-IdentityProviderRequestOptions* CreateValidIdentityProviderRequestOptions() {
-  IdentityProviderRequestOptions* identity_provider_request =
-      IdentityProviderRequestOptions::Create();
-  identity_provider_request->setHolder(DigitalCredentialProvider::Create());
-  return identity_provider_request;
-}
-
 CredentialRequestOptions* CreateOptionsWithProviders(
     const HeapVector<Member<IdentityProviderRequestOptions>>& providers) {
   IdentityCredentialRequestOptions* identity_credential_request =
@@ -47,8 +40,11 @@ CredentialRequestOptions* CreateOptionsWithProviders(
 }
 
 CredentialRequestOptions* CreateValidOptions() {
+  IdentityProviderRequestOptions* identity_provider_request =
+      IdentityProviderRequestOptions::Create();
+  identity_provider_request->setHolder(DigitalCredentialProvider::Create());
   HeapVector<Member<IdentityProviderRequestOptions>> identity_providers;
-  identity_providers.push_back(CreateValidIdentityProviderRequestOptions());
+  identity_providers.push_back(identity_provider_request);
   return CreateOptionsWithProviders(identity_providers);
 }
 
@@ -66,41 +62,6 @@ class DigitalIdentityCredentialTest : public testing::Test {
  private:
   test::TaskEnvironment task_environment_;
 };
-
-TEST_F(DigitalIdentityCredentialTest, IsDigitalIdentityCredentialTypeValid) {
-  EXPECT_TRUE(IsDigitalIdentityCredentialType(*CreateValidOptions()));
-}
-
-TEST_F(DigitalIdentityCredentialTest,
-       IsDigitalIdentityCredentialTypeNoProviders) {
-  CredentialRequestOptions* options = CredentialRequestOptions::Create();
-  options->setIdentity(IdentityCredentialRequestOptions::Create());
-  EXPECT_FALSE(IsDigitalIdentityCredentialType(*options));
-}
-
-TEST_F(DigitalIdentityCredentialTest,
-       IsDigitalIdentityCredentialTypeEmptyProviders) {
-  CredentialRequestOptions* options = CreateValidOptions();
-  options->identity()->setProviders({});
-  EXPECT_FALSE(IsDigitalIdentityCredentialType(*options));
-}
-
-TEST_F(DigitalIdentityCredentialTest, IsDigitalIdentityCredentialTypeNoHolder) {
-  IdentityProviderRequestOptions* provider_no_holder =
-      IdentityProviderRequestOptions::Create();
-  CredentialRequestOptions* options =
-      CreateOptionsWithProviders({provider_no_holder});
-  EXPECT_FALSE(IsDigitalIdentityCredentialType(*options));
-}
-
-TEST_F(DigitalIdentityCredentialTest,
-       IsDigitalIdentityCredentialManyProviders) {
-  IdentityProviderRequestOptions* provider_no_holder =
-      IdentityProviderRequestOptions::Create();
-  CredentialRequestOptions* options = CreateOptionsWithProviders(
-      {provider_no_holder, CreateValidIdentityProviderRequestOptions()});
-  EXPECT_TRUE(IsDigitalIdentityCredentialType(*options));
-}
 
 // Test that navigator.credentials.get() increments the feature use counter when
 // one of the identity providers is a digital identity credential.
