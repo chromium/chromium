@@ -300,7 +300,8 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Returns whether the installed web app at the current page can be
   // overwritten with a new app install for the current page.
-  virtual bool ShouldAllowWebAppReplacementInstall();
+  virtual bool ShouldAllowWebAppReplacementInstall(
+      const ManifestId& manifest_id) const = 0;
 
   // Callback invoked by the InstallableManager once it has fetched the page's
   // manifest.

@@ -363,10 +363,6 @@ bool AppBannerManager::ShouldBypassEngagementChecks() const {
       switches::kBypassAppBannerEngagementChecks);
 }
 
-bool AppBannerManager::ShouldAllowWebAppReplacementInstall() {
-  return false;
-}
-
 void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   // The pipeline will be restarted from DidUpdateWebManifestURL.
   if (IsManifestUrlChange(data)) {
@@ -462,7 +458,7 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   if (client->IsWebAppConsideredFullyInstalled(
           web_contents()->GetBrowserContext(), manifest().start_url,
           manifest_id_) &&
-      !ShouldAllowWebAppReplacementInstall()) {
+      !ShouldAllowWebAppReplacementInstall(manifest_id_)) {
     TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kNo_AlreadyInstalled);

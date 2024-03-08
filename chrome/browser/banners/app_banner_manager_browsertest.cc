@@ -169,6 +169,11 @@ class AppBannerManagerTest : public AppBannerManager {
     }
   }
 
+  bool ShouldAllowWebAppReplacementInstall(
+      const ManifestId& manifest_id) const override {
+    return false;
+  }
+
   base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override {
     return weak_factory_.GetWeakPtr();
   }

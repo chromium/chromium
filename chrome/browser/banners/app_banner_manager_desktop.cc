@@ -91,8 +91,9 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
   extension_registry_ = extensions::ExtensionRegistry::Get(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // May be null in unit tests e.g. TabDesktopMediaListTest.*.
-  if (provider)
+  if (provider) {
     install_manager_observation_.Observe(&provider->install_manager());
+  }
 }
 
 AppBannerManagerDesktop::~AppBannerManagerDesktop() = default;
@@ -157,16 +158,18 @@ void AppBannerManagerDesktop::OnMlInstallPrediction(
                        weak_factory_.GetWeakPtr()));
   }
 }
-web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
+
+web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() const {
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   DCHECK(provider);
   return provider->registrar_unsafe();
 }
 
-bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
+bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall(
+    const ManifestId& manifest_id) const {
   // Only allow replacement install if this specific app is already installed.
-  webapps::AppId app_id = web_app::GenerateAppIdFromManifest(manifest());
+  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
   if (!registrar().IsLocallyInstalled(app_id))
     return false;
 

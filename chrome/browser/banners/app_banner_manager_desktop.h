@@ -69,10 +69,11 @@ class AppBannerManagerDesktop
   friend class content::WebContentsUserData<AppBannerManagerDesktop>;
   friend class FakeAppBannerManagerDesktop;
 
-  web_app::WebAppRegistrar& registrar();
+  web_app::WebAppRegistrar& registrar() const;
 
   // AppBannerManager overrides.
-  bool ShouldAllowWebAppReplacementInstall() override;
+  bool ShouldAllowWebAppReplacementInstall(
+      const ManifestId& manifest_id) const override;
   void ShowBannerUi(WebappInstallSource install_source) override;
 
   // web_app::WebAppInstallManagerObserver:
