@@ -125,6 +125,14 @@ public class DseNewTabUrlManager {
     }
 
     /**
+     * Returns whether the parameter SWAP_OUT_NTP is enabled. Note: this method only checks parts of
+     * isNewTabSearchEngineUrlAndroidEnabled(), i.e., it doesn't check country code.
+     */
+    public static boolean isSwapOutNtpFlagEnabled() {
+        return ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled() && SWAP_OUT_NTP.getValue();
+    }
+
+    /**
      * Returns cached value of {@link ChromePreferenceKeys.IS_DSE_GOOGLE} in the SharedPreference.
      */
     public static boolean isDefaultSearchEngineGoogle() {

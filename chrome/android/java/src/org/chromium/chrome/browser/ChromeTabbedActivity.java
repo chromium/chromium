@@ -2647,7 +2647,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         AsyncTabParamsManagerSingleton.getInstance(),
                         getTabModelSelectorSupplier(),
                         getCompositorViewHolderSupplier(),
-                        mDseNewTabUrlManager),
+                        DseNewTabUrlManager.isSwapOutNtpFlagEnabled()
+                                ? mDseNewTabUrlManager
+                                : null),
                 new ChromeTabCreator(
                         this,
                         getWindowAndroid(),
