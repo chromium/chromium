@@ -24,7 +24,7 @@ TEST(StereoPannerNodeTest, StereoPannerLifetime) {
   StereoPannerHandler& handler =
       static_cast<StereoPannerHandler&>(node->Handler());
   EXPECT_TRUE(handler.stereo_panner_);
-  BaseAudioContext::GraphAutoLocker locker(context);
+  DeferredTaskHandler::GraphAutoLocker locker(context);
   handler.Dispose();
   // m_stereoPanner should live after dispose() because an audio thread is
   // using it.

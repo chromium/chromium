@@ -28,7 +28,7 @@ TEST(ConvolverNodeTest, ReverbLifetime) {
   EXPECT_FALSE(TS_UNCHECKED_READ(handler.reverb_));
   node->setBuffer(AudioBuffer::Create(2, 1, 48000), ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(TS_UNCHECKED_READ(handler.reverb_));
-  BaseAudioContext::GraphAutoLocker locker(context);
+  DeferredTaskHandler::GraphAutoLocker locker(context);
   handler.Dispose();
   // m_reverb should live after dispose() because an audio thread is using it.
   EXPECT_TRUE(TS_UNCHECKED_READ(handler.reverb_));

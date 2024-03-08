@@ -104,7 +104,7 @@ BaseAudioContext::~BaseAudioContext() {
   {
     // We may need to destroy summing junctions, which must happen while this
     // object is still valid and with the graph lock held.
-    GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(this);
     destination_handler_ = nullptr;
   }
 
@@ -723,7 +723,7 @@ LocalDOMWindow* BaseAudioContext::GetWindow() const {
 
 void BaseAudioContext::NotifySourceNodeStartedProcessing(AudioNode* node) {
   DCHECK(IsMainThread());
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
 
   GetDeferredTaskHandler().GetActiveSourceHandlers()->insert(&node->Handler());
   node->Handler().MakeConnection();
@@ -732,7 +732,7 @@ void BaseAudioContext::NotifySourceNodeStartedProcessing(AudioNode* node) {
 void BaseAudioContext::ReleaseActiveSourceNodes() {
   DCHECK(IsMainThread());
 
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
 
   for (auto source_handler :
        *GetDeferredTaskHandler().GetActiveSourceHandlers()) {
@@ -777,7 +777,7 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
     return;
   }
 
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
 
   if (is_resolving_resume_promises_) {
     for (auto& resolver : resume_resolvers_) {
@@ -890,7 +890,7 @@ void BaseAudioContext::NotifyWorkletIsReady() {
   {
     // `audio_worklet_thread_` is constantly peeked by the rendering thread,
     // So we protect it with the graph lock.
-    GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(this);
 
     // At this point, the WorkletGlobalScope must be ready so it is safe to keep
     // the reference to the AudioWorkletThread for the future worklet operation.

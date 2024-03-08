@@ -110,7 +110,7 @@ void StereoPannerHandler::Initialize() {
 void StereoPannerHandler::SetChannelCount(unsigned channel_count,
                                           ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   if (channel_count >= kMinimumOutputChannels &&
       channel_count <= kMaximumOutputChannels) {
@@ -133,7 +133,7 @@ void StereoPannerHandler::SetChannelCount(unsigned channel_count,
 void StereoPannerHandler::SetChannelCountMode(const String& mode,
                                               ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   ChannelCountMode old_mode = InternalChannelCountMode();
 

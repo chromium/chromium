@@ -98,8 +98,6 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
                                  Member<ScriptPromiseResolver>,
                                  IntWithZeroKeyHashTraits<size_t>>;
 
-  using OfflineGraphAutoLocker = DeferredTaskHandler::OfflineGraphAutoLocker;
-
   bool HasPendingActivity() const final;
 
  private:

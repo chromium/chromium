@@ -83,7 +83,7 @@ void MediaStreamAudioSourceHandler::SetFormat(uint32_t number_of_channels,
     source_number_of_channels_ = number_of_channels;
   }
 
-  BaseAudioContext::GraphAutoLocker graph_locker(Context());
+  DeferredTaskHandler::GraphAutoLocker graph_locker(Context());
   Output(0).SetNumberOfChannels(number_of_channels);
 }
 

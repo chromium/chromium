@@ -136,7 +136,7 @@ void DynamicsCompressorHandler::SetChannelCount(
     unsigned channel_count,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // A DynamicsCompressorNode only supports 1 or 2 channels
   if (channel_count > 0 && channel_count <= 2) {
@@ -160,7 +160,7 @@ void DynamicsCompressorHandler::SetChannelCountMode(
     const String& mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   ChannelCountMode old_mode = InternalChannelCountMode();
 

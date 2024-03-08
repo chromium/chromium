@@ -297,7 +297,7 @@ double ScriptProcessorHandler::LatencyTime() const {
 void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
                                              ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   if (channel_count != channel_count_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -312,7 +312,7 @@ void ScriptProcessorHandler::SetChannelCountMode(
     const String& mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   if ((mode == "max") || (mode == "clamped-max")) {
     exception_state.ThrowDOMException(

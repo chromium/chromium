@@ -33,7 +33,7 @@ TEST(AudioNodeInputTest, InputDestroyedBeforeOutput) {
   auto output = std::make_unique<AudioNodeOutput>(&handler2, 0);
 
   {
-    BaseAudioContext::GraphAutoLocker graph_lock(context);
+    DeferredTaskHandler::GraphAutoLocker graph_lock(context);
     AudioNodeWiring::Connect(*output, *input);
     ASSERT_TRUE(output->IsConnected());
 
@@ -58,7 +58,7 @@ TEST(AudioNodeInputTest, OutputDestroyedBeforeInput) {
   auto output = std::make_unique<AudioNodeOutput>(&handler2, 0);
 
   {
-    BaseAudioContext::GraphAutoLocker graph_lock(context);
+    DeferredTaskHandler::GraphAutoLocker graph_lock(context);
     AudioNodeWiring::Connect(*output, *input);
     ASSERT_TRUE(output->IsConnected());
 

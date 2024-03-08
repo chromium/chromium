@@ -96,7 +96,7 @@ void WaveShaperNode::SetCurveImpl(const float* curve_data,
   // This is to synchronize with the changes made in
   // AudioBasicProcessorNode::CheckNumberOfChannelsForInput() where we can
   // Initialize() and Uninitialize(), changing the number of kernels.
-  BaseAudioContext::GraphAutoLocker context_locker(context());
+  DeferredTaskHandler::GraphAutoLocker context_locker(context());
 
   GetWaveShaperProcessor()->SetCurve(curve_data, length);
 }
@@ -139,7 +139,7 @@ void WaveShaperNode::setOversample(const String& type) {
   // This is to synchronize with the changes made in
   // AudioBasicProcessorNode::checkNumberOfChannelsForInput() where we can
   // initialize() and uninitialize().
-  BaseAudioContext::GraphAutoLocker context_locker(context());
+  DeferredTaskHandler::GraphAutoLocker context_locker(context());
 
   if (type == "none") {
     GetWaveShaperProcessor()->SetOversample(

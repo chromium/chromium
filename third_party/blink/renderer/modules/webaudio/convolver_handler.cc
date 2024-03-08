@@ -50,7 +50,7 @@ ConvolverHandler::ConvolverHandler(AudioNode& node, float sample_rate)
   // Until something is connected, we're not actively processing, so disable
   // outputs so that we produce a single channel of silence.  The graph lock is
   // needed to be able to disable outputs.
-  BaseAudioContext::GraphAutoLocker context_locker(Context());
+  DeferredTaskHandler::GraphAutoLocker context_locker(Context());
 
   DisableOutputs();
 }
@@ -95,7 +95,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   DCHECK(IsMainThread());
 
   if (!buffer) {
-    BaseAudioContext::GraphAutoLocker context_locker(Context());
+    DeferredTaskHandler::GraphAutoLocker context_locker(Context());
     base::AutoLock locker(process_lock_);
     reverb_.reset();
     shared_buffer_ = nullptr;
@@ -156,7 +156,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
     // If any channel is detached, we're supposed to treat it as if all were.
     // This means the buffer effectively has length 0, which is the same as if
     // no buffer were given.
-    BaseAudioContext::GraphAutoLocker context_locker(Context());
+    DeferredTaskHandler::GraphAutoLocker context_locker(Context());
     base::AutoLock locker(process_lock_);
     reverb_.reset();
     shared_buffer_ = nullptr;
@@ -178,7 +178,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   {
     // The context must be locked since changing the buffer can
     // re-configure the number of channels that are output.
-    BaseAudioContext::GraphAutoLocker context_locker(Context());
+    DeferredTaskHandler::GraphAutoLocker context_locker(Context());
 
     // Synchronize with process().
     base::AutoLock locker(process_lock_);
@@ -234,7 +234,7 @@ unsigned ConvolverHandler::ComputeNumberOfOutputChannels(
 void ConvolverHandler::SetChannelCount(unsigned channel_count,
                                        ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // channelCount must be 1 or 2
   if (channel_count == 1 || channel_count == 2) {
@@ -255,7 +255,7 @@ void ConvolverHandler::SetChannelCount(unsigned channel_count,
 void ConvolverHandler::SetChannelCountMode(const String& mode,
                                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   ChannelCountMode old_mode = InternalChannelCountMode();
 

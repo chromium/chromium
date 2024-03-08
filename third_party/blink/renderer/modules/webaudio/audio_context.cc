@@ -438,7 +438,7 @@ ScriptPromise AudioContext::resumeContext(ScriptState* script_state,
   // Save the resolver which will get resolved when the destination node starts
   // pulling on the graph again.
   {
-    GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(this);
     resume_resolvers_.push_back(resolver);
   }
 
@@ -593,7 +593,7 @@ double AudioContext::outputLatency() const {
   DCHECK(IsMainThread());
   DCHECK(destination());
 
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
 
   double factor = GetOutputLatencyQuantizingFactor();
   return std::round(output_position_.hardware_output_latency / factor) * factor;
@@ -937,7 +937,7 @@ void AudioContext::ResolvePromisesForUnpause() {
 
 AudioIOPosition AudioContext::OutputPosition() const {
   DCHECK(IsMainThread());
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
   return output_position_;
 }
 
@@ -981,7 +981,7 @@ AudioCallbackMetric AudioContext::GetCallbackMetric() const {
   // allow seeing the audio thread changing the struct values. This method
   // gets called once per second and the size of the struct is small, so
   // creating a copy is acceptable here.
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
   return callback_metric_;
 }
 

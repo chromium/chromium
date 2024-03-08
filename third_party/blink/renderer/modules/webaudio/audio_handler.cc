@@ -207,7 +207,7 @@ void AudioHandler::SetInternalChannelInterpretation(
 void AudioHandler::SetChannelCount(unsigned channel_count,
                                    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   if (channel_count > 0 &&
       channel_count <= BaseAudioContext::MaxNumberOfChannels()) {
@@ -247,7 +247,7 @@ String AudioHandler::GetChannelCountMode() {
 void AudioHandler::SetChannelCountMode(const String& mode,
                                        ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   ChannelCountMode old_mode = channel_count_mode_;
 
@@ -283,7 +283,7 @@ String AudioHandler::ChannelInterpretation() {
 void AudioHandler::SetChannelInterpretation(const String& interpretation,
                                             ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   AudioBus::ChannelInterpretation old_mode = channel_interpretation_;
 

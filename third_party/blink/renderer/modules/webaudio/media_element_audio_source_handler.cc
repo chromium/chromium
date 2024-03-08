@@ -144,7 +144,7 @@ void MediaElementAudioSourceHandler::SetFormat(uint32_t number_of_channels,
 
     {
       // The context must be locked when changing the number of output channels.
-      BaseAudioContext::GraphAutoLocker context_locker(Context());
+      DeferredTaskHandler::GraphAutoLocker context_locker(Context());
 
       // Do any necesssary re-configuration to the output's number of channels.
       Output(0).SetNumberOfChannels(number_of_channels);

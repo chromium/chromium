@@ -277,8 +277,6 @@ class MODULES_EXPORT BaseAudioContext
   // In DCHECK builds, fails if this thread does not own the context's lock.
   void AssertGraphOwner() const { GetDeferredTaskHandler().AssertGraphOwner(); }
 
-  using GraphAutoLocker = DeferredTaskHandler::GraphAutoLocker;
-
   // Returns the maximum numuber of channels we can support.
   static uint32_t MaxNumberOfChannels() { return kMaxNumberOfChannels; }
 

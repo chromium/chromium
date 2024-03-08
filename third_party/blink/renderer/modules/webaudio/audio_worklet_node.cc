@@ -194,7 +194,7 @@ AudioWorkletNode* AudioWorkletNode::Create(
   {
     // The node should be manually added to the automatic pull node list,
     // even without a `connect()` call.
-    BaseAudioContext::GraphAutoLocker locker(context);
+    DeferredTaskHandler::GraphAutoLocker locker(context);
     node->Handler().UpdatePullStatusIfNeeded();
   }
 
