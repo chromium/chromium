@@ -13,6 +13,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -40,7 +41,7 @@ import java.util.List;
 
 /** Builds DropdownItemViewInfo list from AutocompleteResult for the Suggestions list. */
 class DropdownItemViewInfoListBuilder {
-    @Px private static final int DROPDOWN_HEIGHT_UNKNOWN = -1;
+    private @Px static final int DROPDOWN_HEIGHT_UNKNOWN = -1;
     private static final int DEFAULT_SIZE_OF_VISIBLE_GROUP = 5;
 
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
@@ -51,7 +52,8 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable OmniboxImageSupplier mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
-    @Px private int mDropdownHeight;
+    private @Px int mDropdownHeight;
+    private boolean mUseNativeGrouping;
 
     DropdownItemViewInfoListBuilder(
             @NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState) {
@@ -192,6 +194,9 @@ class DropdownItemViewInfoListBuilder {
     /** Signals that native initialization has completed. */
     void onNativeInitialized() {
         mHeaderProcessor.onNativeInitialized();
+        mUseNativeGrouping =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS);
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
             mPriorityOrderedSuggestionProcessors.get(index).onNativeInitialized();
         }
@@ -349,7 +354,9 @@ class DropdownItemViewInfoListBuilder {
             mPriorityOrderedSuggestionProcessors.get(index).onSuggestionsReceived();
         }
 
-        performPartialGroupingBySearchVsUrl(autocompleteResult);
+        if (!mUseNativeGrouping) {
+            performPartialGroupingBySearchVsUrl(autocompleteResult);
+        }
 
         var newMatches = autocompleteResult.getSuggestionsList();
         int newMatchesCount = newMatches.size();

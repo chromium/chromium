@@ -100,7 +100,10 @@ import java.util.List;
             AutocompleteMediatorUnitTest.ShadowTemplateUrlServiceFactory.class,
             ShadowLooper.class
         })
-@EnableFeatures({ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION})
+@EnableFeatures({
+    ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION,
+    ChromeFeatureList.OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS
+})
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;

@@ -41,6 +41,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -59,6 +61,7 @@ import java.util.List;
 
 /** Tests for {@link DropdownItemViewInfoListBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS)
 public class DropdownItemViewInfoListBuilderUnitTest {
     public @Rule TestRule mProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();

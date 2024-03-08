@@ -305,6 +305,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
     &omnibox::kOmniboxModernizeVisualUpdate,
     &omnibox::kOmniboxOnClobberFocusTypeOnContent,
+    &omnibox::kGroupingFrameworkForNonZPS,
     &omnibox::kOmniboxShortcutsAndroid,
     &omnibox::kQueryTilesInZPSOnNTP,
     &omnibox::kSearchReadyOmniboxAllowQueryEdit,

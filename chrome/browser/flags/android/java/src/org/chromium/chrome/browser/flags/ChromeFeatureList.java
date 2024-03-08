@@ -340,6 +340,8 @@ public abstract class ChromeFeatureList {
             "OmniboxNoopEditUrlSuggestionClicks";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =
             "AvoidRelayoutDuringFocusAnimation";
+    public static final String OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS =
+            "OmniboxGroupingFrameworkForNonZPS";
     public static final String OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH =
             "OmniboxTouchDownTriggerForPrefetch";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
