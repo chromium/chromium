@@ -8389,22 +8389,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Plugin.DisabledPlugins" enum="PluginType"
-    expires_after="2024-08-25">
-  <owner>xhwang@chromium.org</owner>
-  <summary>
-    Record of the number of attempts to load a plugin that were blocked because
-    the plugin in question was disabled. An attempt to load a plugin may be made
-    typically once during a page load (or re-load).
-  </summary>
-</histogram>
-
-<histogram name="Plugin.MissingPlugins" enum="PluginType"
-    expires_after="2024-08-25">
-  <owner>xhwang@chromium.org</owner>
-  <summary>Number of times the plugin has been found missing.</summary>
-</histogram>
-
 <histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
     expires_after="2024-06-11">
   <owner>dpad@google.com</owner>

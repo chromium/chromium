@@ -61,7 +61,6 @@
 #include "chrome/renderer/net_benchmarking_extension.h"
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
-#include "chrome/renderer/plugins/plugin_uma.h"
 #include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
 #include "chrome/renderer/v8_unwinder.h"
@@ -912,7 +911,6 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
       orig_mime_type, &plugin_info);
   *plugin = CreatePlugin(render_frame, params, *plugin_info);
 #else  // !BUILDFLAG(ENABLE_PLUGINS)
-  PluginUMAReporter::GetInstance()->ReportPluginMissing(orig_mime_type, url);
   if (orig_mime_type == pdf::kPDFMimeType) {
     ReportPDFLoadStatus(
         PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf);
@@ -978,8 +976,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
                  render_frame, original_params)
           ->plugin();
     } else {
-      PluginUMAReporter::GetInstance()->ReportPluginMissing(orig_mime_type,
-                                                            url);
       placeholder = ChromePluginPlaceholder::CreateLoadableMissingPlugin(
           render_frame, original_params);
     }
@@ -1147,8 +1143,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         return render_frame->CreatePlugin(info, params);
       }
       case chrome::mojom::PluginStatus::kDisabled: {
-        PluginUMAReporter::GetInstance()->ReportPluginDisabled(orig_mime_type,
-                                                               url);
         if (info.path.value() == ChromeContentClient::kPDFExtensionPluginPath) {
           ReportPDFLoadStatus(
               PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf);
