@@ -213,7 +213,9 @@ class CreditCardAccessManagerTest : public testing::Test {
     test_api(credit_card_access_manager()).set_is_user_verifiable(std::nullopt);
   }
 
-  void ClearCards() { personal_data().ClearCreditCards(); }
+  void ClearCards() {
+    personal_data().test_payments_data_manager().ClearCreditCards();
+  }
 
   void CreateLocalCard(std::string guid, std::string number = std::string()) {
     CreditCard local_card = CreditCard();
@@ -1151,7 +1153,7 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 
 // Ensures that FetchCreditCard() reports a failure when a card does not exist.
 TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
 
   credit_card_access_manager().PrepareToFetchCreditCard();
   WaitForCallbacks();

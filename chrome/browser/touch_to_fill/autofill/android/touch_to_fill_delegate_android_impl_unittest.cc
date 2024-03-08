@@ -383,7 +383,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfNoCardsOnFile) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
 
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
@@ -394,7 +396,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfCardIsIncomplete) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard cc_no_number = test::GetCreditCard();
   cc_no_number.SetNumber(u"");
   autofill_client_.GetPersonalDataManager()->AddCreditCard(cc_no_number);
@@ -421,7 +425,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfTheOnlyCardIsExpired) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(
       test::GetExpiredCreditCard());
 
@@ -434,7 +440,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillFailsIfCardNumberIsInvalid) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard cc_invalid_number = test::GetCreditCard();
   cc_invalid_number.SetNumber(u"invalid number");
   autofill_client_.GetPersonalDataManager()->AddCreditCard(cc_invalid_number);
@@ -491,7 +499,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillSucceedsIfAtLestOneCardIsValid) {
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   CreditCard expired_card = test::GetExpiredCreditCard();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
@@ -505,7 +515,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillShowsExpiredCards) {
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   CreditCard expired_card = test::GetExpiredCreditCard();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
@@ -523,7 +535,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        TryToShowTouchToFillDoesNotShowDisusedExpiredCards) {
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   CreditCard disused_expired_card = test::GetExpiredCreditCard();
   credit_card.set_use_date(AutofillClock::Now());
@@ -546,7 +560,9 @@ TEST_F(
     TryToShowTouchToFillShowsVirtualCardSuggestionsForEnrolledCardsWhenEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillVirtualCardsOnTouchToFillAndroid);
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card =
       autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
@@ -575,7 +591,9 @@ TEST_F(
     TryToShowTouchToFillDoesNotShowVirtualCardSuggestionsForOptedOutMerchants) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillVirtualCardsOnTouchToFillAndroid);
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
@@ -594,7 +612,9 @@ TEST_F(
     TryToShowTouchToFillDoesNotShowVirtualCardSuggestionsForEnrolledCardsWhenDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       features::kAutofillVirtualCardsOnTouchToFillAndroid);
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card =
       autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
@@ -659,7 +679,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest, PassTheCreditCardsToTheClient) {
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card1 = autofill::test::GetCreditCard();
   CreditCard credit_card2 = autofill::test::GetCreditCard2();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card1);
@@ -698,7 +720,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, ShowCreditCardSettingsIsCalled) {
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionClosesTheSheet) {
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
 
@@ -709,7 +733,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionClosesTheSheet) {
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionFillsCardForm) {
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
 
@@ -721,7 +747,9 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, CardSelectionFillsCardForm) {
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        VirtualCardSelectionFillsCardForm) {
-  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .ClearCreditCards();
   CreditCard credit_card =
       autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);

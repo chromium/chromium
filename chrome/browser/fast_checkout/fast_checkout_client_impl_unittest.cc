@@ -616,7 +616,7 @@ TEST_F(FastCheckoutClientImplTest,
                    UnorderedElementsAre(Pointee(kCreditCard1))));
 
   // User removes all valid credit cards and adds a valid card.
-  personal_data_manager()->ClearCreditCards();
+  personal_data_manager()->test_payments_data_manager().ClearCreditCards();
   personal_data_manager()->AddCreditCard(kCreditCard1);
 
   // `FastCheckoutClient` is still running.
@@ -1112,7 +1112,7 @@ TEST_F(FastCheckoutClientImplTest,
   StartRunAndSelectOptions({credit_card_form->form_signature()});
   AddFormToAutofillManagerCache(std::move(credit_card_form));
 
-  personal_data_manager()->ClearCreditCards();
+  personal_data_manager()->test_payments_data_manager().ClearCreditCards();
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   // `FillCreditCardForm` is currently only called after the CVC popup was

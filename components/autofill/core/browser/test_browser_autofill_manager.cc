@@ -250,7 +250,9 @@ void TestBrowserAutofillManager::SetAutofillPaymentMethodsEnabled(
   autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
   if (!autofill_payment_methods_enabled) {
     // Credit card data is refreshed when this pref is changed.
-    client.GetPersonalDataManager()->ClearCreditCards();
+    client.GetPersonalDataManager()
+        ->test_payments_data_manager()
+        .ClearCreditCards();
   }
 }
 

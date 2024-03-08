@@ -233,7 +233,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     autofill_driver_.reset();
 
     personal_data().SetPrefService(nullptr);
-    personal_data().ClearCreditCards();
+    personal_data().test_payments_data_manager().ClearCreditCards();
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
@@ -1158,7 +1158,7 @@ INSTANTIATE_TEST_SUITE_P(
                     CreditCard::RecordType::kMaskedServerCard));
 
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   personal_data().ClearProfiles();
 
   credit_card_save_manager_->SetCreditCardUploadEnabled(true);
@@ -2818,7 +2818,7 @@ TEST_F(
 
   // Run through the form submit in exactly the same way (but now Chrome knows
   // that the user is a Google Payments customer).
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   personal_data().ClearProfiles();
   FormSubmitted(credit_card_form);
 

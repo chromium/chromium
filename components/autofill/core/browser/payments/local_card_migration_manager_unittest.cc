@@ -106,7 +106,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     autofill_driver_.reset();
 
     personal_data().SetPrefService(nullptr);
-    personal_data().ClearCreditCards();
+    personal_data().test_payments_data_manager().ClearCreditCards();
   }
 
   void FormsSeen(const std::vector<FormData>& updated_forms) {

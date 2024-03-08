@@ -209,7 +209,7 @@ void AutofillMetricsBaseTest::RecreateCreditCards(
     bool include_masked_server_credit_card,
     bool include_full_server_credit_card,
     bool masked_card_is_enrolled_for_virtual_card) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   CreateCreditCards(include_local_credit_card,
                     include_masked_server_credit_card,
                     include_full_server_credit_card,

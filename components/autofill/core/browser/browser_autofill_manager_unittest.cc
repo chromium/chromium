@@ -732,7 +732,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     browser_autofill_manager_.reset();
 
     personal_data().SetPrefService(nullptr);
-    personal_data().ClearCreditCards();
+    personal_data().test_payments_data_manager().ClearCreditCards();
   }
 
   MockTouchToFillDelegate& touch_to_fill_delegate() {
@@ -1654,7 +1654,7 @@ TEST_F(BrowserAutofillManagerTest, GetVirtualCreditCardsForStandaloneCvcField) {
       .SetFourDigitCombinationsInDOM(combinations);
 
   // Set up virtual card usage data and credit cards.
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   CreditCard masked_server_card = test::GetVirtualCard();
   masked_server_card.set_guid("1234");
   VirtualCardUsageData virtual_card_usage_data =
@@ -2444,7 +2444,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Clear the test credit cards and try again -- we should still show the
   // mixed form warning.
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
@@ -2532,7 +2532,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_MaskedCardWithMoreThan6Digits) {
   // Add a masked server card.
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
 
   CreditCard masked_server_card;
   test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
@@ -2559,7 +2559,7 @@ TEST_F(BrowserAutofillManagerTest,
 // suggested after non expired cards even if they have a higher ranking score.
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_ExpiredCards) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
 
   // Add a never used non expired credit card.
   CreditCard credit_card0("002149C1-EE28-4213-A3B9-DA243FFF021B",
@@ -2617,7 +2617,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 // enabled and the input field is empty.
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_SuppressDisusedCreditCardsOnEmptyField) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   ASSERT_EQ(0U, personal_data().GetCreditCards().size());
 
   // Add a never used non expired local credit card.
@@ -2724,7 +2724,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_NumberMissing) {
   // Create one normal credit card and one credit card with the number
   // missing.
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   ASSERT_EQ(0U, personal_data().GetCreditCards().size());
 
   CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
@@ -2836,7 +2836,7 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
           PopupItemId::kInsecureContextPaymentDisabledMessage)});
 
   // Clear the test credit cards and try again -- we shouldn't return a warning.
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   GetAutofillSuggestions(form, field);
   external_delegate()->CheckNoSuggestions(field.global_id());
 }
@@ -5614,7 +5614,7 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
                                 /*server_id=*/"a123");
   test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
@@ -7126,7 +7126,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_DuplicateCards) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   ASSERT_EQ(0U, personal_data().GetCreditCards().size());
   CreditCard local_card = GetLocalCard();
   personal_data().AddCreditCard(local_card);
@@ -7151,7 +7151,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_UnrelatedCards) {
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   ASSERT_EQ(0U, personal_data().GetCreditCards().size());
   CreditCard local_card = GetLocalCard();
   personal_data().AddCreditCard(local_card);

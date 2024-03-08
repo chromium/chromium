@@ -130,7 +130,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
     masked_server_card.set_record_type(
         CreditCard::RecordType::kMaskedServerCard);
 
-    personal_data_manager().ClearCreditCards();
+    personal_data_manager().test_payments_data_manager().ClearCreditCards();
     personal_data_manager().AddServerCreditCard(masked_server_card);
 
     return masked_server_card;

@@ -110,7 +110,7 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     autofill_driver_.reset();
 
     personal_data_manager_.SetPrefService(nullptr);
-    personal_data_manager_.ClearCreditCards();
+    personal_data_manager_.test_payments_data_manager().ClearCreditCards();
   }
 
   CreditCard CreateServerCard(std::string guid, std::string number) {
@@ -122,7 +122,7 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     masked_server_card.set_record_type(
         CreditCard::RecordType::kMaskedServerCard);
 
-    personal_data_manager_.ClearCreditCards();
+    personal_data_manager_.test_payments_data_manager().ClearCreditCards();
     personal_data_manager_.AddServerCreditCard(masked_server_card);
 
     return masked_server_card;

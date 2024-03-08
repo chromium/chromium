@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
+#include "components/autofill/core/browser/test_payments_data_manager.h"
 
 namespace autofill {
 
@@ -21,10 +22,8 @@ TestPersonalDataManager::TestPersonalDataManager()
   address_data_manager_ = std::make_unique<TestAddressDataManager>(
       base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
                           base::Unretained(this)));
-  payments_data_manager_ = std::make_unique<PaymentsDataManager>(
-      /*profile_database=*/nullptr, /*account_database=*/nullptr,
-      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr,
-      app_locale(), this);
+  payments_data_manager_ =
+      std::make_unique<TestPaymentsDataManager>(app_locale(), this);
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
@@ -345,19 +344,6 @@ void TestPersonalDataManager::ClearLocalCvcs() {
 void TestPersonalDataManager::ClearProfiles() {
   static_cast<TestAddressDataManager*>(address_data_manager_.get())
       ->ClearProfiles();
-}
-
-void TestPersonalDataManager::ClearCreditCards() {
-  payments_data_manager_->local_credit_cards_.clear();
-  payments_data_manager_->server_credit_cards_.clear();
-}
-
-void TestPersonalDataManager::ClearCloudTokenData() {
-  payments_data_manager_->server_credit_card_cloud_token_data_.clear();
-}
-
-void TestPersonalDataManager::ClearCreditCardOfferData() {
-  payments_data_manager_->autofill_offer_data_.clear();
 }
 
 void TestPersonalDataManager::AddServerCreditCard(

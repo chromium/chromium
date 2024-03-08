@@ -921,6 +921,8 @@ static_library("test_support") {
     "test_form_data_importer.h",
     "test_form_filler.cc",
     "test_form_filler.h",
+    "test_payments_data_manager.cc",
+    "test_payments_data_manager.h",
     "test_personal_data_manager.cc",
     "test_personal_data_manager.h",
     "test_utils/test_profiles.cc",

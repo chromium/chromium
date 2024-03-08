@@ -110,8 +110,8 @@ class CreditCardAccessoryControllerTest
   void TearDown() override {
     data_manager_.SetSyncServiceForTest(nullptr);
     data_manager_.SetPrefService(nullptr);
-    data_manager_.ClearCreditCards();
-    data_manager_.ClearCreditCardOfferData();
+    data_manager_.test_payments_data_manager().ClearCreditCards();
+    data_manager_.test_payments_data_manager().ClearCreditCardOfferData();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 

@@ -2213,7 +2213,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetServerCardForLocalCard) {
   // Should return nullptr if no server card has the same information as the
   // local card.
   server_card.SetNumber(u"5454545454545454");
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   personal_data().AddServerCreditCard(server_card);
   EXPECT_FALSE(personal_data().GetServerCardForLocalCard(&local_card));
 }
@@ -2223,7 +2223,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetServerCardForLocalCard) {
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForCreditCards_StableSortBasedOnOffer) {
   // Create three server cards.
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
   personal_data().AddServerCreditCard(CreateServerCard(
       /*guid=*/"00000000-0000-0000-0000-000000000001",
       /*server_id=*/"server_id1", /*instrument_id=*/1));
@@ -2394,7 +2394,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
                 ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
   }
 
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
 
   // GPay logo should not be displayed if at least one local card was in the
   // suggestions.
@@ -2423,7 +2423,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
                 ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
   }
 
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
 
   // GPay logo should be displayed if there was an unused expired local card in
   // the suggestions.
@@ -3858,7 +3858,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
         expected_issuer_or_network_to_metadata_availability);
   }
 
-  personal_data().ClearCreditCards();
+  personal_data().test_payments_data_manager().ClearCreditCards();
 
   {
     // Create a server card with card product description & card art image.

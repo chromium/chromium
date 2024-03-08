@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
+#include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
@@ -38,6 +39,11 @@ class TestPersonalDataManager : public PersonalDataManager {
   using PersonalDataManager::GetProfileSaveStrikeDatabase;
   using PersonalDataManager::GetProfileUpdateStrikeDatabase;
   using PersonalDataManager::SetPrefService;
+
+  TestPaymentsDataManager& test_payments_data_manager() {
+    PaymentsDataManager& manager = payments_data_manager();
+    return *static_cast<TestPaymentsDataManager*>(&manager);
+  }
 
   // PersonalDataManager overrides.  These functions are overridden as needed
   // for various tests, whether to skip calls to uncreated databases/services,
@@ -85,15 +91,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Clears `web_profiles_` and `account_profiles_`.
   void ClearProfiles();
-
-  // Clears |local_credit_cards_| and |server_credit_cards_|.
-  void ClearCreditCards();
-
-  // Clears |server_credit_card_cloud_token_data_|.
-  void ClearCloudTokenData();
-
-  // Clears |autofill_offer_data_|.
-  void ClearCreditCardOfferData();
 
   // Adds a card to `server_credit_cards_`. This test class treats masked and
   // full server cards equally, relying on their preset RecordType to
