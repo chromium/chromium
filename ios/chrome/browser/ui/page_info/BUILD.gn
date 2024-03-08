@@ -170,7 +170,11 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/page_info/core:core",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
 }
 
 source_set("eg_test_support+eg2") {

@@ -81,7 +81,7 @@
   self.viewController.permissionsDelegate = self.permissionsMediator;
   self.permissionsMediator.consumer = self.viewController;
 
-  if (IsRevampPageInfoIosEnabled()) {
+  if (IsAboutThisSiteFeatureEnabled()) {
     page_info::AboutThisSiteService* service =
         AboutThisSiteServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
@@ -142,6 +142,7 @@
 }
 
 - (void)showAboutThisSitePage:(GURL)URL {
+  CHECK(IsAboutThisSiteFeatureEnabled());
   base::RecordAction(base::UserMetricsAction("PageInfo.AboutThisSite.Opened"));
   base::UmaHistogramEnumeration(
       page_info::kWebsiteSettingsActionHistogram,

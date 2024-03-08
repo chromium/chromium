@@ -173,7 +173,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
     [self updateSnapshot:snapshot forPermission:permission];
   }
 
-  if (IsRevampPageInfoIosEnabled()) {
+  if (IsAboutThisSiteFeatureEnabled()) {
     [self updateSnapshotForAboutThisSite:snapshot];
   }
 
@@ -460,6 +460,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 // Updates `snapshot` to reflect the changes to AboutThisSite info.
 - (void)updateSnapshotForAboutThisSite:
     (NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>*)snapshot {
+  CHECK(IsAboutThisSiteFeatureEnabled());
   if (!_aboutThisSiteInfo || !self.pageInfoSecurityDescription.secure) {
     return;
   }
@@ -555,6 +556,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 #pragma mark - PageInfoAboutThisSiteConsumer
 
 - (void)setAboutThisSiteSection:(PageInfoAboutThisSiteInfo*)info {
+  CHECK(IsAboutThisSiteFeatureEnabled());
   _aboutThisSiteInfo = info;
 }
 

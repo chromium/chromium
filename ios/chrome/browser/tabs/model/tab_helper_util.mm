@@ -337,7 +337,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     ContextualPanelTabHelper::CreateForWebState(web_state);
   }
 
-  if (!is_off_the_record && IsRevampPageInfoIosEnabled()) {
+  if (!is_off_the_record && IsAboutThisSiteFeatureEnabled()) {
     AboutThisSiteTabHelper::CreateForWebState(web_state);
   }
 }
