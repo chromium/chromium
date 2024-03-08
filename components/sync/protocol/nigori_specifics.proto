@@ -244,6 +244,7 @@ message NigoriSpecifics {
       STATE_UNSPECIFIED = 0;
       AUTO_UPGRADED = 1;
       CONTROL = 2;
+      VALIDATION = 3;
     }
     // Current state of an account after it was processed by auto-upgrade.
     optional AutoUpgradeState auto_upgrade_state = 1;
