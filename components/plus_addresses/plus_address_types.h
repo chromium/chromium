@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TYPES_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TYPES_H_
 
+#include <map>
 #include <optional>
 #include <string>
-#include <unordered_map>
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
@@ -67,20 +67,23 @@ class PlusAddressRequestError {
 
 // Only used by Autofill.
 using autofill::PlusAddressCallback;
-using PlusAddressMap = std::unordered_map<std::string, std::string>;
+
+using PlusAddressMap = std::map<std::string, std::string>;
 using PlusAddressMapCallback = base::OnceCallback<void(const PlusAddressMap&)>;
+
 // Holds either a PlusProfile or an error that prevented us from getting it.
 using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
 using PlusAddressRequestCallback =
     base::OnceCallback<void(const PlusProfileOrError&)>;
-typedef base::expected<PlusProfile, PlusAddressRequestError> PlusProfileOrError;
-typedef base::OnceCallback<void(const PlusProfileOrError&)>
-    PlusAddressRequestCallback;
+using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
+using PlusAddressRequestCallback =
+    base::OnceCallback<void(const PlusProfileOrError&)>;
+
 // Holds either a PlusAddressMap or an error that prevented us from getting it.
-typedef base::expected<PlusAddressMap, PlusAddressRequestError>
-    PlusAddressMapOrError;
-typedef base::OnceCallback<void(const PlusAddressMapOrError&)>
-    PlusAddressMapRequestCallback;
+using PlusAddressMapOrError =
+    base::expected<PlusAddressMap, PlusAddressRequestError>;
+using PlusAddressMapRequestCallback =
+    base::OnceCallback<void(const PlusAddressMapOrError&)>;
 
 // Defined for use in metrics and to share code for certain network-requests.
 enum class PlusAddressNetworkRequestType {
