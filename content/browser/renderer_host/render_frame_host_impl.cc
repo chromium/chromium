@@ -3010,6 +3010,13 @@ bool RenderFrameHostImpl::CanFireAccessibilityEvents() const {
   return IsActive();
 }
 
+bool RenderFrameHostImpl::ShouldSuppressAXLoadComplete() {
+  if (!AccessibilityIsRootFrame()) {
+    return false;
+  }
+  return GetContentClient()->browser()->ShouldSuppressAXLoadComplete(this);
+}
+
 bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
   // Do not use is_main_frame() or IsOutermostMainFrame().
   // Frame trees may be nested so it can be the case that is_main_frame() is
@@ -3019,10 +3026,6 @@ bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
   // does not escape guest views. Therefore, we must check for any kind of
   // parent document or embedder.
   return !GetParentOrOuterDocumentOrEmbedderExcludingProspectiveOwners();
-}
-
-RenderFrameHostImpl* RenderFrameHostImpl::AccessibilityRenderFrameHost() {
-  return this;
 }
 
 WebContentsAccessibility*

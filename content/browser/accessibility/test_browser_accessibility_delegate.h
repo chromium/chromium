@@ -5,15 +5,15 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_TEST_BROWSER_ACCESSIBILITY_DELEGATE_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_TEST_BROWSER_ACCESSIBILITY_DELEGATE_H_
 
-#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 
 namespace content {
 
-// TODO(nektar): Rename this class to `TestWebAXPlatformTreeManagerDelegate`.
+// TODO(nektar): Rename this class to `TestAXPlatformTreeManagerDelegate`.
 class TestBrowserAccessibilityDelegate
-    : public WebAXPlatformTreeManagerDelegate {
+    : public ui::AXPlatformTreeManagerDelegate {
  public:
   TestBrowserAccessibilityDelegate();
 
@@ -36,8 +36,8 @@ class TestBrowserAccessibilityDelegate
   gfx::NativeWindow GetTopLevelNativeWindow() override;
   bool CanFireAccessibilityEvents() const override;
   bool AccessibilityIsRootFrame() const override;
+  bool ShouldSuppressAXLoadComplete() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
-  RenderFrameHostImpl* AccessibilityRenderFrameHost() override;
 
   bool is_root_frame_;
   gfx::AcceleratedWidget accelerated_widget_;

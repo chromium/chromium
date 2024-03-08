@@ -62,9 +62,8 @@ bool TestBrowserAccessibilityDelegate::AccessibilityIsRootFrame() const {
   return is_root_frame_;
 }
 
-RenderFrameHostImpl*
-TestBrowserAccessibilityDelegate::AccessibilityRenderFrameHost() {
-  return nullptr;
+bool TestBrowserAccessibilityDelegate::ShouldSuppressAXLoadComplete() {
+  return false;
 }
 
 WebContentsAccessibility*

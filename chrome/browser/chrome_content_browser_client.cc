@@ -8218,3 +8218,13 @@ std::unique_ptr<content::DipsDelegate>
 ChromeContentBrowserClient::CreateDipsDelegate() {
   return std::make_unique<ChromeDipsDelegate>();
 }
+
+bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(
+    RenderFrameHost* rfh) {
+  CHECK(rfh);
+  WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
+
+  const GURL& url = web_contents->GetVisibleURL();
+  return url == GURL(chrome::kChromeUINewTabURL) ||
+         url == GURL(chrome::kChromeUINewTabPageURL);
+}

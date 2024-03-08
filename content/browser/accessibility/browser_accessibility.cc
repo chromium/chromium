@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -25,6 +24,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -904,7 +904,7 @@ gfx::NativeViewAccessible BrowserAccessibility::GetParent() const {
   if (parent)
     return parent->GetNativeViewAccessible();
 
-  WebAXPlatformTreeManagerDelegate* delegate =
+  ui::AXPlatformTreeManagerDelegate* delegate =
       manager_->GetDelegateFromRootManager();
   if (!delegate)
     return nullptr;
@@ -1143,7 +1143,7 @@ std::optional<size_t> BrowserAccessibility::GetIndexInParent() const {
 
 gfx::AcceleratedWidget
 BrowserAccessibility::GetTargetForNativeAccessibilityEvent() {
-  WebAXPlatformTreeManagerDelegate* root_delegate =
+  ui::AXPlatformTreeManagerDelegate* root_delegate =
       manager()->GetDelegateFromRootManager();
   if (!root_delegate)
     return gfx::kNullAcceleratedWidget;

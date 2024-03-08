@@ -1698,4 +1698,8 @@ std::unique_ptr<DipsDelegate> ContentBrowserClient::CreateDipsDelegate() {
   return nullptr;
 }
 
+bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
+  return false;
+}
+
 }  // namespace content

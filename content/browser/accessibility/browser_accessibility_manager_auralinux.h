@@ -12,10 +12,13 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 
+namespace ui {
+class AXPlatformTreeManagerDelegate;
+}
+
 namespace content {
 
 class BrowserAccessibilityAuraLinux;
-class WebAXPlatformTreeManagerDelegate;
 
 // Manages a tree of BrowserAccessibilityAuraLinux objects.
 class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
@@ -23,7 +26,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
  public:
   BrowserAccessibilityManagerAuraLinux(
       const ui::AXTreeUpdate& initial_tree,
-      WebAXPlatformTreeManagerDelegate* delegate);
+      ui::AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerAuraLinux(
       const BrowserAccessibilityManagerAuraLinux&) = delete;

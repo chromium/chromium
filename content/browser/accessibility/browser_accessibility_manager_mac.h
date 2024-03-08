@@ -17,16 +17,19 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/ax_event_notification_details.h"
 
+namespace ui {
+class AXPlatformTreeManagerDelegate;
+}
+
 namespace content {
 
 class BrowserAccessibilityCocoaBrowserTest;
-class WebAXPlatformTreeManagerDelegate;
 
 class CONTENT_EXPORT BrowserAccessibilityManagerMac
     : public BrowserAccessibilityManager {
  public:
   BrowserAccessibilityManagerMac(const ui::AXTreeUpdate& initial_tree,
-                                 WebAXPlatformTreeManagerDelegate* delegate);
+                                 ui::AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerMac(const BrowserAccessibilityManagerMac&) =
       delete;
@@ -71,9 +74,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
       id edit_text_marker) const;
 
   bool IsInGeneratedEventBatch(ui::AXEventGenerator::Event event_type) const;
-
-  // Returns whether this page is a new tab page on Chrome.
-  bool IsChromeNewTabPage();
 
   bool ShouldFireLoadCompleteNotification();
 

@@ -29,7 +29,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
-#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -40,6 +39,7 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/strings/grit/ax_strings.h"
@@ -53,9 +53,9 @@ using content::BrowserAccessibilityManager;
 using content::BrowserAccessibilityManagerMac;
 using content::ContentClient;
 using content::OneShotAccessibilityTreeSearch;
-using content::WebAXPlatformTreeManagerDelegate;
 using ui::AXActionHandlerRegistry;
 using ui::AXNodeData;
+using ui::AXPlatformTreeManagerDelegate;
 using ui::AXPositionToAXTextMarker;
 using ui::AXRangeToAXTextMarkerRange;
 using ui::AXTextMarkerRangeToAXRange;
@@ -1106,7 +1106,7 @@ bool content::IsNSRange(id value) {
 
   // Get the delegate for the topmost BrowserAccessibilityManager, because
   // that's the only one that can convert points to their origin in the screen.
-  WebAXPlatformTreeManagerDelegate* delegate =
+  ui::AXPlatformTreeManagerDelegate* delegate =
       _owner->manager()->GetDelegateFromRootManager();
   if (delegate) {
     return gfx::ScreenRectToNSRect(

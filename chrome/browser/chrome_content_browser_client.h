@@ -1012,6 +1012,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::unique_ptr<content::DipsDelegate> CreateDipsDelegate() override;
 
+  bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

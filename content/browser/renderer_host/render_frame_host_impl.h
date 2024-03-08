@@ -44,7 +44,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
@@ -179,6 +178,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -306,7 +306,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public base::SupportsUserData,
       public mojom::FrameHost,
       public mojom::DomAutomationControllerHost,
-      public WebAXPlatformTreeManagerDelegate,
+      public ui::AXPlatformTreeManagerDelegate,
       public SiteInstanceGroup::Observer,
       public blink::mojom::AssociatedInterfaceProvider,
       public blink::mojom::BackForwardCacheControllerHost,
@@ -655,7 +655,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::ScopedInterfaceEndpointHandle handle) override;
   std::string ToDebugString() override;
 
-  // WebAXPlatformTreeManagerDelegate
+  // ui::AXPlatformTreeManagerDelegate
   void AccessibilityPerformAction(const ui::AXActionData& data) override;
   bool AccessibilityViewHasFocus() override;
   void AccessibilityViewSetFocus() override;
@@ -675,7 +675,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   gfx::NativeWindow GetTopLevelNativeWindow() override;
   bool CanFireAccessibilityEvents() const override;
   bool AccessibilityIsRootFrame() const override;
-  RenderFrameHostImpl* AccessibilityRenderFrameHost() override;
+  bool ShouldSuppressAXLoadComplete() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 
   // SiteInstanceGroup::Observer

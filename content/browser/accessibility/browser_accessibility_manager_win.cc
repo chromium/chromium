@@ -18,7 +18,6 @@
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
-#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -26,6 +25,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
 
@@ -61,13 +61,13 @@ BrowserAccessibility* GetUiaTextPatternProvider(BrowserAccessibility& node) {
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    WebAXPlatformTreeManagerDelegate* delegate) {
+    ui::AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerWin(initial_tree, delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    WebAXPlatformTreeManagerDelegate* delegate) {
+    ui::AXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerWin(
       BrowserAccessibilityManagerWin::GetEmptyDocument(), delegate);
 }
@@ -79,7 +79,7 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerWin() {
 
 BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     const ui::AXTreeUpdate& initial_tree,
-    WebAXPlatformTreeManagerDelegate* delegate)
+    ui::AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(delegate) {
   ui::win::CreateATLModuleIfNeeded();
   Initialize(initial_tree);
@@ -117,7 +117,7 @@ ui::AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {
 }
 
 HWND BrowserAccessibilityManagerWin::GetParentHWND() const {
-  WebAXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
+  ui::AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
   if (!delegate)
     return NULL;
   return delegate->AccessibilityGetAcceleratedWidget();
@@ -947,7 +947,7 @@ void BrowserAccessibilityManagerWin::EnqueueSelectionChangedEvent(
 
 gfx::Rect BrowserAccessibilityManagerWin::GetViewBoundsInScreenCoordinates()
     const {
-  WebAXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
+  ui::AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
   if (!delegate) {
     return gfx::Rect();
   }

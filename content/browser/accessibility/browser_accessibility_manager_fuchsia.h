@@ -11,10 +11,13 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 
+namespace ui {
+class AXPlatformTreeManagerDelegate;
+}
+
 namespace content {
 
 class BrowserAccessibilityFuchsia;
-class WebAXPlatformTreeManagerDelegate;
 
 // Manages a tree of BrowserAccessibilityFuchsia objects.
 class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
@@ -22,7 +25,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
  public:
   BrowserAccessibilityManagerFuchsia(
       const ui::AXTreeUpdate& initial_tree,
-      WebAXPlatformTreeManagerDelegate* delegate);
+      ui::AXPlatformTreeManagerDelegate* delegate);
   ~BrowserAccessibilityManagerFuchsia() override;
 
   BrowserAccessibilityManagerFuchsia(

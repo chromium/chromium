@@ -504,8 +504,7 @@ usually forwarded to [BrowserAccessibilityManager] which is responsible for:
    BrowserAccessibilityManager, in a method named `NotifyAccessibilityEvent`.
 3. Dispatching incoming accessibility actions to the appropriate recipient, via
    [AXPlatformTreeManagerDelegate]. For messages destined for a renderer,
-   [RenderFrameHostImpl], which is a WebAXPlatformTreeManagerDelegate, is
-   responsible for calling the remote method
+   [RenderFrameHostImpl] is responsible for calling the remote method
    [ax.mojom.RenderAccessibility.PerformAction()], implemented by the renderer,
    with the appropriate payload (of type [ax.mojom.AXActionData]). This IPC call
    will be received by [RenderAccessibilityManager], which will then relay on
@@ -558,7 +557,6 @@ For more detail on Chrome OS accessibility, read [How Chrome OS Accessibility Wo
 [BlinkAXTreeSource]: https://cs.chromium.org/chromium/src/content/renderer/accessibility/blink_ax_tree_source.h
 [BrowserAccessibility]: https://cs.chromium.org/chromium/src/content/browser/accessibility/browser_accessibility.h
 [BrowserAccessibilityManager]: https://cs.chromium.org/chromium/src/content/browser/accessibility/browser_accessibility_manager.h
-[WebAXPlatformTreeManagerDelegate]: https://cs.chromium.org/chromium/src/content/browser/accessibility/web_ax_platform_tree_manager_delegate.h
 [LayoutObject]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/layout/layout_object.h
 [AXPlatformTreeManagerDelegate]: https://cs.chromium.org/chromium/src/ui/accessibility/platform/ax_platform_tree_manager_delegate.h
 [ViewAccessibility]: https://cs.chromium.org/chromium/src/ui/views/accessibility/view_accessibility.h

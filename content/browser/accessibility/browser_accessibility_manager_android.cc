@@ -9,19 +9,19 @@
 #include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
-#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 
 namespace content {
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    WebAXPlatformTreeManagerDelegate* delegate) {
+    ui::AXPlatformTreeManagerDelegate* delegate) {
   if (!delegate)
     return new BrowserAccessibilityManagerAndroid(initial_tree, nullptr,
                                                   nullptr);
@@ -37,7 +37,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    WebAXPlatformTreeManagerDelegate* delegate) {
+    ui::AXPlatformTreeManagerDelegate* delegate) {
   return BrowserAccessibilityManager::Create(
       BrowserAccessibilityManagerAndroid::GetEmptyDocument(), delegate);
 }
@@ -50,7 +50,7 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerAndroid() {
 BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     const ui::AXTreeUpdate& initial_tree,
     base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
-    WebAXPlatformTreeManagerDelegate* delegate)
+    ui::AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(delegate),
       web_contents_accessibility_(std::move(web_contents_accessibility)),
       prune_tree_for_screen_reader_(true) {
