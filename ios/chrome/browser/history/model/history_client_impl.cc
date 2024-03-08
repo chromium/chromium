@@ -81,9 +81,22 @@ HistoryClientImpl::CreateBackendClient() {
 
 void HistoryClientImpl::UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
                                                    base::Time time) {
-  // TODO(crbug.com/1511291): Implement this method when iOS is migrated to use
-  //                          single BookmarkModel instance.
-  NOTIMPLEMENTED();
+  if (!local_or_syncable_bookmark_model_ || account_bookmark_model_) {
+    return;
+  }
+
+  // If there is a single BookmarkModel, the node ID is guaranteed to
+  // correspond to this model.
+  const bookmarks::BookmarkNode* node =
+      GetBookmarkNodeByID(local_or_syncable_bookmark_model_, bookmark_node_id);
+
+  // This call is async so the BookmarkNode could have already been deleted.
+  if (!node) {
+    return;
+  }
+
+  local_or_syncable_bookmark_model_->UpdateLastUsedTime(node, time,
+                                                        /*just_opened=*/true);
 }
 
 void HistoryClientImpl::BookmarkModelChanged() {

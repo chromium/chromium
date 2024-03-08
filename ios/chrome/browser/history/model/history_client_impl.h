@@ -26,9 +26,10 @@ class BookmarkNode;
 class HistoryClientImpl : public history::HistoryClient,
                           public bookmarks::BaseBookmarkModelObserver {
  public:
-  explicit HistoryClientImpl(
-      bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
-      bookmarks::BookmarkModel* account_bookmark_model);
+  // TODO(crbug.com/326185948): Remove the second BookmarkModel once the
+  // migration of iOS to using a single, unified BookmarkModel is completed.
+  HistoryClientImpl(bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
+                    bookmarks::BookmarkModel* account_bookmark_model);
 
   HistoryClientImpl(const HistoryClientImpl&) = delete;
   HistoryClientImpl& operator=(const HistoryClientImpl&) = delete;

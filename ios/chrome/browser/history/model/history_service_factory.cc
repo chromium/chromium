@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
@@ -15,7 +16,9 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/history/model/history_client_impl.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -26,17 +29,42 @@ namespace ios {
 
 namespace {
 
+std::unique_ptr<HistoryClientImpl> BuildHistoryClientWithUnifiedBookmarkModel(
+    ChromeBrowserState* browser_state) {
+  CHECK(base::FeatureList::IsEnabled(
+      syncer::kEnableBookmarkFoldersForAccountStorage));
+  return std::make_unique<HistoryClientImpl>(
+      BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(
+          browser_state),
+      /*account_bookmark_model=*/nullptr);
+}
+
+std::unique_ptr<HistoryClientImpl> BuildHistoryClientWithTwoBookmarkModels(
+    ChromeBrowserState* browser_state) {
+  CHECK(!base::FeatureList::IsEnabled(
+      syncer::kEnableBookmarkFoldersForAccountStorage));
+  return std::make_unique<HistoryClientImpl>(
+      LocalOrSyncableBookmarkModelFactory::
+          GetDedicatedUnderlyingModelForBrowserState(browser_state),
+      AccountBookmarkModelFactory::GetDedicatedUnderlyingModelForBrowserState(
+          browser_state));
+}
+
+std::unique_ptr<HistoryClientImpl> BuildHistoryClient(
+    ChromeBrowserState* browser_state) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    return BuildHistoryClientWithUnifiedBookmarkModel(browser_state);
+  }
+
+  return BuildHistoryClientWithTwoBookmarkModels(browser_state);
+}
+
 std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(
-          std::make_unique<HistoryClientImpl>(
-              LocalOrSyncableBookmarkModelFactory::
-                  GetDedicatedUnderlyingModelForBrowserState(browser_state),
-              AccountBookmarkModelFactory::
-                  GetDedicatedUnderlyingModelForBrowserState(browser_state)),
-          nullptr));
+      new history::HistoryService(BuildHistoryClient(browser_state), nullptr));
   if (!history_service->Init(history::HistoryDatabaseParamsForPath(
           browser_state->GetStatePath(), GetChannel()))) {
     return nullptr;
@@ -92,8 +120,13 @@ HistoryServiceFactory::HistoryServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "HistoryService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(AccountBookmarkModelFactory::GetInstance());
-  DependsOn(LocalOrSyncableBookmarkModelFactory::GetInstance());
+  if (base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    DependsOn(BookmarkModelFactory::GetInstance());
+  } else {
+    DependsOn(AccountBookmarkModelFactory::GetInstance());
+    DependsOn(LocalOrSyncableBookmarkModelFactory::GetInstance());
+  }
 }
 
 HistoryServiceFactory::~HistoryServiceFactory() {
