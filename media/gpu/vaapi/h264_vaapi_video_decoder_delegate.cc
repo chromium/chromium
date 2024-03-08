@@ -35,12 +35,14 @@ static constexpr uint8_t kZigzagScan8x8[64] = {
     35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
     58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 int GetSliceHeaderCounter() {
   // Needs to be static in case there are multiple active at once, in which case
   // they all need unique values.
   static base::AtomicSequenceNumber parsed_slice_hdr_counter;
   return parsed_slice_hdr_counter.GetNext();
 }
+#endif
 
 }  // namespace
 
