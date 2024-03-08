@@ -53,8 +53,7 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
       pref_change_registrar_->prefs()->GetInteger(
           prefs::kUserGeolocationAccessLevel));
 
-  if (features::IsCrosPrivacyHubEnabled() &&
-      features::IsCrosPrivacyHubLocationEnabled()) {
+  if (features::IsCrosPrivacyHubLocationEnabled()) {
     UpdateNotification();
   }
 }
@@ -62,8 +61,7 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
 void GeolocationPrivacySwitchController::OnPreferenceChanged() {
   VLOG(1) << "Privacy Hub: Geolocation switch state = "
           << static_cast<int>(AccessLevel());
-  if (features::IsCrosPrivacyHubEnabled() &&
-      features::IsCrosPrivacyHubLocationEnabled()) {
+  if (features::IsCrosPrivacyHubLocationEnabled()) {
     CHECK(pref_change_registrar_);
     const GeolocationAccessLevel new_access_level =
         static_cast<GeolocationAccessLevel>(
@@ -152,8 +150,7 @@ GeolocationAccessLevel GeolocationPrivacySwitchController::PreviousAccessLevel()
 
 void GeolocationPrivacySwitchController::SetAccessLevel(
     GeolocationAccessLevel access_level) {
-  if (!features::IsCrosPrivacyHubEnabled() ||
-      !features::IsCrosPrivacyHubLocationEnabled()) {
+  if (!features::IsCrosPrivacyHubLocationEnabled()) {
     return;
   }
   CHECK(pref_change_registrar_);
@@ -180,8 +177,7 @@ void GeolocationPrivacySwitchController::UpdateNotification() {
 
 void GeolocationPrivacySwitchController::ApplyArcLocationUpdate(
     bool geolocation_enabled) {
-  if (!features::IsCrosPrivacyHubEnabled() ||
-      !features::IsCrosPrivacyHubLocationEnabled()) {
+  if (!features::IsCrosPrivacyHubLocationEnabled()) {
     return;
   }
   if (geolocation_enabled &&
