@@ -914,7 +914,6 @@ _exempted_from_contact_builders = {
         "win11-arm64-blink-rel",
         "win11-blink-rel",
         "win11-wpt-content-shell-fyi-rel",
-        "win11-x64-fyi-rel",
         "win32-clobber-rel",
         "win32-official",
         "win_chromium_compile_dbg_ng",

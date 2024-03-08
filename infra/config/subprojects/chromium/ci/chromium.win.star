@@ -302,8 +302,6 @@ ci.thin_tester(
     builder_config_settings = builder_config.ci_settings(
         retry_failed_shards = True,
     ),
-    # TODO(kuanhuang): Add back to sheriff rotation after verified green.
-    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",

@@ -306,7 +306,8 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win11-x64-fyi-rel",
+    name = "win11-rel",
+    description_html = "This builder run tests for Windows 11 release build.",
     mirrors = [
         "ci/Win x64 Builder",
         "ci/Win11 Tests x64",
@@ -323,10 +324,9 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_10,
+    contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
-        # TODO(https://crbug.com/1441206): Enable after resources verified.
-        experiment_percentage = 100,
         location_filters = [
             "sandbox/win/.+",
             "sandbox/policy/win/.+",

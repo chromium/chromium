@@ -148,6 +148,7 @@ chromium/try/win-clobber-rel
 chromium/try/win-dawn-rel
 chromium/try/win-official
 chromium/try/win-rel
+chromium/try/win11-rel
 chromium/try/win32-clobber-rel
 chromium/try/win32-official
 chromium/try/win_chromium_compile_dbg_ng
