@@ -9,6 +9,7 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/notification_center/ash_notification_control_button_factory.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/notification_style_utils.h"
@@ -82,6 +83,9 @@ void ConversationNotificationView::ToggleExpand() {
   // Updates expand state to message center, and let notification delegate
   // handle the state update.
   SetExpanded(expanded_);
+
+  app_name_view_->SetVisible(expanded_);
+  app_name_divider_->SetVisible(expanded_);
 
   PreferredSizeChanged();
 }
@@ -272,27 +276,43 @@ ConversationNotificationView::CreateTitleRow(const Notification& notification) {
   title_row->SetOrientation(views::LayoutOrientation::kHorizontal);
   title_row->SetDefault(views::kMarginsKey, kTitleRowDefaultMargin);
 
+  // Create Title view and add it to title row.
   auto title = std::make_unique<views::Label>();
   title->SetID(ViewId::kTitleLabel);
-  title->SetText(notification.title());
+  title_ = title_row->AddChildView(std::move(title));
+  title_->SetText(notification.title());
+  ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                             *title_);
 
-  notification_style_utils::ConfigureLabelStyle(
-      title.get(), kNotificationTitleLabelSize, true,
-      gfx::Font::Weight::MEDIUM);
-
+  // Title divider view
   auto divider = std::make_unique<views::Label>();
   divider->SetText(kNotificationTitleRowDivider);
   notification_style_utils::ConfigureLabelStyle(divider.get(),
                                                 kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
+  title_row->AddChildView(std::move(divider));
 
+  // App name view
+  auto app_name_view = std::make_unique<views::Label>();
+  app_name_view->SetID(ViewId::kTitleLabel);
+  app_name_view_ = title_row->AddChildView(std::move(app_name_view));
+  app_name_view_->SetText(notification.display_source());
+  ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                             *app_name_view_);
+
+  // App name divider view
+  auto app_name_divider = std::make_unique<views::Label>();
+  app_name_divider->SetText(kNotificationTitleRowDivider);
+  notification_style_utils::ConfigureLabelStyle(app_name_divider.get(),
+                                                kNotificationSecondaryLabelSize,
+                                                /*is_color_primary=*/false);
+  app_name_divider_ = title_row->AddChildView(std::move(app_name_divider));
+
+  // Timestamp view
   auto timestamp = std::make_unique<TimestampView>();
   notification_style_utils::ConfigureLabelStyle(timestamp.get(),
                                                 kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
-
-  title_row->AddChildView(std::move(title));
-  title_row->AddChildView(std::move(divider));
   timestamp_ = title_row->AddChildView(std::move(timestamp));
 
   return title_row;

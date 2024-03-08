@@ -20,6 +20,7 @@ class NotificationControlButtonsView;
 
 namespace views {
 class FlexLayoutView;
+class Label;
 }
 
 namespace ash {
@@ -43,6 +44,7 @@ class ASH_EXPORT ConversationNotificationView
     kExpandButton,
     kMainIcon,
     kTitleLabel,
+    kAppNameLabel,
   };
 
   explicit ConversationNotificationView(const Notification& notification);
@@ -87,6 +89,9 @@ class ASH_EXPORT ConversationNotificationView
   raw_ptr<views::View> inline_settings_view_ = nullptr;
   raw_ptr<views::View> right_controls_container_ = nullptr;
   raw_ptr<TimestampView> timestamp_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> app_name_view_ = nullptr;
+  raw_ptr<views::Label> app_name_divider_ = nullptr;
 };
 }  // namespace ash
 

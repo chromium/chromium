@@ -9,6 +9,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -54,7 +55,7 @@ class ConversationNotificationViewTest : public AshTestBase {
     rich_data.buttons = buttons;
     return std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"title",
-        u"test message", ui::ImageModel(), /*display_source=*/std::u16string(),
+        u"test message", ui::ImageModel(), /*display_source=*/u"TestApp",
         GURL(), message_center::NotifierId(), rich_data, /*delegate=*/nullptr);
   }
 
@@ -78,6 +79,16 @@ class ConversationNotificationViewTest : public AshTestBase {
 
   views::View* right_controls_container() {
     return notification_view_->right_controls_container_;
+  }
+
+  views::Label* app_name_view() { return notification_view_->app_name_view_; }
+
+  views::Label* app_name_divider() {
+    return notification_view_->app_name_divider_;
+  }
+
+  const std::u16string& display_source() const {
+    return notification_->display_source();
   }
 
  private:
@@ -148,10 +159,15 @@ TEST_F(ConversationNotificationViewTest, ActionsViewToggleExpandVisibility) {
 
   EXPECT_FALSE(notification_view()->IsExpanded());
   EXPECT_FALSE(actions_view()->GetVisible());
+  EXPECT_FALSE(app_name_view()->GetVisible());
+  EXPECT_FALSE(app_name_divider()->GetVisible());
 
   notification_view()->ToggleExpand();
 
   EXPECT_TRUE(notification_view()->IsExpanded());
   EXPECT_TRUE(actions_view()->GetVisible());
+  EXPECT_TRUE(app_name_view()->GetVisible());
+  EXPECT_TRUE(app_name_divider()->GetVisible());
+  EXPECT_EQ(display_source(), app_name_view()->GetText());
 }
 }  // namespace ash
