@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -59,12 +60,28 @@ constexpr int kButtonCornerRadius = 8;
 constexpr gfx::Insets kButtonPadding = gfx::Insets::VH(6, 8);
 constexpr gfx::Insets kHeaderRowPadding = gfx::Insets::TLBR(0, 0, 12, 0);
 constexpr int kHeaderRowSpacing = 8;
+constexpr int kButtonsRowSpacing = 12;
 constexpr int kButtonTextfieldSpacing = 16;
 constexpr int kButtonImageLabelSpacing = 4;
 constexpr int kButtonBorderThickness = 1;
 constexpr int kTextfieldContainerSpacing = 8;
 constexpr int kInputContainerCornerRadius = 8;
 constexpr gfx::Insets kTextfieldButtonPadding = gfx::Insets::VH(0, 8);
+
+void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
+  button->SetLabelStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  button->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                        ui::ImageModel::FromVectorIcon(
+                            icon, ui::kColorSysOnSurface, kButtonHeight));
+  button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
+                         ui::kColorSysOnSurface);
+  button->SetImageLabelSpacing(kButtonImageLabelSpacing);
+  button->SetBorder(views::CreatePaddedBorder(
+      views::CreateThemedRoundedRectBorder(kButtonBorderThickness,
+                                           kButtonCornerRadius,
+                                           ui::kColorSysTonalOutline),
+      kButtonPadding));
+}
 
 }  // namespace
 
@@ -115,26 +132,35 @@ MahiMenuView::MahiMenuView() {
 
   AddChildView(std::move(header_row));
 
-  auto summary_button = std::make_unique<views::LabelButton>(
-      /*callback=*/base::BindRepeating(&MahiMenuView::OnSummaryButtonPressed,
-                                       weak_ptr_factory_.GetWeakPtr()),
-      /*text=*/l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT));
-  summary_button->SetLabelStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  summary_button->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(chromeos::kMahiSummarizeIcon,
-                                     ui::kColorSysOnSurface, kButtonHeight));
-  summary_button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
-                                 ui::kColorSysOnSurface);
-  summary_button->SetImageLabelSpacing(kButtonImageLabelSpacing);
-  summary_button->SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedRoundedRectBorder(kButtonBorderThickness,
-                                           kButtonCornerRadius,
-                                           ui::kColorSysTonalOutline),
-      kButtonPadding));
-  summary_button->SetProperty(views::kCrossAxisAlignmentKey,
-                              views::LayoutAlignment::kStart);
-  summary_button_ = AddChildView(std::move(summary_button));
+  // Create row containing the `summary_button_` and `outline_button_`.
+  AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetProperty(views::kCrossAxisAlignmentKey,
+                       views::LayoutAlignment::kStart)
+          .AddChildren(
+              views::Builder<views::LabelButton>()
+                  .CopyAddressTo(&summary_button_)
+                  .SetCallback(
+                      base::BindRepeating(&MahiMenuView::OnButtonPressed,
+                                          weak_ptr_factory_.GetWeakPtr(),
+                                          ::mahi::ButtonType::kSummary))
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT))
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets::TLBR(0, 0, 0, kButtonsRowSpacing)),
+              views::Builder<views::LabelButton>()
+                  .CopyAddressTo(&outline_button_)
+                  .SetCallback(
+                      base::BindRepeating(&MahiMenuView::OnButtonPressed,
+                                          weak_ptr_factory_.GetWeakPtr(),
+                                          ::mahi::ButtonType::kOutline))
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_MAHI_OUTLINE_BUTTON_LABEL_TEXT)))
+          .Build());
+
+  StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);
+  StyleMenuButton(outline_button_, chromeos::kMahiOutlinesIcon);
 
   AddChildView(CreateInputContainer());
 }
@@ -176,11 +202,11 @@ void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
       editor_menu::GetEditorMenuBounds(anchor_view_bounds, this));
 }
 
-void MahiMenuView::OnSummaryButtonPressed() {
+void MahiMenuView::OnButtonPressed(::mahi::ButtonType button_type) {
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
   ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
-      display.id(), ::mahi::ButtonType::kSummary,
+      display.id(), button_type,
       /*question=*/std::u16string());
 }
 

@@ -89,4 +89,39 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
   run_loop.Run();
 }
 
+TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
+  MockMahiWebContentsManager mock_mahi_web_contents_manager;
+  auto scoped_mahi_web_contents_manager =
+      std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+          &mock_mahi_web_contents_manager);
+
+  auto menu_widget = CreateTestWidget();
+  auto* menu_view =
+      menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+
+  auto event_generator = std::make_unique<ui::test::EventGenerator>(
+      views::GetRootWindow(menu_widget.get()));
+  event_generator->MoveMouseTo(
+      menu_view->outline_button_for_test()->GetBoundsInScreen().CenterPoint());
+
+  // Make sure that clicking the summary button would trigger the function in
+  // `MahiWebContentsManager` with the correct parameters.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_mahi_web_contents_manager, OnContextMenuClicked)
+      .WillOnce([&run_loop, &menu_widget](int64_t display_id,
+                                          ::mahi::ButtonType button_type,
+                                          const std::u16string& question) {
+        EXPECT_EQ(display::Screen::GetScreen()
+                      ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
+                      .id(),
+                  display_id);
+        EXPECT_EQ(::mahi::ButtonType::kOutline, button_type);
+        EXPECT_EQ(std::u16string(), question);
+        run_loop.Quit();
+      });
+
+  event_generator->ClickLeftButton();
+  run_loop.Run();
+}
+
 }  // namespace chromeos::mahi

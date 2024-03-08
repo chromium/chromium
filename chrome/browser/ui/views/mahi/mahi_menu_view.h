@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -43,15 +44,17 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
   views::LabelButton* summary_button_for_test() { return summary_button_; }
+  views::LabelButton* outline_button_for_test() { return outline_button_; }
 
  private:
-  // Button callback.
-  void OnSummaryButtonPressed();
+  // Buttons callback.
+  void OnButtonPressed(::mahi::ButtonType button_type);
 
   std::unique_ptr<views::FlexLayoutView> CreateInputContainer();
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::LabelButton> summary_button_ = nullptr;
+  raw_ptr<views::LabelButton> outline_button_ = nullptr;
 
   base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
 };
