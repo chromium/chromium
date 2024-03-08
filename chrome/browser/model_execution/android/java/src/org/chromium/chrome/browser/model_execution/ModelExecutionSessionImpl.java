@@ -11,12 +11,14 @@ import org.chromium.chrome.browser.model_execution.ExecutionResult.ExecutionErro
  * Instantiable version of {@link ModelExecutionSession}. don't add anything to this class.
  * Downstream targets may provide a different implementation. In GN, we specify that {@link
  * ModelExecutionSession} is compiled separately from its implementation; other projects may specify
- * a different DrivingRestrictionsDelegate via GN.
+ * a different ModelExecutionSession via GN.
  */
-class ModelExecutionSessionImpl extends ModelExecutionSession {
+public class ModelExecutionSessionImpl extends ModelExecutionSession {
+
+    public ModelExecutionSessionImpl(@ModelExecutionFeature int feature) {}
 
     @Override
-    protected void executeModel(String request, Callback<ExecutionResult> streamingResultCallback) {
+    public void executeModel(String request, Callback<ExecutionResult> streamingResultCallback) {
         streamingResultCallback.onResult(new ExecutionResult(ExecutionError.NOT_AVAILABLE));
     }
 }

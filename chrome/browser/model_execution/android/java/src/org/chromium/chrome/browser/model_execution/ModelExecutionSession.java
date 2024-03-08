@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.model_execution;
 import org.chromium.base.Callback;
 
 /** Base class that exposes methods to execute models with streaming results. */
-abstract class ModelExecutionSession {
+public abstract class ModelExecutionSession {
 
-    protected boolean isAvailable() {
+    public boolean isAvailable() {
         return false;
     }
 
@@ -23,6 +23,6 @@ abstract class ModelExecutionSession {
      * @param request Model input.
      * @param streamingResultCallback Callback for streaming and final results.
      */
-    protected abstract void executeModel(
+    public abstract void executeModel(
             String request, Callback<ExecutionResult> streamingResultCallback);
 }
