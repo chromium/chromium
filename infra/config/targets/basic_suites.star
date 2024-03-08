@@ -1530,7 +1530,7 @@ targets.legacy_basic_suite(
                 "reftest",
                 "crashtest",
                 "print-reftest",
-                "--additional-driver-flag=--headless",
+                "--additional-driver-flag=--headless=old",
             ],
             swarming = targets.swarming(
                 shards = 1,

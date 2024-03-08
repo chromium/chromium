@@ -1613,7 +1613,7 @@
           'reftest',
           'crashtest',
           'print-reftest',
-          '--additional-driver-flag=--headless',
+          '--additional-driver-flag=--headless=old',
         ],
         'swarming': {
           'shards': 1,
