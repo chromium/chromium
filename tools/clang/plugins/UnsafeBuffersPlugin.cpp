@@ -80,6 +80,15 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       return PassthroughDiagnostic(level, diag);
     }
 
+    // The `-Runsafe-buffer-usage-in-container` warning gets enabled along with
+    // `-Runsafe-buffer-usage`, but it's a hardcoded warning about std::span
+    // constructor. We don't want to emit these, we instead want the span ctor
+    // (and our own base::span ctor) to be marked [[clang::unsafe_buffer_usage]]
+    // and have that work: https://github.com/llvm/llvm-project/issues/80482
+    if (diag_id == clang::diag::warn_unsafe_buffer_usage_in_container) {
+      return;
+    }
+
     if (!(diag_id == clang::diag::warn_unsafe_buffer_variable ||
           diag_id == clang::diag::warn_unsafe_buffer_operation ||
           diag_id == clang::diag::note_unsafe_buffer_operation ||
