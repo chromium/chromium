@@ -1891,8 +1891,9 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
                                  relevance_heap.size());
 
     // Record how long it took to execute the model for all eligible matches.
-    base::UmaHistogramTimes("Omnibox.URLScoringModelExecuted.ElapsedTime",
-                            elapsed_timer.Elapsed());
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Omnibox.URLScoringModelExecuted.ElapsedTime", elapsed_timer.Elapsed(),
+        base::Microseconds(1), base::Milliseconds(3), 100);
   }
 
   while (!relevance_heap.empty()) {
@@ -1971,8 +1972,9 @@ void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
                                results.size());
 
   // Record how long it took to execute the model for all eligible matches.
-  base::UmaHistogramTimes("Omnibox.URLScoringModelExecuted.ElapsedTime",
-                          elapsed_timer.Elapsed());
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Omnibox.URLScoringModelExecuted.ElapsedTime", elapsed_timer.Elapsed(),
+      base::Microseconds(1), base::Milliseconds(3), 100);
 
   // Record whether the model was executed for at least one eligible match.
   provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
@@ -2071,8 +2073,9 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
                                results.size());
 
   // Record how long it took to execute the model for all eligible matches.
-  base::UmaHistogramTimes("Omnibox.URLScoringModelExecuted.ElapsedTime",
-                          elapsed_timer.Elapsed());
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Omnibox.URLScoringModelExecuted.ElapsedTime", elapsed_timer.Elapsed(),
+      base::Microseconds(1), base::Milliseconds(3), 100);
 
   // Record whether the model was executed for at least one eligible match.
   provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
