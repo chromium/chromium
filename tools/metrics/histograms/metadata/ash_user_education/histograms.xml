@@ -182,6 +182,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.ChromeVoxEnabled.When"
+    enum="WelcomeTourChromeVoxEnabled" expires_after="2025-02-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records when ChromeVox is enabled in the Welcome Tour. Only logged when the
+    feature flag is turned on and the tour is shown.
+  </summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Prevented.Reason"
     enum="WelcomeTourPreventedReason" expires_after="2024-08-04">
   <owner>dmblack@google.com</owner>

@@ -22,9 +22,11 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chromeos/constants/devicetype.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -171,19 +173,22 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
   // Returns a builder for an interaction step that checks the dialog
   // description.
   [[nodiscard]] static auto CheckDialogDescription() {
+    const std::u16string product_name = ui::GetChromeOSDeviceName();
     return CheckViewProperty(
         ash::SystemDialogDelegateView::kDescriptionTextIdForTesting,
         &views::Label::GetText,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT));
+        l10n_util::GetStringFUTF16(IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT,
+                                   product_name));
   }
 
   // Returns a builder for an interaction step that checks the dialog title.
   [[nodiscard]] static auto CheckDialogTitle() {
+    const std::u16string product_name = ui::GetChromeOSDeviceName();
     return CheckViewProperty(
         ash::SystemDialogDelegateView::kTitleTextIdForTesting,
         &views::Label::GetText,
-        l10n_util::GetStringUTF16(IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT));
+        l10n_util::GetStringFUTF16(IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT,
+                                   product_name));
   }
 
   // Returns a builder for an interaction step that checks that the anchor of a
@@ -199,11 +204,11 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   // Returns a builder for an interaction step that checks that the body text of
-  // a help bubble matches the specified `message_id`.
-  [[nodiscard]] static auto CheckHelpBubbleBodyText(int message_id) {
+  // a help bubble matches the specified `body_text`.
+  [[nodiscard]] static auto CheckHelpBubbleBodyText(
+      const std::u16string& body_text) {
     return CheckViewProperty(ash::HelpBubbleViewAsh::kBodyTextIdForTesting,
-                             &views::Label::GetText,
-                             l10n_util::GetStringUTF16(message_id));
+                             &views::Label::GetText, body_text);
   }
 
   // Returns a builder for an interaction step that checks whether the help
@@ -242,6 +247,8 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
 
 // An interactive UI test that exercises the entire Welcome Tour.
 IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
+  const std::u16string product_name = ui::GetChromeOSDeviceName();
+
   RunTestSequence(
       // Step 0: Dialog.
       InAnyContext(WaitForDialogVisibility(true)),
@@ -252,66 +259,71 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
 
       // Step 1: Shelf.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(Steps(
-          CheckHelpBubbleAnchor(ash::kShelfViewElementId),
-          CheckHelpBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT),
-          CheckHelpBubbleDefaultButtonFocus(true),
-          CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-          PressHelpBubbleDefaultButton(), FlushEvents())),
+      InSameContext(
+          Steps(CheckHelpBubbleAnchor(ash::kShelfViewElementId),
+                CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
+                    IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)),
+                CheckHelpBubbleDefaultButtonFocus(true),
+                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+                PressHelpBubbleDefaultButton(), FlushEvents())),
 
       // Step 2: Status area.
       InAnyContext(WaitForHelpBubble()),
       InSameContext(
           Steps(CheckHelpBubbleAnchor(ash::kUnifiedSystemTrayElementId),
-                CheckHelpBubbleBodyText(
-                    IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT),
+                CheckHelpBubbleBodyText(l10n_util::GetStringUTF16(
+                    IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)),
                 CheckHelpBubbleDefaultButtonFocus(true),
                 CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
                 PressHelpBubbleDefaultButton(), FlushEvents())),
 
       // Step 3: Home button.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(
-          Steps(CheckHelpBubbleAnchor(ash::kHomeButtonElementId),
-                CheckHelpBubbleBodyText(
-                    IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT),
-                CheckHelpBubbleDefaultButtonFocus(true),
-                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                PressHelpBubbleDefaultButton(), FlushEvents())),
+      InSameContext(Steps(
+          CheckHelpBubbleAnchor(ash::kHomeButtonElementId),
+          CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
+              (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook)
+                  ? IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK
+                  : IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_OTHER_DEVICE_TYPES,
+              product_name)),
+          CheckHelpBubbleDefaultButtonFocus(true),
+          CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+          PressHelpBubbleDefaultButton(), FlushEvents())),
 
       // Step 4: Search box.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(
-          Steps(CheckAppListBubbleVisibility(true),
-                CheckHelpBubbleAnchor(ash::kSearchBoxViewElementId),
-                CheckHelpBubbleBodyText(
-                    IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT),
-                CheckHelpBubbleDefaultButtonFocus(true),
-                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-                PressHelpBubbleDefaultButton(), FlushEvents())),
+      InSameContext(Steps(
+          CheckAppListBubbleVisibility(true),
+          CheckHelpBubbleAnchor(ash::kSearchBoxViewElementId),
+          CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
+              IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT, product_name)),
+          CheckHelpBubbleDefaultButtonFocus(true),
+          CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+          PressHelpBubbleDefaultButton(), FlushEvents())),
 
       // Step 5: Settings app.
       InAnyContext(WaitForHelpBubble()),
       InSameContext(
           Steps(CheckAppListBubbleVisibility(true),
                 CheckHelpBubbleAnchor(ash::kSettingsAppElementId),
-                CheckHelpBubbleBodyText(
-                    IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT),
+                CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
+                    IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                    product_name)),
                 CheckHelpBubbleDefaultButtonFocus(true),
                 CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
                 PressHelpBubbleDefaultButton(), FlushEvents())),
 
       // Step 6: Explore app.
       InAnyContext(WaitForHelpBubble()),
-      InSameContext(
-          Steps(CheckAppListBubbleVisibility(true),
-                CheckHelpBubbleAnchor(ash::kExploreAppElementId),
-                CheckHelpBubbleBodyText(
-                    IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT),
-                CheckHelpBubbleDefaultButtonFocus(true),
-                CheckHelpBubbleDefaultButtonText(
-                    IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT),
-                PressHelpBubbleDefaultButton(), FlushEvents())),
+      InSameContext(Steps(
+          CheckAppListBubbleVisibility(true),
+          CheckHelpBubbleAnchor(ash::kExploreAppElementId),
+          CheckHelpBubbleBodyText(l10n_util::GetStringFUTF16(
+              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT, product_name)),
+          CheckHelpBubbleDefaultButtonFocus(true),
+          CheckHelpBubbleDefaultButtonText(
+              IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT),
+          PressHelpBubbleDefaultButton(), FlushEvents())),
 
       // Step 7: Explore app window.
       InAnyContext(WaitForBrowser()),

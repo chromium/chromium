@@ -2882,6 +2882,12 @@ BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kWelcomeTourEnabledCounterfactually{
     &kWelcomeTour, "is-counterfactual", false};
 
+// Whether ChromeVox is supported in the Welcome Tour that walks new users
+// through ChromeOS System UI.
+BASE_FEATURE(kWelcomeTourChromeVoxSupported,
+             "WelcomeTourChromeVoxSupported",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Forces user eligibility for the Welcome Tour that walks new users through
 // ChromeOS System UI. Enabling this flag has no effect unless `kWelcomeTour` is
 // also enabled.
@@ -4415,6 +4421,11 @@ bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
 
 bool IsWallpaperPerDeskEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperPerDesk);
+}
+
+bool IsWelcomeTourChromeVoxSupported() {
+  return IsWelcomeTourEnabled() &&
+         base::FeatureList::IsEnabled(kWelcomeTourChromeVoxSupported);
 }
 
 bool IsWelcomeTourEnabled() {

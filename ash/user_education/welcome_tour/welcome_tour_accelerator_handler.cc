@@ -5,6 +5,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_accelerator_handler.h"
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,6 +44,11 @@ void WelcomeTourAcceleratorHandler::OnKeyEvent(ui::KeyEvent* event) {
     // Block `event` if `action` is not allowed.
     event->StopPropagation();
   } else if (action_it->aborts_tour) {
+    if (action_it->action == AcceleratorAction::kToggleSpokenFeedback &&
+        features::IsWelcomeTourChromeVoxSupported()) {
+      return;
+    }
+
     // Aborting the Welcome Tour could affect the enabling of `action`.
     // Therefore, abort the Welcome Tour asynchronously.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

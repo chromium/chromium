@@ -32,6 +32,16 @@ enum class AbortedReason {
   kMaxValue = kShutdown,
 };
 
+// Enumeration of when ChromeVox is enabled in the Welcome Tour. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class ChromeVoxEnabled {
+  kMinValue = 0,
+  kBeforeTour = kMinValue,
+  kDuringTour = 1,
+  kMaxValue = kDuringTour,
+};
+
 // Enumeration of reasons the Welcome Tour may be prevented. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused. Be sure to update `kAllPreventedReasonsSet` accordingly.
@@ -105,6 +115,9 @@ static constexpr auto kAllInteractionsSet =
     });
 
 // Utilities -------------------------------------------------------------------
+
+// Record the usage of ChromeVox in the Welcome Tour.
+ASH_EXPORT void RecordChromeVoxEnabled(ChromeVoxEnabled when);
 
 // Record that a given `interaction` has occurred.
 ASH_EXPORT void RecordInteraction(Interaction interaction);

@@ -11268,6 +11268,7 @@ if (!is_android && !is_chromeos_device) {
           "//chromeos/ash/components/standalone_browser",
           "//components/app_constants",
           "//device/udev_linux:test_support",
+          "//ui/chromeos",
           "//ui/events/devices",
           "//ui/events/devices:test_support",
         ]

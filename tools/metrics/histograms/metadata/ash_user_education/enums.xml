@@ -76,6 +76,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kShutdown"/>
 </enum>
 
+<enum name="WelcomeTourChromeVoxEnabled">
+  <int value="0" label="kBeforeTour"/>
+  <int value="1" label="kDuringTour"/>
+</enum>
+
 <enum name="WelcomeTourInteraction">
   <int value="0" label="kFilesApp"/>
   <int value="1" label="kLauncher"/>

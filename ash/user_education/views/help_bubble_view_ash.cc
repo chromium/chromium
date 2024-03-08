@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -22,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/strings/grit/components_strings.h"
@@ -300,13 +302,37 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   }
   SetCancelCallback(std::move(params.dismiss_callback));
 
-  accessible_name_ = params.title_text;
-  if (!accessible_name_.empty()) {
-    accessible_name_ += u". ";
+  // A body text provided from extended properties should take precedence
+  // over the default body text provided from help bubble `params` since
+  // extended properties are the ChromeOS-specific mechanism for overriding
+  // platform agnostic behaviors.
+  std::u16string body_text;
+  if (auto body_text_from_extended_properties =
+          user_education_util::GetHelpBubbleBodyText(
+              params.extended_properties)) {
+    body_text = base::UTF8ToUTF16(body_text_from_extended_properties.value());
+  } else {
+    body_text = params.body_text;
   }
-  accessible_name_ += params.screenreader_text.empty()
-                          ? params.body_text
-                          : params.screenreader_text;
+
+  // An accessible name provided from extended properties should take precedence
+  // over the default accessible name provided from help bubble `params` since
+  // extended properties are the ChromeOS-specific mechanism for overriding
+  // platform agnostic behaviors.
+  if (auto accessible_name_from_extended_properties =
+          user_education_util::GetHelpBubbleAccessibleName(
+              params.extended_properties)) {
+    accessible_name_ =
+        base::UTF8ToUTF16(accessible_name_from_extended_properties.value());
+  } else {
+    accessible_name_ = params.title_text;
+    if (!accessible_name_.empty()) {
+      accessible_name_ += u". ";
+    }
+    accessible_name_ +=
+        params.screenreader_text.empty() ? body_text : params.screenreader_text;
+  }
+
   screenreader_hint_text_ = params.keyboard_navigation_hint;
 
   // Since we don't have any controls for the user to interact with (we're just
@@ -380,16 +406,14 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     labels_.push_back(
         top_text_container->AddChildView(bubble_utils::CreateLabel(
             TypographyToken::kCrosBody1, params.title_text)));
-    views::Label* label =
-        AddChildViewAt(bubble_utils::CreateLabel(TypographyToken::kCrosBody1,
-                                                 params.body_text),
-                       GetIndexOf(button_container).value());
+    views::Label* label = AddChildViewAt(
+        bubble_utils::CreateLabel(TypographyToken::kCrosBody1, body_text),
+        GetIndexOf(button_container).value());
     labels_.push_back(label);
     label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   } else {
-    views::Label* label =
-        top_text_container->AddChildView(bubble_utils::CreateLabel(
-            TypographyToken::kCrosBody1, params.body_text));
+    views::Label* label = top_text_container->AddChildView(
+        bubble_utils::CreateLabel(TypographyToken::kCrosBody1, body_text));
     labels_.push_back(label);
     label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   }

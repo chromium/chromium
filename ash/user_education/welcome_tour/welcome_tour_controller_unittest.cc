@@ -47,6 +47,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chromeos/constants/devicetype.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -54,6 +55,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
@@ -68,15 +71,18 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::ash::welcome_tour_metrics::ChromeVoxEnabled;
 using ::ash::welcome_tour_metrics::PreventedReason;
 using ::base::test::RunOnceClosure;
 using ::session_manager::SessionState;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Conditional;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Matches;
 using ::testing::Mock;
@@ -110,6 +116,10 @@ auto MoveArgs(T*... out) {
 
 // Matchers --------------------------------------------------------------------
 
+MATCHER_P2(StringFUT8Eq, message_id, sub, "") {
+  return Matches(l10n_util::GetStringFUTF8(message_id, sub))(arg);
+}
+
 MATCHER_P(ElementSpecifierEq, element_specifier, "") {
   return absl::visit(base::Overloaded{
                          [&](const ui::ElementIdentifier& element_id) {
@@ -142,6 +152,53 @@ MATCHER_P6(BubbleStep,
          arg.next_button_callback().is_null() != has_next_button &&
          util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM &&
          &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon;
+}
+
+MATCHER_P7(BubbleStep,
+           element_specifier,
+           context_mode,
+           help_bubble_id,
+           body_text_id,
+           body_text_matcher,
+           arrow,
+           has_next_button,
+           "") {
+  namespace util = user_education_util;
+  const auto& ext_props = arg.extended_properties();
+  return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode() == context_mode &&
+         util::GetHelpBubbleId(ext_props) == help_bubble_id &&
+         arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
+         Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
+         arg.next_button_callback().is_null() != has_next_button &&
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
+         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM;
+}
+
+MATCHER_P8(BubbleStep,
+           element_specifier,
+           context_mode,
+           help_bubble_id,
+           accessible_name_matcher,
+           body_text_id,
+           body_text_matcher,
+           arrow,
+           has_next_button,
+           "") {
+  namespace util = user_education_util;
+  const auto& ext_props = arg.extended_properties();
+  return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode() == context_mode &&
+         util::GetHelpBubbleId(ext_props) == help_bubble_id &&
+         Matches(accessible_name_matcher)(
+             util::GetHelpBubbleAccessibleName(ext_props)) &&
+         arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
+         Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
+         arg.next_button_callback().is_null() != has_next_button &&
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
+         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM;
 }
 
 MATCHER_P2(HiddenStep, element_specifier, context_mode, "") {
@@ -303,6 +360,8 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescription) {
   auto* welcome_tour_controller = WelcomeTourController::Get();
   ASSERT_TRUE(welcome_tour_controller);
 
+  const std::u16string product_name = ui::GetChromeOSDeviceName();
+
   EXPECT_THAT(
       welcome_tour_controller->GetTutorialDescription(),
       AllOf(
@@ -333,36 +392,62 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescription) {
                   EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
                             ContextMode::kFromPreviousStep,
                             /*has_name_elements_callback=*/true),
-                  BubbleStep(ElementSpecifier(kHomeButtonElementName),
-                             ContextMode::kAny,
-                             HelpBubbleId::kWelcomeTourHomeButton,
-                             IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT,
-                             HelpBubbleArrow::kBottomLeft,
-                             /*has_next_button=*/true),
-                  BubbleStep(ElementSpecifier(kSearchBoxViewElementId),
-                             ContextMode::kAny,
-                             HelpBubbleId::kWelcomeTourSearchBox,
-                             IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
-                             HelpBubbleArrow::kTopCenter,
-                             /*has_next_button=*/true),
+                  BubbleStep(
+                      ElementSpecifier(kHomeButtonElementName),
+                      ContextMode::kAny, HelpBubbleId::kWelcomeTourHomeButton,
+                      StringFUT8Eq(
+                          IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME,
+                          product_name),
+                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+                      StringFUT8Eq(
+                          (chromeos::GetDeviceType() ==
+                           chromeos::DeviceType::kChromebook)
+                              ? IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK
+                              : IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_OTHER_DEVICE_TYPES,
+                          product_name),
+                      HelpBubbleArrow::kBottomLeft,
+                      /*has_next_button=*/true),
+                  BubbleStep(
+                      ElementSpecifier(kSearchBoxViewElementId),
+                      ContextMode::kAny, HelpBubbleId::kWelcomeTourSearchBox,
+                      StringFUT8Eq(
+                          IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME,
+                          product_name),
+                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+                      StringFUT8Eq(
+                          IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
+                          product_name),
+                      HelpBubbleArrow::kTopCenter,
+                      /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kSearchBoxViewElementId),
                             ContextMode::kFromPreviousStep,
                             /*has_name_elements_callback=*/false),
-                  BubbleStep(ElementSpecifier(kSettingsAppElementId),
-                             ContextMode::kFromPreviousStep,
-                             HelpBubbleId::kWelcomeTourSettingsApp,
-                             IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
-                             HelpBubbleArrow::kBottomLeft,
-                             /*has_next_button=*/true),
+                  BubbleStep(
+                      ElementSpecifier(kSettingsAppElementId),
+                      ContextMode::kFromPreviousStep,
+                      HelpBubbleId::kWelcomeTourSettingsApp,
+                      StringFUT8Eq(
+                          IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_ACCNAME,
+                          product_name),
+                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+                      StringFUT8Eq(
+                          IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                          product_name),
+                      HelpBubbleArrow::kBottomLeft,
+                      /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kSettingsAppElementId),
                             ContextMode::kFromPreviousStep,
                             /*has_name_elements_callback=*/false),
-                  BubbleStep(ElementSpecifier(kExploreAppElementId),
-                             ContextMode::kFromPreviousStep,
-                             HelpBubbleId::kWelcomeTourExploreApp,
-                             IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
-                             HelpBubbleArrow::kBottomLeft,
-                             /*has_next_button=*/false)))));
+                  BubbleStep(
+                      ElementSpecifier(kExploreAppElementId),
+                      ContextMode::kFromPreviousStep,
+                      HelpBubbleId::kWelcomeTourExploreApp,
+                      IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+                      StringFUT8Eq(
+                          IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
+                          product_name),
+                      HelpBubbleArrow::kBottomLeft,
+                      /*has_next_button=*/false)))));
 }
 
 // Verifies that the Welcome Tour is started when the primary user session is
@@ -515,8 +600,42 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
   EXPECT_TRUE(ended_future.Wait());
 }
 
-// Verifies the Welcome Tour to be aborted if ChromeVox is enabled during tour.
-TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
+// WelcomeTourControllerChromeVoxTest -------------------------------------
+
+// Base class for tests of the `WelcomeTourController` which are concerned with
+// the behaviors when ChromeVox is supported in the Welcome Tour, parameterized
+// by whether ChromeVox is supported.
+class WelcomeTourControllerChromeVoxTest
+    : public WelcomeTourControllerTest,
+      public ::testing::WithParamInterface<
+          /*is_chromevox_supported=*/std::optional<bool>> {
+ public:
+  WelcomeTourControllerChromeVoxTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kWelcomeTourChromeVoxSupported, IsChromeVoxSupported());
+  }
+
+  // Returns whether ChromeVox is supported in the Welcome Tour given test
+  // parameterization.
+  bool IsChromeVoxSupported() const { return GetParam().value_or(false); }
+
+ private:
+  // Used to conditionally enable ChromeVox support in the Welcome Tour
+  // given test parameterization.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WelcomeTourControllerChromeVoxTest,
+                         /*is_chromevox_supported=*/
+                         ::testing::Values(std::make_optional(true),
+                                           std::make_optional(false),
+                                           std::nullopt));
+
+// Verifies the Welcome Tour is aborted if ChromeVox is not supported but is
+// enabled during the tour.
+TEST_P(WelcomeTourControllerChromeVoxTest,
+       MaybeAbortTourIfChromeVoxEnabledDuringTour) {
   // Start the Welcome Tour by logging in the primary user for the first time.
   const auto primary_account_id = AccountId::FromUserEmail("primary@test");
   SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
@@ -527,33 +646,48 @@ TEST_F(WelcomeTourControllerTest, AbortTourIfChromeVoxEnabledDuringTour) {
       observation{&observer};
   observation.Observe(WelcomeTourController::Get());
 
-  // Satisfy `ended_future` when an end event is received.
-  base::test::TestFuture<void> ended_future;
-  EXPECT_CALL(observer, OnWelcomeTourEnded)
-      .WillOnce(RunOnceClosure(ended_future.GetCallback()));
-
-  // Expect the Welcome Tour to be aborted when enabling ChromeVox during tour.
+  // The Welcome Tour is only expected to abort when ChromeVox is enabled if
+  // ChromeVox is not supported.
+  const bool expect_abort = !IsChromeVoxSupported();
   EXPECT_CALL(
       *user_education_delegate(),
-      AbortTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour)));
+      AbortTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour)))
+      .Times(expect_abort ? 1 : 0);
 
-  // Expect an attempt to launch the Explore app when the tour is aborted.
+  // Expect the Welcome Tour to end only if it is expected to abort.
+  EXPECT_CALL(observer, OnWelcomeTourEnded).Times(expect_abort ? 1 : 0);
+
+  // Expect an attempt to launch the Explore app only if the Welcome Tour is
+  // aborted.
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+      .Times(expect_abort ? 1 : 0);
 
+  base::HistogramTester histogram_tester;
   auto* const a11y_controller = Shell::Get()->accessibility_controller();
   a11y_controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
   EXPECT_TRUE(a11y_controller->spoken_feedback().enabled());
+
+  // Verify histograms.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Ash.WelcomeTour.ChromeVoxEnabled.When"),
+      Conditional(IsChromeVoxSupported(),
+                  BucketsAre(base::Bucket(ChromeVoxEnabled::kBeforeTour, 0),
+                             base::Bucket(ChromeVoxEnabled::kDuringTour, 1)),
+                  IsEmpty()));
 }
 
-// Checks that the Welcome Tour should NOT start if ChromeVox is enabled.
-TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
+// Verifies the Welcome Tour is prevented from starting if ChromeVox is not
+// supported but is enabled.
+TEST_P(WelcomeTourControllerChromeVoxTest,
+       MaybePreventTourFromStartingIfChromeVoxEnabled) {
   const auto primary_account_id = AccountId::FromUserEmail("primary@test");
 
+  base::HistogramTester histogram_tester;
   TestSessionControllerClient* const session = GetSessionControllerClient();
   session->AddUserSession(
       primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
@@ -567,17 +701,33 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
   EXPECT_TRUE(a11y_controller->spoken_feedback().enabled());
 
   // Start the Welcome Tour by activating the user session. Expect that the
-  // Welcome Tour is NOT registered or started but that an attempt is made to
-  // launch the Explore app.
-  EXPECT_CALL(*user_education_delegate(), RegisterTutorial).Times(0);
-  EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
+  // Welcome Tour is NOT registered or started when ChromeVox is enabled if
+  // ChromeVox is not supported.
+  const bool expect_prevent = !IsChromeVoxSupported();
+  EXPECT_CALL(*user_education_delegate(), RegisterTutorial)
+      .Times(expect_prevent ? 0 : 1);
+  EXPECT_CALL(*user_education_delegate(), StartTutorial)
+      .Times(expect_prevent ? 0 : 1);
+
+  // Expect an attempt to launch the Explore app only if the Welcome Tour is
+  // prevented.
   EXPECT_CALL(*user_education_delegate(),
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
+                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+      .Times(expect_prevent ? 1 : 0);
+
   session->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
+
+  // Verify histograms.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Ash.WelcomeTour.ChromeVoxEnabled.When"),
+      Conditional(IsChromeVoxSupported(),
+                  BucketsAre(base::Bucket(ChromeVoxEnabled::kBeforeTour, 1),
+                             base::Bucket(ChromeVoxEnabled::kDuringTour, 0)),
+                  IsEmpty()));
 }
 
 // WelcomeTourControllerCounterfactualTest -------------------------------------

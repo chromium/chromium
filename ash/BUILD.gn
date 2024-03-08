@@ -3114,6 +3114,7 @@ component("ash") {
     "//chromeos/components/sensors:sensors",
     "//chromeos/components/sensors/mojom",
     "//chromeos/components/webauthn",
+    "//chromeos/constants",
     "//chromeos/crosapi/cpp",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/init",

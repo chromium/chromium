@@ -121,6 +121,36 @@ TEST_F(UserEducationUtilTest, ExtendedPropertiesWithStyle) {
             std::nullopt);
 }
 
+// Verifies that `CreateExtendedPropertiesWithAccessibleName()` can be used to
+// create extended properties for a help bubble having set accessible name, and
+// that `GetHelpBubbleAccessibleName()` can be used to retrieve help bubble
+// accessible name from extended properties.
+TEST_F(UserEducationUtilTest, ExtendedPropertiesWithAccessibleName) {
+  std::string accessible_name = "Accessible Name";
+  EXPECT_EQ(GetHelpBubbleAccessibleName(
+                CreateExtendedPropertiesWithAccessibleName(accessible_name)),
+            accessible_name);
+
+  // It is permissible to query help bubble accessible name even when absent.
+  EXPECT_EQ(GetHelpBubbleAccessibleName(HelpBubbleParams::ExtendedProperties()),
+            std::nullopt);
+}
+
+// Verifies that `CreateExtendedPropertiesWithBodyText()` can be used to create
+// extended properties for a help bubble having set body text, and that
+// `GetHelpBubbleBodyText()` can be used to retrieve help bubble body text from
+// extended properties.
+TEST_F(UserEducationUtilTest, ExtendedPropertiesWithBodyText) {
+  std::string body_text = "Body Text";
+  EXPECT_EQ(
+      GetHelpBubbleBodyText(CreateExtendedPropertiesWithBodyText(body_text)),
+      body_text);
+
+  // It is permissible to query help bubble body text even when absent.
+  EXPECT_EQ(GetHelpBubbleBodyText(HelpBubbleParams::ExtendedProperties()),
+            std::nullopt);
+}
+
 // Verifies that `ToString()` is working as intended.
 TEST_F(UserEducationUtilTest, ToString) {
   std::set<std::string> tutorial_id_strs;

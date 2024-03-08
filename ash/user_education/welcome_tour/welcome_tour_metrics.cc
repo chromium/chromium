@@ -28,6 +28,12 @@ PrefService* GetLastActiveUserPrefService() {
 
 }  // namespace
 
+void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
+  CHECK(features::IsWelcomeTourEnabled());
+
+  base::UmaHistogramEnumeration("Ash.WelcomeTour.ChromeVoxEnabled.When", when);
+}
+
 void RecordInteraction(Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
 
