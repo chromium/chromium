@@ -295,6 +295,11 @@ void ChromePageInfoDelegate::OpenSafetyTipHelpCenterPage() {
 
 void ChromePageInfoDelegate::OpenContentSettingsExceptions(
     ContentSettingsType content_settings_type) {
+  if (content_settings_type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+    const GURL& url = web_contents_->GetLastCommittedURL();
+    chrome::ShowSiteSettingsFileSystem(GetProfile(), url);
+    return;
+  }
   chrome::ShowContentSettingsExceptionsForProfile(GetProfile(),
                                                   content_settings_type);
 }

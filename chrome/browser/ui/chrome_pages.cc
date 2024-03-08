@@ -256,8 +256,6 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   Navigate(&params);
 }
 
-// TODO(crbug.com/1011533): Remove `kFileSystemAccessPersistentPermissions`
-// flag after FSA Persistent Permissions feature launch.
 // TODO(crbug.com/1011533): Add a browsertest that parallels the existing site
 // settings browsertests that open the page info button, and click through to
 // the file system site settings page for a given origin.

@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -13,7 +18,9 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_scroll_panel.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/page_info/page_info.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -26,12 +33,22 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
+bool UseUpdatedFileSystemPersistentPermissionUI() {
+  return base::FeatureList::IsEnabled(
+             features::kFileSystemAccessPersistentPermissions) &&
+         base::FeatureList::IsEnabled(
+             features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo);
+}
+
 PageInfoPermissionContentView::PageInfoPermissionContentView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     ContentSettingsType type,
     content::WebContents* web_contents)
-    : presenter_(presenter), type_(type), ui_delegate_(ui_delegate) {
+    : presenter_(presenter),
+      type_(type),
+      ui_delegate_(ui_delegate),
+      web_contents_(web_contents) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // Use the same insets as buttons and permission rows in the main page for
@@ -76,6 +93,25 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
     label_wrapper->AddChildView(std::move(detail_label));
   }
 
+  if (type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
+      UseUpdatedFileSystemPersistentPermissionUI()) {
+    std::vector<base::FilePath> granted_file_paths;
+    auto* context =
+        FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
+            web_contents->GetBrowserContext());
+    if (context) {
+      granted_file_paths = context->GetGrantedPaths(
+          url::Origin::Create(web_contents->GetLastCommittedURL()));
+    }
+    if (!granted_file_paths.empty()) {
+      std::unique_ptr<views::ScrollView> scroll_panel =
+          FileSystemAccessScrollPanel::Create(granted_file_paths);
+      scroll_panel->SetID(
+          PageInfoViewFactory::
+              VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_FILE_SYSTEM_SCROLL_PANEL);
+      label_wrapper->AddChildView(std::move(scroll_panel));
+    }
+  }
   remember_setting_ =
       label_wrapper->AddChildView(std::make_unique<views::Checkbox>(
           l10n_util::GetStringUTF16(
@@ -84,6 +120,9 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
               &PageInfoPermissionContentView::OnRememberSettingPressed,
               base::Unretained(this)),
           views::style::CONTEXT_DIALOG_BODY_TEXT));
+  remember_setting_->SetID(
+      PageInfoViewFactory::
+          VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_REMEMBER_CHECKBOX);
   remember_setting_->SetProperty(views::kMarginsKey,
                                  gfx::Insets::TLBR(controls_spacing, 0, 0, 0));
 
@@ -112,7 +151,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   MaybeAddMediaPreview(web_contents, *separator);
 
   // TODO(crbug.com/1225563): Consider to use permission specific text.
-  AddChildView(std::make_unique<RichHoverButton>(
+  auto* subpage_manage_button = AddChildView(std::make_unique<RichHoverButton>(
       base::BindRepeating(
           [](PageInfoPermissionContentView* view) {
             view->presenter_->OpenContentSettingsExceptions(view->type_);
@@ -125,7 +164,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP),
       std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
-
+  subpage_manage_button->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON);
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
@@ -156,18 +196,38 @@ void PageInfoPermissionContentView::SetPermissionInfo(
   if (!auto_blocked_label.empty()) {
     state_label_->SetText(auto_blocked_label);
   } else {
-    state_label_->SetText(
-        PageInfoUI::PermissionStateToUIString(ui_delegate_, permission_));
+    // TODO(crbug.com/325020452): Update label for File System Access to be
+    // displayed on this view to meet UX requirements for the Persistent
+    // Permissions feature.
+    if (type_ != ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
+        !UseUpdatedFileSystemPersistentPermissionUI()) {
+      state_label_->SetText(
+          PageInfoUI::PermissionStateToUIString(ui_delegate_, permission_));
+    }
   }
 
   toggle_button_->SetIsOn(PageInfoUI::IsToggleOn(permission_));
-  remember_setting_->SetChecked(!permission_.is_one_time &&
-                                permission_.setting != CONTENT_SETTING_DEFAULT);
-  remember_setting_->SetVisible(
-      permissions::PermissionUtil::IsPermission(type_) &&
-      permissions::PermissionUtil::CanPermissionBeAllowedOnce(
-          permission_.type) &&
-      (permission_.setting != CONTENT_SETTING_BLOCK));
+
+  if (type_ == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
+      UseUpdatedFileSystemPersistentPermissionUI()) {
+    auto* context =
+        FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
+            web_contents_->GetBrowserContext());
+    remember_setting_->SetVisible(context &&
+                                  permission_.setting != CONTENT_SETTING_BLOCK);
+    remember_setting_->SetChecked(
+        context && context->OriginHasExtendedPermission(url::Origin::Create(
+                       web_contents_->GetLastCommittedURL())));
+  } else {
+    remember_setting_->SetChecked(!permission_.is_one_time &&
+                                  permission_.setting !=
+                                      CONTENT_SETTING_DEFAULT);
+    remember_setting_->SetVisible(
+        (permissions::PermissionUtil::IsPermission(type_) &&
+         permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+             permission_.type)) &&
+        (permission_.setting != CONTENT_SETTING_BLOCK));
+  }
   PreferredSizeChanged();
 }
 
@@ -190,7 +250,11 @@ void PageInfoPermissionContentView::OnToggleButtonPressed() {
 }
 
 void PageInfoPermissionContentView::OnRememberSettingPressed() {
-  PageInfoUI::ToggleBetweenRememberAndForget(permission_);
+  if (type_ == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+    ToggleFileSystemExtendedPermissions();
+  } else {
+    PageInfoUI::ToggleBetweenRememberAndForget(permission_);
+  }
   PermissionChanged();
 }
 
@@ -222,6 +286,34 @@ void PageInfoPermissionContentView::OnVideoDevicesChanged(
   }
 }
 #endif
+
+void PageInfoPermissionContentView::ToggleFileSystemExtendedPermissions() {
+  auto* context =
+      FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
+          web_contents_->GetBrowserContext());
+  if (!context) {
+    return;
+  }
+  bool checkbox_enabled = remember_setting_->GetChecked();
+  const url::Origin site_origin =
+      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  bool origin_has_extended_permission =
+      context->OriginHasExtendedPermission(site_origin);
+
+  // After pressing the checkbox, the current extended permissions state should
+  // not match the checkbox state. In the unlikely scenario that they are the
+  // same, do not update permission grants in order to align with the
+  // user-visible checkbox state.
+  if (origin_has_extended_permission == checkbox_enabled) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  if (checkbox_enabled) {
+    context->SetOriginExtendedPermissionByUser(site_origin);
+  } else {
+    context->RemoveOriginExtendedPermissionByUser(site_origin);
+  }
+}
 
 void PageInfoPermissionContentView::MaybeAddMediaPreview(
     content::WebContents* web_contents,

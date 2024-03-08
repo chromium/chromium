@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -1568,32 +1568,44 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// TODO(crbug.com/1504185): Enable this test on Ash prior to the full
-// feature launch of File System Access Persistent Permissions.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       NavigateFromPageInfoToSiteSettingsFileSystemInNewTab) {
-  // Initial navigation.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleURL()));
+                       NavigateFromPageInfoToSiteSettingsInNewTab) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Simulate navigation event to the file system site settings subpage for the
-  // given URL.
-  ChromePageInfoUiDelegate delegate(web_contents,
-                                    web_contents->GetVisibleURL());
-  delegate.OpenSiteSettingsFileSystem();
-
-  content::WebContents* updated_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::LoadStopObserver observer(updated_web_contents);
+  ChromePageInfoDelegate delegate(web_contents);
+  delegate.ShowSiteSettings(web_contents->GetVisibleURL());
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   observer.Wait();
 
-  // The file system site settings page opens in a new tab.
+  // Site settings opens in a new tab.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(
-      chrome::GetSettingsUrl(chrome::kFileSystemSubpage),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+  EXPECT_EQ(chrome::GetSettingsUrl(chrome::kContentSettingsSubPage),
+            browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       NavigateFromPageInfoToSiteSettingsFileSystemInNewTab) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ChromePageInfoDelegate delegate(web_contents);
+  delegate.OpenContentSettingsExceptions(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  observer.Wait();
+
+  // File system site settings opens in a new tab.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(chrome::GetSettingsUrl(chrome::kFileSystemSettingsSubpage),
+            browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL());
 }
 #endif
 

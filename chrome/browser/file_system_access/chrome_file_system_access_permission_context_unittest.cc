@@ -1678,8 +1678,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto write_grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
 
-  EXPECT_FALSE(
-      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_FALSE(permission_context()->OriginHasExtendedPermission(kTestOrigin));
   EXPECT_EQ(
       PersistedGrantStatus::kLoaded,
       permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
@@ -1687,8 +1686,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // The persisted grant status and content setting are updated after the user
   // opts into extended permissions.
   permission_context()->SetOriginExtendedPermissionByUser(kTestOrigin);
-  EXPECT_TRUE(
-      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_TRUE(permission_context()->OriginHasExtendedPermission(kTestOrigin));
   EXPECT_EQ(
       PersistedGrantStatus::kCurrent,
       permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
@@ -1696,8 +1694,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Calling `SetOriginExtendedPermissionByUser` again results in the same
   // state.
   permission_context()->SetOriginExtendedPermissionByUser(kTestOrigin);
-  EXPECT_TRUE(
-      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_TRUE(permission_context()->OriginHasExtendedPermission(kTestOrigin));
   EXPECT_EQ(
       PersistedGrantStatus::kCurrent,
       permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
@@ -1705,8 +1702,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Extended permissions are removed when the user opts out, and the
   // persisted grants remain current.
   permission_context()->RemoveOriginExtendedPermissionByUser(kTestOrigin);
-  EXPECT_FALSE(
-      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_FALSE(permission_context()->OriginHasExtendedPermission(kTestOrigin));
   EXPECT_EQ(
       PersistedGrantStatus::kCurrent,
       permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
@@ -1714,8 +1710,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Calling `RemoveOriginExtendedPermissionByUser` again results in the same
   // state.
   permission_context()->RemoveOriginExtendedPermissionByUser(kTestOrigin);
-  EXPECT_FALSE(
-      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_FALSE(permission_context()->OriginHasExtendedPermission(kTestOrigin));
   EXPECT_EQ(
       PersistedGrantStatus::kCurrent,
       permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));

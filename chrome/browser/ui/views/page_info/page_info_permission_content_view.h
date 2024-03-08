@@ -37,6 +37,19 @@ class ToggleButton;
 // |---------------------------------------------------------------|
 // | Manage button                                                 |
 // *---------------------------------------------------------------*
+// The view for the File System permission subpage additionally contains a
+// scrollable panel listing the files and/or directories with granted,
+// active permissions.
+// *---------------------------------------------------------------*
+// | Icon | Title                                         | Toggle |
+// |      | State label                                   |        |
+// |      |--------------------------------------------------------|
+// |      | Scrollable panel of files / directories                |
+// |      |                                                        |
+// |      | "Remember this setting" checkbox                       |
+// |---------------------------------------------------------------|
+// | Manage button                                                 |
+// *---------------------------------------------------------------*
 class PageInfoPermissionContentView
     : public views::View,
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
@@ -63,6 +76,7 @@ class PageInfoPermissionContentView
   void OnToggleButtonPressed();
   void OnRememberSettingPressed();
   void PermissionChanged();
+  void ToggleFileSystemExtendedPermissions();
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   // media_effects::MediaDeviceInfo::Observer overrides.
@@ -81,6 +95,7 @@ class PageInfoPermissionContentView
   raw_ptr<PageInfo> presenter_ = nullptr;
   ContentSettingsType type_;
   raw_ptr<ChromePageInfoUiDelegate> ui_delegate_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   PageInfo::PermissionInfo permission_;
 
   raw_ptr<NonAccessibleImageView> icon_ = nullptr;

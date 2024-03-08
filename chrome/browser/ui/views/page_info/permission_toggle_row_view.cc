@@ -171,13 +171,14 @@ void PermissionToggleRowView::InitForUserSource(
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
-  // TODO(crbug.com/1011533): Remove separate handling of
-  // `FILE_SYSTEM_WRITE_GUARD` when implementing the final version of the
-  // FSA Persistent Permissions Page Info UI, which utilizes the existing
-  // pattern below for One Time Permissions.
-  if (base::FeatureList::IsEnabled(
+  // TODO(crbug.com/1011533): Update below code to only display the updated
+  // Page Info UI for File System, once the updated UI is ready to be enabled
+  // by default.
+  if (permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
+      base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions) &&
-      permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+      !base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo)) {
     auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
         base::BindRepeating(
             [](PermissionToggleRowView* row) {
@@ -192,8 +193,15 @@ void PermissionToggleRowView::InitForUserSource(
     subpage_button->SetFlipCanvasOnPaintForRTLUI(false);
     row_view_->AddControl(std::move(subpage_button));
   }
+  const bool show_updated_page_info_file_system =
+      permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions) &&
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo);
   if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
-          permission_.type)) {
+          permission_.type) ||
+      show_updated_page_info_file_system) {
     auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
         base::BindRepeating(
             [=](PermissionToggleRowView* row) {

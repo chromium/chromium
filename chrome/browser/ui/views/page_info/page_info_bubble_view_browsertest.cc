@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -14,6 +15,10 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -28,14 +33,18 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -55,6 +64,7 @@
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -180,8 +190,12 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     // launched. Disable features for the new version of "Cookies in use"
     // dialog. The new UI is covered by
     // PageInfoBubbleViewBrowserTestCookiesSubpage.
-    feature_list_.InitWithFeatures({safe_browsing::kRedInterstitialFacelift},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {safe_browsing::kRedInterstitialFacelift,
+         features::kFileSystemAccessPersistentPermissions,
+         features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo,
+         permissions::features::kOneTimePermission},
+        {});
   }
 
   PageInfoBubbleViewBrowserTest(const PageInfoBubbleViewBrowserTest& test) =
@@ -614,6 +628,104 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   views::View* cookies_button = GetView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
   PerformMouseClickOnView(cookies_button);
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       InteractedWithFileSystemSubpage) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  const url::Origin origin = url::Origin::Create(url);
+
+  // Open a file to create an active grant for testing.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath test_file;
+  base::CreateTemporaryFile(&test_file);
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<SelectPredeterminedFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            EvalJs(web_contents,
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+
+  ChromeFileSystemAccessPermissionContext* permission_context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(
+          web_contents->GetBrowserContext());
+  ASSERT_TRUE(permission_context);
+
+  // Open the Page Info bubble.
+  base::RunLoop run_loop;
+  GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
+  OpenPageInfoBubble(browser());
+  run_loop.Run();
+
+  // Open the File System subpage view.
+  auto* page_info_bubble = static_cast<PageInfoBubbleView*>(
+      PageInfoBubbleView::GetPageInfoBubbleForTesting());
+  page_info_bubble->OpenPermissionPage(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  // Simulate toggling the Extended Permissions checkbox button on the File
+  // System subpage.
+  views::Checkbox* toggle_extended_permissions_button =
+      static_cast<views::Checkbox*>(
+          GetView(PageInfoViewFactory::
+                      VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_REMEMBER_CHECKBOX));
+  EXPECT_TRUE(toggle_extended_permissions_button->GetVisible());
+  EXPECT_FALSE(toggle_extended_permissions_button->GetChecked());
+  // The origin does not initially have extended permissions enabled by
+  // default.
+  EXPECT_FALSE(permission_context->OriginHasExtendedPermission(origin));
+  // Clicking the extended permissions checkbox enables extended permissions
+  // for the given origin.
+  PerformMouseClickOnView(toggle_extended_permissions_button);
+  EXPECT_TRUE(permission_context->OriginHasExtendedPermission(origin));
+  EXPECT_TRUE(toggle_extended_permissions_button->GetChecked());
+  // Clicking the extended permissions checkbox again disables extended
+  // permissions for the given origin.
+  PerformMouseClickOnView(toggle_extended_permissions_button);
+  EXPECT_FALSE(permission_context->OriginHasExtendedPermission(origin));
+  EXPECT_FALSE(toggle_extended_permissions_button->GetChecked());
+
+  // The `FileSystemAccessScrollPanel` element is visible and is populated as
+  // expected.
+  views::ScrollView* scroll_panel =
+      static_cast<views::ScrollView*>(page_info_bubble->GetViewByID(
+          PageInfoViewFactory::
+              VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_FILE_SYSTEM_SCROLL_PANEL));
+  EXPECT_TRUE(scroll_panel->GetVisible());
+  ASSERT_THAT(scroll_panel->contents()->children(), testing::SizeIs(1));
+  views::Label* label = static_cast<views::Label*>(
+      scroll_panel->contents()->children()[0]->children()[1]);
+  const std::u16string expected_file_path =
+      file_system_access_ui_helper::GetPathForDisplayAsParagraph(test_file);
+  EXPECT_EQ(label->GetText(), expected_file_path);
+
+  // Simulate clicking the subpage manage button for File System.
+  views::View* content_settings_button = GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON);
+  EXPECT_TRUE(content_settings_button->GetVisible());
+  PerformMouseClickOnView(content_settings_button);
+  constexpr char kParamRequest[] = "site";
+  // TODO(crbug.com/1505843): Update `origin_string` to remove the encoded
+  // trailing slash, once it's no longer required to correctly navigate to
+  // file system site settings page for the given origin.
+  const std::string origin_string =
+      base::StrCat({url::Origin::Create(url).Serialize(), "/"});
+  GURL link_destination = net::AppendQueryParameter(
+      chrome::GetSettingsUrl(chrome::kFileSystemSettingsSubpage), kParamRequest,
+      origin_string);
+  content::WebContents* updated_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(link_destination, updated_web_contents->GetVisibleURL().spec());
+  EXPECT_TRUE(base::DeleteFile(test_file));
 }
 
 class PageInfoBubbleViewBrowserTestWithAutoupgradesDisabled

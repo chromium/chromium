@@ -229,10 +229,6 @@ class ChromeFileSystemAccessPermissionContext
     return GetPersistedGrantType(origin);
   }
 
-  bool OriginHasExtendedPermissionForTesting(const url::Origin& origin) {
-    return OriginHasExtendedPermission(origin);
-  }
-
   bool HasExtendedPermissionForTesting(const url::Origin& origin,
                                        const base::FilePath& path,
                                        HandleType handle_type,
@@ -281,6 +277,10 @@ class ChromeFileSystemAccessPermissionContext
   // type.
   bool OriginHasReadAccess(const url::Origin& origin);
   bool OriginHasWriteAccess(const url::Origin& origin);
+
+  // Returns whether the origin has extended permission enabled via user
+  // opt-in or by having an actively installed PWA.
+  bool OriginHasExtendedPermission(const url::Origin& origin);
 
   // Enable or disable extended permissions as a result of user
   // interaction with the File System Access Page Info UI.
@@ -456,9 +456,6 @@ class ChromeFileSystemAccessPermissionContext
                                                    const base::FilePath& path,
                                                    GrantType grant_type);
 
-  // Returns whether the origin has extended permission enabled via user
-  // opt-in or by having an actively installed PWA.
-  bool OriginHasExtendedPermission(const url::Origin& origin);
   // Removes extended permissions for grants. Does not update the content
   // setting type for extended permissions.
   // This method should only be called for an origin that already has extended
