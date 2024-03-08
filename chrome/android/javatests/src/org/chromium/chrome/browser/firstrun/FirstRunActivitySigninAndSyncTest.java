@@ -445,8 +445,7 @@ public class FirstRunActivitySigninAndSyncTest {
         boolean isLargeScreenOrLandscape =
                 configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE)
                         || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE;
-        clickMoreThenClickButton(
-                isLargeScreenOrLandscape ? R.id.button_secondary : R.id.negative_button);
+        clickButton(isLargeScreenOrLandscape ? R.id.button_secondary : R.id.negative_button);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 

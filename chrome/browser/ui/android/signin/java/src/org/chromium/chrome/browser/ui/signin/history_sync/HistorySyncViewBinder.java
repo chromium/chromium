@@ -18,9 +18,6 @@ class HistorySyncViewBinder {
         } else if (key == HistorySyncProperties.ON_DECLINE_CLICKED) {
             view.getDeclineButton()
                     .setOnClickListener(model.get(HistorySyncProperties.ON_DECLINE_CLICKED));
-        } else if (key == HistorySyncProperties.ON_MORE_CLICKED) {
-            view.getMoreButton()
-                    .setOnClickListener(model.get(HistorySyncProperties.ON_MORE_CLICKED));
         } else {
             throw new IllegalArgumentException("Unknown property key: " + key);
         }

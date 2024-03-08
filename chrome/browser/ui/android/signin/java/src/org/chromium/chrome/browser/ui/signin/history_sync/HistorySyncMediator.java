@@ -52,8 +52,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                 HistorySyncProperties.createModel(
                         mProfileDataCache.getProfileDataOrDefault(mAccountEmail),
                         this::onAcceptClicked,
-                        this::onDeclineClicked,
-                        this::onMoreClicked);
+                        this::onDeclineClicked);
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -96,9 +95,5 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HistorySyncOptIn.Declined", mAccessPoint, SigninAccessPoint.MAX);
         mDelegate.dismiss();
-    }
-
-    private void onMoreClicked() {
-        // TODO(crbug.com/1520791): Implement this method
     }
 }

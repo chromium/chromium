@@ -82,16 +82,6 @@ found in the LICENSE file.
                         android:id="@+id/dual_control_button_bar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
-                    <org.chromium.ui.widget.ButtonCompat
-                        android:id="@+id/more_button"
-                        style="@style/FilledButton.Flat"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:drawableEnd="@drawable/down_arrow"
-                        android:drawableTint="?attr/globalFilledButtonTextColor"
-                        android:drawablePadding="8dp"
-                        android:visibility="gone" />
                 </RelativeLayout>
             </LinearLayout>
         </ScrollView>

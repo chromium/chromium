@@ -20,7 +20,6 @@ import org.chromium.components.browser_ui.widget.DualControlLayout;
 class HistorySyncView extends LinearLayout {
     private ImageView mAccountImage;
     private Button mDeclineButton;
-    private Button mMoreButton;
     private Button mAcceptButton;
     private DualControlLayout mButtonBar;
 
@@ -44,7 +43,6 @@ class HistorySyncView extends LinearLayout {
             createButtonBar();
         }
 
-        mMoreButton = findViewById(R.id.more_button);
         TextView detailsDescription = findViewById(R.id.sync_consent_details_description);
 
         // TODO(crbug.com/1520791): Confirm that these are the correct title and subtitle strings.
@@ -52,7 +50,6 @@ class HistorySyncView extends LinearLayout {
         title.setText(R.string.history_sync_consent_title_c);
         subtitle.setText(R.string.history_sync_consent_subtitle_c);
         mDeclineButton.setText(R.string.no_thanks);
-        mMoreButton.setText(R.string.more);
         mAcceptButton.setText(R.string.signin_accept_button);
         detailsDescription.setText(R.string.sync_consent_details_description);
     }
@@ -63,10 +60,6 @@ class HistorySyncView extends LinearLayout {
 
     Button getDeclineButton() {
         return mDeclineButton;
-    }
-
-    Button getMoreButton() {
-        return mMoreButton;
     }
 
     Button getAcceptButton() {

@@ -14,15 +14,14 @@ found in the LICENSE file.
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <org.chromium.chrome.browser.ui.signin.SigninScrollView
+    <ScrollView
         android:id="@+id/sync_consent_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fadingEdgeLength="48dp"
+        android:fadeScrollbars="false"
         android:fillViewport="true"
-        android:requiresFadingEdge="vertical"
-        android:scrollbars="none">
+        android:scrollIndicators="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,7 +88,7 @@ found in the LICENSE file.
                 android:layout_weight="2"
                 android:visibility="invisible" />
         </LinearLayout>
-    </org.chromium.chrome.browser.ui.signin.SigninScrollView>
+    </ScrollView>
 
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/dual_control_button_bar"
@@ -109,17 +108,6 @@ found in the LICENSE file.
         style="@style/TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/more_button"
-        style="@style/FilledButton.Flat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:drawableEnd="@drawable/down_arrow"
-        android:drawableTint="?attr/globalFilledButtonTextColor"
-        android:drawablePadding="8dp"
-        android:visibility="gone" />
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/sync_consent_details_description"
