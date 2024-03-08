@@ -323,7 +323,7 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
 // normalization.
 BASE_FEATURE(kAutofillUseAddressRewriterInProfileSubsetComparison,
              "AutofillUseAddressRewriterInProfileSubsetComparison",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using the newer i18n address model, overriding the legacy one.
 // This includes:
