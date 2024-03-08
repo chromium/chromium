@@ -135,6 +135,10 @@ BOOL AreCredentialsAtIndexesConnected(
   return self;
 }
 
+- (void)dealloc {
+  [self disconnect];
+}
+
 - (void)disconnect {
   if (_webState) {
     [self webStateDestroyed:_webState];
@@ -438,7 +442,9 @@ BOOL AreCredentialsAtIndexesConnected(
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
   if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
+    if (_webStateObserverBridge) {
+      _webState->RemoveObserver(_webStateObserverBridge.get());
+    }
     _webState = nullptr;
   }
   _webStateObserverBridge.reset();
