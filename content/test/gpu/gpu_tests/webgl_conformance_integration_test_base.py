@@ -100,11 +100,6 @@ class WebGLConformanceIntegrationTestBase(
   def _GetSerialGlobs(self) -> Set[str]:
     serial_globs = set()
     if host_information.IsMac():
-      serial_globs |= {
-          # crbug.com/1347970. Suspected of being prone to causing Metal shader
-          # cache corruption when run in parallel.
-          'deqp/functional/gles3/textureshadow/*',
-      }
       if host_information.IsAmdGpu():
         serial_globs |= {
             # crbug.com/1345466. Can be removed once OpenGL is no longer used on
@@ -120,10 +115,7 @@ class WebGLConformanceIntegrationTestBase(
     return serial_globs
 
   def _GetSerialTests(self) -> Set[str]:
-    serial_tests = {
-        # crbug.com/1347970.
-        'conformance/textures/misc/texture-video-transparent.html',
-    }
+    serial_tests = set()
     if host_information.IsLinux() and host_information.IsNvidiaGpu():
       serial_tests |= {
           # crbug.com/328528533. Regularly takes 2-3 minutes to complete on
