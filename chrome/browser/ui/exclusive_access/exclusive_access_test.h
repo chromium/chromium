@@ -16,6 +16,9 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "exclusive_access_controller_base.h"
+#include "exclusive_access_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
@@ -26,6 +29,25 @@ class TickClock;
 }  // namespace base
 
 class FullscreenController;
+
+class MockExclusiveAccessController : public ExclusiveAccessControllerBase {
+ public:
+  explicit MockExclusiveAccessController(ExclusiveAccessManager* manager);
+  ~MockExclusiveAccessController() override;
+
+  int escape_pressed_count() { return escape_pressed_count_; }
+
+  void reset_escape_pressed_count() { escape_pressed_count_ = 0; }
+
+  bool HandleUserPressedEscape() override;
+
+  MOCK_METHOD(void, ExitExclusiveAccessToPreviousState, (), (override));
+  MOCK_METHOD(void, ExitExclusiveAccessIfNecessary, (), (override));
+  MOCK_METHOD(void, NotifyTabExclusiveAccessLost, (), (override));
+
+ private:
+  int escape_pressed_count_ = 0;
+};
 
 // Test fixture with convenience functions for fullscreen, keyboard lock, and
 // pointer lock.
@@ -56,6 +78,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void GoBack();
   void Reload();
   void EnterActiveTabFullscreen();
+  void WaitForTabFullscreenExit();
   void EnterExtensionInitiatedFullscreen();
 
   static const char kFullscreenKeyboardLockHTML[];
@@ -77,6 +100,12 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
 
   int InitialBubbleDelayMs() const;
 
+  void ExpectMockControllerReceivedEscape(int count);
+
+  MockExclusiveAccessController* mock_controller() {
+    return mock_controller_.get();
+  }
+
   std::vector<ExclusiveAccessBubbleHideReason>
       pointer_lock_bubble_hide_reason_recorder_;
 
@@ -90,6 +119,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   // testing.
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_window_;
 #endif
+  std::unique_ptr<MockExclusiveAccessController> mock_controller_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

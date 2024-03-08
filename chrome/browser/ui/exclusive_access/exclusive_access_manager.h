@@ -81,6 +81,11 @@ class ExclusiveAccessManager {
   // Called by platform ExclusiveAccessExitBubble.
   void ExitExclusiveAccess();
 
+  base::flat_set<raw_ptr<ExclusiveAccessControllerBase>>&
+  exclusive_access_controllers_for_test() {
+    return exclusive_access_controllers_;
+  }
+
  private:
   void RecordLockStateOnEnteringFullscreen(const char histogram_name[]) const;
 
