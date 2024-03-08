@@ -1390,6 +1390,25 @@ message ChromeGraphicsPipeline {
     STEP_FINISH_BUFFER_SWAP = 13;
     STEP_SWAP_BUFFERS_ACK = 14;
 
+    // While the above steps are part of the cc/viz/gpu pipeline, the STEP_EXO*
+    // and STEP_BACKEND* are somehow special.
+    //
+    // STEP_BACKEND* is platform independent and it can be used to trace any of
+    // the backends. For example, it perfectly fits in ozone/drm, ozone/wayland
+    // or x11 and can be set before and after buffer swap or overlay submission
+    // that helps to understand the flow better.
+    //
+    // The STEP_EXO* is used only by EXO (see below). It relies on a trace id
+    // from a Wayland client, which can use the "augmented_surface" protocol's
+    // "augmented_surface.set_frame_trace_id" to pass that value. As a result,
+    // any of the Wayland clients that use EXO will be able to have a nice trace
+    // connection and see their buffer submissions' flows.
+    //
+    // Speaking about the example, Lacros combines both STEP_BACKEND* and
+    // STEP_EXO* so that developers are able to trace the frame submission from
+    // Lacros (cc/viz/gpu) to Ozone/Wayland backend, then to EXO and to Ash
+    // (viz/gpu).
+
     // Frame submission stages when Exo (Wayland server implementation in Ash
     // browser process) is involved. Wayland clients (such as Lacros or ARC++)
     // submit visual contents via Wayland surface commits, with which Exo
@@ -1397,6 +1416,13 @@ message ChromeGraphicsPipeline {
     STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME = 15;
     STEP_EXO_SUBMIT_COMPOSITOR_FRAME = 16;
     STEP_EXO_DISCARD_COMPOSITOR_FRAME = 17;
+
+    // Frame submission stages in backends that viz uses to submit frames to
+    // the gpu or to the system compositor. See the explanation above how these
+    // stages can be used.
+    STEP_BACKEND_SEND_BUFFER_SWAP = 18;
+    STEP_BACKEND_SEND_BUFFER_POST_SUBMIT = 19;
+    STEP_BACKEND_FINISH_BUFFER_SWAP = 20;
   }
   enum FrameSkippedReason {
     SKIPPED_REASON_UNKNOWN = 0;
@@ -1411,6 +1437,9 @@ message ChromeGraphicsPipeline {
   optional LocalSurfaceId local_surface_id = 4;
   optional int64 frame_sequence = 5;
   optional FrameSkippedReason frame_skipped_reason = 6;
+
+  // Optional variable that can be set together with STEP_BACKEND*.
+  optional int64 backend_frame_id = 7;
 };
 
 message LibunwindstackUnwinder {

@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_bindings.h"
@@ -128,7 +129,11 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
 
 void GbmSurfacelessWayland::QueueWaylandOverlayConfig(
     wl::WaylandOverlayConfig config) {
-  unsubmitted_frames_.back()->configs.emplace_back(std::move(config));
+  auto* frame = unsubmitted_frames_.back().get();
+  DCHECK(frame);
+  TRACE_EVENT("wayland", "GbmSurfacelessWayland::QueueWaylandOverlayConfig",
+              "frame_id", frame->frame_id, "buffer_id", config.buffer_id);
+  frame->configs.emplace_back(std::move(config));
 }
 
 bool GbmSurfacelessWayland::ScheduleOverlayPlane(
@@ -313,6 +318,10 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
   }
 
   auto submitted_frame = std::move(submitted_frames_.front());
+
+  TRACE_EVENT("wayland", "GbmSurfacelessWayland::OnSubmission", "frame_id",
+              submitted_frame->frame_id);
+
   submitted_frames_.erase(submitted_frames_.begin());
   for (auto& buf : submitted_frame->in_flight_color_buffers) {
     // Let the holder mark this buffer as free to reuse.
