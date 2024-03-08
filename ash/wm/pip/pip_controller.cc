@@ -4,6 +4,7 @@
 
 #include "ash/wm/pip/pip_controller.h"
 
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
@@ -144,6 +145,17 @@ void PipController::UpdatePipBounds() {
     return;
   }
   WindowState* window_state = WindowState::Get(pip_window_);
+  if (!ash::PipPositioner::HasSnapFraction(window_state) &&
+      IsArcWindow(pip_window_)) {
+    // Prevent PiP bounds from being updated between window state change into
+    // PiP and initial bounds change for PiP. This is only needed for ARC
+    // because chrome PiP becomes visible only after both window state and
+    // initial bounds are set properly while in the case of ARC a normal visible
+    // window can trainsition to PiP. Also, in fact, this check is only valid
+    // for ARC PiP as the first timing snap fraction is set is different between
+    // chrome PiP and ARC PiP.
+    return;
+  }
   gfx::Rect new_bounds =
       PipPositioner::GetPositionAfterMovementAreaChange(window_state);
   wm::ConvertRectFromScreen(pip_window_->GetRootWindow(), &new_bounds);

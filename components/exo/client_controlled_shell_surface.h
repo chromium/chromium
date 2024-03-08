@@ -343,8 +343,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // TODO(oshima): Remove this once all boards are migrated to P or above.
   bool server_reparent_window_ = false;
 
-  bool ignore_bounds_change_request_ = false;
-
   bool display_rotating_with_pip_ = false;
 
   // True if the window state has changed during the commit.
