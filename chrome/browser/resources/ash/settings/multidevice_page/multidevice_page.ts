@@ -702,7 +702,8 @@ export class SettingsMultidevicePageElement extends
     // element if the element is still focusable and within the viewport,
     // otherwise move the focus to <body>. Therefore, we need to move focus
     // manually to the subpage.
-    this.shadowRoot!.querySelector('settings-multidevice-subpage')!.focus();
+    this.shadowRoot!.getElementById(
+                        'settingsMultideviceSubpageWrapper')!.focus();
   }
 
   private onPinNumberSelected_(e: CustomEvent<{isPinNumberSelected: boolean}>):

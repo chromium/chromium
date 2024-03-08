@@ -272,6 +272,11 @@ suite('<settings-multidevice-page>', () => {
         'settings-multidevice-subpage');
   }
 
+  function getSubpageWrapper(): HTMLElement|null {
+    return multidevicePage.shadowRoot!.querySelector<HTMLElement>(
+        '#settingsMultideviceSubpageWrapper');
+  }
+
   function getNearbyShareSecondary(): HTMLElement {
     const nearbyShareSecondary =
         multidevicePage.shadowRoot!.querySelector<HTMLElement>(
@@ -443,7 +448,8 @@ suite('<settings-multidevice-page>', () => {
 
     // Check the subpage is focused on dialog close.
     assertEquals(
-        getSubpage(), getDeepActiveElement(), 'subpage should be focused.');
+        getSubpageWrapper(), getDeepActiveElement(),
+        'subpage wrapper should be focused.');
 
     // A change in pageContentData will not cause the notification access
     // setup dialog to reappear
