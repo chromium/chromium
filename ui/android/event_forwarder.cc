@@ -98,7 +98,7 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
         // Only record if there was movement for Action::Move (we'll update the
         // last position on the first Motion::TouchDown).
         if (android_action ==
-            MotionEventAndroid::GetAndroidAction(MotionEvent::Action::DOWN)) {
+            MotionEventAndroid::GetAndroidAction(MotionEvent::Action::MOVE)) {
           forwarder->set_has_x_movement(
               !base::IsApproximatelyEqual(pos_x_0, last_x_pos_, kEpsilon));
           forwarder->set_has_y_movement(
