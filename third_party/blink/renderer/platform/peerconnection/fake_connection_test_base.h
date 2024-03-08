@@ -36,7 +36,7 @@ class FakeConnectionTestBase : public ::testing::Test {
   const ::cricket::Connection* GetConnection(base::StringPiece remote_ip,
                                              int remote_port) {
     return connection_factory_->CreateConnection(
-        FakeConnectionFactory::CandidateType::LOCAL, remote_ip, remote_port);
+        webrtc::IceCandidateType::kHost, remote_ip, remote_port);
   }
 
   ::base::test::SingleThreadTaskEnvironment env{

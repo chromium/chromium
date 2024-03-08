@@ -36,7 +36,7 @@ void FakeConnectionFactory::Prepare(uint32_t allocator_flags) {
 }
 
 cricket::Connection* FakeConnectionFactory::CreateConnection(
-    CandidateType type,
+    webrtc::IceCandidateType type,
     base::StringPiece remote_ip,
     int remote_port,
     int priority) {
@@ -44,7 +44,7 @@ cricket::Connection* FakeConnectionFactory::CreateConnection(
     return nullptr;
   }
   cricket::Candidate remote =
-      CreateUdpCandidate(GetPortType(type), remote_ip, remote_port, priority);
+      CreateUdpCandidate(type, remote_ip, remote_port, priority);
   cricket::Connection* conn = nullptr;
   for (auto port : ports_) {
     if (port->SupportsProtocol(remote.protocol())) {
@@ -58,19 +58,6 @@ cricket::Connection* FakeConnectionFactory::CreateConnection(
   return conn;
 }
 
-base::StringPiece FakeConnectionFactory::GetPortType(CandidateType type) {
-  switch (type) {
-    case CandidateType::LOCAL:
-      return cricket::LOCAL_PORT_TYPE;
-    case CandidateType::SRFLX:
-      return cricket::STUN_PORT_TYPE;
-    case CandidateType::PRFLX:
-      return cricket::PRFLX_PORT_TYPE;
-    case CandidateType::RELAY:
-      return cricket::RELAY_PORT_TYPE;
-  }
-}
-
 void FakeConnectionFactory::OnPortReady(cricket::PortAllocatorSession* session,
                                         cricket::PortInterface* port) {
   ports_.push_back(port);
@@ -80,7 +67,7 @@ void FakeConnectionFactory::OnPortReady(cricket::PortAllocatorSession* session,
 }
 
 cricket::Candidate FakeConnectionFactory::CreateUdpCandidate(
-    base::StringPiece type,
+    webrtc::IceCandidateType type,
     base::StringPiece ip,
     int port,
     int priority,
@@ -91,7 +78,7 @@ cricket::Candidate FakeConnectionFactory::CreateUdpCandidate(
   c.set_protocol(::cricket::UDP_PROTOCOL_NAME);
   c.set_priority(priority);
   c.set_username(ufrag.data());
-  c.set_type(type.data());
+  c.set_type(type);
   return c;
 }
 

@@ -23,9 +23,6 @@ namespace blink {
 // Generates simulated connection objects for use in tests.
 class FakeConnectionFactory : public sigslot::has_slots<> {
  public:
-  // Represents an ICE candidate type.
-  enum class CandidateType { LOCAL, SRFLX, PRFLX, RELAY };
-
   // The factory must be initialized by calling Prepare(). readyEvent will be
   // signaled when the factory is ready to start creating connections.
   explicit FakeConnectionFactory(rtc::Thread* thread,
@@ -37,7 +34,7 @@ class FakeConnectionFactory : public sigslot::has_slots<> {
 
   // Create a connection to a remote candidate represented as the type, IP
   // address, port, and an optional candidate priority.
-  cricket::Connection* CreateConnection(CandidateType type,
+  cricket::Connection* CreateConnection(webrtc::IceCandidateType type,
                                         base::StringPiece remote_ip,
                                         int remote_port,
                                         int priority = 0);
@@ -46,12 +43,10 @@ class FakeConnectionFactory : public sigslot::has_slots<> {
   int port_count() { return ports_.size(); }
 
  private:
-  static base::StringPiece GetPortType(CandidateType type);
-
   void OnPortReady(cricket::PortAllocatorSession* session,
                    cricket::PortInterface* port);
 
-  cricket::Candidate CreateUdpCandidate(base::StringPiece type,
+  cricket::Candidate CreateUdpCandidate(webrtc::IceCandidateType type,
                                         base::StringPiece ip,
                                         int port,
                                         int priority,
