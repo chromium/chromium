@@ -114,9 +114,7 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
     views::ImageButton::GetAccessibleNodeData(node_data);
 
     node_data->SetName(l10n_util::GetStringUTF16(
-        checked_
-            ? IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_NOT_COMPLETED_ACCESSIBLE_NAME
-            : IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME));
+        IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME));
 
     const ax::mojom::CheckedState checked_state =
         checked_ ? ax::mojom::CheckedState::kTrue

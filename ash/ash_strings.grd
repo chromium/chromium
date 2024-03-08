@@ -7324,9 +7324,6 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the checkbox button to mark a task as completed.">
         Mark completed
       </message>
-      <message name="IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_NOT_COMPLETED_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the checkbox button to mark a task as not completed.">
-        Mark as not completed
-      </message>
       <message name="IDS_GLANCEABLES_CLASSROOM_STUDENT_DUE_SOON_LIST_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the name of the list that contains assigned (pending / not completed) student assignments w/ due date in the future.">
         Due soon
       </message>
