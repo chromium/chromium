@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     std::u16string label_;
     const std::optional<ButtonStyle> style_;
-    const bool is_enabled_;
+    bool is_enabled_;
     // The button callback gets called when the button is activated. Whether
     // that happens on key-press, release, etc. is implementation (and platform)
     // dependent.
@@ -474,6 +474,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   void SetVisible(ElementIdentifier id, bool visible);
 
   void SetButtonLabel(Button* button, const std::u16string& label);
+
+  void SetButtonEnabled(Button* button, bool enabled);
 
   // Called when added to a DialogModelHost.
   void set_host(base::PassKey<DialogModelHost>, DialogModelHost* host) {

@@ -1137,6 +1137,7 @@ void BubbleDialogModelHost::UpdateDialogButtons() {
   if (ui::DialogModel::Button* const ok_button =
           model_->ok_button(DialogModelHost::GetPassKey())) {
     SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label());
+    SetButtonEnabled(ui::DIALOG_BUTTON_OK, ok_button->is_enabled());
     MdTextButton* const ok_button_view = GetOkButton();
     ok_button_view->SetVisible(ok_button->is_visible());
     ok_button_view->SetProperty(kElementIdentifierKey, ok_button->id());
@@ -1144,6 +1145,7 @@ void BubbleDialogModelHost::UpdateDialogButtons() {
   if (ui::DialogModel::Button* const cancel_button =
           model_->cancel_button(DialogModelHost::GetPassKey())) {
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_button->label());
+    SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, cancel_button->is_enabled());
     MdTextButton* const cancel_button_view = GetCancelButton();
     cancel_button_view->SetVisible(cancel_button->is_visible());
     cancel_button_view->SetProperty(kElementIdentifierKey, cancel_button->id());
@@ -1153,6 +1155,7 @@ void BubbleDialogModelHost::UpdateDialogButtons() {
     auto* const extra_button_view = static_cast<MdTextButton*>(GetExtraView());
     extra_button_view->SetText(extra_button->label());
     extra_button_view->SetVisible(extra_button->is_visible());
+    extra_button_view->SetEnabled(extra_button->is_enabled());
     extra_button_view->SetProperty(kElementIdentifierKey, extra_button->id());
   }
 }

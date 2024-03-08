@@ -286,4 +286,13 @@ void DialogModel::SetButtonLabel(DialogModel::Button* button,
   }
 }
 
+void DialogModel::SetButtonEnabled(DialogModel::Button* button, bool enabled) {
+  CHECK(button);
+  button->is_enabled_ = enabled;
+
+  if (host_) {
+    host_->OnDialogButtonChanged();
+  }
+}
+
 }  // namespace ui
