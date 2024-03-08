@@ -551,11 +551,11 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
                                            pinned_state_changed,
                                            /*old_group=*/nullptr,
                                            /*new_group=*/nullptr);
-  const WebStateListStatus status = {
-      // The move operation doesn't insert/delete a WebState and doesn't change
-      // an active WebState.
-      .old_active_web_state = GetActiveWebState(),
-      .new_active_web_state = GetActiveWebState()};
+  // Prepare the status for the observers. The moves don't change the active
+  // web state.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, move_change, status);
   }
@@ -614,14 +614,12 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   web::WebState* new_active_web_state = ContainsIndex(new_active_index)
                                             ? GetWebStateAt(new_active_index)
                                             : nullptr;
+  const WebStateListStatus status = {
+      .old_active_web_state = old_active_web_state,
+      .new_active_web_state = new_active_web_state};
 
-  {
-    const WebStateListStatus status = {
-        .old_active_web_state = old_active_web_state,
-        .new_active_web_state = new_active_web_state};
-    for (auto& observer : observers_) {
-      observer.WebStateListWillChange(this, detach_change, status);
-    }
+  for (auto& observer : observers_) {
+    observer.WebStateListWillChange(this, detach_change, status);
   }
 
   ClearOpenersReferencing(index);
@@ -665,9 +663,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     OnActiveWebStateChanged();
   }
 
-  const WebStateListStatus status = {
-      .old_active_web_state = old_active_web_state,
-      .new_active_web_state = new_active_web_state};
   for (auto& observer : observers_) {
     observer.WebStateListDidChange(this, detach_change, status);
   }

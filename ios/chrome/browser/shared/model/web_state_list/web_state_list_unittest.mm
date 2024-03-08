@@ -57,6 +57,7 @@ class WebStateListTestObserver : public WebStateListObserver {
     web_state_detached_count_ = 0;
     web_state_activated_count_ = 0;
     pinned_state_changed_count_ = 0;
+    status_only_count_ = 0;
     status_only_old_group_ = nullptr;
     status_only_new_group_ = nullptr;
     batch_operation_started_count_ = 0;
@@ -120,6 +121,9 @@ class WebStateListTestObserver : public WebStateListObserver {
   // Returns the number of WebState pin changes.
   int pinned_state_changed_count() const { return pinned_state_changed_count_; }
 
+  // Returns the number of status only changes.
+  int status_only_count() const { return status_only_count_; }
+
   // Returns the old group mentioned in a WebStateListChangeStatusOnly.
   const TabGroup* status_only_old_group() const {
     return status_only_old_group_;
@@ -168,6 +172,7 @@ class WebStateListTestObserver : public WebStateListObserver {
       case WebStateListChange::Type::kStatusOnly: {
         const WebStateListChangeStatusOnly& status_only_change =
             change.As<WebStateListChangeStatusOnly>();
+        ++status_only_count_;
         if (status_only_change.pinned_state_changed()) {
           ++pinned_state_changed_count_;
         }
@@ -187,6 +192,9 @@ class WebStateListTestObserver : public WebStateListObserver {
         EXPECT_TRUE(web_state_list->IsMutating());
         ++web_state_moved_count_;
         const auto& move_change = change.As<WebStateListChangeMove>();
+        if (move_change.pinned_state_changed()) {
+          ++pinned_state_changed_count_;
+        }
         web_state_moved_old_group_ = move_change.old_group();
         web_state_moved_new_group_ = move_change.new_group();
         break;
@@ -233,6 +241,7 @@ class WebStateListTestObserver : public WebStateListObserver {
   raw_ptr<const TabGroup> web_state_detached_group_ = nullptr;
   int web_state_activated_count_ = 0;
   int pinned_state_changed_count_ = 0;
+  int status_only_count_ = 0;
   raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
   raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
   int batch_operation_started_count_ = 0;
@@ -1630,9 +1639,9 @@ TEST_F(WebStateListTest, GetWebStates) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       web_state_list_, "a b | c [ 0 d ] e [ 1 f g h ] [ 2 i ] j"));
-  const TabGroup* group_0 = web_state_list_.GetGroupOfWebStateAt(3);
-  const TabGroup* group_1 = web_state_list_.GetGroupOfWebStateAt(5);
-  const TabGroup* group_2 = web_state_list_.GetGroupOfWebStateAt(8);
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+  const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
 
   EXPECT_EQ(WebStateList::Range(3, 1), web_state_list_.GetWebStates(group_0));
   EXPECT_EQ(WebStateList::Range(5, 3), web_state_list_.GetWebStates(group_1));
@@ -2180,9 +2189,15 @@ TEST_F(WebStateListTest, MoveWebStateAt_NoGroup) {
   ASSERT_TRUE(
       builder.BuildWebStateListFromDescription(web_state_list_, "| a b* c d"));
 
+  observer_.ResetStatistics();
   web_state_list_.MoveWebStateAt(1, 3);
 
   EXPECT_EQ("| a c d b*", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_FALSE(observer_.pinned_state_changed());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
 }
 
 // Tests that replacing when there are no groups doesn't create any group.
@@ -2220,6 +2235,7 @@ TEST_F(WebStateListTest, ActivateWebStateAt_NoGroup) {
   web_state_list_.ActivateWebStateAt(0);
 
   EXPECT_EQ("| a*", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(1, observer_.web_state_activated_count());
   EXPECT_EQ(nullptr, observer_.status_only_old_group());
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
@@ -2237,6 +2253,7 @@ TEST_F(WebStateListTest, ActivateWebStateAt_Grouped) {
 
   EXPECT_EQ("| [ 0 a* ]", builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(1, observer_.web_state_activated_count());
+  EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group, observer_.status_only_old_group());
   EXPECT_EQ(group, observer_.status_only_new_group());
 }
