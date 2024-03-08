@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/plus_addresses/plus_address_service.h"
-#include "components/autofill/core/common/aliases.h"
 
 #include <optional>
 #include <string>
@@ -11,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -20,11 +20,11 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_prefs.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
@@ -68,98 +68,6 @@ auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
 }  // namespace
 
 namespace plus_addresses {
-
-class MockPlusAddressService : public PlusAddressService {
- public:
-  MOCK_METHOD(void, SyncPlusAddressMapping, ());
-  void HandlePollingErrorForTesting(PlusAddressRequestError error) {
-    return this->HandlePollingError(error);
-  }
-  int initial_poll_retry_attempt() { return initial_poll_retry_attempt_; }
-  std::optional<bool> account_is_forbidden() { return account_is_forbidden_; }
-};
-
-TEST(PlusAddressService, HandlePollingError_NoopWhenFlagDisabled) {
-  testing::StrictMock<MockPlusAddressService> service;
-  // Make an error that we would attempt to retry.
-  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
-  error.set_http_response_code(403);
-  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
-  service.HandlePollingErrorForTesting(error);
-  EXPECT_FALSE(service.account_is_forbidden().has_value());
-}
-
-TEST(PlusAddressService, HandlePollingError_NoopForNonNetworkError) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFeature, {{features::kDisableForForbiddenUsers.name, "true"}});
-  testing::StrictMock<MockPlusAddressService> service;
-  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
-  service.HandlePollingErrorForTesting(
-      PlusAddressRequestError(PlusAddressRequestErrorType::kOAuthError));
-  EXPECT_FALSE(service.account_is_forbidden().has_value());
-  service.HandlePollingErrorForTesting(
-      PlusAddressRequestError(PlusAddressRequestErrorType::kParsingError));
-  EXPECT_FALSE(service.account_is_forbidden().has_value());
-}
-
-TEST(PlusAddressService,
-     HandlePollingError_NoopWhenNetworkErrorMissingResponseCode) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFeature, {{features::kDisableForForbiddenUsers.name, "true"}});
-  testing::StrictMock<MockPlusAddressService> service;
-  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
-  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
-  service.HandlePollingErrorForTesting(error);
-  EXPECT_FALSE(service.account_is_forbidden().has_value());
-}
-
-TEST(PlusAddressService, HandlePollingError_NoopForNetworkErrorThatArent403) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFeature, {{features::kDisableForForbiddenUsers.name, "true"}});
-  testing::StrictMock<MockPlusAddressService> service;
-  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
-  error.set_http_response_code(404);
-  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
-  service.HandlePollingErrorForTesting(error);
-  EXPECT_FALSE(service.account_is_forbidden().has_value());
-}
-
-TEST(PlusAddressService, HandlePollingError_IncrementsRetryCounter) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFeature, {{features::kDisableForForbiddenUsers.name, "true"}});
-  testing::StrictMock<MockPlusAddressService> service;
-  // Make an error that we would attempt to retry.
-  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
-  error.set_http_response_code(403);
-  EXPECT_EQ(service.initial_poll_retry_attempt(), 0);
-  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(1);
-  service.HandlePollingErrorForTesting(error);
-  EXPECT_FALSE(service.account_is_forbidden().has_value());
-  EXPECT_EQ(service.initial_poll_retry_attempt(), 1);
-}
-
-TEST(PlusAddressService, HandlePollingError_SetsAccountIsForbidden) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFeature, {{features::kDisableForForbiddenUsers.name, "true"}});
-  testing::StrictMock<MockPlusAddressService> service;
-  // Make an error that we would attempt to retry.
-  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
-  error.set_http_response_code(403);
-  // Initial error handling attempts to retry the request.
-  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(1);
-  service.HandlePollingErrorForTesting(error);
-  EXPECT_FALSE(service.account_is_forbidden().has_value());
-  // If still failing with 403 after 1 retry, mark account as forbidden.
-  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
-  service.HandlePollingErrorForTesting(error);
-  EXPECT_TRUE(service.account_is_forbidden().has_value());
-  EXPECT_TRUE(service.account_is_forbidden().value());
-}
 
 class PlusAddressServiceTest : public ::testing::Test {
  protected:
@@ -270,8 +178,7 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
  public:
   explicit PlusAddressServiceRequestsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFeature,
-        {{"server-url", server_url.spec()}, {"oauth-scope", "scope.example"}});
+        features::kFeature, GetFieldTrialParams());
     test_shared_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory);
@@ -284,9 +191,12 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList* features() { return &scoped_feature_list_; }
+  base::FieldTrialParams GetFieldTrialParams() {
+    return {{"server-url", server_url.spec()},
+            {"oauth-scope", "scope.example"}};
+  }
 
-  GURL server_url = GURL("https://server.example");
+  const GURL server_url = GURL("https://server.example");
   signin::AccessTokenInfo eternal_access_token_info =
       signin::AccessTokenInfo("auth-token", base::Time::Max(), "");
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -298,8 +208,8 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
  private:
   // Required for `IdentityTestEnvironment` and `InProcessDataDecoder` to work.
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder decoder_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  data_decoder::test::InProcessDataDecoder decoder_;
 };
 
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
@@ -423,8 +333,9 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
       confirm_plus_address_endpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = site, .plus_address = plus_address})));
+      test::MakeCreationResponse(PlusProfile({.facet = site,
+                                              .plus_address = plus_address,
+                                              .is_confirmed = true})));
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get()->plus_address, plus_address);
   // Verify that the plus_address is saved when confirmation is successful.
@@ -576,17 +487,164 @@ TEST_F(PlusAddressServiceRequestsTest,
   EXPECT_EQ(confirm.Get()->plus_address, plus_address);
 }
 
+class PlusAddressHttpForbiddenResponseTest
+    : public PlusAddressServiceRequestsTest {
+ public:
+  PlusAddressHttpForbiddenResponseTest()
+      : service_(identity_test_env_.identity_manager(),
+                 nullptr,
+                 std::make_unique<PlusAddressHttpClientImpl>(
+                     identity_test_env_.identity_manager(),
+                     test_shared_loader_factory),
+                 /*webdata_service=*/nullptr) {
+    base::FieldTrialParams params =
+        PlusAddressServiceRequestsTest::GetFieldTrialParams();
+    params[features::kDisableForForbiddenUsers.name] = "true";
+    features_.InitAndEnableFeatureWithParameters(features::kFeature, params);
+
+    identity_test_env_.MakeAccountAvailable("plus@plus.plus",
+                                            {signin::ConsentLevel::kSignin});
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  }
+
+ protected:
+  PlusAddressService& service() { return service_; }
+
+ private:
+  base::test::ScopedFeatureList features_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  PlusAddressService service_;
+};
+
+// Tests that two `HTTP_FORBIDDEN` responses and no successful network request
+// lead to a disabled service.
+TEST_F(PlusAddressHttpForbiddenResponseTest, RepeatedHttpForbiddenFromConfirm) {
+  const std::string kPlusAddress = "plus+remote@plus.plus";
+  ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
+  const url::Origin kNoSubdomainOrigin =
+      url::Origin::Create(GURL("https://test.example"));
+
+  // The service remains enabled after a single `HTTP_FORBIDDEN` response.
+  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+                               base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  EXPECT_TRUE(service().is_enabled());
+
+  // A second `HTTP_FORBIDDEN` responses disables it.
+  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+                               base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  EXPECT_FALSE(service().is_enabled());
+}
+
+// Tests that two `HTTP_FORBIDDEN` responses and no successful network request
+// do not lead to a disabled service unless the feature param is set.
+TEST_F(PlusAddressHttpForbiddenResponseTest,
+       RepeatedHttpForbiddenFromConfirmWithDisabledParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kFeature,
+      PlusAddressServiceRequestsTest::GetFieldTrialParams());
+
+  const std::string kPlusAddress = "plus+remote@plus.plus";
+  ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
+  const url::Origin kNoSubdomainOrigin =
+      url::Origin::Create(GURL("https://test.example"));
+
+  // The service remains enabled after a single `HTTP_FORBIDDEN` response.
+  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+                               base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  EXPECT_TRUE(service().is_enabled());
+
+  // A second `HTTP_FORBIDDEN` responses disables it.
+  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+                               base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  EXPECT_TRUE(service().is_enabled());
+}
+
+// Tests that two `HTTP_FORBIDDEN` responses and no successful network request
+// lead to a disabled service and that other network errors do not have an
+// impact.
+TEST_F(PlusAddressHttpForbiddenResponseTest, OtherErrorsHaveNoEffect) {
+  const std::string kPlusAddress = "plus+remote@plus.plus";
+  ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
+  const url::Origin kNoSubdomainOrigin =
+      url::Origin::Create(GURL("https://test.example"));
+
+  // The service remains enabled after a single `HTTP_FORBIDDEN` response.
+  service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      reserve_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  EXPECT_TRUE(service().is_enabled());
+
+  // A failure that is not `HTTP_FORBIDDEN` does not disable the service.
+  service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      reserve_plus_address_endpoint, "", net::HTTP_REQUEST_TIMEOUT));
+  EXPECT_TRUE(service().is_enabled());
+
+  // But a second `HTTP_FORBIDDEN` does.
+  service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      reserve_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  EXPECT_FALSE(service().is_enabled());
+}
+
+// Tests a single successful response prevents later `HTTP_FORBIDDEN` responses
+// from disabling the service.
+TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
+  const std::string kPlusAddress = "plus+remote@plus.plus";
+  const std::string kOtherPlusAddress = "plusplus+remote@plus.plus";
+  ASSERT_FALSE(service().IsPlusAddress(kPlusAddress));
+  const url::Origin kNoSubdomainOrigin =
+      url::Origin::Create(GURL("https://test.example"));
+  const url::Origin kOtherOrigin =
+      url::Origin::Create(GURL("https://test.example.com"));
+
+  // The service remains enabled after a single `HTTP_FORBIDDEN` response.
+  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+                               base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+  EXPECT_TRUE(service().is_enabled());
+
+  // After a single successful call ...
+  service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
+                               base::DoNothing());
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      confirm_plus_address_endpoint,
+      test::MakeCreationResponse(PlusProfile({.facet = "test.example",
+                                              .plus_address = kPlusAddress,
+                                              .is_confirmed = true}))));
+  EXPECT_TRUE(service().IsPlusAddress(kPlusAddress));
+
+  // ... even repeated `HTTP_FORBIDDEN` responses do not disable the service.
+  for (int i = 0; i < 5; ++i) {
+    SCOPED_TRACE(::testing::Message() << "Iteration #" << 1);
+    // But a second `HTTP_FORBIDDEN` does.
+    service().ConfirmPlusAddress(kOtherOrigin, kOtherPlusAddress,
+                                 base::DoNothing());
+    ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+        confirm_plus_address_endpoint, "", net::HTTP_FORBIDDEN));
+    EXPECT_TRUE(service().is_enabled());
+  }
+}
+
 // Tests the PlusAddressService ability to make network requests.
 class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
  public:
   PlusAddressServicePolling() {
-    features()->Reset();
-    features()->InitAndEnableFeatureWithParameters(
-        features::kFeature, {
-                                {"server-url", server_url.spec()},
-                                {"oauth-scope", "scope.example"},
-                                {"sync-with-server", "true"},
-                            });
+    base::FieldTrialParams params =
+        PlusAddressServiceRequestsTest::GetFieldTrialParams();
+    params["sync-with-server"] = "true";
+    feature_list_.InitAndEnableFeatureWithParameters(features::kFeature,
+                                                     params);
     plus_addresses::RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -594,6 +652,7 @@ class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
   PrefService* prefs() { return &pref_service_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
 };
 
@@ -643,8 +702,8 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
 
 TEST_F(PlusAddressServicePolling,
        DisableForForbiddenUsers_Enabled_404sDontDisableFeature) {
-  features()->Reset();
-  features()->InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
       features::kFeature, {
                               {"server-url", server_url.spec()},
                               {"oauth-scope", "scope.example"},
@@ -673,8 +732,8 @@ TEST_F(PlusAddressServicePolling,
 
 TEST_F(PlusAddressServicePolling,
        DisableForForbiddenUsers_Enabled_403sDisableFeature) {
-  features()->Reset();
-  features()->InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
       features::kFeature, {
                               {"server-url", server_url.spec()},
                               {"oauth-scope", "scope.example"},
@@ -699,7 +758,7 @@ TEST_F(PlusAddressServicePolling,
   test_url_loader_factory.SimulateResponseForPendingRequest(
       plus_profiles_endpoint, "", net::HTTP_FORBIDDEN);
   // Simulate failed responses for the successive retry requests
-  for (int i = 0; i < service.MAX_INITIAL_POLL_RETRY_ATTEMPTS; i++) {
+  for (int i = 0; i < PlusAddressService::kMaxHttpForbiddenResponses; i++) {
     EXPECT_TRUE(service.is_enabled());
     ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
     test_url_loader_factory.SimulateResponseForPendingRequest(

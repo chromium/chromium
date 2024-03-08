@@ -10,7 +10,6 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_allocator.h"
-#include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +42,7 @@ url::Origin GetSampleOrigin2() {
 
 class PlusAddressJitAllocatorRefreshTest : public ::testing::Test {
  public:
-  PlusAddressJitAllocatorRefreshTest() : allocator_(&service_, &http_client_) {}
+  PlusAddressJitAllocatorRefreshTest() : allocator_(&http_client_) {}
 
  protected:
   PlusAddressJitAllocator& allocator() { return allocator_; }
@@ -52,7 +51,6 @@ class PlusAddressJitAllocatorRefreshTest : public ::testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{features::kPlusAddressRefresh};
 
-  PlusAddressService service_;
   NiceMock<MockPlusAddressHttpClient> http_client_;
   PlusAddressJitAllocator allocator_;
 };

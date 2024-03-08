@@ -43,8 +43,10 @@ class PlusAddressService : public KeyedService,
                            public signin::IdentityManager::Observer,
                            public WebDataServiceConsumer {
  public:
-  // Limits the number of retries allowed for the initial poll request.
-  const int MAX_INITIAL_POLL_RETRY_ATTEMPTS = 1;
+  // The number of `HTTP_FORBIDDEN` responses that the user may receive before
+  // `this` is disabled for this session. If a user makes a single successful
+  // call, this limit no longer applies.
+  static constexpr int kMaxHttpForbiddenResponses = 1;
 
   // Used to simplify testing in cases where calls depending on external classes
   // can be mocked out.
@@ -95,19 +97,19 @@ class PlusAddressService : public KeyedService,
   // of `origin` to its eTLD+1 form.
   std::optional<std::string> GetPlusAddress(const url::Origin& origin) const;
 
-  // Save a plus address for the given origin, which is converted to its eTLD+1
+  // Saves a plus address for the given origin, which is converted to its eTLD+1
   // form prior to persistence.
   void SavePlusAddress(url::Origin origin, std::string plus_address);
 
   // Asks the PlusAddressHttpClient to reserve a plus address for use on
-  // `origin`, and returns the plus address via `on_completed`.
+  // `origin` and returns the plus address via `on_completed`.
   //
   // Virtual to allow overriding the behavior in tests.
   virtual void ReservePlusAddress(const url::Origin& origin,
                                   PlusAddressRequestCallback on_completed);
 
   // Asks the PlusAddressHttpClient to confirm `plus_address` for use on
-  // `origin`. and returns the plus address via `on_completed`.
+  // `origin` and returns the plus address via `on_completed`.
   //
   // Virtual to allow overriding the behavior in tests.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
@@ -133,6 +135,7 @@ class PlusAddressService : public KeyedService,
   // integration has finished, it can be removed entirely.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
 
+  // TODO(b/322279583): Make this private.
  protected:
   // Creates and starts a timer to keep `plus_address_by_site_` and
   // `plus_addresses` in sync with a remote plus address server.
@@ -141,10 +144,10 @@ class PlusAddressService : public KeyedService,
   // or `repeating_timer_` has already been created.
   void CreateAndStartTimer();
 
-  // Error handling for failed requests made by GetAllPlusAddresses.
-  //
-  // This is used to determine if the account is forbidden on the startup poll.
-  void HandlePollingError(PlusAddressRequestError error);
+  // Checks whether `error` is a `HTTP_FORBIDDEN` network error and, if there
+  // have been more than `kMaxAllowedForbiddenResponses` such calls without a
+  // successful one, disables plus addresses for the session.
+  void HandlePlusAddressRequestError(const PlusAddressRequestError& error);
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -154,6 +157,13 @@ class PlusAddressService : public KeyedService,
       const GoogleServiceAuthError& error) override;
 
   void HandleSignout();
+
+  // Analyzes `maybe_profile` and, if is an error, it reacts to it (e.g.
+  // by disabling the service for this user). If it is a confirmed plus profile,
+  // it saves it.
+  void HandleCreateOrConfirmResponse(const url::Origin& origin,
+                                     PlusAddressRequestCallback callback,
+                                     const PlusProfileOrError& maybe_profile);
 
   // Get and parse the excluded sites.
   std::set<std::string> GetAndParseExcludedSites();
@@ -201,9 +211,8 @@ class PlusAddressService : public KeyedService,
   // auth errors) are loading.
   GoogleServiceAuthError primary_account_auth_error_;
 
-  // Tracks the number of attempts made to fetch the PlusAddressMap from the
-  // remote server after the initial request made at service construction.
-  int initial_poll_retry_attempt_ = 0;
+  // Counts the number of HTTP_FORBIDDEN that the client has received.
+  int http_forbidden_responses_ = 0;
 
   // Stores whether the account for this ProfileKeyedService is forbidden from
   // using the remote server. This is populated once on the initial poll request

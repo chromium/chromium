@@ -82,7 +82,6 @@ PlusAddressService::PlusAddressService(
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(webdata_service),
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
-          this,
           plus_address_http_client_.get())),
       excluded_sites_(GetAndParseExcludedSites()) {
   if (pref_service) {
@@ -208,7 +207,8 @@ void PlusAddressService::ReservePlusAddress(
   }
   plus_address_allocator_->AllocatePlusAddress(
       origin, PlusAddressAllocator::AllocationMode::kAny,
-      std::move(on_completed));
+      base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
+                     base::Unretained(this), origin, std::move(on_completed)));
 }
 
 void PlusAddressService::ConfirmPlusAddress(
@@ -226,21 +226,24 @@ void PlusAddressService::ConfirmPlusAddress(
   }
   plus_address_http_client_->ConfirmPlusAddress(
       origin, plus_address,
-      // Thin wrapper around on_completed to save the PlusAddress in the
-      // success case.
-      base::BindOnce(
-          [](PlusAddressService* service, const url::Origin& origin,
-             PlusAddressRequestCallback callback,
-             const PlusProfileOrError& maybe_profile) {
-            if (maybe_profile.has_value()) {
-              service->SavePlusAddress(origin, maybe_profile->plus_address);
-            }
-            // Run callback last in case it's dependent on above changes.
-            std::move(callback).Run(maybe_profile);
-          },
-          // base::Unretained is safe here since PlusAddressService owns
-          // the PlusAddressHttpClient and they will have the same lifetime.
-          base::Unretained(this), origin, std::move(on_completed)));
+      base::BindOnce(&PlusAddressService::HandleCreateOrConfirmResponse,
+                     base::Unretained(this), origin, std::move(on_completed)));
+}
+
+void PlusAddressService::HandleCreateOrConfirmResponse(
+    const url::Origin& origin,
+    PlusAddressRequestCallback callback,
+    const PlusProfileOrError& maybe_profile) {
+  if (maybe_profile.has_value()) {
+    account_is_forbidden_ = false;
+    if (maybe_profile->is_confirmed) {
+      SavePlusAddress(origin, maybe_profile->plus_address);
+    }
+  } else {
+    HandlePlusAddressRequestError(maybe_profile.error());
+  }
+  // Run callback last in case it's dependent on above changes.
+  std::move(callback).Run(maybe_profile);
 }
 
 std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
@@ -298,11 +301,16 @@ void PlusAddressService::SyncPlusAddressMapping() {
           if (service->is_enabled()) {
             service->UpdatePlusAddressMap(maybe_mapping.value());
           }
-          if (!service->account_is_forbidden_.has_value()) {
-            service->account_is_forbidden_.emplace(false);
-          }
+          service->account_is_forbidden_ = false;
         } else {
-          service->HandlePollingError(maybe_mapping.error());
+          service->HandlePlusAddressRequestError(maybe_mapping.error());
+          // If `kDisableForForbiddenUsers` is on, we retry 403 responses.
+          if (features::kDisableForForbiddenUsers.Get() &&
+              maybe_mapping.error() == PlusAddressRequestError::AsNetworkError(
+                                           net::HTTP_FORBIDDEN) &&
+              !service->account_is_forbidden_.value_or(false)) {
+            service->SyncPlusAddressMapping();
+          }
         }
       },
       // base::Unretained is safe here since PlusAddressService owns
@@ -358,21 +366,18 @@ void PlusAddressService::OnWebDataServiceRequestDone(
   }
 }
 
-void PlusAddressService::HandlePollingError(PlusAddressRequestError error) {
+void PlusAddressService::HandlePlusAddressRequestError(
+    const PlusAddressRequestError& error) {
   if (!features::kDisableForForbiddenUsers.Get() ||
       error.type() != PlusAddressRequestErrorType::kNetworkError) {
     return;
   }
-  if (!account_is_forbidden_.has_value() &&
-      error.http_response_code().has_value() &&
-      error.http_response_code().value() == net::HTTP_FORBIDDEN) {
-    // Only retry failed 403s up to the limit.
-    if (initial_poll_retry_attempt_ < MAX_INITIAL_POLL_RETRY_ATTEMPTS) {
-      initial_poll_retry_attempt_++;
-      SyncPlusAddressMapping();
-    } else {
-      account_is_forbidden_.emplace(true);
-    }
+  if (account_is_forbidden_ || !error.http_response_code() ||
+      *error.http_response_code() != net::HTTP_FORBIDDEN) {
+    return;
+  }
+  if (++http_forbidden_responses_ > kMaxHttpForbiddenResponses) {
+    account_is_forbidden_ = true;
   }
 }
 void PlusAddressService::OnPrimaryAccountChanged(

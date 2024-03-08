@@ -18,8 +18,7 @@ class PlusAddressService;
 
 class PlusAddressJitAllocator : public PlusAddressAllocator {
  public:
-  PlusAddressJitAllocator(PlusAddressService* service,
-                          PlusAddressHttpClient* http_client);
+  explicit PlusAddressJitAllocator(PlusAddressHttpClient* http_client);
   ~PlusAddressJitAllocator() override;
 
   // PlusAddressAllocator:
@@ -29,8 +28,6 @@ class PlusAddressJitAllocator : public PlusAddressAllocator {
   bool IsRefreshingSupported(const url::Origin& origin) const override;
 
  private:
-  // The `PlusAddressService` that owns `this`.
-  const raw_ref<PlusAddressService> service_;
   // Responsible for server communication. Owned by the `PlusAddressService` and
   // outlives `this`.
   const raw_ref<PlusAddressHttpClient> http_client_;
