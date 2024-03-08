@@ -615,7 +615,8 @@ NetworkContext::NetworkContext(
 #if BUILDFLAG(IS_ANDROID)
           base::BindRepeating(&ReturnAppStatusListenerIfAlive,
                               weak_factory_.GetWeakPtr(),
-                              app_status_listeners_.rbegin()->get()),
+                              base::UnsafeDanglingUntriaged(
+                                  app_status_listeners_.rbegin()->get())),
 #endif  // BUILDFLAG(IS_ANDROID)
           /*file_operations_factory=*/nullptr);
     } else {
@@ -2495,7 +2496,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         std::make_unique<NetworkContextApplicationStatusListener>());
     cache_params.app_status_listener_getter = base::BindRepeating(
         &ReturnAppStatusListenerIfAlive, weak_factory_.GetWeakPtr(),
-        app_status_listeners_.rbegin()->get());
+        base::UnsafeDanglingUntriaged(app_status_listeners_.rbegin()->get()));
 #endif  // BUILDFLAG(IS_ANDROID)
     builder.EnableHttpCache(cache_params);
   }
