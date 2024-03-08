@@ -1012,7 +1012,9 @@ class CORE_EXPORT ConstraintSpace final {
           min_break_appeal != other.min_break_appeal ||
           propagate_child_break_values != other.propagate_child_break_values ||
           should_repeat != other.should_repeat ||
-          is_inside_repeatable_content != other.is_inside_repeatable_content) {
+          is_inside_repeatable_content != other.is_inside_repeatable_content ||
+          should_text_box_trim_start != other.should_text_box_trim_start ||
+          should_text_box_trim_end != other.should_text_box_trim_end) {
         return false;
       }
 
@@ -1051,7 +1053,8 @@ class CORE_EXPORT ConstraintSpace final {
           should_ignore_forced_breaks || is_in_column_bfc || is_past_break ||
           min_break_appeal != kBreakAppealLastResort ||
           propagate_child_break_values || is_at_fragmentainer_start ||
-          should_repeat || is_inside_repeatable_content) {
+          should_repeat || is_inside_repeatable_content ||
+          should_text_box_trim_start || should_text_box_trim_end) {
         return false;
       }
 
