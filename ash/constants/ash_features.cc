@@ -1850,6 +1850,11 @@ BASE_FEATURE(kMojoDBusRelay,
              "MojoDBusRelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables to split left and right modifiers in settings.
+BASE_FEATURE(kModifierSplit,
+             "ModifierSplit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the full apps list in Phone Hub bubble.
 BASE_FEATURE(kEcheLauncher, "EcheLauncher", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3911,6 +3916,10 @@ bool IsKioskLoginScreenEnabled() {
 bool IsOobeJellyEnabled() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kOobeJelly);
+}
+
+bool IsModifierSplitEnabled() {
+  return base::FeatureList::IsEnabled(kModifierSplit);
 }
 
 bool IsOobeJellyModalEnabled() {

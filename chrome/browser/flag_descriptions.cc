@@ -5698,6 +5698,10 @@ const char kAshEnableUnifiedDesktopDescription[] =
 const char kAshPickerName[] = "Picker feature";
 const char kAshPickerDescription[] = "Enable new Picker feature on ChromeOS.";
 
+const char kAshModifierSplitName[] = "Modifier split feature";
+const char kAshModifierSplitDescription[] =
+    "Enable new modifier split feature on ChromeOS.";
+
 const char kAshPickerFeatureKeyName[] = "Feature key for Picker feature";
 const char kAshPickerFeatureKeyDescription[] =
     "Feature key to use the new Picker feature on ChromeOS.";

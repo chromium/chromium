@@ -440,6 +440,15 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ash-modifier-split",
+    "owners": [
+      "dpad@chromium.org",
+      "wangdanny@chromium.org",
+      "cros-peripherals@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "ash-picker",
     "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
     "expiry_milestone": 131

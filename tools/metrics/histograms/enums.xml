@@ -16964,6 +16964,7 @@ from previous Chrome versions.
   <int value="-1760146324" label="CellularAllowPerNetworkRoaming:disabled"/>
   <int value="-1759769801" label="PasswordEditDialogWithDetails:enabled"/>
   <int value="-1759403147" label="MinorModeSupport:disabled"/>
+  <int value="-1758987651" label="ModifierSplit:disabled"/>
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
   <int value="-1758074393" label="BorealisWebUIInstaller:disabled"/>
   <int value="-1757014990" label="SystemEmojiPickerVariantGrouping:disabled"/>
@@ -23884,6 +23885,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
   <int value="1387925207" label="MlRelevanceScoring:enabled"/>
+  <int value="1388323853" label="ModifierSplit:enabled"/>
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
   <int value="1389697465" label="OmniboxGroupingFramework:disabled"/>
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>

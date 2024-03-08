@@ -3291,6 +3291,9 @@ extern const char kArcUnthrottleOnActiveAudioDescription[];
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 
+extern const char kAshModifierSplitName[];
+extern const char kAshModifierSplitDescription[];
+
 extern const char kAshPickerName[];
 extern const char kAshPickerDescription[];
 
