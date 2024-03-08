@@ -53,15 +53,6 @@ export class CrButtonElement extends CrButtonElementBase {
         observer: 'applyTabIndex_',
       },
 
-      /**
-       * Flag used for formatting ripples on circle shaped cr-buttons.
-       * @private
-       */
-      circleRipple: {
-        type: Boolean,
-        value: false,
-      },
-
       hasPrefixIcon_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -78,7 +69,6 @@ export class CrButtonElement extends CrButtonElementBase {
 
   disabled: boolean;
   customTabIndex: number;
-  circleRipple: boolean;
   private hasPrefixIcon_: boolean;
   private hasSuffixIcon_: boolean;
 
@@ -221,22 +211,6 @@ export class CrButtonElement extends CrButtonElementBase {
 
   private onPointerDown_() {
     this.ensureRipple();
-  }
-
-  /**
-   * Customize the element's ripple. Overriding the '_createRipple' function
-   * from PaperRippleMixin.
-   */
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    const ripple = super._createRipple();
-
-    if (this.circleRipple) {
-      ripple.setAttribute('center', '');
-      ripple.classList.add('circle');
-    }
-
-    return ripple;
   }
 }
 
