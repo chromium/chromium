@@ -44,15 +44,11 @@ bool LCPCriticalPathPredictor::HasAnyHintData() const {
 
 void LCPCriticalPathPredictor::set_lcp_element_locators(
     const std::vector<std::string>& lcp_element_locator_strings) {
+  // Clear current set of locators before receiving replacements.
+  lcp_element_locators_.clear();
+  lcp_element_locator_strings_.clear();
   const wtf_size_t reserved_size =
       base::checked_cast<wtf_size_t>(lcp_element_locator_strings.size());
-  if (features::
-          kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements
-              .Get()) {
-    // Clear current set of locators before receiving replacements.
-    lcp_element_locators_.clear();
-    lcp_element_locator_strings_.clear();
-  }
   lcp_element_locators_.reserve(reserved_size);
   lcp_element_locator_strings_.reserve(reserved_size);
   for (const std::string& serialized_locator : lcp_element_locator_strings) {
