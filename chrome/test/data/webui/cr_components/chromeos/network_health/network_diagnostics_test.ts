@@ -4,11 +4,14 @@
 
 import 'chrome://connectivity-diagnostics/strings.m.js';
 import 'chrome://resources/ash/common/network_health/network_diagnostics.js';
+import 'chrome://resources/ash/common/network_health/network_diagnostics_types.js';
+import 'chrome://resources/ash/common/network_health/routine_group.js';
 
 import {setNetworkDiagnosticsServiceForTesting} from 'chrome://resources/ash/common/network_health/mojo_interface_provider.js';
-import {NetworkDiagnosticsElement} from 'chrome://resources/ash/common/network_health/network_diagnostics.js';
+import type {NetworkDiagnosticsElement} from 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 import {Icons} from 'chrome://resources/ash/common/network_health/network_diagnostics_types.js';
-import {RoutineGroupElement} from 'chrome://resources/ash/common/network_health/routine_group.js';
+import type {NetworkHealthContainerElement} from 'chrome://resources/ash/common/network_health/network_health_container.js';
+import type {RoutineGroupElement} from 'chrome://resources/ash/common/network_health/routine_group.js';
 import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -19,16 +22,13 @@ import {FakeNetworkDiagnostics} from './fake_network_diagnostics_routines.js';
 import {getIconFromSrc} from './network_health_test_utils.js';
 
 suite('NetworkDiagnosticsTest', () => {
-  /** @type {?NetworkDiagnosticsElement} */
-  let networkDiagnostics = null;
+  let networkDiagnostics: NetworkDiagnosticsElement|null;
 
-  /** @type {?FakeNetworkDiagnostics} */
-  let fakeNetworkDiagnostics_ = null;
+  let fakeNetworkDiagnostics_: FakeNetworkDiagnostics|null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-    networkDiagnostics = /** @type {!NetworkDiagnosticsElement} */ (
-        document.createElement('network-diagnostics'));
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    networkDiagnostics = document.createElement('network-diagnostics');
     document.body.appendChild(networkDiagnostics);
     fakeNetworkDiagnostics_ = new FakeNetworkDiagnostics();
     setNetworkDiagnosticsServiceForTesting(fakeNetworkDiagnostics_);
@@ -36,61 +36,60 @@ suite('NetworkDiagnosticsTest', () => {
   });
 
   teardown(() => {
-    networkDiagnostics.remove();
-    networkDiagnostics = null;
+    networkDiagnostics!.remove();
   });
 
-  /** @param {!RoutineVerdict} verdict */
-  function setFakeVerdict(verdict) {
-    fakeNetworkDiagnostics_.setFakeVerdict(verdict);
+  function setFakeVerdict(verdict: RoutineVerdict) {
+    fakeNetworkDiagnostics_!.setFakeVerdict(verdict);
   }
 
   async function runRoutines() {
-    networkDiagnostics.runAllRoutines();
+    networkDiagnostics!.runAllRoutines();
     await flushTasks();
   }
 
   async function resolveRoutines() {
-    fakeNetworkDiagnostics_.resolveRoutines();
+    fakeNetworkDiagnostics_!.resolveRoutines();
     await flushTasks();
   }
 
-  /**
-   * Returns a list of the routine groups in the NetworkDiagnostics element.
-   * @returns {!NodeList<!RoutineGroupElement>}
-   */
-  function getRoutineGroups() {
-    return /** @type {!NodeList<!RoutineGroupElement>} */ (
-        networkDiagnostics.shadowRoot.querySelectorAll('routine-group'));
+  function getRoutineGroups(): NodeListOf<RoutineGroupElement> {
+    return networkDiagnostics!.querySelectorAll('routine-group');
   }
 
   /**
    * Checks that all the routine groups match the |running| param
-   * @param {boolean} running
    */
-  function checkRoutinesRunning(running) {
-    for (const group of getRoutineGroups()) {
-      const spinner = group.shadowRoot.querySelector('paper-spinner-lite');
+  function checkRoutinesRunning(running: boolean) {
+    const groups = getRoutineGroups();
+
+    for (const group of groups) {
+      const spinner =
+          group.shadowRoot!.querySelector<HTMLElement>('paper-spinner-lite');
       assertEquals(isVisible(spinner), running);
     }
   }
 
   /**
    * Checks that all the routine groups' verdicts match the |verdict| param
-   * @param {!RoutineVerdict} verdict
    */
-  function checkRoutinesVerdict(verdict) {
+  function checkRoutinesVerdict(verdict: RoutineVerdict) {
     for (const group of getRoutineGroups()) {
-      const icon = group.shadowRoot.querySelector('.routine-icon');
+      assertTrue(!!group);
+      const icon =
+          group!.shadowRoot!.querySelector<HTMLImageElement>('.routine-icon');
+      assertTrue(!!icon);
+      const src = icon!.src;
+      assertTrue(!!src);
       switch (verdict) {
         case RoutineVerdict.kNoProblem:
-          assertEquals(getIconFromSrc(icon.src), Icons.TEST_PASSED);
+          assertEquals(getIconFromSrc(src), Icons.TEST_PASSED);
           break;
         case RoutineVerdict.kNotRun:
-          assertEquals(getIconFromSrc(icon.src), Icons.TEST_NOT_RUN);
+          assertEquals(getIconFromSrc(src), Icons.TEST_NOT_RUN);
           break;
         case RoutineVerdict.kProblem:
-          assertEquals(getIconFromSrc(icon.src), Icons.TEST_FAILED);
+          assertEquals(getIconFromSrc(src), Icons.TEST_FAILED);
           break;
         default:
           assertNotReached();
@@ -100,39 +99,44 @@ suite('NetworkDiagnosticsTest', () => {
 
   /**
    * Checks that all the routine groups' problems match the |verdict| param
-   * @param {!RoutineVerdict} verdict
    */
-  async function checkRoutinesProblems(verdict) {
+  async function checkRoutinesProblems(verdict: RoutineVerdict) {
     for (const group of getRoutineGroups()) {
       const container =
-          group.shadowRoot.querySelector('network-health-container');
-      const header = container.shadowRoot.querySelector('.container-header');
-      header.click();
+          group.shadowRoot!.querySelector<NetworkHealthContainerElement>(
+              'network-health-container');
+      assertTrue(!!container);
+      const header = container!.shadowRoot!.querySelector<HTMLElement>(
+          '.container-header');
+      assertTrue(!!header);
+      header!.click();
       await flushTasks();
       assertTrue(group.expanded.valueOf());
-      for (const routine of container.querySelectorAll('.routine-container')) {
-        const msg = routine.querySelector('#result-msg').textContent.trim();
-        const parts = msg.split(': ');
+      for (const routine of container!.shadowRoot!
+               .querySelectorAll<HTMLElement>('.routine-container')) {
+        const msg = routine.shadowRoot!.querySelector(
+                                           '#result-msg')!.textContent!.trim();
+        const parts = msg!.split(': ');
 
         switch (verdict) {
           case RoutineVerdict.kNoProblem:
             assertEquals(parts.length, 1);
             assertEquals(
-                parts[0], networkDiagnostics.i18n('NetworkDiagnosticsPassed'));
+                parts[0], networkDiagnostics!.i18n('NetworkDiagnosticsPassed'));
             break;
           case RoutineVerdict.kProblem:
             assertGT(parts.length, 0);
             assertEquals(
-                parts[0], networkDiagnostics.i18n('NetworkDiagnosticsFailed'));
+                parts[0], networkDiagnostics!.i18n('NetworkDiagnosticsFailed'));
             // Routine has an associated problem string.
             if (parts.length === 2) {
-              assertGT(parts[1].length, 0);
+              assertGT(parts[1]!.length, 0);
             }
             break;
           case RoutineVerdict.kNotRun:
             assertEquals(parts.length, 1);
             assertEquals(
-                parts[0], networkDiagnostics.i18n('NetworkDiagnosticsNotRun'));
+                parts[0], networkDiagnostics!.i18n('NetworkDiagnosticsNotRun'));
             break;
           default:
             assertNotReached();

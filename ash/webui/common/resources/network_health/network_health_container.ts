@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/ash/common/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons.html.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_health_container.html.js';
 
@@ -14,10 +14,9 @@ import {getTemplate} from './network_health_container.html.js';
  * health info.
  */
 
-/** @polymer */
-class NetworkHealthContainerElement extends PolymerElement {
+export class NetworkHealthContainerElement extends PolymerElement {
   static get is() {
-    return 'network-health-container';
+    return 'network-health-container' as const;
   }
 
   static get template() {
@@ -41,26 +40,33 @@ class NetworkHealthContainerElement extends PolymerElement {
         type: String,
         value: '',
       },
-
     };
   }
+
+  expanded: boolean;
+  label: string;
 
   /**
    * Returns the correct arrow icon depending on if the container is expanded.
    */
-  getArrowIcon_() {
+  private getArrowIcon_(): string {
     return this.expanded ? 'cr:expand-less' : 'cr:expand-more';
   }
 
   /**
    * Helper function to fire the toggle event when clicked.
-   * @private
    */
-  onClick_() {
+  private onClick_(): void {
     this.dispatchEvent(new CustomEvent('toggle-expanded', {
       bubbles: true,
       composed: true,
     }));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkHealthContainerElement.is]: NetworkHealthContainerElement;
   }
 }
 

@@ -9,24 +9,18 @@
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './network_health_container.js';
 
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {RoutineResult, RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {Icons, Routine} from './network_diagnostics_types.js';
 import {getTemplate} from './routine_group.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const RoutineGroupElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const RoutineGroupElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class RoutineGroupElement extends RoutineGroupElementBase {
   static get is() {
-    return 'routine-group';
+    return 'routine-group' as const;
   }
 
   static get template() {
@@ -37,16 +31,13 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
     return {
       /**
        * List of routines to display in the group.
-       * @type {!Array<!Routine>}
        */
       routines: {
         type: Array,
-        value: [],
       },
 
       /**
        * Localized name for the group of routines.
-       * @type {string}
        */
       name: {
         type: String,
@@ -55,7 +46,6 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
 
       /**
        * Boolean flag if the container is expanded.
-       * @type {boolean}
        */
       expanded: {
         type: Boolean,
@@ -64,7 +54,6 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
 
       /**
        * Boolean flag if any routines in the group are running.
-       * @private {boolean}
        */
       running_: {
         type: Boolean,
@@ -73,7 +62,6 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
 
       /**
        * Boolean flag if icon representing the group result should be shown.
-       * @private {boolean}
        */
       showGroupIcon_: {
         type: Boolean,
@@ -82,19 +70,22 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
     };
   }
 
+  routines: Routine[];
+  name: string;
+  expanded: boolean;
+  private running_: boolean;
+  private showGroupIcon_: boolean;
+
   /**
    * Helper function to get the icon for a group of routines based on all of
    * their results.
-   * @param {!PolymerDeepPropertyChange} routines
-   * @return {string}
-   * @private
    */
-  getGroupIcon_(routines) {
+  private getGroupIcon_(routines: {base: Routine[]}): string {
     // Assume that all tests are complete and passing until proven otherwise.
     let complete = true;
     let failed = false;
 
-    for (const routine of /** @type {!Array<!Routine>} */ (routines.base)) {
+    for (const routine of routines.base) {
       if (!routine.result) {
         complete = false;
         continue;
@@ -124,20 +115,15 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
 
   /**
    * Determine if the group routine icon should be showing.
-   * @return {boolean}
-   * @private
    */
-  computeShowGroupIcon_() {
+  private computeShowGroupIcon_(): boolean {
     return !this.running_ && !this.expanded;
   }
 
   /**
    * Helper function to get the icon for a routine based on the result.
-   * @param {!RoutineResult} result
-   * @return {string}
-   * @private
    */
-  getRoutineIcon_(result) {
+  private getRoutineIcon_(result: RoutineResult): string {
     if (!result) {
       return Icons.TEST_NOT_RUN;
     }
@@ -156,26 +142,23 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
 
   /**
    * Determine if any routines in the group are running.
-   * @param {!PolymerDeepPropertyChange} routines
-   * @return {boolean}
-   * @private
    */
-  routinesRunning_(routines) {
-    for (const routine of /** @type {!Array<!Routine>} */ (routines.base)) {
-      if (routine.running) {
-        return true;
-      }
-    }
-    return false;
+  private routinesRunning_(routines: {base: Routine[]}): boolean {
+    return routines.base.some(routine => routine.running);
   }
 
   /**
    * Helper function to toggle the expanded properties when the routine group
    * is clicked.
-   * @private
    */
-  onToggleExpanded_() {
+  private onToggleExpanded_(): void {
     this.set('expanded', !this.expanded);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [RoutineGroupElement.is]: RoutineGroupElement;
   }
 }
 
