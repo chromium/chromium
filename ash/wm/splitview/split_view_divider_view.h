@@ -12,6 +12,7 @@
 
 namespace ash {
 
+class IconButton;
 class SplitViewController;
 class SplitViewDivider;
 class SplitViewDividerHandlerView;
@@ -55,6 +56,13 @@ class SplitViewDividerView : public views::View,
   // `swap_windows` is true, swaps the windows after resizing.
   void EndResizing(gfx::Point location, bool swap_windows);
 
+  // Initializes or refreshes the visibility of the `feedback_button_` on the
+  // divider.
+  void RefreshFeedbackButton(bool visible);
+
+  // Triggered when the feedback button is pressed to open feedback form.
+  void OnFeedbackButtonPressed();
+
   // TODO(b/314018158): Replace with `LayoutDividerController`.
   raw_ptr<SplitViewController, DanglingUntriaged> split_view_controller_;
   raw_ptr<SplitViewDividerHandlerView> divider_handler_view_ = nullptr;
@@ -62,6 +70,8 @@ class SplitViewDividerView : public views::View,
 
   // Securely updates the cursor.
   CursorSetter cursor_setter_;
+
+  raw_ptr<IconButton> feedback_button_ = nullptr;
 
   base::WeakPtrFactory<SplitViewDividerView> weak_ptr_factory_{this};
 };

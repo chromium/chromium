@@ -6358,6 +6358,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS" desc="Click to unlock the locked windows.">
         Unlock the windows
       </message>
+      <message name="IDS_ASH_SNAP_GROUP_SEND_FEEDBACK" desc="Send feedback.">
+        Send feedback
+      </message>
       <message name="IDS_ASH_SNAP_GROUP_MORE_OPTIONS" desc="Click to see more options.">
         More options
       </message>
