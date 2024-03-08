@@ -213,6 +213,8 @@ Profile* GetAshProfile() {
 
 }  // namespace
 
+CrosapiAsh::TestControllerReceiver::~TestControllerReceiver() = default;
+
 CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
     : arc_ash_(std::make_unique<ArcAsh>()),
       audio_service_ash_(std::make_unique<AudioServiceAsh>()),
@@ -1157,8 +1159,8 @@ void CrosapiAsh::REMOVED_62(
 }
 
 void CrosapiAsh::SetTestControllerForTesting(
-    TestControllerReceiver* test_controller) {
-  test_controller_ = test_controller;
+    std::unique_ptr<TestControllerReceiver> test_controller) {
+  test_controller_ = std::move(test_controller);
 }
 
 void CrosapiAsh::OnDisconnected() {

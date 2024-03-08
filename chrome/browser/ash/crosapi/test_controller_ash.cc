@@ -143,6 +143,8 @@ void SetTabletModeEnabled(bool enabled) {
 
 const base::TimeDelta kWindowWaitTimeout = base::Seconds(10);
 
+TestControllerAsh* g_instance = nullptr;
+
 }  // namespace
 
 // This class closes all the Ash browser windows and runs the callback to
@@ -257,11 +259,20 @@ class TestControllerAsh::SelfOwnedAshBrowserWindowOpenWaiter
   base::OneShotTimer timer_;
 };
 
-TestControllerAsh::TestControllerAsh() {
-  CHECK_IS_TEST();
+TestControllerAsh* TestControllerAsh::Get() {
+  return g_instance;
 }
 
-TestControllerAsh::~TestControllerAsh() = default;
+TestControllerAsh::TestControllerAsh() {
+  CHECK_IS_TEST();
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+TestControllerAsh::~TestControllerAsh() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void TestControllerAsh::BindReceiver(
     mojo::PendingReceiver<mojom::TestController> receiver) {

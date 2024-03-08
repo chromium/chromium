@@ -38,7 +38,6 @@ class AshRequiresLacrosExtensionApiTest : public extensions::ExtensionApiTest {
 
  private:
   test::AshBrowserTestStarter ash_starter_;
-  std::unique_ptr<crosapi::TestControllerAsh> test_controller_ash_;
 };
 
 }  // namespace crosapi

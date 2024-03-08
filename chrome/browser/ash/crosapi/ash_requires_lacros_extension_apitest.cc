@@ -35,25 +35,22 @@ void AshRequiresLacrosExtensionApiTest::SetUpOnMainThread() {
   if (!ash_starter_.HasLacrosArgument()) {
     return;
   }
-
-  auto* manager = crosapi::CrosapiManager::Get();
-  test_controller_ash_ = std::make_unique<crosapi::TestControllerAsh>();
-  manager->crosapi_ash()->SetTestControllerForTesting(  // IN-TEST
-      test_controller_ash_.get());
-
   ash_starter_.StartLacros(this);
 
   // Wait until StandaloneBrowserTestController binds with test_controller_ash_.
+  CHECK(crosapi::TestControllerAsh::Get());
   base::test::TestFuture<void> waiter;
-  test_controller_ash_->on_standalone_browser_test_controller_bound().Post(
-      FROM_HERE, waiter.GetCallback());
+  crosapi::TestControllerAsh::Get()
+      ->on_standalone_browser_test_controller_bound()
+      .Post(FROM_HERE, waiter.GetCallback());
   EXPECT_TRUE(waiter.Wait());
 }
 
 mojom::StandaloneBrowserTestController*
 AshRequiresLacrosExtensionApiTest::GetStandaloneBrowserTestController() {
-  CHECK(test_controller_ash_);
-  return test_controller_ash_->GetStandaloneBrowserTestController().get();
+  CHECK(crosapi::TestControllerAsh::Get());
+  return crosapi::TestControllerAsh::Get()
+      ->GetStandaloneBrowserTestController();
 }
 
 }  // namespace crosapi

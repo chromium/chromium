@@ -31,9 +31,13 @@ namespace crosapi {
 
 // This class is the ash-chrome implementation of the TestController interface.
 // This class must only be used from the main thread.
+// There can only be one instance of this class created.
 class TestControllerAsh : public mojom::TestController,
                           public CrosapiAsh::TestControllerReceiver {
  public:
+  // Returns the single instance of this class, if it exists.
+  static TestControllerAsh* Get();
+
   TestControllerAsh();
   TestControllerAsh(const TestControllerAsh&) = delete;
   TestControllerAsh& operator=(const TestControllerAsh&) = delete;
@@ -159,10 +163,9 @@ class TestControllerAsh : public mojom::TestController,
 
   void IsShelfVisible(IsShelfVisibleCallback callback) override;
 
-  mojo::Remote<mojom::StandaloneBrowserTestController>&
-  GetStandaloneBrowserTestController() {
+  mojom::StandaloneBrowserTestController* GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
-    return standalone_browser_test_controller_;
+    return standalone_browser_test_controller_.get();
   }
 
   // Signals when standalone browser test controller becomes bound.

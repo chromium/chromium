@@ -88,16 +88,13 @@ class TestControllerSetupMainExtraParts : public ChromeBrowserMainExtraParts {
 
   void PostBrowserStart() override {
     crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
-        &test_controller_ash_);
+        std::make_unique<crosapi::TestControllerAsh>());
   }
 
   void PostMainMessageLoopRun() override {
     crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
         nullptr);
   }
-
- private:
-  crosapi::TestControllerAsh test_controller_ash_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace

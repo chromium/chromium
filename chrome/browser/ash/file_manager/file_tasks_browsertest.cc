@@ -269,23 +269,21 @@ class TestControllerLacros : public TestController {
                       "--lacros-chrome-path switch is missing.";
     }
 
-    test_controller_ash_.emplace();
-    crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
-        &test_controller_ash_.value());
-
     lacros_starter_.StartLacros(test_class_obj);
 
     // Wait until StandaloneBrowserTestController binds with TestControllerAsh.
+    CHECK(crosapi::TestControllerAsh::Get());
     base::test::TestFuture<void> waiter;
-    test_controller_ash_->on_standalone_browser_test_controller_bound().Post(
-        FROM_HERE, waiter.GetCallback());
+    crosapi::TestControllerAsh::Get()
+        ->on_standalone_browser_test_controller_bound()
+        .Post(FROM_HERE, waiter.GetCallback());
     ASSERT_TRUE(waiter.Wait())
         << "Could not bind StandaloneBrowserTestController - make sure that "
            "the --lacros-chrome-path value points to a test_lacros_chrome "
            "binary (the last component should not be a directory).";
 
-    lacros_waiter_.emplace(
-        test_controller_ash_->GetStandaloneBrowserTestController().get());
+    lacros_waiter_.emplace(crosapi::TestControllerAsh::Get()
+                               ->GetStandaloneBrowserTestController());
   }
 
   std::string InstallExtension(const char* path) override {
@@ -313,7 +311,6 @@ class TestControllerLacros : public TestController {
 
  private:
   ::test::AshBrowserTestStarter lacros_starter_;
-  std::optional<crosapi::TestControllerAsh> test_controller_ash_;
   std::optional<crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter>
       lacros_waiter_;
 };
