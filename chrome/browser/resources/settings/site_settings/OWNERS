@@ -2,3 +2,5 @@ sauski@google.com
 rainhard@chromium.org
 sideyilmaz@chromium.org
 fsenra@google.com
+
+per-file media_picker*=file://chrome/browser/ui/views/media_preview/OWNERS
