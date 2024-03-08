@@ -1459,9 +1459,8 @@ TEST_F(SplitViewControllerTest, SwapWindows) {
 }
 
 // Verify the left and right windows get swapped when the divider is double
-// tapped. SwapWindows() contains a long code comment that shows it is worth
-// having separate tests for double clicking and double tapping the divider->
-TEST_F(SplitViewControllerTest, DoubleTapDivider) {
+// tapped and/or double clicked. Also tests we don't start a drag to resize.
+TEST_F(SplitViewControllerTest, DoubleTapAndClickDivider) {
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -1479,13 +1478,35 @@ TEST_F(SplitViewControllerTest, DoubleTapDivider) {
       split_view_divider()
           ->GetDividerBoundsInScreen(false /* is_dragging */)
           .CenterPoint();
-  GetEventGenerator()->GestureTapAt(divider_center);
-  GetEventGenerator()->GestureTapAt(divider_center);
+  auto* event_generator = GetEventGenerator();
+  event_generator->GestureTapAt(divider_center);
+  EXPECT_FALSE(WindowState::Get(window1.get())->is_dragged());
+  EXPECT_FALSE(WindowState::Get(window2.get())->is_dragged());
+  event_generator->GestureTapAt(divider_center);
+  EXPECT_FALSE(WindowState::Get(window1.get())->is_dragged());
+  EXPECT_FALSE(WindowState::Get(window2.get())->is_dragged());
 
   EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
   EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_EQ(left_bounds, window2->GetBoundsInScreen());
   EXPECT_EQ(right_bounds, window1->GetBoundsInScreen());
+
+  // Press without releasing the mouse. Test we don't start a drag.
+  event_generator->MoveMouseTo(divider_center);
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(WindowState::Get(window1.get())->is_dragged());
+  EXPECT_FALSE(WindowState::Get(window2.get())->is_dragged());
+  event_generator->ReleaseLeftButton();
+
+  // Now double click. Note we need to set `EF_IS_DOUBLE_CLICK` in the event
+  // flags to simulate a double click.
+  event_generator->DoubleClickLeftButton();
+  EXPECT_FALSE(WindowState::Get(window1.get())->is_dragged());
+  EXPECT_FALSE(WindowState::Get(window2.get())->is_dragged());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
+  EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
+  EXPECT_EQ(right_bounds, window2->GetBoundsInScreen());
 }
 
 // Verify the left and right windows do not get swapped when the divider is

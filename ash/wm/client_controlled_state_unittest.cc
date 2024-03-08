@@ -33,6 +33,7 @@
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,6 +59,9 @@ namespace ash {
 namespace {
 
 using ::chromeos::WindowStateType;
+
+using BoundsRequestCallback =
+    base::RepeatingCallback<void(const gfx::Rect& bounds)>;
 
 constexpr gfx::Rect kInitialBounds(0, 0, 100, 100);
 
@@ -98,6 +102,9 @@ class TestClientControlledStateDelegate
       new_state_ = requested_state;
     }
     display_id_ = display_id;
+    if (bounds_request_callback_) {
+      bounds_request_callback_.Run(bounds);
+    }
   }
 
   WindowStateType old_state() const { return old_state_; }
@@ -105,6 +112,10 @@ class TestClientControlledStateDelegate
   WindowStateType new_state() const { return new_state_; }
 
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
+
+  void set_bounds_request_callback(BoundsRequestCallback callback) {
+    bounds_request_callback_ = std::move(callback);
+  }
 
   int64_t display_id() const { return display_id_; }
 
@@ -124,6 +135,7 @@ class TestClientControlledStateDelegate
   int64_t display_id_ = display::kInvalidDisplayId;
   gfx::Rect requested_bounds_;
   bool deleted_ = false;
+  BoundsRequestCallback bounds_request_callback_;
 };
 
 class TestWidgetDelegate : public views::WidgetDelegateView {
@@ -1433,6 +1445,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
   state()->EnterNextState(window_state(), delegate()->new_state());
   ApplyPendingRequestedBounds();
   EXPECT_TRUE(window_state()->IsSnapped());
+  const gfx::Rect bounds_before_resizing(delegate()->requested_bounds());
 
   // Start drag-resizing from the center point of the work area.
   auto* const event_generator = GetEventGenerator();
@@ -1442,13 +1455,21 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
                                      .CenterPoint();
   event_generator->set_current_screen_location(next_cursor_point);
   event_generator->PressLeftButton();
-  // The following drag info is used by client to determine how to handle the
-  // bounds change.
-  EXPECT_TRUE(window_state_delegate()->drag_in_progress());
-  EXPECT_TRUE(window_state()->drag_details()->bounds_change &
-              WindowResizer::kBoundsChange_Resizes);
+  // Test the requested bounds do not change.
+  EXPECT_EQ(bounds_before_resizing, delegate()->requested_bounds());
 
   // Keep dragging...
+  delegate()->set_bounds_request_callback(
+      base::BindLambdaForTesting([&](const gfx::Rect& bounds) {
+        if (bounds == bounds_before_resizing) {
+          return;
+        }
+        // When any new bounds is requested, `OnDragStarted()` should be called
+        // already.
+        EXPECT_TRUE(window_state_delegate()->drag_in_progress());
+        EXPECT_TRUE(window_state()->drag_details()->bounds_change &
+                    WindowResizer::kBoundsChange_Resizes);
+      }));
   next_cursor_point.Offset(-50, 0);
   event_generator->MoveMouseTo(next_cursor_point);
   // The following drag info is used by client to determine how to handle the
@@ -1457,6 +1478,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
   EXPECT_TRUE(window_state()->drag_details()->bounds_change &
               WindowResizer::kBoundsChange_Resizes);
   ApplyPendingRequestedBounds();
+  delegate()->set_bounds_request_callback(base::NullCallback());
 
   // Drag to 1/3 (i.e. make the width 400).
   const float target_width = 400;

@@ -63,6 +63,13 @@ class SplitViewDividerView : public views::View,
   // Triggered when the feedback button is pressed to open feedback form.
   void OnFeedbackButtonPressed();
 
+  // The location of the initial mouse event in screen coordinates.
+  gfx::Point initial_mouse_event_location_;
+
+  // True if the mouse has been pressed down and moved (dragged) so we can start
+  // a resize.
+  bool mouse_move_started_ = false;
+
   // TODO(b/314018158): Replace with `LayoutDividerController`.
   raw_ptr<SplitViewController, DanglingUntriaged> split_view_controller_;
   raw_ptr<SplitViewDividerHandlerView> divider_handler_view_ = nullptr;

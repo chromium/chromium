@@ -23,6 +23,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
@@ -148,11 +149,20 @@ void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
 bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
-  StartResizing(location);
+  initial_mouse_event_location_ = location;
   return true;
 }
 
 bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
+  if (!mouse_move_started_) {
+    // If this is the first mouse drag event, start the resize and reset
+    // `mouse_move_started_`.
+    DCHECK_NE(initial_mouse_event_location_, gfx::Point());
+    mouse_move_started_ = true;
+    StartResizing(initial_mouse_event_location_);
+    return true;
+  }
+  // Else continue with the resize.
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
   divider_->ResizeWithDivider(location);
@@ -162,6 +172,8 @@ bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
 void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
+  initial_mouse_event_location_ = gfx::Point();
+  mouse_move_started_ = false;
   EndResizing(location, /*swap_windows=*/event.GetClickCount() == 2);
 }
 
@@ -181,6 +193,7 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_TAP_DOWN:
+      break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       StartResizing(location);
       break;

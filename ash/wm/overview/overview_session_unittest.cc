@@ -8521,8 +8521,9 @@ TEST_F(SplitViewOverviewSessionTest,
   generator->PressLeftButton();
 
   // Tests that near the right edge, the grid bounds are fixed at 200 and are
-  // partially off screen to the right.
-  generator->MoveMouseTo(580, 0);
+  // partially off screen to the right. Drag with at least 2 steps to
+  // simulate a real mouse drag movement.
+  generator->MoveMouseTo(gfx::Point(580, 0), /*count=*/2);
   gfx::Rect grid_bounds = OverviewGridTestApi(grid).bounds();
   EXPECT_EQ(200, grid_bounds.width());
   EXPECT_GT(grid_bounds.right(), 600);
@@ -8544,7 +8545,8 @@ TEST_F(SplitViewOverviewSessionTest,
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->PressLeftButton();
 
-  generator->MoveMouseTo(20, 0);
+  // Drag with at least 2 steps to simulate a real mouse drag movement.
+  generator->MoveMouseTo(gfx::Point(20, 0), /*count=*/2);
   // Tests that near the left edge, the grid bounds are fixed at 200 and are
   // partially off screen to the left.
   grid_bounds = OverviewGridTestApi(grid).bounds();
@@ -9459,7 +9461,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
           ->GetDividerBoundsInScreen(/*is_dragging=*/false)
           .CenterPoint());
   generator->PressTouch();
-  generator->MoveTouchBy(5, 0);
+  // Drag the divider by an amount big enough to be considered
+  // ET_GESTURE_SCROLL_BEGIN.
+  generator->MoveTouchBy(7, 0);
   EXPECT_TRUE(snapped_window_state_delegate->drag_in_progress());
   EXPECT_NE(nullptr, snapped_window_state->drag_details());
 
