@@ -23,13 +23,13 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -208,21 +208,21 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
   return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
-ConfirmInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
-                                    size_t infobar_index = 0) {
-  return static_cast<ConfirmInfoBarDelegate*>(
+TabSharingInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
+                                       size_t infobar_index = 0) {
+  return static_cast<TabSharingInfoBarDelegate*>(
       GetInfoBarManager(web_contents)->infobars()[infobar_index]->delegate());
 }
 
 bool HasSecondaryButton(content::WebContents* web_contents) {
   return GetDelegate(web_contents)->GetButtons() &
-         ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL;
+         TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL;
 }
 
 std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
   DCHECK(HasSecondaryButton(web_contents));  // Test error otherwise.
   return GetDelegate(web_contents)
-      ->GetButtonLabel(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
 }
 
 void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
