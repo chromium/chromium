@@ -868,9 +868,6 @@ extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
 extern const char kEnableShortcutCustomizationLoggingName[];
 extern const char kEnableShortcutCustomizationLoggingDescription[];
 
-extern const char kEnableInputDeviceSettingsLoggingName[];
-extern const char kEnableInputDeviceSettingsLoggingDescription[];
-
 extern const char kEnableInputDeviceSettingsSplitName[];
 extern const char kEnableInputDeviceSettingsSplitDescription[];
 

@@ -1286,12 +1286,6 @@ const char kEnableShortcutCustomizationLoggingDescription[] =
     "Enable shortcut customization logging to to get detailed logs of shortcut "
     "customization app.";
 
-const char kEnableInputDeviceSettingsLoggingName[] =
-    "Enable input deivce settings logging";
-const char kEnableInputDeviceSettingsLoggingDescription[] =
-    "Enable input device settings logging to to get detailed logs of input "
-    "device settings.";
-
 const char kEnableInputDeviceSettingsSplitName[] =
     "Enable input device settings split";
 const char kEnableInputDeviceSettingsSplitDescription[] =

@@ -2988,12 +2988,6 @@ BASE_FEATURE(kDeviceForceScheduledReboot,
 const base::FeatureParam<base::TimeDelta> kDeviceForceScheduledRebootMaxDelay{
     &kDeviceForceScheduledReboot, "MaxDelay", base::Minutes(2)};
 
-// Enable input device settings logging to get detailed logs of input device
-// settings.
-BASE_FEATURE(kEnableInputDeviceSettingsLogging,
-             "EnableInputDeviceSettingsLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables settings to be split per device.
 BASE_FEATURE(kInputDeviceSettingsSplit,
              "InputDeviceSettingsSplit",
@@ -3290,10 +3284,6 @@ bool IsDeskTemplateSyncEnabled() {
 
 bool IsDisplayPerformanceModeEnabled() {
   return base::FeatureList::IsEnabled(kDisplayPerformanceMode);
-}
-
-bool IsInputDeviceSettingsLoggingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableInputDeviceSettingsLogging);
 }
 
 bool IsInputDeviceSettingsSplitEnabled() {

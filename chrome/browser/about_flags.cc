@@ -7599,11 +7599,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableShortcutCustomizationLoggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableShortcutCustomizationLogging)},
 
-    {"enable-input-device-settings-logging",
-     flag_descriptions::kEnableInputDeviceSettingsLoggingName,
-     flag_descriptions::kEnableInputDeviceSettingsLoggingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableInputDeviceSettingsLogging)},
-
     {"enable-input-device-settings-split",
      flag_descriptions::kEnableInputDeviceSettingsSplitName,
      flag_descriptions::kEnableInputDeviceSettingsSplitDescription, kOsCrOS,
