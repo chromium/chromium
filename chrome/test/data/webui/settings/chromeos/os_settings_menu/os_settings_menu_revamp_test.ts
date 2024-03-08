@@ -831,7 +831,9 @@ suite('<os-settings-menu>', () => {
 
       setPageContentData(
           createFakePageContentData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS));
-      assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+      assertEquals(
+          settingsMenu.i18n('multideviceMenuItemDescription'),
+          multideviceMenuItem.sublabel);
     });
 
 
@@ -842,7 +844,9 @@ suite('<os-settings-menu>', () => {
 
       setPageContentData(
           createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET));
-      assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+      assertEquals(
+          settingsMenu.i18n('multideviceMenuItemDescription'),
+          multideviceMenuItem.sublabel);
     });
 
     test(
@@ -854,7 +858,9 @@ suite('<os-settings-menu>', () => {
 
           setPageContentData(createFakePageContentData(
               MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER));
-          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+          assertEquals(
+              settingsMenu.i18n('multideviceMenuItemDescription'),
+              multideviceMenuItem.sublabel);
         });
 
     test(
@@ -866,7 +872,9 @@ suite('<os-settings-menu>', () => {
 
           setPageContentData(createFakePageContentData(
               MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION));
-          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+          assertEquals(
+              settingsMenu.i18n('multideviceMenuItemDescription'),
+              multideviceMenuItem.sublabel);
         });
 
     test(
@@ -906,28 +914,36 @@ suite('<os-settings-menu>', () => {
           const multideviceMenuItem = getMultideviceMenuItem();
 
           // No eligible device found, show the default description "Phone Hub,
-          // Nearby Share".
+          // Quick Share".
           setPageContentData(createFakePageContentData(
               MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS));
-          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+          assertEquals(
+              settingsMenu.i18n('multideviceMenuItemDescription'),
+              multideviceMenuItem.sublabel);
 
           // No device connected, show the default description "Phone Hub,
-          // Nearby Share".
+          // Quick Share".
           setPageContentData(
               createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET));
-          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+          assertEquals(
+              settingsMenu.i18n('multideviceMenuItemDescription'),
+              multideviceMenuItem.sublabel);
 
           // Device connection is waiting for server, show the default
-          // description "Phone Hub, Nearby Share".
+          // description "Phone Hub, Quick Share".
           setPageContentData(createFakePageContentData(
               MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER));
-          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+          assertEquals(
+              settingsMenu.i18n('multideviceMenuItemDescription'),
+              multideviceMenuItem.sublabel);
 
           // Device connection is waiting for verification, show the default
-          // description "Phone Hub, Nearby Share".
+          // description "Phone Hub, Quick Share".
           setPageContentData(createFakePageContentData(
               MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION));
-          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+          assertEquals(
+              settingsMenu.i18n('multideviceMenuItemDescription'),
+              multideviceMenuItem.sublabel);
 
           // Device is connected, show the phone connected description
           // "Connected to <phone name>".
@@ -938,10 +954,12 @@ suite('<os-settings-menu>', () => {
               `Connected to ${deviceName}`, multideviceMenuItem.sublabel);
 
           // Disconnect the Device, the description should be updated to the
-          // default "Phone Hub, Nearby Share".
+          // default "Phone Hub, Quick Share".
           setPageContentData(
               createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET));
-          assertEquals('Phone Hub, Nearby Share', multideviceMenuItem.sublabel);
+          assertEquals(
+              settingsMenu.i18n('multideviceMenuItemDescription'),
+              multideviceMenuItem.sublabel);
         });
   });
 
