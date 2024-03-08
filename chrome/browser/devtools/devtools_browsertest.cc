@@ -3778,8 +3778,14 @@ class DevToolsProcessPerSiteTest : public DevToolsTest {
   }
 };
 
+// TODO(https://crbug.com/328693031): Flaky on Linux dbg.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_DevToolsSharedProcessInfobar DISABLED_DevToolsSharedProcessInfobar
+#else
+#define MAYBE_DevToolsSharedProcessInfobar DevToolsSharedProcessInfobar
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest,
-                       DevToolsSharedProcessInfobar) {
+                       MAYBE_DevToolsSharedProcessInfobar) {
   const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
 
   Browser* browser1 = CreateBrowser(browser()->profile());
