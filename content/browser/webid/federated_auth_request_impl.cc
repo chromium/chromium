@@ -1374,12 +1374,11 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     if (IsFedCmUseOtherAccountEnabled()) {
       if (!login_url_.is_empty() &&
           login_url_ == idp_info_it->second->metadata.idp_login_url) {
-        new_account_idp = idp_info_it->second->data;
-        new_account_idp->accounts.clear();
         for (const auto& account : idp_info_it->second->data->accounts) {
           if (!account_ids_before_login_.contains(account.id)) {
             // Even though it is theoretically possible for more than one
             // account to be new, just show the first one we encounter.
+            new_account_idp = idp_info_it->second->data;
             new_account_idp->accounts = {account};
             break;
           }

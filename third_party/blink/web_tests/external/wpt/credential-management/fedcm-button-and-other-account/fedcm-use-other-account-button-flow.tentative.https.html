@@ -51,4 +51,34 @@ fedcm_test(async t => {
   assert_equals(cred.token, "account_id=jane_doe");
 }, 'Test that the "Use Other Account" button works correctly.');
 
+
+fedcm_test(async t => {
+  await set_accounts_cookie("1");
+
+  let test_options =
+    request_options_with_mediation_required("manifest_with_variable_accounts.json");
+  test_options.identity.mode = "button";
+  await select_manifest(t, test_options);
+
+  // Trigger FedCM and wait for the initial dialog.
+  let cred_promise = null;
+  await test_driver.bless('initiate FedCM request', async function() {
+    cred_promise = navigator.credentials.get(test_options);
+  });
+
+  let type = await fedcm_get_dialog_type_promise(t);
+  assert_equals(type, "AccountChooser");
+
+  // Click use other account but without changing the account returned.
+  await window.test_driver.click_fedcm_dialog_button("ConfirmIdpLoginContinue");
+
+  // Wait for the account chooser to appear again.
+  type = await fedcm_get_dialog_type_promise(t);
+  assert_equals(type, "AccountChooser");
+
+  await window.test_driver.select_fedcm_account(0);
+  const cred = await cred_promise;
+  assert_equals(cred.token, "account_id=1234");
+}, 'Test that the "Use Other Account" button works correctly when accounts do not change.');
+
 </script>
