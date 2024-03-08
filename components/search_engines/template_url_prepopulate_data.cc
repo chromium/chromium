@@ -47,7 +47,7 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
   CHECK(search_engines::IsEeaChoiceCountry(country_id) &&
         search_engines::IsChoiceScreenFlagEnabled(
             search_engines::ChoicePromo::kAny));
-  const size_t kMaxNumberOfEngines = 8;
+  const size_t kMaxNumberOfEngines = 12;
 
   const std::vector<EngineAndTier> country_engines =
       GetPrepopulationSetFromCountryID(country_id);

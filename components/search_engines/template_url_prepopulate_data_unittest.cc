@@ -216,7 +216,7 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
   feature_list_.Reset();
   feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   const size_t kMinEea = 6;
-  const size_t kMaxEea = 8;
+  const size_t kMaxEea = 12;
   const size_t kMinRow = 3;
   const size_t kMaxRow = 5;
 
