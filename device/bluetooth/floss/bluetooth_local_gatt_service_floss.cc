@@ -18,10 +18,13 @@ namespace floss {
 
 // static
 base::WeakPtr<BluetoothLocalGattServiceFloss>
-BluetoothLocalGattServiceFloss::Create(BluetoothAdapterFloss* adapter,
-                                       const device::BluetoothUUID& uuid,
-                                       bool is_primary) {
-  auto* service = new BluetoothLocalGattServiceFloss(adapter, uuid, is_primary);
+BluetoothLocalGattServiceFloss::Create(
+    BluetoothAdapterFloss* adapter,
+    const device::BluetoothUUID& uuid,
+    bool is_primary,
+    device::BluetoothLocalGattService::Delegate* delegate) {
+  auto* service =
+      new BluetoothLocalGattServiceFloss(adapter, uuid, is_primary, delegate);
   auto weak_ptr = service->weak_ptr_factory_.GetWeakPtr();
   adapter->AddLocalGattService(base::WrapUnique(service));
   return weak_ptr;
@@ -30,11 +33,13 @@ BluetoothLocalGattServiceFloss::Create(BluetoothAdapterFloss* adapter,
 BluetoothLocalGattServiceFloss::BluetoothLocalGattServiceFloss(
     BluetoothAdapterFloss* adapter,
     const device::BluetoothUUID& uuid,
-    bool is_primary)
+    bool is_primary,
+    device::BluetoothLocalGattService::Delegate* delegate)
     : BluetoothGattServiceFloss(adapter),
       is_primary_(is_primary),
       uuid_(uuid),
-      client_instance_id_(NewInstanceId()) {}
+      client_instance_id_(NewInstanceId()),
+      delegate_(delegate) {}
 
 BluetoothLocalGattServiceFloss::~BluetoothLocalGattServiceFloss() = default;
 

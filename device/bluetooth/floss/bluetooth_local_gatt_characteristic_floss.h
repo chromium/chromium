@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_descriptor_floss.h"
@@ -17,6 +18,12 @@
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace floss {
+
+struct GattReadRequest {
+  std::string address;
+  int32_t request_id;
+  int32_t offset;
+};
 
 class BluetoothLocalGattDescriptorFloss;
 
@@ -90,6 +97,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
   // descriptor.
   int32_t AddDescriptor(
       std::unique_ptr<BluetoothLocalGattDescriptorFloss> descriptor);
+
+  // Runs after the browser client has processed the read request and has sent a
+  // response.
+  void OnReadRequestCallback(
+      int32_t request_id,
+      std::optional<BluetoothGattServiceFloss::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
+
+  // Cached instance of the latest pending read request, if one exists.
+  std::optional<GattReadRequest> pending_read_request_;
+
+  // Timer to stop waiting for a callback response.
+  base::OneShotTimer response_timer_;
 
   // UUID of this characteristic.
   device::BluetoothUUID uuid_;

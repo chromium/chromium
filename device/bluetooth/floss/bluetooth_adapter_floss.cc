@@ -1439,7 +1439,8 @@ BluetoothAdapterFloss::CreateLocalGattService(
     const device::BluetoothUUID& uuid,
     bool is_primary,
     device::BluetoothLocalGattService::Delegate* delegate) {
-  return floss::BluetoothLocalGattServiceFloss::Create(this, uuid, is_primary);
+  return floss::BluetoothLocalGattServiceFloss::Create(this, uuid, is_primary,
+                                                       delegate);
 }
 
 void BluetoothAdapterFloss::RegisterGattService(
