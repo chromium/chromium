@@ -94,7 +94,6 @@ LayoutUnit ResolveInlineLengthInternal(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     LayoutUnit override_available_size,
-    Length::AnchorEvaluator* anchor_evaluator,
     LayoutUnit unresolvable_length_result) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
@@ -126,13 +125,12 @@ LayoutUnit ResolveInlineLengthInternal(
       }
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
-          {.anchor_evaluator = anchor_evaluator,
-           .intrinsic_evaluator = [&](const Length& length_to_evaluate) {
-             return ResolveInlineLengthInternal(
-                 constraint_space, style, border_padding, min_max_sizes_func,
-                 length_to_evaluate, override_available_size, anchor_evaluator,
-                 unresolvable_length_result);
-           }});
+          {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
+            return ResolveInlineLengthInternal(
+                constraint_space, style, border_padding, min_max_sizes_func,
+                length_to_evaluate, override_available_size,
+                unresolvable_length_result);
+          }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.InlineSum(), value);
@@ -192,7 +190,6 @@ LayoutUnit ResolveBlockLengthInternal(
     bool use_intrinsic_size,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    Length::AnchorEvaluator* anchor_evaluator,
     IntrinsicBlockSizeFunctionRef unresolvable_block_size_func) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
@@ -226,14 +223,13 @@ LayoutUnit ResolveBlockLengthInternal(
       }
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
-          {.anchor_evaluator = anchor_evaluator,
-           .intrinsic_evaluator = [&](const Length& length_to_evaluate) {
-             return ResolveBlockLengthInternal(
-                 constraint_space, style, border_padding, length_to_evaluate,
-                 use_intrinsic_size, override_available_size,
-                 override_percentage_resolution_size, anchor_evaluator,
-                 unresolvable_block_size_func);
-           }});
+          {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
+            return ResolveBlockLengthInternal(
+                constraint_space, style, border_padding, length_to_evaluate,
+                use_intrinsic_size, override_available_size,
+                override_percentage_resolution_size,
+                unresolvable_block_size_func);
+          }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.BlockSum(), value);
@@ -576,8 +572,7 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
 MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
                                     const ComputedStyle& style,
                                     const BoxStrut& border_padding,
-                                    LayoutUnit override_available_size,
-                                    Length::AnchorEvaluator* anchor_evaluator) {
+                                    LayoutUnit override_available_size) {
   if (const std::optional<MinMaxSizes> override_sizes =
           space.OverrideMinMaxBlockSizes()) {
     DCHECK_GE(override_sizes->max_size, override_sizes->min_size);
@@ -586,12 +581,10 @@ MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
   MinMaxSizes sizes = {
       ResolveMinBlockLength(space, style, border_padding,
                             style.LogicalMinHeight(), override_available_size,
-                            /* override_percentage_resolution_size */ nullptr,
-                            anchor_evaluator),
+                            /* override_percentage_resolution_size */ nullptr),
       ResolveMaxBlockLength(space, style, border_padding,
                             style.LogicalMaxHeight(), override_available_size,
-                            /* override_percentage_resolution_size */ nullptr,
-                            anchor_evaluator)};
+                            /* override_percentage_resolution_size */ nullptr)};
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);
   return sizes;
 }
@@ -657,24 +650,20 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
       ratio, block_min_max, border_padding, style.BoxSizingForAspectRatio());
 }
 
-MinMaxSizes ComputeMinMaxInlineSizes(
-    const ConstraintSpace& space,
-    const BlockNode& node,
-    const BoxStrut& border_padding,
-    MinMaxSizesFunctionRef min_max_sizes_func,
-    const Length* opt_min_length,
-    LayoutUnit override_available_size,
-    Length::AnchorEvaluator* anchor_evaluator) {
+MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
+                                     const BlockNode& node,
+                                     const BoxStrut& border_padding,
+                                     MinMaxSizesFunctionRef min_max_sizes_func,
+                                     const Length* opt_min_length,
+                                     LayoutUnit override_available_size) {
   const ComputedStyle& style = node.Style();
   const Length& min_length =
       opt_min_length ? *opt_min_length : style.LogicalMinWidth();
   MinMaxSizes sizes = {
       ResolveMinInlineLength(space, style, border_padding, min_max_sizes_func,
-                             min_length, override_available_size,
-                             anchor_evaluator),
+                             min_length, override_available_size),
       ResolveMaxInlineLength(space, style, border_padding, min_max_sizes_func,
-                             style.LogicalMaxWidth(), override_available_size,
-                             anchor_evaluator)};
+                             style.LogicalMaxWidth(), override_available_size)};
 
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
@@ -887,12 +876,10 @@ std::optional<LogicalSize> ComputeNormalizedNaturalSize(
 
 // The main part of ComputeReplacedSize(). This function doesn't handle a
 // case of <svg> as the documentElement.
-LogicalSize ComputeReplacedSizeInternal(
-    const BlockNode& node,
-    const ConstraintSpace& space,
-    const BoxStrut& border_padding,
-    ReplacedSizeMode mode,
-    Length::AnchorEvaluator* anchor_evaluator) {
+LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
+                                        const ConstraintSpace& space,
+                                        const BoxStrut& border_padding,
+                                        ReplacedSizeMode mode) {
   DCHECK(node.IsReplaced());
 
   const ComputedStyle& style = node.Style();
@@ -917,14 +904,14 @@ LogicalSize ComputeReplacedSizeInternal(
             : space.ReplacedPercentageResolutionBlockSize();
 
     block_min_max_sizes = {
-        ResolveMinBlockLength(
-            space, style, border_padding, style.LogicalMinHeight(),
-            /* override_available_size */ kIndefiniteSize,
-            &min_max_percentage_resolution_size, anchor_evaluator),
-        ResolveMaxBlockLength(
-            space, style, border_padding, style.LogicalMaxHeight(),
-            /* override_available_size */ kIndefiniteSize,
-            &min_max_percentage_resolution_size, anchor_evaluator)};
+        ResolveMinBlockLength(space, style, border_padding,
+                              style.LogicalMinHeight(),
+                              /* override_available_size */ kIndefiniteSize,
+                              &min_max_percentage_resolution_size),
+        ResolveMaxBlockLength(space, style, border_padding,
+                              style.LogicalMaxHeight(),
+                              /* override_available_size */ kIndefiniteSize,
+                              &min_max_percentage_resolution_size)};
 
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;
@@ -946,7 +933,7 @@ LogicalSize ComputeReplacedSizeInternal(
             space, style, border_padding, block_length_to_resolve,
             /* intrinsic_size */ kIndefiniteSize,
             /* override_available_size */ kIndefiniteSize,
-            &main_percentage_resolution_size, anchor_evaluator);
+            &main_percentage_resolution_size);
         DCHECK_GE(*replaced_block, LayoutUnit());
         replaced_block =
             block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
@@ -977,7 +964,7 @@ LogicalSize ComputeReplacedSizeInternal(
             return MinMaxSizesResult();
           },
           Length::FillAvailable(),
-          /* override_available_size */ kIndefiniteSize, anchor_evaluator);
+          /* override_available_size */ kIndefiniteSize);
     }
 
     // If stretch-fit applies we must have an aspect-ratio.
@@ -1003,8 +990,7 @@ LogicalSize ComputeReplacedSizeInternal(
     } else if (natural_size) {
       DCHECK_NE(mode, ReplacedSizeMode::kIgnoreInlineLengths);
       size = ComputeReplacedSize(node, space, border_padding,
-                                 ReplacedSizeMode::kIgnoreInlineLengths,
-                                 anchor_evaluator)
+                                 ReplacedSizeMode::kIgnoreInlineLengths)
                  .inline_size;
     } else {
       // We don't have a natural size - default to stretching.
@@ -1026,12 +1012,10 @@ LogicalSize ComputeReplacedSizeInternal(
     inline_min_max_sizes = {
         ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMinWidth(),
-                               /* override_available_size */ kIndefiniteSize,
-                               anchor_evaluator),
+                               /* override_available_size */ kIndefiniteSize),
         ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMaxWidth(),
-                               /* override_available_size */ kIndefiniteSize,
-                               anchor_evaluator)};
+                               /* override_available_size */ kIndefiniteSize)};
 
     if (space.IsFixedInlineSize()) {
       replaced_inline = space.AvailableSize().inline_size;
@@ -1049,7 +1033,7 @@ LogicalSize ComputeReplacedSizeInternal(
         replaced_inline = ResolveMainInlineLength(
             space, style, border_padding, MinMaxSizesFunc,
             inline_length_to_resolve,
-            /* override_available_size */ kIndefiniteSize, anchor_evaluator);
+            /* override_available_size */ kIndefiniteSize);
         DCHECK_GE(*replaced_inline, LayoutUnit());
         replaced_inline =
             inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
@@ -1156,14 +1140,12 @@ LogicalSize ComputeReplacedSizeInternal(
 LogicalSize ComputeReplacedSize(const BlockNode& node,
                                 const ConstraintSpace& space,
                                 const BoxStrut& border_padding,
-                                ReplacedSizeMode mode,
-                                Length::AnchorEvaluator* anchor_evaluator) {
+                                ReplacedSizeMode mode) {
   DCHECK(node.IsReplaced());
 
   const auto* svg_root = DynamicTo<LayoutSVGRoot>(node.GetLayoutBox());
   if (!svg_root || !svg_root->IsDocumentElement()) {
-    return ComputeReplacedSizeInternal(node, space, border_padding, mode,
-                                       anchor_evaluator);
+    return ComputeReplacedSizeInternal(node, space, border_padding, mode);
   }
 
   PhysicalSize container_size(svg_root->GetContainerSize());
@@ -1183,8 +1165,8 @@ LogicalSize ComputeReplacedSize(const BlockNode& node,
     return size;
   }
 
-  LogicalSize size = ComputeReplacedSizeInternal(node, space, border_padding,
-                                                 mode, anchor_evaluator);
+  LogicalSize size =
+      ComputeReplacedSizeInternal(node, space, border_padding, mode);
 
   if (node.Style().LogicalWidth().IsPercentOrCalc()) {
     double factor = svg_root->LogicalSizeScaleFactorForPercentageLengths();

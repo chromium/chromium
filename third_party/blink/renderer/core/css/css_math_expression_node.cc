@@ -278,9 +278,7 @@ bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
       return true;
     case CalculationResultCategory::kCalcLength:
       return !CSSPrimitiveValue::IsRelativeUnit(operand->ResolvedUnitType()) &&
-             (!RuntimeEnabledFeatures::
-                  CSSAnchorPositioningComputeAnchorEnabled() ||
-              !operand->IsAnchorQuery());
+             !operand->IsAnchorQuery();
     default:
       return false;
   }
@@ -2352,10 +2350,6 @@ namespace {
 
 CalculationResultCategory AnchorQueryCategory(
     const CSSPrimitiveValue* fallback) {
-  if (!RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled()) {
-    // Anchor queries are resolved used-value time.
-    return kCalcLengthFunction;
-  }
   // Note that the main (non-fallback) result of an anchor query is always
   // a kCalcLength, so the only thing that can make our overall result anything
   // else is the fallback.
@@ -2404,8 +2398,6 @@ double CSSMathExpressionAnchorQuery::ComputeDouble(
   // Note: The category may also be kCalcLengthFunction (see
   // AnchorQueryCategory), in which case we'll reach ToCalculationExpression
   // instead.
-
-  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled());
 
   // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
   scoped_refptr<const CalculationExpressionNode> query =
@@ -2503,11 +2495,6 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
   scoped_refptr<const CalculationExpressionNode> query =
       ToCalculationExpressionQuery(length_resolver);
 
-  // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
-  if (!RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled()) {
-    return query;
-  }
-
   Length result;
 
   if (std::optional<LayoutUnit> px = EvaluateQuery(*query, length_resolver)) {
@@ -2535,6 +2522,7 @@ std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpressionQuery(
     const CSSLengthResolver& length_resolver) const {
+  // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
   DCHECK(IsScopedValue());
   AnchorSpecifierValue* anchor_specifier = AnchorSpecifierValue::Default();
   if (const auto* implicit =

@@ -1667,8 +1667,6 @@ TEST_P(StyleResolverTestCQ, DependsOnStyleContainerQueries) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, AnchorQueriesMPC) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       .anchor {
@@ -1705,8 +1703,6 @@ TEST_P(ParameterizedStyleResolverTest, AnchorQueriesMPC) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, AnchorQueryNoOldStyle) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   // This captures any calls to StoreOldStyleIfNeeded made during
   // StyleResolver::ResolveStyle.
   PostStyleUpdateScope post_style_update_scope(GetDocument());
@@ -1726,8 +1722,6 @@ TEST_P(ParameterizedStyleResolverTest, AnchorQueryNoOldStyle) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, AnchorQueryStoreOldStyle) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   // This captures any calls to StoreOldStyleIfNeeded made during
   // StyleResolver::ResolveStyle.
   PostStyleUpdateScope post_style_update_scope(GetDocument());
@@ -1748,8 +1742,6 @@ TEST_P(ParameterizedStyleResolverTest, AnchorQueryStoreOldStyle) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, AnchorQueryBaseComputedStyle) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #div {
@@ -1778,8 +1770,6 @@ TEST_P(ParameterizedStyleResolverTest, AnchorQueryBaseComputedStyle) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, AnchorQueryResults) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #anchor {
@@ -3717,161 +3707,7 @@ TEST_P(ParameterizedStyleResolverTest, ScopedAnchorDefault) {
       *inner_anchor->ComputedStyleRef().AnchorDefault());
 }
 
-// |length| must be a calculated value of a single anchor query node.
-static const TreeScope* GetAnchorQueryTreeScope(const Length& length) {
-  DCHECK(length.IsCalculated());
-  DCHECK(length.GetCalculationValue().IsExpression());
-  const auto& query = To<CalculationExpressionAnchorQueryNode>(
-      *length.GetCalculationValue().GetOrCreateExpression());
-  return query.AnchorSpecifier().IsNamed()
-             ? query.AnchorSpecifier().GetName().GetTreeScope()
-             : nullptr;
-}
-
-TEST_P(ParameterizedStyleResolverTest, ScopedAnchorFunction) {
-  // This test is not relevant with CSSAnchorPositioningComputeAnchor enabled,
-  // because anchor() functions are resolved computed-value time in that case.
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(false);
-
-  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
-    <style>
-      div { position: absolute; }
-      #left { left: anchor(--a left); }
-      #bottom::part(right) { right: anchor(--a right); }
-    </style>
-    <div id="left"></div>
-    <div id="bottom">
-      <template shadowrootmode=open>
-        <style>
-          div { position: absolute; }
-          #top { top: anchor(--a top); }
-          :host { bottom: anchor(--a bottom); }
-        </style>
-        <div id="top"></div>
-        <div id="right" part="right"></div>
-      </template>
-    </div>
-
-    <style>
-      #inline-start { inset-inline-start: anchor(--a left); }
-      #block-end::part(inline-end) { inset-inline-end: anchor(--a right); }
-    </style>
-    <div id="inline-start"></div>
-    <div id="block-end">
-      <template shadowrootmode=open>
-        <style>
-          div { position: absolute }
-          :host { inset-block-end: anchor(--a bottom); }
-          #block-start { inset-block-start: anchor(--a top); }
-        </style>
-        <div id="block-start"></div>
-        <div id="inline-end" part="inline-end"></div>
-      </template>
-    </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  {
-    Element* left = GetElementById("left");
-    Element* bottom = GetElementById("bottom");
-    ShadowRoot* shadow = bottom->GetShadowRoot();
-    Element* top = shadow->getElementById(AtomicString("top"));
-    Element* right = shadow->getElementById(AtomicString("right"));
-
-    EXPECT_EQ(&GetDocument(),
-              GetAnchorQueryTreeScope(GetLeft(left->ComputedStyleRef())));
-    EXPECT_EQ(&GetDocument(),
-              GetAnchorQueryTreeScope(GetRight(right->ComputedStyleRef())));
-    EXPECT_EQ(shadow, GetAnchorQueryTreeScope(GetTop(top->ComputedStyleRef())));
-    EXPECT_EQ(shadow,
-              GetAnchorQueryTreeScope(GetBottom(bottom->ComputedStyleRef())));
-  }
-
-  {
-    // Verify that it also works for logical properties.
-    Element* inline_start = GetElementById("inline-start");
-    Element* block_end = GetElementById("block-end");
-    ShadowRoot* shadow = block_end->GetShadowRoot();
-    Element* block_start = shadow->getElementById(AtomicString("block-start"));
-    Element* inline_end = shadow->getElementById(AtomicString("inline-end"));
-
-    EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
-                                  GetLeft(inline_start->ComputedStyleRef())));
-    EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
-                                  GetRight(inline_end->ComputedStyleRef())));
-    EXPECT_EQ(shadow,
-              GetAnchorQueryTreeScope(GetTop(block_start->ComputedStyleRef())));
-    EXPECT_EQ(shadow, GetAnchorQueryTreeScope(
-                          GetBottom(block_end->ComputedStyleRef())));
-  }
-}
-
-TEST_P(ParameterizedStyleResolverTest, ScopedAnchorSizeFunction) {
-  // See comment in test ScopedAnchorFunction.
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(false);
-
-  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
-    <style>
-      div { position: absolute; }
-      #width { width: anchor-size(--a width); }
-    </style>
-    <div id="width">
-      <template shadowrootmode=open>
-        <style>
-          div { position: absolute; }
-          #height { height: anchor-size(--a height); }
-        </style>
-        <div id="height"></div>
-      </template>
-    </div>
-
-    <style>
-      #min-width { min-width: anchor-size(--a width); }
-      #max-width::part(max-height) { max-height: anchor-size(--a height); }
-    </style>
-    <div id="min-width"></div>
-    <div id="max-width">
-      <template shadowrootmode=open>
-        <style>
-          div { position: absolute; }
-          #min-height { min-height: anchor-size(--a height); }
-          :host { max-width: anchor-size(--a width); }
-        </style>
-        <div id="min-height"></div>
-        <div id="max-height" part="max-height"></div>
-      </template>
-    </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* width = GetElementById("width");
-  Element* min_width = GetElementById("min-width");
-  Element* max_width = GetElementById("max-width");
-  ShadowRoot* shadow1 = width->GetShadowRoot();
-  ShadowRoot* shadow2 = max_width->GetShadowRoot();
-  Element* height = shadow1->getElementById(AtomicString("height"));
-  Element* min_height = shadow2->getElementById(AtomicString("min-height"));
-  Element* max_height = shadow2->getElementById(AtomicString("max-height"));
-
-  EXPECT_EQ(&GetDocument(),
-            GetAnchorQueryTreeScope(GetWidth(width->ComputedStyleRef())));
-  EXPECT_EQ(shadow1,
-            GetAnchorQueryTreeScope(GetHeight(height->ComputedStyleRef())));
-  EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
-                                GetMinWidth(min_width->ComputedStyleRef())));
-  EXPECT_EQ(shadow2, GetAnchorQueryTreeScope(
-                         GetMaxWidth(max_width->ComputedStyleRef())));
-  EXPECT_EQ(shadow2, GetAnchorQueryTreeScope(
-                         GetMinHeight(min_height->ComputedStyleRef())));
-  EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
-                                GetMaxHeight(max_height->ComputedStyleRef())));
-}
-
 TEST_P(ParameterizedStyleResolverTest, NoAnchorFunction) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -3889,8 +3725,6 @@ TEST_P(ParameterizedStyleResolverTest, NoAnchorFunction) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, HasAnchorFunction) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -3908,8 +3742,6 @@ TEST_P(ParameterizedStyleResolverTest, HasAnchorFunction) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, HasAnchorFunctionImplicit) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -3927,8 +3759,6 @@ TEST_P(ParameterizedStyleResolverTest, HasAnchorFunctionImplicit) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, HasAnchorSizeFunction) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -3946,8 +3776,6 @@ TEST_P(ParameterizedStyleResolverTest, HasAnchorSizeFunction) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, HasAnchorSizeFunctionImplicit) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       div {

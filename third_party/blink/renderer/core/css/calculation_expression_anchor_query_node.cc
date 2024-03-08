@@ -87,18 +87,9 @@ CalculationExpressionAnchorQueryNode::Zoom(double factor) const {
 
 float CalculationExpressionAnchorQueryNode::Evaluate(
     float max_value,
-    const Length::EvaluationInput& input) const {
-  if (input.anchor_evaluator) {
-    if (const std::optional<LayoutUnit> value =
-            input.anchor_evaluator->Evaluate(*this)) {
-      return value->ToFloat();
-    }
-  }
-  // If we did not provide an AnchorEvaluator, then this is not
-  // for an absolutely-positioned element, and we should use the fallback.
-  //
-  // https://drafts.csswg.org/css-anchor-position-1/#valid-anchor-function
-  return FloatValueForLength(fallback_, max_value, input);
+    const Length::EvaluationInput&) const {
+  // TODO(crbug.com//41483417): Remove CalculationExpressionAnchorQueryNode.
+  return 0;
 }
 
 }  // namespace blink

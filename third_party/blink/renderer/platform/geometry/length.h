@@ -430,7 +430,6 @@ class PLATFORM_EXPORT Length {
     STACK_ALLOCATED();
 
    public:
-    Length::AnchorEvaluator* anchor_evaluator = nullptr;
     std::optional<float> size_keyword_basis = std::nullopt;
     std::optional<IntrinsicLengthEvaluator> intrinsic_evaluator = std::nullopt;
   };

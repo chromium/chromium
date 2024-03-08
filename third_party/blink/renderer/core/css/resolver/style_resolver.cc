@@ -2388,8 +2388,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
   }
 
-  if (RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled() &&
-      base_style->HasAnchorFunctions()) {
+  if (base_style->HasAnchorFunctions()) {
     // TODO(crbug.com/41483417): Enable this optimization for styles with
     // anchor queries.
     return false;

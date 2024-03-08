@@ -268,9 +268,8 @@ class OOFCandidateStyleIterator {
   // Otherwise, the base style for generating auto anchor fallbacks.
   const ComputedStyle* style_ = nullptr;
 
-  // When CSSAnchorPositioningComputeAnchor is enabled, this evaluator is
-  // passed to StyleEngine::UpdateStyleForOutOfFlow to evaluate anchor queries
-  // on the computed style.
+  // This evaluator is passed to StyleEngine::UpdateStyleForOutOfFlow to
+  // evaluate anchor queries on the computed style.
   Length::AnchorEvaluator* anchor_evaluator_ = nullptr;
 
   // If the current style is created from an `@try` rule, this holds
@@ -1925,9 +1924,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   const BoxStrut border_padding = ComputeBorders(space, node_info.node) +
                                   ComputePadding(space, candidate_style);
 
-  Length::AnchorScope anchor_scope(Length::AnchorScope::Mode::kSize,
-                                   anchor_evaluator);
-
   std::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
     // Create a new space with the IMCB size, and stretch constraints.
@@ -1963,17 +1959,16 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       }
     }
 
-    replaced_size = ComputeReplacedSize(
-        node_info.node, builder.ToConstraintSpace(), border_padding,
-        ReplacedSizeMode::kNormal, anchor_evaluator);
+    replaced_size =
+        ComputeReplacedSize(node_info.node, builder.ToConstraintSpace(),
+                            border_padding, ReplacedSizeMode::kNormal);
   }
 
   OffsetInfo offset_info;
   LogicalOofDimensions& node_dimensions = offset_info.node_dimensions;
   offset_info.inline_size_depends_on_min_max_sizes = ComputeOofInlineDimensions(
       node_info.node, candidate_style, space, imcb, alignment, border_padding,
-      replaced_size, container_writing_direction, anchor_evaluator,
-      &node_dimensions);
+      replaced_size, container_writing_direction, &node_dimensions);
 
   const std::optional<LogicalRect> additional_fallback_bounds =
       try_fit_available_space
@@ -2016,8 +2011,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   if (node_dimensions.size.block_size == kIndefiniteSize) {
     offset_info.initial_layout_result = ComputeOofBlockDimensions(
         node_info.node, candidate_style, space, imcb, alignment, border_padding,
-        replaced_size, container_writing_direction, anchor_evaluator,
-        &node_dimensions);
+        replaced_size, container_writing_direction, &node_dimensions);
   }
 
   // Calculate the block scroll offset range where the block dimension fits.

@@ -336,8 +336,6 @@ TEST_F(CSSPropertyTest, AlternativePropertyCycle) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeTop) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
-
   ModeCheckingAnchorEvaluator anchor_evaluator(Length::AnchorScope::Mode::kTop);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
 
@@ -354,8 +352,6 @@ TEST_F(CSSPropertyTest, AnchorModeTop) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeRight) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
-
   ModeCheckingAnchorEvaluator anchor_evaluator(
       Length::AnchorScope::Mode::kRight);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
@@ -373,8 +369,6 @@ TEST_F(CSSPropertyTest, AnchorModeRight) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeBottom) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
-
   ModeCheckingAnchorEvaluator anchor_evaluator(
       Length::AnchorScope::Mode::kBottom);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
@@ -392,8 +386,6 @@ TEST_F(CSSPropertyTest, AnchorModeBottom) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeLeft) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
-
   ModeCheckingAnchorEvaluator anchor_evaluator(
       Length::AnchorScope::Mode::kLeft);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
@@ -411,8 +403,6 @@ TEST_F(CSSPropertyTest, AnchorModeLeft) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeSize) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
-
   ModeCheckingAnchorEvaluator anchor_evaluator(
       Length::AnchorScope::Mode::kSize);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};

@@ -730,12 +730,6 @@
       implied_by: ["CSSAnchorPositioning"],
     },
     {
-      // Resolve anchor*() functions computed-value time.
-      name: "CSSAnchorPositioningComputeAnchor",
-      depends_on: ["CSSAnchorPositioningCascadeFallback"],
-      status: "experimental",
-    },
-    {
       // Support for the animation-delay-start and animation-delay-end
       // properties.
       //

@@ -132,8 +132,7 @@ class AbsoluteUtilsTest : public RenderingTest {
             container_writing_direction, node.Style().GetWritingDirection());
     ComputeOofInlineDimensions(node, node.Style(), space, imcb,
                                LogicalAlignment(), border_padding, std::nullopt,
-                               container_writing_direction,
-                               /* anchor_evaluator */ nullptr, dimensions);
+                               container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }
@@ -175,8 +174,7 @@ class AbsoluteUtilsTest : public RenderingTest {
             container_writing_direction, node.Style().GetWritingDirection());
     ComputeOofBlockDimensions(node, node.Style(), space, imcb,
                               LogicalAlignment(), border_padding, std::nullopt,
-                              container_writing_direction,
-                              /* anchor_evaluator */ nullptr, dimensions);
+                              container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }

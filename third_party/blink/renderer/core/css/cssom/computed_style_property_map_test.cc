@@ -54,20 +54,7 @@ TEST_F(ComputedStylePropertyMapTest, TransformPerspectiveZoom) {
   EXPECT_EQ("perspective(100px)", style_value->toString());
 }
 
-TEST_F(ComputedStylePropertyMapTest, TopWithAnchor) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(false);
-
-  ComputedStylePropertyMap* map =
-      SetBodyStyle("position: absolute; top: anchor(bottom, 17px);");
-  CSSStyleValue* style_value =
-      map->get(GetDocument().GetExecutionContext(), "top", ASSERT_NO_EXCEPTION);
-  ASSERT_TRUE(style_value);
-  EXPECT_EQ("anchor(bottom, 17px)", style_value->toString());
-}
-
 TEST_F(ComputedStylePropertyMapTest, TopWithAnchorComputed) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
-
   ComputedStylePropertyMap* map =
       SetBodyStyle("position: absolute; top: anchor(bottom, 17px);");
   CSSStyleValue* style_value =

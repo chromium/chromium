@@ -4557,8 +4557,6 @@ TEST_F(StyleEngineContainerQueryTest,
 }
 
 TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeWithAnchorQuery) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #anchored {
@@ -4592,8 +4590,6 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeWithAnchorQuery) {
 }
 
 TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForElementWithAnchorQuery) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #anchored {
@@ -4629,8 +4625,6 @@ TEST_F(StyleEngineTest, UpdateStyleAndLayoutTreeForElementWithAnchorQuery) {
 }
 
 TEST_F(StyleEngineTest, AnchorQueryComputed) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #anchor {
@@ -4664,8 +4658,6 @@ TEST_F(StyleEngineTest, AnchorQueryComputed) {
 }
 
 TEST_F(StyleEngineTest, AnchorQueryComputedChild) {
-  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #anchor {

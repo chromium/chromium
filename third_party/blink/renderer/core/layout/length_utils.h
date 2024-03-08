@@ -85,7 +85,6 @@ ResolveInlineLengthInternal(const ConstraintSpace&,
                             MinMaxSizesFunctionRef,
                             const Length&,
                             LayoutUnit override_available_size,
-                            Length::AnchorEvaluator* anchor_evaluator,
                             LayoutUnit unresolvable_length_result);
 
 // Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
@@ -98,7 +97,6 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     bool use_intrinsic_size,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    Length::AnchorEvaluator* anchor_evaluator,
     IntrinsicBlockSizeFunctionRef unresolvable_block_size_func);
 
 // Used for resolving min inline lengths, (|ComputedStyle::MinLogicalWidth|).
@@ -108,11 +106,10 @@ inline LayoutUnit ResolveMinInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    LayoutUnit override_available_size = kIndefiniteSize) {
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      override_available_size, anchor_evaluator, border_padding.InlineSum());
+      override_available_size, border_padding.InlineSum());
 }
 
 // Used for resolving max inline lengths, (|ComputedStyle::MaxLogicalWidth|).
@@ -122,13 +119,12 @@ inline LayoutUnit ResolveMaxInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    LayoutUnit override_available_size = kIndefiniteSize) {
   // TODO(https://crbug.com/313072): Ensure that we don't do math on
   // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      override_available_size, anchor_evaluator, LayoutUnit::Max());
+      override_available_size, LayoutUnit::Max());
 }
 
 // Used for resolving main inline lengths, (|ComputedStyle::LogicalWidth|).
@@ -138,16 +134,15 @@ inline LayoutUnit ResolveMainInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    LayoutUnit override_available_size = kIndefiniteSize) {
   // TODO(https://crbug.com/313072): We will need to accept 'auto'
   // lengths here and handle them in ResolveInlineLengthInternal in
   // order to support 'auto' values inside of calc-size().
   DCHECK(!length.IsAuto());
 
-  return ResolveInlineLengthInternal(
-      constraint_space, style, border_padding, min_max_sizes_func, length,
-      override_available_size, anchor_evaluator, LayoutUnit());
+  return ResolveInlineLengthInternal(constraint_space, style, border_padding,
+                                     min_max_sizes_func, length,
+                                     override_available_size, LayoutUnit());
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
@@ -157,13 +152,12 @@ inline LayoutUnit ResolveMinBlockLength(
     const BoxStrut& border_padding,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    const LayoutUnit* override_percentage_resolution_size = nullptr) {
   LayoutUnit border_padding_sum = border_padding.BlockSum();
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* use_intrinsic_size */ false, override_available_size,
-      override_percentage_resolution_size, anchor_evaluator,
+      override_percentage_resolution_size,
       [border_padding_sum]() { return border_padding_sum; });
 }
 
@@ -174,15 +168,13 @@ inline LayoutUnit ResolveMaxBlockLength(
     const BoxStrut& border_padding,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    const LayoutUnit* override_percentage_resolution_size = nullptr) {
   // TODO(https://crbug.com/313072): Ensure that we don't do math on
   // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* use_intrinsic_size */ true, override_available_size,
-      override_percentage_resolution_size, anchor_evaluator,
-      []() { return LayoutUnit::Max(); });
+      override_percentage_resolution_size, []() { return LayoutUnit::Max(); });
 }
 
 // Used for resolving main block lengths, (|ComputedStyle::LogicalHeight|).
@@ -193,8 +185,7 @@ inline LayoutUnit ResolveMainBlockLength(
     const Length& length,
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    const LayoutUnit* override_percentage_resolution_size = nullptr) {
   // TODO(https://crbug.com/313072): We will need to accept 'auto'
   // lengths here and handle them in ResolveBlockLengthInternal in
   // order to support 'auto' values inside of calc-size().
@@ -203,7 +194,7 @@ inline LayoutUnit ResolveMainBlockLength(
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* use_intrinsic_size */ true, override_available_size,
-      override_percentage_resolution_size, anchor_evaluator,
+      override_percentage_resolution_size,
       [intrinsic_size]() { return intrinsic_size; });
 }
 
@@ -213,8 +204,7 @@ inline LayoutUnit ResolveMainBlockLength(
     const BoxStrut& border_padding,
     const Length& length,
     IntrinsicBlockSizeFunctionRef intrinsic_block_size_func,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    LayoutUnit override_available_size = kIndefiniteSize) {
   // TODO(https://crbug.com/313072): We will need to accept 'auto'
   // lengths here and handle them in ResolveBlockLengthInternal in
   // order to support 'auto' values inside of calc-size().
@@ -223,7 +213,7 @@ inline LayoutUnit ResolveMainBlockLength(
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* use_intrinsic_size */ true, override_available_size,
-      /* override_percentage_resolution_size */ nullptr, anchor_evaluator,
+      /* override_percentage_resolution_size */ nullptr,
       intrinsic_block_size_func);
 }
 
@@ -232,8 +222,7 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
     const ComputedStyle&,
     const BoxStrut& border_padding,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr);
+    LayoutUnit override_available_size = kIndefiniteSize);
 
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(
     const LogicalSize& ratio,
@@ -261,8 +250,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length* opt_min_length = nullptr,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr);
+    LayoutUnit override_available_size = kIndefiniteSize);
 
 // Returns block size of the node's border box by resolving the computed value
 // in `style.logicalHeight` to a `LayoutUnit`, adding border and padding, then
@@ -368,8 +356,7 @@ CORE_EXPORT LogicalSize
 ComputeReplacedSize(const BlockNode&,
                     const ConstraintSpace&,
                     const BoxStrut& border_padding,
-                    ReplacedSizeMode = ReplacedSizeMode::kNormal,
-                    Length::AnchorEvaluator* anchor_evaluator = nullptr);
+                    ReplacedSizeMode = ReplacedSizeMode::kNormal);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.

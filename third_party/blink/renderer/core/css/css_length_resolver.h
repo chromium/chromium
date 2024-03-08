@@ -61,8 +61,7 @@ class CORE_EXPORT CSSLengthResolver {
   // https://drafts.csswg.org/css-anchor-position-1/
   virtual void ReferenceAnchor() const = 0;
 
-  // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries,
-  // when the runtime flag CSSAnchorPositioningComputeAnchor is enabled.
+  // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries.
   virtual Length::AnchorEvaluator* AnchorEvaluator() const { return nullptr; }
 
   float Zoom() const { return zoom_; }
