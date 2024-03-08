@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -388,9 +389,9 @@ TEST_P(TabDesktopMediaListTest, RemoveTab) {
   base::RunLoop loop;
   TabStripModel* tab_strip_model = browser_->tab_strip_model();
   ASSERT_TRUE(tab_strip_model);
-  std::unique_ptr<WebContents> released_web_contents =
-      tab_strip_model->DetachWebContentsAtForInsertion(kDefaultSourceCount - 1);
-  std::erase(manually_added_web_contents_, released_web_contents.get());
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      tab_strip_model->DetachTabAtForInsertion(kDefaultSourceCount - 1);
+  std::erase(manually_added_web_contents_, detached_tab.get()->contents());
 
   EXPECT_CALL(observer_, OnSourceRemoved(0))
       .WillOnce(

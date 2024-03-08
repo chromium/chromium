@@ -172,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   Browser* other_browser = CreateBrowser(browser()->profile());
 
   // Move the tab to the other browser.
-  other_browser->tab_strip_model()->InsertWebContentsAt(
-      0, browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0),
+  other_browser->tab_strip_model()->InsertDetachedTabAt(
+      0, browser()->tab_strip_model()->DetachTabAtForInsertion(0),
       AddTabTypes::ADD_ACTIVE);
   ASSERT_EQ(other_browser->tab_strip_model()->count(), 2);
 
