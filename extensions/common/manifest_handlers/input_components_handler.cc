@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/api/input_ime/input_components_handler.h"
+#include "extensions/common/manifest_handlers/input_components_handler.h"
 
 #include <stddef.h>
 

@@ -158,14 +158,11 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
                                            open_in_tab);
 }
 
-OptionsPageManifestHandler::OptionsPageManifestHandler() {
-}
+OptionsPageHandler::OptionsPageHandler() {}
 
-OptionsPageManifestHandler::~OptionsPageManifestHandler() {
-}
+OptionsPageHandler::~OptionsPageHandler() {}
 
-bool OptionsPageManifestHandler::Parse(Extension* extension,
-                                       std::u16string* error) {
+bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::vector<InstallWarning> install_warnings;
   const Manifest* manifest = extension->manifest();
 
@@ -193,10 +190,9 @@ bool OptionsPageManifestHandler::Parse(Extension* extension,
   return true;
 }
 
-bool OptionsPageManifestHandler::Validate(
-    const Extension* extension,
-    std::string* error,
-    std::vector<InstallWarning>* warnings) const {
+bool OptionsPageHandler::Validate(const Extension* extension,
+                                  std::string* error,
+                                  std::vector<InstallWarning>* warnings) const {
   // Validate path to the options page.  Don't check the URL for hosted apps,
   // because they are expected to refer to an external URL.
   if (!OptionsPageInfo::HasOptionsPage(extension) || extension->is_hosted_app())
@@ -213,7 +209,7 @@ bool OptionsPageManifestHandler::Validate(
   return true;
 }
 
-base::span<const char* const> OptionsPageManifestHandler::Keys() const {
+base::span<const char* const> OptionsPageHandler::Keys() const {
   static constexpr const char* kKeys[] = {keys::kOptionsPage, keys::kOptionsUI};
   return kKeys;
 }

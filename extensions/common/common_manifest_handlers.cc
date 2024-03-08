@@ -33,6 +33,7 @@
 #include "extensions/common/manifest_handlers/nacl_modules_handler.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
+#include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_handlers/replacement_apps.h"
 #include "extensions/common/manifest_handlers/requirements_info.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
@@ -44,6 +45,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
+#include "extensions/common/manifest_handlers/input_components_handler.h"
 #endif
 
 namespace extensions {
@@ -75,6 +77,9 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<HomepageURLHandler>());
   registry->RegisterHandler(std::make_unique<IconsHandler>());
   registry->RegisterHandler(std::make_unique<IncognitoHandler>());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterHandler(std::make_unique<InputComponentsHandler>());
+#endif
   registry->RegisterHandler(std::make_unique<KioskModeHandler>());
   registry->RegisterHandler(std::make_unique<MimeTypesHandlerParser>());
 #if BUILDFLAG(ENABLE_NACL)
@@ -82,6 +87,7 @@ void RegisterCommonManifestHandlers() {
 #endif
   registry->RegisterHandler(std::make_unique<OAuth2ManifestHandler>());
   registry->RegisterHandler(std::make_unique<OfflineEnabledHandler>());
+  registry->RegisterHandler(std::make_unique<OptionsPageHandler>());
   registry->RegisterHandler(std::make_unique<ReplacementAppsHandler>());
   registry->RegisterHandler(std::make_unique<RequirementsHandler>());
   registry->RegisterHandler(std::make_unique<SandboxedPageHandler>());

@@ -531,6 +531,12 @@ static_library("common") {
       "manifest_handlers/action_handlers_handler.h",
     ]
   }
+  if (is_chromeos_ash) {
+    sources += [
+      "manifest_handlers/input_components_handler.cc",
+      "manifest_handlers/input_components_handler.h",
+    ]
+  }
 }
 
 # NOTE: This is separate from ":common" because it depends on
@@ -612,6 +618,7 @@ source_set("unit_tests") {
     "manifest_handlers/extension_action_handler_unittest.cc",
     "manifest_handlers/extension_action_page_action_unittest.cc",
     "manifest_handlers/externally_connectable_unittest.cc",
+    "manifest_handlers/homepage_url_unittest.cc",
     "manifest_handlers/icons_handler_unittest.cc",
     "manifest_handlers/incognito_manifest_unittest.cc",
     "manifest_handlers/kiosk_mode_info_unittest.cc",
@@ -623,6 +630,7 @@ source_set("unit_tests") {
     "manifest_handlers/requirements_unittest.cc",
     "manifest_handlers/shared_module_manifest_unittest.cc",
     "manifest_handlers/trial_tokens_unittest.cc",
+    "manifest_handlers/update_url_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
     "mojom/message_port_mojom_traits_unittest.cc",

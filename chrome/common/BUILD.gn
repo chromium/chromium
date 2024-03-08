@@ -376,10 +376,6 @@ static_library("common_lib") {
   }
   if (is_chromeos_ash) {
     assert(enable_extensions)
-    sources += [
-      "extensions/api/input_ime/input_components_handler.cc",
-      "extensions/api/input_ime/input_components_handler.h",
-    ]
     public_deps += [ "//ash/keyboard/ui" ]
     deps += [ "//ash/constants" ]
   } else if (is_chromeos_lacros) {

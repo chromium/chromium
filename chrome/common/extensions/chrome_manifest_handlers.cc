@@ -20,15 +20,10 @@
 #include "chrome/common/extensions/manifest_handlers/natively_connectable_handler.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/extensions/manifest_handlers/theme_handler.h"
-#include "extensions/common/manifest_handlers/options_page_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/common/extensions/api/input_ime/input_components_handler.h"
 #endif
 
 namespace extensions {
@@ -42,7 +37,6 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<MinimumChromeVersionChecker>());
   registry->RegisterHandler(std::make_unique<NativelyConnectableHandler>());
   registry->RegisterHandler(std::make_unique<OmniboxHandler>());
-  registry->RegisterHandler(std::make_unique<OptionsPageManifestHandler>());
   registry->RegisterHandler(std::make_unique<SettingsOverridesHandler>());
   registry->RegisterHandler(std::make_unique<SidePanelManifestHandler>());
   registry->RegisterHandler(std::make_unique<StorageSchemaManifestHandler>());
@@ -56,10 +50,6 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<FileBrowserHandlerParser>());
   registry->RegisterHandler(
       std::make_unique<FileSystemProviderCapabilitiesHandler>());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterHandler(std::make_unique<InputComponentsHandler>());
 #endif
 }
 

@@ -68,15 +68,14 @@ class OptionsPageInfo : public Extension::ManifestData {
 };
 
 // Parses the "options_ui" manifest key and the legacy "options_page" key.
-class OptionsPageManifestHandler : public ManifestHandler {
+class OptionsPageHandler : public ManifestHandler {
  public:
-  OptionsPageManifestHandler();
+  OptionsPageHandler();
 
-  OptionsPageManifestHandler(const OptionsPageManifestHandler&) = delete;
-  OptionsPageManifestHandler& operator=(const OptionsPageManifestHandler&) =
-      delete;
+  OptionsPageHandler(const OptionsPageHandler&) = delete;
+  OptionsPageHandler& operator=(const OptionsPageHandler&) = delete;
 
-  ~OptionsPageManifestHandler() override;
+  ~OptionsPageHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,

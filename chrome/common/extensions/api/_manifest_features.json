@@ -63,20 +63,6 @@
       "extension", "legacy_packaged_app", "hosted_app"
     ]
   },
-  "event_rules": {
-    "channel": "stable",
-    // "event_rules" does not grant any capabilities, it's just
-    // an optimisation for any API which uses events, so it's safe
-    // to expose to all extension types.
-    "extension_types": [
-      "extension",
-      "legacy_packaged_app",
-      "platform_app",
-      "hosted_app",
-      "shared_module",
-      "theme"
-    ]
-  },
   "devtools_page": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -133,14 +119,6 @@
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
     ]
   }],
-  "homepage_url": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
-  "input_components": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
   "minimum_chrome_version": {
     "channel": "stable",
     "extension_types": [
@@ -165,20 +143,7 @@
       "chromeos_system_extension"
     ]
   },
-  "options_page": {
-    "channel": "stable",
-    "extension_types": [
-      "extension",
-      "legacy_packaged_app",
-      "hosted_app",
-      "chromeos_system_extension"
-    ]
-  },
   "platforms": {
-    "channel": "stable",
-    "extension_types": "all"
-  },
-  "short_name": {
     "channel": "stable",
     "extension_types": "all"
   },
@@ -217,10 +182,6 @@
   "tts_engine": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
-  },
-  "update_url": {
-    "channel": "stable",
-    "extension_types": "all"
   },
   "url_handlers": {
     "channel": "stable",
