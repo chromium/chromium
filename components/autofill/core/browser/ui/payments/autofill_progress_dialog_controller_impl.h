@@ -23,7 +23,12 @@ enum class AutofillProgressDialogType;
 class AutofillProgressDialogControllerImpl
     : public AutofillProgressDialogController {
  public:
-  AutofillProgressDialogControllerImpl();
+  // The `autofill_progress_dialog_type` determines the type of the progress
+  // dialog and `cancel_callback` is the function to invoke when the cancel
+  // button is clicked.
+  AutofillProgressDialogControllerImpl(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback);
 
   AutofillProgressDialogControllerImpl(
       const AutofillProgressDialogControllerImpl&) = delete;
@@ -34,14 +39,10 @@ class AutofillProgressDialogControllerImpl
 
   // Show a progress dialog for underlying authorization processes. The
   // `create_and_show_view_callback` will be invoked immediately to create a
-  // view implementation. The `autofill_progress_dialog_type` determines the
-  // type of the progress dialog and `cancel_callback` is the function to invoke
-  // when the cancel button is clicked.
+  // view implementation.
   void ShowDialog(
-      AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>
-          create_and_show_view_callback,
-      base::OnceClosure cancel_callback);
+          create_and_show_view_callback);
 
   // Dismisses the progress dialog after the underlying authorization processes
   // have completed. If `show_confirmation_before_closing` is true, the UI
@@ -75,12 +76,11 @@ class AutofillProgressDialogControllerImpl
   // View that displays the error dialog.
   base::WeakPtr<AutofillProgressDialogView> autofill_progress_dialog_view_;
 
+  // The type of the progress dialog that is being displayed.
+  const AutofillProgressDialogType autofill_progress_dialog_type_;
+
   // Callback function invoked when the cancel button is clicked.
   base::OnceClosure cancel_callback_;
-
-  // The type of the progress dialog that is being displayed.
-  AutofillProgressDialogType autofill_progress_dialog_type_ =
-      AutofillProgressDialogType::kUnspecified;
 
   base::OnceClosure no_interactive_authentication_callback_;
 

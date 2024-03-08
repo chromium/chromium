@@ -105,13 +105,12 @@ void ChromePaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
   autofill_progress_dialog_controller_ =
-      std::make_unique<AutofillProgressDialogControllerImpl>();
+      std::make_unique<AutofillProgressDialogControllerImpl>(
+          autofill_progress_dialog_type, std::move(cancel_callback));
   autofill_progress_dialog_controller_->ShowDialog(
-      autofill_progress_dialog_type,
       base::BindOnce(&CreateAndShowProgressDialog,
                      autofill_progress_dialog_controller_->GetWeakPtr(),
-                     base::Unretained(web_contents())),
-      std::move(cancel_callback));
+                     base::Unretained(web_contents())));
 }
 
 void ChromePaymentsAutofillClient::CloseAutofillProgressDialog(

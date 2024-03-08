@@ -49,11 +49,7 @@ class AutofillProgressDialogViewsBrowserTest
   }
 
   void ShowUi(const std::string& name) override {
-    controller()->ShowDialog(
-        GetDialogType(),
-        base::BindOnce(&CreateAndShowProgressDialog, controller()->GetWeakPtr(),
-                       base::Unretained(web_contents())),
-        base::DoNothing());
+    client()->ShowAutofillProgressDialog(GetDialogType(), base::DoNothing());
   }
 
   AutofillProgressDialogViews* GetDialogViews() {
@@ -68,13 +64,16 @@ class AutofillProgressDialogViewsBrowserTest
   }
 
   AutofillProgressDialogControllerImpl* controller() const {
+    return client()->AutofillProgressDialogControllerForTesting();
+  }
+
+  payments::ChromePaymentsAutofillClient* client() const {
     auto* client =
         ChromeAutofillClient::FromWebContentsForTesting(web_contents());
     // On Desktop and Clank, the PaymentsAutofillClient can only be a
     // ChromePaymentsAutofillClient.
     return static_cast<payments::ChromePaymentsAutofillClient*>(
-               client->GetPaymentsAutofillClient())
-        ->AutofillProgressDialogControllerForTesting();
+        client->GetPaymentsAutofillClient());
   }
 
   content::WebContents* web_contents() const {

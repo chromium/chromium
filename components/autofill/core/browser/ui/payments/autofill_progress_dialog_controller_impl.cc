@@ -11,8 +11,11 @@
 
 namespace autofill {
 
-AutofillProgressDialogControllerImpl::AutofillProgressDialogControllerImpl() =
-    default;
+AutofillProgressDialogControllerImpl::AutofillProgressDialogControllerImpl(
+    AutofillProgressDialogType autofill_progress_dialog_type,
+    base::OnceClosure cancel_callback)
+    : autofill_progress_dialog_type_(autofill_progress_dialog_type),
+      cancel_callback_(std::move(cancel_callback)) {}
 
 AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
   // This if-statement is entered in the case where the tab is closed. When the
@@ -27,21 +30,17 @@ AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
 }
 
 void AutofillProgressDialogControllerImpl::ShowDialog(
-    AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>
-        create_and_show_view_callback,
-    base::OnceClosure cancel_callback) {
+        create_and_show_view_callback) {
   if (autofill_progress_dialog_view_) {
     return;
   }
 
-  autofill_progress_dialog_type_ = autofill_progress_dialog_type;
-  cancel_callback_ = std::move(cancel_callback);
   autofill_progress_dialog_view_ =
       std::move(create_and_show_view_callback).Run();
 
   if (autofill_progress_dialog_view_) {
-    AutofillMetrics::LogProgressDialogShown(autofill_progress_dialog_type);
+    AutofillMetrics::LogProgressDialogShown(autofill_progress_dialog_type_);
   }
 }
 
@@ -74,7 +73,6 @@ void AutofillProgressDialogControllerImpl::OnDismissed(
 
   AutofillMetrics::LogProgressDialogResultMetric(
       is_canceled_by_user, autofill_progress_dialog_type_);
-  autofill_progress_dialog_type_ = AutofillProgressDialogType::kUnspecified;
   cancel_callback_.Reset();
 }
 

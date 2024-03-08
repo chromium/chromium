@@ -61,10 +61,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
-    if (!autofill_progress_dialog_controller_) {
-      autofill_progress_dialog_controller_ =
-          std::make_unique<AutofillProgressDialogControllerImpl>();
-    }
     return autofill_progress_dialog_controller_.get();
   }
 

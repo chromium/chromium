@@ -34,8 +34,13 @@ class TestAutofillProgressDialogView : public AutofillProgressDialogView {
 
 class AutofillProgressDialogControllerImplTest : public testing::Test {
  public:
-  AutofillProgressDialogControllerImplTest() {
-    controller_ = std::make_unique<AutofillProgressDialogControllerImpl>();
+  void ShowDialog() {
+    controller_ = std::make_unique<AutofillProgressDialogControllerImpl>(
+        AutofillProgressDialogType::kAndroidFIDOProgressDialog,
+        base::DoNothing());
+    controller_->ShowDialog(base::BindOnce(
+        &AutofillProgressDialogControllerImplTest::CreateDialogView,
+        base::Unretained(this)));
   }
 
   base::WeakPtr<AutofillProgressDialogView> CreateDialogView() {
@@ -58,12 +63,7 @@ TEST_F(AutofillProgressDialogControllerImplTest,
        ShowDialogNotCancelledByUserTest) {
   base::HistogramTester histogram_tester;
 
-  controller()->ShowDialog(
-      AutofillProgressDialogType::kAndroidFIDOProgressDialog,
-      base::BindOnce(
-          &AutofillProgressDialogControllerImplTest::CreateDialogView,
-          base::Unretained(this)),
-      base::DoNothing());
+  ShowDialog();
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProgressDialog.AndroidFIDO.Shown", true, 1);
@@ -77,12 +77,7 @@ TEST_F(AutofillProgressDialogControllerImplTest,
        ShowDialogAndCancelledByUserTest) {
   base::HistogramTester histogram_tester;
 
-  controller()->ShowDialog(
-      AutofillProgressDialogType::kAndroidFIDOProgressDialog,
-      base::BindOnce(
-          &AutofillProgressDialogControllerImplTest::CreateDialogView,
-          base::Unretained(this)),
-      base::DoNothing());
+  ShowDialog();
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProgressDialog.AndroidFIDO.Shown", true, 1);
