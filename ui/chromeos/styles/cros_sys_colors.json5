@@ -426,6 +426,10 @@
       light: '$cros.ref.neutral40',
       dark: '$cros.ref.neutral70',
     },
+    'inverse-whiteblack': {
+      light: '$cros.ref.neutral0',
+      dark: '$cros.ref.neutral100',
+    },
     'disabled': {
       light: 'rgba($cros.sys.on-surface.rgb, 0.38)',
       dark: 'rgba($cros.sys.on-surface.rgb, 0.38)',
