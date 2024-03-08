@@ -647,7 +647,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     while not ash_process_has_started and num_tries < total_tries:
       num_tries += 1
       ash_start_time = time.monotonic()
-      logging.info('Starting ash-chrome.')
+      logging.info('Starting ash-chrome: ' + ' '.join(ash_cmd))
 
       # Using preexec_fn=os.setpgrp here will detach the forked process from
       # this process group before exec-ing Ash. This prevents interactive
