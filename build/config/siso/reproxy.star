@@ -23,6 +23,7 @@ def __parse_rewrapper_cmdline(ctx, cmd):
     # Example command:
     #   ../../buildtools/reclient/rewrapper
     #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
+    #     -inputs=build/config/unsafe_buffers_paths.txt
     #     -exec_root=/path/to/your/chromium/src/
     #     ../../third_party/llvm-build/Release+Asserts/bin/clang++
     #     [rest of clang args]
@@ -110,6 +111,7 @@ def __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd):
     #     --files_to_instrument=...
     #     ../../buildtools/reclient/rewrapper
     #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
+    #     -inputs=build/config/unsafe_buffers_paths.txt
     #     -exec_root=/path/to/your/chromium/src/
     #     ../../third_party/llvm-build/Release+Asserts/bin/clang++
     #     [rest of clang args]
@@ -119,6 +121,8 @@ def __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd):
     rewrapper_pos = -1
     wrapped_command_pos = -1
     cfg_file = None
+    skip = None
+    rw_ops = {}
     for i, arg in enumerate(cmd.args):
         if i < 2:
             continue
@@ -127,6 +131,13 @@ def __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd):
             continue
         if rewrapper_pos > 0 and arg.startswith("-cfg="):
             cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
+            continue
+        if arg.startswith("-inputs=") or skip == "-inputs":
+            rw_ops["inputs"] = arg.removeprefix("-inputs=").split(",")
+            skip = ""
+            continue
+        if arg == "-inputs":
+            skip = arg
             continue
         if rewrapper_pos > 0 and not arg.startswith("-"):
             wrapped_command_pos = i
@@ -142,7 +153,11 @@ def __parse_clang_code_coverage_wrapper_cmdline(ctx, cmd):
     if len(clang_command) > 1 and "/chrome-sdk/" in clang_command[0]:
         # TODO: implement cros sdk support under code coverage wrapper
         fail("need to fix handler for cros sdk under code coverage wrapper")
-    return clang_command, rewrapper_cfg.parse(ctx, cfg_file)
+    rw_cfg_opts = rewrapper_cfg.parse(ctx, cfg_file)
+
+    # Command line options have higher priority than the ones in the cfg file.
+    rw_cfg_opts.update(rw_ops)
+    return clang_command, rw_cfg_opts
 
 def __rewrite_rewrapper(ctx, cmd, use_large = False):
     # If clang-coverage, needs different handling.
