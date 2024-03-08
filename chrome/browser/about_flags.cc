@@ -7184,6 +7184,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kCCTResizableSideSheetForThirdParties)},
+    {"cct-google-bottom-bar", flag_descriptions::kCCTGoogleBottomBarName,
+     flag_descriptions::kCCTGoogleBottomBarDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTGoogleBottomBar)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

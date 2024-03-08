@@ -3964,6 +3964,10 @@ const char kCCTPageInsightsHubBetterScrollName[] =
 const char kCCTPageInsightsHubBetterScrollDescription[] =
     "Resize Web content in sync with Page Insights sheet.";
 
+const char kCCTGoogleBottomBarName[] = "Google Bottom Bar";
+const char kCCTGoogleBottomBarDescription[] =
+    "Show bottom bar on Custom Tabs opened by the Android Google App.";
+
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =

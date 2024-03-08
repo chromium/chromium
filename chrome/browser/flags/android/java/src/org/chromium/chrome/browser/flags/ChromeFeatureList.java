@@ -217,6 +217,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
     public static final String CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL =
             "CCTPageInsightsHubBetterScroll";
+
+    public static final String CCT_GOOGLE_BOTTOM_BAR = "CCTGoogleBottomBar";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
@@ -536,6 +538,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctMinimized = newCachedFlag(CCT_MINIMIZED, false);
     public static final CachedFlag sCctPageInsightsHub =
             newCachedFlag(CCT_PAGE_INSIGHTS_HUB, false);
+    public static final CachedFlag sCctGoogleBottomBar =
+            newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctResizableSideSheet =
@@ -680,6 +684,7 @@ public abstract class ChromeFeatureList {
                     sCctIntentFeatureOverrides,
                     sCctMinimized,
                     sCctPageInsightsHub,
+                    sCctGoogleBottomBar,
                     sCctResizableForThirdParties,
                     sCctResizableSideSheet,
                     sCctResizableSideSheetForThirdParties,

@@ -55,6 +55,7 @@ BASE_DECLARE_FEATURE(kCCTMinimized);
 BASE_DECLARE_FEATURE(kCCTMinimizedEnabledByDefault);
 BASE_DECLARE_FEATURE(kCCTPageInsightsHub);
 BASE_DECLARE_FEATURE(kCCTPageInsightsHubBetterScroll);
+BASE_DECLARE_FEATURE(kCCTGoogleBottomBar);
 BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
