@@ -76,6 +76,10 @@ class WebFrameImpl : public WebFrame,
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
+  bool ExecuteJavaScriptInContentWorld(
+      const std::u16string& script,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) override;
 
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;

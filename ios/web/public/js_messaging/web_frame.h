@@ -24,6 +24,9 @@ class WebFrameInternal;
 // Default timeout in milliseconds for `CallJavaScriptFunction`.
 extern const double kJavaScriptFunctionCallDefaultTimeout;
 
+using ExecuteJavaScriptCallbackWithError =
+    base::OnceCallback<void(const base::Value*, NSError* error)>;
+
 class WebFrame : public base::SupportsUserData,
                  public base::SupportsWeakPtr<WebFrame> {
  public:
@@ -78,8 +81,6 @@ class WebFrame : public base::SupportsUserData,
       const std::u16string& script,
       base::OnceCallback<void(const base::Value*)> callback) = 0;
 
-  using ExecuteJavaScriptCallbackWithError =
-      base::OnceCallback<void(const base::Value*, NSError* error)>;
   // Executes the given `script` and returns whether the script was run.
   // If the script is successfully executed, `callback` is called with
   // the result. Otherwise, `callback` is called with the bool. The

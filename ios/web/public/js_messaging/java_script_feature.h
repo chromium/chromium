@@ -15,6 +15,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/content_world.h"
+#include "ios/web/public/js_messaging/web_frame.h"
 
 namespace base {
 class TimeDelta;
@@ -211,6 +212,15 @@ class JavaScriptFeature {
       const base::Value::List& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout);
+
+  // Use of this function is DISCOURAGED. Prefer the `CallJavaScriptFunction`
+  // family of functions instead to keep the API clear and well defined.
+  // Executes `script` in `web_frame` within the content world that this feature
+  // has been configured.
+  // See WebFrame::ExecuteJavaScript for more details on `callback`.
+  bool ExecuteJavaScript(WebFrame* web_frame,
+                         const std::u16string& script,
+                         ExecuteJavaScriptCallbackWithError callback);
 
   // Callback for script messages registered through `GetScriptMessageHandler`.
   // `ScriptMessageReceived` is called when `web_state` receives a `message`.

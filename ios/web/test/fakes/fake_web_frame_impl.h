@@ -80,6 +80,14 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
+  // The JavaScript call which would be executed by a real WebFrame will be
+  // added to `java_script_calls_`.
+  // `callback` will be executed with the value passed in to
+  // AddResultForExecutedJs() or null if no such result has been added.
+  bool ExecuteJavaScriptInContentWorld(
+      const std::u16string& script,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) override;
 
   ~FakeWebFrameImpl() override;
 

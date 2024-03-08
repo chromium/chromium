@@ -181,6 +181,18 @@ bool WebFrameImpl::ExecuteJavaScript(
 bool WebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     ExecuteJavaScriptCallbackWithError callback) {
+  JavaScriptContentWorld* content_world =
+      JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
+          GetBrowserState());
+
+  return ExecuteJavaScriptInContentWorld(script, content_world,
+                                         std::move(callback));
+}
+
+bool WebFrameImpl::ExecuteJavaScriptInContentWorld(
+    const std::u16string& script,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
   DCHECK(frame_info_);
 
   NSString* ns_script = base::SysUTF16ToNSString(script);
@@ -195,12 +207,13 @@ bool WebFrameImpl::ExecuteJavaScript(
     }
   };
 
-  web::ExecuteJavaScript(frame_info_.webView, WKContentWorld.pageWorld,
-                         frame_info_, ns_script, completion_handler);
+  web::ExecuteJavaScript(frame_info_.webView,
+                         content_world->GetWKContentWorld(), frame_info_,
+                         ns_script, completion_handler);
   return true;
 }
 
-WebFrame::ExecuteJavaScriptCallbackWithError
+ExecuteJavaScriptCallbackWithError
 WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
     base::OnceCallback<void(const base::Value*)> callback) {
   // Because blocks treat scoped-variables

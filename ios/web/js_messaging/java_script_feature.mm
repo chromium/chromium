@@ -232,4 +232,22 @@ bool JavaScriptFeature::CallJavaScriptFunction(
       function_name, parameters, content_world, std::move(callback), timeout);
 }
 
+bool JavaScriptFeature::ExecuteJavaScript(
+    WebFrame* web_frame,
+    const std::u16string& script,
+    ExecuteJavaScriptCallbackWithError callback) {
+  DCHECK(web_frame);
+
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
+  DCHECK(feature_manager);
+
+  JavaScriptContentWorld* content_world =
+      feature_manager->GetContentWorldForFeature(this);
+  DCHECK(content_world);
+
+  return web_frame->GetWebFrameInternal()->ExecuteJavaScriptInContentWorld(
+      script, content_world, std::move(callback));
+}
+
 }  // namespace web

@@ -179,6 +179,13 @@ bool FakeWebFrameImpl::ExecuteJavaScript(
   return !error;
 }
 
+bool FakeWebFrameImpl::ExecuteJavaScriptInContentWorld(
+    const std::u16string& script,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  return ExecuteJavaScript(script, std::move(callback));
+}
+
 void FakeWebFrameImpl::AddJsResultForFunctionCall(
     base::Value* js_result,
     const std::string& function_name) {
