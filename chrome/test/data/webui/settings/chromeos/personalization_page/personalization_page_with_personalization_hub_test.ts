@@ -4,10 +4,10 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {PersonalizationHubBrowserProxyImpl, SettingsPersonalizationPageElement} from 'chrome://os-settings/os_settings.js';
+import {PersonalizationHubBrowserProxyImpl, Router, routes, settingMojom, SettingsPersonalizationPageElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.js';
@@ -21,6 +21,22 @@ suite('<settings-personalization-page>', () => {
         document.createElement('settings-personalization-page');
     document.body.appendChild(personalizationPage);
     await flushTasks();
+  }
+
+  async function deepLinkToSetting(setting: settingMojom.Setting):
+      Promise<void> {
+    const settingId = setting.toString();
+    const params = new URLSearchParams();
+    params.append('settingId', settingId);
+    Router.getInstance().navigateTo(routes.PERSONALIZATION, params);
+    await flushTasks();
+  }
+
+  async function assertElementIsDeepLinked(element: HTMLElement):
+      Promise<void> {
+    assertTrue(isVisible(element));
+    await waitAfterNextRender(element);
+    assertEquals(element, personalizationPage.shadowRoot!.activeElement);
   }
 
   suiteSetup(() => {
@@ -82,4 +98,17 @@ suite('<settings-personalization-page>', () => {
             isVisible(multitaskingSettingsSubsection),
             'Multitasking settings subsection should not be visible.');
       });
+
+  test('Multitasking settings subsection is deep-linkable', async () => {
+    loadTimeData.overrideValues(
+        {shouldShowMultitaskingInPersonalization: true});
+    await createPersonalizationPage();
+    await deepLinkToSetting(settingMojom.Setting.kSnapWindowSuggestions);
+
+    const multitaskingSettingsSubsection =
+        personalizationPage.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#snapWindowSuggestionsSubsection');
+    assertTrue(!!multitaskingSettingsSubsection);
+    await assertElementIsDeepLinked(multitaskingSettingsSubsection);
+  });
 });

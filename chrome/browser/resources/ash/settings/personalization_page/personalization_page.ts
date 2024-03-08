@@ -15,15 +15,21 @@ import '../settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled, shouldShowMultitaskingInPersonalization} from '../common/load_time_booleans.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {Route, routes} from '../router.js';
 
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
 import {getTemplate} from './personalization_page.html.js';
 
-const SettingsPersonalizationPageElementBase = I18nMixin(PolymerElement);
+const SettingsPersonalizationPageElementBase =
+    DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsPersonalizationPageElement extends
     SettingsPersonalizationPageElementBase {
@@ -56,6 +62,16 @@ export class SettingsPersonalizationPageElement extends
           return shouldShowMultitaskingInPersonalization();
         },
       },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kSnapWindowSuggestions,
+        ]),
+      },
     };
   }
 
@@ -81,12 +97,16 @@ export class SettingsPersonalizationPageElement extends
     this.personalizationHubBrowserProxy_.openPersonalizationHub();
   }
 
-  private getWindowSuggestionsLabelText_(): string {
-    return this.i18n('snapWindowLabel');
-  }
+  /**
+   * Overridden from DeepLinkingMixin.
+   */
+  override currentRouteChanged(route: Route): void {
+    // Does not apply to the personalization page.
+    if (route !== routes.PERSONALIZATION) {
+      return;
+    }
 
-  private getWindowSuggestionsDescriptionText_(): string {
-    return this.i18n('snapWindowDescription');
+    this.attemptDeepLink();
   }
 }
 

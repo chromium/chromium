@@ -478,8 +478,11 @@ ash::DeskProfilesDelegate* ChromeShellDelegate::GetDeskProfilesDelegate() {
 }
 
 void ChromeShellDelegate::OpenMultitaskingSettings() {
+  const auto& sub_page_path =
+      ash::features::IsOsSettingsRevampWayfindingEnabled()
+          ? chromeos::settings::mojom::kSystemPreferencesSectionPath
+          : chromeos::settings::mojom::kPersonalizationSectionPath;
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kSystemPreferencesSectionPath,
+      ProfileManager::GetActiveUserProfile(), sub_page_path,
       chromeos::settings::mojom::Setting::kSnapWindowSuggestions);
 }

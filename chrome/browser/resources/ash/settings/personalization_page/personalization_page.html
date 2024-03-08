@@ -14,8 +14,9 @@
       <template is="dom-if" if="[[shouldShowMultitaskingInPersonalization_]]">
         <settings-toggle-button id="snapWindowSuggestionsSubsection"
           pref="{{prefs.ash.snap_window_suggestions.enabled}}"
-          label="[[getWindowSuggestionsLabelText_()]]"
-          sub-label="[[getWindowSuggestionsDescriptionText_()]]">
+          label="$i18n{snapWindowLabel}"
+          sub-label="$i18n{snapWindowDescription}"
+          deep-link-focus-id$="[[Setting.kSnapWindowSuggestions]]">
         </settings-toggle-button>
       </template>
     </settings-card>
