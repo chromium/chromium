@@ -19,13 +19,20 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,19 +46,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -67,6 +74,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -155,8 +163,6 @@ public class SyncConsentFragmentTest {
         }
     }
 
-    @Rule public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -183,6 +189,9 @@ public class SyncConsentFragmentTest {
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
+
+    // Needed so proguard doesn't mess up mocking.
+    @Mock private SigninManagerImpl mUnused;
 
     private SyncConsentActivity mSyncConsentActivity;
 
@@ -1218,6 +1227,98 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "sync_consent_fragment_with_no_accounts");
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+    public void testManagedAccount_confirmed() throws Exception {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
+
+        SigninManager signinManager =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return IdentityServicesProvider.get()
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                        });
+        IdentityServicesProvider spyProvider = Mockito.spy(IdentityServicesProvider.get());
+        SigninManager spySigninManager = Mockito.spy(signinManager);
+        IdentityServicesProvider.setInstanceForTests(spyProvider);
+
+        doReturn(spySigninManager).when(spyProvider).getSigninManager(any());
+        doAnswer(
+                        invocation -> {
+                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+                            return null;
+                        })
+                .when(spySigninManager)
+                .isAccountManaged(eq(accountInfo), any());
+
+        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
+        View moreButton = mSyncConsentActivity.findViewById(R.id.more_button);
+        if (moreButton != null && moreButton.isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        // Wait for the sync consent to be set.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return IdentityServicesProvider.get()
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+                });
+        assertTrue(
+                TestThreadUtils.runOnUiThreadBlocking(
+                        signinManager::getUserAcceptedAccountManagement));
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+    public void testManagedAccount_failedSignin() throws Exception {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
+
+        SigninManager signinManager =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return IdentityServicesProvider.get()
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                        });
+        IdentityServicesProvider spyProvider = Mockito.spy(IdentityServicesProvider.get());
+        SigninManager spySigninManager = Mockito.spy(signinManager);
+        IdentityServicesProvider.setInstanceForTests(spyProvider);
+
+        doReturn(spySigninManager).when(spyProvider).getSigninManager(any());
+        doAnswer(
+                        invocation -> {
+                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+                            return null;
+                        })
+                .when(spySigninManager)
+                .isAccountManaged(eq(accountInfo), any());
+        doAnswer(
+                        invocation -> {
+                            ((SigninManager.SignInCallback) invocation.getArgument(2))
+                                    .onSignInAborted();
+                            return null;
+                        })
+                .when(spySigninManager)
+                .signinAndEnableSync(eq(accountInfo), anyInt(), any());
+
+        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
+        View moreButton = mSyncConsentActivity.findViewById(R.id.more_button);
+        if (moreButton != null && moreButton.isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        assertFalse(
+                TestThreadUtils.runOnUiThreadBlocking(
+                        signinManager::getUserAcceptedAccountManagement));
     }
 
     private void simulateDeviceLockReadyOnAutomotive() {

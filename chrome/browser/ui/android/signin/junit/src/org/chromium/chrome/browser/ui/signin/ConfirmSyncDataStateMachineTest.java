@@ -53,6 +53,9 @@ public class ConfirmSyncDataStateMachineTest {
 
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackArgument;
 
+    @Captor
+    private ArgumentCaptor<ConfirmManagedSyncDataDialogCoordinator.Listener> mListenerArgument;
+
     private final String mOldAccountName = "old.account.test@testdomain.com";
 
     private final String mNewAccountName = "new.account.test@testdomain.com";
@@ -129,7 +132,7 @@ public class ConfirmSyncDataStateMachineTest {
                 new ConfirmSyncDataStateMachine(
                         mProfile, mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock).dismissAllDialogs();
-        verify(mStateMachineListenerMock).onConfirm(false);
+        verify(mStateMachineListenerMock).onConfirm(false, false);
     }
 
     @Test
@@ -140,9 +143,9 @@ public class ConfirmSyncDataStateMachineTest {
                 new ConfirmSyncDataStateMachine(
                         mProfile, mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock)
-                .showSignInToManagedAccountDialog(
-                        any(ConfirmManagedSyncDataDialogCoordinator.Listener.class),
-                        eq(mNewAccountName));
+                .showSignInToManagedAccountDialog(mListenerArgument.capture(), eq(mNewAccountName));
+        mListenerArgument.getValue().onConfirm();
+        verify(mStateMachineListenerMock).onConfirm(false, true);
     }
 
     @Test
@@ -161,8 +164,9 @@ public class ConfirmSyncDataStateMachineTest {
         Callback<Boolean> callback = mCallbackArgument.getValue();
         callback.onResult(true);
         verify(mDelegateMock)
-                .showSignInToManagedAccountDialog(
-                        any(ConfirmManagedSyncDataDialogCoordinator.Listener.class), eq(domain));
+                .showSignInToManagedAccountDialog(mListenerArgument.capture(), eq(domain));
+        mListenerArgument.getValue().onConfirm();
+        verify(mStateMachineListenerMock).onConfirm(false, true);
     }
 
     @Test

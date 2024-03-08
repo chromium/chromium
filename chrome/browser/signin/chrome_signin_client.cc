@@ -466,6 +466,8 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
   }
 #endif
 
+// Android allows signing out of Managed accounts.
+#if !BUILDFLAG(IS_ANDROID)
   // Check if managed user.
   if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
     if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
@@ -479,6 +481,7 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
       return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
     }
   }
+#endif
   return SigninClient::SignoutDecision::ALLOW;
 }
 

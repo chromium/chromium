@@ -72,11 +72,13 @@ public class ConfirmSyncDataStateMachine
      */
     public interface Listener {
         /**
-         * The state machine has completed and the state is done, or all necessary
-         * confirmations were given and the sign-in flow can proceed.
+         * The state machine has completed and the state is done, or all necessary confirmations
+         * were given and the sign-in flow can proceed.
+         *
          * @param wipeData Whether the user requested that existing data should be wiped.
+         * @param acceptedAccountManagement Whether the user accepted account management.
          */
-        void onConfirm(boolean wipeData);
+        void onConfirm(boolean wipeData, boolean acceptedAccountManagement);
 
         /**
          * The state machine is cancelled or the user cancels the sign-in process
@@ -182,7 +184,7 @@ public class ConfirmSyncDataStateMachine
                 break;
             case State.AFTER_NEW_ACCOUNT_DIALOG:
                 mState = State.DONE;
-                mListener.onConfirm(mWipeData);
+                mListener.onConfirm(mWipeData, mNewAccountManaged);
                 break;
             case State.DONE:
                 throw new IllegalStateException("Can't progress from DONE state!");

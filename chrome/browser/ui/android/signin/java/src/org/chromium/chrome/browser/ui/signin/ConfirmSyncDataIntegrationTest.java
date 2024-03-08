@@ -125,7 +125,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         startConfirmSyncFlow(OLD_ACCOUNT_NAME, NEW_ACCOUNT_NAME);
         onView(withId(R.id.sync_keep_separate_choice)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.continue_button)).perform(click());
-        verify(mListenerMock).onConfirm(true);
+        verify(mListenerMock).onConfirm(true, false);
         verify(mListenerMock, never()).onCancel();
     }
 
@@ -136,7 +136,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         startConfirmSyncFlow(OLD_ACCOUNT_NAME, NEW_ACCOUNT_NAME);
         onView(withId(R.id.sync_keep_separate_choice)).inRoot(isDialog()).perform(click());
         onView(isRoot()).perform(pressBack());
-        verify(mListenerMock, never()).onConfirm(anyBoolean());
+        verify(mListenerMock, never()).onConfirm(anyBoolean(), anyBoolean());
         verify(mListenerMock).onCancel();
     }
 
@@ -151,7 +151,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         onView(withId(R.id.sync_confirm_import_choice)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.continue_button)).perform(click());
         onView(withText(R.string.policy_dialog_proceed)).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onConfirm(false);
+        verify(mListenerMock).onConfirm(false, true);
         verify(mListenerMock, never()).onCancel();
     }
 
@@ -166,7 +166,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         onView(withId(R.id.sync_keep_separate_choice)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.continue_button)).perform(click());
         onView(isRoot()).perform(pressBack());
-        verify(mListenerMock, never()).onConfirm(anyBoolean());
+        verify(mListenerMock, never()).onConfirm(anyBoolean(), anyBoolean());
         verify(mListenerMock).onCancel();
     }
 
@@ -177,7 +177,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         startConfirmSyncFlow(OLD_ACCOUNT_NAME, OLD_ACCOUNT_NAME);
         onView(withId(R.id.sync_import_data_prompt)).check(doesNotExist());
         onView(withText(R.string.sign_in_managed_account)).check(doesNotExist());
-        verify(mListenerMock).onConfirm(false);
+        verify(mListenerMock).onConfirm(false, false);
         verify(mListenerMock, never()).onCancel();
     }
 
@@ -190,7 +190,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
                 .thenReturn(MANAGED_DOMAIN);
         startConfirmSyncFlow("", managedNewAccountName);
         onView(withText(R.string.policy_dialog_proceed)).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onConfirm(false);
+        verify(mListenerMock).onConfirm(false, true);
         verify(mListenerMock, never()).onCancel();
     }
 
