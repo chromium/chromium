@@ -70,7 +70,7 @@ class SaveUpdateAddressProfileMessageController {
   void DismissMessage();
 
   void RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+      AutofillClient::AddressPromptUserDecision decision);
 
   bool UserSignedIn() const;
   std::u16string GetTitle();

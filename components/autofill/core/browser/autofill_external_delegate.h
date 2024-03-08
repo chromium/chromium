@@ -141,9 +141,8 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   void ShowDeleteAddressProfileDialog(const std::string& guid);
 
   // Triggered when the user closes the address editor dialog.
-  void OnAddressEditorClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      base::optional_ref<const AutofillProfile> profile);
+  void OnAddressEditorClosed(AutofillClient::AddressPromptUserDecision decision,
+                             base::optional_ref<const AutofillProfile> profile);
 
   // Triggered when the user closes the delete address profile dialog.
   void OnDeleteDialogClosed(const std::string& guid, bool user_accepted_delete);

@@ -471,11 +471,11 @@ TEST_F(CWVAutofillControllerTest, AutoSaveNewAutofillProfile) {
   auto new_profile = autofill::test::GetFullProfile();
   __block BOOL decision_handler_called = NO;
   auto callback = base::BindOnce(
-      ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      ^(autofill::AutofillClient::AddressPromptUserDecision decision,
         base::optional_ref<const autofill::AutofillProfile> profile) {
-        EXPECT_EQ(autofill::AutofillClient::
-                      SaveAddressProfileOfferUserDecision::kUserNotAsked,
-                  decision);
+        EXPECT_EQ(
+            autofill::AutofillClient::AddressPromptUserDecision::kUserNotAsked,
+            decision);
         EXPECT_EQ(new_profile, profile.value());
         decision_handler_called = YES;
       });
@@ -507,15 +507,14 @@ TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
                            return YES;
                          }]]);
   __block BOOL decision_handler_called = NO;
-  auto callback = base::BindOnce(
-      ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
-        base::optional_ref<const autofill::AutofillProfile> profile) {
-        EXPECT_EQ(autofill::AutofillClient::
-                      SaveAddressProfileOfferUserDecision::kAccepted,
-                  decision);
-        EXPECT_EQ(new_profile, profile.value());
-        decision_handler_called = YES;
-      });
+  auto callback = base::BindOnce(^(
+      autofill::AutofillClient::AddressPromptUserDecision decision,
+      base::optional_ref<const autofill::AutofillProfile> profile) {
+    EXPECT_EQ(autofill::AutofillClient::AddressPromptUserDecision::kAccepted,
+              decision);
+    EXPECT_EQ(new_profile, profile.value());
+    decision_handler_called = YES;
+  });
   [autofill_controller_ confirmSaveAddressProfile:new_profile
                                   originalProfile:nil
                                          callback:std::move(callback)];

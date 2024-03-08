@@ -40,7 +40,7 @@ class MockEditAddressProfileDialogController
   MOCK_METHOD(bool, GetIsValidatable, (), (const, override));
   MOCK_METHOD(void,
               OnDialogClosed,
-              (AutofillClient::SaveAddressProfileOfferUserDecision decision,
+              (AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile),
               (override));
 };
@@ -143,10 +143,9 @@ TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedFullname) {
 
   EXPECT_CALL(
       *mock_controller(),
-      OnDialogClosed(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          AutofillProfileHasInfo(autofill::FieldType::NAME_FULL,
-                                 kNewFirstName)));
+      OnDialogClosed(AutofillClient::AddressPromptUserDecision::kEditAccepted,
+                     AutofillProfileHasInfo(autofill::FieldType::NAME_FULL,
+                                            kNewFirstName)));
   dialog()->Accept();
 }
 
@@ -172,7 +171,7 @@ TEST_F(EditAddressProfileViewTest,
   EXPECT_CALL(
       *mock_controller(),
       OnDialogClosed(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
+          AutofillClient::AddressPromptUserDecision::kEditAccepted,
           AutofillProfileHasInfo(autofill::FieldType::PHONE_HOME_WHOLE_NUMBER,
                                  kNewPhoneNumber)));
   dialog()->Accept();
@@ -194,10 +193,9 @@ TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedEmail) {
 
   EXPECT_CALL(
       *mock_controller(),
-      OnDialogClosed(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          AutofillProfileHasInfo(autofill::FieldType::EMAIL_ADDRESS,
-                                 kNewEmail)));
+      OnDialogClosed(AutofillClient::AddressPromptUserDecision::kEditAccepted,
+                     AutofillProfileHasInfo(autofill::FieldType::EMAIL_ADDRESS,
+                                            kNewEmail)));
   dialog()->Accept();
 }
 

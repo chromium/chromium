@@ -33,8 +33,7 @@ void SaveUpdateAddressProfileFlowManager::OfferSave(
   if (save_update_address_profile_message_controller_.IsMessageDisplayed() ||
       save_update_address_profile_prompt_controller_) {
     std::move(callback).Run(
-        AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-        std::nullopt);
+        AutofillClient::AddressPromptUserDecision::kAutoDeclined, std::nullopt);
     return;
   }
 

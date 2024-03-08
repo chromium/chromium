@@ -202,7 +202,7 @@ class AutofillClient {
     kFido = 2,
   };
 
-  enum class SaveAddressProfileOfferUserDecision {
+  enum class AddressPromptUserDecision {
     kUndefined,
     // No prompt is shown and no decision is needed to proceed with the process.
     kUserNotAsked,
@@ -375,7 +375,7 @@ class AutofillClient {
   // edited version of the profile should be passed as the second parameter. No
   // Autofill profile is passed otherwise.
   using AddressProfileSavePromptCallback =
-      base::OnceCallback<void(SaveAddressProfileOfferUserDecision,
+      base::OnceCallback<void(AddressPromptUserDecision,
                               base::optional_ref<const AutofillProfile>)>;
 
   // The callback accepts the boolean parameter indicating whether the user has

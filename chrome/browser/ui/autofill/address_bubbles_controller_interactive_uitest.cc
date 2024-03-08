@@ -35,23 +35,20 @@ class BaseAddressBubblesControllerTest
 
   InteractiveTestApi::StepBuilder ShowInitBubble() {
     return Do([this]() {
-      user_decision_ =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined;
+      user_decision_ = AutofillClient::AddressPromptUserDecision::kUndefined;
       TriggerBubble();
     });
   }
 
   InteractiveTestApi::StepBuilder EnsureClosedWithDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision
-          expected_user_decision) {
+      AutofillClient::AddressPromptUserDecision expected_user_decision) {
     return Do([this, expected_user_decision]() {
       ASSERT_EQ(expected_user_decision, user_decision_);
     });
   }
 
-  void OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      base::optional_ref<const AutofillProfile> profile) {
+  void OnUserDecision(AutofillClient::AddressPromptUserDecision decision,
+                      base::optional_ref<const AutofillProfile> profile) {
     user_decision_ = decision;
   }
 
@@ -59,7 +56,7 @@ class BaseAddressBubblesControllerTest
   // The latest user decisive interaction with a popup, e.g. Save/Update
   // or Cancel the prompt, it is set in the AddressProfileSavePromptCallback
   // passed to the prompt.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision_;
+  AutofillClient::AddressPromptUserDecision user_decision_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,19 +73,17 @@ class SaveAddressProfileTest: public BaseAddressBubblesControllerTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveAccept) {
-  RunTestSequence(
-      ShowInitBubble(),
-      PressButton(views::DialogClientView::kOkButtonElementId),
-      EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+  RunTestSequence(ShowInitBubble(),
+                  PressButton(views::DialogClientView::kOkButtonElementId),
+                  EnsureClosedWithDecision(
+                      AutofillClient::AddressPromptUserDecision::kAccepted));
 }
 
 IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveDecline) {
-  RunTestSequence(
-      ShowInitBubble(),
-      PressButton(views::DialogClientView::kCancelButtonElementId),
-      EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+  RunTestSequence(ShowInitBubble(),
+                  PressButton(views::DialogClientView::kCancelButtonElementId),
+                  EnsureClosedWithDecision(
+                      AutofillClient::AddressPromptUserDecision::kDeclined));
 }
 
 IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveWithEdit) {
@@ -110,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveWithEdit) {
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForHide(SaveAddressProfileView::kTopViewId),
       EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+          AutofillClient::AddressPromptUserDecision::kAccepted));
 }
 
 IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveInEdit) {
@@ -125,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveInEdit) {
           WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
 
       EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted));
+          AutofillClient::AddressPromptUserDecision::kEditAccepted));
 }
 
 IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveCloseAndOpenAgain) {
@@ -188,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(UpdateAddressProfileTest, UpdateThroughEdit) {
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForHide(UpdateAddressProfileView::kTopViewId),
       EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+          AutofillClient::AddressPromptUserDecision::kAccepted));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -225,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(UpdateAccountAddressProfileTest, UpdateThroughEdit) {
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForHide(UpdateAddressProfileView::kTopViewId),
       EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+          AutofillClient::AddressPromptUserDecision::kAccepted));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,11 +238,10 @@ class MigrateToProfileAddressProfileTest: public BaseAddressBubblesControllerTes
 };
 
 IN_PROC_BROWSER_TEST_F(MigrateToProfileAddressProfileTest, SaveDecline) {
-  RunTestSequence(
-      ShowInitBubble(),
-      PressButton(views::DialogClientView::kCancelButtonElementId),
-      EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kNever));
+  RunTestSequence(ShowInitBubble(),
+                  PressButton(views::DialogClientView::kCancelButtonElementId),
+                  EnsureClosedWithDecision(
+                      AutofillClient::AddressPromptUserDecision::kNever));
 }
 
 IN_PROC_BROWSER_TEST_F(MigrateToProfileAddressProfileTest, SaveWithEdit) {
@@ -269,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(MigrateToProfileAddressProfileTest, SaveWithEdit) {
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForHide(SaveAddressProfileView::kTopViewId),
       EnsureClosedWithDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+          AutofillClient::AddressPromptUserDecision::kAccepted));
 }
 
 }  // namespace autofill

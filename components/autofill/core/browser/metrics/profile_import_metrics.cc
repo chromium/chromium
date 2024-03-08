@@ -15,30 +15,30 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
-const char* GetSaveAndUpdatePromptDecisionMetricsSuffix(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+const char* GetAddressPromptDecisionMetricsSuffix(
+    AutofillClient::AddressPromptUserDecision decision) {
   switch (decision) {
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined:
+    case AutofillClient::AddressPromptUserDecision::kUndefined:
       return ".Undefined";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked:
+    case AutofillClient::AddressPromptUserDecision::kUserNotAsked:
       return ".UserNotAsked";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted:
+    case AutofillClient::AddressPromptUserDecision::kAccepted:
       return ".Accepted";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined:
+    case AutofillClient::AddressPromptUserDecision::kDeclined:
       return ".Declined";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted:
+    case AutofillClient::AddressPromptUserDecision::kEditAccepted:
       return ".EditAccepted";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined:
+    case AutofillClient::AddressPromptUserDecision::kEditDeclined:
       return ".EditDeclined";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kNever:
+    case AutofillClient::AddressPromptUserDecision::kNever:
       return ".Never";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored:
+    case AutofillClient::AddressPromptUserDecision::kIgnored:
       return ".Ignored";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout:
+    case AutofillClient::AddressPromptUserDecision::kMessageTimeout:
       return ".MessageTimeout";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined:
+    case AutofillClient::AddressPromptUserDecision::kMessageDeclined:
       return ".MessageDeclined";
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined:
+    case AutofillClient::AddressPromptUserDecision::kAutoDeclined:
       return ".AutoDeclined";
   }
   NOTREACHED();
@@ -51,7 +51,7 @@ void LogAddressProfileImportUkm(
     ukm::UkmRecorder* ukm_recorder,
     ukm::SourceId source_id,
     AutofillProfileImportType import_type,
-    AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
+    AutofillClient::AddressPromptUserDecision user_decision,
     const ProfileImportMetadata& profile_import_metadata,
     size_t num_edited_fields) {
   ukm::builders::Autofill_AddressProfileImport(source_id)
@@ -114,13 +114,13 @@ void LogSilentUpdatesProfileImportType(AutofillProfileImportType import_type) {
 }
 
 void LogNewProfileImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileDecision",
                                 decision);
 }
 
 void LogProfileUpdateImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
                                 decision);
 }
@@ -158,11 +158,11 @@ void LogNewProfileNumberOfEditedFields(int number_of_edited_fields) {
 
 void LogProfileUpdateAffectedType(
     FieldType affected_type,
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   // Record the decision-specific metric.
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.ProfileImport.UpdateProfileAffectedType",
-                    GetSaveAndUpdatePromptDecisionMetricsSuffix(decision)}),
+                    GetAddressPromptDecisionMetricsSuffix(decision)}),
       ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
 
   // But also collect an histogram for any decision.
@@ -185,12 +185,12 @@ void LogUpdateProfileNumberOfEditedFields(int number_of_edited_fields) {
 
 void LogUpdateProfileNumberOfAffectedFields(
     int number_of_edited_fields,
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   // Record the decision-specific metric.
   base::UmaHistogramExactLinear(
       base::StrCat(
           {"Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields",
-           GetSaveAndUpdatePromptDecisionMetricsSuffix(decision)}),
+           GetAddressPromptDecisionMetricsSuffix(decision)}),
       number_of_edited_fields, /*exclusive_max=*/15);
 
   // But also collect an histogram for any decision.
@@ -200,7 +200,7 @@ void LogUpdateProfileNumberOfAffectedFields(
 }
 
 void LogProfileMigrationImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.MigrateProfileDecision",
                                 decision);
 }

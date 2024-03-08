@@ -218,14 +218,14 @@ std::u16string SaveAddressBubbleController::GetOkButtonLabel() const {
           : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
 }
 
-AutofillClient::SaveAddressProfileOfferUserDecision
+AutofillClient::AddressPromptUserDecision
 SaveAddressBubbleController::GetCancelCallbackValue() const {
   // The migration prompt should not be shown again if the user explicitly
   // rejects it (for a particular address, due to legal and privacy
   // requirements). In other cases it is acceptable to show it a few times more.
   return is_migration_to_account_
-             ? AutofillClient::SaveAddressProfileOfferUserDecision::kNever
-             : AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined;
+             ? AutofillClient::AddressPromptUserDecision::kNever
+             : AutofillClient::AddressPromptUserDecision::kDeclined;
 }
 
 std::u16string SaveAddressBubbleController::GetFooterMessage() const {
@@ -257,7 +257,7 @@ std::u16string SaveAddressBubbleController::GetEditorFooterMessage() const {
 }
 
 void SaveAddressBubbleController::OnUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
   if (delegate_) {
     delegate_->OnUserDecision(decision, profile);

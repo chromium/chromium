@@ -180,10 +180,9 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
   controller_->DisplayPrompt();
 
-  EXPECT_CALL(
-      decision_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(decision_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kAccepted,
+                  Property(&profile_ref::has_value, false)));
   controller_->OnUserAccepted(env_, mock_caller_);
 }
 
@@ -192,10 +191,9 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   SetUpController(/*is_update=*/false, /*is_migration_to_account=*/false);
   controller_->DisplayPrompt();
 
-  EXPECT_CALL(
-      decision_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(decision_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kDeclined,
+                  Property(&profile_ref::has_value, false)));
   controller_->OnUserDeclined(env_, mock_caller_);
 }
 
@@ -206,7 +204,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   EXPECT_CALL(decision_callback_,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kNever,
+              Run(AutofillClient::AddressPromptUserDecision::kNever,
                   Property(&profile_ref::has_value, false)));
   controller_->OnUserDeclined(env_, mock_caller_);
 }
@@ -217,11 +215,10 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   AutofillProfile edited_profile = GetFullProfileWithVerifiedData();
-  EXPECT_CALL(
-      decision_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          AllOf(Property(&profile_ref::has_value, true),
-                Property(&profile_ref::value, edited_profile))));
+  EXPECT_CALL(decision_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
+                  AllOf(Property(&profile_ref::has_value, true),
+                        Property(&profile_ref::value, edited_profile))));
   base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
       edited_profile.CreateJavaObject(
           g_browser_process->GetApplicationLocale());
@@ -246,7 +243,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   EXPECT_CALL(decision_callback_,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                   Property(&profile_ref::has_value, false)));
   controller_.reset();
 }

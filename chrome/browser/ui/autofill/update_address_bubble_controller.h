@@ -40,7 +40,7 @@ class UpdateAddressBubbleController : public content::WebContentsObserver {
   // explicitly (e.g. by pressing the cancel button) or implicitly (e.g. by
   // ignoring the bubble and eventually closing the tab).
   virtual void OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> profile);
   // Called by the view when the address proposed for saving needs to be
   // modified, the user presses the edit button for it.

@@ -40,7 +40,7 @@ class MockUpdateAddressBubbleController : public UpdateAddressBubbleController {
               (const, override));
   MOCK_METHOD(void,
               OnUserDecision,
-              (AutofillClient::SaveAddressProfileOfferUserDecision,
+              (AutofillClient::AddressPromptUserDecision,
                base::optional_ref<const AutofillProfile>),
               (override));
   MOCK_METHOD(void, OnEditButtonClicked, (), (override));
@@ -132,9 +132,8 @@ TEST_F(UpdateAddressProfileViewTest, AcceptInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(
       *mock_controller(),
-      OnUserDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          Property(&profile_ref::has_value, false)));
+      OnUserDecision(AutofillClient::AddressPromptUserDecision::kAccepted,
+                     Property(&profile_ref::has_value, false)));
   view()->AcceptDialog();
 }
 
@@ -142,9 +141,8 @@ TEST_F(UpdateAddressProfileViewTest, CancelInvokesTheController) {
   CreateViewAndShow();
   EXPECT_CALL(
       *mock_controller(),
-      OnUserDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          Property(&profile_ref::has_value, false)));
+      OnUserDecision(AutofillClient::AddressPromptUserDecision::kDeclined,
+                     Property(&profile_ref::has_value, false)));
   view()->CancelDialog();
 }
 

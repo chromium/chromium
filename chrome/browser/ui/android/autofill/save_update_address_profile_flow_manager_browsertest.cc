@@ -76,10 +76,9 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       another_save_callback;
   AutofillProfile another_profile = test::GetFullProfile2();
-  EXPECT_CALL(
-      another_save_callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(another_save_callback,
+              Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
+                  Property(&profile_ref::has_value, false)));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr, kNotMigrationToAccount,
                            another_save_callback.Get());
@@ -100,10 +99,9 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       another_save_callback;
   AutofillProfile another_profile = test::GetFullProfile2();
-  EXPECT_CALL(
-      another_save_callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(another_save_callback,
+              Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
+                  Property(&profile_ref::has_value, false)));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr, kNotMigrationToAccount,
                            another_save_callback.Get());

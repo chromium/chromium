@@ -19,7 +19,7 @@ namespace autofill {
 
 namespace {
 
-using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
+using UserDecision = AutofillClient::AddressPromptUserDecision;
 
 // When the profile is observed without explicit country information, Autofill
 // guesses it's country. Detecting a profile as a duplicate can fail if we guess

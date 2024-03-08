@@ -49,10 +49,10 @@ EditAddressProfileView::EditAddressProfileView(
 
   SetAcceptCallback(base::BindOnce(
       &EditAddressProfileView::OnUserDecision, base::Unretained(this),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted));
+      AutofillClient::AddressPromptUserDecision::kEditAccepted));
   SetCancelCallback(base::BindOnce(
       &EditAddressProfileView::OnUserDecision, base::Unretained(this),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined));
+      AutofillClient::AddressPromptUserDecision::kEditDeclined));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -114,8 +114,7 @@ void EditAddressProfileView::WindowClosing() {
   if (controller_) {
     controller_->OnDialogClosed(
         decision_,
-        decision_ == AutofillClient::SaveAddressProfileOfferUserDecision::
-                         kEditAccepted
+        decision_ == AutofillClient::AddressPromptUserDecision::kEditAccepted
             ? base::optional_ref(address_editor_view_->GetAddressProfile())
             : std::nullopt);
     controller_ = nullptr;
@@ -132,7 +131,7 @@ AddressEditorView* EditAddressProfileView::GetAddressEditorViewForTesting() {
 }
 
 void EditAddressProfileView::OnUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   decision_ = decision;
 }
 

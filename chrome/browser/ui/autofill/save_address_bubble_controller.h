@@ -47,8 +47,8 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   // The value returned by the cancel button callback depends on whether
   // the address is to be saved into user's account. Different values are needed
   // to have different logic for the popup reappearence eligibility.
-  virtual AutofillClient::SaveAddressProfileOfferUserDecision
-  GetCancelCallbackValue() const;
+  virtual AutofillClient::AddressPromptUserDecision GetCancelCallbackValue()
+      const;
   virtual std::u16string GetFooterMessage() const;
   virtual std::u16string GetEditorFooterMessage() const;
 
@@ -56,7 +56,7 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   // explicitly (e.g. by pressing the cancel button) or implicitly (e.g. by
   // ignoring the bubble and eventually closing the tab).
   virtual void OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> profile);
 
   // Called by the view when the address proposed for saving needs to be

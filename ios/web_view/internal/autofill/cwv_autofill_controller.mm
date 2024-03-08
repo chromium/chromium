@@ -54,8 +54,7 @@
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
-using UserDecision =
-    autofill::AutofillClient::SaveAddressProfileOfferUserDecision;
+using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 
 @implementation CWVAutofillController {
   // Bridge to observe the |webState|.

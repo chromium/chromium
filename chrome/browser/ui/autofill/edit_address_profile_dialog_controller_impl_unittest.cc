@@ -60,9 +60,8 @@ class EditAddressProfileDialogControllerImplTest
 
   AutofillProfile profile_ = test::GetFullProfile();
   TestAutofillBubble autofill_bubble_;
-  base::MockOnceCallback<void(
-      AutofillClient::SaveAddressProfileOfferUserDecision,
-      profile_ref profile)>
+  base::MockOnceCallback<void(AutofillClient::AddressPromptUserDecision,
+                              profile_ref profile)>
       save_callback_;
 };
 
@@ -78,37 +77,32 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
 TEST_F(EditAddressProfileDialogControllerImplTest,
        IgnoreDialog_CancelCallbackInvoked) {
   EXPECT_CALL(save_callback_,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                   Property(&profile_ref::has_value, false)));
 
   controller()->OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-      std::nullopt);
+      AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
 }
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
        CancelEditing_CancelCallbackInvoked) {
-  EXPECT_CALL(
-      save_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
+                  Property(&profile_ref::has_value, false)));
 
   controller()->OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
-      std::nullopt);
+      AutofillClient::AddressPromptUserDecision::kEditDeclined, std::nullopt);
 }
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
        SaveAddress_SaveCallbackInvoked) {
-  EXPECT_CALL(
-      save_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          AllOf(Property(&profile_ref::has_value, true),
-                Property(&profile_ref::value, profile_))));
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
+                  AllOf(Property(&profile_ref::has_value, true),
+                        Property(&profile_ref::value, profile_))));
 
   controller()->OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-      profile_);
+      AutofillClient::AddressPromptUserDecision::kEditAccepted, profile_);
 }
 
 }  // namespace autofill

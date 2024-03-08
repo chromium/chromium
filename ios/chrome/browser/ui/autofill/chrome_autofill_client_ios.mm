@@ -408,8 +408,7 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
       if (existing_delegate->is_infobar_visible()) {
         // AutoDecline the new prompt if the existing prompt is visible.
         std::move(callback).Run(
-            AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-            profile);
+            AutofillClient::AddressPromptUserDecision::kAutoDeclined, profile);
         return;
       } else {
         // If the existing prompt is not visible, it means that the user has

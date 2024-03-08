@@ -304,32 +304,30 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
 }
 
 // Tests that the save callback is triggered with
-// |SaveAddressProfileOfferUserDecision::kMessageDeclined| when the user
+// |AddressPromptUserDecision::kMessageDeclined| when the user
 // dismisses the message via gesture.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageDeclinedOnGestureDismiss) {
   EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,
                      save_callback_.Get(), action_callback_.Get());
 
-  EXPECT_CALL(
-      save_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kMessageDeclined,
+                  Property(&profile_ref::has_value, false)));
   TriggerMessageDismissedCallback(messages::DismissReason::GESTURE);
 }
 
 // Tests that the save callback is triggered with
-// |SaveAddressProfileOfferUserDecision::kMessageTimeout| when the message is
+// |AddressPromptUserDecision::kMessageTimeout| when the message is
 // auto-dismissed after a timeout.
 TEST_F(SaveUpdateAddressProfileMessageControllerTest,
        DecisionIsMessageTimeoutOnTimerAutodismiss) {
   EnqueueSaveMessage(*profile_, /*is_migration_to_account=*/false,
                      save_callback_.Get(), action_callback_.Get());
 
-  EXPECT_CALL(
-      save_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kMessageTimeout,
+                  Property(&profile_ref::has_value, false)));
   TriggerMessageDismissedCallback(messages::DismissReason::TIMER);
 }
 
@@ -345,7 +343,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
       SaveUpdateAddressProfileMessageController::PrimaryActionCallback>
       another_action_callback;
   EXPECT_CALL(save_callback_,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                   Property(&profile_ref::has_value, false)));
   ExpectDismissMessageCall();
   EnqueueSaveMessage(another_profile, /*is_migration_to_account=*/false,

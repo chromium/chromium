@@ -55,15 +55,13 @@ TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest,
 TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, EditDeclined) {
   handler_.CancelModal(infobar_.get(), /*fromEditModal=*/YES);
   EXPECT_EQ(mock_delegate().user_decision(),
-            autofill::AutofillClient::SaveAddressProfileOfferUserDecision::
-                kEditDeclined);
+            autofill::AutofillClient::AddressPromptUserDecision::kEditDeclined);
 }
 
 TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, Cancel) {
   handler_.CancelModal(infobar_.get(), /*fromEditModal=*/NO);
-  EXPECT_EQ(
-      mock_delegate().user_decision(),
-      autofill::AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+  EXPECT_EQ(mock_delegate().user_decision(),
+            autofill::AutofillClient::AddressPromptUserDecision::kDeclined);
 }
 
 TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, NoThanks) {

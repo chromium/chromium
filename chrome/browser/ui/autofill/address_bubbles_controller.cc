@@ -63,7 +63,7 @@ void AddressBubblesController::OfferSave(
   // Don't show the bubble if it's already visible, and inform the backend.
   if (bubble_view()) {
     std::move(address_profile_save_prompt_callback)
-        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
+        .Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
              std::nullopt);
     return;
   }
@@ -76,8 +76,7 @@ void AddressBubblesController::OfferSave(
   // showing the 2nd prompt.
   if (address_profile_save_prompt_callback_) {
     std::move(address_profile_save_prompt_callback_)
-        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-             std::nullopt);
+        .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
   }
 
   address_profile_ = profile;
@@ -92,10 +91,9 @@ void AddressBubblesController::OfferSave(
 }
 
 void AddressBubblesController::OnUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
-  if (decision ==
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined) {
+  if (decision == AutofillClient::AddressPromptUserDecision::kEditDeclined) {
     // Reopen this bubble if the user canceled editing.
     shown_by_user_gesture_ = false;
     Show();
@@ -162,7 +160,7 @@ AddressBubblesController::GetWeakPtr() {
 void AddressBubblesController::WebContentsDestroyed() {
   AutofillBubbleControllerBase::WebContentsDestroyed();
 
-  OnUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+  OnUserDecision(AutofillClient::AddressPromptUserDecision::kIgnored,
                  std::nullopt);
 }
 

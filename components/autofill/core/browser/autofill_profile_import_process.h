@@ -158,7 +158,7 @@ class ProfileImportProcess {
     return import_metadata_;
   }
 
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
+  AutofillClient::AddressPromptUserDecision user_decision() const {
     return user_decision_;
   }
 
@@ -208,7 +208,7 @@ class ProfileImportProcess {
   // Supply a user |decision| for the import process. The option
   // |edited_profile| reflect user edits to the import candidate.
   void SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> edited_profile = std::nullopt);
 
   // Records UMA and UKM metrics. Should only be called after a user decision
@@ -277,8 +277,8 @@ class ProfileImportProcess {
   std::optional<AutofillProfile> confirmed_import_candidate_;
 
   // The decision the user made when prompted.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision_{
-      AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined};
+  AutofillClient::AddressPromptUserDecision user_decision_{
+      AutofillClient::AddressPromptUserDecision::kUndefined};
 
   // The application locale used for this import process.
   std::string app_locale_;

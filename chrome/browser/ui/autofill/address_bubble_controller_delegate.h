@@ -18,7 +18,7 @@ namespace autofill {
 class AddressBubbleControllerDelegate {
  public:
   virtual void OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> profile) = 0;
   virtual void OnEditButtonClicked(
       const std::u16string& editor_footer_message) = 0;

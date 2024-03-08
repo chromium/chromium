@@ -533,8 +533,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
-            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
-                     kEditDeclined,
+            .Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
                  profile);
       });
   // No changes should be saved when user cancels editing.
@@ -564,8 +563,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing_ManualFallback) {
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
-            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
-                     kEditDeclined,
+            .Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
                  profile);
       });
   // No changes should be saved when user cancels editing.
@@ -594,8 +592,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
-            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
-                     kEditAccepted,
+            .Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
                  profile);
       });
   // Updated Autofill profile must be persisted when user saves changes through
@@ -629,8 +626,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       .Times(2)
       .WillRepeatedly([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
-            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
-                     kEditAccepted,
+            .Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
                  profile);
       });
   // PDM observer must be added only once.
@@ -658,8 +654,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
-            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
-                     kEditAccepted,
+            .Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
                  profile);
       });
 

@@ -47,14 +47,14 @@ class MockSaveAddressBubbleController : public SaveAddressBubbleController {
   MOCK_METHOD(std::u16string, GetProfileEmail, (), (const, override));
   MOCK_METHOD(std::u16string, GetProfilePhone, (), (const, override));
   MOCK_METHOD(std::u16string, GetOkButtonLabel, (), (const, override));
-  MOCK_METHOD(AutofillClient::SaveAddressProfileOfferUserDecision,
+  MOCK_METHOD(AutofillClient::AddressPromptUserDecision,
               GetCancelCallbackValue,
               (),
               (const, override));
   MOCK_METHOD(std::u16string, GetFooterMessage, (), (const, override));
   MOCK_METHOD(void,
               OnUserDecision,
-              (AutofillClient::SaveAddressProfileOfferUserDecision,
+              (AutofillClient::AddressPromptUserDecision,
                base::optional_ref<const AutofillProfile>),
               (override));
   MOCK_METHOD(void, OnEditButtonClicked, (), (override));
@@ -111,7 +111,7 @@ SaveAddressProfileViewTest::CreateViewController() {
 
   ON_CALL(*mock_controller, GetCancelCallbackValue)
       .WillByDefault(::testing::Return(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+          AutofillClient::AddressPromptUserDecision::kDeclined));
   ON_CALL(*mock_controller, GetWindowTitle())
       .WillByDefault(testing::Return(std::u16string()));
 
@@ -145,9 +145,8 @@ TEST_F(SaveAddressProfileViewTest, AcceptInvokesTheController) {
       CreateViewController();
   EXPECT_CALL(
       *controller,
-      OnUserDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          Property(&profile_ref::has_value, false)));
+      OnUserDecision(AutofillClient::AddressPromptUserDecision::kAccepted,
+                     Property(&profile_ref::has_value, false)));
   CreateViewAndShow(std::move(controller));
   view()->AcceptDialog();
 }
@@ -157,9 +156,8 @@ TEST_F(SaveAddressProfileViewTest, CancelInvokesTheController) {
       CreateViewController();
   EXPECT_CALL(
       *controller,
-      OnUserDecision(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          Property(&profile_ref::has_value, false)));
+      OnUserDecision(AutofillClient::AddressPromptUserDecision::kDeclined,
+                     Property(&profile_ref::has_value, false)));
   CreateViewAndShow(std::move(controller));
   view()->CancelDialog();
 }

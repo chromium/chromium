@@ -890,10 +890,9 @@ void AutofillExternalDelegate::ShowDeleteAddressProfileDialog(
 }
 
 void AutofillExternalDelegate::OnAddressEditorClosed(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> edited_profile) {
-  if (decision ==
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted) {
+  if (decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) {
     autofill_metrics::LogEditAddressProfileDialogClosed(
         /*user_saved_changes=*/true);
     PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();

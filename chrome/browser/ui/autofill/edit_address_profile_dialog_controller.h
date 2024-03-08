@@ -24,7 +24,7 @@ class EditAddressProfileDialogController {
   // button has been clicked. `profile_with_edits` contains the address profile
   // including the edits performed by the user.
   virtual void OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> profile_with_edits) = 0;
 };
 

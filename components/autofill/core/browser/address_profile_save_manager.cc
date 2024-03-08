@@ -38,7 +38,7 @@ void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
 
 }  // namespace
 
-using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
+using UserDecision = AutofillClient::AddressPromptUserDecision;
 
 AddressProfileSaveManager::AddressProfileSaveManager(
     AutofillClient* client,

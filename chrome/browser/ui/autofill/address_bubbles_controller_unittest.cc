@@ -64,13 +64,11 @@ TEST_F(AddressBubblesControllerTest,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
 
-  EXPECT_CALL(
-      callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(callback,
+              Run(AutofillClient::AddressPromptUserDecision::kAccepted,
+                  Property(&profile_ref::has_value, false)));
   controller()->OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-      std::nullopt);
+      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt);
 }
 
 TEST_F(AddressBubblesControllerTest,
@@ -82,13 +80,11 @@ TEST_F(AddressBubblesControllerTest,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
 
-  EXPECT_CALL(
-      callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(callback,
+              Run(AutofillClient::AddressPromptUserDecision::kDeclined,
+                  Property(&profile_ref::has_value, false)));
   controller()->OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-      std::nullopt);
+      AutofillClient::AddressPromptUserDecision::kDeclined, std::nullopt);
 }
 
 // This is testing that closing all tabs (which effectively destroys the web
@@ -114,9 +110,8 @@ TEST_F(AddressBubblesControllerTest,
   // invoke the callback with a decision kIgnored.
   AddTab(browser(), GURL("http://foo.com/"));
   EXPECT_EQ(2, tab_strip_model->count());
-  EXPECT_CALL(callback,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(callback, Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+                            Property(&profile_ref::has_value, false)));
   // Close controller tab.
   int previous_tab_count = browser()->tab_strip_model()->count();
   browser()->tab_strip_model()->CloseWebContentsAt(
@@ -168,10 +163,9 @@ TEST_F(AddressBubblesControllerTest,
 
   // Second prompt should be auto declined.
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(callback,
+              Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
+                  Property(&profile_ref::has_value, false)));
   controller()->OfferSave(
       profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
@@ -193,9 +187,8 @@ TEST_F(AddressBubblesControllerTest,
   controller()->OnBubbleClosed();
 
   // When second prompt comes, the first one will be ignored.
-  EXPECT_CALL(callback,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(callback, Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+                            Property(&profile_ref::has_value, false)));
   controller()->OfferSave(
       profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},

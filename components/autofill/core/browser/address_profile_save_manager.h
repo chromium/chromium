@@ -60,10 +60,9 @@ class AddressProfileSaveManager {
       std::unique_ptr<ProfileImportProcess> import_process);
 
   // Called after the user interaction with the UI is done.
-  void OnUserDecision(
-      std::unique_ptr<ProfileImportProcess> import_process,
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      base::optional_ref<const AutofillProfile> edited_profile);
+  void OnUserDecision(std::unique_ptr<ProfileImportProcess> import_process,
+                      AutofillClient::AddressPromptUserDecision decision,
+                      base::optional_ref<const AutofillProfile> edited_profile);
 
   PersonalDataManager* personal_data_manager() {
     return personal_data_manager_;

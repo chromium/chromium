@@ -40,12 +40,10 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
   // |address_profile_save_prompt_callback_| is run here.
   if (!address_profile_save_prompt_callback_.is_null()) {
     DCHECK(user_decision_ !=
-               AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted &&
+               AutofillClient::AddressPromptUserDecision::kAccepted &&
            user_decision_ !=
-               AutofillClient::SaveAddressProfileOfferUserDecision::
-                   kEditAccepted &&
-           user_decision_ !=
-               AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
+               AutofillClient::AddressPromptUserDecision::kEditAccepted &&
+           user_decision_ != AutofillClient::AddressPromptUserDecision::kNever);
     RunSaveAddressProfilePromptCallback();
   }
 }
@@ -147,33 +145,28 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
     return;
   }
 
-  user_decision_ =
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted;
+  user_decision_ = AutofillClient::AddressPromptUserDecision::kEditAccepted;
   RunSaveAddressProfilePromptCallback();
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::EditDeclined() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined);
+  SetUserDecision(AutofillClient::AddressPromptUserDecision::kEditDeclined);
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::MessageTimeout() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout);
+  SetUserDecision(AutofillClient::AddressPromptUserDecision::kMessageTimeout);
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::MessageDeclined() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined);
+  SetUserDecision(AutofillClient::AddressPromptUserDecision::kMessageDeclined);
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::AutoDecline() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined);
+  SetUserDecision(AutofillClient::AddressPromptUserDecision::kAutoDeclined);
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Never() {
-  SetUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
+  SetUserDecision(AutofillClient::AddressPromptUserDecision::kNever);
   RunSaveAddressProfilePromptCallback();
   return true;
 }
@@ -203,15 +196,13 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfile(
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
-  user_decision_ =
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted;
+  user_decision_ = AutofillClient::AddressPromptUserDecision::kAccepted;
   RunSaveAddressProfilePromptCallback();
   return true;
 }
 
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Cancel() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+  SetUserDecision(AutofillClient::AddressPromptUserDecision::kDeclined);
   return true;
 }
 
@@ -255,34 +246,31 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::
   std::move(address_profile_save_prompt_callback_)
       .Run(user_decision_,
            user_decision_ ==
-                   AutofillClient::SaveAddressProfileOfferUserDecision::
-                       kEditAccepted
+                   AutofillClient::AddressPromptUserDecision::kEditAccepted
                ? base::optional_ref(profile_)
                : std::nullopt);
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision user_decision) {
-  if (user_decision == AutofillClient::SaveAddressProfileOfferUserDecision::
-                           kMessageTimeout &&
-      user_decision_ == AutofillClient::SaveAddressProfileOfferUserDecision::
-                            kMessageDeclined) {
+    AutofillClient::AddressPromptUserDecision user_decision) {
+  if (user_decision ==
+          AutofillClient::AddressPromptUserDecision::kMessageTimeout &&
+      user_decision_ ==
+          AutofillClient::AddressPromptUserDecision::kMessageDeclined) {
     // |SaveAddressProfileInfobarBannerInteractionHandler::InfobarVisibilityChanged|
     // would be called even when the banner is explicitly dismissed by the
     // user. In that case, do not change the |user_decision_|.
     return;
   }
   if (user_decision_ ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted ||
-      user_decision_ ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted) {
+          AutofillClient::AddressPromptUserDecision::kEditAccepted ||
+      user_decision_ == AutofillClient::AddressPromptUserDecision::kAccepted) {
     // The infobar has already been saved. So, cancel should not change the
     // |user_decision_| now.
     return;
   }
 
-  DCHECK(user_decision_ !=
-         AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
+  DCHECK(user_decision_ != AutofillClient::AddressPromptUserDecision::kNever);
   user_decision_ = user_decision;
 }
 

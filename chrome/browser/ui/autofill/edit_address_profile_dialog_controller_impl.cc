@@ -39,8 +39,7 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
   // Don't show the editor if it's already visible, and inform the backend.
   if (dialog_view_) {
     std::move(on_user_decision_callback)
-        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-             profile);
+        .Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined, profile);
     return;
   }
   address_profile_to_edit_ = profile;
@@ -90,7 +89,7 @@ bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
 }
 
 void EditAddressProfileDialogControllerImpl::OnDialogClosed(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile_with_edits) {
   std::move(on_user_decision_callback_).Run(decision, profile_with_edits);
   dialog_view_ = nullptr;

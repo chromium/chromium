@@ -43,7 +43,7 @@ class EditAddressProfileDialogControllerImplTest
   }
 
   void OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> edited_profile) {
     user_decision_ = decision;
     if (edited_profile.has_value()) {
@@ -52,8 +52,7 @@ class EditAddressProfileDialogControllerImplTest
   }
 
   auto EnsureClosedWithDecisionAndProfile(
-      AutofillClient::SaveAddressProfileOfferUserDecision
-          expected_user_decision,
+      AutofillClient::AddressPromptUserDecision expected_user_decision,
       base::optional_ref<const AutofillProfile> expected_profile) {
     return Steps(
         CheckResult([this]() { return user_decision_; },
@@ -72,8 +71,7 @@ class EditAddressProfileDialogControllerImplTest
                   bool is_migration_to_account) {
     return Do([this, profile, original_profile, footer_message,
                is_migration_to_account]() {
-      user_decision_ =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined;
+      user_decision_ = AutofillClient::AddressPromptUserDecision::kUndefined;
 
       EditAddressProfileDialogControllerImpl::CreateForWebContents(
           web_contents());
@@ -94,7 +92,7 @@ class EditAddressProfileDialogControllerImplTest
   // The latest user decisive interaction with the editor, e.g. Save or Cancel
   // the editor, it is set in the AddressProfileSavePromptCallback passed to the
   // prompt.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision_;
+  AutofillClient::AddressPromptUserDecision user_decision_;
   std::unique_ptr<AutofillProfile> local_profile_;
   std::optional<AutofillProfile> edited_profile_;
 };
@@ -111,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
           PressButton(views::DialogClientView::kOkButtonElementId),
           WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
       EnsureClosedWithDecisionAndProfile(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
+          AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));
 }
 

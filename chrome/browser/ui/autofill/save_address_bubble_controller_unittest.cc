@@ -38,7 +38,7 @@ class MockDelegate : public AddressBubbleControllerDelegate {
 
   MOCK_METHOD(void,
               OnUserDecision,
-              (AutofillClient::SaveAddressProfileOfferUserDecision decision,
+              (AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile),
               (override));
   MOCK_METHOD(void, OnEditButtonClicked, (const std::u16string&), (override));
@@ -110,7 +110,7 @@ TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
   EXPECT_EQ(controller->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+            AutofillClient::AddressPromptUserDecision::kDeclined);
   EXPECT_TRUE(controller->GetFooterMessage().empty());
 }
 
@@ -140,7 +140,7 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
   EXPECT_EQ(controller->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+            AutofillClient::AddressPromptUserDecision::kDeclined);
   EXPECT_EQ(
       controller->GetFooterMessage(),
       l10n_util::GetStringFUTF16(
@@ -169,7 +169,7 @@ TEST_F(SaveAddressBubbleControllerTest, MigrateIntoAccountAddress) {
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
   EXPECT_EQ(controller->GetCancelCallbackValue(),
-            AutofillClient::SaveAddressProfileOfferUserDecision::kNever);
+            AutofillClient::AddressPromptUserDecision::kNever);
   EXPECT_TRUE(controller->GetFooterMessage().empty());
 }
 

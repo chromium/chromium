@@ -162,8 +162,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   SetAcceptCallback(base::BindOnce(
       &SaveAddressBubbleController::OnUserDecision,
       base::Unretained(controller_.get()),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-      std::nullopt));
+      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt));
   SetCancelCallback(base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
                                    base::Unretained(controller_.get()),
                                    controller_->GetCancelCallbackValue(),

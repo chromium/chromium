@@ -79,7 +79,7 @@ class SaveUpdateAddressProfilePromptController {
 
  private:
   void RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+      AutofillClient::AddressPromptUserDecision decision);
 
   // If the user explicitly accepted/dismissed/edited the profile.
   bool had_user_interaction_ = false;
