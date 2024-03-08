@@ -15,7 +15,8 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createAutocompleteMatch} from './realbox_test_utils.js';
+import {assertStyle} from '../test_support.js';
+
 import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
 
 enum Attributes {
@@ -25,6 +26,34 @@ enum Attributes {
 function createClipboardEvent(name: string): ClipboardEvent {
   return new ClipboardEvent(
       name, {cancelable: true, clipboardData: new DataTransfer()});
+}
+
+function createAutocompleteMatch(): AutocompleteMatch {
+  return {
+    a11yLabel: mojoString16(''),
+    actions: [],
+    allowedToBeDefaultMatch: false,
+    answer: null,
+    isSearchType: false,
+    isWeatherAnswerSuggestion: null,
+    swapContentsAndDescription: false,
+    supportsDeletion: false,
+    suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
+    contents: mojoString16(''),
+    contentsClass: [{offset: 0, style: 0}],
+    description: mojoString16(''),
+    descriptionClass: [{offset: 0, style: 0}],
+    destinationUrl: {url: ''},
+    inlineAutocompletion: mojoString16(''),
+    fillIntoEdit: mojoString16(''),
+    iconUrl: '',
+    imageDominantColor: '',
+    imageUrl: '',
+    removeButtonA11yLabel: mojoString16(''),
+    tailSuggestCommonPrefix: null,
+    type: '',
+    isRichSuggestion: false,
+  };
 }
 
 function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
