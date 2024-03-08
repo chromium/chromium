@@ -430,6 +430,38 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithWindowSizeBrowserTest,
                                SkColorSetRGB(0xff, 0xff, 0xff)));
 }
 
+class HeadlessModeScreenshotCommandWithBackgroundBrowserTest
+    : public HeadlessModeScreenshotCommandBrowserTest {
+ public:
+  HeadlessModeScreenshotCommandWithBackgroundBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeScreenshotCommandBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(switches::kDefaultBackgroundColor,
+                                    "ff0000");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithBackgroundBrowserTest,
+                       HeadlessScreenshotWithBackground) {
+  ASSERT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::string png_data;
+  ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
+      << screenshot_filename_;
+
+  SkBitmap bitmap;
+  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+
+  // Expect a centered blue rectangle on red background.
+  EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
+                               SkColorSetRGB(0xff, 0x00, 0x00)));
+}
+
 // PrintToPDF command tests -------------------------------------------
 
 class HeadlessModePrintToPdfCommandBrowserTestBase
