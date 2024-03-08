@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_SET_PROCESS_TITLE_H_
-#define CONTENT_COMMON_SET_PROCESS_TITLE_H_
+#ifndef BASE_PROCESS_SET_PROCESS_TITLE_H_
+#define BASE_PROCESS_SET_PROCESS_TITLE_H_
 
-namespace content {
+#include "base/base_export.h"
+
+namespace base {
 
 // Sets OS-specific process title information based on the command line. This
 // does nothing if the OS doesn't support or need this capability.
@@ -21,8 +23,8 @@ namespace content {
 // makes the process name that shows up in "ps" etc. for the child processes
 // show as "exe" instead of "chrome" or something reasonable. This function
 // will try to fix it so the "effective" command line shows up instead.
-void SetProcessTitleFromCommandLine(const char** main_argv);
+BASE_EXPORT void SetProcessTitleFromCommandLine(const char** main_argv);
 
-}  // namespace content
+}  // namespace base
 
-#endif  // CONTENT_COMMON_SET_PROCESS_TITLE_H_
+#endif  // BASE_PROCESS_SET_PROCESS_TITLE_H_

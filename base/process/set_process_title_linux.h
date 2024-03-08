@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_SET_PROCESS_TITLE_LINUX_H_
-#define CONTENT_COMMON_SET_PROCESS_TITLE_LINUX_H_
+#ifndef BASE_PROCESS_SET_PROCESS_TITLE_LINUX_H_
+#define BASE_PROCESS_SET_PROCESS_TITLE_LINUX_H_
+
+#include "base/base_export.h"
 
 // Set the process title that will show in "ps" and similar tools. Takes
 // printf-style format string and arguments. After calling setproctitle()
@@ -13,10 +15,10 @@
 //
 // This signature and naming is to be compatible with most other Unix
 // implementations of setproctitle().
-void setproctitle(const char* fmt, ...);
+BASE_EXPORT void setproctitle(const char* fmt, ...);
 
 // Initialize state needed for setproctitle() on Linux. Pass the argv pointer
 // from main() to setproctitle_init() before calling setproctitle().
-void setproctitle_init(const char** main_argv);
+BASE_EXPORT void setproctitle_init(const char** main_argv);
 
-#endif  // CONTENT_COMMON_SET_PROCESS_TITLE_LINUX_H_
+#endif  // BASE_PROCESS_SET_PROCESS_TITLE_LINUX_H_

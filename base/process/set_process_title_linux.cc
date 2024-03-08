@@ -37,7 +37,7 @@
 // this position within the glibc project, leaving applications caught in the
 // middle. (Also, only a very few applications need or want this anyway.)
 
-#include "content/common/set_process_title_linux.h"
+#include "base/process/set_process_title_linux.h"
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -51,6 +51,7 @@
 
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 
 extern char** environ;
 
@@ -77,7 +78,8 @@ void setproctitle(const char* fmt, ...) {
     return;
 
   // The title can be up to the end of envp.
-  const size_t avail_size = g_envp_end - g_argv_start - 1;
+  const size_t avail_size =
+      base::checked_cast<size_t>(g_envp_end - g_argv_start - 1);
 
   // Linux 4.18--5.2 have a bug where we can never set a process title
   // shorter than the initial argv. Check if the bug exists in the current
@@ -103,11 +105,14 @@ void setproctitle(const char* fmt, ...) {
   size_t size;
   va_start(ap, fmt);
   if (fmt[0] == '-') {
-    size = vsnprintf(g_argv_start, avail_size, &fmt[1], ap);
+    size = base::checked_cast<size_t>(
+        vsnprintf(g_argv_start, avail_size, &fmt[1], ap));
   } else {
-    size = snprintf(g_argv_start, avail_size, "%s ", g_orig_argv0);
+    size = base::checked_cast<size_t>(
+        snprintf(g_argv_start, avail_size, "%s ", g_orig_argv0));
     if (size < avail_size)
-      size += vsnprintf(&g_argv_start[size], avail_size - size, fmt, ap);
+      size += base::checked_cast<size_t>(
+          vsnprintf(&g_argv_start[size], avail_size - size, fmt, ap));
   }
   va_end(ap);
 
@@ -122,7 +127,8 @@ void setproctitle(const char* fmt, ...) {
   // On buggy kernels we can never make the process title shorter than the
   // initial argv. In that case, just leave the remaining bytes filled with
   // null characters.
-  const size_t argv_size = g_argv_end - g_argv_start - 1;
+  const size_t argv_size =
+      base::checked_cast<size_t>(g_argv_end - g_argv_start - 1);
   if (!buggy_kernel && size < argv_size)
     g_argv_end[-1] = '.';
 }

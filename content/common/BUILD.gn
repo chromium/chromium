@@ -222,8 +222,6 @@ source_set("common") {
     "service_worker/service_worker_resource_loader.h",
     "service_worker/service_worker_router_evaluator.cc",
     "service_worker/service_worker_router_evaluator.h",
-    "set_process_title.cc",
-    "set_process_title.h",
     "skia_utils.cc",
     "skia_utils.h",
     "thread_pool_util.cc",
@@ -453,7 +451,6 @@ source_set("common") {
     public_deps += [ "//sandbox/policy" ]
     deps += [
       ":sandbox_support_linux",
-      ":set_process_title_linux",
       "//media/gpu:buildflags",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:seccomp_bpf",
@@ -522,14 +519,6 @@ component("main_frame_counter") {
     "main_frame_counter.h",
   ]
   deps = [ "//base:base" ]
-}
-
-if (is_linux || is_chromeos) {
-  source_set("set_process_title_linux") {
-    public = [ "set_process_title_linux.h" ]
-    sources = [ "set_process_title_linux.cc" ]
-    deps = [ "//base" ]
-  }
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.

@@ -34,11 +34,11 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/process/set_process_title.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/common/set_process_title.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
@@ -628,7 +628,7 @@ base::ProcessId Zygote::ReadArgsAndFork(base::PickleIterator iter,
     // Update the process title. The argv was already cached by the call to
     // SetProcessTitleFromCommandLine in ChromeMain, so we can pass NULL here
     // (we don't have the original argv at this point).
-    SetProcessTitleFromCommandLine(nullptr);
+    base::SetProcessTitleFromCommandLine(nullptr);
   } else if (child_pid < 0) {
     LOG(ERROR) << "Zygote could not fork: process_type " << process_type
                << " numfds " << numfds << " child_pid " << child_pid;

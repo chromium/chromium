@@ -21,6 +21,7 @@
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
+#include "base/process/set_process_title.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -35,7 +36,6 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "content/app/content_main_runner_impl.h"
 #include "content/common/mojo_core_library_support.h"
-#include "content/common/set_process_title.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/configuration.h"
@@ -245,7 +245,7 @@ RunContentProcess(ContentMainParams params,
 
     base::EnableTerminationOnHeapCorruption();
 
-    SetProcessTitleFromCommandLine(argv);
+    base::SetProcessTitleFromCommandLine(argv);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     InitTimeTicksAtUnixEpoch();

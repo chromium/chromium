@@ -20,11 +20,11 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/process/set_process_title.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "content/common/set_process_title.h"
 #include "content/public/common/content_switches.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -670,7 +670,7 @@ bool BrokerProcessPreSandboxHook(
   // Oddly enough, we call back into gpu to invoke this service manager
   // method, since it is part of the embedder component, and the service
   // mananger's sandbox component is a lower layer that can't depend on it.
-  SetProcessTitleFromCommandLine(nullptr);
+  base::SetProcessTitleFromCommandLine(nullptr);
   return true;
 }
 

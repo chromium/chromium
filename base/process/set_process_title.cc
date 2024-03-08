@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+
 // Define _GNU_SOURCE to ensure that <errno.h> defines
 // program_invocation_short_name. Keep this at the top of the file since some
 // system headers might include <errno.h> and the header could be skipped on
 // subsequent includes.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(_GNU_SOURCE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(_GNU_SOURCE)
 #define _GNU_SOURCE
 #endif
 
-#include "content/common/set_process_title.h"
+#include "base/process/set_process_title.h"
 
 #include <stddef.h>
-
-#include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_SOLARIS)
 #include <limits.h>
@@ -37,14 +37,14 @@
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 // Linux/glibc doesn't natively have setproctitle().
-#include "content/common/set_process_title_linux.h"
+#include "base/process/set_process_title_linux.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-namespace content {
+namespace base {
 
 // TODO(jrg): Find out if setproctitle or equivalent is available on Android.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_SOLARIS) && \
-    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_NACL)
 
 void SetProcessTitleFromCommandLine(const char** main_argv) {
   // Build a single string which consists of all the arguments separated
@@ -109,4 +109,4 @@ void SetProcessTitleFromCommandLine(const char** /* main_argv */) {}
 
 #endif
 
-}  // namespace content
+}  // namespace base

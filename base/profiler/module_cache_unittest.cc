@@ -25,7 +25,7 @@
 // Note: The special-case IS_CHROMEOS code inside GetDebugBasenameForModule to
 // handle the interaction between that function and
 // SetProcessTitleFromCommandLine() is tested in
-// content/common/set_process_title_linux_unittest.cc due to dependency issues.
+// base/process/set_process_title_linux_unittest.cc due to dependency issues.
 
 namespace base {
 namespace {

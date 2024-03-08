@@ -558,6 +558,8 @@ component("base") {
     "process/process_handle.cc",
     "process/process_handle.h",
     "process/process_info.h",
+    "process/set_process_title.cc",
+    "process/set_process_title.h",
     "profiler/frame.cc",
     "profiler/frame.h",
     "profiler/metadata_recorder.cc",
@@ -2212,7 +2214,11 @@ component("base") {
 
     configs += linux_configs
     all_dependent_configs += linux_configs
-    sources += [ "system/sys_info_linux.cc" ]
+    sources += [
+      "process/set_process_title_linux.cc",
+      "process/set_process_title_linux.h",
+      "system/sys_info_linux.cc",
+    ]
     if (!is_cronet_build) {
       # These dependencies are not required on Android.
       sources += [
@@ -3712,6 +3718,7 @@ test("base_unittests") {
       "debug/proc_maps_linux_unittest.cc",
       "files/scoped_file_linux_unittest.cc",
       "nix/mime_util_xdg_unittest.cc",
+      "process/set_process_title_linux_unittest.cc",
     ]
 
     if (!is_nacl) {

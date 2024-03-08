@@ -7,10 +7,10 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/process/set_process_title_linux.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "content/common/set_process_title_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
