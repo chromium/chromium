@@ -37,8 +37,14 @@ class LensUntrustedUI : public ui::UntrustedBubbleWebUIController,
       mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensPage> page) override;
 
+  void LoadScreenshot(
+      const std::string& resource_path,
+      content::WebUIDataSource::GotDataCallback got_data_callback);
+
   mojo::Receiver<lens::mojom::LensPageHandlerFactory>
       lens_page_factory_receiver_{this};
+
+  std::vector<unsigned char> screenshot_image_;
 
   base::WeakPtrFactory<LensUntrustedUI> weak_factory_{this};
 

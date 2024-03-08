@@ -76,6 +76,10 @@ class LensOverlayController : public TabStripModelObserver,
   };
   State state() { return state_; }
 
+  // Returns the screenshot currently being displayed on this overlay. If no
+  // screenshot is showing, will return nullptr.
+  const SkBitmap& current_screenshot() { return current_screenshot_; }
+
   // Testing helper method for checking widget.
   raw_ptr<views::Widget> GetOverlayWidgetForTesting();
 
@@ -131,6 +135,9 @@ class LensOverlayController : public TabStripModelObserver,
   // Pointer to the WebContents that is hosting the overlay WebUI. Only valid
   // while `overlay_widget_` is showing.
   raw_ptr<content::WebContents> overlay_web_contents_;
+
+  // The screenshot that is currently being rendered by the WebUI.
+  SkBitmap current_screenshot_;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS

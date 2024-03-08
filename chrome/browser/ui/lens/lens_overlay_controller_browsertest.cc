@@ -33,6 +33,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   controller->ShowUI();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  ASSERT_FALSE(screenshot_bitmap.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {

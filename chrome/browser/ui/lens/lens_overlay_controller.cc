@@ -89,6 +89,7 @@ void LensOverlayController::CloseUI() {
   overlay_web_contents_ = nullptr;
   receiver_.reset();
   page_.reset();
+  current_screenshot_.reset();
   // In the future we may want a hibernate state. In this case we would stop
   // showing the UI but persist enough information to defrost the original UI
   // state when the tab is foregrounded.
@@ -121,6 +122,9 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
 
+  // Need to store the current screenshot before creating the WebUI, since the
+  // WebUI is dependent on the screenshot.
+  current_screenshot_ = bitmap;
   ShowOverlayWidget();
 
   state_ = State::kStartingWebUI;
