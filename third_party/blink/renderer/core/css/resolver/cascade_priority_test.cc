@@ -14,14 +14,14 @@ struct Options {
   bool important = false;
   uint16_t tree_order = 0;
   bool is_inline_style = false;
-  bool is_fallback_style = false;
+  bool is_try_style = false;
   uint16_t layer_order = 0;
   uint32_t position = 0;
 };
 
 CascadePriority Priority(Options o) {
   return CascadePriority(o.origin, o.important, o.tree_order, o.is_inline_style,
-                         o.is_fallback_style, o.layer_order, o.position);
+                         o.is_try_style, o.layer_order, o.position);
 }
 
 CascadePriority AuthorPriority(uint16_t tree_order, uint32_t position) {
@@ -360,25 +360,23 @@ TEST(CascadePriorityTest, InlineStyle) {
             Priority({.is_inline_style = false}));
 }
 
-TEST(CascadePriorityTest, FallbackStyle) {
-  EXPECT_GE(Priority({.is_fallback_style = true}), Priority({}));
-  EXPECT_GE(Priority({.is_fallback_style = true}),
+TEST(CascadePriorityTest, TryStyle) {
+  EXPECT_GE(Priority({.is_try_style = true}), Priority({}));
+  EXPECT_GE(Priority({.is_try_style = true}),
             Priority({.is_inline_style = true}));
-  EXPECT_GE(Priority({.is_fallback_style = true}),
+  EXPECT_GE(Priority({.is_try_style = true}),
             Priority({.layer_order = static_cast<uint16_t>(
                           EncodeLayerOrder(1u, /* important */ false))}));
-  EXPECT_GE(Priority({.is_fallback_style = true}),
-            Priority({.position = 1000}));
+  EXPECT_GE(Priority({.is_try_style = true}), Priority({.position = 1000}));
 
-  EXPECT_LT(Priority({.is_fallback_style = true}),
-            Priority({.important = true}));
-  EXPECT_LT(Priority({.is_fallback_style = true}),
+  EXPECT_LT(Priority({.is_try_style = true}), Priority({.important = true}));
+  EXPECT_LT(Priority({.is_try_style = true}),
             Priority({.origin = CascadeOrigin::kAnimation}));
-  EXPECT_LT(Priority({.is_fallback_style = true}),
+  EXPECT_LT(Priority({.is_try_style = true}),
             Priority({.origin = CascadeOrigin::kTransition}));
 
   // Fallback styles generate a separate layer.
-  EXPECT_NE(Priority({.is_fallback_style = true}).ForLayerComparison(),
+  EXPECT_NE(Priority({.is_try_style = true}).ForLayerComparison(),
             Priority({}).ForLayerComparison());
 }
 

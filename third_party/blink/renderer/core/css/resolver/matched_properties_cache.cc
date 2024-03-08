@@ -200,8 +200,8 @@ bool CachedMatchedProperties::operator==(
         matched_properties_types[i].is_inline_style) {
       return false;
     }
-    if (properties[i].types_.is_fallback_style !=
-        matched_properties_types[i].is_fallback_style) {
+    if (properties[i].types_.is_try_style !=
+        matched_properties_types[i].is_try_style) {
       return false;
     }
     if (properties[i].types_.signal != matched_properties_types[i].signal) {

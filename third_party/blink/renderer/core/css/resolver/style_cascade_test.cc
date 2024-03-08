@@ -87,7 +87,7 @@ struct AddOptions {
   unsigned link_match_type = CSSSelector::kMatchAll;
   CSSSelector::Signal signal = CSSSelector::Signal::kNone;
   bool is_inline_style = false;
-  bool is_fallback_style = false;
+  bool is_try_style = false;
   bool is_invisible = false;
 };
 
@@ -139,7 +139,7 @@ class TestCascade {
         {.link_match_type = options.link_match_type,
          .signal = options.signal,
          .is_inline_style = options.is_inline_style,
-         .is_fallback_style = options.is_fallback_style,
+         .is_try_style = options.is_try_style,
          .is_invisible = options.is_invisible});
   }
 
@@ -3873,12 +3873,12 @@ TEST_F(StyleCascadeTest, InlineStyleLostCascade) {
   EXPECT_TRUE(cascade.InlineStyleLostCascade());
 }
 
-TEST_F(StyleCascadeTest, FallbackStyle) {
+TEST_F(StyleCascadeTest, TryStyle) {
   TestCascade cascade(GetDocument());
   cascade.Add("position:absolute");
   cascade.Add("top:1px");
   cascade.Add("top:2px", {.is_inline_style = true});
-  cascade.Add("top:3px", {.is_fallback_style = true});
+  cascade.Add("top:3px", {.is_try_style = true});
   cascade.Apply();
   EXPECT_EQ("3px", cascade.ComputedValue("top"));
 }

@@ -1618,8 +1618,8 @@ void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
 }
 
 bool StyleCascade::TreatAsRevertLayer(CascadePriority priority) const {
-  return priority.IsFallbackStyle() && !ComputedStyle::HasOutOfFlowPosition(
-                                           state_.StyleBuilder().GetPosition());
+  return priority.IsTryStyle() && !ComputedStyle::HasOutOfFlowPosition(
+                                      state_.StyleBuilder().GetPosition());
 }
 
 const Document& StyleCascade::GetDocument() const {

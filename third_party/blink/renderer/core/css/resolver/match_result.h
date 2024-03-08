@@ -66,9 +66,9 @@ struct CORE_EXPORT MatchedProperties {
     // https://drafts.csswg.org/css-cascade-5/#layer-ordering
     uint16_t layer_order;
     bool is_inline_style;
-    // Fallback styles come from fallback sizing/positioning.
+    // Try styles come from position-try-options.
     // https://drafts.csswg.org/css-anchor-position-1/#fallback
-    bool is_fallback_style;
+    bool is_try_style;
     // See CSSSelector::IsInvisible.
     bool is_invisible;
   };
@@ -92,7 +92,7 @@ struct AddMatchedPropertiesOptions {
   CSSSelector::Signal signal = CSSSelector::Signal::kNone;
   unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
-  bool is_fallback_style = false;
+  bool is_try_style = false;
   bool is_invisible = false;
 };
 

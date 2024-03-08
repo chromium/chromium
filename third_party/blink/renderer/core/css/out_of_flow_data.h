@@ -44,7 +44,7 @@ class CORE_EXPORT OutOfFlowData final
   //
   // During calls to StyleResolver::ResolveStyle, the CSSPropertyValueSet
   // present here will be added to the cascade in the author origin
-  // with CascadePriority::is_fallback_style=true.
+  // with CascadePriority::is_try_style=true.
   //
   // See also StyleEngine::UpdateStyleForOutOfFlow,
   // which sets this value.

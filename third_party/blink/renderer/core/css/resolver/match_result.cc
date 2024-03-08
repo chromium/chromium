@@ -63,7 +63,7 @@ void MatchResult::AddMatchedProperties(
   new_properties.types_.signal = static_cast<unsigned>(options.signal);
   new_properties.types_.layer_order = ClampTo<uint16_t>(options.layer_order);
   new_properties.types_.is_inline_style = options.is_inline_style;
-  new_properties.types_.is_fallback_style = options.is_fallback_style;
+  new_properties.types_.is_try_style = options.is_try_style;
   new_properties.types_.is_invisible = options.is_invisible;
   new_properties.types_.origin = origin;
   new_properties.types_.tree_order = current_tree_order_;
