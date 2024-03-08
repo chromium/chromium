@@ -18,7 +18,9 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -181,7 +183,9 @@ class SafeBrowsingServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingBrowserProcess> browser_process_;
   scoped_refptr<SafeBrowsingService> sb_service_;
+  TestingProfile::Builder profile_builder_;
   std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> otr_profile_;
 
   ::testing::NiceMock<download::MockDownloadItem> download_item_;
   GURL download_url_ = GURL(kTestDownloadUrl);
@@ -245,6 +249,80 @@ TEST_F(
       ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
       /*did_proceed=*/true,
       /*show_download_in_folder=*/true));
+}
+
+TEST_F(SafeBrowsingServiceTest,
+       WhenUserIsInSPAndNotPolicyOrSIncognitoReturnsTrue) {
+  // Default scenario: User is in standard protection normally
+  EXPECT_TRUE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+}
+
+TEST_F(SafeBrowsingServiceTest, WhenSPIsSetByPolicyReturnsFalse) {
+  // Default scenario: User is in standard protection normally
+  EXPECT_TRUE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+  // Setting Standard protection through policy
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(false));
+  EXPECT_TRUE(
+      safe_browsing::IsSafeBrowsingPolicyManaged(*profile_->GetPrefs()));
+  EXPECT_FALSE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+}
+
+TEST_F(SafeBrowsingServiceTest, WhenEPIsSetByPolicyReturnsFalse) {
+  // Default scenario: User is in standard protection normally
+  EXPECT_TRUE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+  // Setting Enhanced protection through policy
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
+  EXPECT_TRUE(
+      safe_browsing::IsSafeBrowsingPolicyManaged(*profile_->GetPrefs()));
+  EXPECT_FALSE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+}
+
+TEST_F(SafeBrowsingServiceTest, WhenNoProtectionIsSetByPolicyReturnsFalse) {
+  // Default scenario: User is in standard protection normally
+  EXPECT_TRUE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+  // Setting no protection by policy
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(false));
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(false));
+  EXPECT_TRUE(
+      safe_browsing::IsSafeBrowsingPolicyManaged(*profile_->GetPrefs()));
+  EXPECT_FALSE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+}
+
+TEST_F(SafeBrowsingServiceTest, WhenUserIsInEPNormallyReturnsFalse) {
+  // Default scenario: User is in standard protection normally
+  EXPECT_TRUE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+  // Set enhanced protection normally
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_FALSE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+}
+
+TEST_F(SafeBrowsingServiceTest, WhenUserIsIncognitoReturnsFalse) {
+  // Default scenario: User is in standard protection normally
+  EXPECT_TRUE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+  // Set profile to incognito
+  otr_profile_ = std::move(profile_builder_.BuildIncognito(profile_.get()));
+  EXPECT_FALSE(
+      SafeBrowsingService::IsUserEligibleForESBPromo(otr_profile_.get()));
+}
+
+TEST_F(SafeBrowsingServiceTest, WhenUserIsInNoProtectionNormallyoReturnsFalse) {
+  // Default scenario: User is in standard protection normally
+  EXPECT_TRUE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
+  // Set no protection normally
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_FALSE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
 }
 
 class SafeBrowsingServiceAntiPhishingTelemetryTest

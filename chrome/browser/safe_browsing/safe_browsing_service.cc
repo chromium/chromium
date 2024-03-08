@@ -61,6 +61,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/unified_consent/pref_names.h"
@@ -147,6 +148,16 @@ base::FilePath SafeBrowsingService::GetBaseFilename() {
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
   DCHECK(result);
   return path.Append(safe_browsing::kSafeBrowsingBaseFilename);
+}
+
+// static
+bool SafeBrowsingService::IsUserEligibleForESBPromo(Profile* profile) {
+  if (IsSafeBrowsingPolicyManaged(*profile->GetPrefs()) ||
+      profile->IsOffTheRecord()) {
+    return false;
+  }
+  return GetSafeBrowsingState(*profile->GetPrefs()) ==
+         SafeBrowsingState::STANDARD_PROTECTION;
 }
 
 SafeBrowsingService::SafeBrowsingService()

@@ -95,6 +95,10 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
 
   static base::FilePath GetBaseFilename();
 
+  // Helper function to determine if a user meets the requirements to be shown
+  // a ESB promo.
+  static bool IsUserEligibleForESBPromo(Profile* profile);
+
   // Called on the UI thread to initialize the service.
   void Initialize();
 
