@@ -244,12 +244,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                SnapPosition snap_position,
                                WindowSnapActionSource snap_action_source);
 
-  // Swaps the window(s). If the it is triggered by `kDoubleTap` with only one
-  // window snapped, the window will be snapped to the other position. For all
-  // other cases with `primary_window_` and `secondary_widnow_` available, the
-  // two windows will be swapped together with their bounds.
-  void SwapWindows();
-
   // |position| should be |LEFT| or |RIGHT|, and this function returns
   // |primary_window_| or |secondary_window_| accordingly.
   aura::Window* GetSnappedWindow(SnapPosition position);
@@ -371,6 +365,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
   void EndResizeWithDivider(const gfx::Point& location_in_screen) override;
   void OnResizeEnding() override;
+  void SwapWindows() override;
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size,

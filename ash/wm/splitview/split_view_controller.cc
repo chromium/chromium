@@ -549,6 +549,11 @@ SplitViewController::~SplitViewController() {
     snap_group_controller->RemoveObserver(this);
   }
 
+  // Needed in case `this` is destroyed due to a root window being removed,
+  // during which `SplitViewDividerView` may still hold a reference to
+  // `SplitViewController`.
+  split_view_divider_.ShutDown();
+
   EndSplitView(EndReason::kRootWindowDestroyed);
 }
 
@@ -898,48 +903,6 @@ void SplitViewController::AttachToBeSnappedWindow(
 
   SetDividerPosition(fixed_divider_position);
   split_view_divider_.UpdateDividerBounds();
-}
-
-void SplitViewController::SwapWindows() {
-  DCHECK(InSplitViewMode());
-
-  // Ignore `IsResizingWithDivider()` because it will be true in case of
-  // double tapping (not double clicking) the divider without ever actually
-  // dragging it anywhere. Double tapping the divider triggers
-  // StartResizeWithDivider(), EndResizeWithDivider(), StartResizeWithDivider(),
-  // SwapWindows(), EndResizeWithDivider(). Double clicking the divider
-  // (possible by using the emulator or chrome://flags/#force-tablet-mode)
-  // triggers StartResizeWithDivider(), EndResizeWithDivider(),
-  // StartResizeWithDivider(), EndResizeWithDivider(), SwapWindows(). Those two
-  // sequences of function calls are what were mainly considered in writing the
-  // condition for bailing out here, to disallow swapping windows when the
-  // divider is being dragged or is animating.
-  if (IsDividerAnimating()) {
-    return;
-  }
-
-  SwapWindowsAndUpdateBounds();
-  if (IsSnapped(primary_window_)) {
-    TriggerWMEventToSnapWindow(WindowState::Get(primary_window_),
-                               WM_EVENT_SNAP_PRIMARY);
-  }
-  if (IsSnapped(secondary_window_)) {
-    TriggerWMEventToSnapWindow(WindowState::Get(secondary_window_),
-                               WM_EVENT_SNAP_SECONDARY);
-  }
-
-  // Update `default_snap_position_` if necessary.
-  if (!primary_window_ || !secondary_window_) {
-    default_snap_position_ =
-        primary_window_ ? SnapPosition::kPrimary : SnapPosition::kSecondary;
-  }
-
-  SetDividerPosition(GetClosestFixedDividerPosition(GetDividerPosition()));
-  UpdateStateAndNotifyObservers();
-  NotifyWindowSwapped();
-
-  base::RecordAction(
-      base::UserMetricsAction("SplitView_DoubleTapDividerSwapWindows"));
 }
 
 aura::Window* SplitViewController::GetSnappedWindow(SnapPosition position) {
@@ -1775,6 +1738,48 @@ void SplitViewController::OnResizeEnding() {
   resize_timer_.Stop();
   presentation_time_recorder_.reset();
   RestoreWindowsTransformAfterResizing();
+}
+
+void SplitViewController::SwapWindows() {
+  DCHECK(InSplitViewMode());
+
+  // Ignore `IsResizingWithDivider()` because it will be true in case of
+  // double tapping (not double clicking) the divider without ever actually
+  // dragging it anywhere. Double tapping the divider triggers
+  // StartResizeWithDivider(), EndResizeWithDivider(), StartResizeWithDivider(),
+  // SwapWindows(), EndResizeWithDivider(). Double clicking the divider
+  // (possible by using the emulator or chrome://flags/#force-tablet-mode)
+  // triggers StartResizeWithDivider(), EndResizeWithDivider(),
+  // StartResizeWithDivider(), EndResizeWithDivider(), SwapWindows(). Those two
+  // sequences of function calls are what were mainly considered in writing the
+  // condition for bailing out here, to disallow swapping windows when the
+  // divider is being dragged or is animating.
+  if (IsDividerAnimating()) {
+    return;
+  }
+
+  SwapWindowsAndUpdateBounds();
+  if (IsSnapped(primary_window_)) {
+    TriggerWMEventToSnapWindow(WindowState::Get(primary_window_),
+                               WM_EVENT_SNAP_PRIMARY);
+  }
+  if (IsSnapped(secondary_window_)) {
+    TriggerWMEventToSnapWindow(WindowState::Get(secondary_window_),
+                               WM_EVENT_SNAP_SECONDARY);
+  }
+
+  // Update `default_snap_position_` if necessary.
+  if (!primary_window_ || !secondary_window_) {
+    default_snap_position_ =
+        primary_window_ ? SnapPosition::kPrimary : SnapPosition::kSecondary;
+  }
+
+  SetDividerPosition(GetClosestFixedDividerPosition(GetDividerPosition()));
+  UpdateStateAndNotifyObservers();
+  NotifyWindowSwapped();
+
+  base::RecordAction(
+      base::UserMetricsAction("SplitView_DoubleTapDividerSwapWindows"));
 }
 
 gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(

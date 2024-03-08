@@ -32,6 +32,12 @@ class LayoutDividerController {
   // resizing and cleaning up drag details.
   virtual void OnResizeEnding() = 0;
 
+  // Swaps the window(s). If in tablet mode, it is triggered by `kDoubleTap`
+  // with only one window snapped, the window will be snapped to the other
+  // position. For all other cases with the windows in `GetLayoutWindows()`
+  // available, the two windows will be swapped together with their bounds.
+  virtual void SwapWindows() = 0;
+
   // Gets snapped bounds in screen coordinates based on `snap_position` and
   // `snap_ratio`. The snapped bounds are updated to accommodate for the
   // `SplitViewDivider` so that the windows and `SplitViewDivider` are not

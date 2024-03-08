@@ -109,8 +109,11 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(
   }
 }
 
-aura::Window* SplitViewDivider::GetRootWindow() const {
-  return divider_widget_->GetNativeWindow()->GetRootWindow();
+void SplitViewDivider::ShutDown() {
+  if (divider_view_) {
+    divider_view_->OnShuttingDown();
+  }
+  CloseDividerWidget();
 }
 
 bool SplitViewDivider::HasDividerWidget() const {
@@ -444,6 +447,10 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   wm::TransientWindowManager::GetOrCreate(divider_widget_native_window)
       ->set_parent_controls_lifetime(false);
   divider_widget_->Show();
+}
+
+aura::Window* SplitViewDivider::GetRootWindow() const {
+  return divider_widget_->GetNativeWindow()->GetRootWindow();
 }
 
 void SplitViewDivider::RefreshStackingOrder() {

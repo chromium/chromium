@@ -12,8 +12,8 @@
 #include "ash/style/icon_button.h"
 #include "ash/utility/cursor_setter.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
-#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -43,9 +43,9 @@ constexpr gfx::Size kFeedbackButtonSize{40, 40};
 
 }  // namespace
 
-SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
+SplitViewDividerView::SplitViewDividerView(LayoutDividerController* controller,
                                            SplitViewDivider* divider)
-    : split_view_controller_(controller),
+    : controller_(controller),
       divider_handler_view_(
           AddChildView(std::make_unique<SplitViewDividerHandlerView>())),
       divider_(divider) {
@@ -64,6 +64,10 @@ SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
 }
 
 SplitViewDividerView::~SplitViewDividerView() = default;
+
+void SplitViewDividerView::OnShuttingDown() {
+  controller_ = nullptr;
+}
 
 void SplitViewDividerView::DoSpawningAnimation(int spawn_position) {
   const gfx::Rect bounds = GetBoundsInScreen();
@@ -109,8 +113,7 @@ void SplitViewDividerView::Layout(PassKey) {
   }
 
   SetBoundsRect(GetLocalBounds());
-  divider_handler_view_->Refresh(
-      split_view_controller_->IsResizingWithDivider());
+  divider_handler_view_->Refresh(divider_->is_resizing_with_divider());
 
   if (feedback_button_) {
     // TODO(michelefan): Calculate the bounds for the feedback button for
@@ -123,6 +126,7 @@ void SplitViewDividerView::Layout(PassKey) {
         feedback_button_size.width(), feedback_button_size.height());
     feedback_button_->SetBoundsRect(feedback_button_bounds);
   }
+  divider_handler_view_->Refresh(divider_->is_resizing_with_divider());
 }
 
 void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -130,7 +134,7 @@ void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
   ConvertPointToScreen(this, &screen_location);
 
   // Set cursor type as the resize cursor when it's on the split view divider.
-  cursor_setter_.UpdateCursor(split_view_controller_->root_window(),
+  cursor_setter_.UpdateCursor(GetWidget()->GetNativeWindow()->GetRootWindow(),
                               ui::mojom::CursorType::kColumnResize);
 
   // Show `feedback_button_` on mouse entered.
@@ -217,33 +221,13 @@ bool SplitViewDividerView::DoesIntersectRect(const views::View* target,
 }
 
 void SplitViewDividerView::SwapWindows() {
-  if (IsSnapGroupEnabledInClamshellMode()) {
-    // TODO(sophiewen): Consider adding a reference to `snap_group_` in
-    // `SplitViewDivider` when multiple groups are added.
-    // The divider would only be created between two windows.
-    CHECK_EQ(2u, divider_->observed_windows().size());
-    aura::Window* window = divider_->observed_windows().front();
-    if (SnapGroup* snap_group =
-            SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
-      snap_group->SwapWindows();
-    }
-    return;
-  }
-  split_view_controller_->SwapWindows();
+  controller_->SwapWindows();
 }
 
 void SplitViewDividerView::OnResizeStatusChanged() {
-  // It's possible that when this function is called, split view mode has
-  // been ended, and the divider widget is to be deleted soon. In this case
+  // If split view has ended, the divider widget will be closing. In this case
   // no need to update the divider layout and do the animation.
-  // `divider_` can also be destroyed while resizing if during mid-gesture we do
-  // tablet <-> clamshell transition.
-  // TODO(b/314018158): Remove `split_view_controller_` from
-  // `SplitViewDividerView`.
-  // Note that the `divider_widget()` pointer might be cleared while the divider
-  // and this view is being closed asynchronously.
-  if (!divider_->divider_widget() ||
-      !split_view_controller_->InSplitViewMode()) {
+  if (!divider_->divider_widget()) {
     return;
   }
 
@@ -253,11 +237,11 @@ void SplitViewDividerView::OnResizeStatusChanged() {
   divider_animator->StopAnimatingProperty(ui::LayerAnimationElement::BOUNDS);
 
   // Do the divider enlarge/shrink animation when starting/ending dragging.
+  const bool is_resizing = divider_->is_resizing_with_divider();
   SetBoundsRect(GetLocalBounds());
   const gfx::Rect old_bounds =
       divider_->GetDividerBoundsInScreen(/*is_dragging=*/false);
-  const gfx::Rect new_bounds = divider_->GetDividerBoundsInScreen(
-      split_view_controller_->IsResizingWithDivider());
+  const gfx::Rect new_bounds = divider_->GetDividerBoundsInScreen(is_resizing);
   gfx::Transform transform;
   transform.Translate(new_bounds.x() - old_bounds.x(),
                       new_bounds.y() - old_bounds.y());
@@ -272,8 +256,7 @@ void SplitViewDividerView::OnResizeStatusChanged() {
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   SetTransform(transform);
 
-  divider_handler_view_->Refresh(
-      split_view_controller_->IsResizingWithDivider());
+  divider_handler_view_->Refresh(is_resizing);
 }
 
 void SplitViewDividerView::StartResizing(gfx::Point location) {

@@ -55,12 +55,14 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
       bool is_dragging);
 
   views::Widget* divider_widget() { return divider_widget_; }
-
   bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
-
   const aura::Window::Windows& observed_windows() const {
     return observed_windows_;
   }
+
+  // Called explicitly by the delegate that created this when it is shutting
+  // down.
+  void ShutDown();
 
   // Returns true if the divider widget is created.
   bool HasDividerWidget() const;
