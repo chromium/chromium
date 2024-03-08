@@ -56,8 +56,6 @@ class MockWebUIDataSource : public content::WebUIDataSource {
                             should_handle_request_callback,
                         const WebUIDataSource::HandleRequestCallback&
                             handle_request_callback) override {}
-  void DisableReplaceExistingSource() override {}
-  void DisableContentSecurityPolicy() override {}
   void OverrideContentSecurityPolicy(network::mojom::CSPDirectiveName directive,
                                      const std::string& value) override {}
   void OverrideCrossOriginOpenerPolicy(const std::string& value) override {}

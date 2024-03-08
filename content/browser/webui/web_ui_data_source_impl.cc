@@ -94,11 +94,7 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
                         URLDataSource::GotDataCallback callback) override {
     return parent_->StartDataRequest(url, wc_getter, std::move(callback));
   }
-  bool ShouldReplaceExistingSource() override {
-    return parent_->replace_existing_source_;
-  }
   bool AllowCaching() override { return false; }
-  bool ShouldAddContentSecurityPolicy() override { return parent_->add_csp_; }
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override {
     if (parent_->csp_overrides_.contains(directive)) {
@@ -235,16 +231,8 @@ void WebUIDataSourceImpl::SetRequestFilter(
   filter_callback_ = handle_request_callback;
 }
 
-void WebUIDataSourceImpl::DisableReplaceExistingSource() {
-  replace_existing_source_ = false;
-}
-
 bool WebUIDataSourceImpl::IsWebUIDataSourceImpl() const {
   return true;
-}
-
-void WebUIDataSourceImpl::DisableContentSecurityPolicy() {
-  add_csp_ = false;
 }
 
 void WebUIDataSourceImpl::OverrideContentSecurityPolicy(
