@@ -4,10 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
-#include <vector>
-
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -15,7 +12,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/web_ui.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -29,30 +25,12 @@
 #include "ui/wm/core/window_util.h"
 #endif
 
-namespace {
-
-// In order to glue the WebUIController to the appropriate instance of
-// LensOverlayController, we need to keep a global list of a
-// LensOverlayControllers.
-using ControllerVector = std::vector<LensOverlayController*>;
-ControllerVector& GetAllControllers() {
-  static base::NoDestructor<ControllerVector> instance;
-  return *instance;
-}
-
-}  // namespace
-
 LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
-  // Automatically unregisters on destruction.
   tab_model_->owning_model()->AddObserver(this);
-
-  GetAllControllers().push_back(this);
 }
 
-LensOverlayController::~LensOverlayController() {
-  std::erase(GetAllControllers(), this);
-}
+LensOverlayController::~LensOverlayController() = default;
 
 void LensOverlayController::ShowUI() {
   // If UI is already showing or in the process of showing, do nothing.
@@ -84,31 +62,6 @@ void LensOverlayController::ShowUI() {
                      weak_factory_.GetWeakPtr(), ++screenshot_attempt_id_));
 }
 
-void LensOverlayController::CloseUI() {
-  overlay_widget_.reset();
-  overlay_web_contents_ = nullptr;
-  receiver_.reset();
-  page_.reset();
-  // In the future we may want a hibernate state. In this case we would stop
-  // showing the UI but persist enough information to defrost the original UI
-  // state when the tab is foregrounded.
-  state_ = State::kOff;
-}
-
-// static
-void LensOverlayController::BindOverlay(
-    content::WebUI* web_ui,
-    mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
-    mojo::PendingRemote<lens::mojom::LensPage> page) {
-  content::WebContents* web_contents = web_ui->GetWebContents();
-  for (LensOverlayController* controller : GetAllControllers()) {
-    if (controller->overlay_web_contents_ == web_contents) {
-      controller->BindOverlay(std::move(receiver), std::move(page));
-      return;
-    }
-  }
-}
-
 void LensOverlayController::DidCaptureScreenshot(int attempt_id,
                                                  const SkBitmap& bitmap) {
   // While capturing a screenshot the overlay was cancelled. Do nothing.
@@ -123,7 +76,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
 
   ShowOverlayWidget();
 
-  state_ = State::kStartingWebUI;
+  state_ = State::kOverlay;
 }
 
 void LensOverlayController::ShowOverlayWidget() {
@@ -189,7 +142,6 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   // Load the untrusted WebUI into the web view.
   GURL url(chrome::kChromeUILensUntrustedURL);
   web_view->LoadInitialURL(url);
-  overlay_web_contents_ = web_view->GetWebContents();
 
   host_view->AddChildView(std::move(web_view));
   return host_view;
@@ -219,19 +171,12 @@ void LensOverlayController::TabBackgrounded() {
   CloseUI();
 }
 
-void LensOverlayController::BindOverlay(
-    mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
-    mojo::PendingRemote<lens::mojom::LensPage> page) {
-  if (state_ != State::kStartingWebUI) {
-    return;
-  }
-  receiver_.Bind(std::move(receiver));
-  page_.Bind(std::move(page));
-  state_ = State::kOverlay;
-}
-
-void LensOverlayController::CloseRequestedByOverlay() {
-  CloseUI();
+void LensOverlayController::CloseUI() {
+  overlay_widget_.reset();
+  // In the future we may want a hibernate state. In this case we would stop
+  // showing the UI but persist enough information to defrost the original UI
+  // state when the tab is foregrounded.
+  state_ = State::kOff;
 }
 
 raw_ptr<views::Widget> LensOverlayController::GetOverlayWidgetForTesting() {

@@ -1157,11 +1157,6 @@ void PopulateChromeWebUIFrameBinders(
       new_tab_page_third_party::mojom::PageHandlerFactory,
       NewTabPageThirdPartyUI>(map);
 
-  if (lens::features::IsLensOverlayEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<lens::mojom::LensPageHandlerFactory,
-                                           lens::LensUntrustedUI>(map);
-  }
-
   RegisterWebUIControllerInterfaceBinder<
       color_change_listener::mojom::PageHandler,
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
