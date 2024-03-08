@@ -1320,6 +1320,30 @@
     },
   },
   {
+    'name': 'chromium.build.fyi',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'Mac Builder': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'chromium_mac_scripts',
+        },
+      },
+      'Mac13 Tests Siso FYI': {
+        'mixins': [
+            'mac_13_x64',
+            'isolate_profile_data',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests_no_nacl',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_once',
+        },
+      },
+    },
+  },
+  {
     # CfT == Chrome for Testing
     # The -cft builders are the Chrome for Testing builders. They
     # are intended to mirror the main builders as much as possible.
