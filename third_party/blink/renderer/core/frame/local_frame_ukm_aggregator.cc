@@ -605,6 +605,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent(int64_t source_id,
   RECORD_METRIC(JavascriptIntersectionObserver);
   RECORD_METRIC(LazyLoadIntersectionObserver);
   RECORD_METRIC(MediaIntersectionObserver);
+  RECORD_METRIC(PermissionElementIntersectionObserver);
   RECORD_METRIC(AnchorElementMetricsIntersectionObserver);
   RECORD_METRIC(UpdateViewportIntersection);
   RECORD_METRIC(VisualUpdateDelay);
@@ -663,6 +664,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent(
   RECORD_METRIC(JavascriptIntersectionObserver);
   RECORD_METRIC(LazyLoadIntersectionObserver);
   RECORD_METRIC(MediaIntersectionObserver);
+  RECORD_METRIC(PermissionElementIntersectionObserver);
   RECORD_METRIC(AnchorElementMetricsIntersectionObserver);
   RECORD_METRIC(UpdateViewportIntersection);
   RECORD_METRIC(VisualUpdateDelay);

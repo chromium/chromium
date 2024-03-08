@@ -540,6 +540,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.MediaIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Paint.UpdateTime"/>
   <affected-histogram name="Blink.ParseStyleSheet.UpdateTime"/>
+  <affected-histogram
+      name="Blink.PermissionElementIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.PossibleSynchronizedScrollCount2.UpdateTime"/>
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>

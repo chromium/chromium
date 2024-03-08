@@ -5085,6 +5085,12 @@ be describing additional metrics about the same event.
       The time spent parsing style sheets.
     </summary>
   </metric>
+  <metric name="PermissionElementIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for permission elements, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="PossibleSynchronizedScrollCount">
     <obsolete>
       Was succeeded by PossibleSynchronizedScrollCount2 since this missed a case
@@ -6173,6 +6179,26 @@ be describing additional metrics about the same event.
   <metric name="ParseStyleSheetBeginMainFrame">
     <summary>
       The total main frame time spent parsing style sheets.
+    </summary>
+  </metric>
+  <metric name="PermissionElementIntersectionObserver">
+    <summary>
+      Time spent computing IntersectionObservations for permission elements, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PermissionElementIntersectionObserverBeginMainFrame">
+    <summary>
+      The total main frame time used to compute IntersectionObservations for
+      permission elements, in microseconds.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCount">

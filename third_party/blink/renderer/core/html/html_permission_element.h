@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/shadow/permission_shadow_element.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -62,12 +63,27 @@ class CORE_EXPORT HTMLPermissionElement final
     return CascadeFilter(CSSProperty::kValidForPermissionElement, false);
   }
 
+  bool IsFullyVisibleForTesting() const { return is_fully_visible_; }
+
  private:
+  // TODO(crbug.com/1315595): remove this friend class once migration
+  // to blink_unittests_v2 completes.
+  friend class ClickingEnabledChecker;
+
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+                           IntersectionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
                            NotAllowedInFencedFrame);
 
   enum class DisableReason {
+    // This element is temporarily disabled for a short period
+    // (`kDefaultDisableTimeout`) after being attached to the DOM.
     kRecentlyAttachedToDOM,
+
+    // This element is temporarily disabled for a short period
+    // (`kDefaultDisableTimeout`) after its intersection status changed from
+    // invisible to visible.
+    kIntersectionChanged,
   };
 
   // Ensure there is a connection to the permission service and return it.
@@ -127,11 +143,19 @@ class CORE_EXPORT HTMLPermissionElement final
   // Removes any existing (temporary or indefinite) disable reasons.
   void EnableClicking(DisableReason reason);
 
+  // Similar to `EnableClicking`, calling this method can override any disabled
+  // duration for a given reason, but after a delay.
+  void EnableClickingAfterDelay(DisableReason reason,
+                                const base::TimeDelta& delay);
+
   void UpdateAppearance();
 
   void UpdateText();
 
   void AddConsoleError(String error);
+
+  void OnIntersectionChanged(
+      const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
@@ -169,10 +193,15 @@ class CORE_EXPORT HTMLPermissionElement final
 
   Member<PermissionShadowElement> shadow_element_;
   Member<HTMLSpanElement> permission_text_span_;
+  Member<IntersectionObserver> intersection_observer_;
 
   // Set to true only if all the corresponding permissions (from `type`
   // attribute) are granted.
   bool permissions_granted_ = false;
+
+  // Set to true only if this element is fully visible on the viewport (observed
+  // by IntersectionObserver).
+  bool is_fully_visible_ = true;
 
   // The permission descriptors that correspond to a request made from this
   // permission element. Only computed once, when the `type` attribute is set.

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -619,6 +620,106 @@ TEST_F(HTMLPemissionElementFencedFrameTest, NotAllowedInFencedFrame) {
     permission_service()->set_pepc_registered_callback(
         base::BindOnce(&NotReachedForPEPCRegistered));
   }
+}
+
+// TODO(crbug.com/1315595): remove this class and use
+// `SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME)` once migration
+// to blink_unittests_v2 completes. We then can simply use
+// `time_environment()->FastForwardBy()`
+class ClickingEnabledChecker {
+ public:
+  explicit ClickingEnabledChecker(HTMLPermissionElement* element)
+      : element_(element) {}
+
+  ClickingEnabledChecker(const ClickingEnabledChecker&) = delete;
+  ClickingEnabledChecker& operator=(const ClickingEnabledChecker&) = delete;
+
+  void CheckClickingEnabledAfterDelay(base::TimeDelta time,
+                                      bool expected_enabled) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        WTF::BindOnce(&ClickingEnabledChecker::CheckClickingEnabled,
+                      base::Unretained(this), expected_enabled),
+        time);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+  void CheckClickingEnabled(bool enabled) {
+    EXPECT_EQ(element_->IsClickingEnabled(), enabled);
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+ private:
+  Persistent<HTMLPermissionElement> element_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+class HTMLPemissionElementIntersectionTest : public SimTest {
+ public:
+  static constexpr int kViewportWidth = 800;
+  static constexpr int kViewportHeight = 600;
+
+ protected:
+  HTMLPemissionElementIntersectionTest() = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
+    WebView().MainFrameWidget()->Resize(
+        gfx::Size(kViewportWidth, kViewportHeight));
+  }
+
+  void TearDown() override {
+    IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
+    SimTest::TearDown();
+  }
+
+  void WaitForFullyVisibleChanged(HTMLPermissionElement* element,
+                                  bool fully_visible) {
+    // The intersection observer might only detect elements that enter/leave the
+    // viewport after a cycle is complete.
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(element->IsFullyVisibleForTesting(), fully_visible);
+  }
+};
+
+TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
+  const base::TimeDelta kDefaultTimeout = base::Milliseconds(500);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id='heading' style='height: 100px;'></div>
+    <permission id='camera' type='camera'>
+    <div id='trailing' style='height: 700px;'></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element = To<HTMLPermissionElement>(
+      GetDocument().QuerySelector(AtomicString("permission")));
+  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+  ClickingEnabledChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+  GetDocument().View()->LayoutViewport()->ScrollBy(
+      ScrollOffset(0, kViewportHeight), mojom::blink::ScrollType::kUser);
+  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ false);
+  GetDocument().View()->LayoutViewport()->ScrollBy(
+      ScrollOffset(0, -kViewportHeight), mojom::blink::ScrollType::kUser);
+
+  // The element is fully visible now but unclickable for a short delay.
+  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+  EXPECT_TRUE(permission_element->IsFullyVisibleForTesting());
+  EXPECT_TRUE(permission_element->IsClickingEnabled());
 }
 
 }  // namespace blink

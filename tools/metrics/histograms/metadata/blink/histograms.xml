@@ -3415,6 +3415,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="Blink.PermissionElementIntersectionObserver.UpdateTime"
+    units="microseconds" expires_after="2024-08-04">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
+
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Time spent computing IntersectionObserver observations in the Blink document
+    lifecycle where the observation is for gathering information about
+    permission elements within the viewport. Recorded when an intersection
+    observation attributed to permission element is updated.
+
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
+
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.PossibleSynchronizedScrollCount2.UpdateTime"
     units="count" expires_after="2024-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
