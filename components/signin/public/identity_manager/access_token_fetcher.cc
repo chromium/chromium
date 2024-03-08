@@ -25,7 +25,7 @@ AccessTokenFetcher::AccessTokenFetcher(
     const ScopeSet& scopes,
     TokenCallback callback,
     Mode mode,
-    bool should_verify_scope_access)
+    bool require_sync_consent_for_scope_verification)
     : AccessTokenFetcher(account_id,
                          oauth_consumer_name,
                          token_service,
@@ -34,7 +34,7 @@ AccessTokenFetcher::AccessTokenFetcher(
                          scopes,
                          std::move(callback),
                          mode,
-                         should_verify_scope_access) {}
+                         require_sync_consent_for_scope_verification) {}
 
 AccessTokenFetcher::AccessTokenFetcher(
     const CoreAccountId& account_id,
@@ -45,7 +45,7 @@ AccessTokenFetcher::AccessTokenFetcher(
     const ScopeSet& scopes,
     TokenCallback callback,
     Mode mode,
-    bool should_verify_scope_access)
+    bool require_sync_consent_for_scope_verification)
     : OAuth2AccessTokenManager::Consumer(oauth_consumer_name),
       account_id_(account_id),
       token_service_(token_service),
@@ -54,7 +54,8 @@ AccessTokenFetcher::AccessTokenFetcher(
       scopes_(scopes),
       callback_(std::move(callback)),
       mode_(mode),
-      should_verify_scope_access_(should_verify_scope_access) {
+      require_sync_consent_for_scope_verification_(
+          require_sync_consent_for_scope_verification) {
   if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
     StartAccessTokenRequest();
     return;
@@ -93,8 +94,13 @@ void AccessTokenFetcher::VerifyScopeAccess() {
         scope.c_str());
   }
 
-  // Only validate scope access if the user has not given sync consent.
-  if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
+  // Bypass scope checking if there's a primary account with the sync consent.
+  // If `require_sync_consent_for_scope_verification_` is false - just having a
+  // primary account is enough to bypass the verification.
+  ConsentLevel consent_level = require_sync_consent_for_scope_verification_
+                                   ? ConsentLevel::kSync
+                                   : ConsentLevel::kSignin;
+  if (!primary_account_manager_->HasPrimaryAccount(consent_level)) {
     for (const std::string& scope : scopes_) {
       CHECK(GetUnconsentedOAuth2Scopes().count(scope)) << base::StringPrintf(
           "Consumer '%s' is requesting scope '%s' that requires user consent. "
@@ -129,9 +135,7 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
 
   // Ensure that the client has the appropriate user consent for accessing the
   // OAuth API scopes in this request.
-  if (should_verify_scope_access_) {
-    VerifyScopeAccess();
-  }
+  VerifyScopeAccess();
 
   if (url_loader_factory_) {
     access_token_request_ = token_service_->StartRequestWithContext(

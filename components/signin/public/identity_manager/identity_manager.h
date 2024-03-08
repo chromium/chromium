@@ -360,7 +360,7 @@ class IdentityManager : public KeyedService,
         AccountConsistencyMethod::kDisabled;
     // TODO(crbug.com/325904258): Reconsider whether completely disabling the
     // scope checking is the right approach in the long run.
-    bool should_verify_scope_access = true;
+    bool require_sync_consent_for_scope_verification = true;
     raw_ptr<SigninClient> signin_client = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
     raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
@@ -691,7 +691,7 @@ class IdentityManager : public KeyedService,
 
   // TODO(crbug.com/40067025): Remove this field once
   // kReplaceSyncPromosWithSignInPromos launches.
-  const bool should_verify_scope_access_;
+  const bool require_sync_consent_for_scope_verification_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Java-side IdentityManager object.

@@ -70,7 +70,7 @@ WebViewIdentityManagerFactory::BuildServiceInstanceFor(
   params.pref_service = browser_state->GetPrefs();
   params.profile_path = base::FilePath();
   params.signin_client = client;
-  params.should_verify_scope_access = false;
+  params.require_sync_consent_for_scope_verification = false;
 
   return signin::BuildIdentityManager(&params);
 }

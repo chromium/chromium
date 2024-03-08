@@ -205,7 +205,8 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(IS_CHROMEOS)
   init_params.account_manager_facade = params->account_manager_facade;
 #endif
-  init_params.should_verify_scope_access = params->should_verify_scope_access;
+  init_params.require_sync_consent_for_scope_verification =
+      params->require_sync_consent_for_scope_verification;
 
   return init_params;
 }
