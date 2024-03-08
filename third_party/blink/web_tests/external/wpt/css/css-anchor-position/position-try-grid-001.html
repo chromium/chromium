@@ -33,32 +33,35 @@
   grid-column: 2 / 4;
   grid-row: 2 / 4;
   position: absolute;
-  position-fallback: --fallback1;
+  position-try-options: --f1, --f2, --f3;
   width: 100px;
   height: 100px;
   background: lime;
   opacity: .2;
+  /* Position to the left of the anchor. */
+  right: anchor(--a1 left);
+  top: anchor(--a1 top);
+  }
 }
-@position-fallback --fallback1 {
-  @try { /* Position to the left of the anchor. */
-    right: anchor(--a1 left);
-    top: anchor(--a1 top);
-  }
-  @try { /* Position to the right of the anchor with the wider width than CB. */
-    left: anchor(--a1 right);
-    top: anchor(--a1 top);
-    width: 250px;
-  }
-  @try { /* Position to the right of the anchor. This entry should succeed. */
-    left: anchor(--a1 right);
-    top: anchor(--a1 top);
-  }
-  @try { /* Zero-sized, the last entry wins if none succeeded. */
-    left: 0;
-    top: 0;
-    width: 0;
-    height: 0;
-  }
+@position-try --f1 {
+  inset: auto;
+  left: anchor(--a1 right);
+  top: anchor(--a1 top);
+  width: 250px;
+}
+@position-try --f2 {
+  /* Position to the right of the anchor. This entry should succeed. */
+  inset: auto;
+  left: anchor(--a1 right);
+  top: anchor(--a1 top);
+}
+@position-try --f3 {
+  /* Zero-sized, the last entry wins if none succeeded. */
+  inset: auto;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
 }
 </style>
 <body onload="checkLayoutForAnchorPos('.target')">

@@ -36,29 +36,28 @@
   position: absolute;
   background: green;
   anchor-default: --a;
-  position-fallback: --fallback;
+  position-try-options: --f1, --f2;
+  width: 100px; height: 100px;
+  /* Above the anchor */
+  left: anchor(--a left);
+  bottom: anchor(--a top);
 }
 
-@position-fallback --fallback {
-  /* Above the anchor */
-  @try {
-    width: 100px; height: 100px;
-    left: anchor(--a left);
-    bottom: anchor(--a top);
-  }
+@position-try --f1 {
   /* Left of the anchor */
-  @try {
-    width: 100px; height: 100px;
-    right: anchor(--a left);
-    top: anchor(--a top);
-  }
-  /* Right of the anchor */
-  @try {
-    width: 100px; height: 100px;
-    left: anchor(--a right);
-    top: anchor(--a top);
-  }
+  right: anchor(--a left);
+  top: anchor(--a top);
+  bottom: auto;
+  left: auto;
 }
+
+@position-try --f2 {
+  /* Right of the anchor */
+  left: anchor(--a right);
+  top: anchor(--a top);
+  bottom: auto;
+}
+
 </style>
 
 <div id="cb">

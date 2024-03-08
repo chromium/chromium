@@ -38,83 +38,79 @@ body { margin: 0; }
   background: lime;
 }
 
-.exceeds-end {
-  position-fallback: --exceeds-end;
-}
-
 /* Used on a element whose block and inline axes are the same with its
    containing block, so that the first two positions will exceed the end edges
    of the IMCB, and the last position will be used. */
-@position-fallback --exceeds-end {
-  @try {
-    left: 0;
-    right: anchor(--a left);
-    width: 100px;
-  }
-
-  @try {
-    top: 0;
-    bottom: anchor(--a top);
-    height: 100px;
-  }
-
-  @try {
-    top: 11px;
-    left: 22px;
-  }
+.exceeds-end {
+  position-try-options: --exceeds-end-1, --exceeds-end-2;
+  left: 0;
+  right: anchor(--a left);
+  width: 100px;
 }
 
-.exceeds-start {
-  position-fallback: --exceeds-start;
+@position-try --exceeds-end-1 {
+  inset: auto;
+  top: 0;
+  bottom: anchor(--a top);
+  width: auto;
+  height: 100px;
+}
+
+@position-try --exceeds-end-2 {
+  inset: auto;
+  top: 11px;
+  left: 22px;
+  width: auto;
+  height: auto;
 }
 
 /* Used on a element whose block and inline axes are in the opposite directions
    of its containing block, so that the first two positions will exceed the
    start edges of the IMCB, and the last position will be used. */
-@position-fallback --exceeds-start {
-  @try {
-    bottom: 0;
-    top: anchor(--a bottom);
-    height: 100px;
-  }
-
-  @try {
-    right: 0;
-    left: anchor(--a right);
-    width: 100px;
-  }
-
-  @try {
-    top: 11px;
-    left: 22px;
-  }
+.exceeds-start {
+  position-try-options: --exceeds-start-1, --exceeds-start-2;
+  bottom: 0;
+  top: anchor(--a bottom);
+  height: 100px;
 }
 
-.exceeds-size {
-  position-fallback: --exceeds-size;
+@position-try --exceeds-start-1 {
+  inset: auto;
+  right: 0;
+  left: anchor(--a right);
+  width: 100px;
+  height: auto;
+}
+
+@position-try --exceeds-start-2 {
+  inset: auto;
+  top: 11px;
+  left: 22px;
+  height: auto;
 }
 
 /* Both inset sides are `auto`, but the size is too big to fit in the containing
    block. */
-@position-fallback --exceeds-size {
-  @try {
-    top: anchor(--a bottom);
-    left: auto;
-    right: auto;
-    width: 300px;
-  }
+.exceeds-size {
+  position-try-options: --exceeds-size-1, --exceeds-size-2;
+  top: anchor(--a bottom);
+  left: auto;
+  right: auto;
+  width: 300px;
+}
 
-  @try {
-    left: anchor(--a right);
-    top: auto;
-    bottom: auto;
-    height: 300px;
-  }
+@position-try --exceeds-size-1 {
+  inset: auto;
+  left: anchor(--a right);
+  width: auto;
+  height: 300px;
+}
 
-  @try {
-    top: 11px;
-    left: 22px;
-  }
+@position-try --exceeds-size-2 {
+  inset: auto;
+  width: auto;
+  top: 11px;
+  left: 22px;
 }
 </style>
 

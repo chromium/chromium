@@ -112,17 +112,14 @@ class StyleResolverTest : public PageTestBase {
     return style.MaxHeight();
   }
 
-  void UpdateStyleForOutOfFlow(Element& element,
-                               ScopedCSSName* name,
-                               wtf_size_t index) {
-    DCHECK(name);
-    StyleRulePositionFallback* rule =
-        GetStyleEngine().GetPositionFallbackRule(*name);
-    if (rule) {
-      const CSSPropertyValueSet* set = rule->TryPropertyValueSetAt(index);
-      GetStyleEngine().UpdateStyleForOutOfFlow(element, set,
-                                               /* anchor_evaluator */ nullptr);
-    }
+  void UpdateStyleForOutOfFlow(Element& element, AtomicString try_name) {
+    ScopedCSSName* scoped_name =
+        MakeGarbageCollected<ScopedCSSName>(try_name, &GetDocument());
+    StyleRulePositionTry* rule =
+        GetStyleEngine().GetPositionTryRule(*scoped_name);
+    CHECK(rule);
+    GetStyleEngine().UpdateStyleForOutOfFlow(element, &rule->Properties(),
+                                             /* anchor_evaluator */ nullptr);
   }
 
   size_t GetCurrentOldStylesCount() {
@@ -2937,21 +2934,18 @@ TEST_P(ParameterizedStyleResolverTest,
          "border-width";
 }
 
-TEST_P(ParameterizedStyleResolverTest, PositionFallbackStylesBasic_Cascade) {
+TEST_P(ParameterizedStyleResolverTest, PositionTryStylesBasic_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --fallback {
-        @try { }
-        @try { left: 100px; }
-        @try { top: 100px; }
-        @try { inset: 50px; }
-      }
+      @position-try --f1 { left: 100px; }
+      @position-try --f2 { top: 100px; }
+      @position-try --f3 { inset: 50px; }
       #target {
         position: absolute;
-        position-fallback: --fallback;
+        position-try-options: --f1, --f2, --f3;
       }
     </style>
     <div id="target"></div>
@@ -2959,60 +2953,49 @@ TEST_P(ParameterizedStyleResolverTest, PositionFallbackStylesBasic_Cascade) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
-      AtomicString("--fallback"), &GetDocument());
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
   EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
   EXPECT_EQ(Length::Fixed(100), GetLeft(*try1));
 
-  UpdateStyleForOutOfFlow(*target, fallback_name, 2);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f2"));
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(100), GetTop(*try2));
   EXPECT_EQ(Length::Auto(), GetLeft(*try2));
 
   // Shorthand should also work
-  UpdateStyleForOutOfFlow(*target, fallback_name, 3);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f3"));
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
   EXPECT_EQ(Length::Fixed(50), GetLeft(*try3));
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try3));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try3));
-
-  // Style without fallback when index is out of bounds.
-  UpdateStyleForOutOfFlow(*target, fallback_name, 4);
-  const ComputedStyle* try4 = target->GetComputedStyle();
-  EXPECT_EQ(Length::Auto(), GetTop(*try4));
-  EXPECT_EQ(Length::Auto(), GetLeft(*try4));
 }
 
 TEST_P(ParameterizedStyleResolverTest,
-       PositionFallbackStylesResolveLogicalProperties_Cascade) {
+       PositionTryStylesResolveLogicalProperties_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --fallback {
-        @try { }
-        @try { inset-inline-start: 100px; }
-        @try { inset-block: 100px 90px; }
-      }
+      @position-try --f1 { inset-inline-start: 100px; }
+      @position-try --f2 { inset-block: 100px 90px; }
       #target {
         position: absolute;
         writing-mode: vertical-rl;
         direction: rtl;
         inset: 50px;
-        position-fallback: --fallback;
+        position-try-options: --f1, --f2;
       }
     </style>
     <div id="target"></div>
@@ -3020,8 +3003,6 @@ TEST_P(ParameterizedStyleResolverTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
-      AtomicString("--fallback"), &GetDocument());
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
@@ -3031,7 +3012,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
   // 'inset-inline-start' should resolve to 'bottom'
-  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
@@ -3040,39 +3021,27 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
   // 'inset-block' with two parameters should set 'right' and then 'left'
-  UpdateStyleForOutOfFlow(*target, fallback_name, 2);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f2"));
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
   EXPECT_EQ(Length::Fixed(90), GetLeft(*try2));
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
   EXPECT_EQ(Length::Fixed(100), GetRight(*try2));
-
-  // @try index out of bounds
-  UpdateStyleForOutOfFlow(*target, fallback_name, 3);
-  const ComputedStyle* try3 = target->GetComputedStyle();
-  ASSERT_TRUE(try3);
-  EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
-  EXPECT_EQ(Length::Fixed(50), GetLeft(*try3));
-  EXPECT_EQ(Length::Fixed(50), GetBottom(*try3));
-  EXPECT_EQ(Length::Fixed(50), GetRight(*try3));
 }
 
 TEST_P(ParameterizedStyleResolverTest,
-       PositionFallbackStylesResolveRelativeLengthUnits_Cascade) {
+       PositionTryStylesResolveRelativeLengthUnits_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --fallback {
-        @try { }
-        @try { top: 2em; }
-      }
+      @position-try --f1 { top: 2em; }
       #target {
         position: absolute;
         font-size: 20px;
-        position-fallback: --fallback;
+        position-try-options: --f1;
       }
     </style>
     <div id="target"></div>
@@ -3080,36 +3049,31 @@ TEST_P(ParameterizedStyleResolverTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
-      AtomicString("--fallback"), &GetDocument());
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // '2em' should resolve to '40px'
-  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(40), GetTop(*try1));
 }
 
 TEST_P(ParameterizedStyleResolverTest,
-       PositionFallbackStylesInBeforePseudoElement_Cascade) {
+       PositionTryStylesInBeforePseudoElement_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --fallback {
-        @try { }
-        @try { top: 50px; }
-      }
+      @position-try --f1 { top: 50px; }
       #target::before {
         display: block;
         content: 'before';
         position: absolute;
-        position-fallback: --fallback;
+        position-try-options: --f1;
       }
     </style>
     <div id="target"></div>
@@ -3117,8 +3081,6 @@ TEST_P(ParameterizedStyleResolverTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
-      AtomicString("--fallback"), &GetDocument());
   Element* target = GetElementById("target");
   Element* before = target->GetPseudoElement(kPseudoIdBefore);
   ASSERT_TRUE(before);
@@ -3127,31 +3089,28 @@ TEST_P(ParameterizedStyleResolverTest,
   ASSERT_TRUE(base_style);
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
-  // 'position-fallback' applies to ::before pseudo-element.
-  UpdateStyleForOutOfFlow(*before, fallback_name, 1);
+  // 'position-try-options' applies to ::before pseudo-element.
+  UpdateStyleForOutOfFlow(*before, AtomicString("--f1"));
   const ComputedStyle* try1 = before->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
 }
 
 TEST_P(ParameterizedStyleResolverTest,
-       PositionFallbackStylesCSSWideKeywords_Cascade) {
+       PositionTryStylesCSSWideKeywords_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --fallback {
-        @try { }
-        @try { top: initial }
-        @try { left: inherit }
-        @try { right: unset }
-        /" 'revert' and 'revert-layer' are already rejected by parser */
-      }
+      /* 'revert' and 'revert-layer' are already rejected by parser */
+      @position-try --f1 { top: initial }
+      @position-try --f2 { left: inherit }
+      @position-try --f3 { right: unset }
       #target {
         position: absolute;
         inset: 50px;
-        position-fallback: --fallback;
+        position-try-options: --f1, --f2, --f3;
       }
       #container {
         position: absolute;
@@ -3165,8 +3124,6 @@ TEST_P(ParameterizedStyleResolverTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScopedCSSName* fallback_name = MakeGarbageCollected<ScopedCSSName>(
-      AtomicString("--fallback"), &GetDocument());
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
@@ -3175,7 +3132,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
   EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
-  UpdateStyleForOutOfFlow(*target, fallback_name, 1);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f1"));
   const ComputedStyle* try1 = target->GetComputedStyle();
   ASSERT_TRUE(try1);
   EXPECT_EQ(Length::Auto(), GetTop(*try1));
@@ -3183,7 +3140,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try1));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
-  UpdateStyleForOutOfFlow(*target, fallback_name, 2);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f2"));
   const ComputedStyle* try2 = target->GetComputedStyle();
   ASSERT_TRUE(try2);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
@@ -3191,7 +3148,7 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
   EXPECT_EQ(Length::Fixed(50), GetRight(*try2));
 
-  UpdateStyleForOutOfFlow(*target, fallback_name, 3);
+  UpdateStyleForOutOfFlow(*target, AtomicString("--f3"));
   const ComputedStyle* try3 = target->GetComputedStyle();
   ASSERT_TRUE(try3);
   EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
@@ -3200,24 +3157,17 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(Length::Auto(), GetRight(*try3));
 }
 
-TEST_P(ParameterizedStyleResolverTest,
-       PositionFallbackPropertyValueChange_Cascade) {
+TEST_P(ParameterizedStyleResolverTest, PositionTryPropertyValueChange_Cascade) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --foo {
-        @try { }
-        @try { top: 100px }
-      }
-      @position-fallback --bar {
-        @try { }
-        @try { left: 100px }
-      }
+      @position-try --foo { top: 100px }
+      @position-try --bar { left: 100px }
       #target {
         position: absolute;
-        position-fallback: --foo;
+        position-try-options: --foo;
       }
     </style>
     <div id="target"></div>
@@ -3225,10 +3175,6 @@ TEST_P(ParameterizedStyleResolverTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScopedCSSName* foo_name = MakeGarbageCollected<ScopedCSSName>(
-      AtomicString("--foo"), &GetDocument());
-  ScopedCSSName* bar_name = MakeGarbageCollected<ScopedCSSName>(
-      AtomicString("--bar"), &GetDocument());
   Element* target = GetElementById("target");
 
   {
@@ -3237,14 +3183,14 @@ TEST_P(ParameterizedStyleResolverTest,
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    UpdateStyleForOutOfFlow(*target, foo_name, 1);
+    UpdateStyleForOutOfFlow(*target, AtomicString("--foo"));
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     EXPECT_EQ(Length::Fixed(100), GetTop(*fallback));
     EXPECT_EQ(Length::Auto(), GetLeft(*fallback));
   }
 
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "--bar");
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions, "--bar");
   UpdateAllLifecyclePhasesForTest();
 
   {
@@ -3253,7 +3199,7 @@ TEST_P(ParameterizedStyleResolverTest,
     EXPECT_EQ(Length::Auto(), GetTop(*base_style));
     EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
-    UpdateStyleForOutOfFlow(*target, bar_name, 1);
+    UpdateStyleForOutOfFlow(*target, AtomicString("--bar"));
     const ComputedStyle* fallback = target->GetComputedStyle();
     ASSERT_TRUE(fallback);
     ASSERT_TRUE(fallback);
@@ -3262,19 +3208,19 @@ TEST_P(ParameterizedStyleResolverTest,
   }
 }
 
-TEST_P(ParameterizedStyleResolverTest, PositionFallback_PersistentTrySet) {
+TEST_P(ParameterizedStyleResolverTest,
+       PositionFallback_PersistentPositionTrySet) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --fallback {
-        @try { left: 100px; }
-        @try { top: 100px; }
-      }
+      @position-try --f1 { left: 100px; }
+      @position-try --f2 { top: 100px; }
       #target {
         position: absolute;
-        position-fallback: --fallback;
+        left: 400000px;
+        position-try-options: --f1, --f2;
       }
     </style>
     <div id="target"></div>
@@ -3290,40 +3236,48 @@ TEST_P(ParameterizedStyleResolverTest, PositionFallback_PersistentTrySet) {
   EXPECT_TRUE(target->GetOutOfFlowData() &&
               target->GetOutOfFlowData()->GetTryPropertyValueSet());
 
-  // The set should be cleared when 'position-fallback' is cleared.
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "none");
+  // The set should be cleared when 'position-try-options' is cleared.
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions, "none");
   UpdateAllLifecyclePhasesForTest();
+  style = target->GetComputedStyle();
+  EXPECT_EQ(Length::Fixed(400000), GetLeft(*style));
+  EXPECT_EQ(Length::Auto(), GetTop(*style));
   EXPECT_FALSE(target->GetOutOfFlowData() &&
                target->GetOutOfFlowData()->GetTryPropertyValueSet());
 
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback,
-                                 "--fallback");
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions,
+                                 "--f1, --f2");
   UpdateAllLifecyclePhasesForTest();
+  style = target->GetComputedStyle();
+  EXPECT_EQ(Length::Fixed(100), GetLeft(*style));
+  EXPECT_EQ(Length::Auto(), GetTop(*style));
   EXPECT_TRUE(target->GetOutOfFlowData() &&
               target->GetOutOfFlowData()->GetTryPropertyValueSet());
 
   // The set should also be cleared when referencing a non-existent fallback.
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionFallback, "--unknown");
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions,
+                                 "--unknown");
   UpdateAllLifecyclePhasesForTest();
+  style = target->GetComputedStyle();
+  EXPECT_EQ(Length::Fixed(400000), GetLeft(*style));
+  EXPECT_EQ(Length::Auto(), GetTop(*style));
   EXPECT_FALSE(target->GetOutOfFlowData() &&
                target->GetOutOfFlowData()->GetTryPropertyValueSet());
 }
 
-TEST_P(ParameterizedStyleResolverTest, PositionFallback_PaintInvalidation) {
+TEST_P(ParameterizedStyleResolverTest, PositionTry_PaintInvalidation) {
   ScopedCSSAnchorPositioningForTest enabled(true);
   ScopedCSSAnchorPositioningCascadeFallbackForTest cascade(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      @position-fallback --fallback {
-        @try { left: 1111111px; }
-        @try { left: 2222222px; }
-        @try { left: 3333333px; }
-        @try { top: 100px; }
-      }
+      @position-try --f1 { left: 2222222px; }
+      @position-try --f2 { left: 3333333px; }
+      @position-try --f3 { top: 100px; left: 0; }
       #target {
         position: absolute;
-        position-fallback: --fallback;
+        left: 1111111px;
+        position-try-options: --f1, --f2, --f3;
       }
     </style>
     <div id="target"></div>
@@ -3335,7 +3289,7 @@ TEST_P(ParameterizedStyleResolverTest, PositionFallback_PaintInvalidation) {
   const ComputedStyle* style = target->GetComputedStyle();
   ASSERT_TRUE(style);
   EXPECT_EQ(Length::Fixed(100), GetTop(*style));
-  EXPECT_EQ(Length::Auto(), GetLeft(*style));
+  EXPECT_EQ(Length::Fixed(0), GetLeft(*style));
 
   EXPECT_FALSE(target->GetLayoutObject()->NeedsLayout());
 

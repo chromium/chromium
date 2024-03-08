@@ -3357,7 +3357,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
   }
 
   if (style->DependsOnSizeContainerQueries() || style->PositionFallback() ||
-      style->HasAnchorFunctions()) {
+      style->GetPositionTryOptions() || style->HasAnchorFunctions()) {
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
   }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Tests which properties are allowed in @fallback-position</title>
+<title>Tests which properties are allowed in @position-try</title>
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/#fallback-rule">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -15,21 +15,21 @@ function test_allowed_declaration(property, value = '1px') {
   test(t => {
     t.add_cleanup(cleanup);
     const serialization = `${property}: ${value}`;
-    const rule = `@position-fallback --foo { @try { ${property}: ${value}; } }`;
+    const rule = `@position-try --foo  { ${property}: ${value}; }`;
     const index = style.sheet.insertRule(rule);
-    const parsed = style.sheet.cssRules[index].cssRules[0];
-    assert_equals(parsed.cssText, `@try { ${serialization}; }`);
-  }, `${property}: ${value} is allowed in @fallback-position`);
+    const parsed = style.sheet.cssRules[index];
+    assert_equals(parsed.cssText, `@position-try --foo { ${serialization}; }`);
+  }, `${property}: ${value} is allowed in @position-try`);
 }
 
 function test_disallowed_declaration(property, value = '1px') {
   test(t => {
     t.add_cleanup(cleanup);
-    const rule = `@position-fallback --foo { @try { ${property}: ${value}; } }`;
+    const rule = `@position-try --foo { ${property}: ${value}; }`;
     const index = style.sheet.insertRule(rule);
-    const parsed = style.sheet.cssRules[index].cssRules[0];
-    assert_equals(parsed.cssText, `@try { }`);
-  }, `${property}: ${value} is disallowed in @fallback-position`);
+    const parsed = style.sheet.cssRules[index];
+    assert_equals(parsed.cssText, `@position-try --foo { }`);
+  }, `${property}: ${value} is disallowed in @position-try`);
 }
 
 // Inset properties are allowed

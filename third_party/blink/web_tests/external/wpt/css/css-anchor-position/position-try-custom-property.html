@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Variable substitution in @try rules</title>
+<title>Variable substitution in @position-try rules</title>
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/#fallback">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -26,7 +26,7 @@
 }
 .target {
   position: absolute;
-  position-fallback: --fallback1;
+  position-try-options: --fallback1;
   width: 40px;
   height: 15px;
   margin: 5px;
@@ -35,22 +35,19 @@
   --top: anchor(--a1 top);
 }
 .fallback1 {
-  position-fallback: --fallback1;
+  position-try-options: --fallback1;
 }
 .fallback2 {
-  position-fallback: --fallback2;
+  position-try-options: --fallback2;
 }
-@position-fallback --fallback1 {
-  @try { /* Position to the right of the anchor. */
-    left: var(--left);
-    top: var(--top);
-  }
+@position-try --fallback1 {
+  /* Position to the right of the anchor. */
+  left: var(--left);
+  top: var(--top);
 }
 /* Same as above, but using a shorthand. */
-@position-fallback --fallback2 {
-  @try {
-    inset: var(--top) 0px 0px var(--left);
-  }
+@position-try --fallback2 {
+  inset: var(--top) 0px 0px var(--left);
 }
 </style>
 <body onload="checkLayoutForAnchorPos('.target')">

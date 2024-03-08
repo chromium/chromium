@@ -406,8 +406,9 @@ bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
   }
 
   if (value->IsRevertValue() || value->IsRevertLayerValue()) {
-    // Declarations in @position-try are not cascaded and cannot be reverted.
-    if (rule_type == StyleRule::kTry) {
+    // Declarations in @try / @position-try are not cascaded and cannot be
+    // reverted.
+    if (rule_type == StyleRule::kTry || rule_type == StyleRule::kPositionTry) {
       return false;
     }
   }

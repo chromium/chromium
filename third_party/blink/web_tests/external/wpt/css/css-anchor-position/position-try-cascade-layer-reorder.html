@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Tests that @position-fallback rules are reordered by cascade layers</title>
+<title>Tests that @position-try rules are reordered by cascade layers</title>
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/#fallback-rule">
 <link rel="help" href="https://www.w3.org/TR/css-cascade-5/#layering">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
@@ -21,7 +21,8 @@ body { margin: 0; }
   width: 100px;
   height: 100px;
   color: lime;
-  position-fallback: --fallback;
+  position-try-options: --fallback;
+  left: 999999px; /* force fallback */
 }
 </style>
 
@@ -46,11 +47,11 @@ function createTargetWithStyle(test, style) {
 
 test(t => {
   const target = createTargetWithStyle(t, `
-    @position-fallback --fallback {
-      @try { right: anchor(--a left); }
+    @position-try --fallback {
+      right: anchor(--a left);
     }
-    @position-fallback --fallback {
-      @try { left: anchor(--a right); }
+    @position-try --fallback {
+      left: anchor(--a right);
     }
   `);
   assert_equals(target.offsetLeft, 300);
@@ -58,12 +59,12 @@ test(t => {
 
 test(t => {
   const target = createTargetWithStyle(t, `
-    @position-fallback --fallback {
-      @try { bottom: anchor(--a top); }
+    @position-try --fallback {
+      bottom: anchor(--a top);
     }
     @layer {
-      @position-fallback --fallback {
-        @try { top: anchor(--a bottom); }
+      @position-try --fallback {
+        top: anchor(--a bottom);
       }
     }
   `);

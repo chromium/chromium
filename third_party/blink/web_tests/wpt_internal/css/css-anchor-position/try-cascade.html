@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>CSS Anchor Positioning Test: @try and cascade interaction</title>
+<title>CSS Anchor Positioning Test: @position-try and cascade interaction</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -15,15 +15,13 @@
     background: darkcyan;
     left: 0px;
     top: 0px;
-    width: 25px;
+    width: 150px;
     height: 25px;
-    position-fallback: --pf;
+    position-try-options: --pf;
   }
-  @position-fallback --pf {
-    @try {
-      left: 50px;
-      top: 50px;
-    }
+  @position-try --pf {
+    left: 50px;
+    top: 50px;
   }
 </style>
 
@@ -100,5 +98,5 @@
     abs_transition.classList.add('move');
     assert_equals(abs_transition.offsetLeft, 50);
     assert_equals(abs_transition.offsetTop, 30);
-  }, '@try rule does not win over transitions');
+  }, '@position-try rule does not win over transitions');
 </script>

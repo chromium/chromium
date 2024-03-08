@@ -46,26 +46,25 @@
   height: 100px;
   background: green;
   anchor-default: --a;
-  position-fallback: --pf;
+  position-try-options: --pf1, --pf2, --pf3;
+  bottom: anchor(--a top);
+  left: anchor(--a right);
 }
 
-@position-fallback --pf {
-  @try {
-    bottom: anchor(--a top);
-    left: anchor(--a right);
-  }
-  @try {
-    top: anchor(--a bottom);
-    left: anchor(--a right);
-  }
-  @try {
-    bottom: anchor(--a top);
-    right: anchor(--a left);
-  }
-  @try {
-    top: anchor(--a bottom);
-    right: anchor(--a left);
-  }
+@position-try --pf1 {
+  inset: auto;
+  top: anchor(--a bottom);
+  left: anchor(--a right);
+}
+@position-try --pf2 {
+  inset: auto;
+  bottom: anchor(--a top);
+  right: anchor(--a left);
+}
+@position-try --pf3 {
+  inset: auto;
+  top: anchor(--a bottom);
+  right: anchor(--a left);
 }
 </style>
 

@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<title>CSS Anchor Positioning Test: Dynamically change position via position-fallback property</title>
+<title>CSS Anchor Positioning Test: Dynamically change position via position-try-options property</title>
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/#fallback">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
   body { margin: 0; }
 
-  @position-fallback --fallback1 {
-    @try {
-      left: anchor(--a1 right);
-    }
+  @position-try --fallback1 {
+    left: anchor(--a1 right);
   }
   #anchor {
     anchor-name: --a1;
@@ -18,6 +16,7 @@
   }
   #anchored {
     position: absolute;
+    left: 999999px; /* Force fallback */
     width: 100px;
     height: 100px;
   }
@@ -26,11 +25,11 @@
 <div id="anchored"></div>
 <script>
   test(() => {
-    assert_equals(anchored.offsetLeft, 0);
+    assert_equals(anchored.offsetLeft, 999999);
   }, "Initial static left position is 0");
 
   test(() => {
-    anchored.style.positionFallback = "--fallback1";
+    anchored.style.positionTryOptions = "--fallback1";
     assert_equals(anchored.offsetLeft, 100);
-  }, "Left position set to right edge of anchor with @position-fallback");
+  }, "Left position set to right edge of anchor with @position-try");
 </script>

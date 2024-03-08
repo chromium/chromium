@@ -33,26 +33,25 @@ html {
   height: 100px;
   background: green;
   anchor-default: --a;
-  position-fallback: --pf;
+  position-try-options: --pf1, --pf2, --pf3;
+  inset-block-start: anchor(--a end);
+  inset-inline-start: anchor(--a end);
 }
 
-@position-fallback --pf {
-  @try {
-    inset-block-start: anchor(--a end);
-    inset-inline-start: anchor(--a end);
-  }
-  @try {
-    inset-block-end: anchor(--a start);
-    inset-inline-start: anchor(--a end);
-  }
-  @try {
-    inset-block-start: anchor(--a end);
-    inset-inline-end: anchor(--a start);
-  }
-  @try {
-    inset-block-end: anchor(--a start);
-    inset-inline-end: anchor(--a start);
-  }
+@position-try --pf1 {
+  inset: auto;
+  inset-block-end: anchor(--a start);
+  inset-inline-start: anchor(--a end);
+}
+@position-try --pf2 {
+  inset: auto;
+  inset-block-start: anchor(--a end);
+  inset-inline-end: anchor(--a start);
+}
+@position-try --pf3 {
+  inset: auto;
+  inset-block-end: anchor(--a start);
+  inset-inline-end: anchor(--a start);
 }
 </style>
 

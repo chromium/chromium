@@ -940,9 +940,9 @@ select:-internal-select-author-datalist > datalist {
   inset: auto;
   min-inline-size: anchor-size(self-inline);
   min-block-size: 1lh;
-  position-fallback: -internal-select-datalist-default-fallbacks;
+  inset-block-start: anchor(self-end);
+  inset-inline-start: anchor(self-start);
   position-try-options:
-    -internal-selectlist-datalist-default,
     -internal-selectlist-datalist-reverse-block,
     -internal-selectlist-datalist-reverse-inline,
     -internal-selectlist-datalist-reverse-both,
@@ -953,70 +953,22 @@ select:-internal-select-author-datalist > datalist {
 }
 
 /* TODO(crbug.com/40279608): Use automatic fallbacks */
-@position-fallback -internal-select-datalist-default-fallbacks {
-  /* Fallbacks without vertical scrolling */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-start: anchor(self-start);
-  }
-  /* Reverse block axis */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-  }
-  /* Reverse inline axis */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-  }
-  /* Reverse both axes */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-  }
-
-  /* Fallbacks with vertical scrolling */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-start: anchor(self-start);
-    block-size: -webkit-fill-available;
-  }
-  /* Reverse block axis */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-    block-size: -webkit-fill-available;
-  }
-  /* Reverse inline axis */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-    block-size: -webkit-fill-available;
-  }
-  /* Reverse both axes */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-    block-size: -webkit-fill-available;
-  }
-}
 
 /* Fallbacks without vertical scrolling */
-@position-try -internal-select-datalist-default {
-  inset-block-start: anchor(self-end);
-  inset-inline-start: anchor(self-start);
-}
 @position-try -internal-select-datalist-reverse-block {
+  inset: auto;
   /* Reverse block axis */
   inset-block-end: anchor(self-start);
   inset-inline-start: anchor(self-start);
 }
 @position-try -internal-select-datalist-reverse-inline {
+  inset: auto;
   /* Reverse inline axis */
   inset-block-start: anchor(self-end);
   inset-inline-end: anchor(self-end);
 }
 @position-try -internal-select-datalist-reverse-both {
+  inset: auto;
   /* Reverse both axes */
   inset-block-end: anchor(self-start);
   inset-inline-end: anchor(self-end);
@@ -1024,23 +976,27 @@ select:-internal-select-author-datalist > datalist {
 
 /* Fallbacks with vertical scrolling */
 @position-try -internal-select-datalist-default-fill {
+  inset: auto;
   inset-block-start: anchor(self-end);
   inset-inline-start: anchor(self-start);
   block-size: -webkit-fill-available;
 }
 @position-try -internal-select-datalist-reverse-block-fill {
+  inset: auto;
   /* Reverse block axis */
   inset-block-end: anchor(self-start);
   inset-inline-start: anchor(self-start);
   block-size: -webkit-fill-available;
 }
 @position-try -internal-select-datalist-reverse-inline-fill {
+  inset: auto;
   /* Reverse inline axis */
   inset-block-start: anchor(self-end);
   inset-inline-end: anchor(self-end);
   block-size: -webkit-fill-available;
 }
 @position-try -internal-select-datalist-reverse-both-fill {
+  inset: auto;
   /* Reverse both axes */
   inset-block-end: anchor(self-start);
   inset-inline-end: anchor(self-end);

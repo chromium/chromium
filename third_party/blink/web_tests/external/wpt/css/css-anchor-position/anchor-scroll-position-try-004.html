@@ -34,16 +34,23 @@ body {
   height: 100px;
   background: green;
   anchor-default: --a;
-  position-fallback: --pf;
+  position-try-options: --pf1, --pf2;
+  /* Top of the anchor */
+  bottom: anchor(--a top);
+  left: anchor(--a left);
 }
 
-@position-fallback --pf {
-  /* Top of the anchor */
-  @try { bottom: anchor(--a top); left: anchor(--a left); }
+@position-try --pf1 {
   /* Bottom of the anchor */
-  @try { top: anchor(--a bottom); left: anchor(--a left); }
+  top: anchor(--a bottom);
+  bottom: auto;
+}
+@position-try --pf2 {
   /* Left of the anchor */
-  @try { top: anchor(--a top); right: anchor(--a left); }
+  top: anchor(--a top);
+  right: anchor(--a left);
+  bottom: auto;
+  left: auto;
 }
 </style>
 

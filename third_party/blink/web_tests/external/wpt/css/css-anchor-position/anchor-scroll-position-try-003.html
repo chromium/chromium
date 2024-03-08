@@ -35,16 +35,17 @@
 
 #anchored {
   position: absolute;
+  top: anchor(--a bottom);
   width: 100px;
   height: 100px;
   background: green;
   anchor-default: --a;
-  position-fallback: --pf;
+  position-try-options: --pf;
 }
 
-@position-fallback --pf {
-  @try { top: anchor(--a bottom); }
-  @try { bottom: anchor(--a top); }
+@position-try --pf {
+  top: auto;
+  bottom: anchor(--a top);
 }
 </style>
 

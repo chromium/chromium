@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html dir="rtl">
-<title>Tests position fallback with rtl scroller and vertical-rl OOF</title>
+<title>Tests position fallback with rtl scroller</title>
 <link rel="author" href="mailto:xiaochengh@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/#scroll">
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/#fallback-apply">
@@ -27,19 +27,19 @@ body {
 }
 
 #anchored {
-  writing-mode: vertical-rl;
   position: fixed;
   width: 100px;
   height: 100px;
   background: green;
   anchor-default: --a;
   top: anchor(--a top);
-  position-fallback: --pf;
+  left: anchor(--a right);
+  position-try-options: --pf;
 }
 
-@position-fallback --pf {
-  @try { left: anchor(--a right); }
-  @try { right: anchor(--a left); }
+@position-try --pf {
+  left: auto;
+  right: anchor(--a left);
 }
 </style>
 

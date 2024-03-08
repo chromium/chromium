@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>@position-fallback for ::before and ::after pseudo elements</title>
+<title>@position-try for ::before and ::after pseudo elements</title>
 <link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#fallback">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -9,9 +9,10 @@
     position: relative;
     width: 195px;
     height: 200px;
+    left: 999999px; /* force fallback */
   }
   #target::before {
-    position-fallback: --fallback;
+    position-try-options: --f1, --f2;
     background: lime;
     position: absolute;
     left: 200px;
@@ -21,7 +22,7 @@
     content: "";
   }
   #target::after {
-    position-fallback: --fallback;
+    position-try-options: --f1, --f2;
     background: green;
     position: absolute;
     left: 100px;
@@ -29,15 +30,13 @@
     height: 100px;
     content: "";
   }
-  @position-fallback --fallback {
-    @try {
-      top: 100px;
-      left: 50px;
-    }
-    @try {
-      top: 0px;
-      left: 0px;
-    }
+  @position-try --f1 {
+    top: 100px;
+    left: 50px;
+  }
+  @position-try --f2 {
+    top: 0px;
+    left: 0px;
   }
 </style>
 <div id="container">

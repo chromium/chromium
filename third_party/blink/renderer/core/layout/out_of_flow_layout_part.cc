@@ -129,8 +129,9 @@ bool CalculateNonOverflowingRangeInOneAxis(
 
 // Helper class to enumerate all the candidate styles to be passed to
 // `TryCalculateOffset()`. The class should iterate through:
-// - The base style, if no `position-fallback` is specified
-// - The `@try` rule styles, if `position-fallback` is specified
+// - The base style, if no `position-try-options` is specified
+// - The `@position-try` rule styles and try tactics if `position-try-options`
+//   is specified
 class OOFCandidateStyleIterator {
   STACK_ALLOCATED();
 
@@ -143,23 +144,21 @@ class OOFCandidateStyleIterator {
     Initialize();
   }
 
-  bool UsesFallbackStyle() const {
-    return position_fallback_index_.has_value();
+  bool HasPositionTryOptions() const {
+    return position_try_options_ != nullptr;
   }
 
   const ComputedStyle& GetStyle() const { return *style_; }
 
   const ComputedStyle& GetBaseStyle() const {
-    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-        UsesFallbackStyle()) {
+    if (HasPositionTryOptions()) {
       return *GetStyle().GetBaseComputedStyleOrThis();
     }
     return GetStyle();
   }
 
   const ComputedStyle& ActivateBaseStyleForTryAttempt() {
-    if (!RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() ||
-        !UsesFallbackStyle()) {
+    if (!HasPositionTryOptions()) {
       return GetStyle();
     }
     const ComputedStyle& base_style = GetBaseStyle();
@@ -170,78 +169,59 @@ class OOFCandidateStyleIterator {
     return base_style;
   }
 
-  const ComputedStyle& ActivateStyleForChosenFallback() {
-    DCHECK(
-        RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
-    DCHECK(UsesFallbackStyle());
+  const ComputedStyle& ActivateStyleForChosenOption() {
     const ComputedStyle& style = GetStyle();
     element_->GetLayoutObject()->SetStyle(&style,
                                           LayoutObject::ApplyStyleChanges::kNo);
     return style;
   }
 
-  bool HasNextStyle() const { return HasNextPositionFallback(); }
-
-  void MoveToNextStyle() {
-    CHECK(style_);
-    CHECK(position_fallback_index_);
-    ++*position_fallback_index_;
-    style_ = UpdateStyle(*position_fallback_index_);
-    CHECK(style_);
+  bool MoveToNextStyle() {
+    CHECK(position_try_options_);
+    CHECK(element_);
+    if (!try_option_index_.has_value()) {
+      try_option_index_ = 0;
+    } else {
+      ++*try_option_index_;
+    }
+    // Need to loop in case a @position-try option does not exist.
+    for (; *try_option_index_ < position_try_options_->GetOptions().size();
+         ++*try_option_index_) {
+      const PositionTryOption& option =
+          position_try_options_->GetOptions()[*try_option_index_];
+      // TODO(crbug.com/40279608): Handle flip-block/inline/start values.
+      if (const ScopedCSSName* name = option.GetPositionTryName()) {
+        if (const StyleRulePositionTry* rule = GetPositionTryRule(*name)) {
+          style_ = UpdateStyle(&rule->Properties());
+          CHECK(style_);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
  private:
-  bool HasNextPositionFallback() const {
-    return position_fallback_index_ && element_ &&
-           HasTryRule(*position_fallback_index_ + 1);
-  }
-
   void Initialize() {
-    position_fallback_rule_ =
-        GetPositionFallbackRule(style_->PositionFallback());
     if (element_) {
-      if (UNLIKELY(position_fallback_rule_)) {
-        CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
-        if (HasTryRule(0)) {
-          position_fallback_index_ = 0;
-          style_ = UpdateStyle(0u);
-        }
-      } else {
-        // We may have previously resolved a style using some try set,
-        // and may have speculated that the same try set still applied.
-        // Calling UpdateStyle with an explicit nullptr clears the set,
-        // and re-resolves the ComputedStyle.
-        //
-        // Note that UpdateStyle returns early without any update
-        // if the incoming try_set matches the set on OutOfFlowData
-        // (including the case where both are unllptr).
-        style_ = UpdateStyle(/* try_set */ nullptr);
-      }
+      position_try_options_ = style_->GetPositionTryOptions();
+      // We may have previously resolved a style using some try set,
+      // and may have speculated that the same try set still applied.
+      // Calling UpdateStyle with an explicit nullptr clears the set,
+      // and re-resolves the ComputedStyle.
+      //
+      // Note that UpdateStyle returns early without any update
+      // if the incoming try_set matches the set on OutOfFlowData
+      // (including the case where both are nullptr).
+      style_ = UpdateStyle(/* try_set */ nullptr);
     }
   }
 
-  const StyleRulePositionFallback* GetPositionFallbackRule(
-      const ScopedCSSName* scoped_name) {
-    if (!scoped_name || !element_) {
-      return nullptr;
-    }
-    return element_->GetDocument().GetStyleEngine().GetPositionFallbackRule(
-        *scoped_name);
-  }
-
-  bool HasTryRule(wtf_size_t index) const {
-    return position_fallback_rule_ &&
-           position_fallback_rule_->HasTryRule(index);
-  }
-
-  const ComputedStyle* UpdateStyle(wtf_size_t index) {
+  const StyleRulePositionTry* GetPositionTryRule(
+      const ScopedCSSName& scoped_name) {
     CHECK(element_);
-    DCHECK(position_fallback_rule_);
-    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
-      return UpdateStyle(position_fallback_rule_->TryPropertyValueSetAt(index));
-    } else {
-      return element_->StyleForPositionFallback(index);
-    }
+    return element_->GetDocument().GetStyleEngine().GetPositionTryRule(
+        scoped_name);
   }
 
   const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set) {
@@ -272,13 +252,13 @@ class OOFCandidateStyleIterator {
   // evaluate anchor queries on the computed style.
   Length::AnchorEvaluator* anchor_evaluator_ = nullptr;
 
-  // If the current style is created from an `@try` rule, this holds
-  // the parent rule. Otherwise nullptr.
-  const StyleRulePositionFallback* position_fallback_rule_ = nullptr;
+  // If the current style is applying a `position-try-options` option, this
+  // holds the list of options. Otherwise nullptr.
+  const PositionTryOptions* position_try_options_ = nullptr;
 
-  // If the current style is created from an `@try` rule, index of the rule;
-  // Otherwise nullopt.
-  std::optional<wtf_size_t> position_fallback_index_;
+  // If the current style is created using `position-try-options`, an index into
+  // the list of options; otherwise nullopt.
+  std::optional<wtf_size_t> try_option_index_;
 };
 
 }  // namespace
@@ -1758,6 +1738,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
   // Note: This assumes @try rounds can't affect writing-mode/anchor-default.
+  // writing-mode/anchor-default.
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, node_info.container_info,
                         node_info.node.Style().GetWritingDirection(),
@@ -1765,46 +1746,43 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
                         *node_info.node.GetLayoutBox(), anchor_queries);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
 
-  // If `@position-fallback` exists, let |TryCalculateOffset| check if the
-  // result fits the available space.
   OOFCandidateStyleIterator iter(*node_info.node.GetLayoutBox(),
                                  anchor_evaluator);
+  // If `position-try-options` exists, let |TryCalculateOffset| check if the
+  // result fits the available space.
+  bool has_try_options = iter.HasPositionTryOptions();
   std::optional<OffsetInfo> offset_info;
-  while (!offset_info) {
-    const bool has_next_fallback_style = iter.HasNextStyle();
+  do {
     NonOverflowingScrollRange non_overflowing_range;
-    // Do @try placement decisions on the *base style* to avoid interference
-    // from animations and transitions.
+    // Do @position-try placement decisions on the *base style* to avoid
+    // interference from animations and transitions.
     const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
     offset_info =
         TryCalculateOffset(node_info, style, anchor_evaluator, anchor_queries,
-                           has_next_fallback_style, &non_overflowing_range);
+                           has_try_options, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset.
-    if (offset_info && has_next_fallback_style) {
+    if (offset_info && has_try_options) {
       non_overflowing_ranges.push_back(non_overflowing_range);
       if (!non_overflowing_range.Contains(anchor_offset,
                                           additional_bounds_offset)) {
         offset_info = std::nullopt;
       }
     }
-
-    if (!offset_info) {
-      iter.MoveToNextStyle();
-    }
-  }
+  } while (!offset_info && iter.MoveToNextStyle());
 
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-      iter.UsesFallbackStyle()) {
-    // Once the @try placement has been decided, calculate the offset again,
-    // using the non-base style.
+      has_try_options) {
+    // Once the position-try-options placement has been decided, calculate the
+    // offset again, using the non-base style.
     NonOverflowingScrollRange non_overflowing_range_unused;
     offset_info = TryCalculateOffset(
-        node_info, iter.ActivateStyleForChosenFallback(), anchor_evaluator,
-        anchor_queries, iter.HasNextStyle(), &non_overflowing_range_unused);
+        node_info, iter.ActivateStyleForChosenOption(), anchor_evaluator,
+        anchor_queries, /* try_fit_available_space */ false,
+        &non_overflowing_range_unused);
   }
 
-  if (iter.UsesFallbackStyle()) {
+  if (iter.HasPositionTryOptions()) {
     offset_info->uses_fallback_style = true;
     offset_info->non_overflowing_ranges = std::move(non_overflowing_ranges);
   } else {

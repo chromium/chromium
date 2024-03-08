@@ -6947,7 +6947,7 @@ TEST_F(StyleEngineTest, UseCountCSSAnchorPositioning) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
 
   ClearUseCounter(WebFeature::kCSSAnchorPositioning);
-  SetBodyInnerHTML("<style>@position-fallback --pf {}</style>");
+  SetBodyInnerHTML("<style>@position-try --pf {}</style>");
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
 }
 
