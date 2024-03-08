@@ -55,7 +55,7 @@ promise_test(() => {
     let transition = document.startViewTransition();
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-group(root)");
+        document.documentElement, "::view-transition-group(root)");
       if (style.backgroundColor == "rgb(255, 0, 0)" && style.color == "rgb(255, 0, 0)")
         resolve();
       else
@@ -71,7 +71,7 @@ promise_test(() => {
     let transition = document.startViewTransition();
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-group(root)");
+        document.documentElement, "::view-transition-group(root)");
       if (style.backgroundColor == "rgb(0, 0, 255)" && style.color == "rgb(0, 0, 255)")
         resolve();
       else
@@ -88,7 +88,7 @@ promise_test(() => {
     let transition = document.startViewTransition();
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-group(target)");
+        document.documentElement, "::view-transition-group(target)");
       if (style.backgroundColor == "rgb(255, 0, 0)" && style.color == "rgb(255, 0, 0)")
         resolve();
       else
@@ -106,7 +106,7 @@ promise_test(() => {
     let transition = document.startViewTransition();
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-group(target)");
+        document.documentElement, "::view-transition-group(target)");
       if (style.backgroundColor == "rgb(0, 0, 255)" && style.color == "rgb(0, 0, 255)")
         resolve();
       else

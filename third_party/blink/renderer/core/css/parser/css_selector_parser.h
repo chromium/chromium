@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 
 namespace blink {
 
@@ -51,6 +52,8 @@ class CORE_EXPORT CSSSelectorParser {
   STACK_ALLOCATED();
 
  public:
+  enum class PseudoElementParseMode { kStandard, kLegacy };
+
   // Both ParseSelector() and ConsumeSelector() return an empty list
   // on error. The HeapVector is used for allocating CSSSelectors;
   // the return value points into a slice at the end of the vector
@@ -86,10 +89,13 @@ class CORE_EXPORT CSSSelectorParser {
   static CSSSelector::PseudoType ParsePseudoType(const AtomicString&,
                                                  bool has_arguments,
                                                  const Document*);
-  static PseudoId ParsePseudoElement(const String&, const Node*);
-  // Returns the argument of a parameterized pseudo-element. For example, for
-  // '::highlight(foo)' it returns 'foo'.
-  static AtomicString ParsePseudoElementArgument(const String&);
+
+  // TODO(crbug.com/328681375) apply this to web animations and remove
+  // PseudoElementParseMode.
+  static PseudoId ParsePseudoElement(const String&,
+                                     const Node*,
+                                     AtomicString& argument,
+                                     PseudoElementParseMode mode);
 
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end

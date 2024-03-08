@@ -91,6 +91,7 @@ enum PseudoId : uint8_t {
   kPseudoIdInputListButton,
   // Special values follow:
   kAfterLastInternalPseudoId,
+  kPseudoIdInvalid,
   kFirstPublicPseudoId = kPseudoIdFirstLine,
   kLastTrackedPublicPseudoId = kPseudoIdGrammarError,
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,

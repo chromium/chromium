@@ -789,6 +789,10 @@
       status: "experimental",
     },
     {
+      name: "CSSComputedStyleFullPseudoElementParser",
+      status: "experimental",
+    },
+    {
       name: "CSSContentVisibilityImpliesContainIntrinsicSizeAuto",
       status: "stable",
     },

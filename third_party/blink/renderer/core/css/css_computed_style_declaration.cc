@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -115,16 +116,12 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(
     const String& pseudo_element_name)
     : CSSStyleDeclaration(element ? element->GetExecutionContext() : nullptr),
       element_(element),
-      pseudo_element_specifier_(
-          CSSSelectorParser::ParsePseudoElement(pseudo_element_name, element)),
       allow_visited_style_(allow_visited_style),
       guaranteed_style_clean_(false) {
-  pseudo_argument_ =
-      PseudoElementHasArguments(pseudo_element_specifier_)
-          ? CSSSelectorParser::ParsePseudoElementArgument(pseudo_element_name)
-          : g_null_atom;
+  pseudo_element_specifier_ = CSSSelectorParser::ParsePseudoElement(
+      pseudo_element_name, element, pseudo_argument_,
+      CSSSelectorParser::PseudoElementParseMode::kStandard);
 }
-
 CSSComputedStyleDeclaration::~CSSComputedStyleDeclaration() = default;
 
 String CSSComputedStyleDeclaration::cssText() const {
@@ -207,6 +204,12 @@ wtf_size_t CSSComputedStyleDeclaration::GetVariableNamesCount() const {
 
 Element* CSSComputedStyleDeclaration::StyledElement() const {
   if (!element_) {
+    return nullptr;
+  }
+
+  if (pseudo_element_specifier_ == kPseudoIdInvalid) {
+    CHECK(RuntimeEnabledFeatures::
+              CSSComputedStyleFullPseudoElementParserEnabled());
     return nullptr;
   }
 
@@ -398,7 +401,8 @@ String CSSComputedStyleDeclaration::GetPropertyValue(
 }
 
 unsigned CSSComputedStyleDeclaration::length() const {
-  if (!element_ || !element_->InActiveDocument()) {
+  if (!element_ || !element_->InActiveDocument() ||
+      (pseudo_element_specifier_ == kPseudoIdInvalid)) {
     return 0;
   }
 

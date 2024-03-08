@@ -62,7 +62,7 @@ promise_test(() => {
 
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-new(root)");
+        document.documentElement, "::view-transition-new(root)");
       if (style.backgroundColor == matchedColor && style.color == matchedColor)
         resolve();
       else
@@ -80,7 +80,7 @@ promise_test(() => {
 
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-new(root)");
+        document.documentElement, "::view-transition-new(root)");
       if (style.backgroundColor == notMatchedColor && style.color == notMatchedColor)
         resolve();
       else
@@ -101,7 +101,7 @@ promise_test(() => {
 
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-new(root)");
+        document.documentElement, "::view-transition-new(root)");
       if (style.backgroundColor == notMatchedColor && style.color == notMatchedColor)
         resolve();
       else
@@ -121,7 +121,7 @@ promise_test(() => {
 
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-new(target)");
+        document.documentElement, "::view-transition-new(target)");
       if (style.backgroundColor == matchedColor && style.color == matchedColor)
         resolve();
       else
@@ -142,7 +142,7 @@ promise_test(() => {
 
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-new(root)");
+        document.documentElement, "::view-transition-new(root)");
       if (style.backgroundColor == notMatchedColor && style.color == notMatchedColor)
         resolve();
       else
@@ -160,7 +160,7 @@ promise_test(() => {
 
     transition.ready.then(() => {
       let style = getComputedStyle(
-        document.documentElement, ":view-transition-new(target)");
+        document.documentElement, "::view-transition-new(target)");
       if (style.backgroundColor == notMatchedColor && style.color == notMatchedColor)
         resolve();
       else

@@ -240,6 +240,7 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
+    case kPseudoIdInvalid:
       CHECK(false);
       return "";
   }
