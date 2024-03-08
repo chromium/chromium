@@ -298,8 +298,6 @@ const char kReauthenticationRequiredId[] =
 std::string GetGenericErrorMessage();
 // Get Microsoft authentication error message for uploading office files.
 std::string GetReauthenticationRequiredMessage();
-// Get access denied error message.
-std::string GetGenericOneDriveAccessErrorMessage();
 
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(
