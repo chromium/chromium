@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
         summary="clears quarantined entries and prepares internal structures
                  for faster lookup"/>
     <variant name="Scan"
-        summary="scans the partition alloc heap looking for dangling pointers"/>
+        summary="scans the PartitionAlloc heap looking for dangling pointers"/>
     <variant name="ScanStack" summary="scans the stack for dangling pointers"/>
     <variant name="Sweep"
         summary="performs sweeping (actual freeing) of memory that is no
