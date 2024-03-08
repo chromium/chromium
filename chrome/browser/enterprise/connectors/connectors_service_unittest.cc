@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_testing_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -55,6 +56,11 @@ constexpr char kNormalReportingSettingsPref[] = R"([
 
 constexpr char kCustomMessage[] = "Custom Admin Message";
 constexpr char kCustomUrl[] = "https://learn.more.com";
+
+constexpr char kFakeDmToken[] = "fake-token";
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr char kFakeDeviceId[] = "fake-device-id";
+#endif
 
 std::string CreateCustomUIPref(const char* custom_message,
                                const char* custom_url,
@@ -104,14 +110,26 @@ class ConnectorsServiceTest : public testing::Test {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidToken("fake-token"));
+        policy::DMToken::CreateValidToken(kFakeDmToken));
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  void SetUp() override {
+    fake_browser_dm_token_storage_.SetClientId(kFakeDeviceId);
+    policy::BrowserDMTokenStorage::SetForTesting(
+        &fake_browser_dm_token_storage_);
+    fake_browser_dm_token_storage_.ResetForTesting();
+  }
+#endif
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
+#if !BUILDFLAG(IS_CHROMEOS)
+  policy::FakeBrowserDMTokenStorage fake_browser_dm_token_storage_;
+#endif
 };
 
 // Test to make sure that HasExtraUiToDisplay returns the right value to
@@ -226,13 +244,26 @@ TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
   auto maybe_dm_token = ConnectorsServiceFactory::GetForBrowserContext(profile_)
                             ->GetDMTokenForRealTimeUrlCheck();
   EXPECT_TRUE(maybe_dm_token.has_value());
-  EXPECT_EQ("fake-token", maybe_dm_token.value());
+  EXPECT_EQ(kFakeDmToken, maybe_dm_token.value());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::string identifier =
+      ConnectorsServiceFactory::GetForBrowserContext(profile_)
+          ->GetRealTimeUrlCheckIdentifier();
+  EXPECT_EQ(identifier, kFakeDeviceId);
+#endif
 
   policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
 
   maybe_dm_token = ConnectorsServiceFactory::GetForBrowserContext(profile_)
                        ->GetDMTokenForRealTimeUrlCheck();
   EXPECT_FALSE(maybe_dm_token.has_value());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  identifier = ConnectorsServiceFactory::GetForBrowserContext(profile_)
+                   ->GetRealTimeUrlCheckIdentifier();
+  EXPECT_TRUE(identifier.empty());
+#endif
 }
 
 class ConnectorsServiceExemptURLsTest

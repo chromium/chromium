@@ -85,28 +85,30 @@ void PopulateBrowserMetadata(bool include_device_info,
     browser_proto->set_machine_user(policy::GetOSUsername());
 }
 
+std::string GetClientId(Profile* profile) {
+  std::string client_id;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* manager = profile->GetUserCloudPolicyManagerAsh();
+  if (manager && manager->core() && manager->core()->client())
+    client_id = manager->core()->client()->client_id();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* main_profile = GetMainProfileLacros();
+  if (main_profile) {
+    client_id = reporting::GetUserClientId(main_profile).value_or("");
+  }
+#else
+  client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#endif
+  return client_id;
+}
+
 void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
                             Profile* profile,
                             ClientMetadata::Device* device_proto) {
   if (!reporting_settings.per_profile && !device_proto->has_dm_token()) {
     device_proto->set_dm_token(reporting_settings.dm_token);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string client_id;
-  auto* manager = profile->GetUserCloudPolicyManagerAsh();
-  if (manager && manager->core() && manager->core()->client())
-    client_id = manager->core()->client()->client_id();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* main_profile = GetMainProfileLacros();
-  std::string client_id;
-  if (main_profile) {
-    client_id = reporting::GetUserClientId(main_profile).value_or("");
-  }
-#else
-  std::string client_id =
-      policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-#endif
-  device_proto->set_client_id(client_id);
+  device_proto->set_client_id(GetClientId(profile));
   device_proto->set_os_version(policy::GetOSVersion());
   device_proto->set_os_platform(policy::GetOSPlatform());
   device_proto->set_name(policy::GetDeviceName());
@@ -461,6 +463,26 @@ ConnectorsService::GetAppliedRealTimeUrlCheck() const {
   return static_cast<safe_browsing::EnterpriseRealTimeUrlCheckMode>(
       Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode));
+}
+
+std::string ConnectorsService::GetRealTimeUrlCheckIdentifier() const {
+  auto dm_token =
+      GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
+  if (!dm_token) {
+    return std::string();
+  }
+
+  Profile* profile = Profile::FromBrowserContext(context_);
+  if (dm_token->scope == policy::POLICY_SCOPE_MACHINE) {
+    return GetClientId(profile);
+  }
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return std::string();
+  }
+
+  return safe_browsing::GetProfileEmail(identity_manager);
 }
 
 ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {

@@ -18,14 +18,10 @@ namespace enterprise_data_protection {
 namespace {
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
-    std::string user_email,
-    std::string device_id,
     std::string watermark_text,
     int64_t timestamp_seconds) {
   safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
   wm.set_watermark_message(watermark_text);
-  wm.set_user_email(user_email);
-  wm.set_obfuscated_device_id(device_id);
   wm.mutable_timestamp()->set_seconds(timestamp_seconds);
 
   safe_browsing::RTLookupResponse::ThreatInfo threat_info;
@@ -61,8 +57,7 @@ class MockRealTimeUrlLookupService
     auto response = std::make_unique<safe_browsing::RTLookupResponse>();
     safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
         response->add_threat_info();
-    *new_threat_info = GetTestThreatInfo("example@email.com", "<device-id>",
-                                         "custom_message", 1709181364);
+    *new_threat_info = GetTestThreatInfo("custom_message", 1709181364);
 
     callback_task_runner->PostTask(
         FROM_HERE,
@@ -160,26 +155,22 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   simulator->Commit();
 
   std::string watermark_text = future.Get();
-  ASSERT_EQ(watermark_text,
-            "example@email.com\n2024-02-29T04:36:04.000Z\ncustom_message");
+  ASSERT_EQ(watermark_text, "\n2024-02-29T04:36:04.000Z\ncustom_message");
 }
 
 namespace {
 
 struct WatermarkStringParams {
-  WatermarkStringParams(std::string user_email,
-                        std::string device_id,
+  WatermarkStringParams(std::string identifier,
                         std::string custom_message,
                         int64_t timestamp_seconds,
                         std::string expected)
-      : user_email(user_email),
-        device_id(device_id),
+      : identifier(identifier),
         custom_message(custom_message),
         timestamp_seconds(timestamp_seconds),
         expected(expected) {}
 
-  std::string user_email;
-  std::string device_id;
+  std::string identifier;
   std::string custom_message;
   int64_t timestamp_seconds;
   std::string expected;
@@ -196,27 +187,24 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         WatermarkStringParams(
             "example@email.com",
-            "<device-id>",
             "custom_message",
             1709181364,
             "example@email.com\n2024-02-29T04:36:04.000Z\ncustom_message"),
         WatermarkStringParams(
-            "",
             "<device-id>",
             "custom_message",
             1709181364,
             "<device-id>\n2024-02-29T04:36:04.000Z\ncustom_message"),
         WatermarkStringParams("example@email.com",
-                              "<device-id>",
                               "",
                               1709181364,
                               "example@email.com\n2024-02-29T04:36:04.000Z")));
 
 TEST_P(WatermarkStringTest, TestGetWatermarkStringFromThreatInfo) {
   safe_browsing::RTLookupResponse::ThreatInfo threat_info = GetTestThreatInfo(
-      GetParam().user_email, GetParam().device_id, GetParam().custom_message,
-      GetParam().timestamp_seconds);
-  EXPECT_EQ(enterprise_data_protection::GetWatermarkString(threat_info),
+      GetParam().custom_message, GetParam().timestamp_seconds);
+  EXPECT_EQ(enterprise_data_protection::GetWatermarkString(
+                GetParam().identifier, threat_info),
             GetParam().expected);
 }
 

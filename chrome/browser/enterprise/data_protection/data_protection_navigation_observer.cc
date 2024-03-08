@@ -55,6 +55,7 @@ base::Time TimestampToTime(safe_browsing::Timestamp timestamp) {
 
 void OnRealTimeLookupComplete(
     DataProtectionNavigationObserver::Callback callback,
+    const std::string& identifier,
     bool is_success,
     bool is_cached,
     std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response) {
@@ -63,47 +64,24 @@ void OnRealTimeLookupComplete(
   std::string watermark_text;
   if (is_success && rt_lookup_response &&
       rt_lookup_response->threat_info_size() > 0) {
-    watermark_text = GetWatermarkString(rt_lookup_response->threat_info(0));
+    watermark_text =
+        GetWatermarkString(identifier, rt_lookup_response->threat_info(0));
   }
   std::move(callback).Run(watermark_text);
 }
 
 void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
               const GURL& url,
+              const std::string& identifier,
               DataProtectionNavigationObserver::Callback callback,
               content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   lookup_service->StartLookup(
-      url, base::BindOnce(&OnRealTimeLookupComplete, std::move(callback)),
+      url,
+      base::BindOnce(&OnRealTimeLookupComplete, std::move(callback),
+                     identifier),
       base::SequencedTaskRunner::GetCurrentDefault(),
       sessions::SessionTabHelper::IdForTab(web_contents));
-}
-
-}  // namespace
-
-std::string GetWatermarkString(
-    const safe_browsing::RTLookupResponse::ThreatInfo& threat_info) {
-  if (!threat_info.has_matched_url_navigation_rule()) {
-    return std::string();
-  }
-  const safe_browsing::MatchedUrlNavigationRule& rule =
-      threat_info.matched_url_navigation_rule();
-  if (!rule.has_watermark_message()) {
-    return std::string();
-  }
-  const safe_browsing::MatchedUrlNavigationRule::WatermarkMessage& watermark =
-      rule.watermark_message();
-
-  base::Time timestamp = TimestampToTime(watermark.timestamp());
-  std::string watermark_text =
-      (watermark.user_email().empty() ? watermark.obfuscated_device_id()
-                                      : watermark.user_email()) +
-      "\n" + base::TimeFormatAsIso8601(timestamp);
-  if (!watermark.watermark_message().empty()) {
-    watermark_text += "\n";
-    watermark_text += watermark.watermark_message();
-  }
-  return watermark_text;
 }
 
 bool IsEnterpriseLookupEnabled(Profile* profile) {
@@ -117,6 +95,41 @@ bool IsEnterpriseLookupEnabled(Profile* profile) {
       connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
   return safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord());
+}
+
+std::string GetIdentifier(content::BrowserContext* browser_context) {
+  return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+             browser_context)
+      ->GetRealTimeUrlCheckIdentifier();
+}
+
+}  // namespace
+
+std::string GetWatermarkString(
+    const std::string& identifier,
+    const safe_browsing::RTLookupResponse::ThreatInfo& threat_info) {
+  if (!threat_info.has_matched_url_navigation_rule()) {
+    return std::string();
+  }
+
+  const safe_browsing::MatchedUrlNavigationRule& rule =
+      threat_info.matched_url_navigation_rule();
+  if (!rule.has_watermark_message()) {
+    return std::string();
+  }
+
+  const safe_browsing::MatchedUrlNavigationRule::WatermarkMessage& watermark =
+      rule.watermark_message();
+
+  std::string watermark_text = base::StrCat(
+      {identifier, "\n",
+       base::TimeFormatAsIso8601(TimestampToTime(watermark.timestamp()))});
+
+  if (!watermark.watermark_message().empty()) {
+    watermark_text =
+        base::StrCat({watermark_text, "\n", watermark.watermark_message()});
+  }
+  return watermark_text;
 }
 
 // static
@@ -162,7 +175,7 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
       ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(profile);
   if (lookup_service && web_contents->GetLastCommittedURL().is_valid()) {
     DoLookup(lookup_service, web_contents->GetLastCommittedURL(),
-             std::move(callback), web_contents);
+             GetIdentifier(profile), std::move(callback), web_contents);
   } else {
     std::move(callback).Run(std::string());
   }
@@ -180,6 +193,8 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
   DCHECK(!pending_navigation_callback_.is_null());
   DCHECK(lookup_service_);
 
+  identifier_ = GetIdentifier(web_contents->GetBrowserContext());
+
   // When serving from cache, we expect to find a page user data. So this code
   // skips the call to DoLookup() to prevent an unneeded network request.
   // This check is speculative however, although a good heuristic, because we'll
@@ -189,7 +204,7 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
   // ultimate destination page of the navigation.
   is_from_cache_ = navigation_handle.IsServedFromBackForwardCache();
   if (!is_from_cache_) {
-    DoLookup(lookup_service_, navigation_handle.GetURL(),
+    DoLookup(lookup_service_, navigation_handle.GetURL(), identifier_,
              base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
                             weak_factory_.GetWeakPtr()),
              navigation_handle.GetWebContents());
@@ -209,10 +224,12 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_from_cache_);
-  DoLookup(lookup_service_, navigation_handle->GetURL(),
-           base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
-                          weak_factory_.GetWeakPtr()),
-           navigation_handle->GetWebContents());
+  DoLookup(
+      lookup_service_, navigation_handle->GetURL(),
+      GetIdentifier(navigation_handle->GetWebContents()->GetBrowserContext()),
+      base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
+                     weak_factory_.GetWeakPtr()),
+      navigation_handle->GetWebContents());
 }
 
 void DataProtectionNavigationObserver::DidFinishNavigation(
@@ -238,7 +255,7 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
                               watermark_text_.value());
   } else {
     DoLookup(
-        lookup_service_, navigation_handle->GetURL(),
+        lookup_service_, navigation_handle->GetURL(), identifier_,
         base::BindOnce(&UpdateDataProtectionState, web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_)),
         web_contents());

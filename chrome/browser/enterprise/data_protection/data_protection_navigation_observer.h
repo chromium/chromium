@@ -88,7 +88,15 @@ class DataProtectionNavigationObserver
       content::NavigationHandle* navigation_handle) override;
 
   bool is_from_cache_ = false;
+
+  // The full watermark string to show over the page. Empty if no watermark
+  // verdict has been obtained.
   std::optional<std::string> watermark_text_;
+
+  // Identifier string to show in the watermark if needed. This is either a user
+  // email or a device ID.
+  std::string identifier_;
+
   raw_ptr<safe_browsing::RealTimeUrlLookupServiceBase> lookup_service_ =
       nullptr;
   Callback pending_navigation_callback_;
@@ -101,6 +109,7 @@ class DataProtectionNavigationObserver
 // Return the watermark string to display if present in `threat_info`. Revealed
 // for testing
 std::string GetWatermarkString(
+    const std::string& identifier,
     const safe_browsing::RTLookupResponse::ThreatInfo& threat_info);
 
 }  // namespace enterprise_data_protection
