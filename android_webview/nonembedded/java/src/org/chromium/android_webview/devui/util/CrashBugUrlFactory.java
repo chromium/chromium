@@ -24,31 +24,34 @@ public class CrashBugUrlFactory {
     // TODO(https://crbug.com/1052295): add assert statement to check the length of this String.
     @VisibleForTesting
     public static final String CRASH_REPORT_TEMPLATE =
-            ""
-                    + "* Build fingerprint: %s\n"
-                    + "* Android API level: %s\n"
-                    + "* Crashed WebView version: %s\n"
-                    + "* DevTools version: %s\n"
-                    + "* Application: %s\n"
-                    + "* If this app is available on Google Play, please include a URL: \n"
-                    + "\n"
-                    + "Steps to reproduce:\n"
-                    + "\n"
-                    + "1. \n"
-                    + "2. \n"
-                    + "3. \n"
-                    + "\n"
-                    + "Expected result:\n"
-                    + "(What should have happened?)\n"
-                    + "\n"
-                    + "<Any additional comments, you want to share>"
-                    + "\n"
-                    + "---\n"
-                    + "**DO NOT CHANGE BELOW THIS LINE**\n"
-                    + "\n"
-                    + "* Crash ID: http://crash/%s\n"
-                    + "* Instructions for triaging this report (Chromium members only): "
-                    + "https://bit.ly/2SM1Y9t\n";
+            """
+            Basic info:
+
+            * Build fingerprint: %s
+            * Android API level: %s
+            * Crashed WebView version: %s
+            * DevTools version: %s
+            * Application: %s
+            * If this app is available on Google Play, please include a URL:
+
+            Steps to reproduce:
+
+            1.
+            2.
+            3.
+
+            Expected result:
+            (What should have happened?)
+
+            <Any additional comments, you want to share>"
+
+            ---
+
+            **DO NOT CHANGE BELOW THIS LINE**
+
+            * Crash ID: http://crash/%s
+            * Instructions for triaging this report (Chromium members only): https://bit.ly/2SM1Y9t
+            """;
 
     private final CrashInfo mCrashInfo;
 
