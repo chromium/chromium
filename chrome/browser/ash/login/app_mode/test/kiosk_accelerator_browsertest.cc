@@ -2,42 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/shell.h"
-#include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/app_mode/test/accelerator_helpers.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/ash_accelerator_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
-#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 namespace {
 
+void WaitForPageLoaded(content::WebContents* web_contents) {
+  content::TestNavigationObserver(web_contents).WaitForNavigationFinished();
+}
+
 int WindowWidth(content::WebContents* web_contents) {
   return content::EvalJs(web_contents, "window.innerWidth").ExtractInt();
 }
 
+void WaitForWindowWidthChanged(content::WebContents* web_contents,
+                               int initial_width) {
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return initial_width != WindowWidth(web_contents); }));
+}
+
 int WindowWidthAfterChange(content::WebContents* web_contents,
                            int initial_width) {
-  test::TestPredicateWaiter(
-      base::BindRepeating(
-          [](content::WebContents* web_contents, int initial_width) {
-            return initial_width != WindowWidth(web_contents);
-          },
-          web_contents, initial_width))
-      .Wait();
+  WaitForWindowWidthChanged(web_contents, initial_width);
   return WindowWidth(web_contents);
 }
 
@@ -60,8 +61,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
       WebKioskAppManager::Get()->kiosk_system_session()->is_shutting_down());
 }
 
-// TODO(https://crbug.com/328386737): Fails flakily
-IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, DISABLED_ZoomAccelerators) {
+IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
   InitializeRegularOnlineKiosk();
   SelectFirstBrowser();
 
@@ -70,24 +70,27 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, DISABLED_ZoomAccelerators) {
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
   ASSERT_NE(web_contents, nullptr);
 
+  // Await page load so accelerators are processed. Prevents a race condition.
+  WaitForPageLoaded(web_contents);
+
   int initial_width = WindowWidthAfterChange(web_contents, 0);
   ASSERT_GT(initial_width, 0);
 
   // Zoom in, content becomes larger and window width becomes smaller.
-  browser_view->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_ADD, ui::EF_CONTROL_DOWN));
+  ASSERT_TRUE(browser_view->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_ADD, ui::EF_CONTROL_DOWN)));
   int zoomed_in_width = WindowWidthAfterChange(web_contents, initial_width);
   ASSERT_LT(zoomed_in_width, initial_width);
 
   // Restore zoom, window width becomes `initial_width`.
-  browser_view->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_0, ui::EF_CONTROL_DOWN));
+  ASSERT_TRUE(browser_view->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_0, ui::EF_CONTROL_DOWN)));
   int restored_width = WindowWidthAfterChange(web_contents, zoomed_in_width);
   ASSERT_EQ(restored_width, initial_width);
 
   // Zoom out, content becomes smaller and window width becomes larger.
-  browser_view->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_SUBTRACT, ui::EF_CONTROL_DOWN));
+  ASSERT_TRUE(browser_view->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_SUBTRACT, ui::EF_CONTROL_DOWN)));
   int zoomed_out_width = WindowWidthAfterChange(web_contents, zoomed_in_width);
   ASSERT_GT(zoomed_out_width, initial_width);
 }
