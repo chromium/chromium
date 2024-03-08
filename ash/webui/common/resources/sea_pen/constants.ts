@@ -19,6 +19,8 @@ export interface SeaPenOption {
   value: SeaPenTemplateOption;
   // `translation` is the translated value to be displayed in the UI.
   translation: string;
+  // The preview image url of the option.
+  previewUrl?: string;
 }
 
 export interface SeaPenTemplate {

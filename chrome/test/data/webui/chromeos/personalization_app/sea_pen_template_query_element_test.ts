@@ -197,6 +197,47 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertEquals(selectedChip[0] as HTMLElement, chipToSelect);
   });
 
+  test('option contains preview image', async () => {
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const chips =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
+    const chipToSelect = chips[1] as HTMLElement;
+
+    chipToSelect!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const seaPenOptionsElement =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            SeaPenOptionsElement.is);
+    assertTrue(
+        !!seaPenOptionsElement,
+        'the options chips should show after clicking a chip');
+    const options =
+        seaPenOptionsElement.shadowRoot!.querySelectorAll('#options cr-button');
+    assertTrue(
+        options.length > 0, 'there should be options available to select');
+    const selectedOption =
+        seaPenOptionsElement.shadowRoot!.querySelector(
+            '#options cr-button[aria-selected]') as HTMLElement;
+    assertTrue(
+        !!selectedOption!.querySelector('img'),
+        'the selected option should contain a preview image');
+    assertEquals(
+        chipToSelect.innerText, selectedOption!.innerText,
+        'the selected chip should have an equivalent selected option');
+    const selectedChip =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
+            '#template .selected .chip-text');
+    assertEquals(
+        1, selectedChip.length,
+        'There should be exactly one chip that is selected.');
+    assertEquals(selectedChip[0] as HTMLElement, chipToSelect);
+  });
+
   test('selecting option updates chip', async () => {
     seaPenTemplateQueryElement = initElement(
         SeaPenTemplateQueryElement,

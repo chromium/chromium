@@ -26,6 +26,13 @@
     outline: 2px solid var(--cros-button-background-color-primary);
     outline-offset: 2px;
   }
+
+  img {
+    border-radius: 50%;
+    height: 20px;
+    margin-inline-end: 8px;
+    width: 20px;
+  }
 </style>
 <template is="dom-if" if="[[shouldShowOptions_(options)]]">
   <div id="options">
@@ -33,6 +40,9 @@
       <cr-button
           on-click="onClickOption_"
           aria-selected$="[[isSelected_(option, selectedChip, selectedOptions)]]">
+        <template is="dom-if" if="[[option.previewUrl]]" restamp>
+          <img is="cr-auto-img" auto-src="[[option.previewUrl]]">
+        </template>
         [[option.translation]]
       </cr-button>
     </template>

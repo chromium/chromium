@@ -282,50 +282,70 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption.kFlowerTypeOrchid,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeOrchid'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/orchid.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeCallaLily,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeCallaLily'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/calla_lily.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeWindflower,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeWindflower'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/windflower.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeTulip,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeTulip'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tulip.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeLilyOfTheValley,
               translation: loadTimeData.getString(
                   'seaPenOptionFlowerTypeLilyOfTheValley'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lily_of_the_valley.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeBirdOfParadise,
               translation: loadTimeData.getString(
                   'seaPenOptionFlowerTypeBirdOfParadise'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bird_of_paradise.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeRose,
               translation: loadTimeData.getString('seaPenOptionFlowerTypeRose'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/garden_rose.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeRanunculus,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeRanunculus'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/ranunculus.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeDaisy,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeDaisy'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/daisy.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeHydrangea,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeHydrangea'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/hydrangea.jpg',
             },
           ],
         ],
