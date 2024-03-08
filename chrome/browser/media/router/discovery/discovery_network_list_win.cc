@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/threading/scoped_thread_priority.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -289,9 +290,17 @@ HRESULT GetProfileNetworkAdapterId(
     WinrtConnectivity::IConnectionProfile* connection_profile,
     GUID* network_adapter_id) {
   ComPtr<WinrtConnectivity::INetworkAdapter> network_adapter;
-  HRESULT hr = connection_profile->get_NetworkAdapter(&network_adapter);
-  if (hr != S_OK) {
-    return hr;
+  {
+    // INetworkAdapter::get_NetworkAdapter() may load the module
+    // Windows.Networking.HostName.dll. Temporarily boost the priority of this
+    // background thread to avoid causing jank by blocking the UI thread from
+    // loading modules. For more details, see https://crbug.com/973868.
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+
+    HRESULT hr = connection_profile->get_NetworkAdapter(&network_adapter);
+    if (hr != S_OK) {
+      return hr;
+    }
   }
   return network_adapter->get_NetworkAdapterId(network_adapter_id);
 }
@@ -330,19 +339,28 @@ HRESULT GetAllConnectionProfiles(
     uint32_t* out_connection_profiles_size) {
   ComPtr<WinrtConnectivity::INetworkInformationStatics>
       network_information_statics;
-  HRESULT hr =
-      GetWindowsOsApi().winrt_api.ro_get_activation_factory_callback.Run(
-          base::win::HStringReference(
-              RuntimeClass_Windows_Networking_Connectivity_NetworkInformation)
-              .Get(),
-          IID_PPV_ARGS(&network_information_statics));
-  if (hr != S_OK) {
-    return hr;
+  {
+    // RoGetActivationFactory() may load the Windows.Networking.Connectivity.dll
+    // module. Temporarily boost the priority of this background thread to avoid
+    // causing jank by blocking the UI thread from loading modules. For more
+    // details, see https://crbug.com/973868.
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+
+    HRESULT hr =
+        GetWindowsOsApi().winrt_api.ro_get_activation_factory_callback.Run(
+            base::win::HStringReference(
+                RuntimeClass_Windows_Networking_Connectivity_NetworkInformation)
+                .Get(),
+            IID_PPV_ARGS(&network_information_statics));
+    if (hr != S_OK) {
+      return hr;
+    }
   }
 
   ComPtr<WinrtCollections::IVectorView<WinrtConnectivity::ConnectionProfile*>>
       connection_profiles;
-  hr = network_information_statics->GetConnectionProfiles(&connection_profiles);
+  HRESULT hr =
+      network_information_statics->GetConnectionProfiles(&connection_profiles);
   if (hr != S_OK) {
     return hr;
   }
