@@ -15,12 +15,14 @@ import * as localDev from './local_dev.js';
 import {getCameraDirectory, getObjectURL} from './models/file_system.js';
 import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
 import {
+  EventsSenderRemote,
   LidState,
   ScreenState,
   StorageMonitorStatus,
   ToteMetricFormat,
   WifiConfig,
 } from './mojo/type.js';
+import {fakeEndpoint} from './mojo/util.js';
 import {MimeType} from './type.js';
 import {expandPath} from './util.js';
 
@@ -166,6 +168,11 @@ export class ChromeHelperFake extends ChromeHelper {
       Promise<LidState> {
     return LidState.kNotPresent;
   }
+
+  override async getEventsSender(): Promise<EventsSenderRemote> {
+    return fakeEndpoint();
+  }
+
   /* eslint-enable @typescript-eslint/require-await */
 }
 

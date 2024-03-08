@@ -44,6 +44,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/version_info/version_info.h"
@@ -561,6 +562,15 @@ void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
   }
   ash::InternetConfigDialog::ShowDialogForNetworkWithWifiConfig(
       std::move(config));
+}
+
+std::string ChromeCameraAppUIDelegate::GetSystemLanguage() {
+  auto* profile = Profile::FromWebUI(web_ui_);
+  auto* pref_service = profile->GetPrefs();
+  std::string accept_languages =
+      pref_service->GetString(language::prefs::kAcceptLanguages);
+  // Languages are splitted by ','. We only need to return the first one.
+  return accept_languages.substr(0, accept_languages.find(','));
 }
 
 ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;

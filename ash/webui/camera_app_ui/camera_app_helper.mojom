@@ -5,6 +5,7 @@
 module ash.camera_app.mojom;
 
 import "ash/components/arc/mojom/camera_intent.mojom";
+import "ash/webui/camera_app_ui/events_sender.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "media/capture/video/chromeos/mojom/system_event_monitor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -319,4 +320,7 @@ interface CameraAppHelper {
   // Calling the Update() whenever the lid state changes.
   SetLidStateMonitor(pending_remote<LidStateMonitor> monitor)
       => (cros.mojom.LidState lid_status);
+
+  // Gets an event sender which can be used to send events to CrOS Events.
+  GetEventsSender() => (pending_remote<EventsSender> events_sender);
 };

@@ -141,6 +141,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) override;
   void OpenWifiDialog(WifiConfig wifi_config) override;
+  std::string GetSystemLanguage() override;
 
  private:
   base::FilePath GetMyFilesFolder();

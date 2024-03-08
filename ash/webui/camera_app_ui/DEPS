@@ -7,6 +7,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/media_device_salt",
+  "+components/metrics/structured/test",
   "+components/onc",
   "+services/video_capture/public/mojom/video_capture_service.mojom.h",
   "+third_party/blink/public/common/storage_key",

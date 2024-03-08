@@ -8,6 +8,8 @@ import * as Comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
+import * as mojoType from './mojo/type.js';
+import * as mojoTypeUtils from './mojo/type_utils.js';
 import * as state from './state.js';
 import {State} from './state.js';
 import {
@@ -43,6 +45,9 @@ const GA4_API_SECRET =
     PRODUCTION ? '0Ir88y9HQtiwnchvaIzZ3Q' : 'WE_zBPUQTGefdXpHl25-ig';
 
 const ready = new WaitableEvent();
+
+// This is used to send events via CrOS Events.
+let eventsSender: mojoType.EventsSenderRemote|null = null;
 
 /**
  * Sends the event to GA backend.
@@ -234,6 +239,18 @@ export function sendLaunchEvent({launchType}: LaunchEventParam): void {
       new Map([
         [GaMetricDimension.LAUNCH_TYPE, launchType],
       ]));
+  void (async () => {
+    (await getEventsSender()).sendStartSessionEvent({
+      launchType: mojoTypeUtils.convertLaunchTypeToMojo(launchType),
+    });
+  })();
+}
+
+async function getEventsSender(): Promise<mojoType.EventsSenderRemote> {
+  if (eventsSender === null) {
+    eventsSender = await ChromeHelper.getInstance().getEventsSender();
+  }
+  return eventsSender;
 }
 
 /**

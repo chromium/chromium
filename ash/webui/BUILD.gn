@@ -20,6 +20,7 @@ test("ash_webui_unittests") {
   ]
 
   deps = [
+    "//ash/webui/camera_app_ui:unit_tests",
     "//ash/webui/common/backend:unit_tests",
     "//ash/webui/demo_mode_app_ui:unit_tests",
     "//ash/webui/diagnostics_ui:unit_tests",

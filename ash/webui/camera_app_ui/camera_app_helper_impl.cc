@@ -602,4 +602,12 @@ void CameraAppHelperImpl::OnLidStateChanged(cros::mojom::LidState state) {
   }
 }
 
+void CameraAppHelperImpl::GetEventsSender(GetEventsSenderCallback callback) {
+  if (!events_sender_) {
+    auto system_language = camera_app_ui_->delegate()->GetSystemLanguage();
+    events_sender_ = std::make_unique<CameraAppEventsSender>(system_language);
+  }
+  std::move(callback).Run(events_sender_->CreateConnection());
+}
+
 }  // namespace ash

@@ -77,6 +77,7 @@ compile_js_files = [
   "mojo/device_operator.ts",
   "mojo/image_capture.ts",
   "mojo/type.ts",
+  "mojo/type_utils.ts",
   "mojo/util.ts",
   "multi_window_manager.ts",
   "nav.ts",

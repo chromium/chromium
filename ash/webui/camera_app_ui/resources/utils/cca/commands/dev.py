@@ -132,8 +132,8 @@ class RequestHandler:
         css = re.sub(r"url\(/", f"url({relative_path}/", css)
         return css
 
-    def _load_camera_app_helper_mojo_enums(self) -> Dict[str, Dict[str, int]]:
-        with open(os.path.join(self._cca_root, "../camera_app_helper.mojom"),
+    def _load_mojo_enums(self, mojo_file_name) -> Dict[str, Dict[str, int]]:
+        with open(os.path.join(self._cca_root, "../", mojo_file_name),
                   "r") as f:
             mojom = f.read()
         enum_blocks = re.findall(r"enum (.*?) \{(.*?)\}", mojom, re.DOTALL)
@@ -171,15 +171,19 @@ class RequestHandler:
         # this case.
         exports = [export.split()[-1] for export in exports if export]
 
-        # Stub the real enum values for enum in camera_app_helper.mojom, since
-        # those enum values are used by CCA.
-        camera_app_helper_mojo_enums = self._load_camera_app_helper_mojo_enums(
-        )
+        # Stub the real enum values for enum in mojom files, since those enum
+        # values are used by CCA.
+        mojo_files = [
+            'camera_app_helper.mojom',
+            'events_sender.mojom',
+        ]
+        mojo_enums = {}
+        for enum_dict in [self._load_mojo_enums(file) for file in mojo_files]:
+            mojo_enums |= enum_dict
 
-        js = "\n".join(
-            f"export const {export} = "
-            f"{json.dumps(camera_app_helper_mojo_enums.get(export))};"
-            for export in exports)
+        js = "\n".join(f"export const {export} = "
+                       f"{json.dumps(mojo_enums.get(export))};"
+                       for export in exports)
         return js
 
     def _handle_color_css_updater_js(self, request_path: str) -> bytes:

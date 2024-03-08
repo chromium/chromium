@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.camera_app.mojom;
+
+// The type indicates how the camera app is launched.
+enum LaunchType {
+  // The default option that most of the launches will fall in.
+  kDefault,
+
+  // The camera app is launched by user query through Google Assistant.
+  kAssistant,
+};
+
+struct StartSessionEventParams {
+  LaunchType launch_type;
+};
+
+// This interface is used by CCA to send metrics to CrOS Events.
+interface EventsSender {
+  // Sends an event to indicate a CCA session is started.
+  SendStartSessionEvent(StartSessionEventParams params);
+};

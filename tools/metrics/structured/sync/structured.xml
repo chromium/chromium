@@ -409,8 +409,8 @@
     </summary>
     <metric name="App" type="hmac-string">
       <summary>
-        App ID of the most-recently-opened app when this launch occurred. This can be
-        an app ID of a Chrome app, Arc++ app, or PWA.
+        App ID of the most-recently-opened app when this launch occurred. This can
+        be an app ID of a Chrome app, Arc++ app, or PWA.
       </summary>
     </metric>
     <metric name="Domain" type="hmac-string">
@@ -932,6 +932,23 @@
     <metric name="AppId" type="raw-string">
       <summary>
         Identifier of the app that is being installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.StartSession">
+    <summary>
+      Event recorded when the camera app is started.
+    </summary>
+    <metric name="LaunchType" type="int">
+      <summary>
+        The type indicates how the camera app is launched.
+      </summary>
+    </metric>
+    <metric name="Language" type="int">
+      <summary>
+        The integer maps to the LocaleCodeISO639 enum indicating the language that
+        CCA UI uses.
       </summary>
     </metric>
   </event>

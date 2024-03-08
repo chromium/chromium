@@ -18,6 +18,7 @@ import {
   CameraAppHelperRemote,
   CameraIntentAction,
   DocumentOutputFormat,
+  EventsSenderRemote,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   LidState,
@@ -232,6 +233,8 @@ export abstract class ChromeHelper {
 
   abstract initLidStateMonitor(onChange: (lidStatus: LidState) => void):
       Promise<LidState>;
+
+  abstract getEventsSender(): Promise<EventsSenderRemote>;
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
@@ -483,5 +486,10 @@ class ChromeHelperImpl extends ChromeHelper {
     const {lidStatus} = await this.remote.setLidStateMonitor(
         monitorCallbackRouter.$.bindNewPipeAndPassRemote());
     return lidStatus;
+  }
+
+  override async getEventsSender(): Promise<EventsSenderRemote> {
+    const {eventsSender} = await this.remote.getEventsSender();
+    return wrapEndpoint(eventsSender);
   }
 }

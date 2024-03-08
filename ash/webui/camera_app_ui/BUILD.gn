@@ -34,6 +34,7 @@ static_library("camera_app_ui") {
 
   deps = [
     ":document_scanning",
+    ":events_sender",
     ":mojo_bindings",
     ":window_managemet",
     "//ash",
@@ -75,6 +76,21 @@ source_set("window_managemet") {
   ]
 }
 
+source_set("events_sender") {
+  sources = [
+    "camera_app_events_sender.cc",
+    "camera_app_events_sender.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//ash/constants",
+    "//base",
+    "//components/metrics/structured:structured_events",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 source_set("document_scanning") {
   sources = [
     "document_scanner_installer.cc",
@@ -98,7 +114,10 @@ source_set("document_scanning") {
 }
 
 mojom("mojo_bindings") {
-  sources = [ "camera_app_helper.mojom" ]
+  sources = [
+    "camera_app_helper.mojom",
+    "events_sender.mojom",
+  ]
 
   deps = [
     "//ash/components/arc/mojom:camera_intent",
@@ -176,4 +195,18 @@ generate_grd("build_generated_grdp") {
                   root_build_dir)
   input_files = [ "js/preload_images.js" ]
   out_grd = generated_grdp_file
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "camera_app_events_sender_unittest.cc" ]
+  deps = [
+    ":events_sender",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:test_support",
+    "//testing/gtest",
+  ]
 }

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/screen_backlight.h"
+#include "ash/webui/camera_app_ui/camera_app_events_sender.h"
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
@@ -107,9 +108,9 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void StopStorageMonitor() override;
   void OpenStorageManagement() override;
   void OpenWifiDialog(camera_app::mojom::WifiConfigPtr wifi_config) override;
-
   void SetLidStateMonitor(mojo::PendingRemote<LidStateMonitor> monitor,
                           SetLidStateMonitorCallback callback) override;
+  void GetEventsSender(GetEventsSenderCallback callback) override;
 
  private:
   void CheckExternalScreenState();
@@ -134,7 +135,6 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
-
   void OnLidStateChanged(cros::mojom::LidState state) override;
 
   // For platform app, we set |camera_app_ui_| to nullptr and should not use
@@ -162,6 +162,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   StartStorageMonitorCallback storage_callback_;
 
   std::unique_ptr<CameraAppWindowStateController> window_state_controller_;
+
+  std::unique_ptr<CameraAppEventsSender> events_sender_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

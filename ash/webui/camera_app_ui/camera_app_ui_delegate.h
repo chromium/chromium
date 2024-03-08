@@ -130,6 +130,9 @@ class CameraAppUIDelegate {
 
   // Opens a Wi-Fi connection dialog based on the given information.
   virtual void OpenWifiDialog(WifiConfig wifi_config) = 0;
+
+  // Gets the system language of the current profile.
+  virtual std::string GetSystemLanguage() = 0;
 };
 
 }  // namespace ash
