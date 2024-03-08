@@ -4143,6 +4143,16 @@ bool WebkitTextStroke::ParseShorthand(
       webkitTextStrokeShorthand(), important, context, range, properties);
 }
 
+const CSSValue* WebkitTextStroke::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForShorthandProperty(
+      webkitTextStrokeShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
+}
+
 bool WhiteSpace::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
