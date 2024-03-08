@@ -61,7 +61,7 @@ public class PassphraseActivity extends AppCompatActivity
         super.onResume();
         Account account =
                 CoreAccountInfo.getAndroidAccountFrom(
-                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
+                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         if (account == null) {
             finish();
             return;

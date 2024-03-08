@@ -83,7 +83,27 @@ public class PassphraseActivityTest {
         Assert.assertNotNull(activity);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> fakeSyncService.setEngineInitialized(true));
-        ActivityTestUtils.waitForFragment(activity, PassphraseActivity.FRAGMENT_PASSPHRASE);
+        final PassphraseDialogFragment fragment =
+                ActivityTestUtils.waitForFragment(activity, PassphraseActivity.FRAGMENT_PASSPHRASE);
+        Assert.assertTrue(fragment.isAdded());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Sync"})
+    public void testLaunchPassphraseDialogForSignedInUsers() {
+        // Override before signing in, otherwise regular SyncService will be created.
+        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
+        mChromeBrowserTestRule.addTestAccountThenSignin();
+
+        // Create the activity.
+        final PassphraseActivity activity = launchPassphraseActivity();
+        Assert.assertNotNull(activity);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> fakeSyncService.setEngineInitialized(true));
+        final PassphraseDialogFragment fragment =
+                ActivityTestUtils.waitForFragment(activity, PassphraseActivity.FRAGMENT_PASSPHRASE);
+        Assert.assertTrue(fragment.isAdded());
     }
 
     private PassphraseActivity launchPassphraseActivity() {
