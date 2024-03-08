@@ -400,3 +400,9 @@ declare_args() {
   raw_ptr_zero_on_move = raw_ptr_zero_on_move_default
   raw_ptr_zero_on_destruct = raw_ptr_zero_on_destruct_default
 }
+
+declare_args() {
+  # Assert that PartitionAlloc and MiraclePtr run on C++20 when set to true.
+  # Embedders may opt-out of using C++ 20 build.
+  assert_cpp20 = assert_cpp20_default
+}

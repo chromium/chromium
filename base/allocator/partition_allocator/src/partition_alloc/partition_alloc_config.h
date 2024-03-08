@@ -356,4 +356,10 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_IS_NONCLANG_MSVC() 0
 #endif
 
+// Set GN build override 'assert_cpp_20' to false to disable assertion.
+#if BUILDFLAG(ASSERT_CPP_20)
+static_assert(__cplusplus >= 202002L,
+              "PartitionAlloc targets C++20 or higher.");
+#endif  // BUILDFLAG(ASSERT_CPP_20)
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_

@@ -217,6 +217,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
 
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
+    "ASSERT_CPP_20=$assert_cpp20",
   ]
 }
 
