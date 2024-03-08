@@ -13,7 +13,6 @@
 #include "base/features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/flags/jni_headers/ChromeFeatureMap_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
@@ -122,8 +121,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebNfc,
     &features::kIncognitoNtpRevamp,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
-    &feature_guide::features::kFeatureNotificationGuide,
-    &feature_guide::features::kSkipCheckForLowEngagedUsers,
     &feed::kFeedDynamicColors,
     &feed::kFeedFollowUiUpdate,
     &feed::kFeedImageMemoryCacheSizePercentage,

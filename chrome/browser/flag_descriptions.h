@@ -2407,13 +2407,6 @@ extern const char kEnablePixDetectionDescription[];
 extern const char kExternalNavigationDebugLogsName[];
 extern const char kExternalNavigationDebugLogsDescription[];
 
-extern const char kFeatureNotificationGuideName[];
-extern const char kFeatureNotificationGuideDescription[];
-
-extern const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersName[];
-extern const char
-    kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription[];
-
 extern const char kFeedFollowUiUpdateName[];
 extern const char kFeedFollowUiUpdateDescription[];
 

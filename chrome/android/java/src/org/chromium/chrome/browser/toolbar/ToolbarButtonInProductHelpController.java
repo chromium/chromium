@@ -22,8 +22,6 @@ import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -154,13 +152,9 @@ public class ToolbarButtonInProductHelpController
                             }
                         },
                         /* swapCallback= */ null);
-
-        FeatureNotificationUtils.registerIPHCallback(
-                FeatureType.INCOGNITO_TAB, this::showIncognitoTabIPH);
     }
 
     public void destroy() {
-        FeatureNotificationUtils.unregisterIPHCallback(FeatureType.INCOGNITO_TAB);
         mPageLoadObserver.destroy();
         mLifecycleDispatcher.unregister(this);
     }
@@ -263,21 +257,6 @@ public class ToolbarButtonInProductHelpController
                                 R.string.iph_download_home_accessibility_text)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.downloads_menu_id))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
-    }
-
-    private void showIncognitoTabIPH() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
-                                mActivity.getResources(),
-                                FeatureConstants
-                                        .FEATURE_NOTIFICATION_GUIDE_INCOGNITO_TAB_HELP_BUBBLE_FEATURE,
-                                R.string.feature_notification_guide_tooltip_message_incognito_tab,
-                                R.string.feature_notification_guide_tooltip_message_incognito_tab)
-                        .setAnchorView(mMenuButtonAnchorView)
-                        .setOnShowCallback(
-                                () -> turnOnHighlightForMenuItem(R.id.new_incognito_tab_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }

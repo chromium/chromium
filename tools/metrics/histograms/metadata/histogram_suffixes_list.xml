@@ -2100,7 +2100,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="NotificationSchedulerClientType" separator=".">
   <suffix name="__Test__" label=""/>
   <suffix name="ChromeUpdate" label=""/>
-  <suffix name="FeatureGuide" label=""/>
+  <suffix name="FeatureGuide" label="Deprecated"/>
   <suffix name="Prefetch" label=""/>
   <suffix name="ReadingList" label=""/>
   <suffix name="Unknown" label=""/>

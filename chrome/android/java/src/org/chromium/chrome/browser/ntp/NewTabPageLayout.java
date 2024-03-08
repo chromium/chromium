@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.DragEvent;
@@ -23,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -51,8 +49,6 @@ import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -61,10 +57,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -1046,53 +1038,6 @@ public class NewTabPageLayout extends LinearLayout {
 
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
         return mMostVisitedTilesCoordinator;
-    }
-
-    void maybeShowFeatureNotificationVoiceSearchIPH() {
-        IPHCommandBuilder iphCommandBuilder =
-                createIPHCommandBuilder(
-                        mActivity.getResources(),
-                        R.string.feature_notification_guide_tooltip_message_voice_search,
-                        R.string.feature_notification_guide_tooltip_message_voice_search,
-                        mSearchBoxCoordinator.getVoiceSearchButton(),
-                        true);
-        UserEducationHelper userEducationHelper =
-                new UserEducationHelper(mActivity, mProfile, new Handler());
-        userEducationHelper.requestShowIPH(iphCommandBuilder.build());
-    }
-
-    private static IPHCommandBuilder createIPHCommandBuilder(
-            Resources resources,
-            @StringRes int stringId,
-            @StringRes int accessibilityStringId,
-            View anchorView,
-            boolean showHighlight) {
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(
-                        resources,
-                        FeatureConstants
-                                .FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE,
-                        stringId,
-                        accessibilityStringId);
-        iphCommandBuilder.setAnchorView(anchorView);
-        int yInsetPx = resources.getDimensionPixelOffset(R.dimen.ntp_iph_searchbox_y_inset);
-        iphCommandBuilder.setInsetRect(new Rect(0, 0, 0, -yInsetPx));
-        if (showHighlight) {
-            iphCommandBuilder.setOnShowCallback(
-                    () ->
-                            ViewHighlighter.turnOnHighlight(
-                                    anchorView, new HighlightParams(HighlightShape.CIRCLE)));
-            iphCommandBuilder.setOnDismissCallback(
-                    () ->
-                            new Handler()
-                                    .postDelayed(
-                                            () -> {
-                                                ViewHighlighter.turnOffHighlight(anchorView);
-                                            },
-                                            ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
-        }
-
-        return iphCommandBuilder;
     }
 
     /** Makes the Search Box and Logo as wide as Most Visited. */

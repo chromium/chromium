@@ -272,9 +272,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_NOTIFICATION_CATEGORY_SECURITY_KEY" desc="Label for a category of notifications that tells the user that they can sign in on a different computer by using this device [CHAR_LIMIT=32]">
         Sign-in verifications
       </message>
-      <message name="IDS_NOTIFICATION_CATEGORY_FEATURE_GUIDE" desc="Label for a category of notifications that is used to promote features in chrome to improve user engagement and browsing experience [CHAR_LIMIT=32]">
-        Chrome tips
-      </message>
       <message name="IDS_NOTIFICATION_CATEGORY_BLUETOOTH" desc="Label for bluetooth-related notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         Bluetooth
       </message>
@@ -3575,38 +3572,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       </message>
       <message name="IDS_WEB_FEED_AWARENESS" desc="Educating the user about the web feed.">
         Explore content to follow
-      </message>
-
-      <!-- Feature notification guide -->
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_TITLE" desc="Notification title text educating user about tips and tricks in chrome.">
-        Chrome tips
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_DEFAULT_BROWSER" desc="Notification body text educating user about setting chrome as default browser.">
-        Learn how to set Chrome as your default
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_SIGN_IN" desc="Notification body text educating user about signing in into chrome.">
-        To get your Google stuff across devices, sign in
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_INCOGNITO_TAB" desc="Notification body text educating user about incognito tab in chrome.">
-        To browse privately on this device, try out Incognito
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_NTP_SUGGESTION_CARD" desc="Notification body text educating user about discovering suggested articles in chrome new tab page.">
-        Discover new content on Chrome’s homepage
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_NOTIFICATION_MESSAGE_VOICE_SEARCH" desc="Notification body text educating user about voice search in chrome.">
-        You can use your voice to search in Chrome
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_INCOGNITO_TAB" desc="Tooltip text educating user about using incognito tab in chrome.">
-        To open a new Incognito tab, open the menu
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_NTP_SUGGESTION_CARD" desc="Tooltip text educating user about discovering suggested articles in chrome new tab page.">
-        Scroll down to see suggested articles
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_VOICE_SEARCH" desc="Tooltip text educating user about voice search in chrome.">
-        To search with your voice, tap the microphone
-      </message>
-      <message name="IDS_FEATURE_NOTIFICATION_GUIDE_TOOLTIP_MESSAGE_SIGN_IN" desc="Tooltip text educating user about signing in into chrome.">
-        Sign in to Chrome with your Google Account
       </message>
 
       <!-- Toolbar button strings -->

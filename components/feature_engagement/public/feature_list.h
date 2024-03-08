@@ -98,33 +98,6 @@ DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadContinuingFeature,
 DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadsAreFasterFeature,
                        "IPH_DownloadInfoBarDownloadsAreFaster");
 DEFINE_VARIATION_PARAM(kIPHEphemeralTabFeature, "IPH_EphemeralTab");
-DEFINE_VARIATION_PARAM(
-    kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature,
-    "IPH_FeatureNotificationGuideDefaultBrowserNotificationShown");
-DEFINE_VARIATION_PARAM(
-    kIPHFeatureNotificationGuideSignInNotificationShownFeature,
-    "IPH_FeatureNotificationGuideSignInNotificationShown");
-DEFINE_VARIATION_PARAM(
-    kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature,
-    "IPH_FeatureNotificationGuideIncognitoTabNotificationShown");
-DEFINE_VARIATION_PARAM(
-    kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature,
-    "IPH_FeatureNotificationGuideNTPSuggestionCardNotificationShown");
-DEFINE_VARIATION_PARAM(
-    kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature,
-    "IPH_FeatureNotificationGuideVoiceSearchNotificationShown");
-DEFINE_VARIATION_PARAM(kIPHFeatureNotificationGuideDefaultBrowserPromoFeature,
-                       "IPH_FeatureNotificationGuideDefaultBrowserPromo");
-DEFINE_VARIATION_PARAM(kIPHFeatureNotificationGuideSignInHelpBubbleFeature,
-                       "IPH_FeatureNotificationGuideSignInHelpBubble");
-DEFINE_VARIATION_PARAM(
-    kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature,
-    "IPH_FeatureNotificationGuideIncognitoTabHelpBubble");
-DEFINE_VARIATION_PARAM(
-    kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature,
-    "IPH_FeatureNotificationGuideNTPSuggestionCardHelpBubble");
-DEFINE_VARIATION_PARAM(kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature,
-                       "IPH_FeatureNotificationGuideVoiceSearchHelpBubble");
 DEFINE_VARIATION_PARAM(kIPHFeedCardMenuFeature, "IPH_FeedCardMenu");
 DEFINE_VARIATION_PARAM(kIPHGenericAlwaysTriggerHelpUiFeature,
                        "IPH_GenericAlwaysTriggerHelpUiFeature");

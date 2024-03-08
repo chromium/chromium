@@ -48,8 +48,6 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -409,8 +407,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     public void onDestroy() {
-        FeatureNotificationUtils.unregisterIPHCallback(FeatureType.DEFAULT_BROWSER);
-
         if (mSystemUiCoordinator != null) mSystemUiCoordinator.destroy();
 
         if (mOfflineIndicatorController != null) {
@@ -911,16 +907,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             didTriggerPromo =
                     mNotificationPermissionController.requestPermissionIfNeeded(
                             /* contextual= */ false);
-        }
-
-        if (!didTriggerPromo) {
-            didTriggerPromo = FeatureNotificationUtils.willShowIPH(FeatureType.DEFAULT_BROWSER);
-            FeatureNotificationUtils.registerIPHCallback(
-                    FeatureType.DEFAULT_BROWSER,
-                    () -> {
-                        DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
-                                mActivity, mWindowAndroid, /* ignoreMaxCount= */ true);
-                    });
         }
 
         if (!didTriggerPromo) {

@@ -139,7 +139,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="chrome/browser/engagement/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/enterprise/util/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/feature_engagement/java/src"/>
-    <classpathentry kind="src" path="chrome/browser/feature_guide/notifications/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/feed/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/feedback/android/java/src"/>
     <classpathentry kind="src" path="chrome/browser/first_run/android/java/src"/>

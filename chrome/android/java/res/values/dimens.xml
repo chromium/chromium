@@ -163,7 +163,6 @@ found in the LICENSE file.
     <dimen name="tile_carousel_layout_min_interval_margin_tablet">16dp</dimen>
     <dimen name="ntp_single_tab_card_top_margin">@dimen/tile_grid_layout_top_margin</dimen>
     <dimen name="ntp_single_tab_card_bottom_margin">@dimen/tile_grid_layout_bottom_margin</dimen>
-    <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="ntp_logo_margin_bottom">23dp</dimen>

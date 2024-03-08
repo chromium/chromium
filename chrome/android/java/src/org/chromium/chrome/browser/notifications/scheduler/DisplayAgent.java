@@ -226,16 +226,8 @@ public class DisplayAgent {
     }
 
     private static AndroidNotificationData toAndroidNotificationData(SystemData systemData) {
-        @ChannelId
-        String channel =
-                systemData.type == SchedulerClientType.FEATURE_GUIDE
-                        ? ChannelId.CHROME_TIPS
-                        : ChannelId.BROWSER;
-        @SystemNotificationType
-        int systemNotificationType =
-                systemData.type == SchedulerClientType.FEATURE_GUIDE
-                        ? SystemNotificationType.CHROME_TIPS
-                        : SystemNotificationType.UNKNOWN;
+        @ChannelId String channel = ChannelId.BROWSER;
+        @SystemNotificationType int systemNotificationType = SystemNotificationType.UNKNOWN;
         return new AndroidNotificationData(channel, systemNotificationType);
     }
 

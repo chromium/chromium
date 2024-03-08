@@ -4103,15 +4103,6 @@ const char kExternalNavigationDebugLogsDescription[] =
     "Enables detailed logging to logcat about why Chrome is making decisions "
     "about whether to allow or block navigation to other apps";
 
-const char kFeatureNotificationGuideName[] = "Feature notification guide";
-const char kFeatureNotificationGuideDescription[] =
-    "Enables notifications about chrome features.";
-
-const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersName[] =
-    "Feature notification guide - Skip check for low engaged users";
-const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription[] =
-    "Skips check for low engaged users.";
-
 const char kFeedFollowUiUpdateName[] = "UI Update for the Following Feed";
 const char kFeedFollowUiUpdateDescription[] =
     "Enables showing the updated UI for the following feed.";

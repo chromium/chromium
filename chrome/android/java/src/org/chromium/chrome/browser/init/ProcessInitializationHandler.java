@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
-import org.chromium.chrome.browser.app.feature_guide.notifications.FeatureNotificationGuideDelegate;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
@@ -50,10 +49,7 @@ import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideService;
-import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationGuideServiceFactory;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
@@ -274,7 +270,6 @@ public class ProcessInitializationHandler {
                 .addObserver(
                         new ContentCaptureHistoryDeletionObserver(
                                 () -> PlatformContentCaptureController.getInstance()));
-        FeatureNotificationGuideService.setDelegate(new FeatureNotificationGuideDelegate());
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
         refreshCachedSegmentationResult();
@@ -503,13 +498,6 @@ public class ProcessInitializationHandler {
                             && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(
                                     profile)) {
                         ShoppingPersistedTabData.onDeferredStartup();
-                    }
-                });
-        deferredStartupHandler.addDeferredTask(
-                () -> {
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEATURE_NOTIFICATION_GUIDE)) {
-                        FeatureNotificationGuideServiceFactory.getForProfile(
-                                ProfileManager.getLastUsedRegularProfile());
                     }
                 });
         deferredStartupHandler.addDeferredTask(

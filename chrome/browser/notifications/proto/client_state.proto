@@ -20,7 +20,7 @@ enum SchedulerClientType {
   CHROME_UPDATE = 2;
   PREFETCH = 3;
   READING_LIST = 4;
-  FEATURE_GUIDE = 5;
+  reserved 5;  // [DEPRECATED] FEATURE_GUIDE
 }
 
 // Contains details about suppression and recovery after suppression expired.

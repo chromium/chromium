@@ -35,7 +35,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/core/features.h"
-#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
@@ -2538,21 +2537,6 @@ const FeatureEntry::FeatureVariation
          std::size(kSearchResumption_use_new_service), nullptr},
 };
 
-const FeatureEntry::FeatureParam kFeatureNotificationGuide_low_engaged[] = {
-    {"enable_feature_incognito_tab", "true"},
-    {"enable_feature_ntp_suggestion_card", "true"},
-    {"enable_feature_voice_search", "true"}};
-
-const FeatureEntry::FeatureParam kFeatureNotificationGuide_default_browser[] = {
-    {"enable_feature_default_browser", "true"}};
-
-const FeatureEntry::FeatureVariation kFeatureNotificationGuideVariations[] = {
-    {"Low engaged users", kFeatureNotificationGuide_low_engaged,
-     std::size(kFeatureNotificationGuide_low_engaged), nullptr},
-    {"Default browser", kFeatureNotificationGuide_default_browser,
-     std::size(kFeatureNotificationGuide_default_browser), nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {
         {"always_show_rationale_before_requesting_permission", "true"},
@@ -5048,13 +5032,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAddToHomescreenIPH,
                                     kAddToHomescreenIPHVariations,
                                     "AddToHomescreen")},
-    {"feature-notification-guide",
-     flag_descriptions::kFeatureNotificationGuideName,
-     flag_descriptions::kFeatureNotificationGuideDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         feature_guide::features::kFeatureNotificationGuide,
-         kFeatureNotificationGuideVariations,
-         "FeatureNotificationGuide")},
     {"notification-permission-rationale-dialog",
      flag_descriptions::kNotificationPermissionRationaleName,
      flag_descriptions::kNotificationPermissionRationaleDescription, kOsAndroid,
@@ -5067,13 +5044,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotificationPermissionRationaleBottomSheetDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNotificationPermissionBottomSheet)},
-    {"feature-notification-guide-skip-check-for-low-engaged-users",
-     flag_descriptions::
-         kFeatureNotificationGuideSkipCheckForLowEngagedUsersName,
-     flag_descriptions::
-         kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(feature_guide::features::kSkipCheckForLowEngagedUsers)},
     {"query-tiles", flag_descriptions::kQueryTilesName,
      flag_descriptions::kQueryTilesDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(query_tiles::features::kQueryTiles,

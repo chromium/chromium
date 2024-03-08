@@ -41601,32 +41601,36 @@ should be able to be added at any place in this file.
       label="For Extensions request access button feature."/>
   <suffix name="FeatureNotificationGuideDefaultBrowserNotificationShown"
       label="For feature notification guide default browser notification
-             feature."/>
+             feature. (obsolete)"/>
   <suffix name="FeatureNotificationGuideDefaultBrowserPromo"
-      label="For feature notification guide default browser promo."/>
+      label="For feature notification guide default browser promo. (obsolete)"/>
   <suffix name="FeatureNotificationGuideIncognitoTabHelpBubble"
-      label="For feature notification guide incognito tab help bubble."/>
+      label="For feature notification guide incognito tab help bubble.
+             (obsolete)"/>
   <suffix name="FeatureNotificationGuideIncognitoTabNotificationShown"
       label="For feature notification guide incognito tab notification
-             feature."/>
+             feature. (obsolete)"/>
   <suffix name="FeatureNotificationGuideIncognitoTabUsed"
-      label="For FeatureNotificationGuideIncognitoTabUsed feature."/>
+      label="For FeatureNotificationGuideIncognitoTabUsed feature. (obsolete)"/>
   <suffix name="FeatureNotificationGuideNTPSuggestionCardHelpBubble"
-      label="For feature notification guide NTP suggestion card help bubble."/>
+      label="For feature notification guide NTP suggestion card help bubble.
+             (obsolete)"/>
   <suffix name="FeatureNotificationGuideNTPSuggestionCardNotificationShown"
       label="For feature notification guide NTP suggestion card notification
-             feature."/>
+             feature. (obsolete)"/>
   <suffix name="FeatureNotificationGuideSignInHelpBubble"
-      label="For feature notification guide sign in help bubble."/>
+      label="For feature notification guide sign in help bubble. (obsolete)"/>
   <suffix name="FeatureNotificationGuideSignInNotificationShown"
-      label="For feature notification guide sign in notification feature."/>
+      label="For feature notification guide sign in notification feature.
+             (obsolete)"/>
   <suffix name="FeatureNotificationGuideVoiceSearchHelpBubble"
-      label="For feature notification guide voice search help bubble."/>
+      label="For feature notification guide voice search help bubble.
+             (obsolete)"/>
   <suffix name="FeatureNotificationGuideVoiceSearchNotificationShown"
       label="For feature notification guide voice search notification
-             feature."/>
+             feature. (obsolete)"/>
   <suffix name="FeatureNotificationGuideVoiceSearchUsed"
-      label="For FeatureNotificationGuideVoiceSearchUsed feature."/>
+      label="For FeatureNotificationGuideVoiceSearchUsed feature. (obsolete)"/>
   <suffix name="FeedCardMenu" label="For FeedCardMenu feature."/>
   <suffix name="FeedHeaderMenu" label="For FeedHeaderMenu feature."/>
   <suffix name="FeedSwipeRefresh" label="For FeedSwipeRefresh feature."/>

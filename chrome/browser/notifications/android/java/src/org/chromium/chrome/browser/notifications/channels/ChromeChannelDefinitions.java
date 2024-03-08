@@ -96,7 +96,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         ChannelId.PRICE_DROP,
         ChannelId.PRICE_DROP_DEFAULT,
         ChannelId.SECURITY_KEY,
-        ChannelId.CHROME_TIPS,
         ChannelId.BLUETOOTH,
         ChannelId.USB
     })
@@ -129,7 +128,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String PRICE_DROP = "shopping_price_drop_alerts";
         String PRICE_DROP_DEFAULT = "shopping_price_drop_alerts_default";
         String SECURITY_KEY = "security_key";
-        String CHROME_TIPS = "chrome_tips";
         String BLUETOOTH = "bluetooth";
         String USB = "usb";
     }
@@ -347,16 +345,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                     PredefinedChannel.create(
                             ChannelId.SECURITY_KEY,
                             R.string.notification_category_security_key,
-                            NotificationManager.IMPORTANCE_HIGH,
-                            ChannelGroupId.GENERAL));
-
-            // The chrome tips notification channel will only appear for users
-            // who are targeted for this feature.
-            map.put(
-                    ChannelId.CHROME_TIPS,
-                    PredefinedChannel.create(
-                            ChannelId.CHROME_TIPS,
-                            R.string.notification_category_feature_guide,
                             NotificationManager.IMPORTANCE_HIGH,
                             ChannelGroupId.GENERAL));
 

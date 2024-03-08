@@ -6716,7 +6716,6 @@ test("unit_tests") {
     "//chrome/browser/dips:unit_tests",
     "//chrome/browser/enterprise/identifiers",
     "//chrome/browser/favicon",
-    "//chrome/browser/feature_guide/notifications:unit_tests",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/google:unit_tests",
     "//chrome/browser/ip_protection:unit_tests",

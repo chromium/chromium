@@ -2839,8 +2839,6 @@ HSPLorg/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateImpl$$Exter
 Lorg/chromium/chrome/browser/app/download/DownloadMessageUiDelegate;
 HSPLorg/chromium/chrome/browser/app/download/DownloadMessageUiDelegate;-><init>()V
 HSPLorg/chromium/chrome/browser/app/download/DownloadMessageUiDelegate;->maybeSwitchToFocusedActivity()Z
-Lorg/chromium/chrome/browser/app/feature_guide/notifications/FeatureNotificationGuideDelegate;
-HSPLorg/chromium/chrome/browser/app/feature_guide/notifications/FeatureNotificationGuideDelegate;-><init>()V
 Lorg/chromium/chrome/browser/app/flags/ChromeCachedFlags;
 HSPLorg/chromium/chrome/browser/app/flags/ChromeCachedFlags;-><init>()V
 Lorg/chromium/chrome/browser/app/metrics/LaunchCauseMetrics;
@@ -3631,12 +3629,6 @@ Lorg/chromium/chrome/browser/feature_engagement/ScreenshotMonitorImpl$Screenshot
 HSPLorg/chromium/chrome/browser/feature_engagement/ScreenshotMonitorImpl$ScreenshotMonitorContentObserver;-><init>(Lorg/chromium/chrome/browser/feature_engagement/ScreenshotMonitorImpl;Lorg/chromium/chrome/browser/feature_engagement/ScreenshotMonitorImpl;)V
 Lorg/chromium/chrome/browser/feature_engagement/TrackerFactory;
 HSPLorg/chromium/chrome/browser/feature_engagement/TrackerFactory;->getTrackerForProfile(Lorg/chromium/chrome/browser/profiles/Profile;)Lorg/chromium/components/feature_engagement/Tracker;
-Lorg/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideBridge;
-Lorg/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideService$Delegate;
-Lorg/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationUtils;
-HSPLorg/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationUtils;->getIPHFeatureForNotificationFeatureType(I)Ljava/lang/String;
-HSPLorg/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationUtils;->registerIPHCallback(ILjava/lang/Runnable;)V
-HSPLorg/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationUtils;->unregisterIPHCallback(I)V
 Lorg/chromium/chrome/browser/feed/FeedFeatures;
 Lorg/chromium/chrome/browser/feed/FeedPlaceholderLayout;
 Lorg/chromium/chrome/browser/feed/FeedStreamViewResizer;

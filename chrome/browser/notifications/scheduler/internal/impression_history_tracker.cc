@@ -45,6 +45,7 @@ std::string ToDatabaseKey(SchedulerClientType type) {
     case SchedulerClientType::kTest3:
       return "Test3";
     case SchedulerClientType::kUnknown:
+    case SchedulerClientType::kDeprecatedFeatureGuide:
       NOTREACHED();
       return std::string();
     case SchedulerClientType::kWebUI:
@@ -55,8 +56,6 @@ std::string ToDatabaseKey(SchedulerClientType type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
-    case SchedulerClientType::kFeatureGuide:
-      return "FeatureGuide";
   }
 }
 

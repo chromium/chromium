@@ -164,11 +164,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_expand_tab_group_with_group_name` appears to be unused"/>
-    <!-- crbug.com/1277400 remove this line and the following 4 lines after the bug is resolved -->
-    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_incognito_tab` appears to be unused"/>
-    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card` appears to be unused"/>
-    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_voice_search` appears to be unused"/>
-    <ignore regexp="The resource `R.string.feature_notification_guide_tooltip_message_sign_in` appears to be unused"/>
 
     <!-- crbug.com/1127531 remove this line and following 9 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.languages_content_description` appears to be unused"/>

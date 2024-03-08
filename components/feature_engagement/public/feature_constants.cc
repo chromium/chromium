@@ -292,43 +292,6 @@ BASE_FEATURE(kIPHShoppingListSaveFlowFeature,
 BASE_FEATURE(kIPHEphemeralTabFeature,
              "IPH_EphemeralTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature,
-             "IPH_FeatureNotificationGuideDefaultBrowserNotificationShown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideSignInNotificationShownFeature,
-             "IPH_FeatureNotificationGuideSignInNotificationShown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature,
-             "IPH_FeatureNotificationGuideIncognitoTabNotificationShown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(
-    kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature,
-    "IPH_FeatureNotificationGuideNTPSuggestionCardNotificationShown",
-    base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature,
-             "IPH_FeatureNotificationGuideVoiceSearchNotificationShown",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideDefaultBrowserPromoFeature,
-             "IPH_FeatureNotificationGuideDefaultBrowserPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideSignInHelpBubbleFeature,
-             "IPH_FeatureNotificationGuideSignInHelpBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature,
-             "IPH_FeatureNotificationGuideIncognitoTabHelpBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature,
-             "IPH_FeatureNotificationGuideNTPSuggestionCardHelpBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature,
-             "IPH_FeatureNotificationGuideVoiceSearchHelpBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideIncognitoTabUsedFeature,
-             "IPH_FeatureNotificationGuideIncognitoTabUsed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHFeatureNotificationGuideVoiceSearchUsedFeature,
-             "IPH_FeatureNotificationGuideVoiceSearchUsed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHFeedCardMenuFeature,
              "IPH_FeedCardMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
