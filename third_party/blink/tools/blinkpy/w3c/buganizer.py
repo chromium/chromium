@@ -56,7 +56,10 @@ class Severity(enum.IntEnum):
 
 @dataclass(frozen=True)
 class BuganizerIssue:
-    """A (simplified) representation Buganizer's `Issue` message."""
+    """A (simplified) representation Buganizer's `Issue` message [0].
+
+    [0]: ///depot/google3/google/devtools/issuetracker/v1/issuetracker.proto
+    """
     title: str
     description: str
     component_id: str
@@ -66,6 +69,11 @@ class BuganizerIssue:
     # `priority` and `severity` are `IntEnum`s to create orderings.
     priority: Priority = Priority.P3
     severity: Severity = Severity.S4
+    # TODO(crbug.com/40283194): There are some fields that aren't needed now
+    # but we may want to support in the future:
+    #   * `assignee` (i.e., "owner")
+    #   * Monorail's old labels (e.g., Test-WebTest) as Buganizer hotlists or
+    #     custom fields
 
     def __str__(self) -> str:
         link = f' {self.link}' if self.link else ''
@@ -84,6 +92,23 @@ class BuganizerIssue:
     @functools.cached_property
     def link(self) -> Optional[str]:
         return f'https://crbug.com/{self.issue_id}' if self.issue_id else None
+
+    @classmethod
+    def from_payload(cls, payload) -> 'BuganizerIssue':
+        # `issueState` and some constituent fields accessed here are required
+        # and should always exist.
+        state = payload['issueState']
+        cc = [user.get('emailAddress', '') for user in state.get('ccs', [])]
+        return cls(
+            title=state['title'],
+            # May or may not exist, depending on the context and endpoint.
+            description=payload.get('issueComment', {}).get('comment', ''),
+            component_id=str(state['componentId']),
+            issue_id=payload.get('issueId'),
+            cc=[email for email in cc if email],
+            status=Status[state['status']],
+            priority=Priority[state['priority']],
+            severity=Severity[state['severity']])
 
 
 class BuganizerClient:
@@ -175,66 +200,29 @@ class BuganizerClient:
                                    http=ServiceAccountHttp(BUGANIZER_SCOPES))
         return response
 
-    def NewIssue(self,
-                 title,
-                 description,
-                 project='chromium',
-                 priority='P3',
-                 severity='S3',
-                 components=None,
-                 owner=None,
-                 cc=None,
-                 status=None,
-                 componentId=None):
-        """ Create an issue on Buganizer
+    def NewIssue(self, issue: BuganizerIssue) -> BuganizerIssue:
+        """File a new bug with the `CreateIssue` RPC [0].
 
-            While the API looks the same as in monorail_client, similar to what we do
-            in reconciling buganizer data, we need to reconstruct the data in the
-            reversed way: from the monorail fashion to the buganizer fashion.
-            The issueState property should always exist for an Issue, and these
-            properties are required for an issueState:
-            title, componentId, status, type, severity, priority.
+        [0]: ///depot/google3/google/devtools/issuetracker/v1/issuetracker_service.proto
 
-            Args:
-            title: a string as the issue title.
-            description: a string as the initial description of the issue.
-            project: this is no longer needed in Buganizer. When creating an issue,
-                we will NOT use it to look for the corresponding components.
-            labels: a list of Monorail labels, each of which will be mapped to a
-                Buganizer hotlist id.
-            components: a list of component names in Monorail. The size of the list
-                should always be 1 as required by Buganizer.
-            owner: the email address of the issue owner/assignee.
-            cc: a list of email address to which the issue update is cc'ed.
-            status: the initial status of the issue
-
-            Returns:
-            {'issue_id': id, 'project_id': project_name} if succeeded; otherwise
-            {'error': error_msg}
+        Raises:
+            BuganizerError: If the client could not create the issue.
         """
-
-        new_issue_state = {
-            'title': title,
-            'componentId': componentId,
-            'status': status,
-            'type': 'BUG',
-            'severity': severity,
-            'priority': priority,
-        }
-
-        new_description = {'comment': description}
-
-        if owner:
-            new_issue_state['assignee'] = {'emailAddress': owner}
-        if cc:
-            emails = set(email.strip() for email in cc if email.strip())
-            new_issue_state['ccs'] = [{
-                'emailAddress': email
-            } for email in emails if email]
-
         new_issue = {
-            'issueState': new_issue_state,
-            'issueComment': new_description
+            'issueState': {
+                'title': issue.title,
+                'componentId': issue.component_id,
+                'status': issue.status.name,
+                'type': 'BUG',
+                'severity': issue.severity.name,
+                'priority': issue.priority.name,
+                'ccs': [{
+                    'emailAddress': email,
+                } for email in set(issue.cc)],
+            },
+            'issueComment': {
+                'comment': issue.description,
+            },
         }
 
         logging.warning('[BuganizerClient] PostIssue request: %s', new_issue)
@@ -243,14 +231,13 @@ class BuganizerClient:
         try:
             response = self._ExecuteRequest(request)
             logging.debug('[BuganizerClient] PostIssue response: %s', response)
-            if response and 'issueId' in response:
-                return {'issue_id': response['issueId'], 'project_id': project}
-            logging.error(
-                '[BuganizerClient] Failed to create new issue; '
-                'response %s', response)
+            return BuganizerIssue.from_payload(response)
         except Exception as e:
-            return {'error': str(e)}
-        return {'error': 'Unknown failure creating issue.'}
+            raise BuganizerError(f'failed to create issue: {e}') from e
+
+
+class BuganizerError(Exception):
+    """Base exception representing a failed Buganizer operation."""
 
 
 def ServiceAccountHttp(scope=EMAIL_SCOPE, timeout=None):

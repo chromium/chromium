@@ -16,6 +16,7 @@ from blinkpy.common.path_finder import (
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
+from blinkpy.w3c.buganizer import BuganizerError
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import (ImportNotifier, TestFailure,
@@ -411,6 +412,33 @@ class ImportNotifierTest(unittest.TestCase):
                 'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
         self.notifier.file_bugs(bugs, dry_run=True)
         self.buganizer_client.NewIssue.assert_not_called()
+
+    def test_file_bugs_with_best_effort(self):
+        """Failing to file a bug should not prevent additional attempts."""
+        self.notifier.new_failures_by_directory = {
+            'external/wpt/foo': [
+                TestFailure.from_expectation_line(
+                    'external/wpt/foo/baz.html',
+                    'crbug.com/12345 external/wpt/foo/baz.html [ Fail ]'),
+            ],
+            'external/wpt/bar': [
+                TestFailure.from_expectation_line(
+                    'external/wpt/bar/baz.html',
+                    'crbug.com/12345 external/wpt/bar/baz.html [ Fail ]'),
+            ],
+        }
+        dir_metadata = WPTDirMetadata(buganizer_public_component='123',
+                                      should_notify=True)
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata',
+                               return_value=dir_metadata):
+            bugs = self.notifier.create_bugs_from_new_failures(
+                'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
+        self.assertEqual(len(bugs), 2)
+
+        self.buganizer_client.NewIssue.side_effect = BuganizerError
+        self.notifier.file_bugs(bugs)
+        self.assertEqual(self.buganizer_client.NewIssue.call_count, 2)
 
 
 class TestFailureTest(unittest.TestCase):

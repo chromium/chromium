@@ -65,3 +65,31 @@ class BuganizerIssueTest(unittest.TestCase):
                                description='test',
                                component_id='999')
         self.assertIsNone(issue.link)
+
+    def test_build_from_payload(self):
+        issue = BuganizerIssue.from_payload({
+            'issueId': 12345,
+            'issueState': {
+                'title': 'test title',
+                'componentId': 999,
+                'status': 'NEW',
+                'severity': 'S2',
+                'priority': 'P1',
+                # `emailAddress` may be blank if the user is not visible to the
+                # caller.
+                'ccs': [{}, {
+                    'emailAddress': 'test@chromium.org',
+                }],
+            },
+            'issueComment': {
+                'comment': 'test description',
+            },
+        })
+        self.assertEqual(issue.issue_id, 12345)
+        self.assertEqual(issue.title, 'test title')
+        self.assertEqual(issue.component_id, '999')
+        self.assertIs(issue.status, Status.NEW)
+        self.assertIs(issue.severity, Severity.S2)
+        self.assertIs(issue.priority, Priority.P1)
+        self.assertEqual(issue.cc, ['test@chromium.org'])
+        self.assertEqual(issue.description, 'test description')

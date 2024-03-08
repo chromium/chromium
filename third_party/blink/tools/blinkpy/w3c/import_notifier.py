@@ -23,9 +23,13 @@ from blinkpy.web_tests.models.testharness_results import (
     Status,
     parse_testharness_baseline,
 )
+from blinkpy.w3c.buganizer import (
+    BuganizerClient,
+    BuganizerError,
+    BuganizerIssue,
+)
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
-from blinkpy.w3c.buganizer import BuganizerClient, BuganizerIssue
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_results_processor import TestType
 
@@ -340,20 +344,11 @@ class ImportNotifier:
 
         _log.info('Filing %d bugs in the pending list to Buganizer', len(bugs))
         for index, bug in enumerate(bugs, start=1):
-            issue_link = None
             try:
-                # TODO(crbug.com/40283194): Pass `bug` to `NewIssue()` directly.
-                buganizer_res = self._buganizer_client.NewIssue(
-                    title=bug.title,
-                    description=bug.description,
-                    cc=bug.cc,
-                    status=bug.status.name,
-                    componentId=bug.component_id)
-                issue_link = f'crbug.com/{buganizer_res["issue_id"]}'
-            except Exception as e:
-                _log.warning('buganizer api call to new issue failed')
-                _log.warning(e)
-            _log.info('[%d] Filed bug: %s', index, issue_link)
+                bug = self._buganizer_client.NewIssue(bug)
+                _log.info(f'[{index}] Filed bug: {bug.link}')
+            except BuganizerError as error:
+                _log.exception('Failed to file bug', exc_info=error)
 
 
 class TestFailure(NamedTuple):
