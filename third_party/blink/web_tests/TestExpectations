@@ -2611,10 +2611,6 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-break/table/table-fragmentation-003a-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-break/table/table-fragmentation-003b-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-break/table/table-fragmentation-003c-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-break/table/table-fragmentation-003d-print.html [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Failure Timeout ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Failure Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Timeout ]
@@ -3386,6 +3382,10 @@ crbug.com/481431 external/wpt/css/css-break/box-decoration-break-clone-001.html 
 crbug.com/481431 external/wpt/css/css-break/box-decoration-break-clone-002.html [ Failure ]
 crbug.com/481431 external/wpt/css/css-break/box-decoration-break-clone-004.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-039.html [ Failure ]
+crbug.com/328483408 external/wpt/css/css-break/table/table-fragmentation-003a-print.html [ Failure ]
+crbug.com/328483408 external/wpt/css/css-break/table/table-fragmentation-003b-print.html [ Failure ]
+crbug.com/328483408 external/wpt/css/css-break/table/table-fragmentation-003c-print.html [ Failure ]
+crbug.com/328483408 external/wpt/css/css-break/table/table-fragmentation-003d-print.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-007.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-break/transform-009.html [ Failure ]
 crbug.com/481431 external/wpt/css/css-multicol/multicol-breaking-004.html [ Failure ]
