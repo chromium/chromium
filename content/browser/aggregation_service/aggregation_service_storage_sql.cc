@@ -848,22 +848,22 @@ void AggregationServiceStorageSql::ClearAllRequests() {
 void AggregationServiceStorageSql::HandleInitializationFailure(
     const InitStatus status) {
   RecordInitializationStatus(status);
-  db_init_status_ = DbStatus::kClosed;
+  db_status_ = DbStatus::kClosed;
 }
 
 bool AggregationServiceStorageSql::EnsureDatabaseOpen(
     DbCreationPolicy creation_policy) {
-  if (!db_init_status_) {
+  if (!db_status_) {
     if (run_in_memory_) {
-      db_init_status_ = DbStatus::kDeferringCreation;
+      db_status_ = DbStatus::kDeferringCreation;
     } else {
-      db_init_status_ = base::PathExists(path_to_database_)
-                            ? DbStatus::kDeferringOpen
-                            : DbStatus::kDeferringCreation;
+      db_status_ = base::PathExists(path_to_database_)
+                       ? DbStatus::kDeferringOpen
+                       : DbStatus::kDeferringCreation;
     }
   }
 
-  switch (*db_init_status_) {
+  switch (*db_status_) {
     // If the database file has not been created, we defer creation until
     // storage needs to be used for an operation which needs to operate even on
     // an empty database.
@@ -900,12 +900,12 @@ bool AggregationServiceStorageSql::EnsureDatabaseOpen(
     }
   }
 
-  if (!InitializeSchema(db_init_status_ == DbStatus::kDeferringCreation)) {
+  if (!InitializeSchema(db_status_ == DbStatus::kDeferringCreation)) {
     HandleInitializationFailure(InitStatus::kFailedToInitializeSchema);
     return false;
   }
 
-  db_init_status_ = DbStatus::kOpen;
+  db_status_ = DbStatus::kOpen;
   RecordInitializationStatus(InitStatus::kSuccess);
   return true;
 }
@@ -1031,7 +1031,7 @@ void AggregationServiceStorageSql::DatabaseErrorCallback(int extended_error,
     DLOG(FATAL) << db_.GetErrorMessage();
 
   // Consider the database closed to avoid further errors.
-  db_init_status_ = DbStatus::kClosed;
+  db_status_ = DbStatus::kClosed;
 
   // Note that this histogram will not be recorded when errors are fatal.
   base::UmaHistogramEnumeration(

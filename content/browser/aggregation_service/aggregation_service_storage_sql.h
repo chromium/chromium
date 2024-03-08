@@ -211,11 +211,10 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   // silently be dropped until there is more capacity.
   int max_stored_requests_per_reporting_origin_;
 
-  // Current status of the database initialization. Tracks what stage `this` is
-  // at for lazy initialization, and used as a signal for if the database is
-  // closed. This is initialized in the first call to EnsureDatabaseOpen() to
-  // avoid doing additional work in the constructor.
-  std::optional<DbStatus> db_init_status_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // The current state of `db_`. Lazy-initialized by `EnsureDatabaseOpen()` to
+  // avoid touching the filesystem in the constructor. Watch out: any time we
+  // use the database, its value may be updated by `DatabaseErrorCallback()`.
+  std::optional<DbStatus> db_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 
