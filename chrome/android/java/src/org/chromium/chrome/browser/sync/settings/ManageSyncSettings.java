@@ -75,7 +75,7 @@ import java.util.stream.Collectors;
  * This fragment is accessible from the main settings view.
  */
 public class ManageSyncSettings extends ChromeBaseSettingsFragment
-        implements PassphraseDialogFragment.Listener,
+        implements PassphraseDialogFragment.Delegate,
                 PassphraseCreationDialogFragment.Listener,
                 PassphraseTypeDialogFragment.Listener,
                 Preference.OnPreferenceChangeListener,

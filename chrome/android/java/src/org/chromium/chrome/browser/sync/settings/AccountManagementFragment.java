@@ -72,7 +72,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                 ProfileDataCache.Observer,
                 CustomDividerFragment,
                 IdentityErrorCardPreference.Listener,
-                PassphraseDialogFragment.Listener {
+                PassphraseDialogFragment.Delegate {
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
