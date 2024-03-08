@@ -542,8 +542,6 @@ public class SyncPromoController {
                     context,
                     mProfile,
                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
-                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
-                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                     SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
                     mAccessPoint);
         } else {

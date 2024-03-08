@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -39,9 +38,9 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -88,10 +87,7 @@ public class SigninAndHistoryOptInIntegrationTest {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
 
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+        launchActivity(NoAccountSigninMode.BOTTOM_SHEET, HistoryOptInMode.REQUIRED);
 
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
         onView(
@@ -122,9 +118,8 @@ public class SigninAndHistoryOptInIntegrationTest {
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
 
         launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED);
 
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
         onView(
@@ -153,11 +148,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     public void testWithExistingAccount_signIn_optionalHistoryOptIn() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.OPTIONAL);
+        launchActivity(NoAccountSigninMode.BOTTOM_SHEET, HistoryOptInMode.OPTIONAL);
 
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
         onView(
@@ -186,11 +177,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     public void testWithExistingAccount_signIn_noHistoryOptIn() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.NONE);
+        launchActivity(NoAccountSigninMode.BOTTOM_SHEET, HistoryOptInMode.NONE);
 
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
         onView(
@@ -215,9 +202,8 @@ public class SigninAndHistoryOptInIntegrationTest {
     public void testWithExistingAccount_refuseSignIn_noHistoryOptIn() {
         mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
         launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
+                SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED);
 
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
         onView(
@@ -236,49 +222,8 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_signInWithExpandedBottomSheet_noHistoryOptIn() {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.NONE);
-
-        // Verifies that the expanded sign-in bottom-sheet is shown, and select an account.
-        onView(
-                        allOf(
-                                withText(SigninTestRule.TEST_ACCOUNT_EMAIL),
-                                isDescendantOfA(withId(R.id.account_picker_state_expanded))))
-                .check(matches(isDisplayed()))
-                .perform(click());
-
-        // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
-        // TODO(crbug.com/41493769): Remove this after sign-in upon account selection will be
-        // implemented.
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()))
-                .perform(click());
-
-        // Verify signed-in state and flow completion.
-        mSigninTestRule.waitForSignin(accountInfo);
-
-        // Verify that the flow completion callback, which finishes the activity, is called.
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-
-        // TODO(crbug.com/41493758): Verify that history sync is not enabled.
-    }
-
-    @Test
-    @MediumTest
     public void testWithNoAccount_noSignIn() {
-        launchActivity(
-                NoAccountSigninMode.NO_SIGNIN,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.NONE);
+        launchActivity(NoAccountSigninMode.NO_SIGNIN, HistoryOptInMode.NONE);
 
         // Verify that no account is signed-in.
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -291,14 +236,11 @@ public class SigninAndHistoryOptInIntegrationTest {
     }
 
     private void launchActivity(
-            @NoAccountSigninMode int noAccountSigninMode,
-            @WithAccountSigninMode int withAccountSigninMode,
-            @HistoryOptInMode int historyOptInMode) {
+            @NoAccountSigninMode int noAccountSigninMode, @HistoryOptInMode int historyOptInMode) {
         Intent intent =
                 SigninAndHistoryOptInActivity.createIntent(
                         ContextUtils.getApplicationContext(),
                         noAccountSigninMode,
-                        withAccountSigninMode,
                         historyOptInMode,
                         SigninAccessPoint.NTP_SIGNED_OUT_ICON);
         mActivityTestRule.launchActivity(intent);

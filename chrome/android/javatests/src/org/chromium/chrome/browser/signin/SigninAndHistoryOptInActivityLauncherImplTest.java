@@ -79,8 +79,6 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     mProfileMock,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
@@ -101,8 +99,6 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     mProfileMock,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
@@ -129,8 +125,6 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
                                     mProfileMock,
                                     SigninAndHistoryOptInCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });

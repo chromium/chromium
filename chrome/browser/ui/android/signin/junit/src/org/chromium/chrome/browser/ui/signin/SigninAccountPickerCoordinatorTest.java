@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -98,7 +97,6 @@ public class SigninAccountPickerCoordinatorTest {
                         mDelegateMock,
                         mDeviceLockActivityLauncherMock,
                         mSigninManagerMock,
-                        AccountPickerLaunchMode.DEFAULT,
                         mAccessPoint);
     }
 

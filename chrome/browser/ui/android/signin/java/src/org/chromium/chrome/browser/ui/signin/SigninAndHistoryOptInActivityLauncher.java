@@ -40,8 +40,6 @@ public interface SigninAndHistoryOptInActivityLauncher {
      * @param profile the current profile.
      * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if
      *     there's no account on the device.
-     * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if
-     *     there are 1+ accounts on the device.
      * @param historyOptInMode Whether the history opt-in should be always, optionally or never
      *     shown.
      * @param accessPoint The access point from which the sign-in was triggered.
@@ -51,7 +49,6 @@ public interface SigninAndHistoryOptInActivityLauncher {
             Context context,
             Profile profile,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint);
 }

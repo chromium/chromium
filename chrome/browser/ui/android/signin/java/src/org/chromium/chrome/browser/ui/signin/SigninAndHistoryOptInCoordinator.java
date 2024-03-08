@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -54,8 +53,8 @@ public class SigninAndHistoryOptInCoordinator
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
+    // TODO(crbug.com/1520783): Start different flow according to the modes set.
     private final @NoAccountSigninMode int mNoAccountSigninMode;
-    private final @WithAccountSigninMode int mWithAccountSigninMode;
     private final @HistoryOptInMode int mHistoryOptInMode;
 
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
@@ -75,7 +74,7 @@ public class SigninAndHistoryOptInCoordinator
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NoAccountSigninMode {
-        /** Show the 0-account version of the sign-in bottom sheet. */
+        /** Show the 0-account sign-in bottom sheet. */
         int BOTTOM_SHEET = 0;
 
         /** Bring the user to GMS Core to add an account, then sign-in with the new account. */
@@ -83,20 +82,6 @@ public class SigninAndHistoryOptInCoordinator
 
         /** No sign-in should be done, the entry point should not be visible to the user. */
         int NO_SIGNIN = 2;
-    }
-
-    /** The sign-in step that should be shown to the user when there's 1+ accounts on the device. */
-    @IntDef({
-        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-        WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface WithAccountSigninMode {
-        /** Show the "collapsed" sign-in bottom sheet containing the default account. */
-        int DEFAULT_ACCOUNT_BOTTOM_SHEET = 0;
-
-        /** Show the "expanded" sign-in bottom sheet containing the accounts list. */
-        int CHOOSE_ACCOUNT_BOTTOM_SHEET = 1;
     }
 
     /** The visibility rule to apply to the history opt-in step. */
@@ -133,7 +118,6 @@ public class SigninAndHistoryOptInCoordinator
             @NonNull OneshotSupplier<Profile> profileSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NoAccountSigninMode int noAccountSigninMode,
-            @WithAccountSigninMode int withAccountSigninMode,
             @HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
@@ -144,7 +128,6 @@ public class SigninAndHistoryOptInCoordinator
         mProfileSupplier.onAvailable(this::onProfileAvailable);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mNoAccountSigninMode = noAccountSigninMode;
-        mWithAccountSigninMode = withAccountSigninMode;
         mHistoryOptInMode = historyOptInMode;
         mSigninAccessPoint = signinAccessPoint;
         mContainerView =
@@ -252,15 +235,6 @@ public class SigninAndHistoryOptInCoordinator
     private void showSigninBottomSheet() {
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
-        @AccountPickerLaunchMode int accountPickerMode = AccountPickerLaunchMode.DEFAULT;
-        switch (mWithAccountSigninMode) {
-            case WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET:
-                accountPickerMode = AccountPickerLaunchMode.DEFAULT;
-                break;
-            case WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET:
-                accountPickerMode = AccountPickerLaunchMode.CHOOSE_ACCOUNT;
-                break;
-        }
         mAccountPickerCoordinator =
                 new SigninAccountPickerCoordinator(
                         mWindowAndroid,
@@ -269,7 +243,6 @@ public class SigninAndHistoryOptInCoordinator
                         this,
                         mDeviceLockActivityLauncher,
                         signinManager,
-                        accountPickerMode,
                         mSigninAccessPoint);
     }
 

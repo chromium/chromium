@@ -53,18 +53,13 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
             Context context,
             Profile profile,
             @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint) {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (signinManager.isSigninAllowed()) {
             Intent intent =
                     SigninAndHistoryOptInActivity.createIntent(
-                            context,
-                            noAccountSigninMode,
-                            withAccountSigninMode,
-                            historyOptInMode,
-                            accessPoint);
+                            context, noAccountSigninMode, historyOptInMode, accessPoint);
             context.startActivity(intent);
         }
         // TODO(https://crbug.com/1520783): Update the UI related to sign-in errors, and handle the
