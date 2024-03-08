@@ -6,18 +6,15 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
-#include "base/files/file_util.h"
-#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
 
@@ -74,6 +71,22 @@ std::optional<proto::Any> OnDeviceModelFeatureAdapter::ConstructOutputMetadata(
 
   return SetProtoValue(output_config.proto_type(), output_config.proto_field(),
                        output);
+}
+
+RedactResult OnDeviceModelFeatureAdapter::Redact(
+    const google::protobuf::MessageLite& last_message,
+    std::string& current_response) const {
+  if (!redactor_) {
+    return RedactResult::kContinue;
+  }
+  auto redact_string_input = GetStringToCheckForRedacting(last_message);
+  base::ElapsedTimer elapsed_timer;
+  auto redact_result = redactor_->Redact(redact_string_input, current_response);
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({"OptimizationGuide.ModelExecution.TimeToProcessRedactions.",
+                    GetStringNameForModelExecutionFeature(config_.feature())}),
+      elapsed_timer.Elapsed());
+  return redact_result;
 }
 
 }  // namespace optimization_guide

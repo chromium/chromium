@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
@@ -39,15 +40,15 @@ class OnDeviceModelFeatureAdapter final {
   std::optional<proto::Any> ConstructOutputMetadata(
       const std::string& output) const;
 
+  // Redacts the content of current response, given the last executed message.
+  RedactResult Redact(const google::protobuf::MessageLite& last_message,
+                      std::string& current_response) const;
+
+ private:
   // Returns the string that is used for checking redaction against.
   std::string GetStringToCheckForRedacting(
       const google::protobuf::MessageLite& message) const;
 
-  // Returns the Redactor. Return value is owned by
-  // this and may be null.
-  const Redactor* redactor() const { return redactor_.get(); }
-
- private:
   proto::OnDeviceModelExecutionFeatureConfig config_;
   std::unique_ptr<Redactor> redactor_;
 };

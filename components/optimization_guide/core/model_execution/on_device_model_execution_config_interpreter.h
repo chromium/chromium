@@ -51,15 +51,10 @@ class OnDeviceModelExecutionConfigInterpreter {
       proto::ModelExecutionFeature feature,
       const std::string& output) const;
 
-  // Returns the string that is used for checking redaction against.
-  std::string GetStringToCheckForRedacting(
-      proto::ModelExecutionFeature feature,
-      const google::protobuf::MessageLite& message) const;
-
-  // Returns the Redactor for the specified feature. Return value is owned by
-  // this and may be null.
-  const Redactor* GetRedactorForFeature(
-      proto::ModelExecutionFeature feature) const;
+  // Redacts the content of current response, given the last executed message.
+  RedactResult Redact(proto::ModelExecutionFeature feature,
+                      const google::protobuf::MessageLite& last_message,
+                      std::string& current_response) const;
 
  private:
   // Get the adapter for a particular feature.

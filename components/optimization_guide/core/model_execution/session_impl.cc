@@ -502,32 +502,19 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   std::string current_response = on_device_state_->current_response;
   logged_response->set_output_string(current_response);
 
-  if (auto* redactor =
-          on_device_state_->config_interpreter->GetRedactorForFeature(
-              feature_)) {
-    auto redact_string_input =
-        on_device_state_->config_interpreter->GetStringToCheckForRedacting(
-            feature_, *last_message_);
-    base::ElapsedTimer elapsed_timer;
-    auto redact_result =
-        redactor->Redact(redact_string_input, current_response);
-    base::UmaHistogramMicrosecondsTimes(
-        base::StrCat(
-            {"OptimizationGuide.ModelExecution.TimeToProcessRedactions.",
-             GetStringNameForModelExecutionFeature(feature_)}),
-        elapsed_timer.Elapsed());
-    if (redact_result == RedactResult::kReject) {
-      if (on_device_state_->histogram_logger) {
-        on_device_state_->histogram_logger->set_result(
-            ExecuteModelResult::kContainedPII);
-        on_device_state_->histogram_logger.reset();
-      }
-      logged_response->set_status(
-          proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-      CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
-                            ModelExecutionError::kFiltered);
-      return;
+  auto redact_result = on_device_state_->config_interpreter->Redact(
+      feature_, *last_message_, current_response);
+  if (redact_result == RedactResult::kReject) {
+    if (on_device_state_->histogram_logger) {
+      on_device_state_->histogram_logger->set_result(
+          ExecuteModelResult::kContainedPII);
+      on_device_state_->histogram_logger.reset();
     }
+    logged_response->set_status(
+        proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
+    CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                          ModelExecutionError::kFiltered);
+    return;
   }
 
   const bool is_complete = response_type != ResponseType::kPartial;

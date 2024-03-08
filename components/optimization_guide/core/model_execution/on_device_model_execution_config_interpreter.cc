@@ -89,24 +89,6 @@ OnDeviceModelExecutionConfigInterpreter::GetAdapter(
   return iter != adapters_.end() ? iter->second.get() : nullptr;
 }
 
-std::string
-OnDeviceModelExecutionConfigInterpreter::GetStringToCheckForRedacting(
-    proto::ModelExecutionFeature feature,
-    const google::protobuf::MessageLite& message) const {
-  if (const auto* adapter = GetAdapter(feature)) {
-    return adapter->GetStringToCheckForRedacting(message);
-  }
-  return std::string();
-}
-
-const Redactor* OnDeviceModelExecutionConfigInterpreter::GetRedactorForFeature(
-    proto::ModelExecutionFeature feature) const {
-  if (const auto* adapter = GetAdapter(feature)) {
-    return adapter->redactor();
-  }
-  return nullptr;
-}
-
 void OnDeviceModelExecutionConfigInterpreter::PopulateFeatureConfigs(
     std::unique_ptr<proto::OnDeviceModelExecutionConfig> config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -146,6 +128,16 @@ OnDeviceModelExecutionConfigInterpreter::ConstructOutputMetadata(
     return adapter->ConstructOutputMetadata(output);
   }
   return std::nullopt;
+}
+
+RedactResult OnDeviceModelExecutionConfigInterpreter::Redact(
+    proto::ModelExecutionFeature feature,
+    const google::protobuf::MessageLite& last_message,
+    std::string& current_response) const {
+  if (const auto* adapter = GetAdapter(feature)) {
+    return adapter->Redact(last_message, current_response);
+  }
+  return RedactResult::kContinue;
 }
 
 }  // namespace optimization_guide
