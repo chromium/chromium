@@ -17,7 +17,7 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   constructor() {
     const factory = LensPageHandlerFactory.getRemote();
-    factory.createLensPageHandler(
+    factory.createPageHandler(
         this.handler.$.bindNewPipeAndPassReceiver(),
         this.callbackRouter.$.bindNewPipeAndPassRemote());
   }

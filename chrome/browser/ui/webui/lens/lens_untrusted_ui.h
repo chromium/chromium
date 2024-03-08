@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
-#include "chrome/browser/ui/webui/lens/lens_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
@@ -34,11 +33,10 @@ class LensUntrustedUI : public ui::UntrustedBubbleWebUIController,
 
  private:
   // lens::mojom::LensPageHandlerFactory:
-  void CreateLensPageHandler(
+  void CreatePageHandler(
       mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensPage> page) override;
 
-  std::unique_ptr<lens::LensPageHandler> lens_page_handler_;
   mojo::Receiver<lens::mojom::LensPageHandlerFactory>
       lens_page_factory_receiver_{this};
 

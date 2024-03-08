@@ -6,11 +6,12 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/lens/lens_page_handler.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -24,10 +25,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensUntrustedURL);
-  Profile* profile = Profile::FromWebUI(web_ui);
-  if (!profile) {
-    return;
-  }
+  html_source->AddLocalizedString("close", IDS_CLOSE);
 
   // Add required resources.
   webui::SetupWebUIDataSource(
@@ -44,14 +42,16 @@ void LensUntrustedUI::BindInterface(
   lens_page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void LensUntrustedUI::CreateLensPageHandler(
+void LensUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
-  lens_page_handler_ = std::make_unique<lens::LensPageHandler>(
-      std::move(receiver), std::move(page));
+  // Once the interface is bound, we want to connect this instance with the
+  // appropriate instance of LensOverlayController.
+  LensOverlayController::BindOverlay(web_ui(), std::move(receiver),
+                                     std::move(page));
 }
 
-LensUntrustedUI::~LensUntrustedUI() = default;
+LensUntrustedUI::~LensUntrustedUI() {}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LensUntrustedUI)
 

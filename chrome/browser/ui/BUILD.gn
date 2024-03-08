@@ -1725,8 +1725,6 @@ static_library("ui") {
       "webui/inspect_ui.h",
       "webui/internals/user_education/user_education_internals_page_handler_impl.cc",
       "webui/internals/user_education/user_education_internals_page_handler_impl.h",
-      "webui/lens/lens_page_handler.cc",
-      "webui/lens/lens_page_handler.h",
       "webui/lens/lens_untrusted_ui.cc",
       "webui/lens/lens_untrusted_ui.h",
       "webui/lens/lens_untrusted_ui_config.cc",
