@@ -1063,8 +1063,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   tab_helper->set_auto_blocker_for_testing(nullptr);
 }
 
+// TODO(crbug.com/328717201): Test is flaky on win asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AllowOncePersistsUntilNavigation \
+  DISABLED_AllowOncePersistsUntilNavigation
+#else
+#define MAYBE_AllowOncePersistsUntilNavigation AllowOncePersistsUntilNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       AllowOncePersistsUntilNavigation) {
+                       MAYBE_AllowOncePersistsUntilNavigation) {
   LoadAutoVideoPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   PlayVideo(web_contents);
