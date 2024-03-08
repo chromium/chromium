@@ -676,6 +676,12 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                 "If enabled, allows navigations to be queued when there is "
                         + "an existing pending commit navigation in progress."),
+        Flag.baseFeature(
+                ContentFeatures.RENDER_DOCUMENT,
+                "If enabled, same-site navigations will change RenderFrameHosts"),
+        Flag.baseFeature(
+                ContentFeatures.RENDER_DOCUMENT_COMPOSITOR_REUSE,
+                "If enabled, allows compositor to be reused on cross-RenderFrameHost navigations"),
         Flag.baseFeature("NetworkServiceCookiesHighPriorityTaskRunner"),
         Flag.baseFeature("IncreaseCoookieAccesCacheSize"),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
