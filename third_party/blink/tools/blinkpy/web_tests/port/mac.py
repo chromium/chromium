@@ -36,15 +36,18 @@ _log = logging.getLogger(__name__)
 
 class MacPort(base.Port):
     SUPPORTED_VERSIONS = ('mac10.15', 'mac11', 'mac11-arm64', 'mac12',
-                          'mac12-arm64', 'mac13', 'mac13-arm64')
+                          'mac12-arm64', 'mac13', 'mac13-arm64', 'mac14',
+                          'mac14-arm64')
     port_name = 'mac'
 
     FALLBACK_PATHS = {}
 
-    FALLBACK_PATHS['mac13'] = ['mac']
+    FALLBACK_PATHS['mac14'] = ['mac']
+    FALLBACK_PATHS['mac14-arm64'] = ['mac-mac14-arm64'
+                                     ] + FALLBACK_PATHS['mac14']
+    FALLBACK_PATHS['mac13'] = ['mac-mac13'] + FALLBACK_PATHS['mac14']
     FALLBACK_PATHS['mac13-arm64'] = ['mac-mac13-arm64'
                                      ] + FALLBACK_PATHS['mac13']
-
     FALLBACK_PATHS['mac12'] = ['mac-mac12'] + FALLBACK_PATHS['mac13']
     FALLBACK_PATHS['mac12-arm64'] = ['mac-mac12-arm64'
                                      ] + FALLBACK_PATHS['mac12']

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] XRFrame getViewerPose updates on the next frame for non-immersive sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRFrame getViewerPose updates on the next frame for non-immersive sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRFrame getViewerPose updates on the next frame for immersive sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] XRFrame getViewerPose updates on the next frame for immersive sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

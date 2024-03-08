@@ -284,8 +284,9 @@ The syntax of a line is roughly:
   applicable to that file.
 * If specified, modifiers can be one of `Fuchsia`, `Mac`, `Mac10.13`,
   `Mac10.14`, `Mac10.15`, `Mac11`, `Mac11-arm64`, `Mac12`, `Mac12-arm64`,
-  `Mac13`, `Mac13-arm64`, `Linux`, `Chrome`, `Win`, `Win10.20h2`,
-  `Win11`, `iOS16-Simulator`, and, optionally, `Release`, or `Debug`.
+  `Mac13`, `Mac13-arm64`, `Mac14`, `Mac14-arm64`, `Linux`, `Chrome`, `Win`,
+  `Win10.20h2`, `Win11`, `iOS16-Simulator`, and, optionally, `Release`, or
+  `Debug`.
   Check the `# tags: ...` comments [at the top of each
   file](/third_party/blink/web_tests/TestExpectations#1) to see which modifiers
   that file supports.

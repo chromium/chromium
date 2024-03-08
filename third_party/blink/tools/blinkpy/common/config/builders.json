@@ -167,6 +167,26 @@
         },
         "is_try_builder": true
     },
+    "mac14-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "mac-mac14",
+        "specifiers": ["Mac14", "Release"],
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "blink_wpt_tests (with patch)": {}
+        },
+        "is_try_builder": true
+    },
+    "mac14.arm64-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "mac-mac14-arm64",
+        "specifiers": ["Mac14-arm64", "Release"],
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "blink_wpt_tests (with patch)": {}
+        },
+        "is_try_builder": true
+    },
     "win10.20h2-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "win-win10.20h2",

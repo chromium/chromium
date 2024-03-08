@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] 'floor-level' XRStationaryReferenceSpace updates properly when the transform changes for immersive sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] 'floor-level' XRStationaryReferenceSpace updates properly when the transform changes for immersive sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] 'floor-level' XRStationaryReferenceSpace updates properly when the transform changes for non-immersive sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] 'floor-level' XRStationaryReferenceSpace updates properly when the transform changes for non-immersive sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

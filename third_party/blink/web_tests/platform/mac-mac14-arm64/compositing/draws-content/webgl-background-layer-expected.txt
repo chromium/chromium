@@ -1,0 +1,2 @@
+CONSOLE ERROR: Uncaught TypeError: Cannot read properties of null (reading 'clearColor')
+

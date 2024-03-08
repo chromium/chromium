@@ -1,0 +1,5 @@
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+
