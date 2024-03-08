@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
@@ -31,21 +30,6 @@ export class CrRadioButtonElement extends CrRadioButtonElementBase {
 
   override render() {
     return getHtml.bind(this)();
-  }
-
-  static override get properties() {
-    return {
-      hideLabel_: {type: Boolean},
-    };
-  }
-
-  protected hideLabel_: boolean = true;
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has('label')) {
-      this.hideLabel_ = !this.label;
-    }
   }
 
   // Overridden from CrRadioButtonMixin

@@ -84,22 +84,6 @@ export const CrRadioButtonMixinLit =
           this.addEventListener('up', this.hideRipple_.bind(this));
         }
 
-        override willUpdate(changedProperties: PropertyValues<this>) {
-          super.willUpdate(changedProperties);
-
-          if (changedProperties.has('checked')) {
-            this.ariaCheckedString = this.checked ? 'true' : 'false';
-          }
-
-          if (changedProperties.has('disabled')) {
-            this.ariaDisabledString = this.disabled ? 'true' : 'false';
-          }
-
-          if (changedProperties.has('focusable')) {
-            this.buttonTabIndex = this.focusable ? 0 : -1;
-          }
-        }
-
         override updated(changedProperties: PropertyValues<this>) {
           super.updated(changedProperties);
 
@@ -112,6 +96,18 @@ export const CrRadioButtonMixinLit =
               link.tabIndex = this.checked ? 0 : -1;
             });
           }
+        }
+
+        getAriaDisabled(): string {
+          return this.disabled ? 'true' : 'false';
+        }
+
+        getAriaChecked(): string {
+          return this.checked ? 'true' : 'false';
+        }
+
+        getButtonTabIndex(): number {
+          return this.focusable ? 0 : -1;
         }
 
         override focus() {
@@ -158,9 +154,9 @@ export interface CrRadioButtonMixinLitInterface {
   hideLabelText: boolean;
   label: string;
   name?: string;
-  buttonTabIndex: number;
-  ariaDisabledString: string;
-  ariaCheckedString: string;
+  getButtonTabIndex(): number;
+  getAriaDisabled(): string;
+  getAriaChecked(): string;
   onInputKeydown(e: KeyboardEvent): void;
   getPaperRipple(): PaperRippleElement;
 }

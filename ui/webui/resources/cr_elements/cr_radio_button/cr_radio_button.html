@@ -1,11 +1,11 @@
-<div aria-checked="${this.ariaCheckedString}"
+<div aria-checked="${this.getAriaChecked()}"
     aria-describedby="slotted-content"
-    aria-disabled="${this.ariaDisabledString}"
+    aria-disabled="${this.getAriaDisabled()}"
     aria-labelledby="label"
     class="disc-wrapper"
     id="button"
     role="radio"
-    tabindex="${this.buttonTabIndex}"
+    tabindex="${this.getButtonTabIndex()}"
     @keydown="${this.onInputKeydown}">
   <div class="disc-border"></div>
   <div class="disc"></div>
@@ -13,7 +13,7 @@
 </div>
 
 <div id="labelWrapper">
-  <span id="label" ?hidden="${this.hideLabel_}" aria-hidden="true">
+  <span id="label" ?hidden="${!this.label}" aria-hidden="true">
     ${this.label}
   </span>
   <span id="slotted-content">

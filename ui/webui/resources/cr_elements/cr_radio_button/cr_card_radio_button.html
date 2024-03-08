@@ -1,9 +1,9 @@
 <div id="button" role="radio"
-    aria-checked="${this.ariaCheckedString}"
+    aria-checked="${this.getAriaChecked()}"
     aria-describedby="slotted-content"
-    aria-disabled="${this.ariaDisabledString}"
+    aria-disabled="${this.getAriaDisabled()}"
     class="disc-wrapper"
-    tabindex="${this.buttonTabIndex}"
+    tabindex="${this.getButtonTabIndex()}"
     aria-labelledby="slotted-content"
     @keydown="${this.onInputKeydown}">
   <iron-icon id="checkMark" icon="cr:check-circle"></iron-icon>
