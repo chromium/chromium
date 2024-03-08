@@ -285,7 +285,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mDelegate.setOnScrollPositionChangedCallback(
                 () -> {
                     handleScrollPositionChanged(mAccessibilityFocusId);
-                    moveAccessibilityFocusToIdAndRefocusIfNeeded(mAccessibilityFocusId);
+                    moveAccessibilityFocusToId(mAccessibilityFocusId);
                 });
 
         AccessibilityState.addListener(this);
@@ -1474,7 +1474,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // AccessibilityNodeInfoCompat for this element before.
         if (!mShouldFocusOnPageLoad) return;
         if (mAccessibilityFocusId != View.NO_ID) {
-            moveAccessibilityFocusToIdAndRefocusIfNeeded(mAccessibilityFocusId);
+            moveAccessibilityFocusToId(mAccessibilityFocusId);
         }
     }
 
@@ -1768,19 +1768,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return true;
     }
 
-    private void moveAccessibilityFocusToIdAndRefocusIfNeeded(int newAccessibilityFocusId) {
-        // Work around a bug in the Android framework where it doesn't fully update the object
-        // with accessibility focus even if you send it a WINDOW_CONTENT_CHANGED. To work around
-        // this, clear focus and then set focus again.
-        if (newAccessibilityFocusId == mAccessibilityFocusId) {
-            sendAccessibilityEvent(
-                    newAccessibilityFocusId,
-                    AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
-            mAccessibilityFocusId = View.NO_ID;
-        }
-        moveAccessibilityFocusToId(newAccessibilityFocusId);
-    }
-
     /**
      * Send a WINDOW_CONTENT_CHANGED event after a short delay. This helps throttle such
      * events from firing too quickly during animations, for example.
@@ -1997,7 +1984,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // using an AXTree that was cached.
         if (mDelegate.getNativeAXTree() != 0) {
             // As a workaround force the node into focus when a paint preview is showing.
-            moveAccessibilityFocusToIdAndRefocusIfNeeded(id);
+            moveAccessibilityFocusToId(id);
         }
     }
 
