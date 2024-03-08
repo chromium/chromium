@@ -51,7 +51,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
@@ -300,9 +299,6 @@ class VideoCaptureDeviceTest
   }
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::PowerManagerClient::InitializeFake();
-#endif
 #if BUILDFLAG(IS_ANDROID)
     static_cast<VideoCaptureDeviceFactoryAndroid*>(
         video_capture_device_factory_.get())
@@ -316,9 +312,6 @@ class VideoCaptureDeviceTest
 
   void TearDown() override {
     task_environment_.RunUntilIdle();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::PowerManagerClient::Shutdown();
-#endif
   }
 
 #if BUILDFLAG(IS_WIN)
