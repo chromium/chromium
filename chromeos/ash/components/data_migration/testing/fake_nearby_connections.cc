@@ -297,9 +297,8 @@ void FakeNearbyConnections::RegisterPayloadFile(
   }
 
   Status result = Status::kSuccess;
-  if (next_register_payload_file_result_) {
-    result = *next_register_payload_file_result_;
-    next_register_payload_file_result_.reset();
+  if (register_payload_file_result_generator_) {
+    result = register_payload_file_result_generator_.Run();
   }
 
   if (result == Status::kSuccess) {

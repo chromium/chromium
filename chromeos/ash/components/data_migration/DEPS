@@ -1,0 +1,10 @@
+include_rules = [
+  "+chrome/browser/nearby_sharing/public",
+  "+chromeos/ash/services/nearby/public",
+]
+
+specific_include_rules = {
+   '.*_unittest\.cc': [
+      '+chrome/browser/nearby_sharing/nearby_connections_manager_impl.h',
+   ],
+}

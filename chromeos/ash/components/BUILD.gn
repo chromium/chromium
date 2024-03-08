@@ -16,6 +16,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper:unit_tests",
     "//chromeos/ash/components/carrier_lock:unit_tests",
     "//chromeos/ash/components/cryptohome:unit_tests",
+    "//chromeos/ash/components/data_migration:unit_tests",
     "//chromeos/ash/components/dbus:unit_tests",
     "//chromeos/ash/components/disks:unit_tests",
     "//chromeos/ash/components/drivefs:unit_tests",
