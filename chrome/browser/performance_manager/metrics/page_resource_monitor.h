@@ -129,6 +129,9 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   resource_attribution::ScopedResourceUsageQuery resource_query_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Manages notificatoin subscriptions to `resource_query_`.
+  resource_attribution::ScopedQueryObservation query_observation_{this};
+
   // Timer which handles logging high CPU after a potential delay.
   base::OneShotTimer log_cpu_on_delay_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
