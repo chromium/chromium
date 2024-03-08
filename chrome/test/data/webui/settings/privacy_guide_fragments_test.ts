@@ -453,7 +453,7 @@ suite('SafeBrowsingFragment', function() {
     assertEquals(result, expectedMetric);
   }
 
-  test('UpdatedEnhancedProtectionPrivacyGuide', function() {
+  test('UpdatedEnhancedProtectionPrivacyGuide', async () => {
     const enhancedProtection =
         fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
             '#safeBrowsingRadioEnhanced');
@@ -462,9 +462,12 @@ suite('SafeBrowsingFragment', function() {
         loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
+    const group = fragment.shadowRoot!.querySelector<HTMLElement>(
+        '#safeBrowsingRadioGroup');
+    assertTrue(!!group);
     fragment.shadowRoot!
         .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
-    flush();
+    await eventToPromise('selected-changed', group);
     // The updated description item container should be visible.
     assertTrue(isChildVisible(fragment, '#updatedDescItemContainer'));
   });

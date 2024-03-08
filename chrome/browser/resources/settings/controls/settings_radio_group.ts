@@ -63,7 +63,7 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
 
   groupAriaLabel: string;
   noSetPref: boolean;
-  selected: string;
+  selected?: string;
   selectableElements: string;
 
   override ready() {
@@ -86,11 +86,15 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
     if (!this.pref) {
       return;
     }
-    this.set('pref.value', stringToPrefValue(this.selected, this.pref));
+    this.set('pref.value', stringToPrefValue(this.selected || '', this.pref));
   }
 
   private onSelectedChanged_() {
+    const previous = this.selected;
     this.selected = this.shadowRoot!.querySelector('cr-radio-group')!.selected;
+    if (previous === this.selected) {
+      return;
+    }
     if (!this.noSetPref) {
       this.sendPrefChange();
     }

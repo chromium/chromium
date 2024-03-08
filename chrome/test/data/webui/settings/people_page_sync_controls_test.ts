@@ -12,7 +12,7 @@ import type {CrLinkRowElement, CrRadioButtonElement, CrToggleElement, SyncPrefs}
 import {Router, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import type {SyncRoutes} from './sync_test_util.js';
 import {getSyncAllPrefs, getSyncAllPrefsManaged, setupRouterWithSyncRoutes} from './sync_test_util.js';
@@ -27,6 +27,7 @@ suite('SyncControlsTest', async function() {
   let browserProxy: TestSyncBrowserProxy;
   let syncEverything: CrRadioButtonElement;
   let customizeSync: CrRadioButtonElement;
+  let radioGroup: HTMLElement;
 
   setup(async function() {
     setupRouterWithSyncRoutes();
@@ -46,8 +47,11 @@ suite('SyncControlsTest', async function() {
         'cr-radio-button[name="sync-everything"]')!;
     customizeSync = syncControls.shadowRoot!.querySelector(
         'cr-radio-button[name="customize-sync"]')!;
-    assertTrue(!!syncEverything);
+    const group = syncControls.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!group);
+    radioGroup = group;
     assertTrue(!!customizeSync);
+    assertTrue(!!radioGroup);
   });
 
   function assertPrefs(
@@ -105,7 +109,7 @@ suite('SyncControlsTest', async function() {
     }
 
     customizeSync.click();
-    flush();
+    await eventToPromise('selected-changed', radioGroup);
     assertFalse(syncEverything.checked);
     assertTrue(customizeSync.checked);
 
@@ -254,6 +258,7 @@ suite('SyncControlsManagedTest', async function() {
   let browserProxy: TestSyncBrowserProxy;
   let syncEverything: CrRadioButtonElement;
   let customizeSync: CrRadioButtonElement;
+  let radioGroup: HTMLElement;
 
   setup(async function() {
     setupRouterWithSyncRoutes();
@@ -273,6 +278,9 @@ suite('SyncControlsManagedTest', async function() {
         'cr-radio-button[name="sync-everything"]')!;
     customizeSync = syncControls.shadowRoot!.querySelector(
         'cr-radio-button[name="customize-sync"]')!;
+    const group = syncControls.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!group);
+    radioGroup = group;
     assertTrue(!!syncEverything);
     assertTrue(!!customizeSync);
   });
@@ -316,7 +324,7 @@ suite('SyncControlsManagedTest', async function() {
     }
 
     customizeSync.click();
-    flush();
+    await eventToPromise('selected-changed', radioGroup);
     assertFalse(syncEverything.checked);
     assertTrue(customizeSync.checked);
 
@@ -367,16 +375,18 @@ suite('AutofillAndPaymentsToggles', async function() {
     const customizeSync: CrRadioButtonElement =
         syncControls.shadowRoot!.querySelector(
             'cr-radio-button[name="customize-sync"]')!;
+    const radioGroup = syncControls.shadowRoot!.querySelector('cr-radio-group');
     autofillCheckbox =
         syncControls.shadowRoot!.querySelector('#autofillCheckbox')!;
     paymentsCheckbox =
         syncControls.shadowRoot!.querySelector('#paymentsCheckbox')!;
     assertTrue(!!customizeSync);
+    assertTrue(!!radioGroup);
     assertTrue(!!autofillCheckbox);
     assertTrue(!!paymentsCheckbox);
 
     customizeSync.click();
-    flush();
+    await eventToPromise('selected-changed', radioGroup);
     assertTrue(customizeSync.checked);
     assertTrue(autofillCheckbox.checked);
     assertTrue(paymentsCheckbox.checked);

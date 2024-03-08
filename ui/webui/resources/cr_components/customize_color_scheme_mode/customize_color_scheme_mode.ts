@@ -87,6 +87,9 @@ export class CustomizeColorSchemeModeElement extends
   }
 
   private onSelectedChanged_(e: CustomEvent<{value: string}>) {
+    if (!!this.currentMode_ && e.detail.value === this.currentMode_.id) {
+      return;
+    }
     const selected = colorSchemeModeOptions.find((option) => {
       return option.id === e.detail.value;
     });

@@ -10,7 +10,7 @@ import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {HatsBrowserProxyImpl, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -122,11 +122,15 @@ suite('Main', function() {
   });
 
   // Tests that changing the HTTPS-First Mode setting sets the associated pref.
-  test('HttpsFirstModeRadioButtons', function() {
+  test('HttpsFirstModeRadioButtons', async () => {
     let radioButton = page.shadowRoot!.querySelector<HTMLElement>(
         '#httpsFirstModeEnabledFull');
+    const radioGroup = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeRadioGroup');
     assertTrue(!!radioButton);
+    assertTrue(!!radioGroup);
     radioButton.click();
+    await eventToPromise('selected-changed', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_FULL,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -135,6 +139,7 @@ suite('Main', function() {
         '#httpsFirstModeEnabledIncognito');
     assertTrue(!!radioButton);
     radioButton.click();
+    await eventToPromise('selected-changed', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_INCOGNITO,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -143,6 +148,7 @@ suite('Main', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeDisabled');
     assertTrue(!!radioButton);
     radioButton.click();
+    await eventToPromise('selected-changed', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.DISABLED,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -214,7 +220,7 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
   test('SecurityPageBeforeUnloadCallsHatsProxy', async function() {
     // Interact with the security page.
     page.$.safeBrowsingEnhanced.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     const t1 = 10000;
     testHatsBrowserProxy.setNow(t1);
@@ -415,7 +421,7 @@ suite('SafeBrowsing', function() {
   let page: SettingsSecurityPageElement;
   let openWindowProxy: TestOpenWindowProxy;
 
-  function setUpPage() {
+  async function setUpPage() {
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
     document.body.appendChild(page);
@@ -423,9 +429,9 @@ suite('SafeBrowsing', function() {
     page.$.safeBrowsingStandard.updateCollapsed();
     flush();
   }
-  function resetPage() {
+  async function resetPage() {
     page.remove();
-    setUpPage();
+    await setUpPage();
   }
 
   setup(function() {
@@ -436,7 +442,7 @@ suite('SafeBrowsing', function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    setUpPage();
+    return setUpPage();
   });
 
   teardown(function() {
@@ -489,7 +495,7 @@ suite('SafeBrowsing', function() {
     assertEquals(PrivacyElementInteractions.IMPROVE_SECURITY, result);
   });
 
-  test('safeBrowsingReportingToggle', function() {
+  test('safeBrowsingReportingToggle', async () => {
     page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
@@ -500,6 +506,7 @@ suite('SafeBrowsing', function() {
 
     // This could also be set to disabled, anything other than standard.
     page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertEquals(
         SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
     flush();
@@ -508,6 +515,7 @@ suite('SafeBrowsing', function() {
     assertTrue(page.prefs.safebrowsing.scout_reporting_enabled.value);
 
     page.$.safeBrowsingStandard.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
     flush();
@@ -519,7 +527,6 @@ suite('SafeBrowsing', function() {
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnRepeatSelection',
       async function() {
         page.$.safeBrowsingStandard.click();
-        flush();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
             page.prefs.generated.safe_browsing.value);
@@ -536,7 +543,8 @@ suite('SafeBrowsing', function() {
         // Clicking on already selected button should not collapse manually
         // expanded option.
         page.$.safeBrowsingStandard.click();
-        flush();
+        // Wait one cycle and confirm nothing changed.
+        await microtasksFinished();
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
       });
@@ -545,7 +553,6 @@ suite('SafeBrowsing', function() {
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnSelectedChanged',
       async function() {
         page.$.safeBrowsingStandard.click();
-        flush();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
             page.prefs.generated.safe_browsing.value);
@@ -556,7 +563,7 @@ suite('SafeBrowsing', function() {
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
         page.$.safeBrowsingDisabled.click();
-        flush();
+        await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
         // Previously selected option must remain opened.
         assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -578,10 +585,9 @@ suite('SafeBrowsing', function() {
     page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
-    flush();
 
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -604,12 +610,12 @@ suite('SafeBrowsing', function() {
 
   test('DisableSafebrowsingDialog_CancelFromEnhanced', async function() {
     page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertEquals(
         SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
-    flush();
 
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingEnhanced.expanded);
@@ -634,10 +640,9 @@ suite('SafeBrowsing', function() {
     page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
-    flush();
 
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -658,24 +663,21 @@ suite('SafeBrowsing', function() {
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
   });
 
-  test('noControlSafeBrowsingReportingInEnhanced', function() {
+  test('noControlSafeBrowsingReportingInEnhanced', async () => {
     page.$.safeBrowsingStandard.click();
-    flush();
-
     assertFalse(page.$.safeBrowsingReportingToggle.disabled);
     page.$.safeBrowsingEnhanced.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     assertTrue(page.$.safeBrowsingReportingToggle.disabled);
   });
 
-  test('noValueChangeSafeBrowsingReportingInEnhanced', function() {
+  test('noValueChangeSafeBrowsingReportingInEnhanced', async () => {
     page.$.safeBrowsingStandard.click();
-    flush();
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
     page.$.safeBrowsingEnhanced.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
         page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
@@ -683,11 +685,10 @@ suite('SafeBrowsing', function() {
 
   test('noControlSafeBrowsingReportingInDisabled', async function() {
     page.$.safeBrowsingStandard.click();
-    flush();
 
     assertFalse(page.$.safeBrowsingReportingToggle.disabled);
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -704,11 +705,10 @@ suite('SafeBrowsing', function() {
 
   test('noValueChangeSafeBrowsingReportingInDisabled', async function() {
     page.$.safeBrowsingStandard.click();
-    flush();
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -724,13 +724,12 @@ suite('SafeBrowsing', function() {
         page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
   });
 
-  test('noValueChangePasswordLeakSwitchToEnhanced', function() {
+  test('noValueChangePasswordLeakSwitchToEnhanced', async () => {
     page.$.safeBrowsingStandard.click();
-    flush();
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
     page.$.safeBrowsingEnhanced.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
         page.prefs.profile.password_manager_leak_detection.value === previous);
@@ -738,11 +737,10 @@ suite('SafeBrowsing', function() {
 
   test('noValuePasswordLeakSwitchToDisabled', async function() {
     page.$.safeBrowsingStandard.click();
-    flush();
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -762,6 +760,9 @@ suite('SafeBrowsing', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     page.$.safeBrowsingStandard.click();
+    // Wait for a timeout to ensure the call count check below catches any
+    // possible incorrect calls.
+    await microtasksFinished();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
     // Not logged because it is already in standard mode.
@@ -774,7 +775,7 @@ suite('SafeBrowsing', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingEnhanced.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     const [enhancedClickedResult, enhancedClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -827,7 +828,7 @@ suite('SafeBrowsing', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     const [disableClickedResult, disableClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -862,7 +863,7 @@ suite('SafeBrowsing', function() {
     await flushTasks();
 
     page.$.safeBrowsingDisabled.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
@@ -916,11 +917,11 @@ suite('SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('UpdatedStandardProtectionDropdown', function() {
+  test('UpdatedStandardProtectionDropdown', async () => {
     loadTimeData.overrideValues({
       enableHashPrefixRealTimeLookups: false,
     });
-    resetPage();
+    await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
     const updatedSpSubLabel =
         loadTimeData.getString('safeBrowsingStandardDescUpdated');
@@ -936,7 +937,7 @@ suite('SafeBrowsing', function() {
     assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 
-  test('UpdatedEnhancedProtectionText', function() {
+  test('UpdatedEnhancedProtectionText', async () => {
     const enhancedProtection = page.$.safeBrowsingEnhanced;
     const epSubLabel =
         loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
@@ -947,17 +948,17 @@ suite('SafeBrowsing', function() {
     assertEquals(npSubLabel, noProtection.subLabel);
 
     page.$.safeBrowsingEnhanced.click();
-    flush();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });
 
   // <if expr="_google_chrome">
-  test('StandardProtectionDropdownWithProxyString', function() {
+  test('StandardProtectionDropdownWithProxyString', async () => {
     loadTimeData.overrideValues({
       enableHashPrefixRealTimeLookups: true,
     });
-    resetPage();
+    await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
     const subLabel =
         loadTimeData.getString('safeBrowsingStandardDescUpdatedProxy');
@@ -968,12 +969,12 @@ suite('SafeBrowsing', function() {
   // standard protection is launched.
   test(
       'FriendlierSettingsDisabledStandardProtectionDropdownWithProxyString',
-      function() {
+      async () => {
         loadTimeData.overrideValues({
           enableFriendlierSafeBrowsingSettings: false,
           enableHashPrefixRealTimeLookups: true,
         });
-        resetPage();
+        await resetPage();
         const standardProtection = page.$.safeBrowsingStandard;
         const subLabel = loadTimeData.getString('safeBrowsingStandardDesc');
         assertEquals(subLabel, standardProtection.subLabel);
@@ -1001,24 +1002,28 @@ suite('SafeBrowsing', function() {
     loadTimeData.overrideValues({
       enableFriendlierSafeBrowsingSettings: false,
     });
-    resetPage();
+    await resetPage();
     page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertFalse(
         page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
 
     loadTimeData.overrideValues({
       enableFriendlierSafeBrowsingSettings: true,
     });
-    resetPage();
+    await resetPage();
     page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertTrue(
         page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
   });
 
   test('FriendlierSettingsClearedOnEsbOptOut', async function() {
     page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     page.setPrefValue('safebrowsing.esb_opt_in_with_friendlier_settings', true);
     page.$.safeBrowsingStandard.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertFalse(
         page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
   });

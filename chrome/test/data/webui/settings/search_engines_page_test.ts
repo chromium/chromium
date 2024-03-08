@@ -12,6 +12,7 @@ import type {CrInputElement, SettingsSearchEngineEditDialogElement, SettingsSear
 import type {SearchEnginesInfo} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
@@ -332,7 +333,7 @@ suite('SearchEnginePageTests', function() {
 
     // Check behavior when switching space triggering off.
     radioButtons.item(1)!.click();
-    flush();
+    await eventToPromise('selected-changed', radioGroup);
     assertEquals('false', radioGroup.selected);
     let result =
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
@@ -341,7 +342,7 @@ suite('SearchEnginePageTests', function() {
 
     // Check behavior when switching space triggering on.
     radioButtons.item(0).click();
-    flush();
+    await eventToPromise('selected-changed', radioGroup);
     assertEquals('true', radioGroup.selected);
     result = await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
     assertEquals(

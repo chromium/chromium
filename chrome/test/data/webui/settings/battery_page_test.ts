@@ -10,6 +10,7 @@ import type {IronCollapseElement, SettingsRadioGroupElement} from 'chrome://sett
 import type {ControlledRadioButtonElement, SettingsBatteryPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
@@ -40,7 +41,7 @@ suite('BatteryPage', function() {
       },
     });
     document.body.appendChild(batteryPage);
-    flush();
+    return microtasksFinished();
   });
 
   test('testBatterySaverModeEnabledOnBattery', function() {

@@ -18,10 +18,7 @@ import {OpenWindowProxyImpl, PageStatus, Router, routes, StatusAction, SyncBrows
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-// <if expr="not chromeos_ash">
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-// </if>
-import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished, eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // <if expr="not chromeos_ash">
 import {simulateStoredAccounts} from './sync_test_util.js';
@@ -293,7 +290,7 @@ suite('SyncSettings', function() {
     assertTrue(encryptionCollapse.opened);
   });
 
-  test('RadioBoxesEnabledWhenUnencrypted', function() {
+  test('RadioBoxesEnabledWhenUnencrypted', async () => {
     // Verify that the encryption radio boxes are enabled.
     assertFalse(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'false');
@@ -306,7 +303,7 @@ suite('SyncSettings', function() {
         !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
 
     encryptWithPassphrase.click();
-    flush();
+    await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
         !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
@@ -317,7 +314,8 @@ suite('SyncSettings', function() {
 
     // Test that a sync prefs update does not reset the selection.
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
-    flush();
+    // Wait for a timeout so that the check below catches any incorrect reset.
+    await microtasksFinished();
     assertTrue(encryptWithPassphrase.checked);
   });
 
@@ -347,7 +345,7 @@ suite('SyncSettings', function() {
 
   test('SaveButtonDisabledWhenPassphraseOrConfirmationEmpty', async () => {
     encryptWithPassphrase.click();
-    flush();
+    await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
         !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
@@ -388,7 +386,7 @@ suite('SyncSettings', function() {
 
   test('CreatingPassphraseMismatchedPassphrase', async () => {
     encryptWithPassphrase.click();
-    flush();
+    await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
         !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
@@ -419,7 +417,7 @@ suite('SyncSettings', function() {
 
   test('CreatingPassphraseValidPassphrase', async function() {
     encryptWithPassphrase.click();
-    flush();
+    await eventToPromise('selected-changed', encryptionRadioGroup);
 
     assertTrue(
         !!encryptionElement.shadowRoot!.querySelector('#create-password-box'));
@@ -601,7 +599,7 @@ suite('SyncSettings', function() {
     webUIListenerCallback('sync-prefs-changed', newPrefs);
 
     flush();
-    await microtasksFinished();
+    await eventToPromise('selected-changed', encryptionRadioGroup);
 
     // Verify that the encryption radio boxes are shown but disabled.
     assertTrue(encryptionRadioGroup.disabled);
@@ -650,7 +648,7 @@ suite('SyncSettings', function() {
   // This test checks whether the passphrase encryption options are
   // disabled. This is important for supervised accounts. Because sync
   // is required for supervision, passphrases should remain disabled.
-  test('DisablingSyncPassphrase', function() {
+  test('DisablingSyncPassphrase', async () => {
     // We initialize a new SyncPrefs object for each case, because
     // otherwise the webUIListener doesn't update.
 
@@ -663,7 +661,8 @@ suite('SyncSettings', function() {
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
     };
-    flush();
+    await microtasksFinished();
+
     assertFalse(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'false');
     assertEquals(encryptWithPassphrase.getAttribute('aria-disabled'), 'false');
@@ -679,7 +678,7 @@ suite('SyncSettings', function() {
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
     };
-    flush();
+    await microtasksFinished();
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
     assertEquals(encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
@@ -693,7 +692,7 @@ suite('SyncSettings', function() {
       supervisedUser: true,
       statusAction: StatusAction.NO_ACTION,
     };
-    flush();
+    await microtasksFinished();
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
     assertEquals(encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
@@ -708,7 +707,7 @@ suite('SyncSettings', function() {
       supervisedUser: true,
       statusAction: StatusAction.NO_ACTION,
     };
-    flush();
+    await microtasksFinished();
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
     assertEquals(encryptWithPassphrase.getAttribute('aria-disabled'), 'true');
@@ -902,7 +901,7 @@ suite('SyncSettings', function() {
 
     // Create and submit a new passphrase.
     encryptWithPassphrase.click();
-    flush();
+    await eventToPromise('selected-changed', encryptionRadioGroup);
     const passphraseInput =
         encryptionElement.shadowRoot!.querySelector<CrInputElement>(
             '#passphraseInput')!;

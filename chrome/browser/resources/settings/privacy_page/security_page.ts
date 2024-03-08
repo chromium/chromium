@@ -397,7 +397,7 @@ export class SettingsSecurityPageElement extends
    */
   private onSafeBrowsingRadioChange_() {
     const selected =
-        Number.parseInt(this.$.safeBrowsingRadioGroup.selected, 10);
+        Number.parseInt(this.$.safeBrowsingRadioGroup.selected || '', 10);
     const prefValue = this.getPref('generated.safe_browsing').value;
     if (prefValue !== selected) {
       this.recordInteractionHistogramOnRadioChange_(selected);

@@ -215,6 +215,10 @@ export class AppManagementSupportedLinksItemElement extends
   private async onSupportedLinkPrefChanged_(
       event: CustomEvent<{value: string}>): Promise<void> {
     const preference = event.detail.value as PreferenceType;
+    const previous = this.getCurrentPreferredApp_(this.app) as PreferenceType;
+    if (preference === previous) {
+      return;
+    }
 
     let overlappingAppIds: string[] = [];
     try {

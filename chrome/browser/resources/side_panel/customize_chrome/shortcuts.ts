@@ -93,6 +93,9 @@ export class ShortcutsElement extends PolymerElement {
   }
 
   private onShortcutsRadioSelectionChanged_(e: CustomEvent<{value: string}>) {
+    if (e.detail.value === this.shortcutsRadioSelection_) {
+      return;
+    }
     this.customLinksEnabled_ = e.detail.value === 'customLinksOption';
     this.setMostVisitedSettings_();
   }

@@ -9,8 +9,8 @@ import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('cr-radio-group', () => {
@@ -26,7 +26,6 @@ suite('cr-radio-group', () => {
           </cr-radio-group>
         </div>`;
     radioGroup = document.body.querySelector('cr-radio-group')!;
-    flush();
     return microtasksFinished();
   });
 
@@ -123,15 +122,19 @@ suite('cr-radio-group', () => {
     press('Enter');
     await microtasksFinished();
     checkSelected('1');
+
     radioGroup.selected = '';
     await microtasksFinished();
     verifyNoneSelectedOneFocusable('1');
+
     press(' ');
     await microtasksFinished();
     checkSelected('1');
+
     radioGroup.selected = '';
     await microtasksFinished();
     verifyNoneSelectedOneFocusable('1');
+
     press('ArrowRight');
     await microtasksFinished();
     checkSelected('2');
@@ -176,26 +179,32 @@ suite('cr-radio-group', () => {
     radioGroup.selected = '1';
     await microtasksFinished();
     checkSelected('1');
+
     radioGroup.disabled = true;
     await microtasksFinished();
     checkNoneFocusable();
+
     radioGroup.disabled = false;
     await microtasksFinished();
     checkSelected('1');
+
     const firstRadio =
         radioGroup.querySelector<CrRadioButtonElement>('[name="1"]')!;
     firstRadio.disabled = true;
     await microtasksFinished();
     assertEquals(-1, firstRadio.$.button.tabIndex);
+
     const secondRadio =
         radioGroup.querySelector<CrRadioButtonElement>('[name="2"]')!;
     assertEquals(0, secondRadio.$.button.tabIndex);
     firstRadio.disabled = false;
     await microtasksFinished();
     checkSelected('1');
+
     radioGroup.selected = '';
     await microtasksFinished();
     verifyNoneSelectedOneFocusable('1');
+
     firstRadio.disabled = true;
     await microtasksFinished();
     verifyNoneSelectedOneFocusable('2');
@@ -206,10 +215,13 @@ suite('cr-radio-group', () => {
     assertFalse(radioGroup.disabled);
     checkLength(3, '[aria-disabled="false"]');
     radioGroup.disabled = true;
+    await radioGroup.updateComplete;
     assertEquals('true', radioGroup.getAttribute('aria-disabled'));
     await microtasksFinished();
     checkLength(3, '[aria-disabled="true"]');
+
     radioGroup.disabled = false;
+    await radioGroup.updateComplete;
     assertEquals('false', radioGroup.getAttribute('aria-disabled'));
     await microtasksFinished();
     checkLength(3, '[aria-disabled="false"]');
@@ -222,10 +234,12 @@ suite('cr-radio-group', () => {
     await microtasksFinished();
     checkLength(2, '[aria-disabled="false"]');
     checkLength(1, '[aria-disabled="true"][disabled][name="1"]');
+
     radioGroup.disabled = true;
     await microtasksFinished();
     checkLength(3, '[aria-disabled="true"]');
     checkLength(1, '[aria-disabled="true"][disabled][name="1"]');
+
     radioGroup.disabled = false;
     await microtasksFinished();
     checkLength(2, '[aria-disabled="false"]');
@@ -254,17 +268,24 @@ suite('cr-radio-group', () => {
     assertEquals(-1, a!.tabIndex);
     verifyNoneSelectedOneFocusable('1');
     press('Enter', a!);
+    await radioGroup.updateComplete;
     press(' ', a!);
+    await radioGroup.updateComplete;
     a!.click();
+    await radioGroup.updateComplete;
     verifyNoneSelectedOneFocusable('1');
+
     radioGroup.querySelector<CrRadioButtonElement>('[name="1"]')!.click();
     await microtasksFinished();
     checkSelected('1');
     press('Enter', a!);
+    await radioGroup.updateComplete;
     press(' ', a!);
+    await radioGroup.updateComplete;
     a!.click();
     await microtasksFinished();
     checkSelected('1');
+
     radioGroup.querySelector<CrRadioButtonElement>('[name="3"]')!.click();
     await microtasksFinished();
     checkSelected('3');
@@ -277,16 +298,20 @@ suite('cr-radio-group', () => {
     verifyNoneSelectedOneFocusable('1');
     press('Enter', input!);
     press(' ', input!);
+    await radioGroup.updateComplete;
     verifyNoneSelectedOneFocusable('1');
+
     input!.click();
     await microtasksFinished();
     checkSelected('2');
+
     radioGroup.querySelector<CrRadioButtonElement>('[name="1"]')!.click();
     await microtasksFinished();
     press('Enter', input!);
     press(' ', input!);
     await microtasksFinished();
     checkSelected('1');
+
     input!.click();
     await microtasksFinished();
     checkSelected('2');
@@ -306,4 +331,65 @@ suite('cr-radio-group', () => {
         await microtasksFinished();
         checkSelected('2');
       });
+
+  // Test that when a 2 way binding to a Polymer parent is updated, the
+  // radio buttons UI state has already been updated.
+  test('TwoWayBindingWithPolymerParent', async () => {
+    class TestElement extends PolymerElement {
+      static get is() {
+        return 'test-element';
+      }
+
+      static get template() {
+        return html`
+          <cr-radio-group
+              selected="{{parentSelected}}"
+              on-selected-changed="onSelectedChanged">
+            <cr-radio-button name="one">Option 1</cr-radio-button>
+            <cr-radio-button name="two">Option 2</cr-radio-button>
+          </cr-radio-group>`;
+      }
+
+      static get properties() {
+        return {
+          parentSelected: String,
+        };
+      }
+
+      parentSelected: string = 'one';
+      changes: string[] = [];
+
+      onSelectedChanged(e: CustomEvent<{value: string}>) {
+        const buttons = this.shadowRoot!.querySelectorAll('cr-radio-button');
+        assertEquals(2, buttons.length);
+        // Verify that the buttons' checked state is already up to date.
+        const isOne = e.detail.value === 'one';
+        assertEquals(isOne, buttons[0]!.checked);
+        assertEquals(!isOne, buttons[1]!.checked);
+        this.changes.push(e.detail.value);
+      }
+    }
+
+    customElements.define(TestElement.is, TestElement);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const element = document.createElement('test-element') as TestElement;
+    document.body.appendChild(element);
+    await microtasksFinished();
+
+    const radioGroup = element.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals('one', radioGroup.selected);
+    assertEquals('one', element.parentSelected);
+
+    const radioButtons =
+        element.shadowRoot!.querySelectorAll('cr-radio-button');
+    assertEquals(2, radioButtons.length);
+    radioButtons[1]!.click();
+    await microtasksFinished();
+    assertEquals('two', radioGroup.selected);
+    assertEquals('two', element.parentSelected);
+
+    assertDeepEquals(['one', 'two'], element.changes);
+  });
 });

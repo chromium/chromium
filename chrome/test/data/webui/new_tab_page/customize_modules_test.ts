@@ -15,7 +15,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
@@ -106,6 +106,9 @@ suite('NewTabPageCustomizeModulesTest', () => {
       $$<HTMLElement>(
           customizeModules,
           `#${visible ? 'hide' : 'customize'}Button`)!.click();
+      await eventToPromise(
+          'selected-changed',
+          $$<HTMLElement>(customizeModules, 'cr-radio-group')!);
       customizeModules.apply();
 
       // Assert.
@@ -287,6 +290,8 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
     // Act.
     $$<HTMLElement>(customizeModules, '#hideButton')!.click();
+    const radioGroup = $$<HTMLElement>(customizeModules, 'cr-radio-group')!;
+    await eventToPromise('selected-changed', radioGroup);
     customizeModules.apply();
     customizeModules.$.toggleRepeat.render();
 

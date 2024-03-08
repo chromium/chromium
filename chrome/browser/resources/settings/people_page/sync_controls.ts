@@ -163,8 +163,11 @@ export class SettingsSyncControlsElement extends
                                                CustomEvent<{value: string}>) {
     const syncAllDataTypes =
         event.detail.value === RadioButtonNames.SYNC_EVERYTHING;
-    this.set('syncPrefs.syncAllDataTypes', syncAllDataTypes);
-    this.handleSyncAllDataTypesChanged_(syncAllDataTypes);
+    const previous = this.syncPrefs!.syncAllDataTypes;
+    if (previous !== syncAllDataTypes) {
+      this.set('syncPrefs.syncAllDataTypes', syncAllDataTypes);
+      this.handleSyncAllDataTypesChanged_(syncAllDataTypes);
+    }
   }
 
   // <if expr="chromeos_lacros">
