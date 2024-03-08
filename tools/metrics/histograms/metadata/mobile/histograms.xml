@@ -299,11 +299,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Confirm.Accept.Time" units="ms"
-    expires_after="2024-04-06">
+    expires_after="2025-04-06">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Confirm.Type" -->
 
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@chromium.org</owner>
   <summary>
     Records the time between the Infobar Delegate is created, and the user
     accepts a Confirm Infobar action.
