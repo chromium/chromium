@@ -126,7 +126,6 @@ bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
     const base::Value::List& parameters,
     JavaScriptContentWorld* content_world) {
-  last_received_content_world_ = content_world;
   return CallJavaScriptFunction(name, parameters);
 }
 
@@ -136,7 +135,6 @@ bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
-  last_received_content_world_ = content_world;
   return CallJavaScriptFunction(name, parameters, std::move(callback), timeout);
 }
 
@@ -196,10 +194,6 @@ void FakeWebFrameImpl::AddResultForExecutedJs(
     base::Value* js_result,
     const std::u16string& executed_js) {
   executed_js_result_map_[executed_js] = js_result;
-}
-
-JavaScriptContentWorld* FakeWebFrameImpl::last_received_content_world() {
-  return last_received_content_world_;
 }
 
 std::u16string FakeWebFrameImpl::GetLastJavaScriptCall() const {
