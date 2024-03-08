@@ -30,6 +30,7 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_utils.h"
+#include "ui/wm/core/window_animations.h"
 
 namespace ash {
 
@@ -175,6 +176,9 @@ std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
   widget->SetContentsView(std::move(contents_view));
+  // Overview uses custom animations so remove the default ones.
+  wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
+                                             wm::ANIMATE_NONE);
   return widget;
 }
 

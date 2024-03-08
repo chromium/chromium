@@ -13,8 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 
-namespace ash {
-namespace switches {
+namespace ash::switches {
 
 namespace {
 
@@ -1370,22 +1369,21 @@ bool IsForestSecretKeyMatched() {
 
   // Commandline looks like:
   //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --birch-feature-key="INSERT KEY HERE" --enable-features=ForestFeature
+  //  --forest-feature-key="INSERT KEY HERE" --enable-features=ForestFeature
   const std::string provided_key_hash = base::SHA1HashString(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kForestFeatureKey));
 
-  bool birch_key_matched = (provided_key_hash == kForestHashKey);
-  if (!birch_key_matched) {
+  bool forest_key_matched = (provided_key_hash == kForestHashKey);
+  if (!forest_key_matched) {
     LOG(ERROR) << "Provided secret key does not match with the expected one.";
   }
 
-  return birch_key_matched;
+  return forest_key_matched;
 }
 
 void SetIgnoreForestSecretKeyForTest(bool ignore) {
   g_ignore_forest_secret_key = ignore;
 }
 
-}  // namespace switches
-}  // namespace ash
+}  // namespace ash::switches

@@ -624,13 +624,22 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   if (no_windows_widget_) {
     if (exit_type == OverviewEnterExitType::kImmediateExit) {
       ImmediatelyCloseWidgetOnExit(std::move(no_windows_widget_));
-      return;
+    } else {
+      // Fade out the no windows widget. This animation continues past the
+      // lifetime of `this`.
+      FadeOutWidgetFromOverview(std::move(no_windows_widget_),
+                                OVERVIEW_ANIMATION_RESTORE_WINDOW);
     }
+  }
 
-    // Fade out the no windows widget. This animation continues past the
-    // lifetime of |this|.
-    FadeOutWidgetFromOverview(std::move(no_windows_widget_),
-                              OVERVIEW_ANIMATION_RESTORE_WINDOW);
+  if (pine_widget_) {
+    if (exit_type == OverviewEnterExitType::kImmediateExit) {
+      ImmediatelyCloseWidgetOnExit(std::move(pine_widget_));
+    } else {
+      // This animation continues past the lifetime of `this`.
+      FadeOutWidgetFromOverview(std::move(pine_widget_),
+                                OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT);
+    }
   }
 
   // After this, the desk bar widget will not be owned by this overview grid
@@ -661,6 +670,10 @@ void OverviewGrid::PrepareForOverview() {
           OverviewEnterExitType::kPine) {
     pine_widget_ = PineContentsView::Create(root_window_);
     pine_widget_->ShowInactive();
+    pine_widget_->SetOpacity(0.f);
+    FadeInWidgetToOverview(pine_widget_.get(),
+                           OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
+                           /*observe=*/true);
   }
 
   for (const auto& item : item_list_) {
