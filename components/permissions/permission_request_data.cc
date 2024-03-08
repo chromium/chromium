@@ -20,6 +20,7 @@ PermissionRequestData::PermissionRequestData(
       embedded_permission_element_initiated(
           request_description.embedded_permission_element_initiated),
       requesting_origin(canonical_requesting_origin),
+      anchor_element_position(request_description.anchor_element_position),
       requested_audio_capture_device_ids(
           request_description.requested_audio_capture_device_ids),
       requested_video_capture_device_ids(

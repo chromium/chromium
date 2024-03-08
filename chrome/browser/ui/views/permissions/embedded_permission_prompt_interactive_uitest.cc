@@ -251,9 +251,11 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         }));
   }
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Failing on Windows, though manual testing of the same flow does not reproduce
@@ -263,11 +265,15 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_BasicFlowCamera DISABLED_BasicFlowCamera
 #define MAYBE_BasicFlowCameraMicrophone DISABLED_BasicFlowCameraMicrophone
 #define MAYBE_TestPartialPermissionsLabels DISABLED_TestPartialPermissionsLabels
+#define MAYBE_TestPermissionElementDialogPositioning \
+  DISABLED_TestPermissionElementDialogPositioning
 #else
 #define MAYBE_BasicFlowMicrophone BasicFlowMicrophone
 #define MAYBE_BasicFlowCamera BasicFlowCamera
 #define MAYBE_BasicFlowCameraMicrophone BasicFlowCameraMicrophone
 #define MAYBE_TestPartialPermissionsLabels TestPartialPermissionsLabels
+#define MAYBE_TestPermissionElementDialogPositioning \
+  TestPermissionElementDialogPositioning
 #endif
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                        MAYBE_BasicFlowMicrophone) {
@@ -333,4 +339,56 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
       u"You previously didn't allow microphone on a.test:" +
           base::UTF8ToUTF16(GetOrigin().port()));
+}
+
+class EmbeddedPermissionPromptPositioningInteractiveTest
+    : public EmbeddedPermissionPromptInteractiveTest {
+ public:
+  EmbeddedPermissionPromptPositioningInteractiveTest() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kPermissionElement,
+             {{"PermissionElementDialogPositioning", "true"}}},
+            {permissions::features::kOneTimePermission, {}},
+            {blink::features::kDisablePepcSecurityForTesting, {}},
+        },
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       MAYBE_TestPermissionElementDialogPositioning) {
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, GetURL()));
+
+  // Click on multiple elements in order from left to right, and ensure that
+  // dialog moves with each click
+  int previous_x = 0;
+  struct ElementAction {
+    std::string element_name;
+    ui::ElementIdentifier button_identifier;
+  };
+  std::vector<ElementAction> element_actions = {
+      {"microphone", EmbeddedPermissionPromptAskView::kAllowId},
+      {"camera", EmbeddedPermissionPromptAskView::kAllowId},
+      {"camera-microphone",
+       EmbeddedPermissionPromptPreviouslyGrantedView::kStopAllowingId},
+  };
+
+  for (const auto& element_action : element_actions) {
+    RunTestSequence(ClickOnPEPCElement(element_action.element_name),
+                    InAnyContext(WaitForShow(
+                        EmbeddedPermissionPromptBaseView::kMainViewId)),
+                    FlushEvents(),
+                    InAnyContext(CheckView(
+                        EmbeddedPermissionPromptBaseView::kMainViewId,
+                        [&previous_x](views::View* view) {
+                          gfx::Rect bounds = view->GetBoundsInScreen();
+                          previous_x = bounds.x();
+                          return bounds.x();
+                        },
+                        testing::Gt(previous_x))),
+                    PushPEPCPromptButton(element_action.button_identifier));
+  }
 }

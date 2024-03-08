@@ -122,8 +122,11 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   void AddButton(views::View& buttons_container,
                  const ButtonConfiguration& button);
   std::unique_ptr<views::FlexLayoutView> CreateLoadingIcon();
+  gfx::Rect GetBubbleBounds() override;
+  bool ShouldOverrideBubbleBounds() const;
 
   const raw_ptr<Browser> browser_;
+  gfx::Rect element_rect_;
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate_;
 };
 

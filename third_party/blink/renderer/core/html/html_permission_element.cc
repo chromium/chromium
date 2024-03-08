@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -367,7 +368,7 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
   auto descriptor = EmbeddedPermissionRequestDescriptor::New();
   // TODO(crbug.com/1462930): Send element position to browser and use the
   // rect to calculate expected prompt position in screen coordinates.
-  descriptor->element_position = gfx::Rect(0, 0, 0, 0);
+  descriptor->element_position = GetBoundingClientRect()->ToEnclosingRect();
   descriptor->permissions = mojo::Clone(permission_descriptors_);
   GetPermissionService()->RequestPageEmbeddedPermission(
       std::move(descriptor),

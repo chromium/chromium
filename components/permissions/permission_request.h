@@ -151,6 +151,9 @@ class PermissionRequest {
   // element.
   bool IsEmbeddedPermissionElementInitiated() const;
 
+  // Returns the position of the element that caused the prompt to open.
+  std::optional<gfx::Rect> GetAnchorElementPosition() const;
+
   // Returns true if the request has two origins and should use the two origin
   // prompt. Returns false otherwise.
   bool ShouldUseTwoOriginPrompt() const;

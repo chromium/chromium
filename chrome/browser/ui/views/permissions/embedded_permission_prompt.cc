@@ -159,7 +159,9 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     PrioritizeAndMergeNewVariant(current_request_variant, type);
   }
 
-  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view = nullptr;
+  RebuildRequests();
+
+  EmbeddedPermissionPromptBaseView* prompt_view = nullptr;
 
   switch (embedded_prompt_variant_) {
     case Variant::kAsk:
@@ -207,7 +209,6 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
   }
 
   if (prompt_view) {
-    RebuildRequests();
     prompt_view_tracker_.SetView(prompt_view);
     content_scrim_widget_ =
         EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(

@@ -180,6 +180,10 @@ bool PermissionRequest::IsEmbeddedPermissionElementInitiated() const {
   return data_.embedded_permission_element_initiated;
 }
 
+std::optional<gfx::Rect> PermissionRequest::GetAnchorElementPosition() const {
+  return data_.anchor_element_position;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 
 bool PermissionRequest::IsConfirmationChipSupported() {
