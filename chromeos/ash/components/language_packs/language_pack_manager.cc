@@ -113,6 +113,8 @@ void UninstallDlc(const std::string& dlc_id,
   }
 }
 
+// Warning: These DLCs are guaranteed to be downloaded (is_trusted), but not
+// guaranteed to be installed (state == INSTALLED).
 void GetExistingDlcs(DlcserviceClient::GetExistingDlcsCallback callback) {
   DlcserviceClient* client = DlcserviceClient::Get();
   if (client) {
@@ -177,11 +179,23 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
 }
 
 void OnGetDlcState(GetPackStateCallback callback,
-                   std::string_view feature_id,
+                   std::string feature_id,
                    const std::string& locale,
                    const std::string& err,
                    const dlcservice::DlcState& dlc_state) {
   PackResult result;
+  if (dlc_state.is_verified() &&
+      dlc_state.state() == dlcservice::DlcState_State_NOT_INSTALLED) {
+    // Mount the DLC for the client if it already exists on disk.
+    // By pure coincidence, `GetPackStateCallback` is the same as
+    // `OnInstallCompleteCallback`, so we can directly pass in the
+    // client-supplied callback here.
+    InstallDlc(dlc_state.id(),
+               base::BindOnce(&OnInstallDlcComplete, std::move(callback),
+                              std::move(feature_id), std::move(locale)));
+    return;
+  }
+
   // GetDlcState() returns 2 errors:
   // one for the DBus call and one for the actual DLC.
   // If the first error is set we can ignore the DLC state.

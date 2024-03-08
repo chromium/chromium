@@ -311,6 +311,30 @@ TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_P(
+    ValidFontLanguageTest,
+    AddValidLanguageOnInitWithValidLanguageLocaleWhenDownloadedButNotMounted) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call)
+      .With(FieldsAre(Property(&base::FilePath::value, test_case.dlc_path)))
+      .Times(1);
+  {
+    dlcservice::DlcState state;
+    state.set_id(test_case.dlc_prefix);
+    state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
+    state.set_is_verified(true);
+    dlcservice_client()->set_install_root_path(test_case.dlc_path);
+    dlcservice_client()->set_dlc_state(std::move(state));
+  }
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
+
+  InitProfileWithServices();
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_P(ValidFontLanguageTest,
        AddValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
   const ValidFontLanguageTestCase& test_case = GetParam();
