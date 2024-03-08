@@ -305,6 +305,23 @@ TEST_F(FileManagerOfficeFileTasksTest,
 }
 
 TEST_F(FileManagerOfficeFileTasksTest,
+       LogOneDriveMetricsAfterFallback_kAndroidOneDriveUnsupportedLocation) {
+  LogOneDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kAndroidOneDriveUnsupportedLocation,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen,
+      std::move(cloud_open_metrics_for_one_drive_));
+
+  histogram_.ExpectUniqueSample(ash::cloud_upload::kOneDriveErrorMetricName,
+                                ash::cloud_upload::OfficeOneDriveOpenErrors::
+                                    kAndroidOneDriveUnsupportedLocation,
+                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen,
+      1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
        LogGoogleDriveMetricsAfterFallback_kOffline) {
   LogGoogleDriveMetricsAfterFallback(
       ash::office_fallback::FallbackReason::kOffline,

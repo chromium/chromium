@@ -18,6 +18,9 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace {
+// A "-1" resource ID is used to indicate that the fallback dialog will not
+// display a "fallback reason" message.
+const int kNoReasonMessageResourceId = -1;
 
 // Width of the Fallback dialog as found with the inspector tool.
 const int kWidth = 512;
@@ -30,6 +33,7 @@ const int kDriveUnavailableHeight = 268;
 const int kDriveDisabledForAccountType = 268;
 const int kMeteredHeight = 268;
 const int kWaitingForUploadHeight = 228;
+const int kAndroidOneDriveUnsupportedLocationHeight = 244;
 
 // Height of a line of text as found with the inspector tool.
 const int kLineHeight = 20;
@@ -128,6 +132,17 @@ void GetDialogTextIdsAndSize(
       enable_quick_office_option = false;
       height = kWaitingForUploadHeight;
       break;
+    case ash::office_fallback::FallbackReason::
+        kAndroidOneDriveUnsupportedLocation:
+      title_id =
+          IDS_OFFICE_FALLBACK_TITLE_ANDROID_ONE_DRIVE_LOCATION_NOT_SUPPORTED;
+      reason_message_id = kNoReasonMessageResourceId;
+      instructions_message_id =
+          IDS_OFFICE_FALLBACK_INSTRUCTIONS_ANDROID_ONE_DRIVE_LOCATION_NOT_SUPPORTED;
+      enable_retry_option = false;
+      enable_quick_office_option = true;
+      height = kAndroidOneDriveUnsupportedLocationHeight;
+      break;
   }
   // Add extra height to account for translations.
   height += kLineHeight;
@@ -191,10 +206,13 @@ bool OfficeFallbackDialog::Show(
   // TODO(cassycc): Figure out how to add the web_drive to the placeholder in
   // IDS_OFFICE_FALLBACK_TITLE_WEB_DRIVE_UNAVAILABLE.
   const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
-  const std::string reason_message =
-      include_task_in_reason_message
-          ? l10n_util::GetStringFUTF8(reason_message_id, task_title)
-          : l10n_util::GetStringUTF8(reason_message_id);
+  std::string reason_message = "";
+  if (reason_message_id != kNoReasonMessageResourceId) {
+    reason_message =
+        include_task_in_reason_message
+            ? l10n_util::GetStringFUTF8(reason_message_id, task_title)
+            : l10n_util::GetStringUTF8(reason_message_id);
+  }
   const std::string instructions_message =
       l10n_util::GetStringUTF8(instructions_message_id);
 

@@ -271,6 +271,47 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
 }
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an
+// `OfficeFallbackElement`. Tests that the correct instructions are displayed
+// when the fallback reason is that the file cannot be open from its current
+// Android OneDrive location, and that the correct user choice is received after
+// clicking the OK button.
+IN_PROC_BROWSER_TEST_F(
+    OfficeFallbackDialogBrowserTest,
+    OfficeFallbackDialogWhenAndroidOneDriveLocationNotSupported) {
+  base::RunLoop run_loop;
+  // Launch Office Fallback dialog.
+  content::WebContents* web_contents =
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
+          files_, FallbackReason::kAndroidOneDriveUnsupportedLocation,
+          file_manager::file_tasks::kActionIdOpenInOffice,
+          base::BindLambdaForTesting(
+              [&run_loop](std::optional<const std::string> choice) {
+                // Expect the dialog is closed with the "OK" user choice.
+                if (choice.has_value() &&
+                    choice.value() == ash::office_fallback::kDialogChoiceOk) {
+                  run_loop.Quit();
+                }
+              }));
+
+  // Check the displayed instruction.
+  content::EvalJsResult eval_result =
+      content::EvalJs(web_contents,
+                      "document.querySelector('office-fallback')"
+                      ".$('#instructions-message').innerText");
+  EXPECT_EQ(
+      eval_result.ExtractString(),
+      l10n_util::GetStringUTF8(
+          IDS_OFFICE_FALLBACK_INSTRUCTIONS_ANDROID_ONE_DRIVE_LOCATION_NOT_SUPPORTED));
+
+  // Click the OK button and wait until the dialog is closed with the correct
+  // user choice.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('office-fallback')"
+                              ".$('#ok-button').click()"));
+  run_loop.Run();
+}
+
+// Test which launches an `OfficeFallbackDialog` which in turn creates an
 // `OfficeFallbackElement`. Tests that the cancel button works.
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickCancel) {
   base::RunLoop run_loop;

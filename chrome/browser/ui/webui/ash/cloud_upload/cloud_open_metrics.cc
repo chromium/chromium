@@ -79,6 +79,10 @@ bool DidEndBeforeCallingOpenOrMoveFiles(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCopied:
     case OfficeTaskResult::kFileAlreadyBeingUploaded:
     case OfficeTaskResult::kCannotShowMoveConfirmation:
+    case OfficeTaskResult::kOkAtFallbackAfterOpen:
+    case OfficeTaskResult::kFallbackQuickOfficeAfterOpen:
+    case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
+    case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
       return false;
   }
 }
@@ -92,6 +96,10 @@ bool DidEndAtFallback(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCancelledAtFallback:
     case OfficeTaskResult::kCannotGetFallbackChoice:
     case OfficeTaskResult::kOkAtFallback:
+    case OfficeTaskResult::kOkAtFallbackAfterOpen:
+    case OfficeTaskResult::kFallbackQuickOfficeAfterOpen:
+    case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
+    case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
       return true;
     case OfficeTaskResult::kOpened:
     case OfficeTaskResult::kMoved:
@@ -131,6 +139,10 @@ bool DidEndAtMoveConfirmation(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCannotShowSetupDialog:
     case OfficeTaskResult::kNoFilesToOpen:
     case OfficeTaskResult::kOkAtFallback:
+    case OfficeTaskResult::kOkAtFallbackAfterOpen:
+    case OfficeTaskResult::kFallbackQuickOfficeAfterOpen:
+    case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
+    case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
       return false;
   }
 }
@@ -234,6 +246,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
+              case OfficeOneDriveOpenErrors::
+                  kAndroidOneDriveUnsupportedLocation:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -244,7 +258,37 @@ void CloudOpenMetrics::CheckForInconsistencies(
       // CloudOpenTask::OpenOrMoveFiles() was called.
       ExpectLogged(source_volume);
       ExpectLogged(transfer_required);
-      if (DidEndAtMoveConfirmation(task_result.value)) {
+      if (DidEndAtFallback(task_result.value)) {
+        // The cloud open/upload flow was exited at the Fallback Dialog after
+        // an open was attempted. OpenErrors should give a fallback reason.
+        if (google_drive) {
+          SetWrongValueLogged(task_result);
+        } else {
+          ExpectLogged(one_drive_open_error);
+          if (one_drive_open_error.logged()) {
+            switch (one_drive_open_error.value) {
+              case OfficeOneDriveOpenErrors::
+                  kAndroidOneDriveUnsupportedLocation:
+                break;
+              case OfficeOneDriveOpenErrors::kSuccess:
+              case OfficeOneDriveOpenErrors::kOffline:
+              case OfficeOneDriveOpenErrors::kNoProfile:
+              case OfficeOneDriveOpenErrors::kNoFileSystemURL:
+              case OfficeOneDriveOpenErrors::kInvalidFileSystemURL:
+              case OfficeOneDriveOpenErrors::kGetActionsGenericError:
+              case OfficeOneDriveOpenErrors::kGetActionsReauthRequired:
+              case OfficeOneDriveOpenErrors::kGetActionsInvalidUrl:
+              case OfficeOneDriveOpenErrors::kGetActionsNoUrl:
+              case OfficeOneDriveOpenErrors::kGetActionsAccessDenied:
+              case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
+              case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
+              case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
+                SetWrongValueLogged(one_drive_open_error);
+                break;
+            }
+          }
+        }
+      } else if (DidEndAtMoveConfirmation(task_result.value)) {
         ExpectNotLogged(upload_result);
         ExpectNotLogged(drive_open_error);
         ExpectNotLogged(one_drive_open_error);
@@ -324,7 +368,6 @@ void CloudOpenMetrics::CheckForInconsistencies(
                 break;
             }
           }
-
         } else {
           ExpectLogged(one_drive_open_error);
           if (one_drive_open_error.logged()) {
@@ -343,6 +386,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
                 break;
               case OfficeOneDriveOpenErrors::kSuccess:
+              case OfficeOneDriveOpenErrors::
+                  kAndroidOneDriveUnsupportedLocation:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -397,6 +442,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
+              case OfficeOneDriveOpenErrors::
+                  kAndroidOneDriveUnsupportedLocation:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -640,6 +687,10 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kCannotShowMoveConfirmation:
           case OfficeTaskResult::kNoFilesToOpen:
           case OfficeTaskResult::kOkAtFallback:
+          case OfficeTaskResult::kOkAtFallbackAfterOpen:
+          case OfficeTaskResult::kFallbackQuickOfficeAfterOpen:
+          case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
+          case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
             SetWrongValueLogged(task_result);
             break;
         }

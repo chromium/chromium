@@ -258,6 +258,12 @@ void LogOneDriveMetricsAfterFallback(
       cloud_open_metrics->LogOneDriveOpenError(
           ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline);
       break;
+    case ash::office_fallback::FallbackReason::
+        kAndroidOneDriveUnsupportedLocation:
+      cloud_open_metrics->LogOneDriveOpenError(
+          ash::cloud_upload::OfficeOneDriveOpenErrors::
+              kAndroidOneDriveUnsupportedLocation);
+      break;
     case ash::office_fallback::FallbackReason::kDriveDisabled:
     case ash::office_fallback::FallbackReason::kNoDriveService:
     case ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady:
@@ -312,6 +318,8 @@ void LogGoogleDriveMetricsAfterFallback(
               kDriveDisabledForAccountType);
       break;
     case ash::office_fallback::FallbackReason::kWaitingForUpload:
+    case ash::office_fallback::FallbackReason::
+        kAndroidOneDriveUnsupportedLocation:
       NOTREACHED();
   }
   cloud_open_metrics->LogTaskResult(task_result);

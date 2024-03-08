@@ -7006,6 +7006,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_WAITING_FOR_UPLOAD" desc="Office Fallback dialog instructions when a user attempts to open a file in Web Drive before it is fully synced.">
     Try again after the file has finished syncing.
   </message>
+  <message name="IDS_OFFICE_FALLBACK_TITLE_ANDROID_ONE_DRIVE_LOCATION_NOT_SUPPORTED" desc="Title for a dialog that appears when a user attempts to open a file from an unsupported location in the Android OneDrive app.">
+    Microsoft 365 can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> from this folder
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_ANDROID_ONE_DRIVE_LOCATION_NOT_SUPPORTED" desc="Office Fallback dialog instructions when a user attempts to open a file from an unsupported location in the Android OneDrive app.">
+    Try opening the file from another folder, or choose "Open in basic editor" to use limited view and editing options.
+  </message>
 
   <!-- Office file handler selection dialog -->
   <message name="IDS_OFFICE_FILE_HANDLER_TITLE" desc="Title for office file handler selection dialog, which allows the user to choose an app to open office files.">

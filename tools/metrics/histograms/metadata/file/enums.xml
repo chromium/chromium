@@ -656,6 +656,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="getActions: no email"/>
   <int value="11" label="Conversion to ODFS URL error"/>
   <int value="12" label="Emails do not match"/>
+  <int value="13" label="Unsupported Android OneDrive location"/>
 </enum>
 
 <enum name="OfficeOneDriveType">
@@ -727,6 +728,10 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Cannot show move confirmation"/>
   <int value="15" label="No files to open"/>
   <int value="16" label="Selected OK at fallback"/>
+  <int value="17" label="Selected OK at fallback after open attempt"/>
+  <int value="18" label="Fallback (QuickOffice) after open attempt"/>
+  <int value="19" label="Cancelled at fallback after open attempt"/>
+  <int value="20" label="Cannot get fallback choice after open attempt"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">

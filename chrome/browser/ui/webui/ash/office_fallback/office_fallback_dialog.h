@@ -23,6 +23,7 @@ enum class FallbackReason {
   kDisableDrivePreferenceSet,
   kDriveDisabledForAccountType,
   kWaitingForUpload,
+  kAndroidOneDriveUnsupportedLocation,
 };
 
 using DialogChoiceCallback =

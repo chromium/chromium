@@ -119,7 +119,8 @@ enum class OfficeOneDriveOpenErrors {
   kGetActionsNoEmail = 10,
   kConversionToODFSUrlError = 11,
   kEmailsDoNotMatch = 12,
-  kMaxValue = kEmailsDoNotMatch,
+  kAndroidOneDriveUnsupportedLocation = 13,
+  kMaxValue = kAndroidOneDriveUnsupportedLocation,
 };
 
 // Records the source volume that an office file is opened from. The values up
@@ -168,7 +169,11 @@ enum class OfficeTaskResult {
   kCannotShowMoveConfirmation = 14,
   kNoFilesToOpen = 15,
   kOkAtFallback = 16,
-  kMaxValue = kOkAtFallback,
+  kOkAtFallbackAfterOpen = 17,
+  kFallbackQuickOfficeAfterOpen = 18,
+  kCancelledAtFallbackAfterOpen = 19,
+  kCannotGetFallbackChoiceAfterOpen = 20,
+  kMaxValue = kCannotGetFallbackChoiceAfterOpen,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.

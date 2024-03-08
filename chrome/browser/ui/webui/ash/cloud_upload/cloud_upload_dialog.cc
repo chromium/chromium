@@ -346,6 +346,52 @@ mojom::OperationType UploadTypeToOperationType(UploadType upload_type) {
   }
 }
 
+void OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived(
+    Profile* profile,
+    const fm_tasks::TaskDescriptor& task,
+    const std::vector<storage::FileSystemURL>& file_urls,
+    ash::office_fallback::FallbackReason fallback_reason,
+    std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
+    std::optional<const std::string> choice) {
+  if (!IsOpenInOfficeTask(task)) {
+    NOTREACHED();
+    return;
+  }
+
+  if (!choice.has_value()) {
+    // The user's choice was unable to be retrieved.
+    fm_tasks::LogOneDriveMetricsAfterFallback(
+        fallback_reason,
+        ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen,
+        std::move(cloud_open_metrics));
+    return;
+  }
+
+  if (choice.value() == ash::office_fallback::kDialogChoiceQuickOffice) {
+    fm_tasks::LogOneDriveMetricsAfterFallback(
+        fallback_reason,
+        ash::cloud_upload::OfficeTaskResult::kFallbackQuickOfficeAfterOpen,
+        std::move(cloud_open_metrics));
+    fm_tasks::LaunchQuickOffice(profile, file_urls);
+  } else if (choice.value() == ash::office_fallback::kDialogChoiceTryAgain) {
+    LOG(ERROR) << "Unexpected response: " << choice.value();
+  } else if (choice.value() == ash::office_fallback::kDialogChoiceCancel) {
+    fm_tasks::LogOneDriveMetricsAfterFallback(
+        fallback_reason,
+        ash::cloud_upload::OfficeTaskResult::kCancelledAtFallbackAfterOpen,
+        std::move(cloud_open_metrics));
+  } else if (choice.value() == ash::office_fallback::kDialogChoiceOk) {
+    fm_tasks::LogOneDriveMetricsAfterFallback(
+        fallback_reason,
+        ash::cloud_upload::OfficeTaskResult::kOkAtFallbackAfterOpen,
+        std::move(cloud_open_metrics));
+  } else if (!choice.value().empty()) {
+    LOG(ERROR) << "Unhandled response: " << choice.value();
+  } else {
+    LOG(ERROR) << "Empty user response";
+  }
+}
+
 }  // namespace
 
 // static
@@ -669,10 +715,8 @@ void CloudOpenTask::CheckEmailAndOpenAndroidOneDriveURLs(
     return;
   }
 
-  // Open files from ODFS.
-  for (const auto& android_onedrive_url : file_urls_) {
-    OpenAndroidOneDriveUrl(android_onedrive_url);
-  }
+  // TODO(b/242685536) add support for multiple files.
+  OpenAndroidOneDriveUrl(file_urls_[0]);
 }
 
 // Open office file, originally selected from Android OneDrive, from ODFS. First
@@ -726,11 +770,17 @@ void CloudOpenTask::OpenAndroidOneDriveUrl(
     return;
   }
   if (components[0] != "Files") {
-    LOG(ERROR)
-        << "Android OneDrive documents provider path is not as expected.";
-    LogOneDriveOpenResultUMA(
-        OfficeTaskResult::kOpened,
-        OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
+    ash::office_fallback::FallbackReason fallback_reason = ash::
+        office_fallback::FallbackReason::kAndroidOneDriveUnsupportedLocation;
+    // `cloud_open_metrics_` can be safely moved since CloudUploadTask is
+    // expected to be destructed straight after.
+    GetUserFallbackChoice(
+        profile_, task_, file_urls_, fallback_reason,
+        base::BindOnce(
+            &OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived, profile_,
+            task_, file_urls_, fallback_reason,
+            std::move(cloud_open_metrics_)));
+
     return;
   }
   // Append relative path from Android OneDrive Url.

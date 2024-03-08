@@ -19,9 +19,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -347,6 +349,22 @@ class TestControllerAsh : public TestController {
     CHECK(message_queue.WaitForMessage(&message));
     return message;
   }
+};
+
+// Helper to exit a RunLoop when the given WebContents is destroyed.
+class WebContentsDestroyedWaiter : public content::WebContentsObserver {
+ public:
+  WebContentsDestroyedWaiter(
+      content::WebContents* contents,
+      const base::RepeatingClosure& on_web_contents_destroyed)
+      : content::WebContentsObserver(contents),
+        on_web_contents_destroyed_(on_web_contents_destroyed) {}
+  ~WebContentsDestroyedWaiter() override = default;
+
+  // Override from WebContentsObserver.
+  void WebContentsDestroyed() override { on_web_contents_destroyed_.Run(); }
+
+  base::RepeatingClosure on_web_contents_destroyed_;
 };
 
 class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
@@ -1978,6 +1996,85 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotGetOfficeFallbackChoice) {
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline, 1);
 }
+
+// Tests that opening a file from Android OneDrive under a virtual folder that
+// we don't support (Recents, Albums etc...) shows the fallback dialog.
+IN_PROC_BROWSER_TEST_F(
+    OneDriveTest,
+    FailToOpenFileFromAndroidOneDriveDirectoryNotAccessibleToODFS) {
+  // Create a fake ODFS with a test file.
+  SetUpTest();
+
+  const TaskDescriptor open_in_office_task = CreateOpenInOfficeTask();
+
+  // Create file path in Android OneDrive in a virtual folder that is not
+  // supported in ODFS.
+  base::FilePath android_onedrive_path_no_equivalent =
+      AndroidOneDriveMountPathForEmail(test::kSampleUserEmail1)
+          .Append("Shared")
+          .Append(relative_test_path_1_);
+
+  // Create a FileSystemURL from the Android OneDrive file path.
+  FileSystemURL android_onedrive_url = FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeArcDocumentsProvider,
+      android_onedrive_path_no_equivalent);
+
+  // Watch for dialog URL chrome://office-fallback.
+  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  content::TestNavigationObserver navigation_observer_dialog(
+      expected_dialog_URL);
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
+  // will fail as there is not an equivalent ODFS file path.
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), {android_onedrive_url}, open_in_office_task,
+      ash::cloud_upload::CloudProvider::kOneDrive,
+      std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+          ash::cloud_upload::CloudProvider::kOneDrive, 1)));
+  task->OpenOrMoveFiles();
+
+  // Wait for office fallback dialog to open.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Get the web contents of the fallback dialog.
+  ash::SystemWebDialogDelegate* dialog =
+      ash::SystemWebDialogDelegate::FindInstance(
+          chrome::kChromeUIOfficeFallbackURL);
+  EXPECT_TRUE(dialog);
+  content::WebUI* webui = dialog->GetWebUIForTest();
+  EXPECT_TRUE(webui);
+  content::WebContents* web_contents = webui->GetWebContents();
+  EXPECT_TRUE(web_contents);
+
+  // Wait until the DOM element actually exists at office-fallback.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(web_contents,
+                           "!!document.querySelector('office-fallback')")
+        .ExtractBool();
+  }));
+
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('office-fallback')"
+                              ".$('#ok-button').click()"));
+
+  base::RunLoop run_loop;
+  WebContentsDestroyedWaiter waiter(web_contents, run_loop.QuitClosure());
+  run_loop.Run();
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kOkAtFallbackAfterOpen, 1);
+  // Expect the conversion to an ODFS equivalent URL to fail.
+  histogram_.ExpectUniqueSample(ash::cloud_upload::kOneDriveErrorMetricName,
+                                ash::cloud_upload::OfficeOneDriveOpenErrors::
+                                    kAndroidOneDriveUnsupportedLocation,
+                                1);
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Test to check that a second setup dialog will not launch when one
@@ -2482,55 +2579,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsGenericError, 1);
-}
-
-// Test that OpenOrMoveFiles() will not open an Android OneDrive office file
-// (that doesn't have the expected Url format) via ODFS when the cloud provider
-// specified is OneDrive but the Android OneDrive path does not have an
-// equivalent on ODFS.
-IN_PROC_BROWSER_TEST_F(
-    OneDriveTest,
-    FailToOpenFileFromAndroidOneDriveDirectoryNotAccessibleToODFS) {
-  // Create a fake ODFS with a test file.
-  SetUpTest();
-
-  // Create file path in Android OneDrive for a file that is not accessible to
-  // ODFS. For example, the "Files" folder is accessible to both file systems,
-  // but the "Shared" folder is only accessible to Android OneDrive.
-  base::FilePath android_onedrive_path_no_equivalent =
-      AndroidOneDriveMountPathForEmail(test::kSampleUserEmail1)
-          .Append("Shared")
-          .Append(relative_test_path_1_);
-
-  // Create a FileSystemURL from the Android OneDrive file path.
-  FileSystemURL android_onedrive_url = FileSystemURL::CreateForTest(
-      kTestStorageKey, storage::kFileSystemTypeArcDocumentsProvider,
-      android_onedrive_path_no_equivalent);
-
-  web_app_publisher_->ClearPastLaunches();
-
-  // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
-  // will fail as there is not an equivalent ODFS file path.
-  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), {android_onedrive_url}, CreateOpenInOfficeTask(),
-      ash::cloud_upload::CloudProvider::kOneDrive,
-      std::move(cloud_open_metrics_)));
-  task->OpenOrMoveFiles();
-
-  auto launches = web_app_publisher_->GetLaunches();
-  ASSERT_EQ(0u, launches.size());
-
-  histogram_.ExpectUniqueSample(
-      ash::cloud_upload::kOneDriveTransferRequiredMetric,
-      ash::cloud_upload::OfficeFilesTransferRequired::kNotRequired, 1);
-  histogram_.ExpectUniqueSample(
-      ash::cloud_upload::kOneDriveTaskResultMetricName,
-      ash::cloud_upload::OfficeTaskResult::kFailedToOpen, 1);
-  // Expect the conversion to an ODFS equivalent URL to fail.
-  histogram_.ExpectUniqueSample(
-      ash::cloud_upload::kOneDriveErrorMetricName,
-      ash::cloud_upload::OfficeOneDriveOpenErrors::kConversionToODFSUrlError,
-      1);
 }
 
 // Test that the setup flow for office files, that has never been run before,
