@@ -163,6 +163,8 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
         return SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
       case RTLookupResponse::ThreatInfo::WARN:
         return SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+      case RTLookupResponse::ThreatInfo::SAFE:
+        return SB_THREAT_TYPE_SAFE;
       default:
         NOTREACHED();
         return SB_THREAT_TYPE_SAFE;
