@@ -404,7 +404,7 @@ bool OverlayProcessorDelegated::BlockForCopyRequests(
     const AggregatedRenderPassList* render_pass_list) {
   bool has_copy = false;
   for (auto& pass : *render_pass_list) {
-    if (!pass->copy_requests.empty()) {
+    if (pass->HasCapture()) {
       has_copy = true;
       break;
     }
