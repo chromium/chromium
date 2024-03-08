@@ -19,6 +19,36 @@
         "additionalProperties": {
           "type": "string"
         }
+      },
+      {
+        "id": "ArraySimple",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      {
+        "id": "ArrayOfInlineObject",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {"type": "string" },
+            "value": {"type": "string", "optional": true },
+            "binaryValue": {
+              "type": "array",
+              "optional": true,
+              "items": {"type": "integer"}
+            }
+          }
+        }
+      },
+      {
+        "id": "TwoChoices",
+        "choices": [
+          { "type": "binary" },
+          { "type": "string" }
+        ]
       }
     ],
     "properties": {

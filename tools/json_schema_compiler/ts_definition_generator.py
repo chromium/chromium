@@ -173,6 +173,11 @@ class _Generator(object):
       # Type alias
       c.Append(f"export type {type.name} = {type.property_type.name};")
       c.Append()
+    elif (type.property_type is PropertyType.ARRAY or
+          type.property_type is PropertyType.CHOICES) :
+      ts_type = self._ExtractType(type)
+      c.Append(f"export type {type.name} = {ts_type};")
+      c.Append()
     else:
       # Adding this for things we may not have accounted for here.
       c.Append(
