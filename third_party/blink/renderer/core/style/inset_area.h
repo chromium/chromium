@@ -11,8 +11,8 @@
 
 namespace blink {
 
-class Length;
 class WritingDirectionMode;
+class CalculationExpressionNode;
 
 // Possible region end points for a computed <inset-area-span>
 enum class InsetAreaRegion {
@@ -37,10 +37,14 @@ enum class InsetAreaRegion {
   kYSelfEnd,
 };
 
-CORE_EXPORT extern const Length& g_anchor_top_length;
-CORE_EXPORT extern const Length& g_anchor_bottom_length;
-CORE_EXPORT extern const Length& g_anchor_left_length;
-CORE_EXPORT extern const Length& g_anchor_right_length;
+CORE_EXPORT extern const scoped_refptr<const CalculationExpressionNode>&
+    g_anchor_top;
+CORE_EXPORT extern const scoped_refptr<const CalculationExpressionNode>&
+    g_anchor_bottom;
+CORE_EXPORT extern const scoped_refptr<const CalculationExpressionNode>&
+    g_anchor_left;
+CORE_EXPORT extern const scoped_refptr<const CalculationExpressionNode>&
+    g_anchor_right;
 
 // Represents the computed value for the inset-area property. Each span is
 // represented by two end points in the spec order for that axis. That is:
@@ -88,13 +92,14 @@ class CORE_EXPORT InsetArea {
       const WritingDirectionMode& container_writing_direction,
       const WritingDirectionMode& self_writing_direction) const;
 
-  // Return Lengths to override auto inset values according to the resolved
-  // inset-area. May only be called on InsetAreas returned from ToPhysical()
-  // which ensures physical vertical / horizontal areas.
-  const Length& UsedTop() const;
-  const Length& UsedBottom() const;
-  const Length& UsedLeft() const;
-  const Length& UsedRight() const;
+  // Return anchor() functions to override auto inset values according to the
+  // resolved inset-area. May only be called on InsetAreas returned from
+  // ToPhysical() which ensures physical vertical / horizontal areas.
+  // A return value of nullptr represents 0px rather than an anchor() function.
+  const CalculationExpressionNode* UsedTop() const;
+  const CalculationExpressionNode* UsedBottom() const;
+  const CalculationExpressionNode* UsedLeft() const;
+  const CalculationExpressionNode* UsedRight() const;
 
   // Anchored elements using inset area align towards the unused area through
   // different 'normal' behavior for align-self and justify-self. Compute the
@@ -103,15 +108,15 @@ class CORE_EXPORT InsetArea {
   std::pair<ItemPosition, ItemPosition> AlignJustifySelfFromPhysical(
       WritingDirectionMode container_writing_direction) const;
 
-  // To be called from CoreInitializer only. Initializes global Length constants
-  // at startup used by the methods above.
-  static void InitializeAnchorLengths();
+  // To be called from CoreInitializer only. Initializes global anchor()
+  // constants at startup used by the methods above.
+  static void InitializeAnchors();
 
   // Made public because they are used in unit test expectations.
-  static const Length& AnchorTop() { return g_anchor_top_length; }
-  static const Length& AnchorBottom() { return g_anchor_bottom_length; }
-  static const Length& AnchorLeft() { return g_anchor_left_length; }
-  static const Length& AnchorRight() { return g_anchor_right_length; }
+  static const CalculationExpressionNode* AnchorTop();
+  static const CalculationExpressionNode* AnchorBottom();
+  static const CalculationExpressionNode* AnchorLeft();
+  static const CalculationExpressionNode* AnchorRight();
 
  private:
   InsetAreaRegion span1_start_ = InsetAreaRegion::kNone;

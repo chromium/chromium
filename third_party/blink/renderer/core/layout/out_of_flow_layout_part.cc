@@ -448,11 +448,6 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   // ContainingBlockInfo with the rect adjusted by inset-area.
   DCHECK(!inset_area.IsNone());
 
-  PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_info.rect.size, GetConstraintSpace().GetWritingMode());
-  LayoutUnit available_width = container_physical_content_size.width;
-  LayoutUnit available_height = container_physical_content_size.height;
-
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, container_info,
                         candidate.Style().GetWritingDirection(),
@@ -463,38 +458,35 @@ OutOfFlowLayoutPart::ApplyInsetArea(
     return container_info;
   }
 
-  float top = 0;
-  float bottom = 0;
-  float left = 0;
-  float right = 0;
+  LayoutUnit top;
+  LayoutUnit bottom;
+  LayoutUnit left;
+  LayoutUnit right;
 
   using AnchorScope = Length::AnchorScope;
 
-  // The InsetArea::Used*() methods either return a 0px length or an anchor()
-  // function, using top/left/right/bottom, to adjust the containing block to
-  // align with either of the physical edges of the default anchor.
+  // The InsetArea::Used*() methods returns either an anchor() function or
+  // nullptr (representing a 0px length), using top/left/right/bottom, to adjust
+  // the containing block to align with either of the physical edges of the
+  // default anchor.
   //
-  // IsCalculated() means the value is an anchor() function, otherwise the inset
-  // adjustment is already set to 0 above.
-  if (inset_area.UsedTop().IsCalculated()) {
+  // Note that the inset adjustment is already set to zero above, so there's
+  // nothing to do here for nullptr values.
+  if (const CalculationExpressionNode* node = inset_area.UsedTop()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, anchor_evaluator);
-    top = inset_area.UsedTop().NonNanCalculatedValue(
-        available_height, {.anchor_evaluator = anchor_evaluator});
+    top = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
   }
-  if (inset_area.UsedBottom().IsCalculated()) {
+  if (const CalculationExpressionNode* node = inset_area.UsedBottom()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBottom, anchor_evaluator);
-    bottom = inset_area.UsedBottom().NonNanCalculatedValue(
-        available_height, {.anchor_evaluator = anchor_evaluator});
+    bottom = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
   }
-  if (inset_area.UsedLeft().IsCalculated()) {
+  if (const CalculationExpressionNode* node = inset_area.UsedLeft()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kLeft, anchor_evaluator);
-    left = inset_area.UsedLeft().NonNanCalculatedValue(
-        available_width, {.anchor_evaluator = anchor_evaluator});
+    left = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
   }
-  if (inset_area.UsedRight().IsCalculated()) {
+  if (const CalculationExpressionNode* node = inset_area.UsedRight()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kRight, anchor_evaluator);
-    right = inset_area.UsedRight().NonNanCalculatedValue(
-        available_width, {.anchor_evaluator = anchor_evaluator});
+    right = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
   }
 
   ContainingBlockInfo adjusted_container_info(container_info);
@@ -503,8 +495,8 @@ OutOfFlowLayoutPart::ApplyInsetArea(
 
   // Reduce the container size and adjust the offset based on the inset-area.
   adjusted_container_info.rect.ContractEdges(
-      LayoutUnit(converter.BlockStart()), LayoutUnit(converter.InlineEnd()),
-      LayoutUnit(converter.BlockEnd()), LayoutUnit(converter.InlineStart()));
+      converter.BlockStart(), converter.InlineEnd(), converter.BlockEnd(),
+      converter.InlineStart());
 
   // For 'center' values (aligned with start and end anchor sides), the
   // containing block is aligned and sized with the anchor, regardless of

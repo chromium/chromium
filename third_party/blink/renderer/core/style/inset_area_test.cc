@@ -91,51 +91,81 @@ TEST_P(InsetAreaToPhysicalTest, All) {
             test_case.expected_physical);
 }
 
-struct UsedInsetsTestCase {
-  InsetArea physical;
-  const Length& expected_top;
-  const Length& expected_bottom;
-  const Length& expected_left;
-  const Length& expected_right;
+enum class ExpectedInset {
+  kZero,  // 0px
+  kTop,
+  kBottom,
+  kLeft,
+  kRight
 };
 
+struct UsedInsetsTestCase {
+  InsetArea physical;
+  ExpectedInset expected_top;
+  ExpectedInset expected_bottom;
+  ExpectedInset expected_left;
+  ExpectedInset expected_right;
+};
+
+namespace {
+
+const CalculationExpressionNode* ToExpressionNode(ExpectedInset inset) {
+  switch (inset) {
+    case ExpectedInset::kZero:
+      return nullptr;  // 0px
+    case ExpectedInset::kTop:
+      return InsetArea::AnchorTop();
+    case ExpectedInset::kBottom:
+      return InsetArea::AnchorBottom();
+    case ExpectedInset::kLeft:
+      return InsetArea::AnchorLeft();
+    case ExpectedInset::kRight:
+      return InsetArea::AnchorRight();
+  }
+}
+
+}  // namespace
+
+// Note that we use ExpectedInset to express the expected results
+// instead of calling InsetArea::AnchorTop() (etc) directly here,
+// because InsetArea::InitializeAnchors may not have happened yet.
 UsedInsetsTestCase used_insets_test_cases[] = {
     {{InsetAreaRegion::kTop, InsetAreaRegion::kTop, InsetAreaRegion::kLeft,
       InsetAreaRegion::kLeft},
-     Length::FixedZero(),
-     InsetArea::AnchorTop(),
-     Length::FixedZero(),
-     InsetArea::AnchorLeft()},
+     ExpectedInset::kZero,
+     ExpectedInset::kTop,
+     ExpectedInset::kZero,
+     ExpectedInset::kLeft},
     {{InsetAreaRegion::kCenter, InsetAreaRegion::kCenter,
       InsetAreaRegion::kCenter, InsetAreaRegion::kCenter},
-     InsetArea::AnchorTop(),
-     InsetArea::AnchorBottom(),
-     InsetArea::AnchorLeft(),
-     InsetArea::AnchorRight()},
+     ExpectedInset::kTop,
+     ExpectedInset::kBottom,
+     ExpectedInset::kLeft,
+     ExpectedInset::kRight},
     {{InsetAreaRegion::kBottom, InsetAreaRegion::kBottom,
       InsetAreaRegion::kRight, InsetAreaRegion::kRight},
-     InsetArea::AnchorBottom(),
-     Length::FixedZero(),
-     InsetArea::AnchorRight(),
-     Length::FixedZero()},
+     ExpectedInset::kBottom,
+     ExpectedInset::kZero,
+     ExpectedInset::kRight,
+     ExpectedInset::kZero},
     {{InsetAreaRegion::kTop, InsetAreaRegion::kCenter, InsetAreaRegion::kLeft,
       InsetAreaRegion::kCenter},
-     Length::FixedZero(),
-     InsetArea::AnchorBottom(),
-     Length::FixedZero(),
-     InsetArea::AnchorRight()},
+     ExpectedInset::kZero,
+     ExpectedInset::kBottom,
+     ExpectedInset::kZero,
+     ExpectedInset::kRight},
     {{InsetAreaRegion::kCenter, InsetAreaRegion::kBottom,
       InsetAreaRegion::kCenter, InsetAreaRegion::kRight},
-     InsetArea::AnchorTop(),
-     Length::FixedZero(),
-     InsetArea::AnchorLeft(),
-     Length::FixedZero()},
+     ExpectedInset::kTop,
+     ExpectedInset::kZero,
+     ExpectedInset::kLeft,
+     ExpectedInset::kZero},
     {{InsetAreaRegion::kTop, InsetAreaRegion::kBottom, InsetAreaRegion::kLeft,
       InsetAreaRegion::kRight},
-     Length::FixedZero(),
-     Length::FixedZero(),
-     Length::FixedZero(),
-     Length::FixedZero()},
+     ExpectedInset::kZero,
+     ExpectedInset::kZero,
+     ExpectedInset::kZero,
+     ExpectedInset::kZero},
 };
 
 class InsetAreaUsedInsetsTest
@@ -148,10 +178,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(InsetAreaUsedInsetsTest, All) {
   const UsedInsetsTestCase& test_case = GetParam();
-  EXPECT_EQ(test_case.physical.UsedTop(), test_case.expected_top);
-  EXPECT_EQ(test_case.physical.UsedBottom(), test_case.expected_bottom);
-  EXPECT_EQ(test_case.physical.UsedLeft(), test_case.expected_left);
-  EXPECT_EQ(test_case.physical.UsedRight(), test_case.expected_right);
+  EXPECT_EQ(test_case.physical.UsedTop(),
+            ToExpressionNode(test_case.expected_top));
+  EXPECT_EQ(test_case.physical.UsedBottom(),
+            ToExpressionNode(test_case.expected_bottom));
+  EXPECT_EQ(test_case.physical.UsedLeft(),
+            ToExpressionNode(test_case.expected_left));
+  EXPECT_EQ(test_case.physical.UsedRight(),
+            ToExpressionNode(test_case.expected_right));
 }
 
 }  // namespace blink

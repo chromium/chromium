@@ -159,7 +159,7 @@ void CoreInitializer::Initialize() {
 
   StringImpl::FreezeStaticStrings();
 
-  InsetArea::InitializeAnchorLengths();
+  InsetArea::InitializeAnchors();
 
   V8ThrowDOMException::Init();
 

@@ -9,16 +9,19 @@
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
-#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 
 namespace blink {
 
-CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_top_length);
-CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_bottom_length);
-CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_left_length);
-CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_right_length);
+CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
+                          g_anchor_top);
+CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
+                          g_anchor_bottom);
+CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
+                          g_anchor_left);
+CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
+                          g_anchor_right);
 
 namespace {
 
@@ -191,67 +194,67 @@ InsetArea InsetArea::ToPhysical(
   return InsetArea(regions[0], regions[1], regions[2], regions[3]);
 }
 
-const Length& InsetArea::UsedTop() const {
+const CalculationExpressionNode* InsetArea::UsedTop() const {
   switch (FirstStart()) {
     case InsetAreaRegion::kTop:
-      return Length::FixedZero();
+      return nullptr;  // 0px
     case InsetAreaRegion::kCenter:
-      return g_anchor_top_length;
+      return g_anchor_top.get();
     case InsetAreaRegion::kBottom:
-      return g_anchor_bottom_length;
+      return g_anchor_bottom.get();
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return Length::Auto();
+      return nullptr;
   }
 }
 
-const Length& InsetArea::UsedBottom() const {
+const CalculationExpressionNode* InsetArea::UsedBottom() const {
   switch (FirstEnd()) {
     case InsetAreaRegion::kTop:
-      return g_anchor_top_length;
+      return g_anchor_top.get();
     case InsetAreaRegion::kCenter:
-      return g_anchor_bottom_length;
+      return g_anchor_bottom.get();
     case InsetAreaRegion::kBottom:
-      return Length::FixedZero();
+      return nullptr;  // 0px
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return Length::Auto();
+      return nullptr;
   }
 }
 
-const Length& InsetArea::UsedLeft() const {
+const CalculationExpressionNode* InsetArea::UsedLeft() const {
   switch (SecondStart()) {
     case InsetAreaRegion::kLeft:
-      return Length::FixedZero();
+      return nullptr;  // 0px
     case InsetAreaRegion::kCenter:
-      return g_anchor_left_length;
+      return g_anchor_left.get();
     case InsetAreaRegion::kRight:
-      return g_anchor_right_length;
+      return g_anchor_right.get();
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return Length::Auto();
+      return nullptr;
   }
 }
 
-const Length& InsetArea::UsedRight() const {
+const CalculationExpressionNode* InsetArea::UsedRight() const {
   switch (SecondEnd()) {
     case InsetAreaRegion::kLeft:
-      return g_anchor_left_length;
+      return g_anchor_left.get();
     case InsetAreaRegion::kCenter:
-      return g_anchor_right_length;
+      return g_anchor_right.get();
     case InsetAreaRegion::kRight:
-      return Length::FixedZero();
+      return nullptr;  // 0px
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return Length::Auto();
+      return nullptr;
   }
 }
 
@@ -295,34 +298,43 @@ std::pair<ItemPosition, ItemPosition> InsetArea::AlignJustifySelfFromPhysical(
                                                     converter.InlineStart());
 }
 
-void InsetArea::InitializeAnchorLengths() {
+void InsetArea::InitializeAnchors() {
   // These globals are initialized here instead of Length::Initialize() because
   // they depend on anchor expressions defined in core/ which cannot be included
   // from platform.
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_top_length)
-      Length(CalculationValue::CreateSimplified(
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_top)
+      scoped_refptr<const CalculationExpressionNode>(
           CalculationExpressionAnchorQueryNode::CreateAnchor(
               *AnchorSpecifierValue::Default(), CSSAnchorValue::kTop,
-              Length::FixedZero()),
-          Length::ValueRange::kAll));
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_bottom_length)
-      Length(CalculationValue::CreateSimplified(
+              Length::FixedZero()));
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_bottom)
+      scoped_refptr<const CalculationExpressionNode>(
           CalculationExpressionAnchorQueryNode::CreateAnchor(
               *AnchorSpecifierValue::Default(), CSSAnchorValue::kBottom,
-              Length::FixedZero()),
-          Length::ValueRange::kAll));
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_left_length)
-      Length(CalculationValue::CreateSimplified(
+              Length::FixedZero()));
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_left)
+      scoped_refptr<const CalculationExpressionNode>(
           CalculationExpressionAnchorQueryNode::CreateAnchor(
               *AnchorSpecifierValue::Default(), CSSAnchorValue::kLeft,
-              Length::FixedZero()),
-          Length::ValueRange::kAll));
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_right_length)
-      Length(CalculationValue::CreateSimplified(
+              Length::FixedZero()));
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_right)
+      scoped_refptr<const CalculationExpressionNode>(
           CalculationExpressionAnchorQueryNode::CreateAnchor(
               *AnchorSpecifierValue::Default(), CSSAnchorValue::kRight,
-              Length::FixedZero()),
-          Length::ValueRange::kAll));
+              Length::FixedZero()));
+}
+
+const CalculationExpressionNode* InsetArea::AnchorTop() {
+  return g_anchor_top.get();
+}
+const CalculationExpressionNode* InsetArea::AnchorBottom() {
+  return g_anchor_bottom.get();
+}
+const CalculationExpressionNode* InsetArea::AnchorLeft() {
+  return g_anchor_left.get();
+}
+const CalculationExpressionNode* InsetArea::AnchorRight() {
+  return g_anchor_right.get();
 }
 
 }  // namespace blink
