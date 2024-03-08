@@ -36,7 +36,7 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
   void Configure(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       display::ConfigureCallback callback,
-      uint32_t modeset_flag) override;
+      display::ModesetFlags modeset_flags) override;
   void SetHdcpKeyProp(int64_t display_id,
                       const std::string& key,
                       display::SetHdcpKeyPropCallback callback) override;

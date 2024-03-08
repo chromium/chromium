@@ -281,9 +281,9 @@ void ConfigureDisplaysTask::Run() {
       is_first_attempt ? &ConfigureDisplaysTask::OnFirstAttemptConfigured
                        : &ConfigureDisplaysTask::OnRetryConfigured;
 
-  uint32_t modeset_flags = display::kTestModeset;
+  display::ModesetFlags modeset_flags{display::ModesetFlag::kTestModeset};
   if (configuration_type_ == kConfigurationTypeSeamless)
-    modeset_flags |= display::kSeamlessModeset;
+    modeset_flags.Put(display::ModesetFlag::kSeamlessModeset);
   delegate_->Configure(
       config_requests,
       base::BindOnce(on_configured, weak_ptr_factory_.GetWeakPtr()),
@@ -327,9 +327,9 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
                                  request.mode, request.enable_vrr);
   }
 
-  uint32_t modeset_flags = display::kCommitModeset;
+  display::ModesetFlags modeset_flags{display::ModesetFlag::kCommitModeset};
   if (configuration_type_ == kConfigurationTypeSeamless)
-    modeset_flags |= display::kSeamlessModeset;
+    modeset_flags.Put(display::ModesetFlag::kSeamlessModeset);
   delegate_->Configure(config_requests,
                        base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
                                       weak_ptr_factory_.GetWeakPtr()),
@@ -398,9 +398,9 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
 
   // Configure the displays using the last successful configuration parameter
   // list.
-  uint32_t modeset_flags = display::kCommitModeset;
+  display::ModesetFlags modeset_flags{display::ModesetFlag::kCommitModeset};
   if (configuration_type_ == kConfigurationTypeSeamless)
-    modeset_flags |= display::kSeamlessModeset;
+    modeset_flags.Put(display::ModesetFlag::kSeamlessModeset);
   delegate_->Configure(last_successful_config_parameters_,
                        base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
                                       weak_ptr_factory_.GetWeakPtr()),

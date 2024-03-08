@@ -131,7 +131,7 @@ void FakeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
 void FakeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     ConfigureCallback callback,
-    uint32_t modeset_flag) {
+    display::ModesetFlags modeset_flags) {
   bool config_success = true;
   for (const auto& config : config_requests) {
     bool request_success = false;

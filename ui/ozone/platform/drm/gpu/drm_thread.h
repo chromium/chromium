@@ -166,7 +166,7 @@ class DrmThread : public base::Thread,
   void RemoveGraphicsDevice(const base::FilePath& path) override;
   void ConfigureNativeDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      uint32_t modeset_flag,
+      display::ModesetFlags modeset_flags,
       ConfigureNativeDisplaysCallback callback) override;
   void SetHdcpKeyProp(int64_t display_id,
                       const std::string& key,

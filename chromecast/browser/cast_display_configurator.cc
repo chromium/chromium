@@ -143,7 +143,8 @@ void CastDisplayConfigurator::EnableDisplay(
   config_request.push_back(std::move(display_config_params));
 
   delegate_->Configure(config_request, std::move(callback),
-                       display::kTestModeset | display::kCommitModeset);
+                       {display::ModesetFlag::kTestModeset,
+                        display::ModesetFlag::kCommitModeset});
   NotifyObservers();
 }
 
@@ -158,7 +159,8 @@ void CastDisplayConfigurator::DisableDisplay(
   config_request.push_back(std::move(display_config_params));
 
   delegate_->Configure(config_request, std::move(callback),
-                       display::kTestModeset | display::kCommitModeset);
+                       {display::ModesetFlag::kTestModeset,
+                        display::ModesetFlag::kCommitModeset});
 }
 
 void CastDisplayConfigurator::ConfigureDisplayFromCommandLine() {
@@ -249,7 +251,8 @@ void CastDisplayConfigurator::OnDisplaysAcquired(
       base::BindRepeating(&CastDisplayConfigurator::OnDisplayConfigured,
                           weak_factory_.GetWeakPtr(), display_,
                           display_->native_mode(), origin),
-      display::kTestModeset | display::kCommitModeset);
+      {display::ModesetFlag::kTestModeset,
+       display::ModesetFlag::kCommitModeset});
 }
 
 void CastDisplayConfigurator::OnDisplayConfigured(

@@ -67,7 +67,7 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
   virtual void Configure(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       ConfigureCallback callback,
-      uint32_t modeset_flag) = 0;
+      display::ModesetFlags modeset_flags) = 0;
 
   // Sets the HDCP Key Property.
   virtual void SetHdcpKeyProp(int64_t display_id,

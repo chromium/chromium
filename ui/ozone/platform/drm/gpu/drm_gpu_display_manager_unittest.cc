@@ -137,7 +137,8 @@ class DrmGpuDisplayManagerTest : public testing::Test {
                                    snapshot->native_mode());
     }
     return drm_gpu_display_manager_->ConfigureDisplays(
-        config_requests, display::kTestModeset | display::kCommitModeset);
+        config_requests, {display::ModesetFlag::kTestModeset,
+                          display::ModesetFlag::kCommitModeset});
   }
 
   DrmDisplay* FindDisplay(int64_t display_id) {

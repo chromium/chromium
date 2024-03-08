@@ -80,7 +80,7 @@ class ScreenManager {
   // display::ModesetFlag).
   bool ConfigureDisplayControllers(
       const ControllerConfigsList& controllers_params,
-      uint32_t modeset_flag);
+      display::ModesetFlags modeset_flags);
 
   // Returns a reference to the display controller configured to display within
   // |bounds|. If the caller caches the controller it must also register as an

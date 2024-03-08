@@ -329,7 +329,7 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
 
 bool DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    uint32_t modeset_flag) {
+    display::ModesetFlags modeset_flags) {
   ScreenManager::ControllerConfigsList controllers_to_configure;
   for (const auto& config : config_requests) {
     int64_t display_id = config.id;
@@ -358,12 +358,13 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
   }
 
   bool config_success = screen_manager_->ConfigureDisplayControllers(
-      controllers_to_configure, modeset_flag);
+      controllers_to_configure, modeset_flags);
 
   if (displays_configured_callback_)
     displays_configured_callback_.Run();
 
-  const bool test_only = modeset_flag == display::kTestModeset;
+  const bool test_only =
+      !modeset_flags.Has(display::ModesetFlag::kCommitModeset);
   if (!test_only && config_success) {
     for (const auto& controller : controllers_to_configure)
       FindDisplay(controller.display_id)->SetOrigin(controller.origin);

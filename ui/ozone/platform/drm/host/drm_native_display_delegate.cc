@@ -53,9 +53,9 @@ void DrmNativeDisplayDelegate::GetDisplays(
 void DrmNativeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     display::ConfigureCallback callback,
-    uint32_t modeset_flag) {
+    display::ModesetFlags modeset_flags) {
   display_manager_->ConfigureDisplays(config_requests, std::move(callback),
-                                      modeset_flag);
+                                      modeset_flags);
 }
 
 void DrmNativeDisplayDelegate::SetHdcpKeyProp(

@@ -216,7 +216,8 @@ void MAYBE_DrmOverlayValidatorTest::SetupControllers() {
       1 /*display_id*/, drm_, primary_crtc_id, primary_connector_id,
       gfx::Point(), std::make_unique<drmModeModeInfo>(kDefaultMode));
   screen_manager_->ConfigureDisplayControllers(
-      controllers_to_enable, display::kTestModeset | display::kCommitModeset);
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset});
 
   drm_device_manager_ = std::make_unique<DrmDeviceManager>(nullptr);
 

@@ -107,9 +107,9 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
 void ParamsToTracedValue(
     perfetto::TracedValue context,
     const ScreenManager::ControllerConfigsList& controllers_params,
-    uint32_t modeset_flag) {
+    display::ModesetFlags modeset_flags) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("modeset_flag", modeset_flag);
+  dict.Add("modeset_flags", modeset_flags.ToEnumBitmask());
 
   auto array = dict.AddArray("param");
   for (const auto& param : controllers_params) {
@@ -324,18 +324,19 @@ void ScreenManager::RemoveDisplayControllers(
 
 bool ScreenManager::ConfigureDisplayControllers(
     const ControllerConfigsList& controllers_params,
-    uint32_t modeset_flag) {
+    display::ModesetFlags modeset_flags) {
   TRACE_EVENT_BEGIN2(
       "drm", "ScreenManager::ConfigureDisplayControllers", "params",
-      ([modeset_flag,
+      ([modeset_flags,
         &controllers_params](perfetto::TracedValue context) -> void {
         ParamsToTracedValue(std::move(context), controllers_params,
-                            modeset_flag);
+                            modeset_flags);
       }),
       "before", this);
 
   // At least one of these flags must be set.
-  DCHECK(modeset_flag & (display::kCommitModeset | display::kTestModeset));
+  DCHECK(modeset_flags.HasAny({display::ModesetFlag::kCommitModeset,
+                               display::ModesetFlag::kTestModeset}));
 
   // Split them to different lists unique to each DRM Device.
   base::flat_map<scoped_refptr<DrmDevice>, ControllerConfigsList>
@@ -350,8 +351,10 @@ bool ScreenManager::ConfigureDisplayControllers(
     displays_for_drm_devices[params.drm].emplace_back(params);
   }
 
-  const bool commit_modeset = modeset_flag & display::kCommitModeset;
-  const bool is_seamless_modeset = modeset_flag & display::kSeamlessModeset;
+  const bool commit_modeset =
+      modeset_flags.Has(display::ModesetFlag::kCommitModeset);
+  const bool is_seamless_modeset =
+      modeset_flags.Has(display::ModesetFlag::kSeamlessModeset);
   bool config_success = true;
   // Perform display configurations together for the same DRM only.
   for (const auto& configs_on_drm : displays_for_drm_devices) {
@@ -359,7 +362,7 @@ bool ScreenManager::ConfigureDisplayControllers(
     VLOG(1) << "DRM " << (commit_modeset ? "configuring: " : "testing: ")
             << GenerateConfigurationLogForController(drm_controllers_params);
 
-    if (modeset_flag & display::kTestModeset) {
+    if (modeset_flags.Has(display::ModesetFlag::kTestModeset)) {
       bool test_modeset =
           TestAndSetPreferredModifiers(drm_controllers_params,
                                        is_seamless_modeset) ||

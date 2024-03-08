@@ -70,7 +70,7 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   void GpuConfigureNativeDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       display::ConfigureCallback callback,
-      uint32_t modeset_flag) override;
+      display::ModesetFlags modeset_flags) override;
   bool GpuSetHdcpKeyProp(int64_t display_id, const std::string& key) override;
   bool GpuGetHDCPState(int64_t display_id) override;
   bool GpuSetHDCPState(

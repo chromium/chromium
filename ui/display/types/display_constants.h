@@ -9,6 +9,7 @@
 
 #include <array>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "ui/display/types/display_types_export.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -145,15 +146,22 @@ enum ConfigurationType {
 
 // A flag to allow ui/display and ozone to adjust the behavior of display
 // configurations.
-enum ModesetFlag {
+enum class ModesetFlag {
   // At least one of kTestModeset and kCommitModeset must be set.
-  kTestModeset = 1 << 0,
-  kCommitModeset = 1 << 1,
+  kTestModeset,
+  kCommitModeset,
   // When |kSeamlessModeset| is set, the commit (or test) will succeed only if
   // the submitted configuration can be completed without visual artifacts such
   // as blanking.
-  kSeamlessModeset = 1 << 2,
+  kSeamlessModeset,
+
+  kMinValue = kTestModeset,
+  kMaxValue = kSeamlessModeset,
 };
+
+// A bitmask of flags as defined in display::ModesetFlag.
+using ModesetFlags =
+    base::EnumSet<ModesetFlag, ModesetFlag::kMinValue, ModesetFlag::kMaxValue>;
 
 enum VariableRefreshRateState {
   kVrrDisabled = 0,

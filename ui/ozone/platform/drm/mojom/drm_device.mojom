@@ -63,7 +63,7 @@ interface DrmDevice {
   // to |modeset_flag| (see display::ModesetFlag).
   ConfigureNativeDisplays(
       array<display.mojom.DisplayConfigurationParams> config_requests,
-      uint32 modeset_flag) =>
+      display.mojom.ModesetFlags modeset_flags) =>
     (bool config_success);
 
   // Sets the HDCP Key Property in the connector attached to the |display_id|.

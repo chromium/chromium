@@ -17,14 +17,17 @@
 
 namespace display::test {
 
-std::string GetModesetFlag(uint32_t flag) {
+std::string GetModesetFlag(display::ModesetFlags modeset_flags) {
   std::string flags_str;
-  if (flag & kTestModeset)
+  if (modeset_flags.Has(display::ModesetFlag::kTestModeset)) {
     flags_str = base::StrCat({flags_str, kTestModesetStr, ","});
-  if (flag & kCommitModeset)
+  }
+  if (modeset_flags.Has(display::ModesetFlag::kCommitModeset)) {
     flags_str = base::StrCat({flags_str, kCommitModesetStr, ","});
-  if (flag & kSeamlessModeset)
+  }
+  if (modeset_flags.Has(display::ModesetFlag::kSeamlessModeset)) {
     flags_str = base::StrCat({flags_str, kSeamlessModesetStr, ","});
+  }
 
   // Remove trailing comma.
   if (!flags_str.empty())
@@ -141,8 +144,8 @@ void TestNativeDisplayDelegate::SaveCurrentConfigSystemBandwidth(
 void TestNativeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     ConfigureCallback callback,
-    uint32_t modeset_flag) {
-  log_->AppendAction(GetModesetFlag(modeset_flag));
+    display::ModesetFlags modeset_flags) {
+  log_->AppendAction(GetModesetFlag(modeset_flags));
   bool config_success = true;
   for (const auto& config : config_requests)
     config_success &= Configure(config);

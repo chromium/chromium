@@ -57,7 +57,7 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   void ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       display::ConfigureCallback callback,
-      uint32_t modeset_flag);
+      display::ModesetFlags modeset_flags);
 
   // DeviceEventObserver overrides:
   void OnDeviceEvent(const DeviceEvent& event) override;
