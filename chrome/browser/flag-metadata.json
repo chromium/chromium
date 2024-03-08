@@ -5002,7 +5002,7 @@
   {
     "name": "ios-password-auth-on-entry-v2",
     "owners": ["eic@chromium.org", "bling-transactions@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "ios-password-bottom-sheet",
