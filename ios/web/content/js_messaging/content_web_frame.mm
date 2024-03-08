@@ -114,6 +114,16 @@ bool ContentWebFrame::CallJavaScriptFunctionInContentWorld(
                            std::move(callback));
 }
 
+bool ContentWebFrame::ExecuteJavaScriptInContentWorld(
+    const std::u16string& script,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  render_frame_host_->ExecuteJavaScript(
+      script, base::BindOnce(&WebWithErrorToContentJavaScriptCallbackAdapter,
+                             std::move(callback)));
+  return true;
+}
+
 bool ContentWebFrame::ExecuteJavaScript(const std::u16string& script) {
   render_frame_host_->ExecuteJavaScript(
       script, content::RenderFrameHost::JavaScriptResultCallback());
