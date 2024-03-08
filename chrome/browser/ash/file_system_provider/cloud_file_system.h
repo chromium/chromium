@@ -140,6 +140,10 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   void OnTimer();
   void OnContentCacheInitialized(
       base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache);
+  // Called when opening a file is completed with either a success or an error.
+  void OnOpenFileCompleted(OpenFileCallback callback,
+                           int file_handle,
+                           base::File::Error result);
 
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
   std::unique_ptr<ContentCache> content_cache_;

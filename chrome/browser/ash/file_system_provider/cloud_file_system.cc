@@ -193,7 +193,10 @@ AbortCallback CloudFileSystem::OpenFile(const base::FilePath& file_path,
                                          OpenFileCallback callback) {
   VLOG(1) << "OpenFile {fsid = '" << GetFileSystemId() << "', file_path = '"
           << file_path << "', mode = '" << mode << "'}";
-  return file_system_->OpenFile(file_path, mode, std::move(callback));
+  return file_system_->OpenFile(
+      file_path, mode,
+      base::BindOnce(&CloudFileSystem::OnOpenFileCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 AbortCallback CloudFileSystem::CloseFile(
@@ -395,6 +398,12 @@ void CloudFileSystem::OnTimer() {
                   VLOG(1) << "Action " << kODFSSyncWithCloudAction
                           << " completed: " << result;
                 }));
+}
+
+void CloudFileSystem::OnOpenFileCompleted(OpenFileCallback callback,
+                                          int file_handle,
+                                          base::File::Error result) {
+  std::move(callback).Run(file_handle, result);
 }
 
 }  // namespace ash::file_system_provider
