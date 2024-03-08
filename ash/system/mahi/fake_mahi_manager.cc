@@ -8,14 +8,19 @@
 
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
-FakeMahiManager::FakeMahiManager()
+FakeMahiManager::FakeMahiManager(bool enable_callback_delays_for_animations)
     : content_title_(u"fake content title"),
-      summary_text_(u"fake summary text") {}
+      summary_text_(u"fake summary text"),
+      enable_fake_delays_for_animations_(
+          enable_callback_delays_for_animations) {}
 
 FakeMahiManager::~FakeMahiManager() {
   mahi_panel_widget_.reset();
@@ -35,8 +40,36 @@ gfx::ImageSkia FakeMahiManager::GetContentIcon() {
 }
 
 void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
-  std::move(callback).Run(summary_text_,
-                          chromeos::MahiResponseStatus::kSuccess);
+  if (!enable_fake_delays_for_animations_) {
+    std::move(callback).Run(summary_text_,
+                            chromeos::MahiResponseStatus::kSuccess);
+    return;
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), summary_text_,
+                     chromeos::MahiResponseStatus::kSuccess),
+      base::Seconds(4));
+}
+
+void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
+  std::vector<chromeos::MahiOutline> outlines;
+  for (int i = 0; i < 5; i++) {
+    outlines.emplace_back(
+        chromeos::MahiOutline(i, u"Outline " + base::NumberToString16(i)));
+  }
+
+  if (!enable_fake_delays_for_animations_) {
+    std::move(callback).Run(outlines, chromeos::MahiResponseStatus::kSuccess);
+    return;
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), outlines,
+                     chromeos::MahiResponseStatus::kSuccess),
+      base::Seconds(6));
 }
 
 void FakeMahiManager::OnContextMenuClicked(

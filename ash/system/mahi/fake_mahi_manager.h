@@ -17,7 +17,7 @@ namespace ash {
 // A fake implementation of `MahiManager`.
 class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
  public:
-  FakeMahiManager();
+  explicit FakeMahiManager(bool enable_callback_delays_for_animations = false);
   FakeMahiManager(const FakeMahiManager&) = delete;
   FakeMahiManager& operator=(const FakeMahiManager&) = delete;
   ~FakeMahiManager() override;
@@ -27,7 +27,7 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   std::u16string GetContentTitle() override;
   gfx::ImageSkia GetContentIcon() override;
   void GetSummary(MahiSummaryCallback callback) override;
-  void GetOutlines(MahiOutlinesCallback callback) override {}
+  void GetOutlines(MahiOutlinesCallback callback) override;
   void GoToOutlineContent(int outline_id) override {}
   void AnswerQuestion(const std::string& question,
                       MahiAnswerQuestionCallback callback) override {}
@@ -59,6 +59,8 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   std::u16string content_title_;
   gfx::ImageSkia content_icon_;
   std::u16string summary_text_;
+
+  bool enable_fake_delays_for_animations_ = false;
 
   int open_feedback_dialog_called_count_ = 0;
 

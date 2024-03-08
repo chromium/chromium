@@ -209,7 +209,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   if (chromeos::features::IsMahiEnabled()) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             ash::switches::kUseFakeMahiManager)) {
-      mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
+      mahi_manager_ = std::make_unique<ash::FakeMahiManager>(
+          /*enable_callback_delays_for_animations=*/true);
     } else {
       mahi_manager_ = std::make_unique<ash::MahiManagerImpl>();
     }
