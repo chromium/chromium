@@ -5,8 +5,10 @@
 module webnn.mojom;
 
 import "components/ml/webnn/features.mojom";
+import "services/webnn/public/mojom/webnn_buffer.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 enum PowerPreference {
   // Let the user agent select the most suitable behavior.
@@ -49,6 +51,15 @@ interface WebNNContext {
   // compiled. Initializes the compiled graph for optimal performance of the
   // subsequent graph executions if the initialization is a necessary step.
   CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
+
+  // Called by the renderer process to create `WebNNBuffer` message pipe for
+  // creating platform specific buffers, the WebNN buffer will be validated and
+  // created. This method guarantees memory allocation on the device.
+  // The receiver represents the connection to the MLBuffer and the
+  // buffer_handle is a generated token used as a handle to identify the buffer
+  // from the renderer.
+  CreateBuffer(pending_receiver<WebNNBuffer> receiver,
+      BufferInfo buffer_info, mojo_base.mojom.UnguessableToken buffer_handle);
 };
 
 // This interface runs in the GPU process and is called from the renderer

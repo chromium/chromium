@@ -1170,10 +1170,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface MLActivation
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface MLBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     getter size
+[Worker]     method constructor
+[Worker]     method destroy
 [Worker] interface MLContext
 [Worker]     attribute @@toStringTag
 [Worker]     method compute
 [Worker]     method constructor
+[Worker]     method createBuffer
 [Worker] interface MLGraph
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

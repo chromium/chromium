@@ -5673,10 +5673,16 @@ interface ML
 interface MLActivation
     attribute @@toStringTag
     method constructor
+interface MLBuffer
+    attribute @@toStringTag
+    getter size
+    method constructor
+    method destroy
 interface MLContext
     attribute @@toStringTag
     method compute
     method constructor
+    method createBuffer
 interface MLGraph
     attribute @@toStringTag
     method constructor

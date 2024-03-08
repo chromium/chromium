@@ -34,12 +34,16 @@ source_set("tflite_graph_builder") {
 component("webnn_service") {
   sources = [
     "error.h",
+    "webnn_buffer_impl.cc",
+    "webnn_buffer_impl.h",
     "webnn_context_impl.cc",
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",
     "webnn_context_provider_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
+    "webnn_object_impl.cc",
+    "webnn_object_impl.h",
     "webnn_utils.cc",
     "webnn_utils.h",
   ]
@@ -55,6 +59,8 @@ component("webnn_service") {
     sources += [
       "dml/adapter.cc",
       "dml/adapter.h",
+      "dml/buffer_impl.cc",
+      "dml/buffer_impl.h",
       "dml/command_queue.cc",
       "dml/command_queue.h",
       "dml/command_recorder.cc",

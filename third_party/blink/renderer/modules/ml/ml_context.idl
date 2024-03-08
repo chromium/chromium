@@ -30,4 +30,10 @@ dictionary MLComputeResult {
     RaisesException
   ] Promise<MLComputeResult> compute(
       MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] MLBuffer createBuffer(MLBufferDescriptor descriptor);
 };

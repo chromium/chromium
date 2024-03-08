@@ -24,6 +24,11 @@ class ContextImpl final : public WebNNContextImpl {
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphCallback callback) override;
+
+  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+      mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
+      mojom::BufferInfoPtr buffer_info,
+      const base::UnguessableToken& buffer_handle) override;
 };
 
 }  // namespace webnn::tflite

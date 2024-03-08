@@ -14,6 +14,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "services/webnn/dml/adapter.h"
+#include "services/webnn/dml/command_queue.h"
+#include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/context_impl.h"
 #endif
 
@@ -93,12 +95,24 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(adapter_creation_result.error())));
     return;
   }
+  scoped_refptr<dml::Adapter> adapter = adapter_creation_result.value();
+  std::unique_ptr<dml::CommandRecorder> command_recorder =
+      dml::CommandRecorder::Create(adapter->command_queue(),
+                                   adapter->dml_device());
+  if (!command_recorder) {
+    std::move(callback).Run(ToError<mojom::CreateContextResult>(
+        mojom::Error::Code::kUnknownError,
+        "Failed to create a WebNN context."));
+    DLOG(ERROR) << "Failed to open the command recorder.";
+    return;
+  }
+
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNContext> blink_remote;
   // The receiver bound to WebNNContextImpl.
   impls_.push_back(base::WrapUnique<WebNNContextImpl>(new dml::ContextImpl(
-      std::move(adapter_creation_result.value()),
-      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+      std::move(adapter), blink_remote.InitWithNewPipeAndPassReceiver(), this,
+      std::move(command_recorder))));
   std::move(callback).Run(
       mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #elif BUILDFLAG(IS_MAC)

@@ -78,6 +78,15 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     FakeWebNNGraphImpl::CreateAndBuild(std::move(graph_info),
                                        std::move(callback));
   }
+
+  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+      mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
+      mojom::BufferInfoPtr buffer_info,
+      const base::UnguessableToken& buffer_handle) override {
+    // TODO(crbug.com/1472888): Implement MLBuffer support for graphs.
+    NOTIMPLEMENTED();
+    return {};
+  }
 };
 
 // Helper class to create the FakeWebNNContext that is intended to test

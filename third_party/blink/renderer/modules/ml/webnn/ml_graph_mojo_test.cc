@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,13 +24,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
 namespace blink {
 
@@ -40,6 +44,8 @@ namespace webnn_features = webnn::mojom::features;
 struct ComputeResult {
   WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> output;
 };
+
+class FakeWebNNBuffer;
 
 class MLGraphTestMojo : public MLGraphTestBase {
  public:
@@ -69,6 +75,28 @@ class MLGraphTestMojo : public MLGraphTestBase {
   ComputeResult compute_result_;
 };
 
+class WebNNContextHelper {
+ public:
+  WebNNContextHelper() = default;
+  ~WebNNContextHelper() = default;
+
+  void ConnectWebNNBufferImpl(const base::UnguessableToken& handle,
+                              std::unique_ptr<FakeWebNNBuffer> buffer) {
+    const auto it = buffer_impls_.find(handle);
+    ASSERT_TRUE(it == buffer_impls_.end());
+    buffer_impls_.try_emplace(handle, std::move(buffer));
+  }
+
+  void DisconnectAndDestroyWebNNBufferImpl(
+      const base::UnguessableToken& handle) {
+    buffer_impls_.erase(handle);
+  }
+
+ private:
+  std::map<base::UnguessableToken, std::unique_ptr<FakeWebNNBuffer>>
+      buffer_impls_;
+};
+
 class FakeWebNNGraph : public blink_mojom::WebNNGraph {
  public:
   explicit FakeWebNNGraph(MLGraphTestMojo& helper) : helper_(helper) {}
@@ -95,6 +123,36 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
   const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
 };
 
+class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
+ public:
+  FakeWebNNBuffer(WebNNContextHelper& helper,
+                  mojo::PendingReceiver<blink_mojom::WebNNBuffer> receiver,
+                  const base::UnguessableToken& buffer_handle)
+      : helper_(helper),
+        receiver_(this, std::move(receiver)),
+        handle_(buffer_handle) {
+    receiver_.set_disconnect_handler(WTF::BindOnce(
+        &FakeWebNNBuffer::OnConnectionError, WTF::Unretained(this)));
+  }
+  ~FakeWebNNBuffer() override = default;
+
+  FakeWebNNBuffer(const FakeWebNNBuffer&) = delete;
+  FakeWebNNBuffer(FakeWebNNBuffer&&) = delete;
+
+  const base::UnguessableToken& handle() const { return handle_; }
+
+ private:
+  void OnConnectionError() {
+    helper_->DisconnectAndDestroyWebNNBufferImpl(handle());
+  }
+
+  const raw_ref<WebNNContextHelper, DanglingUntriaged> helper_;
+
+  mojo::Receiver<blink_mojom::WebNNBuffer> receiver_;
+
+  const base::UnguessableToken handle_;
+};
+
 class FakeWebNNContext : public blink_mojom::WebNNContext {
  public:
   explicit FakeWebNNContext(MLGraphTestMojo& helper) : helper_(helper) {}
@@ -117,6 +175,18 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
     std::move(callback).Run(blink_mojom::CreateGraphResult::NewGraphRemote(
         std::move(blink_remote)));
   }
+
+  void CreateBuffer(mojo::PendingReceiver<blink_mojom::WebNNBuffer> receiver,
+                    blink_mojom::BufferInfoPtr buffer_info,
+                    const base::UnguessableToken& buffer_handle) override {
+    context_helper_.ConnectWebNNBufferImpl(
+        buffer_handle,
+        std::make_unique<FakeWebNNBuffer>(context_helper_, std::move(receiver),
+                                          buffer_handle));
+  }
+
+  WebNNContextHelper context_helper_;
+
   const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
 };
 
@@ -187,9 +257,14 @@ class ScopedWebNNServiceBinder {
   const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
 };
 
+template <typename T>
+T* V8ToObject(V8TestingScope* scope, ScriptValue value) {
+  return NativeValueTraits<T>::NativeValue(scope->GetIsolate(), value.V8Value(),
+                                           scope->GetExceptionState());
+}
+
 MLGraphMojo* ToMLGraphMojo(V8TestingScope* scope, ScriptValue value) {
-  return NativeValueTraits<MLGraphMojo>::NativeValue(
-      scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
+  return V8ToObject<MLGraphMojo>(scope, value);
 }
 
 // Build a simple MLGraph asynchronously with only one relu operator.
@@ -215,6 +290,41 @@ ScriptPromise BuildSimpleGraph(V8TestingScope& scope,
   EXPECT_THAT(output, testing::NotNull());
   return builder->build(scope.GetScriptState(), {{"output", output}},
                         scope.GetExceptionState());
+}
+
+TEST_P(MLGraphTestMojo, CreateWebNNBufferTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn_features::kWebMachineLearningNeuralNetwork);
+
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* script_state = scope.GetScriptState();
+
+  ScriptPromiseTester context_tester(script_state,
+                                     CreateContext(scope, options));
+  context_tester.WaitUntilSettled();
+  EXPECT_TRUE(context_tester.IsFulfilled());
+  MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
+
+  auto* desc = MLBufferDescriptor::Create();
+  desc->setSize(4ull);
+
+  MLBuffer* ml_buffer =
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+
+  if (scope.GetExceptionState().Code() ==
+      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
+    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+  }
+
+  ASSERT_THAT(ml_buffer, testing::NotNull());
+  EXPECT_EQ(ml_buffer->size(), desc->size());
 }
 
 struct OperandInfoMojo {

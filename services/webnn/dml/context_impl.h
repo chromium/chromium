@@ -11,15 +11,18 @@
 namespace webnn::dml {
 
 class Adapter;
+class CommandRecorder;
 
 // `ContextImpl` is created by `WebNNContextProviderImpl` and responsible for
-// creating `GraphImpl` of DirectML backend for Windows platform. The `Adapter`
-// instance is shared by all `GraphImpl` created by this context.
+// creating `GraphImpl` and `BufferImpl` of DirectML backend for Windows
+// platform. The `Adapter` instance is shared by all `GraphImpl` and
+// `BufferImpl` created by this context.
 class ContextImpl final : public WebNNContextImpl {
  public:
   ContextImpl(scoped_refptr<Adapter> adapter,
               mojo::PendingReceiver<mojom::WebNNContext> receiver,
-              WebNNContextProviderImpl* context_provider);
+              WebNNContextProviderImpl* context_provider,
+              std::unique_ptr<CommandRecorder> command_recorder);
 
   ContextImpl(const WebNNContextImpl&) = delete;
   ContextImpl& operator=(const ContextImpl&) = delete;
@@ -30,8 +33,16 @@ class ContextImpl final : public WebNNContextImpl {
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphCallback callback) override;
 
+  std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(
+      mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
+      mojom::BufferInfoPtr buffer_info,
+      const base::UnguessableToken& buffer_handle) override;
+
   // The `Adapter` instance shared by all `GraphImpl` created by this context.
   scoped_refptr<Adapter> adapter_;
+
+  // The `CommandRecorder` instance used exclusively by this context.
+  std::unique_ptr<CommandRecorder> command_recorder_;
 };
 
 }  // namespace webnn::dml

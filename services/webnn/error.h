@@ -11,6 +11,12 @@
 
 namespace webnn {
 
+// Bad messages Mojo errors.
+inline constexpr char kBadMessageInvalidBuffer[] =
+    "Invalid buffer from renderer.";
+inline constexpr char kBadMessageInvalidGraph[] =
+    "Invalid graph from renderer.";
+
 template <typename MojoResultType>
 mojo::StructPtr<MojoResultType> ToError(const mojom::Error::Code& error_code,
                                         const std::string& error_message) {

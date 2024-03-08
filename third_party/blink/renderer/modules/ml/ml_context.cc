@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_model_loader.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -197,4 +198,40 @@ void MLContext::OnCreateWebNNContext(
   resolver->Resolve(this);
 }
 
+void MLContext::CreateWebNNBuffer(
+    mojo::PendingReceiver<webnn::mojom::blink::WebNNBuffer> receiver,
+    webnn::mojom::blink::BufferInfoPtr buffer_info,
+    const base::UnguessableToken& buffer_handle) {
+  // Remote context gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_context_.is_bound()) {
+    return;
+  }
+
+  // Use `WebNNContext` to create `WebNNBuffer` message pipe.
+  remote_context_->CreateBuffer(std::move(receiver), std::move(buffer_info),
+                                buffer_handle);
+}
+
+MLBuffer* MLContext::createBuffer(ScriptState* script_state,
+                                  const MLBufferDescriptor* descriptor,
+                                  ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::createBuffer");
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return nullptr;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
+    return MLBufferMojo::Create(std::move(scoped_trace), script_state, this,
+                                descriptor, exception_state);
+  }
+#endif
+
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented");
+  return nullptr;
+}
 }  // namespace blink
