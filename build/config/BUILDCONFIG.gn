@@ -803,6 +803,14 @@ foreach(_target_type, [ "action" ]) {
         re_outputs_file = "$target_gen_dir/${target_name}__remote_outputs.rsp"
         write_file(re_outputs_file, re_outputs)
 
+        rewrapper_cfg = "$rbe_py_cfg_file"
+        if (defined(invoker.remote_worker)) {
+          remote_worker = invoker.remote_worker
+          assert(remote_worker == "large",
+                 "remote_worker = " + remote_worker + " is not supported")
+          rewrapper_cfg = "$rbe_py_large_cfg_file"
+        }
+
         args = []
         args += [ "$rbe_bin_dir/rewrapper" ]
         if (defined(invoker.custom_processor)) {
@@ -810,7 +818,7 @@ foreach(_target_type, [ "action" ]) {
         }
 
         args += [
-          "--cfg=$rbe_py_cfg_file",
+          "--cfg=" + rewrapper_cfg,
           "--exec_root=$rbe_exec_root",
           "--input_list_paths=" + rebase_path(re_inputs_file, root_build_dir),
           "--output_list_paths=" + rebase_path(re_outputs_file, root_build_dir),
@@ -823,7 +831,11 @@ foreach(_target_type, [ "action" ]) {
         }
       } else {
         forward_variables_from(invoker, [ "inputs" ])
-        not_needed(invoker, [ "custom_processor" ])
+        not_needed(invoker,
+                   [
+                     "custom_processor",
+                     "remote_worker",
+                   ])
       }
     }
   }

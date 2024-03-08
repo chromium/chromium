@@ -750,6 +750,10 @@ template("mojom") {
 
     action(parser_target_name) {
       allow_remote = true
+
+      # Use large worker to avoid OOM (b/325844324) and make it faster with
+      # multiple cores.
+      remote_worker = "large"
       custom_processor = "mojom_parser"
       script = mojom_parser_script
       inputs = mojom_parser_sources + ply_sources + [ build_metadata_filename ]
