@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -3517,6 +3518,51 @@ TEST_P(ParameterizedStyleResolverTest, TrySet_NonAbsPosDynamic) {
   ASSERT_TRUE(try_style);
   EXPECT_EQ("10px", ComputedValue("left", *try_style));
   EXPECT_EQ("auto", ComputedValue("right", *try_style));
+}
+
+TEST_P(ParameterizedStyleResolverTest, TryTacticsSet_Flip) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        position: absolute;
+        left: 10px;
+        right: 20px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* div = GetElementById("div");
+  ASSERT_TRUE(div);
+  EXPECT_EQ("10px", ComputedValue("left", div->ComputedStyleRef()));
+  EXPECT_EQ("20px", ComputedValue("right", div->ComputedStyleRef()));
+
+  const CSSPropertyValueSet* try_set =
+      css_test_helpers::ParseDeclarationBlock(R"CSS(
+      left: 100px;
+      right: 200px;
+  )CSS");
+  ASSERT_TRUE(try_set);
+  div->EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
+
+  // Add a try-tactics set which flips left and right.
+  auto* try_tactics_set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  try_tactics_set->SetProperty(
+      CSSPropertyID::kLeft, *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
+                                CSSPropertyID::kRight));
+  try_tactics_set->SetProperty(
+      CSSPropertyID::kRight,
+      *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
+          CSSPropertyID::kLeft));
+  ASSERT_TRUE(try_tactics_set);
+  div->EnsureOutOfFlowData().SetTryTacticsPropertyValueSet(try_tactics_set);
+
+  const ComputedStyle* try_style = StyleForId("div");
+  ASSERT_TRUE(try_style);
+  EXPECT_EQ("200px", ComputedValue("left", *try_style));
+  EXPECT_EQ("100px", ComputedValue("right", *try_style));
 }
 
 TEST_P(ParameterizedStyleResolverTest,

@@ -34,6 +34,21 @@ class CORE_EXPORT OutOfFlowData final
 
   const CSSPropertyValueSet* GetTryPropertyValueSet() const { return try_set_; }
 
+  // Similarly to the try-set, the try-tactics-set is also stored
+  // on the element for subsequent style recalcs to use.
+  //
+  // The try-tactics set is intended to contain CSSRevertToValues,
+  // in order to carry out the "flips" required by <try-tactics>.
+  //
+  // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+  void SetTryTacticsPropertyValueSet(const CSSPropertyValueSet* set) {
+    try_tactics_set_ = set;
+  }
+
+  const CSSPropertyValueSet* GetTryTacticsPropertyValueSet() const {
+    return try_tactics_set_;
+  }
+
   AnchorResults& GetAnchorResults() { return anchor_results_; }
   const AnchorResults& GetAnchorResults() const { return anchor_results_; }
 
@@ -49,6 +64,9 @@ class CORE_EXPORT OutOfFlowData final
   // See also StyleEngine::UpdateStyleForOutOfFlow,
   // which sets this value.
   Member<const CSSPropertyValueSet> try_set_;
+  // Like above, but added to the cascade in the author origin
+  // with CascadePriority::is_try_tactics_style=true.
+  Member<const CSSPropertyValueSet> try_tactics_set_;
 
   // During interleaved style updates for out-of-flow elements,
   // the result of any anchor() or anchor-size() functions are stored here,

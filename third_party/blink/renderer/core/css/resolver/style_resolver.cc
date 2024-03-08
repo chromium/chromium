@@ -837,6 +837,8 @@ void StyleResolver::MatchPositionTryRules(const Element& element,
   if (try_element) {
     if (OutOfFlowData* data = try_element->GetOutOfFlowData()) {
       collector.AddTryStyleProperties(data->GetTryPropertyValueSet());
+      collector.AddTryTacticsStyleProperties(
+          data->GetTryTacticsPropertyValueSet());
     }
   }
 }

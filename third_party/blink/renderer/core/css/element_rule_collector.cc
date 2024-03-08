@@ -404,6 +404,19 @@ void ElementRuleCollector::AddTryStyleProperties(
   result_.SetIsCacheable(false);
 }
 
+void ElementRuleCollector::AddTryTacticsStyleProperties(
+    const CSSPropertyValueSet* property_set) {
+  if (!property_set) {
+    return;
+  }
+  auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
+  result_.AddMatchedProperties(
+      property_set, CascadeOrigin::kAuthor,
+      {.link_match_type = AdjustLinkMatchType(inside_link_, link_match_type),
+       .is_try_tactics_style = true});
+  result_.SetIsCacheable(false);
+}
+
 static bool RulesApplicableInCurrentTreeScope(
     const Element* element,
     const ContainerNode* scoping_node) {
