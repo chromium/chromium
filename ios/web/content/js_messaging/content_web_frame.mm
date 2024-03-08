@@ -22,7 +22,7 @@ void WebToContentJavaScriptCallbackAdapter(
 }
 
 void WebWithErrorToContentJavaScriptCallbackAdapter(
-    WebFrame::ExecuteJavaScriptCallbackWithError web_callback,
+    ExecuteJavaScriptCallbackWithError web_callback,
     base::Value value) {
   std::move(web_callback).Run(&value, /*error=*/nil);
 }
