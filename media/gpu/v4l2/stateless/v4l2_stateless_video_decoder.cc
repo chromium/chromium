@@ -27,9 +27,9 @@
 // they can easily be bubbled up to MEDIA_LOG. When a function has multiple
 // error paths it is best to log each error path. Avoid logging every error
 // path if there is a meaningful error message logged from the calling function.
-// MEDIA_LOG(ERROR, media_log_):
-// Unrecoverable errors should be bubbled up the the media log so that they can
-// easily be seen during runtime.
+// LogError(media_log_):
+// Unrecoverable errors should be bubbled up the the media log and logged to
+// file so that they can easily be seen during runtime and in post log analysis.
 //
 // VLOGF(1):
 // Expected or recoverable events that occur on a per frame frame basis. These
@@ -51,6 +51,16 @@ constexpr char kBitstreamTracing[] = "V4L2 Bitstream Held Duration";
 constexpr char kBitstreamID[] = "bitstream id";
 
 constexpr size_t kTimestampCacheSize = 128;
+
+template <typename... Args>
+void LogError(const std::unique_ptr<media::MediaLog>& media_log,
+              Args&&... args) {
+  std::ostringstream error_message;
+  (error_message << ... << args);
+  LOG(ERROR) << error_message.str();
+  MEDIA_LOG(ERROR, media_log) << error_message.str();
+}
+
 }  // namespace
 
 namespace media {
@@ -111,7 +121,7 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DVLOGF(3);
   TRACE_EVENT0("media,gpu", "V4L2StatelessVideoDecoder::Initialize");
   if (config.is_encrypted()) {
-    MEDIA_LOG(ERROR, media_log_) << "Decoder does not support encrypted stream";
+    LogError(media_log_, "Decoder does not support encrypted stream.");
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
@@ -123,7 +133,7 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   device_->Close();
   if (!device_->Open()) {
-    MEDIA_LOG(ERROR, media_log_) << "Failed to open device.";
+    LogError(media_log_, "Failed to open device.");
     std::move(init_cb).Run(
         DecoderStatus(DecoderStatus::Codes::kNotInitialized)
             .AddCause(V4L2Status(V4L2Status::Codes::kNoDevice)));
@@ -132,8 +142,8 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   if (!device_->CheckCapabilities(
           VideoCodecProfileToVideoCodec(config.profile()))) {
-    MEDIA_LOG(ERROR, media_log_) << "Video configuration is not supported: "
-                                 << config.AsHumanReadableString();
+    LogError(media_log_, "Video configuration is not supported: ",
+             config.AsHumanReadableString());
     std::move(init_cb).Run(
         DecoderStatus(DecoderStatus::Codes::kNotInitialized)
             .AddCause(
@@ -234,7 +244,7 @@ void V4L2StatelessVideoDecoder::ApplyResolutionChange() {
   input_queue_ = InputQueue::Create(device_, codec, decoder_->GetPicSize());
   if (!input_queue_) {
     // TODO(frkoenig): Handle error!
-    MEDIA_LOG(ERROR, media_log_) << "Unable to create input queue.";
+    LogError(media_log_, "Unable to create input queue.");
   }
 
   // TODO(frkoenig): There only needs to be a single buffer in order to
@@ -244,8 +254,7 @@ void V4L2StatelessVideoDecoder::ApplyResolutionChange() {
   if (input_queue_->PrepareBuffers(kInputBuffers)) {
     if (!input_queue_->StartStreaming()) {
       // TODO(frkoenig): Handle error!
-      MEDIA_LOG(ERROR, media_log_)
-          << "Unable to start streaming on the input queue";
+      LogError(media_log_, "Unable to start streaming on the input queue.");
     }
 
     ServiceDecodeRequestQueue();
@@ -306,14 +315,15 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     // The header needs to be parsed before the video resolution and format
     // can be decided.
     if (!device_->SetHeaders(ctrls, base::ScopedFD(-1))) {
-      MEDIA_LOG(ERROR, media_log_) << "Failure to send the header necessary "
-                                      "for output queue instantiation.";
+      LogError(media_log_,
+               "Failure to send the header necessary for output queue "
+               "instantiation.");
       return false;
     }
 
     output_queue_ = OutputQueue::Create(device_);
     if (!output_queue_) {
-      MEDIA_LOG(ERROR, media_log_) << "Unable to create an output queue.";
+      LogError(media_log_, "Unable to create an output queue.");
       return false;
     }
 
@@ -327,7 +337,7 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     // vector (CAPCM*1_Sand_E.h264).
     CHECK_LE(num_buffers, 32u);
     if (!output_queue_->PrepareBuffers(num_buffers)) {
-      MEDIA_LOG(ERROR, media_log_) << "Unable to prepare output buffers.";
+      LogError(media_log_, "Unable to prepare output buffers.");
       return false;
     }
 
@@ -336,8 +346,7 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     }
 
     if (!output_queue_->StartStreaming()) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "Unable to start streaming on the output queue.";
+      LogError(media_log_, "Unable to start streaming on the output queue.");
     }
 
     ArmBufferMonitor();
@@ -350,8 +359,8 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     return true;
   }
 
-  MEDIA_LOG(ERROR, media_log_) << "Unable to submit compressed frame "
-                               << dec_surface->FrameID() << " to be decoded.";
+  LogError(media_log_, "Unable to submit compressed frame ",
+           dec_surface->FrameID(), " to be decoded.");
   return false;
 }
 
@@ -488,9 +497,8 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
           profile, color_space);
       break;
     default:
-      MEDIA_LOG(ERROR, media_log_)
-          << GetCodecName(VideoCodecProfileToVideoCodec(profile))
-          << " not supported.";
+      LogError(media_log_, GetCodecName(VideoCodecProfileToVideoCodec(profile)),
+               " not supported.");
       return false;
   }
 
@@ -534,11 +542,11 @@ bool V4L2StatelessVideoDecoder::SetupOutputFormatForPipeline() {
           /*use_protected=*/false, /*need_aux_frame_pool=*/false,
           /*allocator=*/std::nullopt);
   if (!status_or_output_format.has_value()) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "Unable to convert or directly display video that has a "
-        << output_queue_->GetQueueFormat().ToString()
-        << " format with a resolution of "
-        << output_queue_->GetVideoResolution().ToString();
+    LogError(media_log_,
+             "Unable to convert or directly display video that has a ",
+             output_queue_->GetQueueFormat().ToString(),
+             " format with a resolution of ",
+             output_queue_->GetVideoResolution().ToString());
     return false;
   }
 
@@ -739,8 +747,7 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
         // done being processed.
         return;
       case AcceleratedVideoDecoder::kDecodeError:
-        MEDIA_LOG(ERROR, media_log_)
-            << "AcceleratedVideoDecoder::Decode() failed";
+        LogError(media_log_, "AcceleratedVideoDecoder::Decode() failed.");
         ClearPendingRequests(DecoderStatus::Codes::kPlatformDecodeFailure);
         return;
       case AcceleratedVideoDecoder::kTryAgain:
