@@ -15,8 +15,7 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "siso_latest"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -26,7 +25,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "use_clang_coverage"
+                  "use_clang_coverage",
+                  "siso_latest"
                 ],
                 "config": "chromium"
               }

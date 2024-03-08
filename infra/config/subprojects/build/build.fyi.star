@@ -43,13 +43,13 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = [
                 "mb",
-                "siso_latest",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
