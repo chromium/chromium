@@ -836,7 +836,9 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
 
 void ComposeSession::SaveMostRecentOkStateToUndoStack() {
   if (!most_recent_ok_state_->IsMojoValid()) {
-    // Attempting to save a state with an invalid response onto the undo stack.
+    // This occurs when processing the first ok response of a session - no
+    // previous ok state exists and so there is nothing to save to the undo
+    // stack.
     return;
   }
   undo_states_.push(std::make_unique<ComposeState>(
