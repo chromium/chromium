@@ -69,6 +69,8 @@ using set_up_list_prefs::SetUpListItemState;
                                   SetUpListItemType::kDefaultBrowser, unknown);
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kAutofill,
                                   unknown);
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kNotifications,
+                                  unknown);
 }
 
 + (BOOL)setUpListItemSignInSyncIsComplete {

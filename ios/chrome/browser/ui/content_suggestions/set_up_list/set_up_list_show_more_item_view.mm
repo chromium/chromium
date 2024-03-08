@@ -133,6 +133,8 @@ NSAttributedString* Strikethrough(NSString* text) {
     [tryButton addTarget:self
                   action:@selector(tryTapped)
         forControlEvents:UIControlEventTouchUpInside];
+    tryButton.accessibilityIdentifier =
+        [NSString stringWithFormat:@"%@ Try Button", [self titleText]];
     tryButton.layer.cornerRadius = 15;
     [NSLayoutConstraint activateConstraints:@[
       [tryButton.widthAnchor constraintEqualToConstant:kTryButtonWidth],

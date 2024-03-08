@@ -31,6 +31,8 @@ NSString* const kBanner = @"notifications_opt_in_banner";
 CGFloat const kTableViewSeparatorInset = 16.0;
 // Space above the title.
 CGFloat const kSpaceAboveTitle = 20.0;
+// Accessibility identifier.
+NSString* const kNotificationsOptInScreenAxId = @"NotificationsOptInScreenAxId";
 }  // namespace
 
 @interface NotificationsOptInViewController () <UITableViewDelegate>
@@ -61,6 +63,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
   self.bannerName = kBanner;
   self.bannerSize = BannerImageSizeType::kShort;
   self.shouldBannerFillTopSpace = YES;
+  self.view.accessibilityIdentifier = kNotificationsOptInScreenAxId;
   _tableView = [self createTableView];
   [self.specificContentView addSubview:_tableView];
   [NSLayoutConstraint activateConstraints:@[
