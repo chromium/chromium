@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
@@ -86,6 +87,7 @@ struct AddOptions {
   CascadeOrigin origin = CascadeOrigin::kAuthor;
   unsigned link_match_type = CSSSelector::kMatchAll;
   CSSSelector::Signal signal = CSSSelector::Signal::kNone;
+  unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
   bool is_try_style = false;
   bool is_invisible = false;
@@ -138,6 +140,7 @@ class TestCascade {
         set, options.origin,
         {.link_match_type = options.link_match_type,
          .signal = options.signal,
+         .layer_order = options.layer_order,
          .is_inline_style = options.is_inline_style,
          .is_try_style = options.is_try_style,
          .is_invisible = options.is_invisible});
@@ -374,6 +377,16 @@ class StyleCascadeTest : public PageTestBase {
                                    SecureContextMode::kSecureContext,
                                    /* context_style_sheet */ nullptr,
                                    /* is_animation_tainted */ true);
+    return set;
+  }
+
+  const CSSPropertyValueSet* FlipRevertSet(String from_property,
+                                           String to_property) {
+    auto* set =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+    set->SetProperty(PropertyName(from_property).Id(),
+                     *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
+                         PropertyName(to_property).Id()));
     return set;
   }
 
@@ -3853,6 +3866,116 @@ TEST_F(StyleCascadeTest, RevertOrigin) {
   ASSERT_TRUE(resolved_value);
   EXPECT_EQ(CascadeOrigin::kNone, origin);
   EXPECT_EQ("unset", resolved_value->CssText());
+}
+
+TEST_F(StyleCascadeTest, FlipRevertValue_Swap) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left:1px", {.layer_order = 1});
+  cascade.Add("right:2px", {.layer_order = 1});
+  cascade.Add("top:3px", {.layer_order = 1});
+  cascade.Add("bottom:4px", {.layer_order = 1});
+
+  // Revert left to right, and vice-versa.
+  cascade.Add(FlipRevertSet("left", "right"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("right", "left"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("top", "bottom"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("bottom", "top"), {.layer_order = 2});
+
+  cascade.Apply();
+
+  EXPECT_EQ("2px", cascade.ComputedValue("left"));
+  EXPECT_EQ("1px", cascade.ComputedValue("right"));
+  EXPECT_EQ("4px", cascade.ComputedValue("top"));
+  EXPECT_EQ("3px", cascade.ComputedValue("bottom"));
+}
+
+TEST_F(StyleCascadeTest, FlipRevertValue_Chain) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left:1px", {.layer_order = 1});
+  cascade.Add("right:2px", {.layer_order = 1});
+  cascade.Add("top:3px", {.layer_order = 1});
+  cascade.Add("bottom:4px", {.layer_order = 1});
+
+  cascade.Add(FlipRevertSet("right", "left"), {.layer_order = 2});
+
+  cascade.Add(FlipRevertSet("top", "right"), {.layer_order = 3});
+
+  cascade.Add(FlipRevertSet("bottom", "top"), {.layer_order = 4});
+
+  cascade.Apply();
+
+  EXPECT_EQ("1px", cascade.ComputedValue("left"));
+  EXPECT_EQ("1px", cascade.ComputedValue("right"));
+  EXPECT_EQ("1px", cascade.ComputedValue("top"));
+  EXPECT_EQ("1px", cascade.ComputedValue("bottom"));
+}
+
+TEST_F(StyleCascadeTest, FlipRevertValue_Asymmetric) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left:1px", {.layer_order = 1});
+  cascade.Add("right:2px", {.layer_order = 1});
+  cascade.Add("top:3px", {.layer_order = 1});
+  cascade.Add("bottom:4px", {.layer_order = 1});
+
+  // Revert left to right, but not vice-versa.
+  cascade.Add(FlipRevertSet("left", "right"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("top", "bottom"), {.layer_order = 2});
+
+  cascade.Apply();
+
+  EXPECT_EQ("2px", cascade.ComputedValue("left"));
+  EXPECT_EQ("2px", cascade.ComputedValue("right"));
+  EXPECT_EQ("4px", cascade.ComputedValue("top"));
+  EXPECT_EQ("4px", cascade.ComputedValue("bottom"));
+}
+
+TEST_F(StyleCascadeTest, FlipRevertValue_DifferentOrigins) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left:10px", {.origin = CascadeOrigin::kUser});
+
+  // CascadeOrigin::kAuthor
+  cascade.Add("right:2px", {.layer_order = 1});
+  cascade.Add("top:3px", {.layer_order = 1});
+  cascade.Add("bottom:4px", {.layer_order = 1});
+
+  cascade.Add(FlipRevertSet("right", "left"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("bottom", "top"), {.layer_order = 2});
+
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("left"));
+  EXPECT_EQ("10px", cascade.ComputedValue("right"));
+  EXPECT_EQ("3px", cascade.ComputedValue("top"));
+  EXPECT_EQ("3px", cascade.ComputedValue("bottom"));
+}
+
+TEST_F(StyleCascadeTest, FlipRevertValue_Overwritten) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left:1px", {.layer_order = 1});
+  cascade.Add("right:2px", {.layer_order = 1});
+  cascade.Add("top:3px", {.layer_order = 1});
+  cascade.Add("bottom:4px", {.layer_order = 1});
+
+  cascade.Add(FlipRevertSet("left", "right"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("right", "left"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("top", "bottom"), {.layer_order = 2});
+  cascade.Add(FlipRevertSet("bottom", "top"), {.layer_order = 2});
+
+  // Overwrite the CSSFlipRevertValues for left/top.
+  cascade.Add("left:10px", {.layer_order = 3});
+  cascade.Add("top:30px", {.layer_order = 3});
+
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("left"));
+  EXPECT_EQ("1px", cascade.ComputedValue("right"));
+  EXPECT_EQ("30px", cascade.ComputedValue("top"));
+  EXPECT_EQ("3px", cascade.ComputedValue("bottom"));
 }
 
 TEST_F(StyleCascadeTest, InlineStyleWonCascade) {

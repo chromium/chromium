@@ -46,6 +46,7 @@ class StyleResolverState;
 namespace cssvalue {
 
 class CSSPendingSubstitutionValue;
+class CSSFlipRevertValue;
 
 }  // namespace cssvalue
 
@@ -66,6 +67,7 @@ class CORE_EXPORT StyleCascade {
   STACK_ALLOCATED();
 
   using CSSPendingSubstitutionValue = cssvalue::CSSPendingSubstitutionValue;
+  using CSSFlipRevertValue = cssvalue::CSSFlipRevertValue;
   using Signal = CSSSelector::Signal;
 
  public:
@@ -359,10 +361,13 @@ class CORE_EXPORT StyleCascade {
                                 CascadeOrigin&,
                                 CascadeResolver&);
   const CSSValue* ResolveRevertLayer(const CSSProperty&,
-                                     const CSSValue&,
                                      CascadePriority,
                                      CascadeOrigin&,
                                      CascadeResolver&);
+  const CSSValue* ResolveFlipRevert(const CSSFlipRevertValue&,
+                                    CascadePriority,
+                                    CascadeOrigin&,
+                                    CascadeResolver&);
 
   scoped_refptr<CSSVariableData> ResolveVariableData(CSSVariableData*,
                                                      const CSSParserContext&,

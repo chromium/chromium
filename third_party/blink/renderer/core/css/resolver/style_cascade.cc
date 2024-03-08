@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
+#include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -969,7 +970,10 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
     return ResolveRevert(property, *result, origin, resolver);
   }
   if (result->IsRevertLayerValue() || TreatAsRevertLayer(priority)) {
-    return ResolveRevertLayer(property, *result, priority, origin, resolver);
+    return ResolveRevertLayer(property, priority, origin, resolver);
+  }
+  if (const auto* v = DynamicTo<CSSFlipRevertValue>(result)) {
+    return ResolveFlipRevert(*v, priority, origin, resolver);
   }
 
   resolver.CollectFlags(property, origin);
@@ -1187,7 +1191,7 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
 }
 
 const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
-                                                 const CSSValue& value,
+
                                                  CascadePriority priority,
                                                  CascadeOrigin& origin,
                                                  CascadeResolver& resolver) {
@@ -1200,6 +1204,15 @@ const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
   origin = p->GetOrigin();
   return Resolve(property, *ValueAt(match_result_, p->GetPosition()), *p,
                  origin, resolver);
+}
+
+const CSSValue* StyleCascade::ResolveFlipRevert(const CSSFlipRevertValue& value,
+                                                CascadePriority priority,
+                                                CascadeOrigin& origin,
+                                                CascadeResolver& resolver) {
+  const CSSProperty& property = CSSProperty::Get(value.PropertyID());
+  // TODO(crbug.com/40279608): Transform the result before returning.
+  return ResolveRevertLayer(property, priority, origin, resolver);
 }
 
 scoped_refptr<CSSVariableData> StyleCascade::ResolveVariableData(

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
+#include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
@@ -322,6 +323,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSInvalidVariableValue>(*this, other);
       case kCyclicVariableValueClass:
         return CompareCSSValues<CSSCyclicVariableValue>(*this, other);
+      case kFlipRevertClass:
+        return CompareCSSValues<cssvalue::CSSFlipRevertValue>(*this, other);
       case kLightDarkValuePairClass:
         return CompareCSSValues<CSSLightDarkValuePair>(*this, other);
       case kScrollClass:
@@ -474,6 +477,8 @@ String CSSValue::CssText() const {
       return To<CSSInvalidVariableValue>(this)->CustomCSSText();
     case kCyclicVariableValueClass:
       return To<CSSCyclicVariableValue>(this)->CustomCSSText();
+    case kFlipRevertClass:
+      return To<cssvalue::CSSFlipRevertValue>(this)->CustomCSSText();
     case kLightDarkValuePairClass:
       return To<CSSLightDarkValuePair>(this)->CustomCSSText();
     case kScrollClass:
@@ -717,6 +722,9 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kCyclicVariableValueClass:
       To<CSSCyclicVariableValue>(this)->TraceAfterDispatch(visitor);
       return;
+    case kFlipRevertClass:
+      To<cssvalue::CSSFlipRevertValue>(this)->TraceAfterDispatch(visitor);
+      return;
     case kLightDarkValuePairClass:
       To<CSSLightDarkValuePair>(this)->TraceAfterDispatch(visitor);
       return;
@@ -852,6 +860,8 @@ String CSSValue::ClassTypeToString() const {
       return "InvalidVariableValueClass";
     case kCyclicVariableValueClass:
       return "CyclicVariableValueClass";
+    case kFlipRevertClass:
+      return "FlipRevertClass";
     case kLayoutFunctionClass:
       return "LayoutFunctionClass";
     case kCSSContentDistributionClass:
