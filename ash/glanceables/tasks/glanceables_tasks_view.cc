@@ -59,8 +59,8 @@
 namespace ash {
 namespace {
 
-constexpr int kAddNewTaskIconSize = 24;
-constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
+constexpr auto kProgressBarPreferredSize = gfx::Size(0, 8);
+constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
 constexpr int kInteriorGlanceableBubbleMargin = 15;
 constexpr int kScrollViewBottomMargin = 12;
 constexpr int kListViewBetweenChildSpacing = 4;
@@ -106,11 +106,11 @@ class AddNewTaskButton : public views::LabelButton {
             l10n_util::GetStringUTF16(
                 IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL)) {
     SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
-    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      kGlanceablesTasksAddNewTaskIcon,
-                      cros_tokens::kCrosSysPrimary, kAddNewTaskIconSize));
-    SetImageLabelSpacing(14);
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
+                                       cros_tokens::kCrosSysPrimary));
+    SetImageLabelSpacing(12);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(8, 0)));
     SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
@@ -193,6 +193,7 @@ GlanceablesTasksView::GlanceablesTasksView(
   SetBorder(nullptr);
 
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  tasks_header_view_->SetInteriorMargin(gfx::Insets::TLBR(1, 1, 0, 1));
   tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -200,6 +201,7 @@ GlanceablesTasksView::GlanceablesTasksView(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView));
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
+  progress_bar_->SetPreferredSize(kProgressBarPreferredSize);
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   auto* const scroll_view =

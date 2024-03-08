@@ -116,7 +116,7 @@ TEST_F(GlanceablesPixelTest, GlanceablesZeroState) {
   GetGlanceableTrayBubble()->GetTasksView()->ScrollViewToVisible();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_zero_state", /*revision_number=*/7,
+      "glanceables_zero_state", /*revision_number=*/8,
       GetGlanceableTrayBubble()->GetBubbleView()));
 }
 
@@ -152,7 +152,7 @@ TEST_F(GlanceablesPixelTest, GlanceablesTasksMarkAsCompleted) {
             fake_glanceables_tasks_client()->pending_completed_tasks().size());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_task_view_no_completed_tasks", /*revision_number=*/3,
+      "glanceables_task_view_no_completed_tasks", /*revision_number=*/4,
       GetGlanceableTrayBubble()->GetTasksView()));
 
   GestureTapOn(task_view->GetButtonForTest());
@@ -161,7 +161,7 @@ TEST_F(GlanceablesPixelTest, GlanceablesTasksMarkAsCompleted) {
             fake_glanceables_tasks_client()->pending_completed_tasks().size());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_task_view_one_completed_task", /*revision_number=*/3,
+      "glanceables_task_view_one_completed_task", /*revision_number=*/4,
       GetGlanceableTrayBubble()->GetTasksView()));
 }
 
@@ -188,7 +188,7 @@ TEST_F(GlanceablesPixelTest, GlanceablesCalendarHeight) {
   ASSERT_TRUE(GetDateTray()->is_active());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_calendar_height", /*revision_number=*/2,
+      "glanceables_calendar_height", /*revision_number=*/3,
       GetGlanceableTrayBubble()->GetBubbleView()));
 }
 

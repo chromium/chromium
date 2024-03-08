@@ -61,7 +61,6 @@ namespace {
 // A global flag for tests to manually set the connection of the network.
 std::optional<bool> g_is_network_connected_for_test = std::nullopt;
 
-constexpr int kIconSize = 20;
 constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
 
 // Margins between icons and labels in `tasks_details_view_`.
@@ -71,10 +70,10 @@ constexpr auto kSingleRowInteriorMargin = gfx::Insets::TLBR(6, 0, 2, 0);
 constexpr auto kDoubleRowInteriorMargin = gfx::Insets();
 
 constexpr auto kCheckButtonMargin = gfx::Insets::VH(2, 0);
-constexpr auto kContentsMargin = gfx::Insets::TLBR(0, 6, 4, 8);
+constexpr auto kContentsMargin = gfx::Insets::TLBR(0, 4, 4, 8);
 // In edit state, the bottom margin is smaller to accommodate
 // `edit_in_browser_button_`.
-constexpr auto kContentsMarginInEditState = gfx::Insets::TLBR(0, 6, 0, 8);
+constexpr auto kContentsMarginInEditState = gfx::Insets::TLBR(0, 4, 0, 8);
 
 constexpr auto kTitleAndDetailMarginsInViewState =
     gfx::Insets::TLBR(0, 8, 0, 0);
@@ -268,11 +267,11 @@ class GlanceablesTaskViewV2::CheckButton : public views::ImageButton {
 
  private:
   void UpdateImage() {
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            checked_ ? ash::kHollowCheckCircleIcon : ash::kHollowCircleIcon,
-            cros_tokens::kFocusRingColor, kIconSize));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      checked_ ? kGlanceablesHollowCheckCircleIcon
+                               : kGlanceablesHollowCircleIcon,
+                      cros_tokens::kFocusRingColor));
   }
 
   bool checked_ = false;

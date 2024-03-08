@@ -146,6 +146,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "glanceables_calendar_today.icon",
     "glanceables_classroom.icon",
     "glanceables_classroom_assignment.icon",
+    "glanceables_hollow_check_circle.icon",
+    "glanceables_hollow_circle.icon",
     "glanceables_subtask.icon",
     "glanceables_tasks.icon",
     "glanceables_tasks_add_new_task.icon",

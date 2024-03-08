@@ -14,6 +14,7 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_view.h"
@@ -64,8 +65,9 @@ class TimeManagementContainer : public views::FlexLayoutView {
   TimeManagementContainer() {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     SetOrientation(views::LayoutOrientation::kVertical);
-    SetInteriorMargin(gfx::Insets(12));
+    SetInteriorMargin(gfx::Insets(8));
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated,
         kGlanceablesContainerCornerRadius));
