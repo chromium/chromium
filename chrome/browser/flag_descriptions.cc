@@ -1264,6 +1264,12 @@ const char kEnableControlledFrameDescription[] =
     "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
     "for more information.";
 
+const char kEnableFingerprintingProtectionBlocklistName[] =
+    "Enable Fingerprinting Protection Blocklist";
+const char kEnableFingerprintingProtectionBlocklistDescription[] =
+    "Enable Fingerprinting Protection which may block fingerprinting "
+    "resources from loading in a 3p context.";
+
 const char kEnableShortcutCustomizationName[] =
     "Enable customization in new shortcuts app";
 const char kEnableShortcutCustomizationDescription[] =

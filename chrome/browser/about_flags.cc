@@ -11044,6 +11044,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSaveCardLocalSaveFallback)},
 
+    {"enable-fingerprinting-protection-blocklist",
+     flag_descriptions::kEnableFingerprintingProtectionBlocklistName,
+     flag_descriptions::kEnableFingerprintingProtectionBlocklistDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kEnableFingerprintingProtectionBlocklist)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

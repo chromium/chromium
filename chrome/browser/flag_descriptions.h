@@ -825,6 +825,9 @@ extern const char kEnableIsolatedWebAppDevModeDescription[];
 extern const char kEnableControlledFrameName[];
 extern const char kEnableControlledFrameDescription[];
 
+extern const char kEnableFingerprintingProtectionBlocklistName[];
+extern const char kEnableFingerprintingProtectionBlocklistDescription[];
+
 extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];

@@ -18695,6 +18695,8 @@ from previous Chrome versions.
   <int value="-985845117" label="Cardboard:enabled"/>
   <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
+  <int value="-983747413"
+      label="EnableFingerprintingProtectionBlockList:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
   <int value="-983087919"
@@ -20373,6 +20375,8 @@ from previous Chrome versions.
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>
+  <int value="-215370258"
+      label="EnableFingerprintingProtectionBlockList:disabled"/>
   <int value="-215103767" label="ShoppingList:disabled"/>
   <int value="-215048684" label="NtpComprehensiveThemeRealbox:disabled"/>
   <int value="-214859547" label="OmniboxActionsUISimplification:enabled"/>
