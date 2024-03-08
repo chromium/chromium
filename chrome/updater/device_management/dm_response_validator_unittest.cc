@@ -114,7 +114,7 @@ TEST_F(DMResponseValidatorTests, UnexpectedDMToken) {
                                 "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
-  EXPECT_TRUE(validation_result.policy_type.empty());
+  EXPECT_EQ(validation_result.policy_type, "google/machine-level-omaha");
   EXPECT_EQ(validation_result.status,
             PolicyValidationResult::Status::kValidationBadDMToken);
   EXPECT_TRUE(validation_result.issues.empty());
@@ -134,7 +134,7 @@ TEST_F(DMResponseValidatorTests, UnexpectedDeviceID) {
                                 "unexpected-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
-  EXPECT_TRUE(validation_result.policy_type.empty());
+  EXPECT_EQ(validation_result.policy_type, "google/machine-level-omaha");
   EXPECT_EQ(validation_result.status,
             PolicyValidationResult::Status::kValidationBadDeviceID);
   EXPECT_TRUE(validation_result.issues.empty());
@@ -156,7 +156,7 @@ TEST_F(DMResponseValidatorTests, NoCachedPublicKey) {
                                 "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
-  EXPECT_TRUE(validation_result.policy_type.empty());
+  EXPECT_EQ(validation_result.policy_type, "google/machine-level-omaha");
   EXPECT_EQ(validation_result.status,
             PolicyValidationResult::Status::kValidationBadSignature);
   EXPECT_TRUE(validation_result.issues.empty());
@@ -180,7 +180,7 @@ TEST_F(DMResponseValidatorTests, BadSignedPublicKey) {
   DMResponseValidator validator(cached_info, "test-dm-token", "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
-  EXPECT_TRUE(validation_result.policy_type.empty());
+  EXPECT_EQ(validation_result.policy_type, "google/machine-level-omaha");
   EXPECT_EQ(
       validation_result.status,
       PolicyValidationResult::Status::kValidationBadKeyVerificationSignature);

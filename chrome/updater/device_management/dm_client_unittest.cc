@@ -613,6 +613,7 @@ TEST_F(DMPolicyFetchClientTest, RejectKeyWithBadSignature) {
   callback_handler_->SetExpectNewPublicKey(false);
 
   PolicyValidationResult expected_validation_result;
+  expected_validation_result.policy_type = "google/machine-level-omaha";
   expected_validation_result.status =
       PolicyValidationResult::Status::kValidationBadKeyVerificationSignature;
   callback_handler_->AppendExpectedValidationResult(expected_validation_result);

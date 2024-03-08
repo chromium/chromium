@@ -482,6 +482,14 @@ bool DMResponseValidator::ValidatePolicyResponse(
     return false;
   }
 
+  if (!fetch_policy_data.has_policy_type()) {
+    VLOG(1) << "Missing policy type in the policy response.";
+    validation_result.status =
+        PolicyValidationResult::Status::kValidationWrongPolicyType;
+    return false;
+  }
+  validation_result.policy_type = fetch_policy_data.policy_type();
+
   if (fetch_policy_data.has_policy_token()) {
     validation_result.policy_token = fetch_policy_data.policy_token();
   }
@@ -494,16 +502,6 @@ bool DMResponseValidator::ValidatePolicyResponse(
 
   std::string signature_key;
   if (!ValidateNewPublicKey(fetch_response, signature_key, validation_result)) {
-    return false;
-  }
-
-  if (fetch_policy_data.has_policy_type()) {
-    validation_result.policy_type = fetch_policy_data.policy_type();
-  }
-  if (validation_result.policy_type.empty()) {
-    VLOG(1) << "Missing policy type in the policy response.";
-    validation_result.status =
-        PolicyValidationResult::Status::kValidationWrongPolicyType;
     return false;
   }
 

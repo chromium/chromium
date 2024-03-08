@@ -134,7 +134,7 @@ TEST(DMMessage, ResponseValidation) {
       dm_response_data, initial_policy_info, bad_dm_token, "test-device-id",
       validation_results);
   EXPECT_EQ(validation_results.size(), size_t{1});
-  EXPECT_TRUE(validation_results[0].policy_type.empty());
+  EXPECT_EQ(validation_results[0].policy_type, policy_type);
   EXPECT_EQ(validation_results[0].status,
             PolicyValidationResult::Status::kValidationBadDMToken);
   EXPECT_TRUE(validation_results[0].issues.empty());
@@ -146,7 +146,7 @@ TEST(DMMessage, ResponseValidation) {
                                         "test-dm-token", bad_devide_id,
                                         validation_results);
   EXPECT_EQ(validation_results.size(), size_t{1});
-  EXPECT_TRUE(validation_results[0].policy_type.empty());
+  EXPECT_EQ(validation_results[0].policy_type, policy_type);
   EXPECT_EQ(validation_results[0].status,
             PolicyValidationResult::Status::kValidationBadDeviceID);
   EXPECT_TRUE(validation_results[0].issues.empty());
@@ -161,7 +161,7 @@ TEST(DMMessage, ResponseValidation) {
                                         initial_policy_info, "test-dm-token",
                                         "test-device-id", validation_results);
   EXPECT_EQ(validation_results.size(), size_t{1});
-  EXPECT_TRUE(validation_results[0].policy_type.empty());
+  EXPECT_EQ(validation_results[0].policy_type, policy_type);
   EXPECT_EQ(validation_results[0].status,
             PolicyValidationResult::Status::kValidationBadSignature);
   EXPECT_TRUE(validation_results[0].issues.empty());
@@ -190,7 +190,7 @@ TEST(DMMessage, ResponseValidation) {
                                         updated_policy_info, "test-dm-token",
                                         "test-device-id", validation_results);
   EXPECT_EQ(validation_results.size(), size_t{1});
-  EXPECT_TRUE(validation_results[0].policy_type.empty());
+  EXPECT_EQ(validation_results[0].policy_type, policy_type);
   EXPECT_EQ(
       validation_results[0].status,
       PolicyValidationResult::Status::kValidationBadKeyVerificationSignature);
