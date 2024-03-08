@@ -98,17 +98,23 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
     AutofillClient::AddressProfileSavePromptCallback callback) {
   AddressBubblesController::CreateForWebContents(web_contents);
   auto* controller = AddressBubblesController::FromWebContents(web_contents);
+  bool is_save_bubble = !original_profile;
   auto show_bubble_view_impl =
-      !original_profile
+      is_save_bubble
           // Save address bubble.
           ? base::BindRepeating(ShowSaveBubble, profile,
                                 options.is_migration_to_account)
           // Update address bubble.
           : base::BindRepeating(ShowUpdateBubble, profile, *original_profile);
+  std::u16string page_action_icon_tootip = l10n_util::GetStringUTF16(
+      is_save_bubble ? (options.is_migration_to_account
+                            ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
+                            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE)
+                     : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 
-  controller->SetUpAndShowBubble(std::move(show_bubble_view_impl), profile,
-                                 original_profile, options,
-                                 std::move(callback));
+  controller->SetUpAndShowBubble(
+      std::move(show_bubble_view_impl), std::move(page_action_icon_tootip),
+      profile, original_profile, options, std::move(callback));
 }
 
 void AddressBubblesController::OnUserDecision(
@@ -158,15 +164,7 @@ bool AddressBubblesController::IsBubbleActive() const {
 }
 
 std::u16string AddressBubblesController::GetPageActionIconTootip() const {
-  // TODO(b/325440757): Move tooltip defining outside this class.
-  if (IsSaveBubble()) {
-    return l10n_util::GetStringUTF16(
-        is_migration_to_account_
-            ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
-            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
-  }
-
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+  return page_action_icon_tootip_;
 }
 
 AutofillBubbleBase* AddressBubblesController::GetBubbleView() const {
@@ -199,12 +197,9 @@ void AddressBubblesController::DoShowBubble() {
   CHECK(bubble_view());
 }
 
-bool AddressBubblesController::IsSaveBubble() const {
-  return !original_profile_;
-}
-
 void AddressBubblesController::SetUpAndShowBubble(
     ShowBubbleViewCallback show_bubble_view_callback,
+    std::u16string page_action_icon_tootip,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
     AutofillClient::SaveAddressProfilePromptOptions options,
@@ -230,6 +225,7 @@ void AddressBubblesController::SetUpAndShowBubble(
   }
 
   show_bubble_view_callback_ = std::move(show_bubble_view_callback);
+  page_action_icon_tootip_ = std::move(page_action_icon_tootip);
   address_profile_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =

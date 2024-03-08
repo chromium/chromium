@@ -86,10 +86,9 @@ class AddressBubblesController
   friend class content::WebContentsUserData<
       AddressBubblesController>;
 
-  bool IsSaveBubble() const;
-
   void SetUpAndShowBubble(
       ShowBubbleViewCallback show_bubble_view_callback,
+      std::u16string page_action_icon_tootip,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
       AutofillClient::SaveAddressProfilePromptOptions options,
@@ -122,6 +121,8 @@ class AddressBubblesController
   // the ownership of the instance returned (it only hides the bubble),
   // the hosting widget is expected to be the owner.
   ShowBubbleViewCallback show_bubble_view_callback_;
+
+  std::u16string page_action_icon_tootip_;
 
   std::string app_locale_;
 
