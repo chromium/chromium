@@ -239,25 +239,23 @@ void V4L2StatelessVideoDecoder::ApplyResolutionChange() {
   input_queue_.reset();
   output_queue_.reset();
 
-  const VideoCodec codec =
-      VideoCodecProfileToVideoCodec(decoder_->GetProfile());
-  input_queue_ = InputQueue::Create(device_, codec, decoder_->GetPicSize());
-  if (!input_queue_) {
-    // TODO(frkoenig): Handle error!
-    LogError(media_log_, "Unable to create input queue.");
-  }
-
   // TODO(frkoenig): There only needs to be a single buffer in order to
   // decode. This should be investigated later to see if additional buffers
   // provide better performance.
   constexpr size_t kInputBuffers = 1;
-  if (input_queue_->PrepareBuffers(kInputBuffers)) {
-    if (!input_queue_->StartStreaming()) {
-      // TODO(frkoenig): Handle error!
-      LogError(media_log_, "Unable to start streaming on the input queue.");
-    }
 
+  const VideoCodec codec =
+      VideoCodecProfileToVideoCodec(decoder_->GetProfile());
+  input_queue_ = InputQueue::Create(device_, codec, decoder_->GetPicSize());
+
+  if (input_queue_ && input_queue_->PrepareBuffers(kInputBuffers) &&
+      input_queue_->StartStreaming()) {
     ServiceDecodeRequestQueue();
+  } else {
+    LogError(media_log_, "Unable to create input queue and allocate (",
+             kInputBuffers, ") buffers");
+    ClearPendingRequests(DecoderStatus::Codes::kPlatformDecodeFailure);
+    input_queue_.reset();
   }
 }
 
