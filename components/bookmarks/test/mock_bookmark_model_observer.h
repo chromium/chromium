@@ -32,6 +32,8 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
                     const BookmarkNode*,
                     const std::set<GURL>&));
 
+  MOCK_METHOD1(OnWillChangeBookmarkNode, void(const BookmarkNode* node));
+
   MOCK_METHOD1(BookmarkNodeChanged, void(const BookmarkNode*));
 
   MOCK_METHOD1(BookmarkNodeFaviconChanged, void(const BookmarkNode*));

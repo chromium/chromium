@@ -90,6 +90,7 @@ LegacyBookmarkModelWithSharedUnderlyingModel::
       node_type_for_uuid_lookup_(node_type_for_uuid_lookup),
       managed_bookmark_service_(managed_bookmark_service) {
   CHECK(underlying_model_);
+  scoped_observation_.Observe(underlying_model_);
 }
 
 LegacyBookmarkModelWithSharedUnderlyingModel::
@@ -141,15 +142,12 @@ bool LegacyBookmarkModelWithSharedUnderlyingModel::is_permanent_node(
 
 void LegacyBookmarkModelWithSharedUnderlyingModel::AddObserver(
     bookmarks::BookmarkModelObserver* observer) {
-  // TODO(crbug.com/326185948): Implement observers properly as the approach
-  // below leaks undesired state changes.
-  underlying_model()->AddObserver(observer);
+  observers_.AddObserver(observer);
 }
 
 void LegacyBookmarkModelWithSharedUnderlyingModel::RemoveObserver(
     bookmarks::BookmarkModelObserver* observer) {
-  // TODO(crbug.com/326185948): Implement observers properly.
-  underlying_model()->RemoveObserver(observer);
+  observers_.RemoveObserver(observer);
 }
 
 std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
@@ -215,6 +213,226 @@ LegacyBookmarkModelWithSharedUnderlyingModel::GetNodeById(int64_t id) {
     return nullptr;
   }
   return node;
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkModelLoaded(
+    bool ids_reassigned) {
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkModelLoaded(ids_reassigned);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkModelBeingDeleted() {
+  scoped_observation_.Reset();
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkModelBeingDeleted();
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeMoved(
+    const bookmarks::BookmarkNode* old_parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* new_parent,
+    size_t new_index) {
+  const bool is_old_parent_excluded = IsNodeExcludedFromView(old_parent);
+  const bool is_new_parent_excluded = IsNodeExcludedFromView(new_parent);
+
+  if (is_old_parent_excluded && is_new_parent_excluded) {
+    // Excluded from view before and after, nothing to report.
+    return;
+  }
+
+  if (is_old_parent_excluded && !is_new_parent_excluded) {
+    // Node became visible; report it as creation.
+    for (bookmarks::BookmarkModelObserver& observer : observers_) {
+      observer.BookmarkNodeAdded(new_parent, new_index,
+                                 /*added_by_user=*/false);
+    }
+    return;
+  }
+
+  if (!is_old_parent_excluded && is_new_parent_excluded) {
+    // Node no longer visible; report it as removal.
+    const bookmarks::BookmarkNode* node =
+        new_parent->children()[new_index].get();
+    for (bookmarks::BookmarkModelObserver& observer : observers_) {
+      observer.OnWillRemoveBookmarks(old_parent, old_index, node);
+    }
+    for (bookmarks::BookmarkModelObserver& observer : observers_) {
+      observer.BookmarkNodeRemoved(old_parent, old_index, node,
+                                   /*no_longer_bookmarked=*/{});
+    }
+    return;
+  }
+
+  // Node visible before and after the move; report it as normal move.
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeMoved(old_parent, old_index, new_parent, new_index);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeAdded(
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    bool added_by_user) {
+  if (parent->is_root()) {
+    // Account permanent folders were just created.
+    // TODO(crbug.com/326185948): Figure out a way to notify observers.
+    return;
+  }
+  if (IsNodeExcludedFromView(parent)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeAdded(parent, index, added_by_user);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::OnWillRemoveBookmarks(
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.OnWillRemoveBookmarks(parent, old_index, node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeRemoved(
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node,
+    const std::set<GURL>& no_longer_bookmarked) {
+  if (parent->is_root()) {
+    // Account permanent folders were just removed.
+    // TODO(crbug.com/326185948): Figure out a way to notify observers.
+    return;
+  }
+  if (IsNodeExcludedFromView(parent)) {
+    return;
+  }
+  // It isn't possible to compute `no_longer_bookmarked` so the workaround here
+  // is to always pass an empty set, as it isn't actually consumed on ios.
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeRemoved(parent, old_index, node,
+                                 /*no_longer_bookmarked=*/{});
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::OnWillChangeBookmarkNode(
+    const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.OnWillChangeBookmarkNode(node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeChanged(
+    const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeChanged(node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::OnWillChangeBookmarkMetaInfo(
+    const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.OnWillChangeBookmarkMetaInfo(node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkMetaInfoChanged(
+    const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkMetaInfoChanged(node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeFaviconChanged(
+    const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeFaviconChanged(node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::OnWillReorderBookmarkNode(
+    const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.OnWillReorderBookmarkNode(node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::
+    BookmarkNodeChildrenReordered(const bookmarks::BookmarkNode* node) {
+  if (IsNodeExcludedFromView(node)) {
+    return;
+  }
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeChildrenReordered(node);
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::
+    ExtensiveBookmarkChangesBeginning() {
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.ExtensiveBookmarkChangesBeginning();
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::
+    ExtensiveBookmarkChangesEnded() {
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.ExtensiveBookmarkChangesEnded();
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::
+    OnWillRemoveAllUserBookmarks() {
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.OnWillRemoveAllUserBookmarks();
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkAllUserNodesRemoved(
+    const std::set<GURL>& removed_urls) {
+  // Computing `removed_urls` isn't possible so this simply uses an empty set,
+  // as it isn't consumed anyway on ios/.
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkAllUserNodesRemoved(/*removed_urls=*/{});
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::
+    GroupedBookmarkChangesBeginning() {
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.GroupedBookmarkChangesBeginning();
+  }
+}
+
+void LegacyBookmarkModelWithSharedUnderlyingModel::
+    GroupedBookmarkChangesEnded() {
+  for (bookmarks::BookmarkModelObserver& observer : observers_) {
+    observer.GroupedBookmarkChangesEnded();
+  }
 }
 
 base::WeakPtr<LegacyBookmarkModel>

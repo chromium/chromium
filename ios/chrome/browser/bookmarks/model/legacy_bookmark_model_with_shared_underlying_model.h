@@ -11,8 +11,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 
@@ -23,7 +25,6 @@ class Uuid;
 }  // namespace base
 
 namespace bookmarks {
-class BookmarkModelObserver;
 class BookmarkNode;
 class ManagedBookmarkService;
 struct QueryFields;
@@ -33,7 +34,8 @@ struct QueryFields;
 // may be shared with other LegacyBookmarkModel instances. It exposes a subset
 // of the bookmark tree, depending on the arguments in the constructor.
 class LegacyBookmarkModelWithSharedUnderlyingModel
-    : public LegacyBookmarkModel {
+    : public LegacyBookmarkModel,
+      public bookmarks::BookmarkModelObserver {
  public:
   // `node_type_for_uuid_lookup` not only influences UUID lookups, but also
   // generally determines which subset of the BookmarkModel is exposed in the
@@ -65,6 +67,39 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
       size_t max_count,
       std::vector<const bookmarks::BookmarkNode*>* nodes) override;
   const bookmarks::BookmarkNode* GetNodeById(int64_t id) override;
+
+  // BookmarkModelObserver overrides.
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
+                         size_t index,
+                         bool added_by_user) override;
+  void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
+                             size_t old_index,
+                             const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& no_longer_bookmarked) override;
+  void OnWillChangeBookmarkNode(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void OnWillChangeBookmarkMetaInfo(
+      const bookmarks::BookmarkNode* node) override;
+  void BookmarkMetaInfoChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
+  void OnWillReorderBookmarkNode(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeChildrenReordered(
+      const bookmarks::BookmarkNode* node) override;
+  void ExtensiveBookmarkChangesBeginning() override;
+  void ExtensiveBookmarkChangesEnded() override;
+  void OnWillRemoveAllUserBookmarks() override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
+  void GroupedBookmarkChangesBeginning() override;
+  void GroupedBookmarkChangesEnded() override;
   base::WeakPtr<LegacyBookmarkModel> AsWeakPtr() override;
 
  protected:
@@ -101,6 +136,10 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
       node_type_for_uuid_lookup_;
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 
+  base::ObserverList<BookmarkModelObserver, true> observers_;
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_observation_{this};
   base::WeakPtrFactory<LegacyBookmarkModelWithSharedUnderlyingModel>
       weak_factory_{this};
 };

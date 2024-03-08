@@ -9,6 +9,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,10 +20,10 @@ namespace ios {
 
 namespace {
 
+using testing::_;
 using testing::Eq;
 using testing::IsNull;
 using testing::SizeIs;
-using testing::UnorderedElementsAre;
 
 }  // namespace
 
@@ -37,7 +38,15 @@ class LegacyBookmarkModelWithSharedUnderlyingModelTest : public testing::Test {
         account_view_(
             /*underlying_model=*/shared_model_.get(),
             bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes,
-            /*managed_bookmark_service=*/nullptr) {}
+            /*managed_bookmark_service=*/nullptr) {
+    local_view_.AddObserver(&local_view_observer_);
+    account_view_.AddObserver(&account_view_observer_);
+  }
+
+  ~LegacyBookmarkModelWithSharedUnderlyingModelTest() override {
+    local_view_.RemoveObserver(&local_view_observer_);
+    account_view_.RemoveObserver(&account_view_observer_);
+  }
 
   void PopulateTestNodes() {
     shared_model_->AddURL(shared_model_->bookmark_bar_node(), 0, kLocalTitle1,
@@ -55,8 +64,6 @@ class LegacyBookmarkModelWithSharedUnderlyingModelTest : public testing::Test {
     shared_model_->AddURL(shared_model_->account_mobile_node(), 0,
                           kAccountTitle3, kAccountUrl3);
   }
-
-  ~LegacyBookmarkModelWithSharedUnderlyingModelTest() override = default;
 
   const GURL kLocalUrl1 = GURL("https://local1.com/");
   const GURL kLocalUrl2 = GURL("https://local2.com/");
@@ -76,6 +83,9 @@ class LegacyBookmarkModelWithSharedUnderlyingModelTest : public testing::Test {
   std::unique_ptr<bookmarks::BookmarkModel> shared_model_;
   LegacyBookmarkModelWithSharedUnderlyingModel local_view_;
   LegacyBookmarkModelWithSharedUnderlyingModel account_view_;
+  testing::NiceMock<bookmarks::MockBookmarkModelObserver> local_view_observer_;
+  testing::NiceMock<bookmarks::MockBookmarkModelObserver>
+      account_view_observer_;
 };
 
 TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest, IsBookmarked) {
@@ -221,6 +231,198 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
   nodes.clear();
   account_view_.GetBookmarksMatchingProperties(query2, kMaxCount, &nodes);
   EXPECT_THAT(nodes, SizeIs(1));
+}
+
+TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
+       NotifyBookmarkNodeAdded) {
+  shared_model_->CreateAccountPermanentFolders();
+
+  ASSERT_THAT(local_view_.bookmark_bar_node(),
+              Eq(shared_model_->bookmark_bar_node()));
+  ASSERT_THAT(local_view_.mobile_node(), Eq(shared_model_->mobile_node()));
+  ASSERT_THAT(local_view_.other_node(), Eq(shared_model_->other_node()));
+  ASSERT_THAT(account_view_.bookmark_bar_node(),
+              Eq(shared_model_->account_bookmark_bar_node()));
+  ASSERT_THAT(account_view_.mobile_node(),
+              Eq(shared_model_->account_mobile_node()));
+  ASSERT_THAT(account_view_.other_node(),
+              Eq(shared_model_->account_other_node()));
+
+  EXPECT_CALL(local_view_observer_,
+              BookmarkNodeAdded(shared_model_->bookmark_bar_node(), 0, false));
+  EXPECT_CALL(account_view_observer_, BookmarkNodeAdded).Times(0);
+  shared_model_->AddURL(shared_model_->bookmark_bar_node(), 0, kLocalTitle1,
+                        kLocalUrl1);
+  testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+  testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+
+  EXPECT_CALL(local_view_observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(
+      account_view_observer_,
+      BookmarkNodeAdded(shared_model_->account_bookmark_bar_node(), 0, false));
+  shared_model_->AddURL(shared_model_->account_bookmark_bar_node(), 0,
+                        kAccountTitle1, kAccountUrl1);
+  testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+  testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+}
+
+TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
+       NotifyBookmarkNodeRemoved) {
+  shared_model_->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* node1 = shared_model_->AddURL(
+      shared_model_->bookmark_bar_node(), 0, kLocalTitle1, kLocalUrl1);
+  const bookmarks::BookmarkNode* node2 = shared_model_->AddURL(
+      shared_model_->account_bookmark_bar_node(), 0, kLocalTitle2, kLocalUrl2);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(
+        local_view_observer_,
+        OnWillRemoveBookmarks(shared_model_->bookmark_bar_node(), 0, node1));
+    EXPECT_CALL(
+        local_view_observer_,
+        BookmarkNodeRemoved(shared_model_->bookmark_bar_node(), 0, node1, _));
+    EXPECT_CALL(account_view_observer_, OnWillRemoveBookmarks).Times(0);
+    EXPECT_CALL(account_view_observer_, BookmarkNodeRemoved).Times(0);
+    shared_model_->Remove(node1,
+                          bookmarks::metrics::BookmarkEditSource::kOther);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+  }
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(account_view_observer_,
+                OnWillRemoveBookmarks(
+                    shared_model_->account_bookmark_bar_node(), 0, node2));
+    EXPECT_CALL(account_view_observer_,
+                BookmarkNodeRemoved(shared_model_->account_bookmark_bar_node(),
+                                    0, node2, _));
+    EXPECT_CALL(local_view_observer_, OnWillRemoveBookmarks).Times(0);
+    EXPECT_CALL(local_view_observer_, BookmarkNodeRemoved).Times(0);
+    shared_model_->Remove(node2,
+                          bookmarks::metrics::BookmarkEditSource::kOther);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+  }
+}
+
+TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
+       NotifyBookmarkNodeChanged) {
+  shared_model_->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* node1 = shared_model_->AddURL(
+      shared_model_->bookmark_bar_node(), 0, kLocalTitle1, kLocalUrl1);
+  const bookmarks::BookmarkNode* node2 = shared_model_->AddURL(
+      shared_model_->account_bookmark_bar_node(), 0, kLocalTitle2, kLocalUrl2);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(local_view_observer_, OnWillChangeBookmarkNode(node1));
+    EXPECT_CALL(local_view_observer_, BookmarkNodeChanged(node1));
+    EXPECT_CALL(account_view_observer_, OnWillChangeBookmarkNode).Times(0);
+    EXPECT_CALL(account_view_observer_, BookmarkNodeChanged).Times(0);
+    shared_model_->SetTitle(node1, u"New Title",
+                            bookmarks::metrics::BookmarkEditSource::kOther);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+  }
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(account_view_observer_, OnWillChangeBookmarkNode(node2));
+    EXPECT_CALL(account_view_observer_, BookmarkNodeChanged(node2));
+    EXPECT_CALL(local_view_observer_, OnWillChangeBookmarkNode).Times(0);
+    EXPECT_CALL(local_view_observer_, BookmarkNodeChanged).Times(0);
+    shared_model_->SetTitle(node2, u"New Title",
+                            bookmarks::metrics::BookmarkEditSource::kOther);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+  }
+}
+
+TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
+       NotifyBookmarkNodeMoved) {
+  shared_model_->CreateAccountPermanentFolders();
+
+  ASSERT_THAT(local_view_.bookmark_bar_node(),
+              Eq(shared_model_->bookmark_bar_node()));
+  ASSERT_THAT(local_view_.mobile_node(), Eq(shared_model_->mobile_node()));
+  ASSERT_THAT(local_view_.other_node(), Eq(shared_model_->other_node()));
+  ASSERT_THAT(account_view_.bookmark_bar_node(),
+              Eq(shared_model_->account_bookmark_bar_node()));
+  ASSERT_THAT(account_view_.mobile_node(),
+              Eq(shared_model_->account_mobile_node()));
+  ASSERT_THAT(account_view_.other_node(),
+              Eq(shared_model_->account_other_node()));
+
+  const bookmarks::BookmarkNode* node1 = shared_model_->AddURL(
+      shared_model_->bookmark_bar_node(), 0, kLocalTitle1, kLocalUrl1);
+  const bookmarks::BookmarkNode* node2 = shared_model_->AddURL(
+      shared_model_->account_bookmark_bar_node(), 0, kLocalTitle2, kLocalUrl2);
+
+  // Move from local to local.
+  {
+    EXPECT_CALL(local_view_observer_,
+                BookmarkNodeMoved(shared_model_->bookmark_bar_node(), 0,
+                                  shared_model_->mobile_node(), 0));
+    EXPECT_CALL(account_view_observer_, BookmarkNodeMoved).Times(0);
+    shared_model_->Move(node1, shared_model_->mobile_node(), 0);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+  }
+
+  // Move from account to account.
+  {
+    EXPECT_CALL(account_view_observer_,
+                BookmarkNodeMoved(shared_model_->account_bookmark_bar_node(), 0,
+                                  shared_model_->account_mobile_node(), 0));
+    EXPECT_CALL(local_view_observer_, BookmarkNodeMoved).Times(0);
+    shared_model_->Move(node2, shared_model_->account_mobile_node(), 0);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+  }
+
+  // Move from local to account.
+  {
+    EXPECT_CALL(local_view_observer_,
+                OnWillRemoveBookmarks(shared_model_->mobile_node(), 0, node1));
+    EXPECT_CALL(local_view_observer_,
+                BookmarkNodeRemoved(shared_model_->mobile_node(), 0, node1, _));
+    EXPECT_CALL(account_view_observer_,
+                BookmarkNodeAdded(shared_model_->account_bookmark_bar_node(), 0,
+                                  false));
+    EXPECT_CALL(local_view_observer_, BookmarkNodeAdded).Times(0);
+    EXPECT_CALL(local_view_observer_, BookmarkNodeMoved).Times(0);
+    EXPECT_CALL(account_view_observer_, OnWillRemoveBookmarks).Times(0);
+    EXPECT_CALL(account_view_observer_, BookmarkNodeRemoved).Times(0);
+    EXPECT_CALL(account_view_observer_, BookmarkNodeMoved).Times(0);
+    shared_model_->Move(node1, shared_model_->account_bookmark_bar_node(), 0);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+  }
+
+  // Move from account to local.
+  {
+    EXPECT_CALL(
+        account_view_observer_,
+        OnWillRemoveBookmarks(shared_model_->account_mobile_node(), 0, node2));
+    EXPECT_CALL(
+        account_view_observer_,
+        BookmarkNodeRemoved(shared_model_->account_mobile_node(), 0, node2, _));
+    EXPECT_CALL(
+        local_view_observer_,
+        BookmarkNodeAdded(shared_model_->bookmark_bar_node(), 0, false));
+    EXPECT_CALL(account_view_observer_, BookmarkNodeAdded).Times(0);
+    EXPECT_CALL(account_view_observer_, BookmarkNodeMoved).Times(0);
+    EXPECT_CALL(local_view_observer_, OnWillRemoveBookmarks).Times(0);
+    EXPECT_CALL(local_view_observer_, BookmarkNodeRemoved).Times(0);
+    EXPECT_CALL(local_view_observer_, BookmarkNodeMoved).Times(0);
+    shared_model_->Move(node2, shared_model_->bookmark_bar_node(), 0);
+    testing::Mock::VerifyAndClearExpectations(&account_view_observer_);
+    testing::Mock::VerifyAndClearExpectations(&local_view_observer_);
+  }
 }
 
 }  // namespace ios
