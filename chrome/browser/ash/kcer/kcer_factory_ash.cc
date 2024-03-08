@@ -272,6 +272,9 @@ void KcerFactoryAsh::InitializeDeviceKcerWithoutNss(
 // interface is implemented by Ash itself, so it should always be present.
 bool KcerFactoryAsh::EnsureHighLevelChapsClientInitialized() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (did_shutdown_) {
+    return false;
+  }
   if (IsHighLevelChapsClientInitialized()) {
     return true;
   }

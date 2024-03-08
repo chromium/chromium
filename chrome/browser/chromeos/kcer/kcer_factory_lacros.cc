@@ -80,6 +80,9 @@ void KcerFactoryLacros::OnCertDbInfoReceived(
 // time this is used in production, the minimal supported version of Ash should
 // also always have the interface.
 bool KcerFactoryLacros::EnsureHighLevelChapsClientInitialized() {
+  if (did_shutdown_) {
+    return false;
+  }
   if (session_chaps_client_ && high_level_chaps_client_) {
     return true;
   }
