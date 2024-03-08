@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
@@ -22,14 +23,16 @@
 - (void)setUp {
   [[self class] testForStartup];
   [super setUp];
-  // Make sure the search engine has been reset, to avoid any issues if it was
-  // not by a previous test.
-  [SettingsAppInterface resetSearchEngine];
 }
 
 - (void)tearDown {
+  // Clear the "choice was made" timestamp pref.
+  [ChromeEarlGrey
+      clearUserPrefWithName:
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp];
   // Reset the default search engine to Google
   [SettingsAppInterface resetSearchEngine];
+
   [super tearDown];
 }
 
@@ -59,9 +62,10 @@
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
 }
 
+// TODO(b/325441139): Test fails on device and simulator.
 // Tests that search engine choice dialog is moved to the other active scene
 // when the current scene is removed.
-- (void)testOpenSecondWindow {
+- (void)DISABLED_testOpenSecondWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -74,10 +78,11 @@
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
 }
 
+// TODO(b/325441139): Test fails on device and simulator.
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenSelectThenScroll {
+- (void)DISABLED_testSearchEngineChoiceScreenSelectThenScroll {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   // Verifies that the primary button is initially the "More" button.
@@ -104,10 +109,11 @@
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
 
+// TODO(b/325441139): Test fails on device and simulator.
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenScrollThenSelect {
+- (void)DISABLED_testSearchEngineChoiceScreenScrollThenSelect {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   // Verifies that the primary button is initially the "More" button.

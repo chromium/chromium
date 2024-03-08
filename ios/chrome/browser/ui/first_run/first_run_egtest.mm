@@ -9,6 +9,7 @@
 #import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -1716,16 +1716,11 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   return config;
 }
 
-- (void)setUp {
-  [super setUp];
-  // Make sure the search engine has been reset, to avoid any issues if it was
-  // not by a previous test.
-  [SettingsAppInterface resetSearchEngine];
-}
-
 - (void)tearDown {
-  // Reset the search engine for any other tests.
-  [SettingsAppInterface resetSearchEngine];
+  // Clear the "choice was made" timestamp pref.
+  [ChromeEarlGrey
+      clearUserPrefWithName:
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp];
   [super tearDown];
 }
 
