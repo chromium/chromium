@@ -4,14 +4,19 @@
 
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_util.h"
 
 namespace network {
 
@@ -79,21 +84,51 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
     },
 };
 
+constexpr std::string_view kTestDomain = "example.com";
+
 }  // namespace
 
-class NetworkServiceProxyAllowListTest : public ::testing::Test {};
+class NetworkServiceProxyAllowListBaseTest : public testing::Test {};
 
-TEST_F(NetworkServiceProxyAllowListTest, IsNotEnabledByDefault) {
+class NetworkServiceProxyAllowListTest
+    : public NetworkServiceProxyAllowListBaseTest {
+ public:
+  NetworkServiceProxyAllowListTest()
+      : allow_list_no_bypass_(
+            network::mojom::IpProtectionProxyBypassPolicy::kNone),
+        allow_list_first_party_bypass_(
+            network::mojom::IpProtectionProxyBypassPolicy::
+                kFirstPartyToTopLevelFrame) {}
+
+  void SetUp() override {
+    MaskedDomainList mdl;
+    auto* resource_owner = mdl.add_resource_owners();
+    resource_owner->set_owner_name("foo");
+    resource_owner->add_owned_properties("property.com");
+    resource_owner->add_owned_resources()->set_domain(std::string(kTestDomain));
+    allow_list_no_bypass_.UseMaskedDomainList(
+        mdl, /*exclusion_list=*/std::vector<std::string>());
+    allow_list_first_party_bypass_.UseMaskedDomainList(
+        mdl, /*exclusion_list=*/std::vector<std::string>());
+  }
+
+ protected:
+  NetworkServiceProxyAllowList allow_list_no_bypass_;
+  NetworkServiceProxyAllowList allow_list_first_party_bypass_;
+};
+
+TEST_F(NetworkServiceProxyAllowListBaseTest, IsNotEnabledByDefault) {
   NetworkServiceProxyAllowList allow_list_no_bypass(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   NetworkServiceProxyAllowList allow_list_first_party_bypass(
       network::mojom::IpProtectionProxyBypassPolicy::
           kFirstPartyToTopLevelFrame);
+
   EXPECT_FALSE(allow_list_no_bypass.IsEnabled());
   EXPECT_FALSE(allow_list_first_party_bypass.IsEnabled());
 }
 
-TEST_F(NetworkServiceProxyAllowListTest, IsEnabledWhenManuallySet) {
+TEST_F(NetworkServiceProxyAllowListBaseTest, IsEnabledWhenManuallySet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({net::features::kEnableIpProtectionProxy,
                                         network::features::kMaskedDomainList},
@@ -105,13 +140,13 @@ TEST_F(NetworkServiceProxyAllowListTest, IsEnabledWhenManuallySet) {
   EXPECT_TRUE(allow_list.IsEnabled());
 }
 
-TEST_F(NetworkServiceProxyAllowListTest, AllowListIsNotPopulatedByDefault) {
+TEST_F(NetworkServiceProxyAllowListBaseTest, AllowListIsNotPopulatedByDefault) {
   NetworkServiceProxyAllowList allow_list(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   EXPECT_FALSE(allow_list.IsPopulated());
 }
 
-TEST_F(NetworkServiceProxyAllowListTest, AllowlistIsPopulatedWhenMDLUsed) {
+TEST_F(NetworkServiceProxyAllowListBaseTest, AllowlistIsPopulatedWhenMDLUsed) {
   NetworkServiceProxyAllowList allow_list(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   MaskedDomainList mdl;
@@ -125,173 +160,95 @@ TEST_F(NetworkServiceProxyAllowListTest, AllowlistIsPopulatedWhenMDLUsed) {
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchHttp) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  NetworkServiceProxyAllowList allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-  MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+  const auto kHttpRequestUrl = GURL(base::StrCat({"http://", kTestDomain}));
+  const auto kHttpCrossSiteNak = net::NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(GURL("http://top.com")));
 
-  EXPECT_TRUE(allow_list_no_bypass.Matches(
-      GURL("http://example.com"),
-      net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("http://top.com")))));
-  EXPECT_TRUE(allow_list_first_party_bypass.Matches(
-      GURL("http://example.com"),
-      net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("http://top.com")))));
+  EXPECT_TRUE(
+      allow_list_no_bypass_.Matches(kHttpRequestUrl, kHttpCrossSiteNak));
+  EXPECT_TRUE(allow_list_first_party_bypass_.Matches(kHttpRequestUrl,
+                                                     kHttpCrossSiteNak));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchThirdPartyToTopLevelFrame) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  NetworkServiceProxyAllowList allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-  MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
+  const auto kHttpsCrossSiteNak = net::NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(GURL("https://top.com")));
 
-  EXPECT_TRUE(allow_list_no_bypass.Matches(
-      GURL("https://example.com"),
-      net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("https://top.com")))));
-  EXPECT_TRUE(allow_list_first_party_bypass.Matches(
-      GURL("https://example.com"),
-      net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("https://top.com")))));
+  EXPECT_TRUE(
+      allow_list_no_bypass_.Matches(kHttpsRequestUrl, kHttpsCrossSiteNak));
+  EXPECT_TRUE(allow_list_first_party_bypass_.Matches(kHttpsRequestUrl,
+                                                     kHttpsCrossSiteNak));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
        MatchFirstPartyToTopLevelFrameDependsOnBypass) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  NetworkServiceProxyAllowList allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-  MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
+  const auto kHttpsSameSiteNak = net::NetworkAnonymizationKey::CreateSameSite(
+      net::SchemefulSite(kHttpsRequestUrl));
 
-  EXPECT_TRUE(allow_list_no_bypass.Matches(
-      GURL("https://example.com"),
-      net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("https://example.com")))));
-  EXPECT_FALSE(allow_list_first_party_bypass.Matches(
-      GURL("https://example.com"),
-      net::NetworkAnonymizationKey::CreateCrossSite(
-          net::SchemefulSite(GURL("https://example.com")))));
+  EXPECT_TRUE(
+      allow_list_no_bypass_.Matches(kHttpsRequestUrl, kHttpsSameSiteNak));
+  EXPECT_FALSE(allow_list_first_party_bypass_.Matches(kHttpsRequestUrl,
+                                                      kHttpsSameSiteNak));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
        MatchFirstPartyToTopLevelFrameIfEmptyNakDependsOnBypass) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  NetworkServiceProxyAllowList allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-  MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
+  const auto kEmptyNak = net::NetworkAnonymizationKey();
 
-  EXPECT_TRUE(allow_list_no_bypass.Matches(GURL("https://example.com"),
-                                           net::NetworkAnonymizationKey()));
-  EXPECT_FALSE(allow_list_first_party_bypass.Matches(
-      GURL("https://example.com"), net::NetworkAnonymizationKey()));
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsRequestUrl, kEmptyNak));
+  EXPECT_FALSE(
+      allow_list_first_party_bypass_.Matches(kHttpsRequestUrl, kEmptyNak));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
-       ShouldNotMatchWithTransientNakIfUrlDoesNotMatch) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  NetworkServiceProxyAllowList allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-  MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+       ShouldNotMatchWithFencedFrameNakIfUrlDoesNotMatch) {
+  const auto kHttpsOtherRequestUrl = GURL("https://other.com");
+  const auto kNakWithNonce = net::NetworkAnonymizationKey::CreateFromParts(
+      net::SchemefulSite(), /*is_cross_site=*/true,
+      base::UnguessableToken::Create());
 
-  EXPECT_FALSE(allow_list_no_bypass.Matches(
-      GURL("https://other.com"),
-      net::NetworkAnonymizationKey::CreateTransient()));
-  EXPECT_FALSE(allow_list_first_party_bypass.Matches(
-      GURL("https://other.com"),
-      net::NetworkAnonymizationKey::CreateTransient()));
+  EXPECT_FALSE(
+      allow_list_no_bypass_.Matches(kHttpsOtherRequestUrl, kNakWithNonce));
+  EXPECT_FALSE(allow_list_first_party_bypass_.Matches(kHttpsOtherRequestUrl,
+                                                      kNakWithNonce));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
-       ShouldMatchWithTransientNakIfUrlMatches) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  NetworkServiceProxyAllowList allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-  MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
+       ShouldMatchWithFencedFrameNakIfUrlMatches) {
+  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
+  const auto kNakWithNonce = net::NetworkAnonymizationKey::CreateFromParts(
+      net::SchemefulSite(), /*is_cross_site=*/true,
+      base::UnguessableToken::Create());
 
-  EXPECT_TRUE(allow_list_no_bypass.Matches(
-      GURL("https://example.com"),
-      net::NetworkAnonymizationKey::CreateTransient()));
-  EXPECT_TRUE(allow_list_first_party_bypass.Matches(
-      GURL("https://example.com"),
-      net::NetworkAnonymizationKey::CreateTransient()));
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsRequestUrl, kNakWithNonce));
+  EXPECT_TRUE(
+      allow_list_first_party_bypass_.Matches(kHttpsRequestUrl, kNakWithNonce));
+}
+
+// Test whether third-party requests from pages with a data: URL top-level site
+// (where the corresponding NAK is transient) should be proxied.
+TEST_F(NetworkServiceProxyAllowListTest, DataUrlTopLevelSite) {
+  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
+  const auto kDataUrlNak = net::NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(GURL("data:text/html,<html></html>")));
+  ASSERT_TRUE(kDataUrlNak.IsTransient());
+
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsRequestUrl, kDataUrlNak));
+  EXPECT_TRUE(
+      allow_list_first_party_bypass_.Matches(kHttpsRequestUrl, kDataUrlNak));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, AllowListWithoutBypassUsesLessMemory) {
-  NetworkServiceProxyAllowList allow_list_no_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::kNone);
-  NetworkServiceProxyAllowList allow_list_first_party_bypass(
-      network::mojom::IpProtectionProxyBypassPolicy::
-          kFirstPartyToTopLevelFrame);
-  MaskedDomainList mdl;
-  auto* resource_owner = mdl.add_resource_owners();
-  resource_owner->set_owner_name("foo");
-  resource_owner->add_owned_properties("property.com");
-  resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-  allow_list_first_party_bypass.UseMaskedDomainList(
-      mdl, /*exclusion_list=*/std::vector<std::string>());
-
-  EXPECT_GT(allow_list_first_party_bypass.EstimateMemoryUsage(),
-            allow_list_no_bypass.EstimateMemoryUsage());
+  EXPECT_GT(allow_list_first_party_bypass_.EstimateMemoryUsage(),
+            allow_list_no_bypass_.EstimateMemoryUsage());
 }
 
 class NetworkServiceProxyAllowListExperimentGroupMatchTest
-    : public testing::TestWithParam<ExperimentGroupMatchTest> {};
+    : public NetworkServiceProxyAllowListBaseTest,
+      public testing::WithParamInterface<ExperimentGroupMatchTest> {};
 
 TEST_P(NetworkServiceProxyAllowListExperimentGroupMatchTest, Match) {
   const ExperimentGroupMatchTest& p = GetParam();
@@ -340,7 +297,8 @@ TEST_P(NetworkServiceProxyAllowListExperimentGroupMatchTest, Match) {
                                                     network_anonymization_key));
 }
 
-TEST_F(NetworkServiceProxyAllowListTest, ExclusionSetDomainsRemovedFromMDL) {
+TEST_F(NetworkServiceProxyAllowListBaseTest,
+       ExclusionSetDomainsRemovedFromMDL) {
   NetworkServiceProxyAllowList allow_list_no_bypass(
       network::mojom::IpProtectionProxyBypassPolicy::kExclusionList);
   std::set<std::string> mdl_domains(

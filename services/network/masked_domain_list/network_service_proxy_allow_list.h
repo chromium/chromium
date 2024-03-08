@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
       const std::set<std::string>& mdl_domains,
       const std::set<std::string>& excluded_domains);
 
-  FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyAllowListTest,
+  FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyAllowListBaseTest,
                            ExclusionSetDomainsRemovedFromMDL);
 };
 
