@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
-#include "media/cdm/key_system_capability.h"
+#include "media/base/key_system_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 
 namespace content {

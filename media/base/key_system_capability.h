@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CDM_KEY_SYSTEM_CAPABILITY_H_
-#define MEDIA_CDM_KEY_SYSTEM_CAPABILITY_H_
+#ifndef MEDIA_BASE_KEY_SYSTEM_CAPABILITY_H_
+#define MEDIA_BASE_KEY_SYSTEM_CAPABILITY_H_
 
+#include "media/base/cdm_capability.h"
 #include "media/base/media_export.h"
-#include "media/cdm/cdm_capability.h"
 
 namespace media {
 
@@ -27,4 +27,4 @@ bool MEDIA_EXPORT operator==(const KeySystemCapability& lhs,
 
 }  // namespace media
 
-#endif  // MEDIA_CDM_KEY_SYSTEM_CAPABILITY_H_
+#endif  // MEDIA_BASE_KEY_SYSTEM_CAPABILITY_H_

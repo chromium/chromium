@@ -10,10 +10,10 @@
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/web_ui.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
-#include "media/cdm/cdm_capability.h"
 
 namespace content {
 

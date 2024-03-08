@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/common/cdm_info.h"
-#include "media/cdm/cdm_capability.h"
+#include "media/base/cdm_capability.h"
 #include "media/cdm/cdm_type.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "third_party/widevine/cdm/buildflags.h"

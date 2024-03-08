@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "media/cdm/cdm_capability.h"
+#include "media/base/cdm_capability.h"
 
 namespace content {
 

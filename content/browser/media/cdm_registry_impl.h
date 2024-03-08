@@ -16,8 +16,8 @@
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/common/cdm_info.h"
-#include "media/cdm/cdm_capability.h"
-#include "media/cdm/key_system_capability.h"
+#include "media/base/cdm_capability.h"
+#include "media/base/key_system_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 
 namespace content {

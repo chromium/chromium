@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CDM_CDM_CAPABILITY_H_
-#define MEDIA_CDM_CDM_CAPABILITY_H_
+#ifndef MEDIA_BASE_CDM_CAPABILITY_H_
+#define MEDIA_BASE_CDM_CAPABILITY_H_
 
 #include <map>
 #include <optional>
@@ -78,4 +78,4 @@ using CdmCapabilityCB = base::OnceCallback<void(std::optional<CdmCapability>)>;
 
 }  // namespace media
 
-#endif  // MEDIA_CDM_CDM_CAPABILITY_H_
+#endif  // MEDIA_BASE_CDM_CAPABILITY_H_

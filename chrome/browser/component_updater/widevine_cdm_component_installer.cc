@@ -36,7 +36,7 @@
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_paths.h"
 #include "crypto/sha2.h"
-#include "media/cdm/cdm_capability.h"
+#include "media/base/cdm_capability.h"
 #include "media/cdm/cdm_paths.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"

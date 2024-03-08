@@ -5,7 +5,7 @@
 #ifndef MEDIA_MOJO_MOJOM_KEY_SYSTEM_CAPABILITY_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_KEY_SYSTEM_CAPABILITY_MOJOM_TRAITS_H_
 
-#include "media/cdm/key_system_capability.h"
+#include "media/base/key_system_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 
 namespace mojo {

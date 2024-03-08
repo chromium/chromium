@@ -20,11 +20,11 @@
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "media/base/key_system_capability.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
-#include "media/cdm/key_system_capability.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 

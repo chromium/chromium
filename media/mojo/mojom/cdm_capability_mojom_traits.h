@@ -7,10 +7,10 @@
 
 #include "base/containers/flat_set.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
-#include "media/cdm/cdm_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 
 namespace mojo {
