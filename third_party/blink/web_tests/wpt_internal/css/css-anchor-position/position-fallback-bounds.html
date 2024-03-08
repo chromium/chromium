@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>CSS Anchor Positioning: position-fallback-bounds support</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/9868">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  // This property was part of the CSS Anchor Positioning spec,
+  // but was removed at some point. We do however plan to offer
+  // something similar in the future [1], and so we're holding
+  // on to the implementation for how.
+  //
+  // The property must not be web-exposed, however.
+  //
+  // [1] https://github.com/w3c/csswg-drafts/issues/9868
+  test(() => {
+    assert_false(CSS.supports('position-fallback-bounds', 'initial'));
+  }, 'position-fallback-bounds is not supported');
+</script>

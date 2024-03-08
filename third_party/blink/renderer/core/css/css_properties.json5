@@ -4302,7 +4302,7 @@
       converter: "ConvertNormalOrCustomIdent",
       keywords: ["normal"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSAnchorPositioning",
+      runtime_flag: "CSSPositionFallbackBounds",
     },
     {
       name: "position-try-options",
