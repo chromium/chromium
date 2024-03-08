@@ -145,23 +145,23 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 new ChromeSwitchPreference(getStyledContext(), null);
         autofillSwitch.setTitle(R.string.autofill_enable_profiles_toggle_label);
         autofillSwitch.setSummary(R.string.autofill_enable_profiles_toggle_sublabel);
-        autofillSwitch.setChecked(PersonalDataManager.isAutofillProfileEnabled());
+        autofillSwitch.setChecked(PersonalDataManager.getInstance().isAutofillProfileEnabled());
         autofillSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
-                    PersonalDataManager.setAutofillProfileEnabled((boolean) newValue);
+                    PersonalDataManager.getInstance().setAutofillProfileEnabled((boolean) newValue);
                     return true;
                 });
         autofillSwitch.setManagedPreferenceDelegate(
                 new ChromeManagedPreferenceDelegate(getProfile()) {
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return PersonalDataManager.isAutofillProfileManaged();
+                        return PersonalDataManager.getInstance().isAutofillProfileManaged();
                     }
 
                     @Override
                     public boolean isPreferenceClickDisabled(Preference preference) {
-                        return PersonalDataManager.isAutofillProfileManaged()
-                                && !PersonalDataManager.isAutofillProfileEnabled();
+                        return PersonalDataManager.getInstance().isAutofillProfileManaged()
+                                && !PersonalDataManager.getInstance().isAutofillProfileEnabled();
                     }
                 });
         getPreferenceScreen().addPreference(autofillSwitch);
@@ -186,7 +186,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
         // Add 'Add address' button. Tap of it brings up address editor which allows users type in
         // new addresses.
-        if (PersonalDataManager.isAutofillProfileEnabled()) {
+        if (PersonalDataManager.getInstance().isAutofillProfileEnabled()) {
             AutofillProfileEditorPreference pref =
                     new AutofillProfileEditorPreference(getStyledContext());
             Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);

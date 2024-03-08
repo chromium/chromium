@@ -24,7 +24,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -57,25 +57,25 @@ using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
 
-Profile* GetProfile() {
-  return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
-}
-
-PrefService* GetPrefs() {
-  return GetProfile()->GetPrefs();
-}
-
 }  // namespace
 
-PersonalDataManagerAndroid::PersonalDataManagerAndroid(JNIEnv* env, jobject obj)
+PersonalDataManagerAndroid::PersonalDataManagerAndroid(
+    JNIEnv* env,
+    jobject obj,
+    PersonalDataManager* personal_data_manager,
+    PrefService* prefs)
     : weak_java_obj_(env, obj),
-      personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile())) {
+      personal_data_manager_(personal_data_manager),
+      prefs_(prefs) {
   personal_data_manager_->AddObserver(this);
 }
 
 PersonalDataManagerAndroid::~PersonalDataManagerAndroid() {
   personal_data_manager_->RemoveObserver(this);
+}
+
+void PersonalDataManagerAndroid::Destroy(JNIEnv* env) {
+  delete this;
 }
 
 // static
@@ -736,20 +736,16 @@ jboolean PersonalDataManagerAndroid::IsValidIban(
   return Iban::IsValid(ConvertJavaStringToUTF16(env, jiban_value));
 }
 
-// Returns whether the Autofill feature is managed.
-static jboolean JNI_PersonalDataManager_IsAutofillManaged(JNIEnv* env) {
-  return prefs::IsAutofillManaged(GetPrefs());
+jboolean PersonalDataManagerAndroid::IsAutofillManaged(JNIEnv* env) {
+  return prefs::IsAutofillManaged(prefs_);
 }
 
-// Returns whether the Autofill feature for profiles is managed.
-static jboolean JNI_PersonalDataManager_IsAutofillProfileManaged(JNIEnv* env) {
-  return prefs::IsAutofillProfileManaged(GetPrefs());
+jboolean PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
+  return prefs::IsAutofillProfileManaged(prefs_);
 }
 
-// Returns whether the Autofill feature for credit cards is managed.
-static jboolean JNI_PersonalDataManager_IsAutofillCreditCardManaged(
-    JNIEnv* env) {
-  return prefs::IsAutofillCreditCardManaged(GetPrefs());
+jboolean PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
+  return prefs::IsAutofillCreditCardManaged(prefs_);
 }
 
 // Returns an ISO 3166-1-alpha-2 country code for a |jcountry_name| using
@@ -762,10 +758,16 @@ static ScopedJavaLocalRef<jstring> JNI_PersonalDataManager_ToCountryCode(
                base::android::ConvertJavaStringToUTF16(env, jcountry_name)));
 }
 
-static jlong JNI_PersonalDataManager_Init(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+static jlong JNI_PersonalDataManager_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jprofile) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  CHECK(profile);
   PersonalDataManagerAndroid* personal_data_manager_android =
-      new PersonalDataManagerAndroid(env, obj);
+      new PersonalDataManagerAndroid(
+          env, obj, PersonalDataManagerFactory::GetForProfile(profile),
+          profile->GetPrefs());
   return reinterpret_cast<intptr_t>(personal_data_manager_android);
 }
 

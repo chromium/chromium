@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
+class PrefService;
+
 namespace autofill {
 
 // Android wrapper of the PersonalDataManager which provides access from the
@@ -20,11 +22,17 @@ namespace autofill {
 // therefore a single instance of this wrapper.
 class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  public:
-  PersonalDataManagerAndroid(JNIEnv* env, jobject obj);
+  PersonalDataManagerAndroid(JNIEnv* env,
+                             jobject obj,
+                             PersonalDataManager* personal_data_manager,
+                             PrefService* prefs);
 
   PersonalDataManagerAndroid(const PersonalDataManagerAndroid&) = delete;
   PersonalDataManagerAndroid& operator=(const PersonalDataManagerAndroid&) =
       delete;
+
+  // Trigger the destruction of the C++ object from Java.
+  void Destroy(JNIEnv* env);
 
   static base::android::ScopedJavaLocalRef<jobject>
   CreateJavaCreditCardFromNative(JNIEnv* env, const CreditCard& card);
@@ -343,6 +351,15 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jiban_value);
 
+  // Returns whether the Autofill feature is managed.
+  jboolean IsAutofillManaged(JNIEnv* env);
+
+  // Returns whether the Autofill feature for profiles is managed.
+  jboolean IsAutofillProfileManaged(JNIEnv* env);
+
+  // Returns whether the Autofill feature for credit cards is managed.
+  jboolean IsAutofillCreditCardManaged(JNIEnv* env);
+
  private:
   ~PersonalDataManagerAndroid() override;
 
@@ -376,6 +393,8 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Pointer to the PersonalDataManager for the main profile.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace autofill

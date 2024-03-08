@@ -13,8 +13,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
@@ -29,16 +30,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Android wrapper of the PersonalDataManager which provides access from the Java
- * layer.
+ * Android wrapper of the PersonalDataManager which provides access from the Java layer.
  *
- * Only usable from the UI thread as it's primary purpose is for supporting the Android
+ * <p>Only usable from the UI thread as it's primary purpose is for supporting the Android
  * preferences UI.
  *
- * See chrome/browser/autofill/personal_data_manager.h for more details.
+ * <p>See chrome/browser/autofill/personal_data_manager.h for more details.
  */
 @JNINamespace("autofill")
-public class PersonalDataManager {
+public class PersonalDataManager implements Destroyable {
     private static final String TAG = "PersonalDataManager";
 
     /** Observer of PersonalDataManager events. */
@@ -553,30 +553,34 @@ public class PersonalDataManager {
         }
     }
 
-    private static PersonalDataManager sManager;
-
-    // Suppress FindBugs warning, since |sManager| is only used on the UI thread.
+    /**
+     * @deprecated Use {@link PersonalDataManagerFactory#getForProfile(Profile)}.
+     */
+    @Deprecated
     public static PersonalDataManager getInstance() {
-        ThreadUtils.assertOnUiThread();
-        if (sManager == null) {
-            sManager = new PersonalDataManager();
-        }
-        return sManager;
+        return PersonalDataManagerFactory.getInstance();
     }
 
-    private final long mPersonalDataManagerAndroid;
+    private final PrefService mPrefService;
     private final List<PersonalDataManagerObserver> mDataObservers =
             new ArrayList<PersonalDataManagerObserver>();
+
+    private long mPersonalDataManagerAndroid;
     private AutofillImageFetcher mImageFetcher;
 
-    private PersonalDataManager() {
-        // Note that this technically leaks the native object, however, PersonalDataManager
-        // is a singleton that lives forever and there's no clean shutdown of Chrome on Android
-        mPersonalDataManagerAndroid = PersonalDataManagerJni.get().init(PersonalDataManager.this);
+    PersonalDataManager(Profile profile) {
+        mPersonalDataManagerAndroid = PersonalDataManagerJni.get().init(this, profile);
+        mPrefService = UserPrefs.get(profile);
         // Get the AutofillImageFetcher instance that was created during browser startup.
         mImageFetcher =
                 PersonalDataManagerJni.get()
                         .getOrCreateJavaImageFetcher(mPersonalDataManagerAndroid);
+    }
+
+    @Override
+    public void destroy() {
+        PersonalDataManagerJni.get().destroy(mPersonalDataManagerAndroid);
+        mPersonalDataManagerAndroid = 0;
     }
 
     /** Called from native when template URL service is done loading. */
@@ -991,12 +995,6 @@ public class PersonalDataManager {
         mImageFetcher.clearCachedImagesForTesting();
     }
 
-    public static void setInstanceForTesting(PersonalDataManager manager) {
-        var oldValue = sManager;
-        sManager = manager;
-        ResettersForTesting.register(() -> sManager = oldValue);
-    }
-
     /**
      * Determines whether the logged in user (if any) is eligible to store
      * Autofill address profiles to their account.
@@ -1055,107 +1053,109 @@ public class PersonalDataManager {
     /**
      * @return Whether the Autofill feature for Profiles (addresses) is enabled.
      */
-    public static boolean isAutofillProfileEnabled() {
-        return getPrefService().getBoolean(Pref.AUTOFILL_PROFILE_ENABLED);
+    public boolean isAutofillProfileEnabled() {
+        return mPrefService.getBoolean(Pref.AUTOFILL_PROFILE_ENABLED);
     }
 
     /**
      * @return Whether the Autofill feature for Credit Cards is enabled.
      */
-    public static boolean isAutofillCreditCardEnabled() {
-        return getPrefService().getBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED);
+    public boolean isAutofillCreditCardEnabled() {
+        return mPrefService.getBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED);
     }
 
     /**
      * Enables or disables the Autofill feature for Profiles.
+     *
      * @param enable True to disable profile Autofill, false otherwise.
      */
-    public static void setAutofillProfileEnabled(boolean enable) {
-        getPrefService().setBoolean(Pref.AUTOFILL_PROFILE_ENABLED, enable);
+    public void setAutofillProfileEnabled(boolean enable) {
+        mPrefService.setBoolean(Pref.AUTOFILL_PROFILE_ENABLED, enable);
     }
 
     /**
      * Enables or disables the Autofill feature for Credit Cards.
+     *
      * @param enable True to disable credit card Autofill, false otherwise.
      */
-    public static void setAutofillCreditCardEnabled(boolean enable) {
-        getPrefService().setBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED, enable);
+    public void setAutofillCreditCardEnabled(boolean enable) {
+        mPrefService.setBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED, enable);
     }
 
     /**
      * @return Whether the Autofill feature for FIDO authentication is enabled.
      */
-    public static boolean isAutofillCreditCardFidoAuthEnabled() {
-        return getPrefService().getBoolean(Pref.AUTOFILL_CREDIT_CARD_FIDO_AUTH_ENABLED);
+    public boolean isAutofillCreditCardFidoAuthEnabled() {
+        return mPrefService.getBoolean(Pref.AUTOFILL_CREDIT_CARD_FIDO_AUTH_ENABLED);
     }
 
     /**
-     * Enables or disables the Autofill feature for FIDO authentication.
-     * We are trying to align this pref with the server's source of truth, but any mismatches
-     * between this pref and the server should imply the user's intention to opt in/out.
+     * Enables or disables the Autofill feature for FIDO authentication. We are trying to align this
+     * pref with the server's source of truth, but any mismatches between this pref and the server
+     * should imply the user's intention to opt in/out.
+     *
      * @param enable True to enable credit card FIDO authentication, false otherwise.
      */
-    public static void setAutofillCreditCardFidoAuthEnabled(boolean enable) {
-        getPrefService().setBoolean(Pref.AUTOFILL_CREDIT_CARD_FIDO_AUTH_ENABLED, enable);
+    public void setAutofillCreditCardFidoAuthEnabled(boolean enable) {
+        mPrefService.setBoolean(Pref.AUTOFILL_CREDIT_CARD_FIDO_AUTH_ENABLED, enable);
     }
 
     /**
      * @return Whether the Autofill feature for payment methods mandatory reauth is enabled.
      */
-    public static boolean isPaymentMethodsMandatoryReauthEnabled() {
-        return getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH);
+    public boolean isPaymentMethodsMandatoryReauthEnabled() {
+        return mPrefService.getBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH);
     }
 
     /**
      * Enables or disables the Autofill feature for payment methods mandatory reauth.
+     *
      * @param enable True to enable payment methods mandatory reauth, false otherwise.
      */
-    public static void setAutofillPaymentMethodsMandatoryReauth(boolean enable) {
-        getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, enable);
+    public void setAutofillPaymentMethodsMandatoryReauth(boolean enable) {
+        mPrefService.setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, enable);
     }
 
     /**
      * @return Whether the Autofill feature for payment cvc storage is enabled.
      */
-    public static boolean isPaymentCvcStorageEnabled() {
-        return getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE);
+    public boolean isPaymentCvcStorageEnabled() {
+        return mPrefService.getBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE);
     }
 
     /**
      * Enables or disables the Autofill feature for payment cvc storage.
+     *
      * @param enable True to enable payment cvc storage, false otherwise.
      */
-    public static void setAutofillPaymentCvcStorage(boolean enable) {
-        getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE, enable);
+    public void setAutofillPaymentCvcStorage(boolean enable) {
+        mPrefService.setBoolean(Pref.AUTOFILL_PAYMENT_CVC_STORAGE, enable);
     }
 
     /**
      * @return Whether the Autofill feature is managed.
      */
-    public static boolean isAutofillManaged() {
-        return PersonalDataManagerJni.get().isAutofillManaged();
+    public boolean isAutofillManaged() {
+        return PersonalDataManagerJni.get().isAutofillManaged(mPersonalDataManagerAndroid);
     }
 
     /**
      * @return Whether the Autofill feature for Profiles (addresses) is managed.
      */
-    public static boolean isAutofillProfileManaged() {
-        return PersonalDataManagerJni.get().isAutofillProfileManaged();
+    public boolean isAutofillProfileManaged() {
+        return PersonalDataManagerJni.get().isAutofillProfileManaged(mPersonalDataManagerAndroid);
     }
 
     /**
      * @return Whether the Autofill feature for Credit Cards is managed.
      */
-    public static boolean isAutofillCreditCardManaged() {
-        return PersonalDataManagerJni.get().isAutofillCreditCardManaged();
+    public boolean isAutofillCreditCardManaged() {
+        return PersonalDataManagerJni.get()
+                .isAutofillCreditCardManaged(mPersonalDataManagerAndroid);
     }
 
     public void setSyncServiceForTesting() {
         PersonalDataManagerJni.get().setSyncServiceForTesting(mPersonalDataManagerAndroid);
-    }
-
-    private static PrefService getPrefService() {
-        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 
     private void fetchCreditCardArtImages() {
@@ -1185,7 +1185,9 @@ public class PersonalDataManager {
 
     @NativeMethods
     interface Natives {
-        long init(PersonalDataManager caller);
+        long init(PersonalDataManager caller, Profile profile);
+
+        void destroy(long nativePersonalDataManagerAndroid);
 
         boolean isDataLoaded(long nativePersonalDataManagerAndroid, PersonalDataManager caller);
 
@@ -1326,11 +1328,11 @@ public class PersonalDataManager {
 
         boolean isFidoAuthenticationAvailable(long nativePersonalDataManagerAndroid);
 
-        boolean isAutofillManaged();
+        boolean isAutofillManaged(long nativePersonalDataManagerAndroid);
 
-        boolean isAutofillProfileManaged();
+        boolean isAutofillProfileManaged(long nativePersonalDataManagerAndroid);
 
-        boolean isAutofillCreditCardManaged();
+        boolean isAutofillCreditCardManaged(long nativePersonalDataManagerAndroid);
 
         String toCountryCode(String countryName);
 

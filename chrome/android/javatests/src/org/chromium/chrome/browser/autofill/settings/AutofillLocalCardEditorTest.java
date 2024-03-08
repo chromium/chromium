@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -700,7 +701,7 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManagerMock);
 
         FakeModalDialogManager fakeModalDialogManager =
                 new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
@@ -729,7 +730,7 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManagerMock);
 
         FakeModalDialogManager fakeModalDialogManager =
                 new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
