@@ -226,6 +226,96 @@ IN_PROC_BROWSER_TEST_F(BaseUrlLegacyBehaviorIframeTest,
   EXPECT_EQ(GURL("about:blank"), new_root->child_at(0)->current_url());
 }
 
+// A test class to test functionality with and without both OOPSIF and the
+// new about:srcdoc navigation blocking feature.
+class SrcdocBlockingIsolatedSandboxedIframeTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SrcdocBlockingIsolatedSandboxedIframeTest() {
+    feature_list_.InitWithFeatureStates(
+        {{blink::features::kIsolateSandboxedIframes, std::get<0>(GetParam())},
+         {features::kBlockCrossOriginInitiatedAboutSrcdocNavigations,
+          std::get<1>(GetParam())}});
+  }
+
+  void SetUpOnMainThread() override {
+    // Support multiple sites on the test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+  void StartEmbeddedServer() {
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};  // class SrcdocBlockingIsolatedSandboxedIframeTest
+
+// Test the scenario where a Site A mainframe contains a Site B subframe which
+// in turn has a sandboxed srcdoc frame. If A tries to directly navigate
+// the srcdoc to about:srcdoc, we shouldn't get a renderer kill.
+IN_PROC_BROWSER_TEST_P(SrcdocBlockingIsolatedSandboxedIframeTest,
+                       NoRendererKillForCrossOriginInitiatorWithoutBlocking) {
+  StartEmbeddedServer();
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  GURL subframe_url(embedded_test_server()->GetURL(
+      "b.com", "/page_with_sandboxed_srcdoc_iframe.html"));
+  {
+    TestNavigationObserver srcdoc_observer(shell()->web_contents());
+    EXPECT_TRUE(NavigateFrameToURL(child, subframe_url));
+    srcdoc_observer.Wait();
+  }
+
+  // The srcdoc should have its parent's origin and base url.
+  FrameTreeNode* srcdoc_frame = child->child_at(0);
+  EXPECT_TRUE(
+      srcdoc_frame->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(url::SchemeHostPort(subframe_url),
+            srcdoc_frame->current_frame_host()
+                ->GetLastCommittedOrigin()
+                .GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_EQ(subframe_url,
+            GURL(EvalJs(srcdoc_frame, "document.baseURI").ExtractString()));
+
+  // Have mainframe attempt to navigate srcdoc to about:srcdoc.
+  {
+    TestNavigationObserver srcdoc_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, "frames[0][0].location.href = 'about:srcdoc';"));
+    srcdoc_observer.Wait();
+  }
+
+  // Check final origin and base url.
+  bool srcdoc_navigations_blocked = std::get<1>(GetParam());
+  std::string expected_base_url_str = srcdoc_navigations_blocked
+                                          ? "chrome-error://chromewebdata/"
+                                          : "about:srcdoc";
+  EXPECT_EQ(expected_base_url_str,
+            EvalJs(srcdoc_frame, "document.baseURI").ExtractString());
+
+  EXPECT_TRUE(
+      srcdoc_frame->current_frame_host()->GetLastCommittedOrigin().opaque());
+  if (srcdoc_navigations_blocked) {
+    EXPECT_EQ(url::SchemeHostPort(), srcdoc_frame->current_frame_host()
+                                         ->GetLastCommittedOrigin()
+                                         .GetTupleOrPrecursorTupleIfOpaque());
+  } else {
+    EXPECT_EQ(url::SchemeHostPort(subframe_url),
+              srcdoc_frame->current_frame_host()
+                  ->GetLastCommittedOrigin()
+                  .GetTupleOrPrecursorTupleIfOpaque());
+  }
+}
+
 // Test class to allow testing srcdoc functionality both with and without
 // `kIsolateSandboxedIframes` enabled. The tests verify the correct operation of
 // plumbing of both srcdoc attribute values, as well as the srcdoc frame's
@@ -2531,6 +2621,18 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "isolated" : "non_isolated";
                          });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SrcdocBlockingIsolatedSandboxedIframeTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      bool srcdoc_isolated = std::get<0>(info.param);
+      bool srcdoc_navigation_blocking = std::get<1>(info.param);
+      return base::StringPrintf(
+          "%s_%s", srcdoc_isolated ? "isolated" : "nonIsolated",
+          srcdoc_navigation_blocking ? "navigationBlocking"
+                                     : "navigationNonBlocking");
+    });
 INSTANTIATE_TEST_SUITE_P(All,
                          BaseUrlInheritanceIframeTest,
                          testing::Bool(),

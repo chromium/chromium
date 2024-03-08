@@ -2212,6 +2212,26 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     debug_info_builder.Append(", url=");
     debug_info_builder.Append(owner_document->Url().BaseAsString());
     debug_info_builder.Append(")");
+  } else if (url_.IsAboutSrcdocURL()) {
+    // If there's no owner_document and this is a srcdoc load, then get the
+    // origin from the remote parent. A srcdoc navigation with no owner_document
+    // can only happen if the iframe is sandboxed and isolated sandboxed frames
+    // is enabled In that case, copy the origin from the remote parent
+    // here—though this origin will only be used to derive the actual opaque
+    // origin later.
+    // TODO(https://crbug.com/328279696): this block can be removed once the
+    // about:srcdoc navigation blocking finishes rolling out, as then the
+    // initiator can never be cross-origin to the parent.
+    debug_info_builder.Append("about_srcdoc_with_remote_parent");
+    // Verify this is a sandboxed srcdoc frame.
+    CHECK((policy_container_->GetPolicies().sandbox_flags &
+           network::mojom::blink::WebSandboxFlags::kOrigin) !=
+          network::mojom::blink::WebSandboxFlags::kNone);
+    origin = frame_->Tree()
+                 .Parent()
+                 ->GetSecurityContext()
+                 ->GetSecurityOrigin()
+                 ->IsolatedCopy();
   } else {
     debug_info_builder.Append("use_url_with_precursor");
     // Otherwise, create an origin that propagates precursor information
