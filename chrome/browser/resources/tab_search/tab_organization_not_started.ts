@@ -40,7 +40,11 @@ export class TabOrganizationNotStartedElement extends
 
   static get properties() {
     return {
-      showFre: Boolean,
+      showFre: {
+        type: Boolean,
+        value: false,
+      },
+
       account_: Object,
       sync_: Object,
     };

@@ -49,10 +49,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
       availableHeight: {
         type: Number,
         observer: 'onAvailableHeightChange_',
+        value: 0,
       },
 
       multiTabOrganization: {
         type: Boolean,
+        value: false,
         reflectToAttribute: true,
       },
 

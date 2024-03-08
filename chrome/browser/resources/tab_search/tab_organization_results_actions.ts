@@ -23,8 +23,15 @@ export class TabOrganizationResultsActionsElement extends PolymerElement {
 
   static get properties() {
     return {
-      multipleOrganizations: Boolean,
-      showClear: Boolean,
+      multipleOrganizations: {
+        type: Boolean,
+        value: false,
+      },
+
+      showClear: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 

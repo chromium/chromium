@@ -43,16 +43,30 @@ export class TabOrganizationGroupElement extends PolymerElement {
         observer: 'onTabsChange_',
       },
 
-      name: String,
-      multiTabOrganization: Boolean,
-      organizationId: Number,
+      name: {
+        type: String,
+        value: '',
+      },
+
+      multiTabOrganization: {
+        type: Boolean,
+        value: false,
+      },
+
+      organizationId: {
+        type: Number,
+        value: -1,
+      },
 
       lastFocusedIndex_: {
         type: Number,
         value: 0,
       },
 
-      showInput_: Boolean,
+      showInput_: {
+        type: Boolean,
+        value: false,
+      },
 
       tabDatas_: {
         type: Array,

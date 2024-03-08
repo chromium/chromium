@@ -46,8 +46,12 @@ export class TabOrganizationPageElement extends PolymerElement {
   static get properties() {
     return {
       state_: Object,
-      availableHeight_: Number,
       session_: Object,
+
+      availableHeight_: {
+        type: Number,
+        value: 0,
+      },
 
       tabOrganizationStateEnum_: {
         type: Object,
@@ -69,7 +73,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private state_: TabOrganizationState = TabOrganizationState.kInitializing;
-  private availableHeight_: number = 0;
+  private availableHeight_: number;
   private session_: TabOrganizationSession|null;
   private showFRE_: boolean;
   private multiTabOrganization_: boolean;

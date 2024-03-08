@@ -26,7 +26,11 @@ export class TabOrganizationFailureElement extends PolymerElement {
   static get properties() {
     return {
       error: Object,
-      showFre: Boolean,
+
+      showFre: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
