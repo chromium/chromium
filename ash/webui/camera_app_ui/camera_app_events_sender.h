@@ -30,6 +30,18 @@ class CameraAppEventsSender : public camera_app::mojom::EventsSender {
   void SendCaptureEvent(
       camera_app::mojom::CaptureEventParamsPtr params) override;
 
+  void SendAndroidIntentEvent(
+      camera_app::mojom::AndroidIntentEventParamsPtr params) override;
+
+  void SendOpenPTZPanelEvent(
+      camera_app::mojom::OpenPTZPanelEventParamsPtr params) override;
+
+  void SendDocScanActionEvent(
+      camera_app::mojom::DocScanActionEventParamsPtr params) override;
+
+  void SendDocScanResultEvent(
+      camera_app::mojom::DocScanResultEventParamsPtr params) override;
+
  private:
   std::string system_language_;
 

@@ -38,6 +38,9 @@ export type {
 export {
   AndroidIntentResultType,
   AspectRatioSet,
+  DocScanActionType,
+  DocScanFixType,
+  DocScanResultType,
   Facing,
   GifResultType,
   GridType,

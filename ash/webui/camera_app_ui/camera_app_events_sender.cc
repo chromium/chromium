@@ -199,4 +199,57 @@ void CameraAppEventsSender::SendCaptureEvent(
           .SetTimelapseSpeed(static_cast<int64_t>(GetTimelapseSpeed(params)))));
 }
 
+void CameraAppEventsSender::SendAndroidIntentEvent(
+    camera_app::mojom::AndroidIntentEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      cros_events::CameraApp_AndroidIntent()
+          .SetMode(static_cast<int64_t>(params->mode))
+          .SetShouldHandleResult(
+              static_cast<int64_t>(params->should_handle_result))
+          .SetShouldDownscale(static_cast<int64_t>(params->should_downscale))
+          .SetIsSecure(static_cast<int64_t>(params->is_secure))));
+}
+
+void CameraAppEventsSender::SendOpenPTZPanelEvent(
+    camera_app::mojom::OpenPTZPanelEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      cros_events::CameraApp_OpenPTZPanel()
+          .SetSupportPan(static_cast<int64_t>(params->support_pan))
+          .SetSupportTilt(static_cast<int64_t>(params->support_tilt))
+          .SetSupportZoom(static_cast<int64_t>(params->support_zoom))));
+}
+
+void CameraAppEventsSender::SendDocScanActionEvent(
+    camera_app::mojom::DocScanActionEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::CameraApp_DocScanAction().SetActionType(
+          static_cast<int64_t>(params->action_type))));
+}
+
+void CameraAppEventsSender::SendDocScanResultEvent(
+    camera_app::mojom::DocScanResultEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::CameraApp_DocScanResult()
+                    .SetResultType(static_cast<int64_t>(params->result_type))
+                    .SetFixTypes(static_cast<int64_t>(params->fix_types_mask))
+                    .SetFixCount(static_cast<int64_t>(params->fix_count))
+                    .SetPageCount(static_cast<int64_t>(params->page_count))));
+}
+
 }  // namespace ash

@@ -533,6 +533,14 @@ export function sendIntentEvent({intent, result}: IntentEventParam): void {
         [GaMetricDimension.SHOULD_DOWN_SCALE, boolToIntString(shouldDownScale)],
         [GaMetricDimension.IS_SECURE, boolToIntString(isSecure)],
       ]));
+  void (async () => {
+    (await getEventsSender()).sendAndroidIntentEvent({
+      mode: mojoTypeUtils.convertModeToMojo(mode),
+      shouldHandleResult,
+      shouldDownscale: shouldDownScale,
+      isSecure,
+    });
+  })();
 }
 
 export interface ErrorEventParam {
@@ -621,6 +629,13 @@ export function sendOpenPTZPanelEvent(
         [GaMetricDimension.SUPPORT_TILT, boolToIntString(capabilities.tilt)],
         [GaMetricDimension.SUPPORT_ZOOM, boolToIntString(capabilities.zoom)],
       ]));
+  void (async () => {
+    (await getEventsSender()).sendOpenPTZPanelEvent({
+      supportPan: capabilities.pan,
+      supportTilt: capabilities.tilt,
+      supportZoom: capabilities.zoom,
+    });
+  })();
 }
 
 export enum DocScanFixType {
@@ -656,6 +671,14 @@ export function sendDocScanResultEvent(
         [GaMetricDimension.DOC_FIX_TYPE, String(fixType)],
         [GaMetricDimension.DOC_PAGE_COUNT, String(pageCount)],
       ]));
+  void (async () => {
+    (await getEventsSender()).sendDocScanResultEvent({
+      resultType: mojoTypeUtils.convertDocScanResultTypeToMojo(action),
+      fixTypesMask: mojoTypeUtils.convertDocScanFixTypeToMojo(fixType),
+      fixCount,
+      pageCount,
+    });
+  })();
 }
 
 export enum DocScanActionType {
@@ -672,6 +695,11 @@ export function sendDocScanEvent(action: DocScanActionType): void {
     eventCategory: 'doc-scan',
     eventAction: action,
   });
+  void (async () => {
+    (await getEventsSender()).sendDocScanActionEvent({
+      actionType: mojoTypeUtils.convertDocScanActionTypeToMojo(action),
+    });
+  })();
 }
 
 export enum LowStorageActionType {

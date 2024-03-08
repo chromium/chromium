@@ -4,6 +4,9 @@
 
 import {assertNotReached} from '../assert.js';
 import {
+  DocScanActionType,
+  DocScanFixType,
+  DocScanResultActionType,
   GifResultType,
   IntentResultType,
   LaunchType,
@@ -228,4 +231,57 @@ export function convertRecordTypeToMojo(recordType: RecordType):
     default:
       return mojoType.RecordType.kNotRecording;
   }
+}
+
+/**
+ * Converts the document scanning action type to the mojo enum to be used in
+ * metrics.
+ */
+export function convertDocScanActionTypeToMojo(actionType: DocScanActionType):
+    mojoType.DocScanActionType {
+  switch (actionType) {
+    case DocScanActionType.ADD_PAGE:
+      return mojoType.DocScanActionType.kAddPage;
+    case DocScanActionType.DELETE_PAGE:
+      return mojoType.DocScanActionType.kDeletePage;
+    case DocScanActionType.FIX:
+      return mojoType.DocScanActionType.kFix;
+    default:
+      assertNotReached();
+  }
+}
+
+/**
+ * Converts the document scanning result type to the mojo enum to be used in
+ * metrics.
+ */
+export function convertDocScanResultTypeToMojo(
+    resultType: DocScanResultActionType): mojoType.DocScanResultType {
+  switch (resultType) {
+    case DocScanResultActionType.CANCEL:
+      return mojoType.DocScanResultType.kCancel;
+    case DocScanResultActionType.SAVE_AS_PDF:
+      return mojoType.DocScanResultType.kSaveAsPdf;
+    case DocScanResultActionType.SAVE_AS_PHOTO:
+      return mojoType.DocScanResultType.kSaveAsPhoto;
+    case DocScanResultActionType.SHARE:
+      return mojoType.DocScanResultType.kShare;
+    default:
+      assertNotReached();
+  }
+}
+
+/**
+ * Converts the document scanning fix type to the integer aligned with the
+ * definition in the mojo enum that can be used in metrics.
+ */
+export function convertDocScanFixTypeToMojo(fixType: number): number {
+  let mojoFixTypes = 0;
+  if ((fixType & DocScanFixType.CORNER) !== 0) {
+    mojoFixTypes |= mojoType.DocScanFixType.kCorner;
+  }
+  if ((fixType & DocScanFixType.ROTATION) !== 0) {
+    mojoFixTypes |= mojoType.DocScanFixType.kRotation;
+  }
+  return mojoFixTypes;
 }

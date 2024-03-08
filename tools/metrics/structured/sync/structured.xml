@@ -1069,6 +1069,96 @@
     </metric>
   </event>
 
+  <event name="CameraApp.AndroidIntent">
+    <summary>
+      Event recorded when the camera app is successfully handled an Android camera
+      intent.
+    </summary>
+    <metric name="Mode" type="int">
+      <summary>
+        The mode where the Android camera intent is corresponding to.
+      </summary>
+    </metric>
+    <metric name="ShouldHandleResult" type="int">
+      <summary>
+        Boolean indicating whether the camera app should handle the captured result
+        for the Android camera intent.
+      </summary>
+    </metric>
+    <metric name="ShouldDownscale" type="int">
+      <summary>
+        Boolean indicating whether the camera app should downscale the captured
+        result for the Android camera intent.
+      </summary>
+    </metric>
+    <metric name="IsSecure" type="int">
+      <summary>
+        Boolean indicating whether the camera intent is launched under the secure
+        mode.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.OpenPTZPanel">
+    <summary>
+      Event recorded when the PTZ panel is opened in the camera app.
+    </summary>
+    <metric name="SupportPan" type="int">
+      <summary>
+        Boolean indicating whether pan control is supported on the current camera.
+      </summary>
+    </metric>
+    <metric name="SupportTilt" type="int">
+      <summary>
+        Boolean indicating whether tilt control is supported on the current camera.
+      </summary>
+    </metric>
+    <metric name="SupportZoom" type="int">
+      <summary>
+        Boolean indicating whether zoom control is supported on the current camera.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.DocScanAction">
+    <summary>
+      Event recorded when action related to document scanning is performed.
+    </summary>
+    <metric name="ActionType" type="int">
+      <summary>
+        The type of the document scanning related action.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.DocScanResult">
+    <summary>
+      Event recorded when the user finishes a document scanning session.
+    </summary>
+    <metric name="ResultType" type="int">
+      <summary>
+        The type of the result of this document scanning session.
+      </summary>
+    </metric>
+    <metric name="FixTypes" type="int">
+      <summary>
+        Integer used as a bit mask indicating the type(s) of fix that the user
+        applied on the document scanning result.
+      </summary>
+    </metric>
+    <metric name="FixCount" type="int">
+      <summary>
+        Integer indicating how many times the user performed a fix on the document
+        scanning result.
+      </summary>
+    </metric>
+    <metric name="PageCount" type="int">
+      <summary>
+        Integer indicating how many pages are there in the document scanning result.
+      </summary>
+    </metric>
+  </event>
+
   <event name="OOBE.GaiaSigninRequested" force_record="true">
     <summary>
       Recorded after the password is entered for authentication in the GAIA Sign-

@@ -152,4 +152,93 @@ TEST_F(CameraAppEventsSenderTest, Capture) {
   EXPECT_EQ(received_event.metric_values(), expected_event.metric_values());
 }
 
+TEST_F(CameraAppEventsSenderTest, AndroidIntent) {
+  auto params = ash::camera_app::mojom::AndroidIntentEventParams::New();
+  params->mode = ash::camera_app::mojom::Mode::kVideo;
+  params->should_handle_result = true;
+  params->should_downscale = true;
+  params->is_secure = true;
+
+  cros_events::CameraApp_AndroidIntent expected_event;
+  expected_event.SetMode(static_cast<int64_t>(params->mode))
+      .SetShouldHandleResult(static_cast<int64_t>(params->should_handle_result))
+      .SetShouldDownscale(static_cast<int64_t>(params->should_downscale))
+      .SetIsSecure(static_cast<int64_t>(params->is_secure));
+
+  events_sender_->SendAndroidIntentEvent(std::move(params));
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+
+  auto& received_event = events[0];
+  EXPECT_EQ(received_event.event_name(), expected_event.event_name());
+  EXPECT_EQ(received_event.metric_values(), expected_event.metric_values());
+}
+
+TEST_F(CameraAppEventsSenderTest, OpenPTZPanel) {
+  auto params = ash::camera_app::mojom::OpenPTZPanelEventParams::New();
+  params->support_pan = true;
+  params->support_tilt = true;
+  params->support_zoom = true;
+
+  cros_events::CameraApp_OpenPTZPanel expected_event;
+  expected_event.SetSupportPan(static_cast<int64_t>(params->support_pan))
+      .SetSupportTilt(static_cast<int64_t>(params->support_tilt))
+      .SetSupportZoom(static_cast<int64_t>(params->support_zoom));
+
+  events_sender_->SendOpenPTZPanelEvent(std::move(params));
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+
+  auto& received_event = events[0];
+  EXPECT_EQ(received_event.event_name(), expected_event.event_name());
+  EXPECT_EQ(received_event.metric_values(), expected_event.metric_values());
+}
+
+TEST_F(CameraAppEventsSenderTest, DocScanAction) {
+  auto params = ash::camera_app::mojom::DocScanActionEventParams::New();
+  params->action_type = ash::camera_app::mojom::DocScanActionType::kFix;
+
+  cros_events::CameraApp_DocScanAction expected_event;
+  expected_event.SetActionType(static_cast<int64_t>(params->action_type));
+
+  events_sender_->SendDocScanActionEvent(std::move(params));
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+
+  auto& received_event = events[0];
+  EXPECT_EQ(received_event.event_name(), expected_event.event_name());
+  EXPECT_EQ(received_event.metric_values(), expected_event.metric_values());
+}
+
+TEST_F(CameraAppEventsSenderTest, DocScanResult) {
+  auto params = ash::camera_app::mojom::DocScanResultEventParams::New();
+  params->result_type = ash::camera_app::mojom::DocScanResultType::kShare;
+  params->fix_types_mask =
+      static_cast<uint32_t>(ash::camera_app::mojom::DocScanFixType::kCorner);
+  params->fix_count = 1;
+  params->page_count = 1;
+
+  cros_events::CameraApp_DocScanResult expected_event;
+  expected_event.SetResultType(static_cast<int64_t>(params->result_type))
+      .SetFixTypes(static_cast<int64_t>(params->fix_types_mask))
+      .SetFixCount(static_cast<int64_t>(params->fix_count))
+      .SetPageCount(static_cast<int64_t>(params->page_count));
+
+  events_sender_->SendDocScanResultEvent(std::move(params));
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+
+  auto& received_event = events[0];
+  EXPECT_EQ(received_event.event_name(), expected_event.event_name());
+  EXPECT_EQ(received_event.metric_values(), expected_event.metric_values());
+}
+
 }  // namespace ash

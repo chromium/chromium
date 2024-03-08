@@ -145,6 +145,53 @@ struct CaptureEventParams {
   CaptureDetails? capture_details;
 };
 
+struct AndroidIntentEventParams {
+  Mode mode;
+  bool should_handle_result;
+  bool should_downscale;
+  bool is_secure;
+};
+
+struct OpenPTZPanelEventParams {
+  bool support_pan;
+  bool support_tilt;
+  bool support_zoom;
+};
+
+enum DocScanActionType {
+  kAddPage,
+  kDeletePage,
+  kFix,
+};
+
+struct DocScanActionEventParams {
+  DocScanActionType action_type;
+};
+
+enum DocScanResultType {
+  kCancel,
+  kSaveAsPdf,
+  kSaveAsPhoto,
+  kShare,
+};
+
+enum DocScanFixType {
+  kCorner = 1,
+  kRotation = 2,
+  // Next enum value should be 4.
+};
+
+struct DocScanResultEventParams {
+  DocScanResultType result_type;
+
+  // A bit mask of the combination of `DocScanFixType` representing what kinds
+  // of fix are applied.
+  uint32 fix_types_mask;
+
+  int32 fix_count;
+  int32 page_count;
+};
+
 // This interface is used by CCA to send metrics to CrOS Events.
 interface EventsSender {
   // Sends an event to indicate a CCA session is started.
@@ -152,4 +199,16 @@ interface EventsSender {
 
   // Sends an event to indicate a capture is happened.
   SendCaptureEvent(CaptureEventParams params);
+
+  // Sends an event when an Android intent is handled by CCA.
+  SendAndroidIntentEvent(AndroidIntentEventParams params);
+
+  // Sends an event when the PTZ panel is opened.
+  SendOpenPTZPanelEvent(OpenPTZPanelEventParams params);
+
+  // Sends an event when a document scanning related action is performed.
+  SendDocScanActionEvent(DocScanActionEventParams params);
+
+  // Sends an event when the user finishes a document scanning session.
+  SendDocScanResultEvent(DocScanResultEventParams params);
 };
