@@ -984,16 +984,24 @@ TEST_P(
 // TODO(crbug.com/325646493): Cleanup
 // AutofillSuggestionGeneratorTest.AutofillCreditCardBenefitsLabelTest setup and
 // parameters.
+// TODO(crbug.com/1477646): Add unittest coverage that credit cards with
+// benefits do not have benefit labels in suggestions when flag is disabled.
+// Params:
+// 1. Function reference to call which creates the appropriate credit card
+// benefit for the unittest.
+// 2. Issuer ID which is set for the credit card with benefits.
 class AutofillCreditCardBenefitsLabelTest
     : public AutofillSuggestionGeneratorTest,
       public ::testing::WithParamInterface<
-          base::FunctionRef<CreditCardBenefit()>> {
+          std::tuple<base::FunctionRef<CreditCardBenefit()>, std::string>> {
  public:
   void SetUp() override {
     AutofillSuggestionGeneratorTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardBenefits,
-                              features::kAutofillEnableVirtualCardMetadata},
+        /*enabled_features=*/
+        {features::kAutofillEnableCardBenefitsForAmericanExpress,
+         features::kAutofillEnableCardBenefitsForCapitalOne,
+         features::kAutofillEnableVirtualCardMetadata},
         /*disabled_features=*/{});
 
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
@@ -1036,10 +1044,11 @@ class AutofillCreditCardBenefitsLabelTest
         /*guid=*/"00000000-0000-0000-0000-000000000001",
         /*server_id=*/"server_id1",
         /*instrument_id=*/instrument_id);
+    card_.set_issuer_id(std::get<1>(GetParam()));
     personal_data().AddServerCreditCard(card_);
   }
 
-  CreditCardBenefit GetBenefit() const { return GetParam()(); }
+  CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
 
   const CreditCard& card() { return card_; }
 
@@ -1056,9 +1065,11 @@ class AutofillCreditCardBenefitsLabelTest
 INSTANTIATE_TEST_SUITE_P(
     AutofillSuggestionGeneratorTest,
     AutofillCreditCardBenefitsLabelTest,
-    ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
-                      &test::GetActiveCreditCardCategoryBenefit,
-                      &test::GetActiveCreditCardMerchantBenefit));
+    testing::Combine(
+        ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
+                          &test::GetActiveCreditCardCategoryBenefit,
+                          &test::GetActiveCreditCardMerchantBenefit),
+        ::testing::Values("amex", "capitalone")));
 
 // Checks that for FPAN suggestions that the benefit description is displayed.
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {

@@ -1053,7 +1053,10 @@ bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
 }
 
 bool PersonalDataManager::IsPaymentCardBenefitsEnabled() {
-  return base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefits) &&
+  return (base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardBenefitsForAmericanExpress) ||
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardBenefitsForCapitalOne)) &&
          prefs::IsPaymentCardBenefitsEnabled(pref_service_);
 }
 

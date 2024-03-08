@@ -1238,9 +1238,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("cvcStorageAvailable", CheckCvcStorageAvailability());
 
-  html_source->AddBoolean("autofillCardBenefitsAvailable",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillEnableCardBenefits));
+  html_source->AddBoolean(
+      "autofillCardBenefitsAvailable",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCardBenefitsForAmericanExpress) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableCardBenefitsForCapitalOne));
 
   html_source->AddBoolean(
       "autofillEnablePaymentsMandatoryReauth",

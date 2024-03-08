@@ -240,8 +240,7 @@ export class SettingsCreditCardListEntryElement extends
   }
 
   private isCardBenefitsProductUrlAvailable_(): boolean {
-    return loadTimeData.getBoolean('autofillCardBenefitsAvailable') &&
-        !!this.creditCard.productTermsUrl;
+    return !!this.creditCard.productTermsUrl;
   }
 
   private getCardBenefitsProductUrl_(): string {

@@ -211,7 +211,7 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * Checks if card benefits feature flag is enabled.
+       * Checks if a card benefits feature flag is enabled.
        */
       cardBenefitsFlagEnabled_: {
         type: Boolean,

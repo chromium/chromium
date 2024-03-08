@@ -2076,8 +2076,9 @@ std::optional<Suggestion::Text>
 AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
     const CreditCard& credit_card,
     const url::Origin& origin) const {
-  // Benefits are only displayed for app locale set to U.S. English.
-  if (!base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefits) ||
+  // Benefits are only displayed if a card is eligible and the app locale is set
+  // to U.S English.
+  if (!credit_card.IsCardEligibleForBenefits() ||
       personal_data().app_locale() != "en-US") {
     return std::nullopt;
   }

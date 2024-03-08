@@ -559,7 +559,7 @@ suite('PaymentsSectionCardRows', function() {
       creditCard.metadata.isLocal = false;
       creditCard.metadata.isVirtualCardEnrollmentEligible = false;
       creditCard.metadata.isVirtualCardEnrolled = true;
-      if (productTermsUrlAvailable) {
+      if (benefitsAvailable && productTermsUrlAvailable) {
         creditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(
@@ -627,7 +627,7 @@ suite('PaymentsSectionCardRows', function() {
       creditCard.metadata.isVirtualCardEnrollmentEligible = false;
       creditCard.metadata.isVirtualCardEnrolled = true;
       creditCard.cvc = '***';
-      if (productTermsUrlAvailable) {
+      if (benefitsAvailable && productTermsUrlAvailable) {
         creditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(
@@ -692,7 +692,7 @@ suite('PaymentsSectionCardRows', function() {
       const serverCreditCard = createCreditCardEntry();
       assertTrue(!!serverCreditCard.metadata);
       serverCreditCard.metadata.isLocal = false;
-      if (productTermsUrlAvailable) {
+      if (benefitsAvailable && productTermsUrlAvailable) {
         serverCreditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(
@@ -758,7 +758,7 @@ suite('PaymentsSectionCardRows', function() {
       assertTrue(!!serverCreditCard.metadata);
       serverCreditCard.metadata.isLocal = false;
       serverCreditCard.cvc = '***';
-      if (productTermsUrlAvailable) {
+      if (benefitsAvailable && productTermsUrlAvailable) {
         serverCreditCard.productTermsUrl = 'https://google.com/';
       }
       await createPaymentsSection(

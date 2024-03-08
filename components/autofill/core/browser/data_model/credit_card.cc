@@ -1253,6 +1253,15 @@ bool CreditCard::HasRichCardArtImageFromMetadata() const {
          card_art_url().spec() != kCapitalOneCardArtUrl;
 }
 
+bool CreditCard::IsCardEligibleForBenefits() const {
+  return (issuer_id() == kAmexCardIssuerId &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardBenefitsForAmericanExpress)) ||
+         (issuer_id() == kCapitalOneCardIssuerId &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardBenefitsForCapitalOne));
+}
+
 void CreditCard::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(CREDIT_CARD_NAME_FULL);
   supported_types->insert(CREDIT_CARD_NAME_FIRST);
