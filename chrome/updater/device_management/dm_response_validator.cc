@@ -302,12 +302,13 @@ bool DMResponseValidator::ValidateNewPublicKey(
   }
 
   // Verifies that the new public key verification data is properly signed
-  // by the pinned key.
+  // by the pinned key. The DM server always signs the new key using SHA256
+  // algorithm.
   if (!VerifySignature(
           fetch_response.new_public_key_verification_data(),
           policy::GetPolicyVerificationKey(),
           fetch_response.new_public_key_verification_data_signature(),
-          GetResponseSignatureType(fetch_response))) {
+          crypto::SignatureVerifier::RSA_PKCS1_SHA256)) {
     VLOG(1) << "Public key verification data is not signed correctly.";
     validation_result.status =
         PolicyValidationResult::Status::kValidationBadKeyVerificationSignature;

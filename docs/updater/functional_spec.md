@@ -944,6 +944,24 @@ installs (per user)`.
 The updater then downloads and installs the application on all machines where
 the policy is deployed, and where the application is not already installed.
 
+#### CBCM policy cache
+The updater fetches all machine level app CBCM policies and caches them in the
+file system.  The cached policy files are global readable for other apps to
+consume. Location of the policy cache folder:
+
+* **Windows**: `%PROGRAMFILESX86%\{COMPANY_SHORTNAME}\Policies`
+* **macOS**: `/Library/{COMPANY_SHORTNAME}/GoogleSoftwareUpdate/DeviceManagement`
+* **Linux**: `/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/DeviceManagement`
+
+The policies are signed. The verification chain is:
+
+* A special file called `CachedPolicyInfo` contains a public signing key
+  with its verification data. This public key verification data is signed by
+  the pinned key always using `RSA_PKCS1_SHA256`.
+* Each type of policy is saved at
+  `base64_encoding{policy_type}/PolicyFetchResponse`. This file is signed by
+  the key in `CachedPolicyInfo` using the algorithm specified in this file.
+
 ### Dynamic Install Parameters
 
 #### `needsadmin`
