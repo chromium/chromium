@@ -1083,7 +1083,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
-            "os": "Mac-13.5",
+            "os": "Mac-14",
         },
     ),
 )
