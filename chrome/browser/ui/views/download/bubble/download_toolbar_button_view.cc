@@ -148,6 +148,7 @@ gfx::Insets GetSecurityViewMargin() {
   return gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL));
 }
+
 }  // namespace
 
 DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
@@ -474,8 +475,9 @@ bool DownloadToolbarButtonView::IsShowingDetails() const {
 }
 
 void DownloadToolbarButtonView::UpdateIcon() {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
 
   // Schedule paint to update the progress ring.
   if (redraw_progress_soon_) {
@@ -589,15 +591,17 @@ void DownloadToolbarButtonView::OpenSecurityDialog(
 
 void DownloadToolbarButtonView::CloseDialog(
     views::Widget::ClosedReason reason) {
-  if (bubble_delegate_)
+  if (bubble_delegate_) {
     bubble_delegate_->GetWidget()->CloseWithReason(reason);
+  }
 }
 
 void DownloadToolbarButtonView::ResizeDialog() {
   // Resize may be called when there is no delegate, e.g. during bubble
   // construction.
-  if (bubble_delegate_)
+  if (bubble_delegate_) {
     bubble_delegate_->SizeToContents();
+  }
 }
 
 void DownloadToolbarButtonView::OnDialogInteracted() {
@@ -651,6 +655,12 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
         browser_view->immersive_mode_controller()->GetRevealedLock(
             ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
+
+  // If the IPH is showing, close it to avoid showing the download dialog over
+  // it.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHDeepScanPromptRemovalFeature,
+      user_education::EndFeaturePromoReason::kAbortPromo);
 
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       this, views::BubbleBorder::TOP_RIGHT);
@@ -766,14 +776,12 @@ void DownloadToolbarButtonView::BubbleCloser::OnEvent(const ui::Event& event) {
 }
 
 void DownloadToolbarButtonView::ShowIphPromo() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Profile* profile = browser_->profile();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Don't show IPH Promo if safe browsing level is set by policy.
-  if (safe_browsing::SafeBrowsingPolicyHandler::
-          IsSafeBrowsingProtectionLevelSetByPolicy(profile->GetPrefs())) {
-    return;
-  }
-  if (safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
+  if (!safe_browsing::SafeBrowsingPolicyHandler::
+          IsSafeBrowsingProtectionLevelSetByPolicy(profile->GetPrefs()) &&
+      safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
           safe_browsing::SafeBrowsingState::STANDARD_PROTECTION &&
       !profile->IsOffTheRecord() &&
       browser_->window()->MaybeShowFeaturePromo(
@@ -781,6 +789,29 @@ void DownloadToolbarButtonView::ShowIphPromo() {
     return;
   }
 #endif
+
+  // Notify users that we're removing the ESB deep scanning
+  // prompt. Users should only see the prompt if:
+  // - They're not incognito, since we don't want to imply deep scans
+  //   happen incognito
+  // - They're ESB users, since this isn't relevant to SSB users
+  // - They didn't opt-in with the friendlier settings strings, since
+  //   then they should know this is possible.
+  // - chrome://settings/security currently shows the friendlier
+  //   settings strings, so that clicking "Settings" on the IPH would
+  //   show them strings saying this is possible.
+  if (!profile->IsOffTheRecord() &&
+      safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
+      !profile->GetPrefs()->GetBoolean(
+          prefs::kSafeBrowsingEsbOptInWithFriendlierSettings) &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
+      browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHDeepScanPromptRemovalFeature)) {
+    profile->GetPrefs()->SetBoolean(
+        prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, true);
+    return;
+  }
 }
 
 void DownloadToolbarButtonView::OnPartialViewClosed() {

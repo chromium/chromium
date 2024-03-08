@@ -841,6 +841,23 @@ void MaybeRegisterChromeFeaturePromos(
                       .SetBubbleArrow(HelpBubbleArrow::kBottomRight)));
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+  // kIPHDeepScanPromptRemovalFeature
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHDeepScanPromptRemovalFeature,
+          kToolbarDownloadButtonElementId, IDS_DEEP_SCANNING_PROMPT_REMOVAL_IPH,
+          IDS_DEEP_SCANNING_PROMPT_REMOVAL_IPH_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowSafeBrowsingEnhancedProtection(browser);
+              }))
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 }
 
 void MaybeRegisterChromeTutorials(

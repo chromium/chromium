@@ -41562,6 +41562,8 @@ should be able to be added at any place in this file.
   <suffix name="DataSaverMilestonePromo"
       label="For DataSaverMilestonePromo feature."/>
   <suffix name="DataSaverPreview" label="For DataSaverPreview feature."/>
+  <suffix name="DeepScanPromptRemoval"
+      label="For deep scan prompt removal feature."/>
   <suffix name="DefaultSiteView" label="For DefaultSiteView feature."/>
   <suffix name="DesktopCustomizeChrome" label="For Customize Chrome feature."/>
   <suffix name="DesktopCustomizeChromeRefresh"

@@ -165,6 +165,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHComposeMenuNewBadgeFeature,
     &kIPHComposeMSBBSettingsFeature,
     &kIPHComposeNewBadgeFeature,
+    &kIPHDeepScanPromptRemovalFeature,
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDesktopCustomizeChromeRefreshFeature,
     &kIPHDesktopNewTabPageModulesCustomizeFeature,

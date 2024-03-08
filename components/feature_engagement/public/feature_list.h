@@ -303,6 +303,8 @@ DEFINE_VARIATION_PARAM(kIPHComposeNewBadgeFeature,
                        "IPH_ComposeNewBadgeFeature");
 DEFINE_VARIATION_PARAM(kIPHComposeMSBBSettingsFeature,
                        "IPH_ComposeMSBBSettingsFeature");
+DEFINE_VARIATION_PARAM(kIPHDeepScanPromptRemovalFeature,
+                       "IPH_DeepScanPromptRemoval");
 DEFINE_VARIATION_PARAM(kIPHDesktopCustomizeChromeFeature,
                        "IPH_DesktopCustomizeChrome");
 DEFINE_VARIATION_PARAM(kIPHDesktopCustomizeChromeRefreshFeature,
@@ -630,6 +632,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHComposeMenuNewBadgeFeature),
         VARIATION_ENTRY(kIPHComposeMSBBSettingsFeature),
         VARIATION_ENTRY(kIPHComposeNewBadgeFeature),
+        VARIATION_ENTRY(kIPHDeepScanPromptRemovalFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeRefreshFeature),
         VARIATION_ENTRY(kIPHDesktopNewTabPageModulesCustomizeFeature),
