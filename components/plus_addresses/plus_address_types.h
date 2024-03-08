@@ -17,6 +17,7 @@
 namespace plus_addresses {
 
 struct PlusProfile {
+  int64_t profile_id;
   std::string facet;
   std::string plus_address;
   bool is_confirmed;

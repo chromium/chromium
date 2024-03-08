@@ -18,13 +18,28 @@ namespace plus_addresses {
 // Owned by the `WebDatabaseBackend` managing the "Web Data" database, which is
 // owned by the `WebDataServiceWrapper` keyed service.
 //
-// Schema:
+// Schema to store PlusProfiles:
 // plus_addresses     A collection of confirmed `PlusProfile`s.
+//  profile_id        A unique identifier from the PlusAddress backend that
+//                    identifies it. Primary key.
 //  facet             The origin which this plus_address is associated with.
-//                    Primary key.
 //  plus_address      The email address associated with the facet. Even though
 //                    this is guaranteed to be a valid email address, the
 //                    database layer doesn't enforce this.
+//
+// Schema to implement `syncer::SyncMetadataStore`.
+// TODO(b/322147254): Implement the interface.
+// Even though plus addresses only use a single model type so far, more might
+// be added in the future. For this reason, tables are keyed by model type.
+// plus_address_sync_model_type_state
+//   model_type         int identifying the ModelType. Primary key.
+//   value              A serialized ModelTypeState record.
+//
+// plus_address_sync_entity_metadata
+//   model_type         int identifying the ModelType.
+//   storage_key        The storage_key of the sync EntitySpecifics.
+//     Composite (model_type, storage_key) primary key.
+//   value              A serialized EntityMetadata record.
 class PlusAddressTable : public WebDatabaseTable {
  public:
   PlusAddressTable();
@@ -39,7 +54,7 @@ class PlusAddressTable : public WebDatabaseTable {
   std::vector<PlusProfile> GetPlusProfiles() const;
 
   // Adds `profile` to the database and returns true if the operation succeeded.
-  // Trying to add a `profile` for an already existing facet will fail.
+  // Trying to add a `profile` for an already existing profile_id will fail.
   bool AddPlusProfile(const PlusProfile& profile);
 
   // Deletes all stored PlusProfiles, returning true if the operation succeeded.
@@ -54,10 +69,13 @@ class PlusAddressTable : public WebDatabaseTable {
   // Creates the table of the given name in the newest version of the schema,
   // unless it already exists. Returns true if the table exists now.
   bool CreatePlusAddressesTable();
+  bool CreateSyncModelTypeStateTable();
+  bool CreateSyncEntityMetadataTable();
 
   // Migration logic to a specific version. Returns true if the migration
   // succeeded.
-  bool MigrateToVersion126();
+  bool MigrateToVersion126_InitialSchema();
+  bool MigrateToVersion127_SyncSupport();
 };
 
 }  // namespace plus_addresses

@@ -16,7 +16,7 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 126;
+const int WebDatabase::kCurrentVersionNumber = 127;
 
 // To support users who are upgrading from older versions of Chrome, we enable
 // migrating from any database version newer than `kDeprecatedVersionNumber`.
@@ -64,9 +64,9 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 125 deletes the 'unmasked_credit_cards' table, and thus is no longer
-// compatible with version 124.
-const int kCompatibleVersionNumber = 125;
+// Version 127 changes the primary key of 'plus_addresses', and thus is no
+// longer compatible with version 126.
+const int kCompatibleVersionNumber = 127;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.

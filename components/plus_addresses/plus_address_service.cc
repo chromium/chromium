@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/rand_util.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -324,8 +325,13 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   // Update the database.
   webdata_service_->ClearPlusProfiles();
   for (const auto& [facet, plus_address] : map) {
+    // TODO(b/322147254): Receive profile_ids from the PlusAddress backend. For
+    // now, just assign any random identifier.
     webdata_service_->AddPlusProfile(
-        {.facet = facet, .plus_address = plus_address, .is_confirmed = true});
+        {.profile_id = static_cast<int64_t>(base::RandUint64() >> 1),
+         .facet = facet,
+         .plus_address = plus_address,
+         .is_confirmed = true});
   }
   // TODO(b/322147254): Re-reading the data we just wrote is unnecessary and the
   // local cache could be updated right away. This simply exists as a "sanity
