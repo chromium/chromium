@@ -494,6 +494,7 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
     case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:
     case EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION:
     case EventType::SECURITY_SENSITIVE_DOWNLOAD:
+    case EventType::DOWNLOAD_DEEP_SCAN:
       return false;
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
     case EventType::CSD_INTERSTITIAL_BYPASS:
@@ -529,6 +530,7 @@ bool SafeBrowsingMetricsCollector::IsSecuritySensitiveEventType(
     case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:
     case EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION:
     case EventType::SECURITY_SENSITIVE_DOWNLOAD:
+    case EventType::DOWNLOAD_DEEP_SCAN:
       return true;
   }
 }

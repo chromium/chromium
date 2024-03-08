@@ -79,8 +79,10 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     // The user bypasses an interstitial that is triggered by the local Safe
     // Browsing database through Android Safe Browsing API.
     ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS = 15,
+    // The user started a download deep scan
+    DOWNLOAD_DEEP_SCAN = 16,
 
-    kMaxValue = ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS
+    kMaxValue = DOWNLOAD_DEEP_SCAN
   };
 
   using EventTypeFilter = base::RepeatingCallback<bool(const EventType&)>;
