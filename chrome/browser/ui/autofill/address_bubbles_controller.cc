@@ -54,40 +54,16 @@ AddressBubblesController::~AddressBubblesController() {
   DCHECK(address_profile_save_prompt_callback_.is_null());
 }
 
-void AddressBubblesController::OfferSave(
+void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+    content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
     AutofillClient::SaveAddressProfilePromptOptions options,
-    AutofillClient::AddressProfileSavePromptCallback
-        address_profile_save_prompt_callback) {
-  // Don't show the bubble if it's already visible, and inform the backend.
-  if (bubble_view()) {
-    std::move(address_profile_save_prompt_callback)
-        .Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
-             std::nullopt);
-    return;
-  }
-  // If the user closed the bubble of the previous import process using the
-  // "Close" button without making a decision to "Accept" or "Deny" the prompt,
-  // a fallback icon is shown, so the user can get back to the prompt. In this
-  // specific scenario the import process is considered in progress (since the
-  // backend didn't hear back via the callback yet), but hidden. When a second
-  // prompt arrives, we finish the previous import process as "Ignored", before
-  // showing the 2nd prompt.
-  if (address_profile_save_prompt_callback_) {
-    std::move(address_profile_save_prompt_callback_)
-        .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
-  }
-
-  address_profile_ = profile;
-  original_profile_ = base::OptionalFromPtr(original_profile);
-  address_profile_save_prompt_callback_ =
-      std::move(address_profile_save_prompt_callback);
-  shown_by_user_gesture_ = false;
-  is_migration_to_account_ = options.is_migration_to_account;
-  if (options.show_prompt) {
-    Show();
-  }
+    AutofillClient::AddressProfileSavePromptCallback callback) {
+  AddressBubblesController::CreateForWebContents(web_contents);
+  AddressBubblesController::FromWebContents(web_contents)
+      ->SetUpAndShowBubble(profile, original_profile, options,
+                           std::move(callback));
 }
 
 void AddressBubblesController::OnUserDecision(
@@ -197,6 +173,42 @@ void AddressBubblesController::DoShowBubble() {
 
 bool AddressBubblesController::IsSaveBubble() const {
   return !original_profile_;
+}
+
+void AddressBubblesController::SetUpAndShowBubble(
+    const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
+    AutofillClient::SaveAddressProfilePromptOptions options,
+    AutofillClient::AddressProfileSavePromptCallback
+        address_profile_save_prompt_callback) {
+  // Don't show the bubble if it's already visible, and inform the backend.
+  if (bubble_view()) {
+    std::move(address_profile_save_prompt_callback)
+        .Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
+             std::nullopt);
+    return;
+  }
+  // If the user closed the bubble of the previous import process using the
+  // "Close" button without making a decision to "Accept" or "Deny" the prompt,
+  // a fallback icon is shown, so the user can get back to the prompt. In this
+  // specific scenario the import process is considered in progress (since the
+  // backend didn't hear back via the callback yet), but hidden. When a second
+  // prompt arrives, we finish the previous import process as "Ignored", before
+  // showing the 2nd prompt.
+  if (address_profile_save_prompt_callback_) {
+    std::move(address_profile_save_prompt_callback_)
+        .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
+  }
+
+  address_profile_ = profile;
+  original_profile_ = base::OptionalFromPtr(original_profile);
+  address_profile_save_prompt_callback_ =
+      std::move(address_profile_save_prompt_callback);
+  shown_by_user_gesture_ = false;
+  is_migration_to_account_ = options.is_migration_to_account;
+  if (options.show_prompt) {
+    Show();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressBubblesController);

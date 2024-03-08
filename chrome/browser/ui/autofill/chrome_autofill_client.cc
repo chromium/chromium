@@ -979,11 +979,8 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
       web_contents(), profile, original_profile,
       options.is_migration_to_account, std::move(callback));
 #else
-  AddressBubblesController::CreateForWebContents(web_contents());
-  AddressBubblesController* controller =
-      AddressBubblesController::FromWebContents(web_contents());
-  controller->OfferSave(profile, original_profile, options,
-                        std::move(callback));
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, original_profile, options, std::move(callback));
 #endif
 }
 

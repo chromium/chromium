@@ -36,8 +36,6 @@ class AddressBubblesControllerTest
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
-    AddressBubblesController::CreateForWebContents(
-        web_contents());
   }
 
   AddressBubblesController* controller() {
@@ -59,8 +57,8 @@ TEST_F(AddressBubblesControllerTest,
        DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
 
@@ -75,8 +73,8 @@ TEST_F(AddressBubblesControllerTest,
        DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
 
@@ -94,8 +92,8 @@ TEST_F(AddressBubblesControllerTest,
        WebContentsDestroyedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
 
@@ -125,8 +123,8 @@ TEST_F(AddressBubblesControllerTest,
 TEST_F(AddressBubblesControllerTest,
        BubbleShouldBeVisibleWithShowPrompt) {
   AutofillProfile profile = test::GetFullProfile();
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 
@@ -140,8 +138,8 @@ TEST_F(AddressBubblesControllerTest,
 TEST_F(AddressBubblesControllerTest,
        BubbleShouldBeInvisibleWithoutShowPrompt) {
   AutofillProfile profile = test::GetFullProfile();
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = false},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
   // Bubble is invisible but active
@@ -156,8 +154,8 @@ TEST_F(AddressBubblesControllerTest,
        SecondPromptWillBeAutoDeclinedWhileFirstIsVisible) {
   AutofillProfile profile = test::GetFullProfile();
 
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 
@@ -166,8 +164,8 @@ TEST_F(AddressBubblesControllerTest,
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
                   Property(&profile_ref::has_value, false)));
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
 }
@@ -180,8 +178,8 @@ TEST_F(AddressBubblesControllerTest,
   AutofillProfile profile = test::GetFullProfile();
 
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       callback.Get());
   controller()->OnBubbleClosed();
@@ -189,8 +187,8 @@ TEST_F(AddressBubblesControllerTest,
   // When second prompt comes, the first one will be ignored.
   EXPECT_CALL(callback, Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                             Property(&profile_ref::has_value, false)));
-  controller()->OfferSave(
-      profile, /*original_profile=*/nullptr,
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 }

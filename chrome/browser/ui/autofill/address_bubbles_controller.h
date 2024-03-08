@@ -40,16 +40,17 @@ class AddressBubblesController
       const AddressBubblesController&) = delete;
   ~AddressBubblesController() override;
 
-  // Sets up the controller and offers to save the `profile`. If
-  // `original_profile` is not nullptr, it will be updated of the user accepts
-  // the offer. `address_profile_save_prompt_callback` will be invoked once the
-  // user makes a decision with respect to the offer-to-save prompt.
-  // `options` carries extra configuration for opening the prompt.
-  void OfferSave(const AutofillProfile& profile,
-                 const AutofillProfile* original_profile,
-                 AutofillClient::SaveAddressProfilePromptOptions options,
-                 AutofillClient::AddressProfileSavePromptCallback
-                     address_profile_save_prompt_callback);
+  // Sets up the controller and offers to save or the `profile`. If
+  // `original_profile` is not nullptr, it will be updated if the user accepts
+  // the offer. `callback` will be invoked once the user makes a decision with
+  // respect to the prompt. `options` carries extra configuration for opening
+  // the prompt.
+  static void SetUpAndShowSaveOrUpdateAddressBubble(
+      content::WebContents* web_contents,
+      const AutofillProfile& profile,
+      const AutofillProfile* original_profile,
+      AutofillClient::SaveAddressProfilePromptOptions options,
+      AutofillClient::AddressProfileSavePromptCallback callback);
 
   // AddressBubbleControllerDelegate:
   void OnUserDecision(
@@ -80,6 +81,13 @@ class AddressBubblesController
       AddressBubblesController>;
 
   bool IsSaveBubble() const;
+
+  void SetUpAndShowBubble(
+      const AutofillProfile& profile,
+      const AutofillProfile* original_profile,
+      AutofillClient::SaveAddressProfilePromptOptions options,
+      AutofillClient::AddressProfileSavePromptCallback
+          address_profile_save_prompt_callback);
 
   // Callback to run once the user makes a decision with respect to the saving
   // the address profile.
