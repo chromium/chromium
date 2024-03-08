@@ -57,9 +57,9 @@ class InputDeviceSettingsLoggingTest : public testing::Test {
 };
 
 TEST_F(InputDeviceSettingsLoggingTest, EnableFeatureFlag) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kEnableInputDeviceSettingsLogging}, {});
-  IDS_LOG(INFO) << kLog1;
+  scoped_feature_list_.InitWithFeatures({features::kEnablePeripheralsLogging},
+                                        {});
+  PR_LOG(INFO, Feature::IDS) << kLog1;
 
   ASSERT_EQ(1u, GetStandardLogs().size());
   EXPECT_NE(std::string::npos, GetStandardLogs()[0].find(kLog1));
@@ -67,9 +67,10 @@ TEST_F(InputDeviceSettingsLoggingTest, EnableFeatureFlag) {
 
 TEST_F(InputDeviceSettingsLoggingTest, DisableFeatureFlag) {
   scoped_feature_list_.InitAndDisableFeature(
-      {features::kEnableInputDeviceSettingsLogging});
+      {features::kEnablePeripheralsLogging});
 
-  IDS_LOG(INFO) << kLog2;
+  PR_LOG(INFO, Feature::IDS) << kLog2;
+
   ASSERT_EQ(0u, GetStandardLogs().size());
 }
 

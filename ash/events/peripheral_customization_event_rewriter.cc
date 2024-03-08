@@ -20,6 +20,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/input_device_settings/input_device_settings_logging.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
@@ -908,6 +909,25 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
     metrics_manager_->RecordRemappingActionWhenButtonPressed(
         *remapping_action,
         ToMetricsString(remapping_action_result->peripheral_kind).data());
+  }
+
+  auto id = event.source_device_id();
+  switch (remapping_action_result->peripheral_kind) {
+    case PeripheralCustomizationMetricsType::kMouse:
+      PR_LOG(INFO, Feature::IDS) << GetMouseSettingsLog(
+          "Mouse button is pressed",
+          *(input_device_settings_controller_->GetMouse(id)));
+      break;
+    case PeripheralCustomizationMetricsType::kGraphicsTablet:
+      PR_LOG(INFO, Feature::IDS) << GetGraphicsTabletSettingsLog(
+          "Graphics tablet button is pressed",
+          *(input_device_settings_controller_->GetGraphicsTablet(id)));
+      break;
+    case PeripheralCustomizationMetricsType::kGraphicsTabletPen:
+      PR_LOG(INFO, Feature::IDS) << GetGraphicsTabletSettingsLog(
+          "Graphics tablet pen button is pressed",
+          *(input_device_settings_controller_->GetGraphicsTablet(id)));
+      break;
   }
 
   if (remapping_action->is_accelerator_action()) {

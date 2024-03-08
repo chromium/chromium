@@ -514,21 +514,36 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         InputDeviceSettingsController::ScopedResetterForTest>();
     controller_ = std::make_unique<
         testing::NiceMock<TestInputDeviceSettingsController>>();
-    keyboard_settings_ = mojom::KeyboardSettings::New();
-    mouse_settings_ = mojom::MouseSettings::New();
-    graphics_tablet_settings_ = mojom::GraphicsTabletSettings::New();
+    mouse_ = mojom::Mouse::New();
+    mouse_->settings = mojom::MouseSettings::New();
+    graphics_tablet_ = mojom::GraphicsTablet::New();
+    graphics_tablet_->settings = mojom::GraphicsTabletSettings::New();
+    keyboard_ = mojom::Keyboard::New();
+    keyboard_->settings = mojom::KeyboardSettings::New();
     ON_CALL(*controller_, GetMouseSettings(testing::_))
         .WillByDefault(testing::Return(nullptr));
     ON_CALL(*controller_, GetGraphicsTabletSettings(testing::_))
         .WillByDefault(testing::Return(nullptr));
     ON_CALL(*controller_, GetKeyboardSettings(testing::_))
         .WillByDefault(testing::Return(nullptr));
+    ON_CALL(*controller_, GetMouse(testing::_))
+        .WillByDefault(testing::Return(nullptr));
+    ON_CALL(*controller_, GetGraphicsTablet(testing::_))
+        .WillByDefault(testing::Return(nullptr));
+    ON_CALL(*controller_, GetKeyboard(testing::_))
+        .WillByDefault(testing::Return(nullptr));
     ON_CALL(*controller_, GetMouseSettings(kMouseDeviceId))
-        .WillByDefault(testing::Return(mouse_settings_.get()));
+        .WillByDefault(testing::Return(mouse_->settings.get()));
     ON_CALL(*controller_, GetGraphicsTabletSettings(kGraphicsTabletDeviceId))
-        .WillByDefault(testing::Return(graphics_tablet_settings_.get()));
-    ON_CALL(*controller_, GetKeyboardSettings(testing::_))
-        .WillByDefault(testing::Return(keyboard_settings_.get()));
+        .WillByDefault(testing::Return(graphics_tablet_->settings.get()));
+    ON_CALL(*controller_, GetKeyboardSettings(kRandomKeyboardDeviceId))
+        .WillByDefault(testing::Return(keyboard_->settings.get()));
+    ON_CALL(*controller_, GetKeyboard(kRandomKeyboardDeviceId))
+        .WillByDefault(testing::Return(keyboard_.get()));
+    ON_CALL(*controller_, GetGraphicsTablet(kGraphicsTabletDeviceId))
+        .WillByDefault(testing::Return(graphics_tablet_.get()));
+    ON_CALL(*controller_, GetMouse(kMouseDeviceId))
+        .WillByDefault(testing::Return(mouse_.get()));
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>(
         controller_.get());
     metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
@@ -729,9 +744,9 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
   std::unique_ptr<testing::NiceMock<TestInputDeviceSettingsController>>
       controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  mojom::KeyboardSettingsPtr keyboard_settings_;
-  mojom::MouseSettingsPtr mouse_settings_;
-  mojom::GraphicsTabletSettingsPtr graphics_tablet_settings_;
+  mojom::KeyboardPtr keyboard_;
+  mojom::MousePtr mouse_;
+  mojom::GraphicsTabletPtr graphics_tablet_;
   std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 
   TestEventSink sink_;
@@ -765,7 +780,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest, KeyEventActionRewriting) {
   TestAcceleratorObserver accelerator_observer;
   TestEventRewriterContinuation continuation;
 
-  mouse_settings_->button_remappings.push_back(
+  mouse_->settings->button_remappings.push_back(
       mojom::ButtonRemapping::New("", mojom::Button::NewVkey(ui::VKEY_A),
                                   mojom::RemappingAction::NewAcceleratorAction(
                                       AcceleratorAction::kBrightnessDown)));
@@ -781,7 +796,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest, KeyEventActionRewriting) {
 TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
   TestAcceleratorObserver accelerator_observer;
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       mojom::RemappingAction::NewAcceleratorAction(
@@ -800,7 +815,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
 TEST_F(PeripheralCustomizationEventRewriterTest, ScrollEventActionRewriting) {
   TestAcceleratorObserver accelerator_observer;
 
-  mouse_settings_->button_remappings.push_back(
+  mouse_->settings->button_remappings.push_back(
       mojom::ButtonRemapping::New("",
                                   mojom::Button::NewCustomizableButton(
                                       mojom::CustomizableButton::kScrollLeft),
@@ -838,12 +853,13 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseWheelDuringObserving) {
 
 TEST_F(PeripheralCustomizationEventRewriterTest,
        MouseEventFlagAppliedOnRelease) {
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  TestEventRewriterContinuation continuation;
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       mojom::RemappingAction::NewStaticShortcutAction(
           mojom::StaticShortcutAction::kDisable)));
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewStaticShortcutAction(
           mojom::StaticShortcutAction::kMiddleClick)));
@@ -853,7 +869,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 
 TEST_F(PeripheralCustomizationEventRewriterTest,
        KeyEventFlagNotAppliedOnRelease) {
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  TestEventRewriterContinuation continuation;
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           ui::VKEY_CONTROL, static_cast<int>(ui::DomCode::CONTROL_LEFT),
@@ -866,7 +883,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 
 TEST_F(PeripheralCustomizationEventRewriterTest,
        ModifierReleasedDuringSequence) {
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           ui::VKEY_A, static_cast<int>(ui::DomCode::US_A),
@@ -894,10 +911,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 
 TEST_F(PeripheralCustomizationEventRewriterTest,
        RemappedModifierReleasedDuringSequence) {
-  keyboard_settings_->modifier_remappings[ui::mojom::ModifierKey::kAlt] =
+  keyboard_->settings->modifier_remappings[ui::mojom::ModifierKey::kAlt] =
       ui::mojom::ModifierKey::kControl;
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           ui::VKEY_A, static_cast<int>(ui::DomCode::US_A),
@@ -954,7 +971,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 
   layout_engine->SetCustomLookupTableForTesting(us_table);
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  TestEventRewriterContinuation continuation;
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           ui::VKEY_OEM_MINUS, static_cast<int>(ui::DomCode::MINUS),
@@ -976,7 +994,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 TEST_F(PeripheralCustomizationEventRewriterTest,
        ModifiersAffectComputedDomKeyKeyEvent) {
   TestEventRewriterContinuation continuation;
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           ui::VKEY_A, static_cast<int>(ui::DomCode::US_A),
@@ -990,7 +1008,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 TEST_F(PeripheralCustomizationEventRewriterTest,
        ModifiersAffectComputedDomKeyMouseEvent) {
   TestEventRewriterContinuation continuation;
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
@@ -1005,7 +1023,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
 TEST_F(PeripheralCustomizationEventRewriterTest,
        ModifierPressedAffectsDomKeyOnOtherDevices) {
   TestEventRewriterContinuation continuation;
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       /*name=*/"",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
@@ -1251,12 +1269,12 @@ TEST_F(MouseButtonObserverTest, AllowCustomizationsRestriction) {
 TEST_F(PeripheralCustomizationEventRewriterTest,
        RewriteEventFromButtonEmitMetrics) {
   base::HistogramTester histogram_tester;
-  mouse_settings_->button_remappings.push_back(
+  mouse_->settings->button_remappings.push_back(
       mojom::ButtonRemapping::New("", mojom::Button::NewVkey(ui::VKEY_A),
                                   mojom::RemappingAction::NewAcceleratorAction(
                                       AcceleratorAction::kBrightnessDown)));
 
-  graphics_tablet_settings_->pen_button_remappings.push_back(
+  graphics_tablet_->settings->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "", mojom::Button::NewVkey(ui::VKEY_Z),
           mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
@@ -1603,7 +1621,7 @@ TEST_P(ButtonRewritingTest, GraphicsPenRewriteEvent) {
     ApplyCustomizationFlag(data.rewritten_events);
   }
 
-  graphics_tablet_settings_->pen_button_remappings.push_back(
+  graphics_tablet_->settings->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "", button.Clone(),
           mojom::RemappingAction::NewKeyEvent(key_event.Clone())));
@@ -1620,7 +1638,7 @@ TEST_P(ButtonRewritingTest, GraphicsTabletRewriteEvent) {
     ApplyCustomizationFlag(data.rewritten_events);
   }
 
-  graphics_tablet_settings_->tablet_button_remappings.push_back(
+  graphics_tablet_->settings->tablet_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "", button.Clone(),
           mojom::RemappingAction::NewKeyEvent(key_event.Clone())));
@@ -1637,7 +1655,7 @@ TEST_P(ButtonRewritingTest, MouseRewriteEvent) {
     ApplyCustomizationFlag(data.rewritten_events);
   }
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", button.Clone(),
       mojom::RemappingAction::NewKeyEvent(key_event.Clone())));
 
@@ -1666,7 +1684,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
   const auto& data = GetParam();
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           data.keycode, (int)data.code, (int)data.key, data.flags,
@@ -1696,7 +1714,7 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
 TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
   const auto& data = GetParam();
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           data.keycode, (int)data.code, (int)data.key, data.flags,
@@ -1736,7 +1754,7 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
                                        ? ui::EF_SHIFT_DOWN
                                        : ui::EF_COMMAND_DOWN;
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
           data.keycode, (int)data.code, (int)data.key, data.flags,
@@ -1801,12 +1819,12 @@ INSTANTIATE_TEST_SUITE_P(
     })));
 
 TEST_F(StaticShortcutActionRewritingTest, StaticShortcutDisableMouseRewriting) {
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       mojom::RemappingAction::NewStaticShortcutAction(
           mojom::StaticShortcutAction::kDisable)));
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_A),
       mojom::RemappingAction::NewStaticShortcutAction(
           mojom::StaticShortcutAction::kDisable)));
@@ -1820,7 +1838,7 @@ TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseRewriting) {
   auto [static_shortcut_action, expected_key_events] = GetParam();
   ApplyCustomizationFlag(expected_key_events);
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
@@ -1832,12 +1850,12 @@ TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseWheelRewriting) {
   auto [static_shortcut_action, expected_key_events] = GetParam();
   ApplyCustomizationFlag(expected_key_events);
 
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kScrollLeft),
       mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kScrollRight),
@@ -1852,14 +1870,14 @@ TEST_P(StaticShortcutActionRewritingTest,
   auto [static_shortcut_action, expected_key_events] = GetParam();
   ApplyCustomizationFlag(expected_key_events);
 
-  graphics_tablet_settings_->pen_button_remappings.push_back(
+  graphics_tablet_->settings->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "",
           mojom::Button::NewCustomizableButton(
               mojom::CustomizableButton::kForward),
           mojom::RemappingAction::NewStaticShortcutAction(
               static_shortcut_action)));
-  graphics_tablet_settings_->tablet_button_remappings.push_back(
+  graphics_tablet_->settings->tablet_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "",
           mojom::Button::NewCustomizableButton(
@@ -1892,7 +1910,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(StaticShortcutActionMouseButtonRewritingTest, RewriteEvent) {
   const auto [static_shortcut_action, expected_events] = GetParam();
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
@@ -1902,12 +1920,12 @@ TEST_P(StaticShortcutActionMouseButtonRewritingTest, RewriteEvent) {
 
 TEST_P(StaticShortcutActionMouseButtonRewritingTest, ScrollEventRewriteEvent) {
   const auto [static_shortcut_action, expected_events] = GetParam();
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kScrollLeft),
       mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
       mojom::Button::NewCustomizableButton(
           mojom::CustomizableButton::kScrollRight),
@@ -1919,7 +1937,7 @@ TEST_P(StaticShortcutActionMouseButtonRewritingTest, ScrollEventRewriteEvent) {
 
 TEST_P(StaticShortcutActionMouseButtonRewritingTest, KeyEventRewrite) {
   auto [static_shortcut_action, expected_events] = GetParam();
-  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_A),
       mojom::RemappingAction::NewStaticShortcutAction(static_shortcut_action)));
 

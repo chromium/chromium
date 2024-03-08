@@ -8,32 +8,35 @@
 #include <sstream>
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "components/peripherals/logging/logging.h"
 
 namespace ash {
 
-// Use the IDS_LOG() macro for all logging related to Input Device.
-#define IDS_LOG(severity) \
-  ScopedLogMessage(__FILE__, __LINE__, logging::LOGGING_##severity).stream()
+// Get settings log for graphics tablet.
+ASH_EXPORT std::string GetGraphicsTabletSettingsLog(
+    base::StringPiece category,
+    const mojom::GraphicsTablet& graphics_tablet);
 
-// An intermediate object used by the IDS_LOG macro, wrapping a
-// logging::LogMessage instance. When this object is destroyed, the message will
-// be logged with the standard logging system.
-class ASH_EXPORT ScopedLogMessage {
- public:
-  ScopedLogMessage(const char* file, int line, logging::LogSeverity severity);
-  ScopedLogMessage(const ScopedLogMessage&) = delete;
-  ScopedLogMessage& operator=(const ScopedLogMessage&) = delete;
-  ~ScopedLogMessage();
+// Get settings log for keyboard.
+ASH_EXPORT std::string GetKeyboardSettingsLog(base::StringPiece category,
+                                              const mojom::Keyboard& keyboard);
 
-  std::ostream& stream() { return stream_; }
+// Get settings log for mouse.
+ASH_EXPORT std::string GetMouseSettingsLog(base::StringPiece category,
+                                           const mojom::Mouse& mouse);
 
- private:
-  const char* file_;
-  int line_;
-  logging::LogSeverity severity_;
-  std::ostringstream stream_;
-};
+// Get settings log for pointing stick.
+ASH_EXPORT std::string GetPointingStickSettingsLog(
+    base::StringPiece category,
+    const mojom::PointingStick& pointing_stick);
+
+// Get settings log for touchpad.
+ASH_EXPORT std::string GetTouchpadSettingsLog(base::StringPiece category,
+                                              const mojom::Touchpad& touchpad);
 
 }  // namespace ash
 
