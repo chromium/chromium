@@ -14,6 +14,7 @@ import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 // </if>
 import type {IronCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {OpenWindowProxyImpl, PageStatus, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -26,6 +27,7 @@ import {simulateStoredAccounts} from './sync_test_util.js';
 
 import type {SyncRoutes} from './sync_test_util.js';
 import {getSyncAllPrefs, setupRouterWithSyncRoutes} from './sync_test_util.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
@@ -1001,6 +1003,7 @@ suite('SyncSettings', function() {
 suite('EEAChoiceCountry', function() {
   let syncPage: SettingsSyncPageElement;
   let openWindowProxy: TestOpenWindowProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -1010,6 +1013,8 @@ suite('EEAChoiceCountry', function() {
   });
 
   setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
@@ -1076,6 +1081,9 @@ suite('EEAChoiceCountry', function() {
             '#linkedServicesLinkRow');
     assertTrue(!!linkedServicesLinkRow);
     linkedServicesLinkRow.click();
+    assertEquals(
+        'Sync_OpenLinkedServicesPage',
+        await metricsBrowserProxy.whenCalled('recordAction'));
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(loadTimeData.getString('linkedServicesUrl'), url);
   });

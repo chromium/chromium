@@ -38263,6 +38263,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Sync_OpenLinkedServicesPage">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    The user has clicked on the linked services row in
+    chrome://settings/syncSetup to open the Linked Services page.
+  </description>
+</action>
+
 <action name="Sync_SaveNewPassphraseClicked">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
