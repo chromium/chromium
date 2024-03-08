@@ -379,8 +379,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)scheduleStartupCleanupTasks;
 // Schedules various tasks to be performed after the application becomes active.
 - (void)scheduleLowPriorityStartupTasks;
-// Schedules tasks that require a fully-functional BVC to be performed.
-- (void)scheduleTasksRequiringBVCWithBrowserState;
+// Schedules external file removal.
+- (void)scheduleExternalFileClenup;
 // Schedules the deletion of user downloaded files that might be leftover
 // from the last time Chrome was run.
 - (void)scheduleDeleteTempDownloadsDirectory;
@@ -627,7 +627,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [_startupTasks registerForApplicationWillResignActiveNotification];
   [self registerForOrientationChangeNotifications];
 
-  [self scheduleTasksRequiringBVCWithBrowserState];
+  [self scheduleExternalFileClenup];
 
   CustomizeUIAppearance();
 
@@ -1261,15 +1261,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 }
 
-- (void)scheduleTasksRequiringBVCWithBrowserState {
+- (void)scheduleExternalFileClenup {
   if (GetApplicationContext()->WasLastShutdownClean()) {
     // Delay the cleanup of the unreferenced files to not impact startup
     // performance.
-    // TODO(b/326183377): Run this code for all browser states.
-    ExternalFileRemoverFactory::GetForBrowserState(
-        self.appState.mainBrowserState)
-        ->RemoveAfterDelay(base::Seconds(kExternalFilesCleanupDelaySeconds),
-                           base::OnceClosure());
+    std::vector<ChromeBrowserState*> loadedBrowserStates =
+        GetApplicationContext()
+            ->GetChromeBrowserStateManager()
+            ->GetLoadedBrowserStates();
+    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+      ExternalFileRemoverFactory::GetForBrowserState(browserState)
+          ->RemoveAfterDelay(base::Seconds(kExternalFilesCleanupDelaySeconds),
+                             base::OnceClosure());
+    }
   }
 }
 
