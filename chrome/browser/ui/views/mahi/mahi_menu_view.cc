@@ -239,8 +239,10 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
           .SetImageModel(
               views::Button::STATE_NORMAL,
               ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon))
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME))
+          .SetProperty(views::kMarginsKey, kTextfieldButtonPadding)
           .Build());
-  button->SetProperty(views::kMarginsKey, kTextfieldButtonPadding);
 
   // Focus ring insets need to be negative because we want the focus rings to
   // exceed the textfield bounds horizontally to cover the entire `container`.

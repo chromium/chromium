@@ -392,7 +392,9 @@
       <message name="IDS_MAHI_PANEL_OUTLINES_SECTION_NAME" desc="The name for the outlines section that lies within the Mahi panel">
         Outlines
       </message>
-
+      <message name="IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
+        Send button
+      </message>
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Split
