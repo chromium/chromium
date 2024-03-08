@@ -2313,6 +2313,12 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     }
   }
 
+  if ((should_text_box_trim_start_ || should_text_box_trim_end_) &&
+      layout_result->IsTextBoxTrimApplied()) {
+    should_text_box_trim_start_ = false;
+    container_builder_.SetIsTextBoxTrimApplied();
+  }
+
   if (GetConstraintSpace().HasBlockFragmentation() &&
       !has_break_opportunity_before_next_child_) {
     has_break_opportunity_before_next_child_ =

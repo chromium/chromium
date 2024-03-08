@@ -703,6 +703,13 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   if (!line_box_metrics.IsEmpty())
     container_builder_.SetMetrics(line_box_metrics);
 
+  const ConstraintSpace& space = GetConstraintSpace();
+  if (space.ShouldTextBoxTrimStart() || space.ShouldTextBoxTrimEnd()) {
+    // TODO(crbug.com/40254880): Just flags, trimming data isn't implemented.
+    // TODO(crbug.com/40254880): Block-in-inline case probably needs a logic.
+    container_builder_.SetIsTextBoxTrimApplied();
+  }
+
   // |container_builder_| is already set up by |PlaceBlockInInline|.
   if (line_info->IsBlockInInline())
     return;

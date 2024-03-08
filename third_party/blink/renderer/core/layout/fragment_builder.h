@@ -141,6 +141,8 @@ class CORE_EXPORT FragmentBuilder {
     lines_until_clamp_ = value;
   }
 
+  void SetIsTextBoxTrimApplied() { is_text_box_trim_applied_ = true; }
+
   const UnpositionedListMarker& GetUnpositionedListMarker() const {
     return unpositioned_list_marker_;
   }
@@ -625,6 +627,7 @@ class CORE_EXPORT FragmentBuilder {
   bool requires_content_before_breaking_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
+  bool is_text_box_trim_applied_ = false;
 
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
