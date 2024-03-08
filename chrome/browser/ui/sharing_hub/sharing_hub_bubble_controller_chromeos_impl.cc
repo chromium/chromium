@@ -206,10 +206,10 @@ void SharingHubBubbleControllerChromeOsImpl::ShowSharesheetAsh() {
       &GetWebContents(), std::move(intent),
       sharesheet::LaunchSource::kOmniboxShare,
       base::BindOnce(&SharingHubBubbleControllerChromeOsImpl::OnShareDelivered,
-                     AsWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
           &SharingHubBubbleControllerChromeOsImpl::OnSharesheetClosed,
-          AsWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SharingHubBubbleControllerChromeOsImpl::CloseSharesheetAsh() {
@@ -242,7 +242,7 @@ void SharingHubBubbleControllerChromeOsImpl::ShowSharesheetLacros() {
       sharesheet::LaunchSource::kOmniboxShare, std::move(intent),
       base::BindOnce(
           &SharingHubBubbleControllerChromeOsImpl::OnSharesheetClosedLacros,
-          AsWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SharingHubBubbleControllerChromeOsImpl::CloseSharesheetLacros() {

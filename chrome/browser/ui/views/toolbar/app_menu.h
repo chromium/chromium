@@ -29,10 +29,9 @@ class MenuRunner;
 }
 
 // AppMenu adapts the AppMenuModel to view's menu related classes.
-class AppMenu : public views::MenuDelegate,
-                public bookmarks::BaseBookmarkModelObserver,
-                public GlobalErrorObserver,
-                public base::SupportsWeakPtr<AppMenu> {
+class AppMenu final : public views::MenuDelegate,
+                      public bookmarks::BaseBookmarkModelObserver,
+                      public GlobalErrorObserver {
  public:
   AppMenu(Browser* browser, ui::MenuModel* model, int run_types);
   AppMenu(const AppMenu&) = delete;
@@ -53,6 +52,8 @@ class AppMenu : public views::MenuDelegate,
   }
 
   views::MenuItemView* root_menu_item() { return root_; }
+
+  base::WeakPtr<AppMenu> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
   // views::MenuDelegate:
   const gfx::FontList* GetLabelFontList(int command_id) const override;
@@ -188,6 +189,8 @@ class AppMenu : public views::MenuDelegate,
 
   // Records the time from when menu opens to when the user selects a menu item.
   base::ElapsedTimer menu_opened_timer_;
+
+  base::WeakPtrFactory<AppMenu> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_APP_MENU_H_
