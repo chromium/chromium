@@ -27,7 +27,7 @@ std::string GaiaInfoScreen::GetResultString(Result result) {
     case Result::kEnterQuickStart:
       return "Enter Quick Start";
     case Result::kQuickStartOngoing:
-      return "Quick Start ongoing";
+      return BaseScreen::kNotApplicable;
     case Result::kBack:
       return "Back";
     case Result::kNotApplicable:
@@ -51,19 +51,20 @@ bool GaiaInfoScreen::MaybeSkip(WizardContext& context) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
+
+  // Continue QuickStart flow if there is an ongoing setup. This is checked in
+  // the GaiaScreen as well in case the GaiaInfoScreen is not shown to a Quick
+  // Start user.
+  if (context.quick_start_setup_ongoing) {
+    exit_callback_.Run(Result::kQuickStartOngoing);
+    return true;
+  }
+
   return false;
 }
 
 void GaiaInfoScreen::ShowImpl() {
   if (!view_) {
-    return;
-  }
-
-  // Continue QuickStart flow if there is an ongoing setup. This is checked in
-  // the GaiaScreen as well in case the GaiaInfoScreen is not shown to a Quick
-  // Start user.
-  if (context()->quick_start_setup_ongoing) {
-    exit_callback_.Run(Result::kQuickStartOngoing);
     return;
   }
 
