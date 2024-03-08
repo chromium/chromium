@@ -1105,10 +1105,10 @@
         From <ph name="FROM_DEVICE">%1$s<ex>My Tablet</ex></ph>
       </message>
       <message name="IDS_TAB_RESUMPTION_MODULE_SINGLE_POST_INFO" desc="Post-info text template for the singleton item of the tab resumption module, showing recency and host name.">
-        <ph name="RECENCY">%1$s<ex>2h ago</ex></ph> <ph name="SEPARATOR">•</ph> <ph name="HOST_NAME">%2$s<ex>wikipedia.org</ex></ph>
+        <ph name="HOST_NAME">%2$s<ex>wikipedia.org</ex></ph> <ph name="SEPARATOR">•</ph> <ph name="RECENCY">%1$s<ex>2 hrs ago</ex></ph>
       </message>
       <message name="IDS_TAB_RESUMPTION_MODULE_MULTI_INFO" desc="Info text template for each item of the tab resumption module, showing recency and foreign session name.">
-        <ph name="RECENCY">%1$s<ex>2h ago</ex></ph> <ph name="SEPARATOR">•</ph> From <ph name="FROM_DEVICE">%2$s<ex>My Pixel 7</ex></ph>
+        <ph name="RECENCY">%1$s<ex>2 hrs ago</ex></ph> <ph name="SEPARATOR">•</ph> From <ph name="FROM_DEVICE">%2$s<ex>My Pixel 7</ex></ph>
       </message>
       <message name="IDS_TAB_RESUMPTION_MODULE_OTHER_DEVICES_NAME" desc="The name of feature to show suggested tabs from other devices in the tab resumption module, to appear, e.g., on the Settings page to toggle the feature.">
         Tabs from other devices

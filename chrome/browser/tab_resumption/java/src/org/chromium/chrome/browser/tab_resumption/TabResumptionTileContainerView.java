@@ -98,7 +98,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                     res.getString(
                             R.string.tab_resumption_module_single_post_info,
                             recencyString,
-                            entry.url.getHost());
+                            TabResumptionModuleUtils.getDomainUrl(entry.url));
             tileView.setSuggestionTextsSingle(preInfoText, entry.title, postInfoText);
             return preInfoText + ", " + entry.title + ", " + postInfoText;
         } else {

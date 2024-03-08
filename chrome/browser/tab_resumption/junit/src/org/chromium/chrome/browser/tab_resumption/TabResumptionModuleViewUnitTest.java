@@ -33,9 +33,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageCallback;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -44,6 +47,8 @@ import org.chromium.url.JUnitTestGURLs;
 @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
 public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
 
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
@@ -63,6 +68,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
 
         Context context = ApplicationProvider.getApplicationContext();
         context.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -135,8 +141,9 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 "From Desktop", ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText());
         Assert.assertEquals(
                 "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "3 hours ago \u2022 www.google.com",
+                "www.google.com \u2022 3 hr ago",
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         // Image is not loaded yet.
@@ -199,7 +206,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 "Blue website with a very long title that might not fit",
                 ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "16 minutes ago \u2022 From My Tablet",
+                "16 min ago \u2022 From My Tablet",
                 ((TextView) tile1.findViewById(R.id.tile_info_text)).getText());
 
         View divider = (View) mTileContainerView.getChildAt(1);
@@ -209,7 +216,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(
                 "Google Dog", ((TextView) tile2.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "3 hours ago \u2022 From Desktop",
+                "3 hr ago \u2022 From Desktop",
                 ((TextView) tile2.findViewById(R.id.tile_info_text)).getText());
 
         // Images are not loaded yet.

@@ -66,6 +66,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:singleLine="true"
+            android:ellipsize="middle"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
     </RelativeLayout>
 </org.chromium.chrome.browser.tab_resumption.TabResumptionTileView>

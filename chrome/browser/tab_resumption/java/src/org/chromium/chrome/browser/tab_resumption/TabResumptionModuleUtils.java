@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import android.content.res.Resources;
+import android.text.TextUtils;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.url.GURL;
 
@@ -59,25 +61,31 @@ public class TabResumptionModuleUtils {
      * @param timeDelta Time delta in milliseconds.
      */
     static String getRecencyString(Resources res, long timeDeltaMs) {
-        if (timeDeltaMs < 0) timeDeltaMs = 0;
+        if (timeDeltaMs < 0L) timeDeltaMs = 0L;
 
         long daysElapsed = TimeUnit.MILLISECONDS.toDays(timeDeltaMs);
-        long hoursElapsed = TimeUnit.MILLISECONDS.toHours(timeDeltaMs);
-        long minutesElapsed = TimeUnit.MILLISECONDS.toMinutes(timeDeltaMs);
-
         if (daysElapsed > 0L) {
             return res.getQuantityString(R.plurals.n_days_ago, (int) daysElapsed, daysElapsed);
         }
 
+        long hoursElapsed = TimeUnit.MILLISECONDS.toHours(timeDeltaMs);
         if (hoursElapsed > 0L) {
-            return res.getQuantityString(R.plurals.n_hours_ago, (int) hoursElapsed, hoursElapsed);
-        }
-
-        if (minutesElapsed > 0L) {
             return res.getQuantityString(
-                    R.plurals.n_minutes_ago, (int) minutesElapsed, minutesElapsed);
+                    R.plurals.n_hours_ago_narrow, (int) hoursElapsed, hoursElapsed);
         }
 
-        return res.getString(R.string.just_now);
+        // Bound recency to 1 min.
+        long minutesElapsed = Math.max(1L, TimeUnit.MILLISECONDS.toMinutes(timeDeltaMs));
+        return res.getQuantityString(
+                R.plurals.n_minutes_ago_narrow, (int) minutesElapsed, minutesElapsed);
+    }
+
+    /**
+     * Extracts the registered, organization-identifying host and all its registry information, but
+     * no subdomains, from a given URL. In particular, removes the "www." prefix.
+     */
+    static String getDomainUrl(GURL url) {
+        String domainUrl = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
+        return TextUtils.isEmpty(domainUrl) ? url.getHost() : domainUrl;
     }
 }
