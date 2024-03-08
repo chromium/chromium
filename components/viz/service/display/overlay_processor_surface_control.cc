@@ -80,15 +80,18 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     // Aggregator adds `display_transform_` to all quads, which is then added to
     // `candidate.transform` here. `display_transform_` only applies to content
     // on the main plane so it needs to be removed candidate it its own plane.
-    gfx::OverlayTransform result = OverlayTransformsConcat(
+    gfx::OverlayTransform candidate_overlay_transform = OverlayTransformsConcat(
         absl::get<gfx::OverlayTransform>(candidate.transform),
         InvertOverlayTransform(display_transform_));
-    if (result != gfx::OVERLAY_TRANSFORM_NONE &&
-        result != gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL) {
+    // Note the transform below using `candidate_overlay_transform` to compute
+    // clipped and normalized `uv_rect` is only tested with NONE and
+    // FLIP_VERTICAL.
+    if (candidate_overlay_transform != gfx::OVERLAY_TRANSFORM_NONE &&
+        candidate_overlay_transform != gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL) {
       candidate.overlay_handled = false;
       return;
     }
-    candidate.transform = result;
+    candidate.transform = candidate_overlay_transform;
 
     gfx::RectF orig_display_rect = candidate.display_rect;
     gfx::RectF display_rect = orig_display_rect;
@@ -114,8 +117,18 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     candidate.unclipped_uv_rect = candidate.uv_rect;
 
     candidate.display_rect = gfx::RectF(gfx::ToEnclosingRect(display_rect));
+
+    // Transform `uv_rect` to display space, then clip, then transform back.
+    candidate.uv_rect = gfx::OverlayTransformToTransform(
+                            candidate_overlay_transform, gfx::SizeF(1, 1))
+                            .MapRect(candidate.uv_rect);
     candidate.uv_rect = cc::MathUtil::ScaleRectProportional(
         candidate.uv_rect, orig_display_rect, candidate.display_rect);
+    candidate.uv_rect =
+        gfx::OverlayTransformToTransform(
+            gfx::InvertOverlayTransform(candidate_overlay_transform),
+            gfx::SizeF(1, 1))
+            .MapRect(candidate.uv_rect);
     candidate.overlay_handled = true;
   }
 }
