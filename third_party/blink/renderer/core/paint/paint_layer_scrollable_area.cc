@@ -2524,7 +2524,7 @@ ScrollingCoordinator* PaintLayerScrollableArea::GetScrollingCoordinator()
   return page->GetScrollingCoordinator();
 }
 
-bool PaintLayerScrollableArea::SmoothScrollMustTickOnMain() const {
+bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kPaintClean);
   if (HasBeenDisposed()) {
@@ -2536,12 +2536,9 @@ bool PaintLayerScrollableArea::SmoothScrollMustTickOnMain() const {
     if (const auto* properties =
             GetLayoutBox()->FirstFragment().PaintProperties()) {
       if (const auto* scroll = properties->Scroll()) {
-        // Most "main thread scrolling reasons" are really main thread hit
-        // testing or main thread repaint reasons. The exception is popups
-        // which cannot sync scroll deltas from cc (crbug.com/1503709).
         return paint_artifact_compositor->GetMainThreadScrollingReasons(
-                   *scroll) &
-               cc::MainThreadScrollingReason::kPopupNoThreadedInput;
+                   *scroll) !=
+               cc::MainThreadScrollingReason::kNotScrollingOnMain;
       }
     }
   }

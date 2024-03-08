@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="scroll-animation.js"></script>
+<title>The first programmatic smooth scroll runs on compositor</title>
+<style>
+body {
+    width: 2000px;
+    height: 2000px;
+}
+</style>
+<script>
+// From ScrollAnimatorCompositorCoordinator::RunState
+var RUNNING_ON_COMPOSITOR = "RunningOnCompositor";
+var RUNNING_ON_MAIN_THREAD = "RunningOnMainThread";
+
+function waitForCompositor() {
+  return new Promise((resolve, reject) => {
+    function tick(frames) {
+      if (frames >= 10 ||
+          internals.getProgrammaticScrollAnimationState(document) ==
+          RUNNING_ON_MAIN_THREAD) {
+        reject("First scroll ran on main thread.");
+      }
+      if (internals.getProgrammaticScrollAnimationState(document) ==
+          RUNNING_ON_COMPOSITOR) {
+        resolve();
+      }
+      requestAnimationFrame(tick.bind(null, frames + 1));
+    }
+
+    if (!window.internals)
+      reject("This test requires window.internals.");
+    tick(0);
+  });
+}
+
+requestAnimationFrame(() => {
+promise_test(t => {
+  document.scrollingElement.scrollTop = 0;
+  window.scrollBy({top: 500, behavior: "smooth"});
+  return waitForCompositor()
+        .then(waitForWindowScrollEnd.bind(this, '', 500))
+        .then(() => {
+            assert_approx_equals(document.scrollingElement.scrollTop, 500, 1);
+        });
+    }, "The first programmatic smooth scroll doesn't always run on the main " +
+       "thread (see crbug.com/592799).");
+});
+</script>

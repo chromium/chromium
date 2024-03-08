@@ -281,9 +281,8 @@ void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
 }
 
 bool ScrollAnimator::SendAnimationToCompositor() {
-  if (scrollable_area_->SmoothScrollMustTickOnMain()) {
+  if (scrollable_area_->ShouldScrollOnMainThread())
     return false;
-  }
 
   auto animation = cc::KeyframeModel::Create(
       animation_curve_->Clone(), cc::AnimationIdProvider::NextKeyframeModelId(),

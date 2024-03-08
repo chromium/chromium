@@ -384,6 +384,8 @@ interface Internals {
 
     DOMString getScrollAnimationState(Node node);
 
+    DOMString getProgrammaticScrollAnimationState(Node node);
+
     OriginTrialsTest originTrialsTest();
 
     void crash();

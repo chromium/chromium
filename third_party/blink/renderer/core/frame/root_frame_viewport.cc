@@ -508,8 +508,8 @@ bool RootFrameViewport::UsesCompositedScrolling() const {
   return LayoutViewport().UsesCompositedScrolling();
 }
 
-bool RootFrameViewport::SmoothScrollMustTickOnMain() const {
-  return LayoutViewport().SmoothScrollMustTickOnMain();
+bool RootFrameViewport::ShouldScrollOnMainThread() const {
+  return LayoutViewport().ShouldScrollOnMainThread();
 }
 
 bool RootFrameViewport::ScrollbarsCanBeActive() const {
