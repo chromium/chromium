@@ -138,8 +138,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
                                      wgpu::Texture texture);
 
   void AddWGPUDeviceWithPendingCommands(wgpu::Device device);
-  void WaitForDawnCommandsToBeScheduled();
+  void WaitForDawnCommandsToBeScheduled(const wgpu::Device& excluded_device);
 #endif
+
+  void AddEGLDisplayWithPendingCommands(gl::GLDisplayEGL* display);
+  void WaitForANGLECommandsToBeScheduled();
 
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
@@ -302,6 +305,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // If this backing was displayed as an overlay, this fence may be set.
   // Wait on this fence before allowing another access.
   gfx::GpuFenceHandle release_fence_;
+
+  // Tracks the displays to invoke eglWaitUntilWorkScheduledANGLE().
+  base::flat_set<gl::GLDisplayEGL*> egl_displays_pending_flush_;
 
   using ScopedMLTSharedEvent =
       base::apple::scoped_nsprotocol<id<MTLSharedEvent>>;

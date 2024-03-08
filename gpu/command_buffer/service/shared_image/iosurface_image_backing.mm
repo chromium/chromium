@@ -656,16 +656,14 @@ bool IOSurfaceImageBacking::OverlayRepresentation::BeginReadAccess(
     return false;
   }
 
-  gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
-  if (display) {
-    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
-  }
+  // This will transition the image to be accessed by CoreAnimation. So
+  // WaitForANGLECommandsToBeScheduled() call is required.
+  iosurface_backing->WaitForANGLECommandsToBeScheduled();
 
 #if BUILDFLAG(USE_DAWN)
-  // This will transition the image to be accessed by CoreAnimation. So
-  // WaitForDawnCommandsToBeScheduled() call is required. This is similar
-  // to ANGLE's requirement for eglWaitUntilWorkScheduledANGLE() above.
-  iosurface_backing->WaitForDawnCommandsToBeScheduled();
+  // Likewise do the same for Dawn's commands.
+  iosurface_backing->WaitForDawnCommandsToBeScheduled(
+      /*excluded_device=*/nullptr);
 #endif
 
   gl::GLContext* context = gl::GLContext::GetCurrent();
@@ -784,6 +782,14 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   if (!iosurface_backing->BeginAccess(readonly)) {
     return {};
   }
+
+  // IOSurface might be written on a different GPU. We need to wait for
+  // previous commands to be scheduled first.
+  // Note: we don't need to wait for the commands from the same wgpu::Device to
+  // be scheduled.
+  iosurface_backing->WaitForANGLECommandsToBeScheduled();
+  iosurface_backing->WaitForDawnCommandsToBeScheduled(
+      /*excluded_device=*/device_);
 
   usage_ = wgpu_texture_usage;
 
@@ -922,12 +928,14 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
 
   iosurface_backing->DestroyWGPUTextureIfNotCached(device_, texture_);
 
-  if (!readonly && end_access_desc.fenceCount > 0) {
+  if (end_access_desc.fenceCount > 0) {
     // For write access, we would need to WaitForCommandsToBeScheduled
     // before the image is used by CoreAnimation or WebGL later.
     // However, we defer the wait on this device until CoreAnimation
     // or WebGL actually needs to access the image. This could avoid repeated
     // and unnecessary waits.
+    // TODO(b/328411251): Investigate whether this is needed if the access
+    // is readonly.
     iosurface_backing->AddWGPUDeviceWithPendingCommands(device_);
   }
 
@@ -1344,14 +1352,35 @@ void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
   wgpu_devices_pending_flush_.insert(std::move(device));
 }
 
-void IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled() {
+void IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled(
+    const wgpu::Device& excluded_device) {
   for (const auto& device : wgpu_devices_pending_flush_) {
+    if (device.Get() == excluded_device.Get()) {
+      continue;
+    }
     dawn::native::metal::WaitForCommandsToBeScheduled(device.Get());
   }
 
   wgpu_devices_pending_flush_.clear();
+  if (excluded_device != nullptr) {
+    // This device wasn't flushed, so we need to add it to the list again.
+    wgpu_devices_pending_flush_.insert(excluded_device);
+  }
 }
 #endif
+
+void IOSurfaceImageBacking::AddEGLDisplayWithPendingCommands(
+    gl::GLDisplayEGL* display) {
+  egl_displays_pending_flush_.insert(display);
+}
+
+void IOSurfaceImageBacking::WaitForANGLECommandsToBeScheduled() {
+  for (auto* display : egl_displays_pending_flush_) {
+    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
+  }
+
+  egl_displays_pending_flush_.clear();
+}
 
 std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     SharedImageManager* manager,
@@ -1656,12 +1685,13 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     return false;
   }
 
+  // IOSurface might be written on a different GPU. So we have to wait for the
+  // previous Dawn commands to be scheduled first.
+  // Note we don't need to wait for previous GL commands on a different GPU to
+  // be scheduled because it is already done when the previous GL context is
+  // made uncurrent.
 #if BUILDFLAG(USE_DAWN)
-  // WebGL might use different GPU from what Dawn uses, in that case we need to
-  // wait until Dawn's commands are scheduled before proceeding to access the
-  // image in WebGL.
-  // TODO(b/328411251): Investigate why this is needed.
-  WaitForDawnCommandsToBeScheduled();
+  WaitForDawnCommandsToBeScheduled(/*excluded_device=*/nullptr);
 #endif
 
   // If the GL texture is already bound (the bind is not marked as pending),
@@ -1810,6 +1840,12 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
         } else {
           LOG(DFATAL) << "Failed to create Metal shared event";
         }
+
+        // Defer WaitForANGLECommandsToBeScheduled() call until CoreAnimation or
+        // Dawn needs to access this image. This is to avoid waiting overhead.
+        // TODO(b/328411251): Investigate whether this is needed if the access
+        // is readonly.
+        AddEGLDisplayWithPendingCommands(display);
       }
     }
 
