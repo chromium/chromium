@@ -1861,38 +1861,48 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       navigation_rfh->GetSiteInstance()->GetIsolationContext();
   request->AddOriginAgentClusterStateIfNecessary(isolation_context);
 
-  // If this function picked an incompatible process for the URL, except for
-  // allowed cases such as navigating to an error page reusing the current
-  // process, capture a crash dump to diagnose why it is occurring.
+  // If this function picked an incompatible process for the origin that's about
+  // to commit, except for allowed cases such as navigating to an error page
+  // reusing the current process, capture a crash dump to diagnose why it is
+  // occurring.
   // TODO(creis): Remove this check after we've gathered enough information to
   // debug issues with browser-side security checks. https://crbug.com/931895.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const auto process_lock = navigation_rfh->GetProcess()->GetProcessLock();
   if (!process_lock.is_error_page() &&
       request->common_params().url.IsStandard() &&
-      // TODO(https://crbug.com/888079): Replace `common_params().url` with
-      // the origin to commit calculated on the browser side.
-      !policy->CanAccessDataForOrigin(
-          navigation_rfh->GetProcess()->GetID(),
-          url::Origin::Create(request->common_params().url)) &&
       !request->IsForMhtmlSubframe() &&
       request->ComputeErrorPageProcess() !=
           NavigationRequest::ErrorPageProcess::kCurrentProcess) {
-    SCOPED_CRASH_KEY_STRING256("GetFrameHostForNav", "lock_url",
-                               process_lock.ToString());
-    SCOPED_CRASH_KEY_STRING64(
-        "GetFrameHostForNav", "commit_origin",
-        request->common_params().url.DeprecatedGetOriginAsURL().spec());
-    SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "is_main_frame",
-                          frame_tree_node_->IsMainFrame());
-    SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "use_current_rfh",
-                          use_current_rfh);
-    NOTREACHED() << "Picked an incompatible process for URL: "
-                 << process_lock.ToString() << " lock vs "
-                 << request->common_params().url.DeprecatedGetOriginAsURL()
-                 << ", request_is_sandboxed = "
-                 << request->GetUrlInfo().is_sandboxed;
-    base::debug::DumpWithoutCrashing();
+    // Note that GetOriginToCommit() could return nullopt if the response is
+    // received but does not need to be rendered, for example for a download.
+    // However, that case should never need to pick a RenderFrameHost via
+    // GetFrameHostForNavigation(), so getting here should imply that
+    // GetOriginToCommit() always has a value.
+    const url::Origin origin_to_commit =
+        request->state() >= NavigationRequest::WILL_PROCESS_RESPONSE
+            ? request->GetOriginToCommit().value()
+            : request->GetTentativeOriginAtRequestTime();
+    if (!policy->CanAccessDataForOrigin(navigation_rfh->GetProcess()->GetID(),
+                                        origin_to_commit)) {
+      SCOPED_CRASH_KEY_STRING256("GetFrameHostForNav", "lock_url",
+                                 process_lock.ToString());
+      SCOPED_CRASH_KEY_STRING64(
+          "GetFrameHostForNav", "commit_url_origin",
+          request->common_params().url.DeprecatedGetOriginAsURL().spec());
+      SCOPED_CRASH_KEY_STRING64("GetFrameHostForNav", "commit_origin",
+                                origin_to_commit.GetDebugString());
+      SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "is_main_frame",
+                            frame_tree_node_->IsMainFrame());
+      SCOPED_CRASH_KEY_BOOL("GetFrameHostForNav", "use_current_rfh",
+                            use_current_rfh);
+      NOTREACHED() << "Picked an incompatible process for origin: "
+                   << process_lock.ToString() << " lock vs "
+                   << origin_to_commit.GetDebugString()
+                   << ", request_is_sandboxed = "
+                   << request->GetUrlInfo().is_sandboxed;
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   return navigation_rfh;
