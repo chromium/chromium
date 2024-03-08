@@ -2066,6 +2066,7 @@ chromium-metrics-reviews@google.com.
   <int value="1232" label="DirectSocketsBlockedForUrls"/>
   <int value="1233" label="ProductSpecificationsEnabled"/>
   <int value="1234" label="PrefixedVideoFullscreenApiAvailability"/>
+  <int value="1235" label="PrivacySandboxIpProtectionEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

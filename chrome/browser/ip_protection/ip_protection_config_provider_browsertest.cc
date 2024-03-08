@@ -9,11 +9,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -573,4 +578,73 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderUserSettingBrowserTest,
             incognito_profile_auth_token_getter_interceptor_->expiration());
 
   DestroyIncognitoNetworkContextAndInterceptors();
+}
+
+class IpProtectionConfigProviderPolicyBrowserTest : public policy::PolicyTest {
+ public:
+  IpProtectionConfigProviderPolicyBrowserTest()
+      : profile_selections_(IpProtectionConfigProviderFactory::GetInstance(),
+                            IpProtectionConfigProviderFactory::
+                                CreateProfileSelectionsForTesting()) {}
+
+  void UpdateIpProtectionEnterpisePolicyValue(bool enabled) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kPrivacySandboxIpProtectionEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(enabled), nullptr);
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  void UnsetIpProtectionEnterprisePolicyValue() {
+    policy::PolicyMap policies;
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
+
+  // Note that the order of initialization is important here.
+  ScopedIpProtectionFeatureList scoped_ip_protection_feature_list_;
+  profiles::testing::ScopedProfileSelectionsForFactoryTesting
+      profile_selections_;
+};
+
+// TODO(https://crbug.com/328624105): These policy tests are flaky on Android.
+// Re-enable them once the root cause has been determined.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE(test) DISABLED_##test
+#else
+#define MAYBE(test) test
+#endif
+
+IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderPolicyBrowserTest,
+                       MAYBE(IpProtectionEnterprisePolicyDisableAndEnable)) {
+  IpProtectionConfigProvider* provider =
+      IpProtectionConfigProvider::Get(GetProfile());
+
+  ASSERT_TRUE(provider->IsIpProtectionEnabled());
+
+  // Setting the enterprise policy value to "Disabled" should change the default
+  // IP Protection feature state.
+  UpdateIpProtectionEnterpisePolicyValue(/*enabled=*/false);
+  EXPECT_FALSE(provider->IsIpProtectionEnabled());
+
+  // Setting the enterprise policy value to "Enabled" should re-enable IP
+  // Protection.
+  UpdateIpProtectionEnterpisePolicyValue(/*enabled=*/true);
+  EXPECT_TRUE(provider->IsIpProtectionEnabled());
+}
+
+// Test transitioning from the policy being set to the policy being unset - the
+// pref value should no longer be considered managed and should effectively be
+// reset to its initial state.
+IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderPolicyBrowserTest,
+                       MAYBE(IpProtectionEnterprisePolicyUnsetAfterSet)) {
+  IpProtectionConfigProvider* provider =
+      IpProtectionConfigProvider::Get(GetProfile());
+
+  UpdateIpProtectionEnterpisePolicyValue(/*enabled=*/false);
+  EXPECT_FALSE(provider->IsIpProtectionEnabled());
+
+  UnsetIpProtectionEnterprisePolicyValue();
+  EXPECT_TRUE(provider->IsIpProtectionEnabled());
 }

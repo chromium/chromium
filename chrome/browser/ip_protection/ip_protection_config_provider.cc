@@ -18,6 +18,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -57,6 +58,7 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
   CHECK(identity_manager);
   identity_manager_->AddObserver(this);
   CHECK(tracking_protection_settings);
+  CHECK(pref_service_);
   tracking_protection_settings_->AddObserver(this);
 }
 
@@ -686,6 +688,17 @@ bool IpProtectionConfigProvider::CanIpProtectionBeEnabled() {
 }
 
 bool IpProtectionConfigProvider::IsIpProtectionEnabled() {
+  if (is_shutting_down_) {
+    return false;
+  }
+
+  // If the user's enterprise has a policy for IP, use this regardless of user
+  // UX feature status. Enterprises should have the ability to enable or disable
+  // IPP even when users do not have UX access to the feature.
+  if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
+    return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+  }
+
   // TODO(https://crbug.com/1521138): We should ultimately use
   // `tracking_protection_settings_->IsIpProtectionEnabled()` but we can't yet
   // because it would prevent us from being able to do experiments via Finch
@@ -695,10 +708,7 @@ bool IpProtectionConfigProvider::IsIpProtectionEnabled() {
     // via other means like via Finch experiment.
     return true;
   }
-  if (!pref_service_) {
-    return false;
-  }
-  return pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+  return tracking_protection_settings_->IsIpProtectionEnabled();
 }
 
 void IpProtectionConfigProvider::OnIpProtectionEnabledChanged() {
