@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -888,12 +889,11 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   }
 
   void SetUp() override {
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    LoginState::Initialize();
+    crosapi_environment_.SetUp();
     crosapi::IdleServiceAsh::DisableForTesting();
-    profile_ =
-        testing_profile_manager_.CreateTestingProfile("testing_profile@test");
-    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    profile_ = crosapi_environment_.profile_manager()->CreateTestingProfile(
+        "testing_profile@test");
+
     SetUpKioskAppId();
     fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id);
     fake_user_manager_->LoginUser(kiosk_app_id().account_id);
@@ -918,9 +918,9 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   }
 
   void TearDown() override {
+    profile_ = nullptr;
     controller_.reset();
-    crosapi_manager_.reset();
-    LoginState::Shutdown();
+    crosapi_environment_.TearDown();
   }
 
   auto HasState(AppState app_state, NetworkUIState network_state) {
@@ -958,7 +958,9 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   Profile* profile() { return profile_; }
 
   crosapi::ForceInstalledTrackerAsh* force_installed_tracker() {
-    return crosapi_manager_->crosapi_ash()->force_installed_tracker_ash();
+    return crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->force_installed_tracker_ash();
   }
 
   int num_launchers_created() { return app_launchers_created_; }
@@ -1006,12 +1008,9 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
+  crosapi::TestCrosapiEnvironment crosapi_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
-  TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal(), &testing_local_state_};
   raw_ptr<Profile> profile_;
   crosapi::FakeBrowserManager browser_manager_;
 
@@ -1031,7 +1030,6 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   KioskAppId kiosk_app_id_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 };
 
 TEST_F(KioskLaunchControllerUsingLacrosTest,
