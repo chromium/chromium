@@ -53,6 +53,21 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Stream with random-sized input and output buffers.
   while (fdp.ConsumeBool()) {
+    if (fdp.ConsumeBool()) {
+      // Check that copying the stream's state works. Gating this behind
+      // ConsumeBool() allows to interleave deflateCopy() with deflate() calls
+      // to better stress the code.
+      z_stream stream2;
+      ASSERT(deflateCopy(&stream2, &stream) == Z_OK);
+      ret = deflateEnd(&stream);
+      ASSERT(ret == Z_OK || Z_DATA_ERROR);
+      memset(&stream, 0xff, sizeof(stream));
+
+      ASSERT(deflateCopy(&stream, &stream2) == Z_OK);
+      ret = deflateEnd(&stream2);
+      ASSERT(ret == Z_OK || Z_DATA_ERROR);
+    }
+
     std::vector<uint8_t> src_chunk = fdp.ConsumeBytes<uint8_t>(
         fdp.ConsumeIntegralInRange(kMinChunk, kMaxChunk));
     std::vector<uint8_t> out_chunk(
