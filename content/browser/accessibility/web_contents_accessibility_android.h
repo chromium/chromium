@@ -335,9 +335,24 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& view_structure_root,
       const base::android::JavaParamRef<jobject>& on_done_callback);
+
   void ProcessCompletedAccessibilityTreeSnapshot(
       JNIEnv* env,
+      const base::android::JavaRef<jobject>& view_structure_root,
       const ui::AXTreeUpdate& result);
+
+  void RecursivelyPopulateViewStructureTree(
+      JNIEnv* env,
+      base::android::ScopedJavaLocalRef<jobject> obj,
+      const BrowserAccessibilityAndroid* node,
+      const base::android::JavaRef<jobject>& java_side_assist_data_object,
+      bool is_root);
+
+  void PopulateViewStructureNode(
+      JNIEnv* env,
+      base::android::ScopedJavaLocalRef<jobject> obj,
+      const BrowserAccessibilityAndroid* node,
+      const base::android::JavaRef<jobject>& java_side_assist_data_object);
 
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager

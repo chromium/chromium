@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.accessibility;
 
+import android.view.ViewStructure;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
@@ -19,5 +21,31 @@ import org.jni_zero.JNINamespace;
 public class AssistDataBuilder {
     // Stubbed.
     @CalledByNative
-    public void stubbed() {}
+    public void populateBaseProperties(ViewStructure node) {}
+
+    // Stubbed.
+    @CalledByNative
+    public void populateTextProperties(ViewStructure node) {}
+
+    // Stubbed.
+    @CalledByNative
+    public void populateBoundsProperties(ViewStructure node) {}
+
+    // Stubbed.
+    @CalledByNative
+    public void populateHTMLProperties(ViewStructure node) {}
+
+    // Stubbed.
+    @CalledByNative
+    public void populateHTMLMetadataProperties(ViewStructure node) {}
+
+    // Stubbed.
+    @CalledByNative
+    public ViewStructure addChildNode(ViewStructure node) {
+        return null;
+    }
+
+    // Stubbed.
+    @CalledByNative
+    public void commitNode(ViewStructure node) {}
 }

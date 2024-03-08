@@ -1709,6 +1709,9 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
   // below, which is called once the renderer has returned all AXTreeUpdates.
   on_done_callback_ = std::move(on_done_callback);
 
+  base::android::ScopedJavaGlobalRef<jobject> movable_view_structure_root;
+  movable_view_structure_root.Reset(env, view_structure_root);
+
   // Define snapshot parameters:
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
   params->ax_mode =
@@ -1721,7 +1724,7 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
   auto combiner = base::MakeRefCounted<AccessibilityTreeSnapshotCombiner>(
       base::BindOnce(&WebContentsAccessibilityAndroid::
                          ProcessCompletedAccessibilityTreeSnapshot,
-                     GetWeakPtr(), env),
+                     GetWeakPtr(), env, std::move(movable_view_structure_root)),
       std::move(params));
   web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&combiner](RenderFrameHostImpl* rfhi) {
@@ -1731,6 +1734,7 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
 
 void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
     JNIEnv* env,
+    const base::android::JavaRef<jobject>& view_structure_root,
     const ui::AXTreeUpdate& result) {
   // If we don't have a connection back to the Java-side objects, then fail.
   ScopedJavaLocalRef<jobject> obj = java_adb_ref_.get(env);
@@ -1745,18 +1749,64 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
             result, GetWeakPtr(), /* delegate= */ nullptr);
   }
 
+  auto* root = static_cast<BrowserAccessibilityAndroid*>(
+      GetRootBrowserAccessibilityManager()->GetBrowserAccessibilityRoot());
+  CHECK(root);
+
   // Construct the Java-side tree, use the JNI builder `java_adb_ref_` to
   // recursively construct each node of the tree starting with the provided
-  // root. Stubbed.
-  Java_AssistDataBuilder_stubbed(env, obj);
+  // root.
+  RecursivelyPopulateViewStructureTree(env, obj, root, view_structure_root,
+                                       /* is_root= */ true);
 
-  // Add tree-level data to Java-side tree.
-  // Stubbed.
+  // Add tree-level (root only) data to Java-side tree (e.g. HTML metadata).
+  Java_AssistDataBuilder_populateHTMLMetadataProperties(env, obj,
+                                                        view_structure_root);
 
   // We have fulfilled the request for an accessibility tree snapshot, so we can
   // now call the provided Java-side callback to inform original client that the
   // async construction is complete.
   base::android::RunRunnableAndroid(on_done_callback_);
+}
+
+void WebContentsAccessibilityAndroid::RecursivelyPopulateViewStructureTree(
+    JNIEnv* env,
+    ScopedJavaLocalRef<jobject> obj,
+    const BrowserAccessibilityAndroid* node,
+    const base::android::JavaRef<jobject>& java_side_assist_data_object,
+    bool is_root) {
+  PopulateViewStructureNode(env, obj, node, java_side_assist_data_object);
+  for (const auto& child : node->PlatformChildren()) {
+    const auto& child_node =
+        static_cast<const BrowserAccessibilityAndroid&>(child);
+    base::android::ScopedJavaLocalRef<jobject> java_side_child_object =
+        Java_AssistDataBuilder_addChildNode(env, obj,
+                                            java_side_assist_data_object);
+    RecursivelyPopulateViewStructureTree(env, obj, &child_node,
+                                         java_side_child_object,
+                                         /* is_root= */ false);
+  }
+  if (!is_root) {
+    Java_AssistDataBuilder_commitNode(env, obj, java_side_assist_data_object);
+  }
+}
+
+void WebContentsAccessibilityAndroid::PopulateViewStructureNode(
+    JNIEnv* env,
+    ScopedJavaLocalRef<jobject> obj,
+    const BrowserAccessibilityAndroid* node,
+    const base::android::JavaRef<jobject>& java_side_assist_data_object) {
+  Java_AssistDataBuilder_populateBaseProperties(env, obj,
+                                                java_side_assist_data_object);
+
+  Java_AssistDataBuilder_populateTextProperties(env, obj,
+                                                java_side_assist_data_object);
+
+  Java_AssistDataBuilder_populateBoundsProperties(env, obj,
+                                                  java_side_assist_data_object);
+
+  Java_AssistDataBuilder_populateHTMLProperties(env, obj,
+                                                java_side_assist_data_object);
 }
 
 base::WeakPtr<WebContentsAccessibilityAndroid>
