@@ -2250,6 +2250,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
+  // TODO(crbug.com/40926211): settingsWillBeDismissed must be called before the
+  // AccountManagerService is destroyed. Switch to DCHECK if the number of
+  // reports is low.
   DUMP_WILL_BE_CHECK(!_accountManagerServiceObserver.get());
 }
 
