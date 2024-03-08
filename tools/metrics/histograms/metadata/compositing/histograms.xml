@@ -813,17 +813,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Compositing.SurfaceAggregator.OrphanedRenderPassCount"
-    units="render passes" expires_after="2024-07-14">
-  <owner>kylechar@chromium.org</owner>
-  <owner>khaslett@chromium.org</owner>
-  <summary>
-    The number of render passes that are drawn but are not contributing pixels
-    to either the framebuffer or a CopyOutputRequest. These render passes can
-    likely be skipped. This is logged once per frame.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.SurfaceAggregator.PrewalkedSurfaceCount"
     units="surfaces" expires_after="2024-09-01">
   <owner>kylechar@chromium.org</owner>

@@ -129,9 +129,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
     // True if the current frame contains a unembedded render pass.
     bool has_unembedded_pass = false;
 
-    // The number of render passes in the final frame that are not embedded from
-    // root render pass or needed to fulfill a CopyOutputRequest.
-    int orphaned_render_pass = 0;
     base::TimeDelta prewalk_time;
     base::TimeDelta copy_time;
   };
