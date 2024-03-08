@@ -12,7 +12,7 @@
 namespace blink {
 
 ResultCachingAnchorEvaluator::ResultCachingAnchorEvaluator(
-    Length::AnchorEvaluator* evaluator,
+    AnchorEvaluator* evaluator,
     AnchorResults& results)
     : evaluator_(evaluator), results_(results) {
   results_.Clear();
@@ -20,11 +20,11 @@ ResultCachingAnchorEvaluator::ResultCachingAnchorEvaluator(
 
 std::optional<LayoutUnit> ResultCachingAnchorEvaluator::Evaluate(
     const CalculationExpressionNode& node) {
-  if (GetMode() == Length::AnchorScope::Mode::kNone) {
+  if (GetMode() == AnchorScope::Mode::kNone) {
     return std::nullopt;
   }
   // Forward mode to inner evaluator.
-  Length::AnchorScope anchor_scope(GetMode(), evaluator_);
+  AnchorScope anchor_scope(GetMode(), evaluator_);
   std::optional<LayoutUnit> result =
       evaluator_ ? evaluator_->Evaluate(node) : std::optional<LayoutUnit>();
   results_.Set(GetMode(), node, result);

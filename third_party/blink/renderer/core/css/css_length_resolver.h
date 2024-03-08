@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -62,7 +63,7 @@ class CORE_EXPORT CSSLengthResolver {
   virtual void ReferenceAnchor() const = 0;
 
   // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries.
-  virtual Length::AnchorEvaluator* AnchorEvaluator() const { return nullptr; }
+  virtual AnchorEvaluator* GetAnchorEvaluator() const { return nullptr; }
 
   float Zoom() const { return zoom_; }
   void SetZoom(float zoom) {

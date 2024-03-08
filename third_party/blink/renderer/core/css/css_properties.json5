@@ -279,7 +279,7 @@
     //
     // If omitted, no anchor queries are allowed.
     //
-    // See also Length::AnchorScope::Mode.
+    // See also AnchorScope::Mode.
     anchor_mode: {
       valid_values: [
         // anchor()

@@ -44,6 +44,7 @@
 
 namespace blink {
 
+class AnchorEvaluator;
 class ComputedStyle;
 class Element;
 class Font;
@@ -245,11 +246,11 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    public:
     AnchorData() = default;
-    AnchorData(Element* anchored, Length::AnchorEvaluator*);
-    Length::AnchorEvaluator* GetEvaluator() const { return evaluator_; }
+    AnchorData(Element* anchored, AnchorEvaluator*);
+    AnchorEvaluator* GetEvaluator() const { return evaluator_; }
 
    private:
-    Length::AnchorEvaluator* evaluator_ = nullptr;
+    AnchorEvaluator* evaluator_ = nullptr;
   };
 
   using Flags = uint16_t;
@@ -345,7 +346,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
   void ReferenceAnchor() const override;
 
-  Length::AnchorEvaluator* AnchorEvaluator() const override {
+  AnchorEvaluator* GetAnchorEvaluator() const override {
     return anchor_data_.GetEvaluator();
   }
 

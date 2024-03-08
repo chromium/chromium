@@ -7,31 +7,31 @@
 
 #include <optional>
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 
 namespace blink {
 
 class AnchorResults;
 
-// An implementation of Length::AnchorEvaluator which returns
-// the results of the specified evaluator, but also stores the results
-// in the specified AnchorResults object.
+// An implementation of AnchorEvaluator which returns the results of
+// the specified evaluator, but also stores the results in the specified
+// AnchorResults object.
 //
 // This class is instantiated during interleaved style recalc from
 // out-of-flow layout (StyleEngine::UpdateStyleForOutOfFlow),
 // and only used by style resolutions during that function.
 //
 // See also AnchorResults.
-class ResultCachingAnchorEvaluator : public Length::AnchorEvaluator {
+class ResultCachingAnchorEvaluator : public AnchorEvaluator {
   STACK_ALLOCATED();
 
  public:
-  ResultCachingAnchorEvaluator(Length::AnchorEvaluator*, AnchorResults&);
+  ResultCachingAnchorEvaluator(AnchorEvaluator*, AnchorResults&);
 
   std::optional<LayoutUnit> Evaluate(const CalculationExpressionNode&) override;
 
  private:
-  Length::AnchorEvaluator* evaluator_;
+  AnchorEvaluator* evaluator_;
   AnchorResults& results_;
 };
 

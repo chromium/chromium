@@ -9,11 +9,11 @@
 
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
-#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -248,7 +248,7 @@ class CORE_EXPORT LogicalAnchorQuery
                           WritingMode self_writing_mode) const;
 };
 
-class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
+class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   STACK_ALLOCATED();
 
  public:

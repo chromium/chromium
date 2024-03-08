@@ -9,7 +9,7 @@
 
 namespace blink {
 
-AnchorItem* AnchorItem::Create(Length::AnchorScope::Mode mode,
+AnchorItem* AnchorItem::Create(AnchorScope::Mode mode,
                                const CalculationExpressionNode& node) {
   const auto& anchor_node = To<CalculationExpressionAnchorQueryNode>(node);
 
@@ -55,7 +55,7 @@ void AnchorResults::Trace(Visitor* visitor) const {
 
 std::optional<LayoutUnit> AnchorResults::Evaluate(
     const CalculationExpressionNode& node) {
-  if (GetMode() == Length::AnchorScope::Mode::kNone) {
+  if (GetMode() == AnchorScope::Mode::kNone) {
     return std::nullopt;
   }
   auto* item = AnchorItem::Create(GetMode(), node);
@@ -69,7 +69,7 @@ std::optional<LayoutUnit> AnchorResults::Evaluate(
   return std::nullopt;
 }
 
-void AnchorResults::Set(Length::AnchorScope::Mode mode,
+void AnchorResults::Set(AnchorScope::Mode mode,
                         const CalculationExpressionNode& node,
                         std::optional<LayoutUnit> result) {
   map_.Set(AnchorItem::Create(mode, node), result);
@@ -79,10 +79,9 @@ void AnchorResults::Clear() {
   map_.clear();
 }
 
-bool AnchorResults::IsAnyResultDifferent(
-    Length::AnchorEvaluator* evaluator) const {
+bool AnchorResults::IsAnyResultDifferent(AnchorEvaluator* evaluator) const {
   for (const auto& [key, old_result] : map_) {
-    Length::AnchorScope anchor_scope(key->GetMode(), evaluator);
+    AnchorScope anchor_scope(key->GetMode(), evaluator);
     std::optional<LayoutUnit> new_result =
         evaluator ? evaluator->Evaluate(*key->ToExpressionNode())
                   : std::optional<LayoutUnit>();

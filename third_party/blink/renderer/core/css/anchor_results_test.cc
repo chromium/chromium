@@ -17,7 +17,7 @@ class AnchorResultsTest : public PageTestBase {
     STACK_ALLOCATED();
 
    public:
-    Length::AnchorScope::Mode mode = Length::AnchorScope::Mode::kNone;
+    AnchorScope::Mode mode = AnchorScope::Mode::kNone;
     CSSAnchorQueryType query_type = CSSAnchorQueryType::kAnchor;
     AnchorSpecifierValue::Type specifier_type =
         AnchorSpecifierValue::Type::kDefault;
@@ -56,8 +56,8 @@ class AnchorResultsTest : public PageTestBase {
 
 TEST_F(AnchorResultsTest, ItemEquality) {
   EXPECT_EQ(*CreateItem(Options{}), *CreateItem(Options{}));
-  EXPECT_EQ(*CreateItem(Options{.mode = Length::AnchorScope::Mode::kTop}),
-            *CreateItem(Options{.mode = Length::AnchorScope::Mode::kTop}));
+  EXPECT_EQ(*CreateItem(Options{.mode = AnchorScope::Mode::kTop}),
+            *CreateItem(Options{.mode = AnchorScope::Mode::kTop}));
   EXPECT_EQ(*CreateItem(Options{.query_type = CSSAnchorQueryType::kAnchorSize,
                                 .value = CSSAnchorSizeValue::kWidth}),
             *CreateItem(Options{.query_type = CSSAnchorQueryType::kAnchorSize,
@@ -88,8 +88,8 @@ TEST_F(AnchorResultsTest, ItemEquality) {
 TEST_F(AnchorResultsTest, ItemInequality) {
   EXPECT_NE(*CreateItem(Options{.query_type = CSSAnchorQueryType::kAnchorSize}),
             *CreateItem(Options{}));
-  EXPECT_NE(*CreateItem(Options{.mode = Length::AnchorScope::Mode::kTop}),
-            *CreateItem(Options{.mode = Length::AnchorScope::Mode::kBottom}));
+  EXPECT_NE(*CreateItem(Options{.mode = AnchorScope::Mode::kTop}),
+            *CreateItem(Options{.mode = AnchorScope::Mode::kBottom}));
   EXPECT_NE(*CreateItem(Options{.query_type = CSSAnchorQueryType::kAnchorSize,
                                 .value = CSSAnchorSizeValue::kWidth}),
             *CreateItem(Options{.query_type = CSSAnchorQueryType::kAnchor}));
@@ -119,8 +119,8 @@ TEST_F(AnchorResultsTest, ItemInequality) {
 
 TEST_F(AnchorResultsTest, ItemHashEqual) {
   EXPECT_EQ(ItemHash(Options{}), ItemHash(Options{}));
-  EXPECT_EQ(ItemHash(Options{.mode = Length::AnchorScope::Mode::kTop}),
-            ItemHash(Options{.mode = Length::AnchorScope::Mode::kTop}));
+  EXPECT_EQ(ItemHash(Options{.mode = AnchorScope::Mode::kTop}),
+            ItemHash(Options{.mode = AnchorScope::Mode::kTop}));
   EXPECT_EQ(ItemHash(Options{.query_type = CSSAnchorQueryType::kAnchorSize,
                              .value = CSSAnchorSizeValue::kWidth}),
             ItemHash(Options{.query_type = CSSAnchorQueryType::kAnchorSize,
@@ -152,8 +152,8 @@ TEST_F(AnchorResultsTest, ItemHashNotEqual) {
   EXPECT_NE(ItemHash(Options{.specifier_type =
                                  AnchorSpecifierValue::Type::kImplicit}),
             ItemHash(Options{}));
-  EXPECT_NE(ItemHash(Options{.mode = Length::AnchorScope::Mode::kTop}),
-            ItemHash(Options{.mode = Length::AnchorScope::Mode::kLeft}));
+  EXPECT_NE(ItemHash(Options{.mode = AnchorScope::Mode::kTop}),
+            ItemHash(Options{.mode = AnchorScope::Mode::kLeft}));
   EXPECT_NE(ItemHash(Options{.query_type = CSSAnchorQueryType::kAnchorSize,
                              .value = CSSAnchorSizeValue::kWidth}),
             ItemHash(Options{.query_type = CSSAnchorQueryType::kAnchor}));
@@ -187,16 +187,16 @@ TEST_F(AnchorResultsTest, MapInsert) {
   AnchorResultMap map;
 
   const AnchorItem* item1 =
-      CreateItem(Options{.mode = Length::AnchorScope::Mode::kSize,
+      CreateItem(Options{.mode = AnchorScope::Mode::kSize,
                          .query_type = CSSAnchorQueryType::kAnchorSize,
                          .value = CSSAnchorSizeValue::kWidth});
   const AnchorItem* item2 =
-      CreateItem(Options{.mode = Length::AnchorScope::Mode::kSize,
+      CreateItem(Options{.mode = AnchorScope::Mode::kSize,
                          .query_type = CSSAnchorQueryType::kAnchorSize,
                          .value = CSSAnchorSizeValue::kWidth});
 
   const AnchorItem* item3 =
-      CreateItem(Options{.mode = Length::AnchorScope::Mode::kSize,
+      CreateItem(Options{.mode = AnchorScope::Mode::kSize,
                          .specifier_type = AnchorSpecifierValue::Type::kNamed,
                          .name = AtomicString("--foo")});
 
@@ -226,17 +226,17 @@ TEST_F(AnchorResultsTest, IsEmpty) {
 
 TEST_F(AnchorResultsTest, IsNotEmpty) {
   AnchorResults results;
-  results.Set(Length::AnchorScope::Mode::kTop,
+  results.Set(AnchorScope::Mode::kTop,
               *CreateItem(Options{})->ToExpressionNode(), LayoutUnit(42.0));
   EXPECT_FALSE(results.IsEmpty());
 }
 
 TEST_F(AnchorResultsTest, IsAnyResultDifferent_NoDiff) {
   AnchorResults results1;
-  results1.Set(Length::AnchorScope::Mode::kTop,
+  results1.Set(AnchorScope::Mode::kTop,
                *CreateItem(Options{})->ToExpressionNode(), LayoutUnit(42.0));
   AnchorResults results2;
-  results2.Set(Length::AnchorScope::Mode::kTop,
+  results2.Set(AnchorScope::Mode::kTop,
                *CreateItem(Options{})->ToExpressionNode(), LayoutUnit(42.0));
   EXPECT_FALSE(results1.IsAnyResultDifferent(&results2));
 }
@@ -244,17 +244,17 @@ TEST_F(AnchorResultsTest, IsAnyResultDifferent_NoDiff) {
 TEST_F(AnchorResultsTest, IsAnyResultDifferent_Empty) {
   AnchorResults results1;
   AnchorResults results2;
-  results2.Set(Length::AnchorScope::Mode::kTop,
+  results2.Set(AnchorScope::Mode::kTop,
                *CreateItem(Options{})->ToExpressionNode(), LayoutUnit(42.0));
   EXPECT_FALSE(results1.IsAnyResultDifferent(&results2));
 }
 
 TEST_F(AnchorResultsTest, IsAnyResultDifferent_Diff) {
   AnchorResults results1;
-  results1.Set(Length::AnchorScope::Mode::kTop,
+  results1.Set(AnchorScope::Mode::kTop,
                *CreateItem(Options{})->ToExpressionNode(), LayoutUnit(42.0));
   AnchorResults results2;
-  results2.Set(Length::AnchorScope::Mode::kTop,
+  results2.Set(AnchorScope::Mode::kTop,
                *CreateItem(Options{})->ToExpressionNode(), LayoutUnit(84.0));
   EXPECT_TRUE(results1.IsAnyResultDifferent(&results2));
 }
@@ -265,13 +265,12 @@ TEST_F(AnchorResultsTest, IsAnyResultDifferent_Missing) {
   // call to IsAnyResultDifferent something to do.
   AnchorResults results1;
   {
-    Length::AnchorScope anchor_scope(Length::AnchorScope::Mode::kTop,
-                                     &results1);
+    AnchorScope anchor_scope(AnchorScope::Mode::kTop, &results1);
     results1.Evaluate(*CreateItem(Options{})->ToExpressionNode());
   }
 
   AnchorResults results2;
-  results2.Set(Length::AnchorScope::Mode::kTop,
+  results2.Set(AnchorScope::Mode::kTop,
                *CreateItem(Options{})->ToExpressionNode(), LayoutUnit(42.0));
   EXPECT_TRUE(results1.IsAnyResultDifferent(&results2));
 }
@@ -279,28 +278,28 @@ TEST_F(AnchorResultsTest, IsAnyResultDifferent_Missing) {
 TEST_F(AnchorResultsTest, Evaluate) {
   AnchorResults results;
 
-  Length::AnchorScope::Mode mode = Length::AnchorScope::Mode::kSize;
+  AnchorScope::Mode mode = AnchorScope::Mode::kSize;
   const AnchorItem* item =
       CreateItem(Options{.mode = mode,
                          .query_type = CSSAnchorQueryType::kAnchorSize,
                          .value = CSSAnchorSizeValue::kWidth});
   results.Set(mode, *item->ToExpressionNode(), LayoutUnit(42.0));
 
-  Length::AnchorScope anchor_scope(mode, &results);
+  AnchorScope anchor_scope(mode, &results);
   EXPECT_EQ(LayoutUnit(42.0), results.Evaluate(*item->ToExpressionNode()));
 }
 
 TEST_F(AnchorResultsTest, EvaluateWrongMode) {
   AnchorResults results;
 
-  Length::AnchorScope::Mode mode = Length::AnchorScope::Mode::kSize;
+  AnchorScope::Mode mode = AnchorScope::Mode::kSize;
   const AnchorItem* item =
       CreateItem(Options{.mode = mode,
                          .query_type = CSSAnchorQueryType::kAnchorSize,
                          .value = CSSAnchorSizeValue::kWidth});
   results.Set(mode, *item->ToExpressionNode(), LayoutUnit(42.0));
 
-  Length::AnchorScope anchor_scope(Length::AnchorScope::Mode::kTop, &results);
+  AnchorScope anchor_scope(AnchorScope::Mode::kTop, &results);
   EXPECT_EQ(std::nullopt, results.Evaluate(*item->ToExpressionNode()));
 }
 

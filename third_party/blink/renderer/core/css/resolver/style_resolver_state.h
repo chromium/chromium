@@ -40,6 +40,7 @@
 
 namespace blink {
 
+class AnchorEvaluator;
 class ComputedStyle;
 class FontDescription;
 class PseudoElement;
@@ -288,7 +289,7 @@ class CORE_EXPORT StyleResolverState {
   Element* container_unit_context_;
 
   // See StyleRecalcContext::anchor_evaluator_.
-  Length::AnchorEvaluator* anchor_evaluator_ = nullptr;
+  AnchorEvaluator* anchor_evaluator_ = nullptr;
 
   // Whether this element is inside a link or not. Note that this is different
   // from ElementLinkState() if the element is not a link itself but is inside

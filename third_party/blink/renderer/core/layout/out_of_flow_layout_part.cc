@@ -137,7 +137,7 @@ class OOFCandidateStyleIterator {
 
  public:
   explicit OOFCandidateStyleIterator(const LayoutObject& object,
-                                     Length::AnchorEvaluator* anchor_evaluator)
+                                     AnchorEvaluator* anchor_evaluator)
       : element_(DynamicTo<Element>(object.GetNode())),
         style_(object.Style()),
         anchor_evaluator_(anchor_evaluator) {
@@ -228,7 +228,7 @@ class OOFCandidateStyleIterator {
     CHECK(element_);
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
       StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
-      Length::AnchorEvaluator* anchor_evaluator =
+      AnchorEvaluator* anchor_evaluator =
           RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()
               ? anchor_evaluator_
               : nullptr;
@@ -250,7 +250,7 @@ class OOFCandidateStyleIterator {
 
   // This evaluator is passed to StyleEngine::UpdateStyleForOutOfFlow to
   // evaluate anchor queries on the computed style.
-  Length::AnchorEvaluator* anchor_evaluator_ = nullptr;
+  AnchorEvaluator* anchor_evaluator_ = nullptr;
 
   // If the current style is applying a `position-try-options` option, this
   // holds the list of options. Otherwise nullptr.
@@ -441,8 +441,6 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   LayoutUnit bottom;
   LayoutUnit left;
   LayoutUnit right;
-
-  using AnchorScope = Length::AnchorScope;
 
   // The InsetArea::Used*() methods returns either an anchor() function or
   // nullptr (representing a 0px length), using top/left/right/bottom, to adjust

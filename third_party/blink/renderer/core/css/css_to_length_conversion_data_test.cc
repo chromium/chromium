@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -23,7 +24,7 @@ namespace blink {
 namespace {
 
 // Evaluates any query to `result`.
-class TestAnchorEvaluator : public Length::AnchorEvaluator {
+class TestAnchorEvaluator : public AnchorEvaluator {
   STACK_ALLOCATED();
 
  public:
@@ -54,7 +55,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
     // The zoom to pass to the CSSToLengthConversionData constructor.
     std::optional<float> data_zoom;
     // Used to evaluate anchor() and anchor-size() queries.
-    Length::AnchorEvaluator* anchor_evaluator = nullptr;
+    AnchorEvaluator* anchor_evaluator = nullptr;
     // Any flags set by conversion is stored here.
     // See CSSToLengthConversionData::Flag.
     CSSToLengthConversionData::Flags* flags = nullptr;

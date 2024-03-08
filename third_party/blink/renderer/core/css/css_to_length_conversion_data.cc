@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
@@ -267,9 +268,8 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
   cache = FindSizeForContainerAxis(requested_axis, context_element_);
 }
 
-CSSToLengthConversionData::AnchorData::AnchorData(
-    Element* anchored,
-    Length::AnchorEvaluator* evaluator)
+CSSToLengthConversionData::AnchorData::AnchorData(Element* anchored,
+                                                  AnchorEvaluator* evaluator)
     : evaluator_(evaluator) {
   if (!evaluator_ && anchored) {
     if (OutOfFlowData* out_of_flow_data = anchored->GetOutOfFlowData()) {

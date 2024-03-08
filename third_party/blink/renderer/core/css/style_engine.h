@@ -73,6 +73,7 @@ class TextPosition;
 
 namespace blink {
 
+class AnchorEvaluator;
 class ComputedStyleBuilder;
 class CounterStyle;
 class CounterStyleMap;
@@ -616,7 +617,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // @position-try rule.
   void UpdateStyleForOutOfFlow(Element& element,
                                const CSSPropertyValueSet* try_set,
-                               Length::AnchorEvaluator*);
+                               AnchorEvaluator*);
   StyleRulePositionFallback* GetPositionFallbackRule(const ScopedCSSName&);
   StyleRulePositionTry* GetPositionTryRule(const ScopedCSSName&);
   void RecalcStyle();

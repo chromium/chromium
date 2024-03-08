@@ -10,6 +10,7 @@
 #include "base/memory/values_equivalent.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -30,11 +31,11 @@ namespace blink {
 class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
  public:
   // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
-  static AnchorItem* Create(Length::AnchorScope::Mode,
+  static AnchorItem* Create(AnchorScope::Mode,
                             const CalculationExpressionNode&);
   scoped_refptr<const CalculationExpressionNode> ToExpressionNode() const;
 
-  AnchorItem(Length::AnchorScope::Mode mode,
+  AnchorItem(AnchorScope::Mode mode,
              CSSAnchorQueryType query_type,
              const AnchorSpecifierValue* anchor_specifier,
              float percentage,
@@ -55,7 +56,7 @@ class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
   }
   bool operator!=(const AnchorItem& other) const { return !operator==(other); }
 
-  Length::AnchorScope::Mode GetMode() const { return mode_; }
+  AnchorScope::Mode GetMode() const { return mode_; }
 
   unsigned GetHash() const {
     unsigned hash = 0;
@@ -76,7 +77,7 @@ class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
   void Trace(Visitor*) const;
 
  private:
-  Length::AnchorScope::Mode mode_;
+  AnchorScope::Mode mode_;
   CSSAnchorQueryType query_type_;
   Member<const AnchorSpecifierValue> anchor_specifier_;
   float percentage_;
@@ -102,9 +103,9 @@ using AnchorResultMap = HeapHashMap<Member<const AnchorItem>,
 // [blink-gc] Left-most base class 'AnchorEvaluator' of derived class
 // 'AnchorResults' must be polymorphic.
 class GC_PLUGIN_IGNORE("Suppress broken is-polymorphic-check") AnchorResults;
-static_assert(std::is_polymorphic_v<Length::AnchorEvaluator>);
+static_assert(std::is_polymorphic_v<AnchorEvaluator>);
 
-// An implementation of Length::AnchorEvaluator which simply fetches
+// An implementation of AnchorEvaluator which simply fetches
 // the results from a predefined map.
 //
 // The results are populated during interleaved style recalc from
@@ -119,20 +120,20 @@ static_assert(std::is_polymorphic_v<Length::AnchorEvaluator>);
 // changed, and skip recalc entirely if possible.
 //
 // See also ResultCachingAnchorEvaluator.
-class CORE_EXPORT AnchorResults : public Length::AnchorEvaluator {
+class CORE_EXPORT AnchorResults : public AnchorEvaluator {
   DISALLOW_NEW();
 
  public:
   std::optional<LayoutUnit> Evaluate(const CalculationExpressionNode&) override;
 
-  void Set(Length::AnchorScope::Mode,
+  void Set(AnchorScope::Mode,
            const CalculationExpressionNode&,
            std::optional<LayoutUnit>);
   void Clear();
 
   // Used for invalidation, see class comment.
   bool IsEmpty() const { return map_.empty(); }
-  bool IsAnyResultDifferent(Length::AnchorEvaluator*) const;
+  bool IsAnyResultDifferent(AnchorEvaluator*) const;
 
   void Trace(Visitor*) const;
 

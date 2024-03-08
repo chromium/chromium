@@ -3467,10 +3467,9 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       container.GetLayoutObject());
 }
 
-void StyleEngine::UpdateStyleForOutOfFlow(
-    Element& element,
-    const CSSPropertyValueSet* try_set,
-    Length::AnchorEvaluator* anchor_evaluator) {
+void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
+                                          const CSSPropertyValueSet* try_set,
+                                          AnchorEvaluator* anchor_evaluator) {
   // Note that we enter this function for any OOF element, not just those that
   // use position-try-options. Therefore, it's important to return immediately
   // without doing any work when `try_set` and `existing_try_set` both are

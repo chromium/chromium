@@ -552,7 +552,6 @@ AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::GetPhysicalAnchorCenterOffset(
     bool is_y_axis) {
-  using AnchorScope = Length::AnchorScope;
   AnchorScope anchor_scope(
       is_y_axis ? AnchorScope::Mode::kTop : AnchorScope::Mode::kLeft, this);
   // Parameter `percentage` is unused for any non-percentage anchor value.

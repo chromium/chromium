@@ -7,6 +7,7 @@
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
@@ -30,11 +31,11 @@ namespace {
 
 // Evaluates any query to '1' when it's in the expected mode,
 // otherwise std::nullopt.
-class ModeCheckingAnchorEvaluator : public Length::AnchorEvaluator {
+class ModeCheckingAnchorEvaluator : public AnchorEvaluator {
   STACK_ALLOCATED();
 
  public:
-  explicit ModeCheckingAnchorEvaluator(Length::AnchorScope::Mode required_mode)
+  explicit ModeCheckingAnchorEvaluator(AnchorScope::Mode required_mode)
       : required_mode_(required_mode) {}
 
   std::optional<LayoutUnit> Evaluate(
@@ -44,7 +45,7 @@ class ModeCheckingAnchorEvaluator : public Length::AnchorEvaluator {
   }
 
  private:
-  Length::AnchorScope::Mode required_mode_;
+  AnchorScope::Mode required_mode_;
 };
 
 }  // namespace
@@ -336,7 +337,7 @@ TEST_F(CSSPropertyTest, AlternativePropertyCycle) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeTop) {
-  ModeCheckingAnchorEvaluator anchor_evaluator(Length::AnchorScope::Mode::kTop);
+  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kTop);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
 
   EXPECT_EQ("1px", ComputedValue("top", "anchor(top)", context));
@@ -352,8 +353,7 @@ TEST_F(CSSPropertyTest, AnchorModeTop) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeRight) {
-  ModeCheckingAnchorEvaluator anchor_evaluator(
-      Length::AnchorScope::Mode::kRight);
+  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kRight);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
 
   EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
@@ -369,8 +369,7 @@ TEST_F(CSSPropertyTest, AnchorModeRight) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeBottom) {
-  ModeCheckingAnchorEvaluator anchor_evaluator(
-      Length::AnchorScope::Mode::kBottom);
+  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kBottom);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
 
   EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
@@ -386,8 +385,7 @@ TEST_F(CSSPropertyTest, AnchorModeBottom) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeLeft) {
-  ModeCheckingAnchorEvaluator anchor_evaluator(
-      Length::AnchorScope::Mode::kLeft);
+  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kLeft);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
 
   EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
@@ -403,8 +401,7 @@ TEST_F(CSSPropertyTest, AnchorModeLeft) {
 }
 
 TEST_F(CSSPropertyTest, AnchorModeSize) {
-  ModeCheckingAnchorEvaluator anchor_evaluator(
-      Length::AnchorScope::Mode::kSize);
+  ModeCheckingAnchorEvaluator anchor_evaluator(AnchorScope::Mode::kSize);
   StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
 
   EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
