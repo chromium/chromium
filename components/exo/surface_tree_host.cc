@@ -496,7 +496,8 @@ void SurfaceTreeHost::UpdateHostLayerOpacity() {
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
 
   const bool fills_bounds_opaquely =
-      gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
+      bounds ==
+          gfx::ToEnclosingRectIgnoringError(root_surface_->visual_rect()) &&
       root_surface_->FillsBoundsOpaquely();
 
   if (commit_target_layer == host_window_->layer()) {

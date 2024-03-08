@@ -369,8 +369,8 @@ class Surface final : public ui::PropertyHandler {
   // Called when the begin frame source has changed.
   void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source);
 
-  // Returns the active content size.
-  const gfx::SizeF& content_size() const { return content_size_; }
+  // Returns the active visual rect.
+  const gfx::RectF& visual_rect() const { return visual_rect_; }
 
   // Returns the active content bounds for surface hierarchy. ie. the bounding
   // box of the surface and its descendants, in the local coordinate space of
@@ -643,8 +643,9 @@ class Surface final : public ui::PropertyHandler {
                              std::optional<float> device_scale_factor,
                              viz::CompositorFrame* frame);
 
-  // Update surface content size base on current buffer size.
-  void UpdateContentSize();
+  // Update surface content size and visual rect based on the current buffer
+  // size or viewport rect.
+  void UpdateContentSizeAndVisualRect();
 
   // This returns true when the surface has some contents assigned to it.
   bool has_contents() const {
@@ -662,6 +663,9 @@ class Surface final : public ui::PropertyHandler {
 
   // This is the size of the last committed contents.
   gfx::SizeF content_size_;
+
+  // This is the bounds of the last committed contents that are not clipped.
+  gfx::RectF visual_rect_;
 
   // This is the bounds of the last committed surface hierarchy contents.
   gfx::Rect surface_hierarchy_content_bounds_;

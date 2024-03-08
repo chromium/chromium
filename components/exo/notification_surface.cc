@@ -42,9 +42,9 @@ NotificationSurface::~NotificationSurface() {
 
 gfx::Size NotificationSurface::GetContentSize() const {
   float int_part;
-  DCHECK(std::modf(root_surface()->content_size().width(), &int_part) == 0.0f &&
-         std::modf(root_surface()->content_size().height(), &int_part) == 0.0f);
-  return gfx::ToRoundedSize(root_surface()->content_size());
+  DCHECK(std::modf(root_surface()->visual_rect().width(), &int_part) == 0.0f &&
+         std::modf(root_surface()->visual_rect().height(), &int_part) == 0.0f);
+  return gfx::ToRoundedSize(root_surface()->visual_rect().size());
 }
 
 void NotificationSurface::SetApplicationId(const char* application_id) {

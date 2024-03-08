@@ -627,6 +627,101 @@ TEST_F(ShellSurfaceTest, HostWindowIncludesAllSubSurfacesWithScaleFactor) {
   EXPECT_EQ(gfx::Point(10, 10), shell_surface->root_surface_origin_pixel());
 }
 
+TEST_F(ShellSurfaceTest, HostWindowNotIncludeClippedArea) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
+
+  constexpr gfx::Size kChildBufferSize(32, 32);
+
+  // Add child buffer at the upper-right corner of the root surface.
+  auto child_buffer1 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface1 = std::make_unique<Surface>();
+  child_surface1->Attach(child_buffer1.get());
+  child_surface1->SetClipRect(std::make_optional(gfx::RectF(5, 5, 32, 32)));
+  auto subsurface1 = std::make_unique<SubSurface>(
+      child_surface1.get(), shell_surface->root_surface());
+  subsurface1->SetPosition(gfx::PointF(-10, -10));
+  child_surface1->Commit();
+
+  // Add child buffer at the bottom-left corner of the root surface.
+  auto child_buffer2 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface2 = std::make_unique<Surface>();
+  child_surface2->Attach(child_buffer2.get());
+  child_surface2->SetClipRect(std::make_optional(gfx::RectF(0, 0, 10, 10)));
+  auto subsurface2 = std::make_unique<SubSurface>(
+      child_surface2.get(), shell_surface->root_surface());
+  subsurface2->SetPosition(gfx::PointF(250, 250));
+  child_surface2->Commit();
+
+  shell_surface->root_surface()->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  shell_surface->SetGeometry(gfx::Rect(256, 256));
+  shell_surface->root_surface()->Commit();
+
+  // Host window must be set to include all children subsurfaces, but not the
+  // clipped area.
+  EXPECT_EQ(gfx::Rect(-5, -5, 265, 265),
+            shell_surface->host_window()->bounds());
+  // Root surface origin must be adjusted relative to host window.
+  EXPECT_EQ(gfx::Point(5, 5), shell_surface->root_surface_origin_pixel());
+}
+
+TEST_F(ShellSurfaceTest, HostWindowNotIncludeClippedAreaWithScaleFactor) {
+  constexpr gfx::Point kOrigin(20, 20);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
+
+  // Set scale.
+  constexpr float kScaleFactor = 2.0;
+  shell_surface->set_client_submits_surfaces_in_pixel_coordinates(true);
+  shell_surface->SetScaleFactor(kScaleFactor);
+
+  constexpr gfx::Size kChildBufferSize(32, 32);
+
+  // Add child buffer at the upper-right corner of the root surface.
+  auto child_buffer1 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface1 = std::make_unique<Surface>();
+  child_surface1->Attach(child_buffer1.get());
+  child_surface1->SetClipRect(std::make_optional(gfx::RectF(5, 5, 32, 32)));
+  auto subsurface1 = std::make_unique<SubSurface>(
+      child_surface1.get(), shell_surface->root_surface());
+  subsurface1->SetPosition(gfx::PointF(-10, -10));
+  child_surface1->Commit();
+
+  // Add child buffer at the bottom-left corner of the root surface.
+  auto child_buffer2 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kChildBufferSize));
+  auto child_surface2 = std::make_unique<Surface>();
+  child_surface2->Attach(child_buffer2.get());
+  child_surface2->SetClipRect(std::make_optional(gfx::RectF(10, 10)));
+  auto subsurface2 = std::make_unique<SubSurface>(
+      child_surface2.get(), shell_surface->root_surface());
+  subsurface2->SetPosition(gfx::PointF(250, 250));
+  child_surface2->Commit();
+
+  shell_surface->root_surface()->Commit();
+
+  ASSERT_TRUE(shell_surface->GetWidget());
+  shell_surface->SetGeometry(gfx::Rect(0, 0, 256, 256));
+  shell_surface->root_surface()->Commit();
+
+  // Host window must be set to include all children subsurfaces, but not the
+  // clipped area.
+  EXPECT_EQ(gfx::Rect(-2, -2, 133, 133),
+            shell_surface->host_window()->bounds());
+  // Root surface origin must be adjusted relative to host window.
+  EXPECT_EQ(gfx::Point(5, 5), shell_surface->root_surface_origin_pixel());
+}
+
 TEST_F(ShellSurfaceTest, LocalSurfaceIdUpdatedOnHostWindowOriginChanged) {
   constexpr gfx::Point kOrigin(100, 100);
   std::unique_ptr<ShellSurface> shell_surface =
@@ -721,13 +816,59 @@ TEST_F(ShellSurfaceTest,
             shell_surface->host_window()->layer()->GetSubpixelOffset());
 }
 
+TEST_F(ShellSurfaceTest,
+       LocalSurfaceIdNotUpdatedOnSurfaceOutOfWindowButClipped) {
+  constexpr gfx::Point kOrigin(100, 100);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({100, 100})
+          .SetOrigin(kOrigin)
+          .SetGeometry(gfx::Rect(100, 100))
+          .BuildShellSurface();
+
+  auto* root_surface = shell_surface->root_surface();
+
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(200, 200)));
+  auto child_surface = std::make_unique<Surface>();
+  child_surface->Attach(child_buffer.get());
+  child_surface->SetClipRect(std::make_optional(gfx::RectF(50, 50, 100, 100)));
+  auto subsurface =
+      std::make_unique<SubSurface>(child_surface.get(), root_surface);
+  subsurface->SetPosition(gfx::PointF(-50, -50));
+
+  child_surface->Commit();
+  root_surface->Commit();
+  EXPECT_EQ(gfx::Rect(100, 100), shell_surface->host_window()->bounds());
+
+  // Store the current local surface id.
+  const viz::LocalSurfaceId old_id =
+      shell_surface->GetSurfaceId().local_surface_id();
+
+  // If nothing is changed, no need to update local surface id.
+  child_surface->Commit();
+  root_surface->Commit();
+  EXPECT_EQ(shell_surface->GetSurfaceId().local_surface_id(), old_id);
+
+  // If the surface is moving around the out of window while it's clipped, we do
+  // not allocate local surface id.
+  child_surface->SetClipRect(std::make_optional(gfx::RectF(25, 25, 100, 100)));
+  subsurface->SetPosition(gfx::PointF(-25, -25));
+  child_surface->Commit();
+  root_surface->Commit();
+  EXPECT_EQ(gfx::Rect(100, 100), shell_surface->host_window()->bounds());
+  EXPECT_EQ(old_id, shell_surface->GetSurfaceId().local_surface_id());
+
+  EXPECT_EQ(gfx::Vector2dF(),
+            shell_surface->host_window()->layer()->GetSubpixelOffset());
+}
+
 TEST_F(ShellSurfaceTest, EventTargetWithNegativeHostWindowOrigin) {
   constexpr gfx::Point kOrigin(20, 20);
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})
           .SetOrigin(kOrigin)
-          .SetGeometry(gfx::Rect(0, 0, 256, 256))
-          .SetInputRegion(gfx::Rect(0, 0, 256, 256))
+          .SetGeometry(gfx::Rect(256, 256))
+          .SetInputRegion(gfx::Rect(256, 256))
           .SetFrame(SurfaceFrameType::SHADOW)
           .BuildShellSurface();
 
@@ -851,8 +992,8 @@ TEST_F(ShellSurfaceTest,
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})
           .SetOrigin(kOrigin)
-          .SetGeometry(gfx::Rect(0, 0, 256, 256))
-          .SetInputRegion(gfx::Rect(0, 0, 256, 256))
+          .SetGeometry(gfx::Rect(256, 256))
+          .SetInputRegion(gfx::Rect(256, 256))
           .SetFrame(SurfaceFrameType::SHADOW)
           .BuildShellSurface();
 

@@ -2191,20 +2191,19 @@ void ShellSurfaceBase::UpdateWindowRoundedCorners() {
 gfx::Rect ShellSurfaceBase::GetVisibleBounds() const {
   // Use |geometry_| if set, otherwise use the visual bounds of the surface.
   if (geometry_.IsEmpty()) {
-    gfx::Size size;
+    gfx::Rect rect;
     if (root_surface()) {
       float int_part;
-      DCHECK(std::modf(root_surface()->content_size().width(), &int_part) ==
-                 0.0f &&
-             std::modf(root_surface()->content_size().height(), &int_part) ==
-                 0.0f);
-      size = gfx::ToCeiledSize(root_surface()->content_size());
+      DCHECK(
+          std::modf(root_surface()->visual_rect().width(), &int_part) == 0.0f &&
+          std::modf(root_surface()->visual_rect().height(), &int_part) == 0.0f);
+      rect = gfx::ToEnclosingRectIgnoringError(root_surface()->visual_rect());
       if (client_submits_surfaces_in_pixel_coordinates()) {
         float dsf = host_window()->layer()->device_scale_factor();
-        size = gfx::ScaleToRoundedSize(size, 1.0f / dsf);
+        rect = gfx::ScaleToEnclosingRectIgnoringError(rect, 1.0f / dsf);
       }
     }
-    return gfx::Rect(size);
+    return rect;
   }
 
   return geometry_;

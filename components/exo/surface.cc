@@ -1139,7 +1139,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
     state_.presentation_callbacks.splice(state_.presentation_callbacks.end(),
                                          cached_state_.presentation_callbacks);
 
-    UpdateContentSize();
+    UpdateContentSizeAndVisualRect();
 
     // Synchronize window hierarchy. This will position and update the stacking
     // order of all sub-surfaces after committing all pending state of
@@ -1172,7 +1172,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       sub_surfaces_changed_ = false;
     }
 
-    gfx::Rect output_rect(gfx::ToCeiledSize(content_size_));
+    gfx::Rect output_rect(gfx::ToEnclosingRectIgnoringError(visual_rect_));
     if (needs_full_damage) {
       state_.damage = output_rect;
     } else {
@@ -1187,7 +1187,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
   }
 
   surface_hierarchy_content_bounds_ =
-      gfx::Rect(gfx::ToCeiledSize(content_size_));
+      gfx::Rect(gfx::ToEnclosingRectIgnoringError(visual_rect_));
 
   if (state_.basic_state.input_region) {
     hit_test_region_ = *state_.basic_state.input_region;
@@ -1338,7 +1338,7 @@ bool Surface::FillsBoundsOpaquely() const {
   return !current_resource_has_alpha_ ||
          state_.basic_state.blend_mode == SkBlendMode::kSrc ||
          state_.basic_state.opaque_region.Contains(
-             gfx::ToEnclosingRect(gfx::RectF(content_size_)));
+             gfx::ToEnclosingRectIgnoringError(visual_rect_));
 }
 
 void Surface::SetOcclusionTracking(bool tracking) {
@@ -1587,15 +1587,14 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
   gfx::PointF parent_to_root_dp = gfx::ScalePoint(
       parent_to_root_px, 1.f / device_scale_factor.value_or(1.f));
   gfx::PointF to_root_dp = parent_to_root_dp + to_parent_dp.OffsetFromOrigin();
-  gfx::RectF output_rect(to_root_dp, content_size_);
+  gfx::RectF output_rect = to_root_dp.OffsetFromOrigin() + visual_rect_;
   gfx::Rect quad_rect(0, 0, 1, 1);
 
   // Surface bounds are in DIPs, but |damage_rect| should be specified in
   // pixels, so we need to scale by the |device_scale_factor|.
   gfx::RectF damage_rect_px;
-  gfx::RectF damage_rect_dp = needs_full_damage
-                                  ? gfx::RectF(content_size_)
-                                  : gfx::RectF(state_.damage.bounds());
+  gfx::RectF damage_rect_dp =
+      needs_full_damage ? visual_rect_ : gfx::RectF(state_.damage.bounds());
   if (!damage_rect_dp.IsEmpty()) {
     // Outset damage by 1 DIP to as damage is in surface coordinate space and
     // client might not be aware of |device_scale_factor| and the
@@ -1819,7 +1818,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
   render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
 }
 
-void Surface::UpdateContentSize() {
+void Surface::UpdateContentSizeAndVisualRect() {
   gfx::SizeF content_size;
   // Enable/disable sub-surface based on if it has contents.
   if (has_contents()) {
@@ -1852,21 +1851,25 @@ void Surface::UpdateContentSize() {
     window_->Hide();
   }
 
-  if (content_size_ != content_size) {
-    content_size_ = content_size;
-    // TODO(b/191414141) : Check is temporary to isolate damage issue.
-    if (!gfx::ToRoundedSize(content_size_).GetCheckedArea().IsValid()) {
-      DCHECK(false) << " content_size_=" << content_size_.ToString();
-      constexpr int kMaxSizeScalar = 1 << 15;
-      // Forceably restrict |content_size_| to 32kx32k.
-      content_size_.SetToMin(gfx::SizeF(kMaxSizeScalar, kMaxSizeScalar));
-    }
-    window_->SetBounds(gfx::Rect(window_->bounds().origin(),
-                                 gfx::ToCeiledSize(content_size_)));
+  content_size_ = content_size;
 
-    for (SurfaceObserver& observer : observers_)
-      observer.OnContentSizeChanged(this);
+  // TODO(b/191414141) : Check is temporary to isolate damage issue.
+  if (!gfx::ToRoundedSize(content_size).GetCheckedArea().IsValid()) {
+    CHECK(false) << " content_size is " << content_size.ToString();
+    constexpr int kMaxSizeScalar = 1 << 15;
+    // Forcibly restrict `content_size` to 32kx32k.
+    content_size.SetToMin(gfx::SizeF(kMaxSizeScalar, kMaxSizeScalar));
   }
+  // TODO(elkurin): Decide whether we should assign content size or effective
+  // rect as the window bounds.
+  window_->SetBounds(
+      gfx::Rect(window_->bounds().origin(), gfx::ToCeiledSize(content_size)));
+
+  gfx::RectF visual_rect(content_size);
+  if (state_.clip_rect) {
+    visual_rect.Intersect(*state_.clip_rect);
+  }
+  visual_rect_ = visual_rect;
 }
 
 void Surface::SetFrameLocked(bool lock) {
@@ -2015,11 +2018,10 @@ std::string Surface::DumpDebugInfo() const {
     }
   };
 
-  return "content-size=" + content_size_.ToString() +
+  return "visual_rect=" + visual_rect_.ToString() +
          (current_resource_has_alpha_ ? std::string(" has_alpha") : "") +
          blend_mode_str(state_.basic_state.blend_mode) +
-         +" opaque-region=" + state_.basic_state.opaque_region.ToString() +
-         " " +
+         " opaque-region=" + state_.basic_state.opaque_region.ToString() + " " +
          (has_buffer
               ? ("format=" +
                  FormatToString(state_.buffer->buffer()->GetFormat()) +

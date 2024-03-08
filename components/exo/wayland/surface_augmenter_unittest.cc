@@ -176,7 +176,7 @@ TEST_F(SurfaceAugmenterTest,
   ASSERT_TRUE(parent_surface);
   ASSERT_TRUE(parent_shell_surface);
   ASSERT_TRUE(parent_shell_surface->GetWidget()->IsVisible());
-  EXPECT_EQ(gfx::SizeF(256, 256), parent_surface->content_size());
+  EXPECT_EQ(gfx::RectF(0, 0, 256, 256), parent_surface->visual_rect());
 
   //----------------------------------------------------------------
   //  Create another surface (subsurface of the toplevel one).

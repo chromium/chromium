@@ -278,7 +278,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
-  void OnContentSizeChanged(Surface*) override {}
   void OnFrameLockingChanged(Surface*, bool) override {}
   void OnDeskChanged(Surface*, int) override {}
   void OnTooltipShown(Surface* surface,
