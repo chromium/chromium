@@ -3292,13 +3292,13 @@ Some features are limited to increase battery life.
         Keep on
       </message>
       <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_ONE_DEVICE" desc="Bluetooth pairing message shown to indicate a Bluetooth device will disconnect when Bluetooth is turned off.">
-        When you turn off Bluetooth, "<ph name="DEVICE_NAME">$1<ex>Dell RGB Keyboard</ex></ph>" will disconnect from your Chromebook.
+        When you turn off Bluetooth, this external device will disconnect from your <ph name="DEVICE_TYPE">$1<ex>ChromeBox</ex></ph>:  &#x0D;&#x0D; &#x2022; <ph name="DEVICE_NAME">$2<ex>Mx Mouse</ex></ph>
       </message>
       <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_TWO_DEVICES" desc="Bluetooth pairing message shown to indicate that two Bluetooth devices will disconnect when Bluetooth is turned off.">
-        When you turn off Bluetooth, "<ph name="DEVICE_NAME_1">$1<ex>Logitech SmartMouse</ex></ph>" and "<ph name="DEVICE_NAME_2">$2<ex>Dell RGB Keyboard</ex></ph>" will disconnect from your Chromebook.
+         When you turn off Bluetooth, these external devices will disconnect from your <ph name="DEVICE_TYPE">$1<ex>ChromeBox</ex></ph>: &#x0D;&#x0D; &#x2022; <ph name="DEVICE_NAME_1">$2<ex>Mano 703</ex></ph> &#x0D; &#x2022; <ph name="DEVICE_NAME_2">$3<ex>RGB Keyboard</ex></ph>
       </message>
       <message name="IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_MULTIPLE_DEVICES" desc="Bluetooth pairing message shown to indicate that multiple Bluetooth devices will disconnect when Bluetooth is turned off.">
-        When you turn off Bluetooth, "<ph name="DEVICE_NAME_1">$1<ex>Logitech SmartMouse</ex></ph>", "<ph name="DEVICE_NAME_2">$2<ex>Dell RGB Keyboard</ex></ph>" and <ph name="DEVICE_COUNT">$3<ex>3</ex></ph> other devices will disconnect from your Chromebook.
+         When you turn off Bluetooth, <ph name="DEVICE_COUNT">$1<ex>2</ex></ph> external devices will disconnect from your <ph name="DEVICE_TYPE">$2<ex>ChromeBox</ex></ph>, including: &#x0D;&#x0D; &#x2022; <ph name="DEVICE_NAME_1">$3<ex>Mano 703</ex></ph> &#x0D; &#x2022; <ph name="DEVICE_NAME_2">$4<ex>RGB Keyboard</ex></ph> &#x0D; &#x2022; <ph name="DEVICE_NAME_3">$5<ex>Logitech Mouse</ex></ph>
       </message>
 
       <!-- Ash multi-user warning dialog -->
