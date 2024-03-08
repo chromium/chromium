@@ -22,6 +22,7 @@ See also the general instructions about the dangling pointer detector:
     - [Object vended from C API](#object-vended-from-c-api)
     - [Object conditionally owned](#object-conditionally-owned)
     - [Fallback solution](#fallback-solution-1)
+- [What to do about unretained dangling pointers](./unretained_dangling_ptr_guide.md)
 - [I can't figure out which pointer is dangling](I-can_t-figure-out-which-pointer-is-dangling)
 - [FAQ - Why dangling pointers matter](#faq-why-dangling-pointers-matter)
 
