@@ -97,11 +97,6 @@ enum class Conv2dFilterOperandLayout { kOihw, kHwio, kOhwi, kIhwo };
 // / groups, H is height and W is the width of filter.
 enum class ConvTranspose2dFilterOperandLayout { kIohw, kHwoi, kOhwi };
 
-// Represents the `MLAutoPad`. `Explicit` means that the values in the padding
-// array should be used for calculating input padding, the `SameUpper` and
-// `SameLower` options mean the padding values are automatically computed.
-enum class AutoPad { kExplicit, kSameUpper, kSameLower };
-
 // Represents the `MLRoundingType` that is used to compute the output shape.
 enum class RoundingType { kFloor, kCeil };
 
@@ -177,8 +172,6 @@ struct Conv2dAttributesBase {
   Size2d<uint32_t> strides;
   // The dilation factor for each spatial dimension of input.
   Size2d<uint32_t> dilations;
-  // The automatic input padding options.
-  AutoPad auto_pad = AutoPad::kExplicit;
   // The number of groups that input channels and output channels are divided
   // into.
   uint32_t groups = 1;
@@ -237,8 +230,6 @@ struct Pool2dAttributes {
   Size2d<uint32_t> strides;
   // The dilation factor for each spatial dimension of input.
   Size2d<uint32_t> dilations;
-  // The automatic input padding options.
-  AutoPad auto_pad = AutoPad::kExplicit;
   // The layout format of the input.
   InputOperandLayout layout = InputOperandLayout::kNchw;
   // The rounding function used to compute the output shape.
@@ -577,37 +568,6 @@ std::optional<std::vector<uint32_t>> BroadcastShapes(
     base::span<const uint32_t> dims_lhs,
     base::span<const uint32_t> dims_rhs,
     bool bidirectional = true);
-
-// TODO(crbug.com/1273291): Don't export PaddingSizes when moving the validation
-// of ConvTransposed2d to the shared library.
-struct PaddingSizes {
-  uint32_t begin;
-  uint32_t end;
-};
-
-// Calculate the effective padding for conv2d based on WebNN auto padding
-// rules.
-//
-// TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
-// defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-std::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
-                                                   const uint32_t input_size,
-                                                   const uint32_t filter_size,
-                                                   const uint32_t stride,
-                                                   const uint32_t dilation);
-
-// Calculate the effective padding for convTranspose2d based on WebNN auto
-// padding rules.
-//
-// TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
-// defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-std::optional<PaddingSizes> CalculateConvTranspose2dPadding(
-    AutoPad auto_pad,
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t stride,
-    const uint32_t dilation,
-    const uint32_t output_padding);
 
 // Calculate the output size for convTranspose2d based on WebNN spec:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d

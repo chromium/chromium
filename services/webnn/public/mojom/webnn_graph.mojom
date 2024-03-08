@@ -184,9 +184,7 @@ struct Conv2d {
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
 
-  // The padding of input tensor which is the explicit pad or calculated pad
-  // with `MLAutoPad` type, input sizes, filter size, strides and dilations in
-  // blink side.
+  // The padding for each spatial dimension of input.
   Padding2d padding;
   // The stride of the sliding window for each spatial dimension of input.
   Size2d strides;
@@ -410,9 +408,7 @@ struct Pool2d {
   // The dimensions of the sliding window which is supplied by user or the
   // element of input operand height and width.
   Size2d window_dimensions;
-  // The padding of input tensor which is the explicit pad or calculated pad
-  // with `MLAutoPad` type, input sizes, window dimensions, strides and
-  // dilations in blink side.
+  // The padding for each spatial dimension of input.
   Padding2d padding;
   // The element stride of the sliding window for each spatial dimension of
   // input.

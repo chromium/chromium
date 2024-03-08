@@ -114,7 +114,6 @@ TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
                                  V8MLOperandDataType::Enum::kFloat32,
                                  scope.GetExceptionState());
     auto* options = MLConv2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
     auto* conv2d_0 = BuildConv2d(scope, builder, input, filter, options);
     auto* conv2d_1 = BuildConv2d(scope, builder, conv2d_0, filter, options);
     auto* conv2d_2 = BuildConv2d(scope, builder, conv2d_0, filter, options);

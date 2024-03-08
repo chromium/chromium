@@ -22,12 +22,6 @@ enum MLInputOperandLayout {
   NHWC = 1;
 }
 
-enum MLAutoPad {
-  EXPLICIT = 0;
-  SAME_UPPER = 1;
-  SAME_LOWER = 2;
-}
-
 enum MLConv2dFilterOperandLayout {
   OIHW = 0;
   HWIO = 1;
@@ -49,7 +43,6 @@ message conv2dOptions {
   repeated uint32 padding = 1;
   repeated uint32 strides = 2;
   repeated uint32 dilations = 3;
-  optional MLAutoPad auto_pad = 4 [default = EXPLICIT];
   optional uint32 groups = 5 [default = 1];
   optional MLInputOperandLayout input_layout = 6 [default = NCHW];
   optional MLConv2dFilterOperandLayout filter_layout = 7 [default = OIHW];
@@ -60,7 +53,6 @@ message pool2dOptions {
   repeated uint32 padding = 2;
   repeated uint32 strides = 3;
   repeated uint32 dilations = 4;
-  optional MLAutoPad auto_pad = 5 [default = EXPLICIT];
   optional MLInputOperandLayout layout = 6 [default = NCHW];
   optional MLRoundingType rounding_type = 7 [default = FLOOR];
   repeated uint32 output_size = 8;

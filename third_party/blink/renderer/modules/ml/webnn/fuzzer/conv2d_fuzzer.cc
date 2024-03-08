@@ -46,10 +46,6 @@ void ProtobufToConv2dOptions(const webnn_proto::conv2dOptions& data,
     options->setDilations(RepeatedFieldToVector<uint32_t>(data.dilations()));
   }
 
-  if (data.has_auto_pad()) {
-    options->setAutoPad(ToV8MLAutoPad(data.auto_pad()));
-  }
-
   if (data.has_groups()) {
     options->setGroups(data.groups());
   }

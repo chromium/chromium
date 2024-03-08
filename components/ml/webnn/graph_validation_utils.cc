@@ -72,59 +72,25 @@ ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
                                       const uint32_t filter_width,
                                       const Padding2d& padding,
                                       const Size2d<uint32_t>& strides,
-                                      const Size2d<uint32_t>& dilations,
-                                      const AutoPad auto_pad) {
+                                      const Size2d<uint32_t>& dilations) {
   if (strides.height == 0 || strides.width == 0) {
     return base::unexpected("All strides should be greater than 0.");
   }
   if (dilations.height == 0 || dilations.width == 0) {
     return base::unexpected("All dilations should be greater than 0.");
   }
-  const uint32_t stride_height = strides.height;
-  const uint32_t stride_width = strides.width;
-  const uint32_t dilation_height = dilations.height;
-  const uint32_t dilation_width = dilations.width;
-
-  uint32_t padding_beginning_height = padding.beginning.height;
-  uint32_t padding_ending_height = padding.ending.height;
-  uint32_t padding_beginning_width = padding.beginning.width;
-  uint32_t padding_ending_width = padding.ending.width;
-
-  // When the autoPad is other than "explicit", the values in the
-  // options.padding array are ignored and the explicit padding values need to
-  // be calculated.
-  if (auto_pad != AutoPad::kExplicit) {
-    const auto padding_sizes_height = CalculateConv2dPadding(
-        auto_pad, input_height, filter_height, stride_height, dilation_height);
-    if (!padding_sizes_height) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the height "
-          "dimension.");
-    }
-    padding_beginning_height = padding_sizes_height->begin;
-    padding_ending_height = padding_sizes_height->end;
-    const auto padding_sizes_width = CalculateConv2dPadding(
-        auto_pad, input_width, filter_width, stride_width, dilation_width);
-    if (!padding_sizes_width) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the width "
-          "dimension.");
-    }
-    padding_beginning_width = padding_sizes_width->begin;
-    padding_ending_width = padding_sizes_width->end;
-  }
 
   const auto float_output_height = CalculateConv2dOutputSize(
-      input_height, filter_height, padding_beginning_height,
-      padding_ending_height, stride_height, dilation_height);
+      input_height, filter_height, padding.beginning.height,
+      padding.ending.height, strides.height, dilations.height);
   if (!float_output_height.has_value()) {
     return base::unexpected("Failed to calculate the output height: " +
                             float_output_height.error());
   }
 
   const auto float_output_width = CalculateConv2dOutputSize(
-      input_width, filter_width, padding_beginning_width, padding_ending_width,
-      stride_width, dilation_width);
+      input_width, filter_width, padding.beginning.width, padding.ending.width,
+      strides.width, dilations.width);
   if (!float_output_width.has_value()) {
     return base::unexpected("Failed to calculate the output width: " +
                             float_output_width.error());
@@ -145,71 +111,32 @@ ValidateAndCalculateConvTranspose2dOutputSizes(
     const Padding2d& padding,
     const Size2d<uint32_t>& strides,
     const Size2d<uint32_t>& dilations,
-    const Size2d<uint32_t>& output_padding,
-    const AutoPad auto_pad) {
+    const Size2d<uint32_t>& output_padding) {
   if (strides.height == 0 || strides.width == 0) {
     return base::unexpected("All strides should be greater than 0.");
   }
   if (dilations.height == 0 || dilations.width == 0) {
     return base::unexpected("All dilations should be greater than 0.");
   }
-  const uint32_t stride_height = strides.height;
-  const uint32_t stride_width = strides.width;
-  const uint32_t dilation_height = dilations.height;
-  const uint32_t dilation_width = dilations.width;
-
-  const uint32_t output_padding_height = output_padding.height;
-  const uint32_t output_padding_width = output_padding.width;
-  if (output_padding_height >= stride_height ||
-      output_padding_width >= stride_width) {
+  if (output_padding.height >= strides.height ||
+      output_padding.width >= strides.width) {
     return base::unexpected(
         "The output padding must be smaller than the stride along the same "
         "dimension.");
   }
 
-  uint32_t padding_beginning_height = padding.beginning.height;
-  uint32_t padding_ending_height = padding.ending.height;
-  uint32_t padding_beginning_width = padding.beginning.width;
-  uint32_t padding_ending_width = padding.ending.width;
-
-  // When the autoPad is other than "explicit", the values in the
-  // options.padding array are ignored and the padding values need to be
-  // calculated.
-  if (auto_pad != AutoPad::kExplicit) {
-    const auto padding_sizes_height = CalculateConvTranspose2dPadding(
-        auto_pad, input_height, filter_height, stride_height, dilation_height,
-        output_padding_height);
-    if (!padding_sizes_height) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the height "
-          "dimension.");
-    }
-    padding_beginning_height = padding_sizes_height->begin;
-    padding_ending_height = padding_sizes_height->end;
-    const auto padding_sizes_width = CalculateConvTranspose2dPadding(
-        auto_pad, input_width, filter_width, stride_width, dilation_width,
-        output_padding_width);
-    if (!padding_sizes_width) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the width "
-          "dimension.");
-    }
-    padding_beginning_width = padding_sizes_width->begin;
-    padding_ending_width = padding_sizes_width->end;
-  }
-
   const auto output_height = CalculateConvTranspose2dOutputSize(
-      input_height, filter_height, padding_beginning_height,
-      padding_ending_height, stride_height, dilation_height,
-      output_padding_height);
+      input_height, filter_height, padding.beginning.height,
+      padding.ending.height, strides.height, dilations.height,
+      output_padding.height);
   if (!output_height.has_value()) {
     return base::unexpected("Failed to calculate the output height: " +
                             output_height.error());
   }
 
   const auto output_width = CalculateConvTranspose2dOutputSize(
-      input_width, filter_width, padding_beginning_width, padding_ending_width,
-      stride_width, dilation_width, output_padding_width);
+      input_width, filter_width, padding.beginning.width, padding.ending.width,
+      strides.width, dilations.width, output_padding.width);
   if (!output_width.has_value()) {
     return base::unexpected("Failed to calculate the output width: " +
                             output_width.error());
@@ -678,8 +605,7 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
   // Validate and calculate output sizes.
   const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
       input_info->height, input_info->width, filter_height, filter_width,
-      attributes.padding, attributes.strides, attributes.dilations,
-      attributes.auto_pad);
+      attributes.padding, attributes.strides, attributes.dilations);
   if (!output_sizes.has_value()) {
     return base::unexpected(output_sizes.error());
   }
@@ -780,7 +706,7 @@ base::expected<Operand, std::string> ValidateConvTranspose2dAndInferOutput(
             // https://webmachinelearning.github.io/webnn/#dom-mlconvtranspose2doptions-outputsizes
             // When the output sizes are explicitly specified, the output
             // padding values in outputPadding are ignored.
-            {0, 0}, attributes.auto_pad);
+            {0, 0});
     if (!calculated_output_sizes.has_value()) {
       return base::unexpected(calculated_output_sizes.error());
     }
@@ -809,7 +735,7 @@ base::expected<Operand, std::string> ValidateConvTranspose2dAndInferOutput(
     const auto output_sizes = ValidateAndCalculateConvTranspose2dOutputSizes(
         input_info->height, input_info->width, filter_height, filter_width,
         attributes.padding, attributes.strides, attributes.dilations,
-        attributes.output_padding, attributes.auto_pad);
+        attributes.output_padding);
     if (!output_sizes.has_value()) {
       return base::unexpected(output_sizes.error());
     }
@@ -970,8 +896,7 @@ base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
   // sizes.
   const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
       input_height, input_width, window_height, window_width,
-      attributes.padding, attributes.strides, attributes.dilations,
-      attributes.auto_pad);
+      attributes.padding, attributes.strides, attributes.dilations);
   if (!output_sizes.has_value()) {
     return base::unexpected(output_sizes.error());
   }
@@ -1946,84 +1871,6 @@ std::optional<std::vector<uint32_t>> BroadcastShapes(
         bidirectional ? std::max(dim_lhs, dim_rhs) : dim_rhs;
   }
   return dims_output;
-}
-
-std::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
-                                                   const uint32_t input_size,
-                                                   const uint32_t filter_size,
-                                                   const uint32_t stride,
-                                                   const uint32_t dilation) {
-  auto checked_output_size =
-      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
-  auto checked_dilated_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  auto checked_needed_input_size =
-      (checked_output_size - 1) * stride + checked_dilated_filter_size;
-  if (!checked_needed_input_size.IsValid()) {
-    return std::nullopt;
-  }
-  auto checked_total_padding =
-      checked_needed_input_size.ValueOrDie() > input_size
-          ? checked_needed_input_size - input_size
-          : base::MakeCheckedNum<uint32_t>(0);
-  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
-  switch (auto_pad) {
-    case AutoPad::kSameUpper:
-      checked_padding_begin = checked_total_padding / 2;
-      checked_padding_end = (checked_total_padding + 1) / 2;
-      break;
-    case AutoPad::kSameLower:
-      checked_padding_begin = (checked_total_padding + 1) / 2;
-      checked_padding_end = checked_total_padding / 2;
-      break;
-    case AutoPad::kExplicit:
-      // The case has been ruled out before the function be called.
-      NOTREACHED_NORETURN()
-          << "Invalid auto pad value when calculating conv2d padding.";
-  }
-  uint32_t padding_begin, padding_end;
-  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
-      !checked_padding_end.AssignIfValid(&padding_end)) {
-    return std::nullopt;
-  }
-  return PaddingSizes({.begin = padding_begin, .end = padding_end});
-}
-
-std::optional<PaddingSizes> CalculateConvTranspose2dPadding(
-    AutoPad auto_pad,
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t stride,
-    const uint32_t dilation,
-    const uint32_t output_padding) {
-  auto checked_output_size =
-      base::MakeCheckedNum<uint32_t>(input_size) * stride;
-  auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  auto checked_total_padding =
-      stride * (base::MakeCheckedNum<uint32_t>(input_size) - 1) +
-      checked_effective_filter_size + output_padding - checked_output_size;
-  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
-  switch (auto_pad) {
-    case AutoPad::kSameUpper:
-      checked_padding_begin = checked_total_padding / 2;
-      checked_padding_end = (checked_total_padding + 1) / 2;
-      break;
-    case AutoPad::kSameLower:
-      checked_padding_begin = (checked_total_padding + 1) / 2;
-      checked_padding_end = checked_total_padding / 2;
-      break;
-    case AutoPad::kExplicit:
-      // The case has been ruled out before the function be called.
-      NOTREACHED_NORETURN()
-          << "Invalid auto pad value when calculating convTranspose2d padding.";
-  }
-  uint32_t padding_begin, padding_end;
-  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
-      !checked_padding_end.AssignIfValid(&padding_end)) {
-    return std::nullopt;
-  }
-  return webnn::PaddingSizes({.begin = padding_begin, .end = padding_end});
 }
 
 base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(

@@ -463,18 +463,6 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
     conv2d_mojo->bias_operand_id = operand_to_id_map.at(options->bias());
   }
 
-  // Get height and width of input for calculating padding.
-  auto input_size = mojo::GetInputOperandSize2d(
-      conv2d->Inputs()[0].Get(), options->inputLayout().AsEnum());
-
-  // Get and validate filter.
-  CHECK_GT(conv2d->Inputs().size(), 1u);
-  const auto* filter = conv2d->Inputs()[1].Get();
-  CHECK(filter);
-  const auto filter_shape = filter->Dimensions();
-  CHECK_EQ(filter_shape.size(), 4u);
-
-  webnn::Padding2d padding;
   if constexpr (std::is_same<MLConv2dOptionsType, MLConv2dOptions>::value) {
     conv2d_mojo->type = blink_mojom::Conv2d::Type::kDirect;
 
@@ -487,16 +475,6 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
           String::Format("The filter layout %s is not supported.",
                          options->filterLayout().AsCStr()));
     }
-    // Get height and width of filter operand for calculating padding.
-    auto filter_height = filter_shape[2];
-    auto filter_width = filter_shape[3];
-
-    // Calculate the padding given input sizes, filter size, padding, strides
-    // and dilations.
-    padding = blink::CalculatePadding2D(
-        options, input_size.height, input_size.width, filter_height,
-        filter_width, conv2d_mojo->strides->height, conv2d_mojo->strides->width,
-        conv2d_mojo->dilations->height, conv2d_mojo->dilations->width);
   } else if constexpr (std::is_same<MLConv2dOptionsType,
                                     MLConvTranspose2dOptions>::value) {
     conv2d_mojo->type = blink_mojom::Conv2d::Type::kTransposed;
@@ -510,68 +488,18 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
           String::Format("The filter layout %s is not supported.",
                          options->filterLayout().AsCStr()));
     }
-    // Get height and width of filter operand for calculating padding.
-    auto filter_height = filter_shape[2];
-    auto filter_width = filter_shape[3];
-
-    // Calculate output padding of convTranspose2d for calculating padding.
-    const Vector<uint32_t> default_output_padding({0, 0});
-    uint32_t output_padding_height, output_padding_width;
-    if (options->hasOutputSizes()) {
-      const auto calculated_output_sizes = CalculateConvTransposeOutputSize2D(
-          options, input_size.height, input_size.width, filter_height,
-          filter_width, conv2d_mojo->strides->height,
-          conv2d_mojo->strides->width, conv2d_mojo->dilations->height,
-          conv2d_mojo->dilations->width,
-          // Calculate output size without output padding.
-          0u, 0u);
-
-      const auto* output = conv2d->Outputs()[0].Get();
-      CHECK(output);
-      const auto output_shape = output->Dimensions();
-      CHECK_EQ(output_shape.size(), 4u);
-      uint32_t output_height, output_width;
-      switch (conv2d_mojo->input_layout) {
-        case blink_mojom::InputOperandLayout::kChannelsFirst: {
-          output_height = output_shape[2];
-          output_width = output_shape[3];
-          break;
-        }
-        case blink_mojom::InputOperandLayout::kChannelsLast: {
-          output_height = output_shape[1];
-          output_width = output_shape[2];
-          break;
-        }
-      }
-      CHECK_GE(output_height, calculated_output_sizes.height);
-      output_padding_height = output_height - calculated_output_sizes.height;
-      CHECK_GE(output_width, calculated_output_sizes.width);
-      output_padding_width = output_width - calculated_output_sizes.width;
-    } else {
-      output_padding_height =
-          options->getOutputPaddingOr(default_output_padding)[0];
-      output_padding_width =
-          options->getOutputPaddingOr(default_output_padding)[1];
-    }
-
-    // Calculate the padding given input sizes, filter size, padding, strides,
-    // dilations.
-    padding = blink::CalculateConvTransposePadding2D(
-        options, input_size.height, input_size.width, filter_height,
-        filter_width, conv2d_mojo->strides->height, conv2d_mojo->strides->width,
-        conv2d_mojo->dilations->height, conv2d_mojo->dilations->width,
-        output_padding_height, output_padding_width);
   } else {
     NOTREACHED_NORETURN();
   }
 
-  // The order of sequence array is [beginning_height, ending_height,
-  // beginning_width, ending_width].
+  // Set the padding from WebNN explicit padding that is in
+  // [beginning_height, ending_height, beginning_width, ending_width],
+  // default to 0.
+  auto ml_padding = options->getPaddingOr({0, 0, 0, 0});
+  CHECK_EQ(ml_padding.size(), 4u);
   conv2d_mojo->padding = blink_mojom::Padding2d::New(
-      /*beginning padding*/ Size2d::New(padding.beginning.height,
-                                        padding.beginning.width),
-      /*ending padding*/ Size2d::New(padding.ending.height,
-                                     padding.ending.width));
+      /*beginning padding*/ Size2d::New(ml_padding[0], ml_padding[2]),
+      /*ending padding*/ Size2d::New(ml_padding[1], ml_padding[3]));
 
   // Convert `MLActivition` to `mojo::Operator` if it's configured.
   if (options->hasActivation()) {
@@ -931,19 +859,14 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
   }
   pool2d_mojo->window_dimensions = Size2d::New(window_height, window_width);
 
-  // Calculate the padding given input sizes, window dimensions, padding,
-  // strides and dilations.
-  auto padding = blink::CalculatePadding2D(
-      options, input_size.height, input_size.width, window_height, window_width,
-      pool2d_mojo->strides->height, pool2d_mojo->strides->width,
-      pool2d_mojo->dilations->height, pool2d_mojo->dilations->width);
-  // The order of sequence array is [beginning_height, ending_height,
-  // beginning_width, ending_width].
+  // Set the padding from WebNN explicit padding that is in
+  // [beginning_height, ending_height, beginning_width, ending_width],
+  // default to 0.
+  auto ml_padding = options->getPaddingOr({0, 0, 0, 0});
+  CHECK_EQ(ml_padding.size(), 4u);
   pool2d_mojo->padding = blink_mojom::Padding2d::New(
-      /*beginning padding*/ Size2d::New(padding.beginning.height,
-                                        padding.beginning.width),
-      /*ending padding*/ Size2d::New(padding.ending.height,
-                                     padding.ending.width));
+      /*beginning padding*/ Size2d::New(ml_padding[0], ml_padding[2]),
+      /*ending padding*/ Size2d::New(ml_padding[1], ml_padding[3]));
 
   return blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo));
 }

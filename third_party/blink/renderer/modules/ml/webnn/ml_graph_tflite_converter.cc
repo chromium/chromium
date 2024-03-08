@@ -104,6 +104,41 @@ uint32_t GetOperatorCodeIndex(tflite::BuiltinOperator code,
   return operator_code_index;
 }
 
+struct PaddingSizes {
+  uint32_t begin;
+  uint32_t end;
+};
+
+// Helper to calculate the explicit padding for TFLite SAME padding mode.
+std::optional<PaddingSizes> CalculateExplicitPaddingForSamePaddingMode(
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t stride,
+    const uint32_t dilation) {
+  auto checked_output_size =
+      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
+  auto checked_dilated_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  auto checked_needed_input_size =
+      (checked_output_size - 1) * stride + checked_dilated_filter_size;
+  if (!checked_needed_input_size.IsValid()) {
+    return std::nullopt;
+  }
+  auto checked_total_padding =
+      checked_needed_input_size.ValueOrDie() > input_size
+          ? checked_needed_input_size - input_size
+          : base::MakeCheckedNum<uint32_t>(0);
+  // Same upper padding.
+  auto checked_padding_begin = checked_total_padding / 2;
+  auto checked_padding_end = (checked_total_padding + 1) / 2;
+  uint32_t padding_begin, padding_end;
+  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
+      !checked_padding_end.AssignIfValid(&padding_end)) {
+    return std::nullopt;
+  }
+  return PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
 // Holds tflite padding mode and the explicit padding if needed.
 struct TfLitePadding {
   tflite::Padding mode;
@@ -120,48 +155,33 @@ base::expected<TfLitePadding, String> GetTfLitePaddingMode(
     const webnn::Size2d<uint32_t>& stride,
     const webnn::Size2d<uint32_t>& dilation) {
   CHECK(options);
-  switch (options->autoPad().AsEnum()) {
-    case V8MLAutoPad::Enum::kExplicit: {
-      // Valid padding means there are no padding to be used as described here
-      // https://www.tensorflow.org/api_docs/python/tf/nn#valid_padding.
-      const Vector<uint32_t> no_padding = {0, 0, 0, 0};
-      const auto explicit_padding = options->getPaddingOr(no_padding);
-      CHECK_EQ(explicit_padding.size(), 4u);
-      if (explicit_padding == no_padding) {
-        return TfLitePadding{.mode = tflite::Padding_VALID};
-      } else {
-        // Convert the explicit padding to tflite same padding mode, throw
-        // exception if the calculated padding with kSameUpper are not the same
-        // as explicit padding.
-        const auto padding_height = webnn::CalculateConv2dPadding(
-            webnn::AutoPad::kSameUpper, input.height, filter.height,
-            stride.height, dilation.height);
-        const auto padding_width = webnn::CalculateConv2dPadding(
-            webnn::AutoPad::kSameUpper, input.width, filter.width, stride.width,
-            dilation.width);
-        // WebNN explicit padding is in [beginning_height, ending_height,
-        // beginning_width, ending_width] sequence.
-        const Vector<uint32_t> upper_padding = {
-            padding_height->begin, padding_height->end, padding_width->begin,
-            padding_width->end};
-        if (explicit_padding == upper_padding) {
-          return TfLitePadding{.mode = tflite::Padding_SAME};
-        } else {
-          return TfLitePadding{.mode = tflite::Padding_VALID,
-                               .paddings = explicit_padding};
-        }
-      }
-    }
-    case V8MLAutoPad::Enum::kSameUpper:
-      // Tflite same padding is the additional ending padding of the spatial
-      // input dimensions by default.
-      // https://www.tensorflow.org/api_docs/python/tf/nn#same_padding
+  // Valid padding means there are no padding to be used as described here
+  // https://www.tensorflow.org/api_docs/python/tf/nn#valid_padding.
+  const Vector<uint32_t> no_padding = {0, 0, 0, 0};
+  const auto explicit_padding = options->getPaddingOr(no_padding);
+  CHECK_EQ(explicit_padding.size(), 4u);
+  if (explicit_padding == no_padding) {
+    return TfLitePadding{.mode = tflite::Padding_VALID};
+  } else {
+    // Convert the explicit padding to tflite same padding mode, store the
+    // padding values for inserting a dedicated pad operator if the calculated
+    // padding with kSameUpper are not the same as explicit padding.
+    const auto padding_height = CalculateExplicitPaddingForSamePaddingMode(
+        input.height, filter.height, stride.height, dilation.height);
+    const auto padding_width = CalculateExplicitPaddingForSamePaddingMode(
+        input.width, filter.width, stride.width, dilation.width);
+    // WebNN explicit padding is in [beginning_height, ending_height,
+    // beginning_width, ending_width] sequence.
+    const Vector<uint32_t> upper_padding = {
+        padding_height->begin, padding_height->end, padding_width->begin,
+        padding_width->end};
+    if (explicit_padding == upper_padding) {
       return TfLitePadding{.mode = tflite::Padding_SAME};
-    case V8MLAutoPad::Enum::kSameLower:
-      // The values in the padding array are ignored, so we don't need to
-      // calculate if it's tflite same padding.
-      return base::unexpected(
-          "Same lower padding mode is not supported in tflite schema.");
+    } else {
+      // Store other padding values for inserting a dedicated pad operator.
+      return TfLitePadding{.mode = tflite::Padding_VALID,
+                           .paddings = explicit_padding};
+    }
   }
 
   NOTREACHED_NORETURN();

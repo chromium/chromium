@@ -10,7 +10,6 @@
 
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_auto_pad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_filter_operand_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_input_operand_layout.h"
@@ -79,8 +78,6 @@ TransferNamedArrayBufferViews(v8::Isolate* isolate,
 MODULES_EXPORT MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> views_info);
 
-webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type);
-
 // Create a default permutation vector [rank - 1, ..., 0].
 Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank);
 
@@ -91,53 +88,6 @@ Vector<uint32_t> CreateAllAxes(const wtf_size_t rank);
 // vector when rank <= 1 for layer normalization specified in
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
 Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank);
-
-// Helper to get padding sizes for convolution 2d or pooling 2d Nodes.
-template <typename OptionsType>
-webnn::Padding2d CalculatePadding2D(const OptionsType* options,
-                                    uint32_t input_height,
-                                    uint32_t input_width,
-                                    uint32_t filter_height,
-                                    uint32_t filter_width,
-                                    uint32_t stride_height,
-                                    uint32_t stride_width,
-                                    uint32_t dilation_height,
-                                    uint32_t dilation_width) {
-  webnn::Padding2d padding;
-  switch (options->autoPad().AsEnum()) {
-    case V8MLAutoPad::Enum::kExplicit: {
-      // Set the padding from WebNN explicit padding that is in
-      // [beginning_height, ending_height, beginning_width, ending_width],
-      // default to 0.
-      auto ml_padding = options->getPaddingOr({0, 0, 0, 0});
-      CHECK_EQ(ml_padding.size(), 4u);
-      padding.beginning.height = ml_padding[0];
-      padding.ending.height = ml_padding[1];
-      padding.beginning.width = ml_padding[2];
-      padding.ending.width = ml_padding[3];
-      break;
-    }
-    case V8MLAutoPad::Enum::kSameUpper:
-    case V8MLAutoPad::Enum::kSameLower: {
-      webnn::AutoPad auto_pad =
-          BlinkAutoPadToComponent(options->autoPad().AsEnum());
-      // Calculate padding based on WebNN auto padding mode and sizes.
-      auto padding_sizes_height =
-          webnn::CalculateConv2dPadding(auto_pad, input_height, filter_height,
-                                        stride_height, dilation_height);
-      CHECK(padding_sizes_height);
-      padding.beginning.height = padding_sizes_height.value().begin;
-      padding.ending.height = padding_sizes_height.value().end;
-      auto padding_sizes_width = webnn::CalculateConv2dPadding(
-          auto_pad, input_width, filter_width, stride_width, dilation_width);
-      CHECK(padding_sizes_width);
-      padding.beginning.width = padding_sizes_width.value().begin;
-      padding.ending.width = padding_sizes_width.value().end;
-      break;
-    }
-  }
-  return padding;
-}
 
 // A depthwise conv2d operation is a variant of grouped convolution where the
 // options.groups == input_channels == output_channels according to WebNN conv2d
@@ -151,20 +101,6 @@ base::expected<void, String> ValidateFilterLayout(
     bool depthwise,
     V8MLInputOperandLayout input_layout,
     V8MLConv2dFilterOperandLayout filter_layout);
-
-// Helper to get padding sizes for convolution transpose 2d Node.
-webnn::Padding2d CalculateConvTransposePadding2D(
-    const blink::MLConvTranspose2dOptions* options,
-    uint32_t input_height,
-    uint32_t input_width,
-    uint32_t filter_height,
-    uint32_t filter_width,
-    uint32_t stride_height,
-    uint32_t stride_width,
-    uint32_t dilation_height,
-    uint32_t dilation_width,
-    uint32_t output_padding_height,
-    uint32_t output_padding_width);
 
 // Helper to get output sizes for convolution transpose 2d Node.
 webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(

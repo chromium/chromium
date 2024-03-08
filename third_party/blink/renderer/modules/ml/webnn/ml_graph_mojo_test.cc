@@ -1211,7 +1211,6 @@ struct Conv2dTester {
     std::optional<Vector<uint32_t>> padding;
     std::optional<Vector<uint32_t>> strides;
     std::optional<Vector<uint32_t>> dilations;
-    std::optional<blink::V8MLAutoPad::Enum> auto_pad;
     std::optional<uint32_t> groups;
     std::optional<blink::V8MLInputOperandLayout::Enum> input_layout;
     std::optional<blink::V8MLConv2dFilterOperandLayout::Enum> filter_layout;
@@ -1251,9 +1250,6 @@ struct Conv2dTester {
     }
     if (options.dilations) {
       ml_conv2d_options->setDilations(options.dilations.value());
-    }
-    if (options.auto_pad) {
-      ml_conv2d_options->setAutoPad(options.auto_pad.value());
     }
     if (options.groups) {
       ml_conv2d_options->setGroups(options.groups.value());
@@ -1351,40 +1347,6 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
         .expected_attributes = {.padding = {0, 0, 0, 0},
-                                .strides = {1, 1},
-                                .dilations = {1, 1},
-                                .groups = 1}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test conv2d with autoPad="same-upper".
-    Conv2dTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 1, 5, 5}},
-        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                   .dimensions = {1, 1, 3, 3}},
-        .options = {.auto_pad = V8MLAutoPad::Enum::kSameUpper},
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {1, 1, 5, 5}},
-        .expected_attributes = {.padding = {1, 1, 1, 1},
-                                .strides = {1, 1},
-                                .dilations = {1, 1},
-                                .groups = 1}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test conv2d with autoPad="same-lower".
-    Conv2dTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 1, 5, 5}},
-        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                   .dimensions = {1, 1, 3, 3}},
-        .options = {.auto_pad = V8MLAutoPad::Enum::kSameLower},
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {1, 1, 5, 5}},
-        .expected_attributes = {.padding = {1, 1, 1, 1},
                                 .strides = {1, 1},
                                 .dilations = {1, 1},
                                 .groups = 1}}
@@ -3644,7 +3606,6 @@ struct Pool2dTester {
     std::optional<Vector<uint32_t>> padding;
     std::optional<Vector<uint32_t>> strides;
     std::optional<Vector<uint32_t>> dilations;
-    std::optional<blink::V8MLAutoPad::Enum> auto_pad;
     std::optional<blink::V8MLInputOperandLayout::Enum> layout;
     std::optional<blink::V8MLRoundingType::Enum> rounding_type;
     std::optional<Vector<uint32_t>> output_sizes;
@@ -3690,9 +3651,6 @@ struct Pool2dTester {
     }
     if (options.dilations) {
       ml_pool2d_options->setDilations(options.dilations.value());
-    }
-    if (options.auto_pad) {
-      ml_pool2d_options->setAutoPad(options.auto_pad.value());
     }
     if (options.layout) {
       ml_pool2d_options->setLayout(options.layout.value());
@@ -3794,38 +3752,6 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
                              .dimensions = {1, 3, 2, 2}},
         .expected_attributes = {.window_dimensions = {3, 3},
                                 .padding = {0, 0, 0, 0},
-                                .strides = {1, 1},
-                                .dilations = {1, 1}}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test pool2d with autoPad="same-upper".
-    Pool2dTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 3, 5, 5}},
-        .options = {.window_dimensions = Vector<uint32_t>({5, 5}),
-                    .auto_pad = V8MLAutoPad::Enum::kSameUpper},
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.window_dimensions = {5, 5},
-                                .padding = {2, 2, 2, 2},
-                                .strides = {1, 1},
-                                .dilations = {1, 1}}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test pool2d with autoPad="same-lower".
-    Pool2dTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 3, 5, 5}},
-        .options = {.window_dimensions = Vector<uint32_t>({5, 5}),
-                    .auto_pad = V8MLAutoPad::Enum::kSameLower},
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.window_dimensions = {5, 5},
-                                .padding = {2, 2, 2, 2},
                                 .strides = {1, 1},
                                 .dilations = {1, 1}}}
         .Test(*this, scope, builder);

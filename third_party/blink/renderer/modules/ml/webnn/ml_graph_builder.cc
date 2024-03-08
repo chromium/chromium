@@ -252,7 +252,6 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
   }
   attributes.dilations =
       webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
-  attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
   attributes.groups = options->groups();
   attributes.input_layout =
       BlinkInputOperandLayoutToComponent(options->inputLayout().AsEnum());
@@ -350,7 +349,6 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
   }
   attributes.dilations =
       webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
-  attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
   attributes.layout =
       BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
   attributes.rounding_type =

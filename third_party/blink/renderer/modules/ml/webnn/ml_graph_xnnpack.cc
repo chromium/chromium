@@ -622,45 +622,16 @@ struct XnnPadding2D {
 
 // Helper to get padding sizes for XNNPACK convolution 2d or pooling 2d Nodes.
 template <typename OptionsType>
-XnnPadding2D GetXnnPadding2D(const OptionsType* options,
-                             uint32_t input_height,
-                             uint32_t input_width,
-                             uint32_t filter_height,
-                             uint32_t filter_width,
-                             uint32_t stride_height,
-                             uint32_t stride_width,
-                             uint32_t dilation_height,
-                             uint32_t dilation_width) {
-  auto padding = CalculatePadding2D(
-      options, input_height, input_width, filter_height, filter_width,
-      stride_height, stride_width, dilation_height, dilation_width);
-  return XnnPadding2D{.top = padding.beginning.height,
-                      .bottom = padding.ending.height,
-                      .left = padding.beginning.width,
-                      .right = padding.ending.width};
-}
-
-// Helper to get padding sizes for XNNPACK convTranspose2d Nodes.
-XnnPadding2D GetXnnConvTransposePadding2D(
-    const MLConvTranspose2dOptions* options,
-    uint32_t input_height,
-    uint32_t input_width,
-    uint32_t filter_height,
-    uint32_t filter_width,
-    uint32_t stride_height,
-    uint32_t stride_width,
-    uint32_t dilation_height,
-    uint32_t dilation_width,
-    uint32_t output_padding_height,
-    uint32_t output_padding_width) {
-  auto padding = blink::CalculateConvTransposePadding2D(
-      options, input_height, input_width, filter_height, filter_width,
-      stride_height, stride_width, dilation_height, dilation_width,
-      output_padding_height, output_padding_width);
-  return XnnPadding2D{.top = padding.beginning.height,
-                      .bottom = padding.ending.height,
-                      .left = padding.beginning.width,
-                      .right = padding.ending.width};
+XnnPadding2D GetXnnPadding2D(const OptionsType* options) {
+  // Set the XNNPACK padding from WebNN explicit padding that is in
+  // [beginning_height, ending_height, beginning_width, ending_width],
+  // default to 0.
+  auto ml_padding = options->getPaddingOr({0, 0, 0, 0});
+  CHECK_EQ(ml_padding.size(), 4u);
+  return XnnPadding2D{.top = ml_padding[0],
+                      .bottom = ml_padding[1],
+                      .left = ml_padding[2],
+                      .right = ml_padding[3]};
 }
 
 xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
@@ -695,7 +666,6 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   const uint32_t dilation_width = options->getDilationsOr(default_dilations)[1];
 
   // Set input and filter sizes of XNNPACK conv2d.
-  uint32_t input_height, input_width;
   uint32_t filter_height, filter_width;
   uint32_t input_channels, output_channels;
   const uint32_t groups = options->groups();
@@ -703,8 +673,6 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   if (options->inputLayout().AsEnum() == V8MLInputOperandLayout::Enum::kNhwc) {
     const auto* input = conv2d->Inputs()[0].Get();
     DCHECK(input);
-    input_height = input->Dimensions()[1];
-    input_width = input->Dimensions()[2];
     input_channels = input->Dimensions()[3];
     const auto* output = conv2d->Outputs()[0].Get();
     DCHECK(output);
@@ -730,10 +698,8 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
     return xnn_status_unsupported_parameter;
   }
 
-  // Set or calculate padding sizes of XNNPACK conv2d.
-  const auto padding = GetXnnPadding2D(
-      options, input_height, input_width, filter_height, filter_width,
-      stride_height, stride_width, dilation_height, dilation_width);
+  // Set padding sizes of XNNPACK conv2d.
+  const auto padding = GetXnnPadding2D(options);
 
   // Set the minimum and maximum output values for XNNPACK conv2d based on the
   // fused activation function. If no fused activation function is set, there
@@ -884,11 +850,8 @@ xnn_status DefineXnnNodeForConvTranspose2d(
         options->getOutputPaddingOr(default_output_padding)[1];
   }
 
-  // Set or calculate padding sizes of XNNPACK convTranspose2d.
-  const auto padding = GetXnnConvTransposePadding2D(
-      options, input_height, input_width, filter_height, filter_width,
-      stride_height, stride_width, dilation_height, dilation_width,
-      output_padding_height, output_padding_width);
+  // Set padding sizes of XNNPACK convTranspose2d.
+  const auto padding = GetXnnPadding2D(options);
 
   // Set the minimum and maximum output values for XNNPACK convTranspose2d based
   // on the fused activation function. If no fused activation function is set,
@@ -1340,9 +1303,7 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
   }
 
   // Set or calculate padding sizes of XNNPACK pooling 2d Node.
-  auto padding = GetXnnPadding2D(options, input_height, input_width,
-                                 filter_height, filter_width, stride_height,
-                                 stride_width, dilation_height, dilation_width);
+  auto padding = GetXnnPadding2D(options);
 
   // Since XNNPACK doesn't support ceil rounding, add bottom and right padding
   // to bring the output to the sizes after ceil rounding.

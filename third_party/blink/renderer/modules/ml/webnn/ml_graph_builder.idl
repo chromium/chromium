@@ -12,8 +12,6 @@ enum MLConv2dFilterOperandLayout { "oihw", "hwio", "ohwi", "ihwo" };
 
 enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
 
-enum MLAutoPad { "explicit", "same-upper", "same-lower" };
-
 enum MLRecurrentNetworkDirection { "forward", "backward", "both" };
 
 enum MLLstmWeightLayout { "iofg", "ifgo" };
@@ -42,7 +40,6 @@ dictionary MLConv2dOptions {
   sequence<[EnforceRange] unsigned long> padding;
   sequence<[EnforceRange] unsigned long> strides;
   sequence<[EnforceRange] unsigned long> dilations;
-  MLAutoPad autoPad = "explicit";
   [EnforceRange] unsigned long groups = 1;
   MLInputOperandLayout inputLayout = "nchw";
   MLConv2dFilterOperandLayout filterLayout = "oihw";
@@ -56,7 +53,6 @@ dictionary MLConvTranspose2dOptions {
   sequence<[EnforceRange] unsigned long> dilations;
   sequence<[EnforceRange] unsigned long> outputPadding;
   sequence<[EnforceRange] unsigned long> outputSizes;
-  MLAutoPad autoPad = "explicit";
   [EnforceRange] unsigned long groups = 1;
   MLInputOperandLayout inputLayout = "nchw";
   MLConvTranspose2dFilterOperandLayout filterLayout = "iohw";
@@ -142,7 +138,6 @@ dictionary MLPool2dOptions {
   sequence<[EnforceRange] unsigned long> padding;
   sequence<[EnforceRange] unsigned long> strides;
   sequence<[EnforceRange] unsigned long> dilations;
-  MLAutoPad autoPad = "explicit";
   MLInputOperandLayout layout = "nchw";
   MLRoundingType roundingType = "floor";
   sequence<[EnforceRange] unsigned long> outputSizes;

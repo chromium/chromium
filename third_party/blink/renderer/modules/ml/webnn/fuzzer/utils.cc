@@ -30,17 +30,6 @@ V8MLOperandDataType::Enum ToV8MLOperandDataType(
   }
 }
 
-V8MLAutoPad::Enum ToV8MLAutoPad(webnn_proto::MLAutoPad auto_pad) {
-  switch (auto_pad) {
-    case webnn_proto::MLAutoPad::EXPLICIT:
-      return V8MLAutoPad::Enum::kExplicit;
-    case webnn_proto::MLAutoPad::SAME_UPPER:
-      return V8MLAutoPad::Enum::kSameUpper;
-    case webnn_proto::MLAutoPad::SAME_LOWER:
-      return V8MLAutoPad::Enum::kSameLower;
-  }
-}
-
 V8MLInputOperandLayout::Enum ToV8MLInputOperandLayout(
     webnn_proto::MLInputOperandLayout input_layout) {
   switch (input_layout) {

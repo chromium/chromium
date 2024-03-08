@@ -1050,8 +1050,6 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
                                  V8MLOperandDataType::Enum::kFloat32,
                                  scope.GetExceptionState());
     auto* options = MLConv2dOptions::Create();
-    EXPECT_TRUE(options->hasAutoPad());
-    EXPECT_EQ(options->autoPad(), V8MLAutoPad::Enum::kExplicit);
     EXPECT_FALSE(options->hasBias());
     EXPECT_FALSE(options->hasDilations());
     EXPECT_FALSE(options->hasActivation());
@@ -1077,32 +1075,6 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
                                  scope.GetExceptionState());
     auto* options = MLConv2dOptions::Create();
     options->setPadding({1, 1, 1, 1});
-    auto* output = BuildConv2d(scope, builder, input, filter, options);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 5, 5}));
-  }
-  {
-    // Test conv2d with autopad="same-lower".
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 3, 3},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConv2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
-    auto* output = BuildConv2d(scope, builder, input, filter, options);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 5, 5}));
-  }
-  {
-    // Test conv2d with autopad="same-upper".
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 3, 3},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConv2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
     auto* output = BuildConv2d(scope, builder, input, filter, options);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 5, 5}));
   }
@@ -1531,50 +1503,6 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
               "The groups should be greater than 0.");
   }
   {
-    // Test throwing exception due to overflow when calculating the padding
-    // along the height dimension.
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 23567, 2},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConv2dOptions::Create();
-    options->setStrides({193232, 3});
-    options->setDilations({232328, 2});
-    options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
-    auto* output =
-        builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_THAT(output, testing::IsNull());
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Overflow occurred when calculating "
-              "the padding along the height dimension.");
-  }
-  {
-    // Test throwing exception due to overflow when calculating the padding
-    // along the width dimension.
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 2, 28476},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConv2dOptions::Create();
-    options->setStrides({1, 284234});
-    options->setDilations({1, 434329});
-    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
-    auto* output =
-        builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_THAT(output, testing::IsNull());
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Overflow occurred when calculating "
-              "the padding along the width dimension.");
-  }
-  {
     // Test throwing exception due to overflow when calculating the effective
     // filter height.
     auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
@@ -1761,8 +1689,6 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
                                  V8MLOperandDataType::Enum::kFloat32,
                                  scope.GetExceptionState());
     auto* options = MLConvTranspose2dOptions::Create();
-    EXPECT_TRUE(options->hasAutoPad());
-    EXPECT_EQ(options->autoPad(), V8MLAutoPad::Enum::kExplicit);
     EXPECT_FALSE(options->hasBias());
     EXPECT_FALSE(options->hasDilations());
     EXPECT_FALSE(options->hasActivation());
@@ -1909,7 +1835,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
   }
   {
-    // Test convTranspose2d with autopad="explicit", strides=2.
+    // Test convTranspose2d with strides=2.
     auto* input = BuildInput(builder, "input", {1, 1, 3, 3},
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
@@ -1917,66 +1843,9 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
                                  V8MLOperandDataType::Enum::kFloat32,
                                  scope.GetExceptionState());
     auto* options = MLConvTranspose2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kExplicit);
     options->setStrides({2, 2});
     auto* output = BuildConvTranspose2d(scope, builder, input, filter, options);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 7, 7}));
-  }
-  {
-    // Test convTranspose2d with autopad="same-upper".
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 3, 3},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConvTranspose2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
-    auto* output = BuildConvTranspose2d(scope, builder, input, filter, options);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 5, 5}));
-  }
-  {
-    // Test convTranspose2d with autopad="same-upper", strides=2.
-    auto* input = BuildInput(builder, "input", {1, 1, 3, 3},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 2, 3, 3},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConvTranspose2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
-    options->setStrides({2, 2});
-    auto* output = BuildConvTranspose2d(scope, builder, input, filter, options);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 6, 6}));
-  }
-  {
-    // Test convTranspose2d with autopad="same-lower".
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 3, 3},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConvTranspose2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
-    auto* output = BuildConvTranspose2d(scope, builder, input, filter, options);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 5, 5}));
-  }
-  {
-    // Test convTranspose2d with autopad="same-lower", strides=2, padding=[0, 1,
-    // 0, 1].
-    auto* input = BuildInput(builder, "input", {1, 1, 3, 3},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 2, 3, 3},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConvTranspose2dOptions::Create();
-    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
-    options->setPadding({0, 1, 0, 1});
-    options->setStrides({2, 2});
-    auto* output = BuildConvTranspose2d(scope, builder, input, filter, options);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 6, 6}));
   }
   {
     // Test convTranspose2d with strides=2 and padding=1.
@@ -2246,50 +2115,6 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The groups should be greater than 0.");
-  }
-  {
-    // Test throwing exception due to overflow when calculating the padding
-    // along the height dimension.
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 23567, 2},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConvTranspose2dOptions::Create();
-    options->setStrides({193232, 3});
-    options->setDilations({232328, 2});
-    options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
-    auto* output = builder->convTranspose2d(input, filter, options,
-                                            scope.GetExceptionState());
-    EXPECT_THAT(output, testing::IsNull());
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Overflow occurred when calculating "
-              "the padding along the height dimension.");
-  }
-  {
-    // Test throwing exception due to overflow when calculating the padding
-    // along the width dimension.
-    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
-                             V8MLOperandDataType::Enum::kFloat32,
-                             scope.GetExceptionState());
-    auto* filter = BuildConstant(builder, {1, 1, 2, 28476},
-                                 V8MLOperandDataType::Enum::kFloat32,
-                                 scope.GetExceptionState());
-    auto* options = MLConvTranspose2dOptions::Create();
-    options->setStrides({1, 284234});
-    options->setDilations({1, 434329});
-    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
-    auto* output = builder->convTranspose2d(input, filter, options,
-                                            scope.GetExceptionState());
-    EXPECT_THAT(output, testing::IsNull());
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Overflow occurred when calculating "
-              "the padding along the width dimension.");
   }
   {
     // Test throwing exception due to overflow when calculating the effective
@@ -2580,8 +2405,6 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
                                V8MLOperandDataType::Enum::kFloat32,
                                scope.GetExceptionState());
       auto* options = MLPool2dOptions::Create();
-      EXPECT_TRUE(options->hasAutoPad());
-      EXPECT_EQ(options->autoPad(), V8MLAutoPad::Enum::kExplicit);
       EXPECT_FALSE(options->hasWindowDimensions());
       EXPECT_FALSE(options->hasPadding());
       EXPECT_FALSE(options->hasStrides());
@@ -2614,30 +2437,6 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* options = MLPool2dOptions::Create();
       options->setWindowDimensions({5, 5});
       options->setPadding({2, 2, 2, 2});
-      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      CheckPool2dOutput(input, output, pool2d_kind);
-      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
-    }
-    {
-      // Test pool2d with autoPad="same-upper".
-      auto* input = BuildInput(builder, "input", {1, 3, 5, 5},
-                               V8MLOperandDataType::Enum::kFloat32,
-                               scope.GetExceptionState());
-      auto* options = MLPool2dOptions::Create();
-      options->setWindowDimensions({5, 5});
-      options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
-      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      CheckPool2dOutput(input, output, pool2d_kind);
-      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
-    }
-    {
-      // Test pool2d with autoPad="same-lower".
-      auto* input = BuildInput(builder, "input", {1, 3, 5, 5},
-                               V8MLOperandDataType::Enum::kFloat32,
-                               scope.GetExceptionState());
-      auto* options = MLPool2dOptions::Create();
-      options->setWindowDimensions({5, 5});
-      options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
       CheckPool2dOutput(input, output, pool2d_kind);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 5, 5}));
