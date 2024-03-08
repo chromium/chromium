@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getParentEntry} from '../../common/js/api.js';
-import {canHaveSubDirectories, isDirectoryEntry, isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, isVolumeFileData, readEntries, shouldSupportDriveSpecificIcons, sortEntries, supportsUiChildren} from '../../common/js/entry_utils.js';
+import {canHaveSubDirectories, isDirectoryEntry, isDriveRootEntryList, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrive, isGrandRootEntryInDrive, isInsideDrive, isVolumeEntry, isVolumeFileData, readEntries, shouldSupportDriveSpecificIcons, sortEntries, supportsUiChildren} from '../../common/js/entry_utils.js';
 import {getIcon} from '../../common/js/file_type.js';
 import type {FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
@@ -87,9 +87,8 @@ function clearCachedEntriesReducer(state: State): State {
 
   // For all expanded entries, we need to keep them and all their direct
   // children.
-  for (const [key, fileData] of Object.entries(entries)) {
+  for (const fileData of Object.values(entries)) {
     if (fileData.expanded) {
-      entriesToKeep.add(key);
       if (fileData.children) {
         for (const child of fileData.children) {
           entriesToKeep.add(child);
@@ -576,7 +575,7 @@ export async function*
     // Fetch metadata if the entry supports Drive specific share icon.
     state = getStore().getState();
     const parentFileData = getFileData(state, fileKey);
-    if (parentFileData && isEntryInsideDrive(parentFileData)) {
+    if (parentFileData && isInsideDrive(parentFileData)) {
       const entriesNeedMetadata = subDirectories.filter(subDirectory => {
         const subDirFileData = getFileData(state, subDirectory.toURL());
         return subDirFileData &&
@@ -682,13 +681,13 @@ async function*
 
   for (const childEntry of driveChildren) {
     // For fake entries ("Shared with me" and "Offline").
-    if (isFakeEntryInDrives(childEntry)) {
+    if (isFakeEntryInDrive(childEntry)) {
       filteredChildren.push(childEntry);
       continue;
     }
     // For non grand roots (also not fake entries), we put them in the children
     // directly and dispatch an action to read the it later.
-    if (!isGrandRootEntryInDrives(childEntry)) {
+    if (!isGrandRootEntryInDrive(childEntry)) {
       filteredChildren.push(childEntry);
       continue;
     }

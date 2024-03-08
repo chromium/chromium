@@ -7,7 +7,7 @@ import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome:/
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
-import {compareLabelAndGroupBottomEntries, compareName, isComputersEntry, isDescendantEntry, isEntryInsideDrive, isOneDrive, isOneDriveId, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
+import {compareLabelAndGroupBottomEntries, compareName, isComputersEntry, isDescendantEntry, isInsideDrive, isOneDrive, isOneDriveId, isRecentRootType, isSameEntry, isSharedDriveEntry} from '../../../common/js/entry_utils.js';
 import {getIconOverrides} from '../../../common/js/file_type.js';
 import {FilesAppDirEntry} from '../../../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
@@ -404,7 +404,7 @@ export class DirectoryItem extends FilesTreeItem {
   get insideDrive() {
     // @ts-ignore: error TS2345: Argument of type '{ rootType: string | null; }'
     // is not assignable to parameter of type 'FileData'.
-    return isEntryInsideDrive({rootType: this.rootType});
+    return isInsideDrive({rootType: this.rootType});
   }
 
   /**

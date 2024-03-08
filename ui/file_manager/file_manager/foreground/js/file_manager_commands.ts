@@ -13,7 +13,7 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
-import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandRootEntryInDrives, isNonModifiable, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
+import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandRootEntryInDrive, isNonModifiable, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
@@ -1230,7 +1230,7 @@ export class RenameCommand extends FilesCommand {
     // ARC doesn't support rename for now. http://b/232152680
     const recentArcEntry = isRecentArcEntry(unwrapEntry(entries[0]!) as Entry);
     // Drive grand roots do not support rename.
-    const isDriveGrandRoot = isGrandRootEntryInDrives(entries[0]!);
+    const isDriveGrandRoot = isGrandRootEntryInDrive(entries[0]!);
 
     event.canExecute = entries.length === 1 && volumeIsNotReadOnly &&
         !recentArcEntry && !isDriveGrandRoot &&

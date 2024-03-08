@@ -9,7 +9,7 @@ import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_
 import type {VolumeManager} from '../background/js/volume_manager.js';
 import {isModal} from '../common/js/dialog_type.js';
 import {queryRequiredElement} from '../common/js/dom_utils.js';
-import {isEntryInsideDrive} from '../common/js/entry_utils.js';
+import {isInsideDrive} from '../common/js/entry_utils.js';
 import type {FakeEntry} from '../common/js/files_app_entry_types.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
@@ -67,7 +67,7 @@ function createLocationOptions(state: State): XfOption[] {
     },
   ];
   if (dirPath.length > 0) {
-    if (dir && isEntryInsideDrive(dir)) {
+    if (dir && isInsideDrive(dir)) {
       // For Google Drive we currently do not have the ability to search a
       // specific folder. Thus the only options shown, when the user is
       // triggering search from a location in Drive, is Everywhere (set up

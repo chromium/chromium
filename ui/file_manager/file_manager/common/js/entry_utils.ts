@@ -119,7 +119,7 @@ export function isDriveRootEntryList(entry: Entry|FilesAppEntry|
  * inside Drive. Note: if the return value is true, the input entry is
  * guaranteed to be DirectoryEntry type.
  */
-export function isGrandRootEntryInDrives(entry: Entry|FilesAppEntry):
+export function isGrandRootEntryInDrive(entry: Entry|FilesAppEntry):
     entry is DirectoryEntry {
   const {fullPath} = entry;
   return fullPath === SHARED_DRIVES_DIRECTORY_PATH ||
@@ -130,8 +130,8 @@ export function isGrandRootEntryInDrives(entry: Entry|FilesAppEntry):
  * Given an entry, check if it's a fake entry ("Shared with me" and "Offline")
  * inside Drive.
  */
-export function isFakeEntryInDrives(entry: Entry|
-                                    FilesAppEntry): entry is FakeEntry {
+export function isFakeEntryInDrive(entry: Entry|
+                                   FilesAppEntry): entry is FakeEntry {
   if (!(entry instanceof FakeEntryImpl)) {
     return false;
   }
@@ -162,8 +162,7 @@ export function isEntryInsideComputers(fileData: FileData): boolean {
 /**
  * Returns true if fileData's entry is inside any part of Drive.
  */
-export function isEntryInsideDrive(fileData: FileData|
-                                   CurrentDirectory): boolean {
+export function isInsideDrive(fileData: FileData|CurrentDirectory): boolean {
   const {rootType} = fileData;
   return isDriveRootType(rootType);
 }
@@ -930,7 +929,7 @@ export function isGuestOs(type: VolumeType) {
 export function shouldSupportDriveSpecificIcons(fileData: FileData): boolean {
   return (isEntryInsideMyDrive(fileData) && !isVolumeEntry(fileData.entry)) ||
       (isEntryInsideComputers(fileData) &&
-       !isGrandRootEntryInDrives(fileData.entry));
+       !isGrandRootEntryInDrive(fileData.entry));
 }
 
 /**
