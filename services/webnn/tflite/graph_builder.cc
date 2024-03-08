@@ -197,6 +197,12 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = elementwise_result.value();
       break;
     }
+    case mojom::Operation::Tag::kElu: {
+      const auto elu_result = SerializeElu(*op.get_elu());
+      RETURN_IF_ERROR(elu_result);
+      operator_offset = elu_result.value();
+      break;
+    }
     case mojom::Operation::Tag::kHardSwish:
       operator_offset = SerializeHardSwish(*op.get_hard_swish());
       break;
@@ -233,8 +239,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("batchNormalization is not implemented");
     case mojom::Operation::Tag::kConv2d:
       return base::unexpected("conv2d is not implemented");
-    case mojom::Operation::Tag::kElu:
-      return base::unexpected("elu is not implemented");
     case mojom::Operation::Tag::kExpand:
       return base::unexpected("expand is not implemented");
     case mojom::Operation::Tag::kGather:
@@ -526,6 +530,17 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }
+}
+
+auto GraphBuilder::SerializeElu(const mojom::Elu& elu)
+    -> base::expected<OperatorOffset, std::string> {
+  if (elu.alpha != 1.0) {
+    // TODO: crbug.com/328736354 - Support custom alpha values.
+    return base::unexpected(
+        "Setting a custom alpha is not supported in tflite schema.");
+  }
+  return SerializeUnaryOperator(::tflite::BuiltinOperator_ELU,
+                                elu.input_operand_id, elu.output_operand_id);
 }
 
 auto GraphBuilder::SerializeHardSwish(const mojom::HardSwish& hard_swish)
