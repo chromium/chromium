@@ -280,9 +280,9 @@ using password_manager::WarningType;
 
 - (void)showDetailedViewForAffiliatedGroup:
     (const password_manager::AffiliatedGroup&)affiliatedGroup {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.passwordDetailsCoordinator);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!self.passwordDetailsCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
@@ -296,9 +296,8 @@ using password_manager::WarningType;
 }
 
 - (void)showAddPasswordSheet {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.addPasswordCoordinator);
+  // Not an invariant. DCHECKing for debugging purposes. See crbug.com/40067451.
+  DCHECK(!self.addPasswordCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
@@ -401,9 +400,9 @@ using password_manager::WarningType;
 }
 
 - (void)showPasswordManagerWidgetPromoInstructions {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.widgetPromoInstructionsCoordinator);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!self.widgetPromoInstructionsCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
