@@ -11,8 +11,8 @@
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
@@ -61,7 +61,8 @@ void FakeUploadClient::OnUploadComplete(
     bool force_confirm =
         force_confirm_flag.has_value() && force_confirm_flag.value();
     auto seq_info_result =
-        RecordHandlerImpl::SequenceInformationValueToProto(*last_success);
+        UploadResponseParser::SequenceInformationValueToProto(
+            /*is_generation_guid_required=*/false, *last_success);
     if (seq_info_result.has_value()) {
       std::move(report_upload_success_cb)
           .Run(seq_info_result.value(), force_confirm);
