@@ -22,7 +22,21 @@ export class DestinationSelectElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      showLoading: Boolean,
+    };
+  }
+
   private controller = new DestinationSelectController();
+  private showLoading: boolean;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    // Initialize properties using the controller.
+    this.showLoading = this.controller.shouldShowLoading();
+  }
 
   getControllerForTesting(): DestinationSelectController {
     return this.controller;

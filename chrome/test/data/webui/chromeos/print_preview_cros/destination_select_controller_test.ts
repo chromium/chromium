@@ -19,4 +19,9 @@ suite('DestinationSelectController', () => {
   test('is event target', () => {
     assertTrue(controller instanceof EventTarget, 'Is event target');
   });
+
+  // Verify shouldShowLoading returns true by default.
+  test('shouldShowLoading returns true by default', () => {
+    assertTrue(controller.shouldShowLoading());
+  });
 });

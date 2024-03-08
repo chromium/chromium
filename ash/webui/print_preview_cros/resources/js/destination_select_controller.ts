@@ -11,4 +11,10 @@
 
 // DestinationSelectController defines functionality used to update the
 // `destination-select` element.
-export class DestinationSelectController extends EventTarget {}
+export class DestinationSelectController extends EventTarget {
+  // TODO(b/323421684): Use destination manager to determine if there are
+  // destinations available or if initial fetch is still in progress.
+  shouldShowLoading(): boolean {
+    return true;
+  }
+}
