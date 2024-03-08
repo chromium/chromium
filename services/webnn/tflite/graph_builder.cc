@@ -377,10 +377,12 @@ const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
   return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
-auto GraphBuilder::SerializeUnaryOperator(::tflite::BuiltinOperator code,
-                                          uint64_t input_operand_id,
-                                          uint64_t output_operand_id)
-    -> OperatorOffset {
+auto GraphBuilder::SerializeUnaryOperator(
+    ::tflite::BuiltinOperator code,
+    uint64_t input_operand_id,
+    uint64_t output_operand_id,
+    ::tflite::BuiltinOptions builtin_options_type,
+    flatbuffers::Offset<void> builtin_options) -> OperatorOffset {
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
   // code.
@@ -391,7 +393,23 @@ auto GraphBuilder::SerializeUnaryOperator(::tflite::BuiltinOperator code,
       operand_to_index_map_.at(output_operand_id)};
   return ::tflite::CreateOperator(builder_, operator_code_index,
                                   builder_.CreateVector<int32_t>(op_inputs),
-                                  builder_.CreateVector<int32_t>(op_outputs));
+                                  builder_.CreateVector<int32_t>(op_outputs),
+                                  builtin_options_type, builtin_options);
+}
+
+auto GraphBuilder::SerializeCastOperation(uint64_t input_operand_id,
+                                          uint64_t output_operand_id)
+    -> OperatorOffset {
+  const auto cast_options = ::tflite::CreateCastOptions(
+      builder_,
+      /*in_data_type=*/
+      MojoOperandTypeToTFLite(GetOperand(input_operand_id).data_type),
+      /*out_data_type=*/
+      MojoOperandTypeToTFLite(GetOperand(output_operand_id).data_type));
+
+  return SerializeUnaryOperator(
+      ::tflite::BuiltinOperator_CAST, input_operand_id, output_operand_id,
+      ::tflite::BuiltinOptions_CastOptions, cast_options.Union());
 }
 
 auto GraphBuilder::SerializeClamp(const mojom::Clamp& clamp)
@@ -521,12 +539,13 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
     case mojom::ElementWiseUnary::Kind::kSqrt:
       return SerializeUnaryOperator(::tflite::BuiltinOperator_SQRT,
                                     op.input_operand_id, op.output_operand_id);
+    case mojom::ElementWiseUnary::Kind::kCast:
+      return SerializeCastOperation(op.input_operand_id, op.output_operand_id);
     case mojom::ElementWiseUnary::Kind::kTan:
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
     case mojom::ElementWiseUnary::Kind::kIdentity:
     case mojom::ElementWiseUnary::Kind::kErf:
     case mojom::ElementWiseUnary::Kind::kReciprocal:
-    case mojom::ElementWiseUnary::Kind::kCast:
       return base::unexpected(
           base::StrCat({base::ToString(op.kind), " is not implemented."}));
   }

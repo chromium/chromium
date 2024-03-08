@@ -100,8 +100,16 @@ class GraphBuilder final {
   // Will craash if `graph_info_` does not contain `operand_id`.
   const mojom::Operand& GetOperand(uint64_t operand_id) const;
 
-  OperatorOffset SerializeUnaryOperator(::tflite::BuiltinOperator code,
-                                        uint64_t input_operand_id,
+  // Operation serialization helpers for operations not directly declared in the
+  // mojom::Operation union.
+  OperatorOffset SerializeUnaryOperator(
+      ::tflite::BuiltinOperator code,
+      uint64_t input_operand_id,
+      uint64_t output_operand_id,
+      ::tflite::BuiltinOptions builtin_options_type =
+          ::tflite::BuiltinOptions_NONE,
+      flatbuffers::Offset<void> builtin_options = 0);
+  OperatorOffset SerializeCastOperation(uint64_t input_operand_id,
                                         uint64_t output_operand_id);
 
   // Serialize functions for members of the mojom::Operation union. Keep these
