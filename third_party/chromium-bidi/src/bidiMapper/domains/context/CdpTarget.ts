@@ -243,7 +243,7 @@ export class CdpTarget {
             session: this.cdpSessionId,
           },
         },
-        null
+        this.id
       );
     });
   }
