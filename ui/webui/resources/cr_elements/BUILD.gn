@@ -125,6 +125,7 @@ build_webui("build") {
       "cr_input/cr_input.css",
       "cr_input/cr_input_style.css",
       "cr_input/cr_input_style_lit.css",
+      "cr_search_field/cr_search_field.css",
       "cr_tabs/cr_tabs.css",
       "cr_toast/cr_toast.css",
       "cr_toast/cr_toast_manager.css",
