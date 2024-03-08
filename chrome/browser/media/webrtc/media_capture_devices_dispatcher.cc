@@ -112,9 +112,9 @@ MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() {}
 
 void MediaCaptureDevicesDispatcher::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kDefaultAudioCaptureDevice,
+  registry->RegisterStringPref(prefs::kDefaultAudioCaptureDeviceDeprecated,
                                std::string());
-  registry->RegisterStringPref(prefs::kDefaultVideoCaptureDevice,
+  registry->RegisterStringPref(prefs::kDefaultVideoCaptureDeviceDeprecated,
                                std::string());
 }
 

@@ -244,9 +244,9 @@ const base::Value::List& GetAndMaybeMigratePref(PrefService& prefs,
   // unset.
   std::string default_device_pref_name;
   if (pref_name == kAudioInputUserPreferenceRanking) {
-    default_device_pref_name = prefs::kDefaultAudioCaptureDevice;
+    default_device_pref_name = prefs::kDefaultAudioCaptureDeviceDeprecated;
   } else if (pref_name == kVideoInputUserPreferenceRanking) {
-    default_device_pref_name = prefs::kDefaultVideoCaptureDevice;
+    default_device_pref_name = prefs::kDefaultVideoCaptureDeviceDeprecated;
   } else {
     NOTREACHED();
   }

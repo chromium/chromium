@@ -176,19 +176,21 @@ TEST_F(CaptureDeviceRankingTest, InitializeAudioDeviceInfosRanking) {
       /*group_id=*/"usb_group",
   });
 
-  prefs_.registry()->RegisterStringPref(prefs::kDefaultAudioCaptureDevice, "");
+  prefs_.registry()->RegisterStringPref(
+      prefs::kDefaultAudioCaptureDeviceDeprecated, "");
 
   // The default device is set to "" so the output should be unmodified.
   ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kIntegratedMic, kUsbMic});
 
   // The default device isn't in the passed device list, so the output should be
   // unmodified.
-  prefs_.SetString(prefs::kDefaultAudioCaptureDevice, "not_found_id");
+  prefs_.SetString(prefs::kDefaultAudioCaptureDeviceDeprecated, "not_found_id");
   ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kIntegratedMic, kUsbMic});
 
   // The default device is USB mic so the device ranking gets initialized to put
   // that first.
-  prefs_.SetString(prefs::kDefaultAudioCaptureDevice, kUsbMic.unique_id);
+  prefs_.SetString(prefs::kDefaultAudioCaptureDeviceDeprecated,
+                   kUsbMic.unique_id);
   ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kUsbMic, kIntegratedMic});
 
   // The device ranking pref now has a value, so use that instead of the default
@@ -204,7 +206,8 @@ TEST_F(CaptureDeviceRankingTest, InitializeVideoDeviceInfosRanking) {
   const media::VideoCaptureDeviceInfo kUsbCamera({/*display_name=*/"USB Camera",
                                                   /*device_id=*/"usb_camera"});
 
-  prefs_.registry()->RegisterStringPref(prefs::kDefaultVideoCaptureDevice, "");
+  prefs_.registry()->RegisterStringPref(
+      prefs::kDefaultVideoCaptureDeviceDeprecated, "");
 
   // The default device is set to "" so the output should be unmodified.
   ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
@@ -212,13 +215,13 @@ TEST_F(CaptureDeviceRankingTest, InitializeVideoDeviceInfosRanking) {
 
   // The default device isn't in the passed device list, so the output should be
   // unmodified.
-  prefs_.SetString(prefs::kDefaultVideoCaptureDevice, "not_found_id");
+  prefs_.SetString(prefs::kDefaultVideoCaptureDeviceDeprecated, "not_found_id");
   ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
                      {kIntegratedCamera, kUsbCamera});
 
   // The default device is usb camera so the device ranking gets Initialized to
   // put that first.
-  prefs_.SetString(prefs::kDefaultVideoCaptureDevice,
+  prefs_.SetString(prefs::kDefaultVideoCaptureDeviceDeprecated,
                    kUsbCamera.descriptor.device_id);
   ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
                      {kUsbCamera, kIntegratedCamera});

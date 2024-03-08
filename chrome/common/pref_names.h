@@ -2397,13 +2397,13 @@ inline constexpr char kWebAppsPreferences[] = "web_apps.web_app_ids";
 // The default audio capture device used by the Media content setting.
 // TODO(crbug.com/311205211): Remove this once users have been migrated to
 // `kAudioInputUserPreferenceRanking`.
-inline constexpr char kDefaultAudioCaptureDevice[] =
+inline constexpr char kDefaultAudioCaptureDeviceDeprecated[] =
     "media.default_audio_capture_device";
 
 // The default video capture device used by the Media content setting.
 // TODO(crbug.com/311205211): Remove this once users have been migrated to
 // `kVideoInputUserPreferenceRanking`.
-inline constexpr char kDefaultVideoCaptureDevice[] =
+inline constexpr char kDefaultVideoCaptureDeviceDeprecated[] =
     "media.default_video_capture_Device";
 
 // The salt used for creating Storage IDs. The Storage ID is used by encrypted
