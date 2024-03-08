@@ -2086,6 +2086,11 @@ BASE_FEATURE(kEnableShortcutCustomizationLogging,
 // Enables or disables sending feedback for Orca.
 BASE_FEATURE(kOrcaFeedback, "OrcaFeedback", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables proofread for Orca.
+BASE_FEATURE(kOrcaProofread,
+             "OrcaProofread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Orca on Workspace.
 BASE_FEATURE(kOrcaOnWorkspace,
              "OrcaOnWorkspace",
