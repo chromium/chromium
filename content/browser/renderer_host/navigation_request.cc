@@ -10413,6 +10413,10 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
           blink::mojom::NavigationTypeForNavigationApi::kReload;
       break;
 
+    case blink::mojom::NavigationType::RESTORE:
+    case blink::mojom::NavigationType::RESTORE_WITH_POST:
+      // When traversing to a restored entry, we use these navigation types.
+      // Process them same as traverse navigations.
     case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
       page_swap_event_params->navigation_type =
           blink::mojom::NavigationTypeForNavigationApi::kTraverse;
@@ -10425,11 +10429,6 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
               ? blink::mojom::NavigationTypeForNavigationApi::kReplace
               : blink::mojom::NavigationTypeForNavigationApi::kPush;
       break;
-
-    case blink::mojom::NavigationType::RESTORE:
-    case blink::mojom::NavigationType::RESTORE_WITH_POST:
-      NOTREACHED_NORETURN()
-          << "session restore should not have an old Document";
 
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
     case blink::mojom::NavigationType::SAME_DOCUMENT:

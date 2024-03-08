@@ -105,7 +105,6 @@
 namespace content {
 
 namespace {
-
 class InterceptAndCancelDidCommitProvisionalLoad
     : public DidCommitNavigationInterceptor {
  public:
@@ -8259,6 +8258,70 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestDeprecateUnloadOptOut,
   // Check for the side-effect.
   ASSERT_EQ(EvalJs(web_contents(), "localStorage.getItem('unload')"),
             IsOptOutEnabled() ? "dispatched" : "not_dispatched");
+}
+
+class NavigationWithPageSwapBrowserTest : public NavigationBrowserTest {
+ public:
+  NavigationWithPageSwapBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kPageSwapEvent);
+  }
+
+  bool NavigateBack(WebContentsImpl* contents) {
+    auto result = EvalJs(contents, JsReplace(
+                                       R"(
+    (async () => {
+      let pageswapfired = new Promise((resolve) => {
+        onpageswap = (e) => {
+          activation = e.activation;
+          resolve(activation);
+        };
+      });
+      history.back();
+      let result = await pageswapfired;
+      return result != null;
+    })();
+  )"));
+    return result.ExtractBool();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationWithPageSwapBrowserTest,
+                       PageSwapForInitialEntry) {
+  ASSERT_TRUE(
+      web_contents()->GetController().GetActiveEntry()->IsInitialEntry());
+
+  // TODO(khushalsagar): Assert that pageswap is fired without activation. The
+  // test script is hitting an issue for the initial Document.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            embedded_test_server()->GetURL("/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationWithPageSwapBrowserTest,
+                       PageSwapWhenTraversingToRestoredEntry) {
+  ASSERT_TRUE(
+      web_contents()->GetController().GetActiveEntry()->IsInitialEntry());
+
+  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+
+  // Clone the tab and load the page.
+  std::unique_ptr<WebContents> new_tab = shell()->web_contents()->Clone();
+  WebContentsImpl* new_tab_impl = static_cast<WebContentsImpl*>(new_tab.get());
+  NavigationController& new_controller = new_tab_impl->GetController();
+
+  {
+    TestNavigationObserver clone_observer(new_tab.get());
+    new_controller.LoadIfNecessary();
+    clone_observer.Wait();
+  }
+
+  ASSERT_TRUE(NavigateBack(new_tab_impl));
 }
 
 }  // namespace content
