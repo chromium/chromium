@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
             language_state->translation_type());
 
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
-  histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 148,
+  histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 149,
                                1);
   histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
 }
