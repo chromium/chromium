@@ -710,9 +710,10 @@ MediaFactory::CreateRendererFactorySelector(
     interface_broker_->GetInterface(
         media_foundation_renderer_notifier.BindNewPipeAndPassReceiver());
 
-    media::ObserveOverlayStateCB observe_overlay_state_cb =
-        base::BindRepeating(&OverlayStateObserverImpl::Create,
-                            render_thread->GetOverlayStateServiceProvider());
+    media::ObserveOverlayStateCB observe_overlay_state_cb = base::BindRepeating(
+        &OverlayStateObserverImpl::Create,
+        base::UnsafeDanglingUntriaged(
+            render_thread->GetOverlayStateServiceProvider()));
 
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
