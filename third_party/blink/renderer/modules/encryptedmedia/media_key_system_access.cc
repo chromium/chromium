@@ -40,13 +40,12 @@ namespace {
 class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
  public:
   NewCdmResultPromise(
-      ScriptState* script_state,
+      ScriptPromiseResolverTyped<MediaKeys>* resolver,
       const MediaKeysConfig& config,
       const WebVector<WebEncryptedMediaSessionType>& supported_session_types)
-      : ContentDecryptionModuleResultPromise(
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state),
-            config,
-            EmeApiType::kCreateMediaKeys),
+      : ContentDecryptionModuleResultPromise(resolver,
+                                             config,
+                                             EmeApiType::kCreateMediaKeys),
         config_(config),
         supported_session_types_(supported_session_types) {}
 
@@ -69,7 +68,7 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
         config_);
 
     // 2.10. Resolve promise with media keys.
-    Resolve(media_keys);
+    Resolve<MediaKeys>(media_keys);
   }
 
  private:
@@ -202,7 +201,8 @@ MediaKeySystemConfiguration* MediaKeySystemAccess::getConfiguration() const {
   return result;
 }
 
-ScriptPromise MediaKeySystemAccess::createMediaKeys(ScriptState* script_state) {
+ScriptPromiseTyped<MediaKeys> MediaKeySystemAccess::createMediaKeys(
+    ScriptState* script_state) {
   // From http://w3c.github.io/encrypted-media/#createMediaKeys
   // (Reordered to be able to pass values into the promise constructor.)
   // 2.4 Let configuration be the value of this object's configuration value.
@@ -212,9 +212,11 @@ ScriptPromise MediaKeySystemAccess::createMediaKeys(ScriptState* script_state) {
 
   // 1. Let promise be a new promise.
   MediaKeysConfig config = {keySystem(), UseHardwareSecureCodecs()};
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<MediaKeys>>(script_state);
   NewCdmResultPromise* helper = MakeGarbageCollected<NewCdmResultPromise>(
-      script_state, config, configuration.session_types);
-  ScriptPromise promise = helper->Promise();
+      resolver, config, configuration.session_types);
+  auto promise = resolver->Promise();
 
   // 2. Asynchronously create and initialize the MediaKeys object.
   // 2.1 Let cdm be the CDM corresponding to this object.

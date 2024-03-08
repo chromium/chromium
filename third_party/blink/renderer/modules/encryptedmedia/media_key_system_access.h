@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
+class MediaKeys;
 
 class MediaKeySystemAccess final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -24,7 +25,7 @@ class MediaKeySystemAccess final : public ScriptWrappable {
 
   String keySystem() const { return access_->GetKeySystem(); }
   MediaKeySystemConfiguration* getConfiguration() const;
-  ScriptPromise createMediaKeys(ScriptState*);
+  ScriptPromiseTyped<MediaKeys> createMediaKeys(ScriptState*);
 
   bool UseHardwareSecureCodecs() const {
     return access_->UseHardwareSecureCodecs();

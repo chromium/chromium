@@ -15,12 +15,13 @@
 namespace blink {
 
 class ExceptionState;
+class MediaKeySystemAccess;
 
 class NavigatorRequestMediaKeySystemAccess {
   STATIC_ONLY(NavigatorRequestMediaKeySystemAccess);
 
  public:
-  static ScriptPromise requestMediaKeySystemAccess(
+  static ScriptPromiseTyped<MediaKeySystemAccess> requestMediaKeySystemAccess(
       ScriptState*,
       Navigator&,
       const String& key_system,

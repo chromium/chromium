@@ -41,11 +41,6 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
   }
   const SecurityOrigin* GetSecurityOrigin() const override;
 
-  // IMPORTANT: Acquire the promise immediately after creating the |this|.
-  // Otherwise the promise returned to JS will be undefined. See comment above
-  // Promise() in script_promise_resolver.h
-  ScriptPromise Promise();
-
   void Trace(Visitor* visitor) const override;
 
  protected:
