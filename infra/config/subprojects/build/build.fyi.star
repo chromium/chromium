@@ -4,7 +4,7 @@
 """Definitions of builders in chromium.build.fyi builder group."""
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "siso")
+load("//lib/builders.star", "cpu", "os", "reclient", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -20,6 +20,8 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     notifies = ["chrome-build-perf"],
     priority = ci.DEFAULT_FYI_PRIORITY,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     shadow_siso_project = siso.project.DEFAULT_UNTRUSTED,
