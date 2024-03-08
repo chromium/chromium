@@ -1,26 +1,14 @@
 <style>
   :host {
-    --customize-chrome-check-mark-wrapper-background: var(--google-blue-600);
-    --customize-chrome-check-mark-wrapper-color: white;
+    --customize-chrome-check-mark-wrapper-background: var(
+        --color-side-panel-customize-chrome-theme-checkmark-background);
+    --customize-chrome-check-mark-wrapper-color: var(
+        --color-side-panel-customize-chrome-theme-checkmark-foreground);
     --customize-chrome-check-mark-wrapper-end: 0px;
     --customize-chrome-check-mark-wrapper-size: 16px;
     --customize-chrome-check-mark-wrapper-top: 0px;
     display: block;
     position: relative;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --customize-chrome-check-mark-wrapper-background: var(--google-blue-300);
-      --customize-chrome-check-mark-wrapper-color: var(--google-grey-900);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]):host {
-    --customize-chrome-check-mark-wrapper-background: var(
-        --color-side-panel-customize-chrome-theme-checkmark-background);
-    --customize-chrome-check-mark-wrapper-color: var(
-        --color-side-panel-customize-chrome-theme-checkmark-foreground);
   }
 
   svg {

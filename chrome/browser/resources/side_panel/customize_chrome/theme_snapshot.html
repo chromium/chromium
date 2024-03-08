@@ -1,6 +1,7 @@
 <style>
   :host {
-    --image-background-color: var(--customize-chrome-color-background-color);
+    --image-background-color: var(
+        --color-side-panel-customize-chrome-theme-snapshot-background);
   }
 
   .snapshot-container {
@@ -40,12 +41,7 @@
     width: 100%;
   }
 
-  :host-context([chrome-refresh-2023]):host {
-    --image-background-color: var(
-        --color-side-panel-customize-chrome-theme-snapshot-background);
-  }
-
-  :host-context([chrome-refresh-2023]) .image-background {
+  .image-background {
     align-items: center;
     background-color: var(--image-background-color);
     border: 0;
@@ -58,8 +54,8 @@
     padding: 16px;
   }
 
-  :host-context([chrome-refresh-2023]) img,
-  :host-context([chrome-refresh-2023]) svg {
+  img,
+  svg {
     border: 0;
     border-radius: 8px;
     box-shadow: var(--cr-elevation-2);
@@ -68,11 +64,6 @@
 
   .overlay,
   paper-ripple {
-    display: none;
-  }
-
-  :host-context([chrome-refresh-2023]) .overlay,
-  :host-context([chrome-refresh-2023]) paper-ripple {
     border-radius: inherit;
     display: inherit;
     height: 100%;
@@ -82,7 +73,7 @@
     width: 100%;
   }
 
-  :host-context([chrome-refresh-2023]) .image-background:hover .overlay {
+  .image-background:hover .overlay {
     background-color: var(--cr-hover-on-subtle-background-color);
   }
 

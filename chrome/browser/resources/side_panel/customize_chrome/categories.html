@@ -1,21 +1,12 @@
 <style include="cr-hidden-style cr-icons sp-shared-style">
   sp-heading {
-    margin: 8px 16px;
-  }
-
-  :host-context([chrome-refresh-2023]) .sp-card sp-heading {
     margin: 0 0 8px;
   }
 
   cr-grid {
     --cr-column-width: 1fr;
-    --cr-grid-gap: 16px 12px;
-    display: block;
-    padding: 0 16px 32px;
-  }
-
-  :host-context([chrome-refresh-2023]) cr-grid {
     --cr-grid-gap: 8px;
+    display: block;
     padding: 0 var(--sp-card-inline-padding) 16px;
   }
 
@@ -27,7 +18,7 @@
   }
 
   .image-container {
-    background-color: var(--google-grey-100);
+    background-color: var(--color-side-panel-customize-chrome-theme-background);
     overflow: hidden;
     padding-top: 100%;
     position: relative;
@@ -36,35 +27,30 @@
 
   @media (prefers-color-scheme: dark) {
     .image-container {
-      background-color: var(--google-grey-900);
       border: 1px solid var(--google-grey-700);
     }
   }
 
-  :host-context([chrome-refresh-2023]) .image-container {
-    background-color: var(--color-side-panel-customize-chrome-theme-background);
-  }
-
-  :host-context([chrome-refresh-2023]) #cornerNewTabPageTile {
+  #cornerNewTabPageTile {
     background-color: rgb( 211, 227, 253);
     border: solid 1px
         var(--color-side-panel-customize-chrome-corner-ntp-border);
   }
 
-  :host-context([chrome-refresh-2023]) #uploadImageTile .image-container,
-  :host-context([chrome-refresh-2023]) #wallpaperSearchTile .image-container {
+  #uploadImageTile .image-container,
+  #wallpaperSearchTile .image-container {
     --cr-icon-color: var(
         --color-side-panel-customize-chrome-custom-option-foreground);
     background-color: var(
         --color-side-panel-customize-chrome-custom-option-background);
   }
 
-  :host-context([chrome-refresh-2023]) #chromeWebStoreTile .image-container {
+  #chromeWebStoreTile .image-container {
     border: solid 1px
         var(--color-side-panel-customize-chrome-web-store-border);
   }
 
-  :host-context([chrome-refresh-2023]) #chromeWebStoreTile .cr-icon {
+  #chromeWebStoreTile .cr-icon {
     --cr-icon-color: currentColor;
   }
 
@@ -83,46 +69,29 @@
 
   .label {
     color: var(--cr-primary-text-color);
-    text-align: center;
-  }
-
-  :host-context([chrome-refresh-2023]) .label {
     font-size: 11px;
     font-weight: 400;
     line-height: 16px;
+    text-align: center;
   }
 
   .tile:nth-of-type(-n+4) {
     grid-column: span 3;
-     /* To result in an extra 5px horizontal gap between first 4 tiles. */
-    padding-inline-end: 2.5px;
-  }
-
-  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4) {
-    /* To result in an extra 8px horizontal gap between first 4 tiles. */
-    padding-inline-end: 4px;
-  }
-
-  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4) {
     /* To result in an extra 10px vertical gap between large and small tiles. */
     padding-block-end: 10px;
     /* To result in an extra 8px vertical gap between first 4 tiles. */
     padding-block-start: 4px;
+    /* To result in an extra 8px horizontal gap between first 4 tiles. */
+    padding-inline-end: 4px;
   }
 
-  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+2) {
+  .tile:nth-of-type(-n+2) {
     /* To result in an extra 8px vertical gap between first 4 tiles. */
     padding-block-end: 4px;
     padding-block-start: 0;
   }
 
   .tile:nth-of-type(-n+4):nth-of-type(even) {
-    padding-inline-end: 0;
-     /* To result in an extra 5px horizontal gap between first 4 tiles. */
-    padding-inline-start: 2.5px;
-  }
-
-  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4):nth-of-type(even) {
     padding-inline-end: 0;
     /* To result in an extra 8px horizontal gap between first 4 tiles. */
     padding-inline-start: 4px;
@@ -133,12 +102,6 @@
   }
 
   .tile:nth-of-type(-n+4) .label {
-    font-size: 13px;
-    line-height: 20px;
-    padding-top: 12px;
-  }
-
-  :host-context([chrome-refresh-2023]) .tile:nth-of-type(-n+4) .label {
     font-size: 12px;
     line-height: 16px;
     padding-top: 8px;
@@ -151,10 +114,6 @@
   .label {
     font-size: 11px;
     line-height: 16px;
-    padding-top: 7px;
-  }
-
-  :host-context([chrome-refresh-2023]) .label {
     padding-top: 4px;
   }
 
@@ -198,18 +157,12 @@
   }
 
   #cornerNewTabPage {
-    left: 12%;
-    top: 15%;
-    width: 88%;
-  }
-
-  :host-context([chrome-refresh-2023]) #cornerNewTabPage {
     border-radius: 4px;
     box-shadow: var(--cr-elevation-2);
     height: 100%;
-    width: 100%;
     left: 15.5%;
     top: 15.5%;
+    width: 100%;
   }
 
   svg {

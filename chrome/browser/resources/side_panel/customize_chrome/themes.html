@@ -1,26 +1,17 @@
 <style include="cr-hidden-style cr-icons sp-shared-style">
-  :host-context([chrome-refresh-2023]) .sp-card {
+  .sp-card {
     padding-block-end: 0;
   }
 
   sp-heading {
-    margin: 8px 16px;
-  }
-
-  :host-context([chrome-refresh-2023]) .sp-card sp-heading {
     margin: 0 0 8px;
   }
 
   cr-grid {
     --cr-column-width: 1fr;
-    --cr-grid-gap: 16px 12px;
+    --cr-grid-gap: 8px;
     --cr-grid-width: 100%;
     display: block;
-    padding: 16px 16px 32px;
-  }
-
-  :host-context([chrome-refresh-2023]) cr-grid {
-    --cr-grid-gap: 8px;
     padding: var(--sp-card-inline-padding);
   }
 
@@ -63,20 +54,11 @@
   #refreshDailyToggleContainer {
     display: flex;
     justify-content: space-between;
-    margin: 24px 16px 16px;
-  }
-
-  :host-context([chrome-refresh-2023]) #refreshDailyToggleContainer {
     margin: 0;
     padding: var(--sp-card-padding);
   }
 
   #refreshDailyToggleTitle {
-    font-size: 13px;
-    line-height: 20px;
-  }
-
-  :host-context([chrome-refresh-2023]) #refreshDailyToggleTitle {
     font-size: 12px;
     line-height: 16px;
   }

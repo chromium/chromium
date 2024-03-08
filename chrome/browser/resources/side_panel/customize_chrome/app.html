@@ -2,14 +2,11 @@
   #container {
     box-sizing: border-box;
     color: var(--cr-primary-text-color);
+    display: block;
     height: 100%;
     overflow: auto;
-    position: relative;
-  }
-
-  :host-context([chrome-refresh-2023]) #container {
-    display: block;
     padding: var(--sp-body-padding) 0;
+    position: relative;
   }
 
   .section {
@@ -20,25 +17,7 @@
     margin: 8px 16px;
   }
 
-  .sp-cards-separator {
-    background-color: var(--google-grey-300);
-    border: none;
-    height: 2px;
-    margin: 0;
-    width: 100%;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .sp-cards-separator {
-      background-color: var(--google-grey-700);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) .sp-cards-separator {
-    background: transparent;
-  }
-
-  :host-context([chrome-refresh-2023]) .sp-card {
+  .sp-card {
     font-size: 12px;
     font-weight: 500;
     line-height: 16px;
@@ -61,7 +40,7 @@
     width: 100%;
   }
 
-  :host-context([chrome-refresh-2023]) customize-chrome-appearance {
+  customize-chrome-appearance {
     margin-bottom: 0;
   }
 

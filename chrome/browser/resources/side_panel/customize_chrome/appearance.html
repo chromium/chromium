@@ -2,7 +2,7 @@
   #editButtonsContainer {
     display: flex;
     gap: 8px;
-    margin: 0 16px 24px;
+    margin: 0 16px 16px;
     width: calc(100% - 32px);
   }
 
@@ -14,19 +14,10 @@
     flex-grow: 1.5;
   }
 
-  .theme-button:not([hidden]) ~ #editButtonsContainer {
-    margin: 24px 16px 16px;
-  }
-
   .edit-theme-icon {
-    --cr-icon-color: var(--ink-color-action);
-    margin-inline-end: 0;
-    margin-inline-start: 0;
-  }
-
-  :host-context([chrome-refresh-2023]) .edit-theme-icon {
     --cr-icon-color: currentColor;
     margin-inline-end: 0;
+    margin-inline-start: 0;
   }
 
   #editThemeIcon {
@@ -65,7 +56,6 @@
 
   customize-color-scheme-mode,
   .sp-hr {
-    display: none;
     width: calc(100% - 32px);
   }
 
@@ -74,30 +64,21 @@
   }
 
   customize-color-scheme-mode {
+    display: block;
     margin: 16px;
   }
 
-  :host-context([chrome-refresh-2023]) cr-theme-color-picker {
+  cr-theme-color-picker {
     display: block;
     margin-bottom: 16px;
   }
 
-  :host-context([chrome-refresh-2023]) customize-color-scheme-mode,
-  :host-context([chrome-refresh-2023]) .sp-hr {
-    display: block;
-  }
-
-  :host-context([chrome-refresh-2023]) .theme-button {
+  .theme-button {
     margin-top: 16px;
   }
 
-  :host-context([chrome-refresh-2023]) .theme-button:not([hidden])
-      ~ #editButtonsContainer {
+  .theme-button:not([hidden]) ~ #editButtonsContainer {
     margin: 20px 16px;
-  }
-
-  :host-context([chrome-refresh-2023]) #editButtonsContainer {
-    margin-bottom: 16px;
   }
 
   #followThemeToggle {
