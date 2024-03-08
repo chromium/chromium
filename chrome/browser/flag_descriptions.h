@@ -333,6 +333,9 @@ extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
 extern const char kAutofillEnableSaveCardLoadingAndConfirmationName[];
 extern const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[];
 
+extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
+extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
+
 extern const char kAutofillEnableServerIbanName[];
 extern const char kAutofillEnableServerIbanDescription[];
 
