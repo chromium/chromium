@@ -6,8 +6,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 
@@ -26,23 +24,8 @@ MahiTabHelper::MahiTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<MahiTabHelper>(*web_contents),
       content::WebContentsObserver(web_contents) {}
 
-// A tab should be skipped if it is empty, blank or default page.
-bool MahiTabHelper::ShouldSkip() {
-  static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>({
-      // blank and default pages.
-      "about:blank",
-      "chrome://newtab/",
-  });
-
-  const std::string& url = web_contents()->GetURL().spec();
-  return url.empty() || base::Contains(kSkipUrls, url);
-}
-
 void MahiTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
-  if (ShouldSkip()) {
-    return;
-  }
   // Only fire an event if the web content has finished document loading.
   // Otherwise, it would be handled by
   // `DocumentOnLoadCompletedInPrimaryMainFrame`.
@@ -52,9 +35,6 @@ void MahiTabHelper::OnWebContentsFocused(
 }
 
 void MahiTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (ShouldSkip()) {
-    return;
-  }
   // Ignore the events from unfocused pages.
   if (!web_contents()->GetFocusedFrame()) {
     return;

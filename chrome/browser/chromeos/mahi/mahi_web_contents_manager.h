@@ -98,6 +98,10 @@ class MahiWebContentsManager {
   // Virtual so we can override in tests.
   virtual gfx::ImageSkia GetFavicon(content::WebContents* web_contents) const;
 
+  // Default pages are all skipped including "about::blank" and
+  // "chrome://newtab/".
+  bool ShouldSkip(content::WebContents* web_contents);
+
   std::unique_ptr<MahiContentExtractionDelegate> content_extraction_delegate_;
   std::unique_ptr<MahiBrowserClientImpl> client_;
   bool is_initialized_ = false;

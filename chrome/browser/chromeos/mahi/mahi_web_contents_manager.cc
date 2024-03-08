@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
@@ -64,6 +66,16 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
   focused_web_content_state_ = WebContentState(
       web_contents->GetLastCommittedURL(), web_contents->GetTitle());
   focused_web_content_state_.favicon = GetFavicon(web_contents);
+
+  // If the page is in the skip list, sets its distillability to false and
+  // notifies `MahiManager` immediately without requesting the snapshot.
+  if (ShouldSkip(web_contents)) {
+    focused_web_content_state_.is_distillable.emplace(false);
+    client_->OnFocusedPageChanged(focused_web_content_state_);
+    return;
+  }
+
+  // Notifies `MahiManger` the focused page has changed.
   client_->OnFocusedPageChanged(focused_web_content_state_);
 
   // Requests the a11y tree snapshot.
@@ -170,6 +182,18 @@ void MahiWebContentsManager::FocusedPageGotRequest() {
 gfx::ImageSkia MahiWebContentsManager::GetFavicon(
     content::WebContents* web_contents) const {
   return favicon::TabFaviconFromWebContents(web_contents).AsImageSkia();
+}
+
+// A tab should be skipped if it is empty, blank or default page.
+bool MahiWebContentsManager::ShouldSkip(content::WebContents* web_contents) {
+  static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>({
+      // blank and default pages.
+      "about:blank",
+      "chrome://newtab/",
+  });
+
+  const std::string& url = web_contents->GetURL().spec();
+  return url.empty() || base::Contains(kSkipUrls, url);
 }
 
 }  // namespace mahi

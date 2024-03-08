@@ -40,10 +40,6 @@ class MahiTabHelper : public content::WebContentsUserData<MahiTabHelper>,
   // WebContentsUserData.
   explicit MahiTabHelper(content::WebContents* web_contents);
 
-  // Default pages are all skipped including "about::blank" and
-  // "chrome://newtab/".
-  bool ShouldSkip();
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
