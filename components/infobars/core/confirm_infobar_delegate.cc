@@ -79,11 +79,6 @@ bool ConfirmInfoBarDelegate::Cancel() {
   return true;
 }
 
-bool ConfirmInfoBarDelegate::ExtraButtonPressed() {
-  NOTREACHED() << "Method must be overridden.";
-  return true;
-}
-
 void ConfirmInfoBarDelegate::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
