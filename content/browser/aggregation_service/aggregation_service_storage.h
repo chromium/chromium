@@ -87,7 +87,7 @@ class AggregationServiceStorage {
   // memory at the same time.
   virtual std::vector<RequestAndId> GetRequestsReportingOnOrBefore(
       base::Time not_after_time,
-      std::optional<int> limit = std::nullopt) = 0;
+      std::optional<int> limit) = 0;
 
   // Returns the requests with the given IDs. Empty vector is returned if `ids`
   // is empty.
