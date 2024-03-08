@@ -13,9 +13,11 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -34,6 +36,29 @@ namespace {
 bool ShouldIgnoreContents(const Node& node) {
   if (node.getNodeType() == Node::kCommentNode) {
     return true;
+  }
+
+  // A modal dialog and fullscreen element can escape inertness of ancestors.
+  // See https://issues.chromium.org/issues/40506558.
+  if (RuntimeEnabledFeatures::InertElementNonSearchableEnabled()) {
+    const Element* modal_element = node.GetDocument().ActiveModalDialog();
+    if (!modal_element) {
+      modal_element = Fullscreen::FullscreenElementFrom(node.GetDocument());
+    }
+    if (modal_element && modal_element != &node) {
+      // If `modal_element` is the child of `node`, `node` should not ignore
+      // contents to avoid skipping `modal_element`.
+      if (modal_element->IsDescendantOf(&node)) {
+        return false;
+      }
+      // https://html.spec.whatwg.org/multipage/interaction.html#modal-dialogs-and-inert-subtrees
+      // > While document is so blocked, every node that is connected to
+      // > document, with the exception of the subject element and its flat tree
+      // > descendants, must become inert.
+      if (!node.IsDescendantOf(modal_element)) {
+        return true;
+      }
+    }
   }
 
   const auto* element = DynamicTo<HTMLElement>(node);
