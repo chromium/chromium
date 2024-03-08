@@ -1425,7 +1425,8 @@ TEST_F(FieldFillingPaymentsUtilTest,
                                      .label = u"First Name on Card"},
                                     {.role = CREDIT_CARD_NUMBER,
                                      .label = u"Card Number",
-                                     .value = u"field is not empty"}}});
+                                     .value = u"field is not empty",
+                                     .properties_mask = kUserTyped}}});
 
   FormStructure form_structure(form_data);
   test_api(form_structure)
@@ -1443,7 +1444,8 @@ TEST_F(FieldFillingPaymentsUtilTest,
                                      .label = u"First Name on Card"},
                                     {.role = CREDIT_CARD_NUMBER,
                                      .label = u"Card Number",
-                                     .is_autofilled = true}}});
+                                     .is_autofilled = true,
+                                     .properties_mask = kUserTyped}}});
 
   FormStructure form_structure(form_data);
   test_api(form_structure)
@@ -1456,10 +1458,32 @@ TEST_F(FieldFillingPaymentsUtilTest,
 // credit card number field is present and is both empty and not autofilled.
 TEST_F(FieldFillingPaymentsUtilTest,
        WillFillCreditCardNumber_CCNumberFieldPresent) {
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .label = u"First Name on Card"},
+                                    {.role = CREDIT_CARD_NUMBER,
+                                     .label = u"Card Number",
+                                     .properties_mask = kUserTyped}}});
+
+  FormStructure form_structure(form_data);
+  test_api(form_structure)
+      .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
+  EXPECT_TRUE(WillFillCreditCardNumber(
+      form_data.fields, form_structure.fields(), *form_structure.fields()[0]));
+}
+
+// Verify that `WillFillCreditCardNumber` return true on the form where the
+// credit card number field is present and not empty but was not typed by the
+// user.
+TEST_F(FieldFillingPaymentsUtilTest,
+       WillFillCreditCardNumber_CCNumberFieldNotEmpty_NotUserTyped) {
   FormData form_data = test::GetFormData(
       {.fields = {
            {.role = CREDIT_CARD_NAME_FULL, .label = u"First Name on Card"},
-           {.role = CREDIT_CARD_NUMBER, .label = u"Card Number"}}});
+           {.role = CREDIT_CARD_NUMBER,
+            .label = u"Card Number",
+            .value = u"field is not empty",
+            .properties_mask = kAutofilledOnPageLoad}}});
 
   FormStructure form_structure(form_data);
   test_api(form_structure)

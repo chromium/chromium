@@ -83,6 +83,34 @@ class FormFiller {
 
   virtual ~FormFiller();
 
+  // Given a `form_field` and corresponding `autofill_field` to fill and the
+  // `trigger_field` return the skip reasons for that field.
+  // `type_count` tracks the number of times a type of field has been filled.
+  // `type_group_originally_filled` denotes, in case of a refill, what groups
+  // where filled in the initial filling.
+  // `field_types_to_fill` denotes a set of field types we are interested in
+  // filling, and the actual fields filled will be the intersection between
+  // `field_types_to_fill` and the classified fields for which we have data
+  // stored.
+  // `filling_product` is the type of filling calling this function.
+  // TODO(crbug/1275649): Add the case removed in crrev.com/c/4675831 when the
+  // experiment resumes.
+  // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
+  // a FieldTypeSet.
+  // TODO(crbug/1331312): Keep only one of 'field' and 'autofill_field'.
+  static FieldFillingSkipReason GetFieldFillingSkipReason(
+      const FormFieldData& field,
+      const AutofillField& autofill_field,
+      const AutofillField& trigger_field,
+      base::flat_map<FieldType, size_t>& type_count,
+      base::optional_ref<const DenseSet<FieldTypeGroup>>
+          type_group_originally_filled,
+      const FieldTypeSet field_types_to_fill = kAllFieldTypes,
+      const FillingProduct filling_product = FillingProduct::kNone,
+      const bool skip_unrecognized_autocomplete_fields = false,
+      const bool is_refill = false,
+      const bool is_expired_credit_card = false);
+
   // Resets states that FormFiller holds and maintains.
   void Reset();
 
@@ -91,20 +119,9 @@ class FormFiller {
 
   base::TimeDelta get_limit_before_refill() { return limit_before_refill_; }
 
-  // Given a `form` (and corresponding `form_structure`) to fill, return a map
-  // from each field's id to the skip reasons for that field.
-  // `type_group_originally_filled` denotes, in case of a refill, what groups
-  // where filled in the initial filling.
-  // It is assumed here that `form` and `form_structure` have the same
-  // number of fields, and this would be the size of the returned list.
+  // Given a `form`, returns a map from each field's id to the skip reason for
+  // that field. See additional comments in GetFieldFillingSkipReason.
   // TODO(crbug/1331312): Keep only one of 'form' and 'form_structure'.
-  // `field_types_to_fill` denotes a set of field types we are interested in
-  // filling, and the actual fields filled will be the intersection between
-  // `field_types_to_fill` and the classified fields for which we have data
-  // stored.
-  // `filling_product` is the type of filling calling this function.
-  // TODO(crbug/1275649): Add the case removed in crrev.com/c/4675831 when the
-  // experiment resumes.
   // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
   // a FieldTypeSet.
   base::flat_map<FieldGlobalId, FieldFillingSkipReason>

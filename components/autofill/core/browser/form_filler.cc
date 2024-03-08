@@ -107,9 +107,9 @@ std::string_view ActionPersistenceToString(
 // meaningful (guarded by `features::kAutofillOverwritePlaceholdersOnly`) and
 // Autofill's behavior for filling pre-filled fields is overwriting them by
 // default.
-bool IsMeaningfullyPreFilled(const autofill::AutofillField* autofill_field) {
-  return autofill_field->may_use_prefilled_placeholder().has_value() &&
-         !autofill_field->may_use_prefilled_placeholder().value() &&
+bool IsMeaningfullyPreFilled(const autofill::AutofillField& autofill_field) {
+  return autofill_field.may_use_prefilled_placeholder().has_value() &&
+         !autofill_field.may_use_prefilled_placeholder().value() &&
          !base::FeatureList::IsEnabled(
              features::kAutofillSkipPreFilledFields) &&
          base::FeatureList::IsEnabled(
@@ -120,15 +120,141 @@ bool IsMeaningfullyPreFilled(const autofill::AutofillField* autofill_field) {
 // placeholder (guarded by `features::kAutofillOverwritePlaceholdersOnly`) and
 // Autofill's behavior for filling pre-filled fields is skipping them by
 // default.
-bool IsNotAPlaceholder(const autofill::AutofillField* autofill_field) {
-  return (!autofill_field->may_use_prefilled_placeholder().has_value() ||
-          !autofill_field->may_use_prefilled_placeholder().value() ||
+bool IsNotAPlaceholder(const autofill::AutofillField& autofill_field) {
+  return (!autofill_field.may_use_prefilled_placeholder().has_value() ||
+          !autofill_field.may_use_prefilled_placeholder().value() ||
           !base::FeatureList::IsEnabled(
               features::kAutofillOverwritePlaceholdersOnly)) &&
          base::FeatureList::IsEnabled(features::kAutofillSkipPreFilledFields);
 }
 
 }  // namespace
+
+FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
+    const FormFieldData& field,
+    const AutofillField& autofill_field,
+    const AutofillField& trigger_field,
+    base::flat_map<FieldType, size_t>& type_count,
+    base::optional_ref<const DenseSet<FieldTypeGroup>>
+        type_groups_originally_filled,
+    const FieldTypeSet field_types_to_fill,
+    const FillingProduct filling_product,
+    const bool skip_unrecognized_autocomplete_fields,
+    const bool is_refill,
+    const bool is_expired_credit_card) {
+  const bool is_trigger_field =
+      autofill_field.global_id() == trigger_field.global_id();
+
+  if (autofill_field.section != trigger_field.section) {
+    return FieldFillingSkipReason::kNotInFilledSection;
+  }
+
+  if (autofill_field.only_fill_when_focused() && !is_trigger_field) {
+    return FieldFillingSkipReason::kNotFocused;
+  }
+
+  // Address fields with unrecognized autocomplete attribute are only filled
+  // when triggered through manual fallbacks.
+  if (!is_trigger_field && skip_unrecognized_autocomplete_fields &&
+      autofill_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
+    return FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute;
+  }
+
+  // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime,
+  // which may happen with refills.
+  if (autofill_field.global_id() != field.global_id()) {
+    return FieldFillingSkipReason::kFormChanged;
+  }
+
+  // Don't fill unfocusable fields, with the exception of <select> fields, for
+  // the sake of filling the synthetic fields.
+  if (!autofill_field.IsFocusable() && !autofill_field.IsSelectElement()) {
+    return FieldFillingSkipReason::kInvisibleField;
+  }
+
+  // Do not fill fields that have been edited by the user, except if the field
+  // is empty and its initial value (= cached value) was empty as well. A
+  // similar check is done in ForEachMatchingFormFieldCommon(), which
+  // frequently has false negatives.
+  // TODO(b/40227496): 'autofill_field.value' should be the initial value of
+  // the field. `form_field.value` should be the current value.
+  if ((field.properties_mask & kUserTyped) &&
+      (!field.value.empty() || !autofill_field.value.empty()) &&
+      !is_trigger_field) {
+    return FieldFillingSkipReason::kUserFilledFields;
+  }
+
+  // Don't fill previously autofilled fields except the initiating field or
+  // when it's a refill.
+  if (field.is_autofilled && !is_trigger_field && !is_refill) {
+    return FieldFillingSkipReason::kAutofilledFieldsNotRefill;
+  }
+
+  FieldTypeGroup field_group_type = autofill_field.Type().group();
+  if (field_group_type == FieldTypeGroup::kNoGroup) {
+    return FieldFillingSkipReason::kNoFillableGroup;
+  }
+
+  // On a refill, only fill fields from type groups that were present during
+  // the initial fill.
+  if (is_refill && type_groups_originally_filled.has_value() &&
+      !base::Contains(*type_groups_originally_filled, field_group_type)) {
+    return FieldFillingSkipReason::kRefillNotInInitialFill;
+  }
+
+  FieldType field_type = autofill_field.Type().GetStorableType();
+  // Don't fill expired cards expiration date.
+  if (data_util::IsCreditCardExpirationType(field_type) &&
+      is_expired_credit_card) {
+    return FieldFillingSkipReason::kExpiredCards;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
+    if (!field_types_to_fill.contains(field_type)) {
+      return FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet;
+    }
+  }
+
+  // A field with a specific type is only allowed to be filled a limited
+  // number of times given by |TypeValueFormFillingLimit(field_type)|.
+  if (++type_count[field_type] > TypeValueFormFillingLimit(field_type)) {
+    return FieldFillingSkipReason::kFillingLimitReachedType;
+  }
+
+  // Usually, this should not happen because Autofill sectioning logic
+  // separates address fields from credit card fields. However, autofill
+  // respects the HTML `autocomplete` attribute when it is used to specify a
+  // section, and so in some rare cases it might happen that a credit card
+  // field is included in an address section or vice versa.
+  // Note that autofilling using manual fallback does not use this logic flow,
+  // otherwise this wouldn't be true.
+  if ((filling_product == FillingProduct::kAddress &&
+       !IsAddressType(autofill_field.Type().GetStorableType())) ||
+      (filling_product == FillingProduct::kCreditCard &&
+       autofill_field.Type().group() != FieldTypeGroup::kCreditCard)) {
+    return FieldFillingSkipReason::kFieldTypeUnrelated;
+  }
+
+  // Add new skip reasons above this comment.
+  // Skip reason `kValuePrefilled` needs to be checked last. For metrics
+  // purposes, `GetFieldFillingDataFor(Profile|CreditCard)()` is queried for
+  // fields that were skipped because of `kValuePrefilled`. Since the function
+  // assumes that the field's type is profile/card-related, it's important
+  // that this check happens after the `kFieldTypeUnrelated` check.
+
+  // Don't fill meaningfully pre-filled fields but overwrite placeholders.
+  // TODO(b/40227496): 'autofill_field.value' should be the initial value of
+  // the field.
+  if (!is_trigger_field && !autofill_field.IsSelectOrSelectListElement() &&
+      !autofill_field.value.empty() &&
+      (IsNotAPlaceholder(autofill_field) ||
+       IsMeaningfullyPreFilled(autofill_field))) {
+    return FieldFillingSkipReason::kValuePrefilled;
+  }
+
+  return FieldFillingSkipReason::kNotSkipped;
+}
 
 FormFiller::FillingContext::FillingContext(
     const AutofillField& field,
@@ -200,138 +326,21 @@ FormFiller::GetFieldFillingSkipReasons(
           });
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     // Log events when the fields on the form are filled by autofill suggestion.
-    const AutofillField* autofill_field = form_structure.field(i);
-    const FieldGlobalId field_id = autofill_field->global_id();
-    const bool is_trigger_field = field_id == trigger_field.global_id();
+    FieldFillingSkipReason skip_reason = GetFieldFillingSkipReason(
+        form.fields[i], *form_structure.field(i), trigger_field, type_count,
+        type_groups_originally_filled, field_types_to_fill, filling_product,
+        skip_unrecognized_autocomplete_fields, is_refill,
+        is_expired_credit_card);
 
-    if (autofill_field->section != trigger_field.section) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kNotInFilledSection;
-      continue;
+    // Usually, `skip_reasons[field_id] == FieldFillingSkipReason::kNotSkipped`
+    // if skip reason has no value. It may not be the case though because
+    // FieldGlobalIds are not unique among FormData::fields, so a previous
+    // iteration may have set a skip reason for `field_id`. To err on the side
+    // of caution we set `kNotSkipped` when initializing `skip_reasons` and
+    // ignore `kNotSkipped` in `GetFieldFillingSkipReason()`.
+    if (skip_reason != FieldFillingSkipReason::kNotSkipped) {
+      skip_reasons[form_structure.field(i)->global_id()] = skip_reason;
     }
-
-    if (autofill_field->only_fill_when_focused() && !is_trigger_field) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kNotFocused;
-      continue;
-    }
-
-    // Address fields with unrecognized autocomplete attribute are only filled
-    // when triggered through manual fallbacks.
-    if (!is_trigger_field && skip_unrecognized_autocomplete_fields &&
-        autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      skip_reasons[field_id] =
-          FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute;
-      continue;
-    }
-
-    // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime,
-    // which may happen with refills.
-    if (field_id != form.fields[i].global_id()) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kFormChanged;
-      continue;
-    }
-
-    // Don't fill unfocusable fields, with the exception of <select> fields, for
-    // the sake of filling the synthetic fields.
-    if (!autofill_field->IsFocusable() && !autofill_field->IsSelectElement()) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kInvisibleField;
-      continue;
-    }
-
-    // Do not fill fields that have been edited by the user, except if the field
-    // is empty and its initial value (= cached value) was empty as well. A
-    // similar check is done in ForEachMatchingFormFieldCommon(), which
-    // frequently has false negatives.
-    // TODO(b/40227496): 'autofill_field->value' should be the initial value of
-    // the field. `form.fields[i].value` should be the current value.
-    if ((form.fields[i].properties_mask & kUserTyped) &&
-        (!form.fields[i].value.empty() || !autofill_field->value.empty()) &&
-        !is_trigger_field) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kUserFilledFields;
-      continue;
-    }
-
-    // Don't fill previously autofilled fields except the initiating field or
-    // when it's a refill.
-    if (form.fields[i].is_autofilled && !is_trigger_field && !is_refill) {
-      skip_reasons[field_id] =
-          FieldFillingSkipReason::kAutofilledFieldsNotRefill;
-      continue;
-    }
-
-    FieldTypeGroup field_group_type = autofill_field->Type().group();
-    if (field_group_type == FieldTypeGroup::kNoGroup) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kNoFillableGroup;
-      continue;
-    }
-
-    // On a refill, only fill fields from type groups that were present during
-    // the initial fill.
-    if (is_refill && type_groups_originally_filled.has_value() &&
-        !base::Contains(*type_groups_originally_filled, field_group_type)) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kRefillNotInInitialFill;
-      continue;
-    }
-
-    FieldType field_type = autofill_field->Type().GetStorableType();
-    // Don't fill expired cards expiration date.
-    if (data_util::IsCreditCardExpirationType(field_type) &&
-        is_expired_credit_card) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kExpiredCards;
-      continue;
-    }
-
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable)) {
-      if (!field_types_to_fill.contains(field_type)) {
-        skip_reasons[field_id] =
-            FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet;
-        continue;
-      }
-    }
-
-    // A field with a specific type is only allowed to be filled a limited
-    // number of times given by |TypeValueFormFillingLimit(field_type)|.
-    if (++type_count[field_type] > TypeValueFormFillingLimit(field_type)) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kFillingLimitReachedType;
-      continue;
-    }
-
-    // Usually, this should not happen because Autofill sectioning logic
-    // separates address fields from credit card fields. However, autofill
-    // respects the HTML `autocomplete` attribute when it is used to specify a
-    // section, and so in some rare cases it might happen that a credit card
-    // field is included in an address section or vice versa.
-    // Note that autofilling using manual fallback does not use this logic flow,
-    // otherwise this wouldn't be true.
-    if ((filling_product == FillingProduct::kAddress &&
-         !IsAddressType(autofill_field->Type().GetStorableType())) ||
-        (filling_product == FillingProduct::kCreditCard &&
-         autofill_field->Type().group() != FieldTypeGroup::kCreditCard)) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kFieldTypeUnrelated;
-      continue;
-    }
-
-    // Add new skip reasons above this comment.
-    // Skip reason `kValuePrefilled` needs to be checked last. For metrics
-    // purposes, `GetFieldFillingDataFor(Profile|CreditCard)()` is queried for
-    // fields that were skipped because of `kValuePrefilled`. Since the function
-    // assumes that the field's type is profile/card-related, it's important
-    // that this check happens after the `kFieldTypeUnrelated` check.
-
-    // Don't fill meaningfully pre-filled fields but overwrite placeholders.
-    // TODO(b/40227496): 'autofill_field->value' should be the initial value of
-    // the field.
-    if (!is_trigger_field && !autofill_field->IsSelectOrSelectListElement() &&
-        !autofill_field->value.empty() &&
-        (IsNotAPlaceholder(autofill_field) ||
-         IsMeaningfullyPreFilled(autofill_field))) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kValuePrefilled;
-      continue;
-    }
-    // Usually, `skip_reasons[field_id] == FieldFillingSkipReason::kNotSkipped`.
-    // It may not be the case though because FieldGlobalIds are not unique among
-    // FormData::fields, so a previous iteration may have set a skip reason for
-    // `field_id`. To err on the side of caution we keep the skip reason.
   }
   return skip_reasons;
 }
