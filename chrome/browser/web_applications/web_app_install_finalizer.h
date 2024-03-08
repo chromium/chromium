@@ -135,11 +135,6 @@ class WebAppInstallFinalizer {
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
-  void OnMaybeRegisterOsUninstall(const webapps::AppId& app_id,
-                                  WebAppManagement::Type source,
-                                  UninstallWebAppCallback callback,
-                                  OsHooksErrors os_hooks_errors);
-
   void UpdateIsolationDataAndResetPendingUpdateInfo(
       WebApp* web_app,
       const IsolatedWebAppStorageLocation& location,

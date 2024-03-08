@@ -9,10 +9,11 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+
+class Profile;
 
 namespace web_app {
 
@@ -37,7 +38,7 @@ class RemoveInstallSourceJob : public UninstallJob {
   webapps::WebappUninstallSource uninstall_source() const override;
 
  private:
-  void RemoveInstallSourceFromDatabase(OsHooksErrors os_hooks_errors);
+  void RemoveInstallSourceFromDatabaseSyncOsIntegration();
   void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
 
   const webapps::WebappUninstallSource uninstall_source_;

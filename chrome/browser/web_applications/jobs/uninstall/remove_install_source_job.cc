@@ -85,14 +85,13 @@ void RemoveInstallSourceJob::Start(AllAppsLock& lock, Callback callback) {
       return;
 
     case Action::kRemoveInstallSources:
-      // Install sources may block user uninstallation (e.g. policy), if one of
-      // these install sources is being removed then the ability to uninstall
-      // may need to be re-deployed into the OS.
-      MaybeRegisterOsUninstall(
-          app, install_managements_to_remove_, lock_->os_integration_manager(),
-          base::BindOnce(
-              &RemoveInstallSourceJob::RemoveInstallSourceFromDatabase,
-              weak_ptr_factory_.GetWeakPtr()));
+      // Removing an install source from an app might change the OS integration
+      // characteristics of an app, for example, an app that was installed by
+      // both policy and default sources cannot be removed from the OS by an end
+      // user on Windows, but if the policy source is removed, the app becomes
+      // user uninstallable. This requires an OS integration synchronization to
+      // be triggered.
+      RemoveInstallSourceFromDatabaseSyncOsIntegration();
       return;
 
     case Action::kRemoveApp:
@@ -112,8 +111,8 @@ webapps::WebappUninstallSource RemoveInstallSourceJob::uninstall_source()
   return uninstall_source_;
 }
 
-void RemoveInstallSourceJob::RemoveInstallSourceFromDatabase(
-    OsHooksErrors os_hooks_errors) {
+void RemoveInstallSourceJob::
+    RemoveInstallSourceFromDatabaseSyncOsIntegration() {
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp* app = update->UpdateApp(app_id_);
