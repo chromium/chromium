@@ -190,9 +190,6 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 void PineController::MaybeStartPineOverviewSession(
     std::unique_ptr<PineContentsData> pine_contents_data) {
   CHECK(features::IsForestFeatureEnabled());
-  if (ShouldShowPineOnboarding()) {
-    return;
-  }
 
   if (OverviewController::Get()->InOverviewSession()) {
     return;
