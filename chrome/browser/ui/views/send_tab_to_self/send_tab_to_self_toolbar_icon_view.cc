@@ -9,8 +9,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -27,13 +29,16 @@ namespace send_tab_to_self {
 
 SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
     BrowserView* browser_view)
-    : ImageView(ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                                   ? kDevicesChromeRefreshIcon
-                                                   : kDevicesIcon,
-                                               ui::kColorIcon,
-                                               gfx::kFaviconSize)),
+    : ImageView(ui::ImageModel::FromVectorIcon(
+          features::IsChromeRefresh2023() ? kDevicesChromeRefreshIcon
+                                          : kDevicesIcon,
+          ui::kColorIcon,
+          GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT) -
+              GetLayoutInsets(TOOLBAR_BUTTON).height())),
       browser_(browser_view->browser()),
       browser_view_(browser_view) {
+  const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
+  SetPreferredSize(gfx::Size(button_height, button_height));
   SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_A11Y_NAME));
   SetTooltipText(
