@@ -16,6 +16,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
+import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
 import {acceptSeaPenTermsOfService, getShouldShowSeaPenTermsOfServiceDialog} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
@@ -90,7 +91,12 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   }
 
   selectSeaPenTemplate(templateId: SeaPenTemplateId|Query) {
-    this.goToRoute(SeaPenPaths.ROOT, {seaPenTemplateId: templateId.toString()});
+    // resets the Sea Pen thumbnail response status code when switching
+    // template; otherwise, error state will remain in sea-pen-images element if
+    // it happens in the last query search.
+    this.dispatch(setThumbnailResponseStatusCodeAction(null));
+    this.goToRoute(
+        SeaPenPaths.RESULTS, {seaPenTemplateId: templateId.toString()});
   }
 
   async goToRoute(
@@ -144,16 +150,13 @@ export class SeaPenRouterElement extends WithSeaPenStore {
 
   private shouldShowTextInputQuery_(
       relativePath: string|null, templateId: string|null): boolean {
-    return isSeaPenTextInputEnabled() &&
-        (relativePath === SeaPenPaths.ROOT ||
-         relativePath === SeaPenPaths.RESULTS) &&
+    return isSeaPenTextInputEnabled() && relativePath === SeaPenPaths.RESULTS &&
         templateId === 'Query';
   }
 
   private shouldShowTemplateQuery_(
       relativePath: string|null, templateId: string|null): boolean {
-    return (relativePath === SeaPenPaths.ROOT ||
-            relativePath === SeaPenPaths.RESULTS) &&
+    return relativePath === SeaPenPaths.RESULTS &&
         (!!templateId && templateId !== 'Query');
   }
 

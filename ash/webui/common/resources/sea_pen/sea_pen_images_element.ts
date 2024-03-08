@@ -17,6 +17,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import './sea_pen_feedback_element.js';
 import './sea_pen_image_loading_element.js';
+import './sea_pen_zero_state_svg_element.js';
 
 import {Query, SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
@@ -150,9 +151,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     clearSeaPenThumbnails(this.getStore());
   }
 
-  private shouldShowThumbnailPlaceholders_(
+  private shouldShowZeroState_(
       thumbnailsLoading: boolean, thumbnails: SeaPenThumbnail[]|null): boolean {
-    // Use placeholders before and during loading thumbnails.
     return !thumbnails && !thumbnailsLoading;
   }
 

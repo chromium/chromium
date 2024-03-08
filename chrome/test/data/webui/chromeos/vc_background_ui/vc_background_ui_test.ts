@@ -95,17 +95,23 @@ suite('VcBackgroundUITest', () => {
         'Expected template text is shown for Classic art');
 
     assertEquals(
-        'chrome://vc-background/?seaPenTemplateId=104', window.location.href,
+        'chrome://vc-background/results?seaPenTemplateId=104',
+        window.location.href,
         'VC Background Classic art template id is added to url');
 
-    // Breadcrumbs have not changed yet.
+    // Breadcrumbs should show 'Classic art'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel')]);
+        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), 'Classic art']);
   });
 
-  test('updates breadcrumbs when create button clicked', async () => {
+  test('verifies breadcrumbs when create button clicked', async () => {
+    const seaPenRouter = getSeaPenRouter();
+    seaPenRouter.goToRoute(SeaPenPaths.ROOT);
+    await waitAfterNextRender(seaPenRouter);
+
     const seaPenTemplateElements = getSeaPenTemplateElements();
+    await waitAfterNextRender(seaPenRouter);
 
     // Click the 'Classic art' template.
     seaPenTemplateElements
@@ -113,7 +119,7 @@ suite('VcBackgroundUITest', () => {
           const p = template.shadowRoot?.querySelector('p.primary-text');
           return p?.textContent?.trim() === 'Classic art';
         })!.click();
-    await waitAfterNextRender(getSeaPenRouter());
+    await waitAfterNextRender(seaPenRouter);
 
     const seaPenTemplateQuery = getSeaPenTemplateQuery();
     assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query exists');
@@ -130,7 +136,7 @@ suite('VcBackgroundUITest', () => {
         window.location.href,
         'App is on /results and Classic art template id is added to url');
 
-    // Breadcrumbs should now show 'Classic art'.
+    // Breadcrumbs should show 'Classic art'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
         [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), 'Classic art']);

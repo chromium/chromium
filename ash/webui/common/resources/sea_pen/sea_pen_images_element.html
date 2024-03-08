@@ -121,6 +121,14 @@
     top: -12px;
   }
 
+  .zero-state-container {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
   wallpaper-grid-item[data-sea-pen-image],
   div.loading-placeholder {
     position: absolute;
@@ -171,19 +179,15 @@
   </div>
 </template>
 <template is="dom-if" if="[[!showError_]]" restamp>
-  <h2 class="wallpaper-collections-heading">
-    [[getPoweredByGoogleMessage_()]]
-  </h2>
-  <template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
-    <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
-      <template>
-        <div class="thumbnail-placeholder-container">
-          <div class="thumbnail-placeholder"></div>
-        </div>
-      </template>
-    </iron-list>
+  <template is="dom-if" if="[[shouldShowZeroState_(thumbnailsLoading_, thumbnails_)]]">
+    <div class="zero-state-container">
+      <sea-pen-zero-state-svg></sea-pen-zero-state-svg>
+    </div>
   </template>
   <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]" restamp>
+    <h2 class="wallpaper-collections-heading">
+      [[getPoweredByGoogleMessage_()]]
+    </h2>
     <iron-list id="grid"
         items="[[tiles_]]"
         grid

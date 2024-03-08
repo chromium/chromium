@@ -45,6 +45,7 @@ build_webui("build_ts") {
     "sea_pen_template_query_element.ts",
     "sea_pen_templates_element.ts",
     "sea_pen_terms_of_service_dialog_element.ts",
+    "sea_pen_zero_state_svg_element.ts",
     "surface_effects/sparkle_placeholder.ts",
   ]
 

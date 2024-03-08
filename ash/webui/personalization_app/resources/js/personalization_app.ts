@@ -132,6 +132,7 @@ export {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/
 export {SeaPenTemplatesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_templates_element.js';
 export {setSeaPenProviderForTesting} from 'chrome://resources/ash/common/sea_pen/sea_pen_interface_provider.js';
 export {SeaPenTermsOfServiceDialogElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_terms_of_service_dialog_element.js';
+export {SeaPenZeroStateSvgElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_zero_state_svg_element.js';
 export {isDefaultImage, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_element.js';
