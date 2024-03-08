@@ -2955,12 +2955,12 @@ chromium-metrics-reviews@google.com.
       label="Committed memory size for malloc(). Recorded only when
              PartitionAlloc is used as malloc()."/>
   <suffix name="Malloc.Fragmentation"
-      label="Fragmentation of Partition allocator."/>
+      label="Fragmentation of PartitionAlloc."/>
   <suffix name="Malloc.Fragmentation.After1H"
-      label="Fragmentation of Partition allocator for processes that have
+      label="Fragmentation of PartitionAlloc for processes that have
              existed for &gt;=1H."/>
   <suffix name="Malloc.Fragmentation.After24H"
-      label="Fragmentation of Partition allocator for processes older than 1
+      label="Fragmentation of PartitionAlloc for processes older than 1
              day."/>
   <suffix name="Malloc.MaxAllocatedSize"
       label="Highwatermark for allocated memory for malloc(). Recorded only
@@ -2980,7 +2980,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="ManualFillingCache"
       label="Only counting memory used by the password manager fallbacks."/>
   <suffix name="PartitionAlloc"
-      label="Only counting memory used by Partition allocator."/>
+      label="Only counting memory used by PartitionAlloc."/>
   <suffix
       name="PartitionAlloc.AddressSpace.BRPPoolLargestAvailableReservation"
       label="Longest free chunk in the BRP pool. Only recorded for 64-bit."/>
@@ -3061,7 +3061,7 @@ chromium-metrics-reviews@google.com.
       label="Used super pages in the thread isolated pool. Only recorded on
              supported platforms with process uptime 24H+."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
-      label="Only counting objects allocated using Partition allocator."/>
+      label="Only counting objects allocated using PartitionAlloc."/>
   <suffix name="PartitionAlloc.CommittedSize.ArrayBuffer"
       label="Committed memory size for the ArrayBuffer partition."/>
   <suffix name="PartitionAlloc.CommittedSize.Buffer"
