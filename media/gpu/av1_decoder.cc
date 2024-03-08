@@ -127,6 +127,12 @@ scoped_refptr<AV1Picture> AV1Decoder::AV1Accelerator::CreateAV1PictureSecure(
   return nullptr;
 }
 
+AV1Decoder::AV1Accelerator::Status AV1Decoder::AV1Accelerator::SetStream(
+    base::span<const uint8_t> stream,
+    const DecryptConfig* decrypt_config) {
+  return Status::kOk;
+}
+
 AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -210,6 +216,13 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     secure_handle_ = decoder_buffer.side_data()->secure_handle;
   } else {
     secure_handle_ = 0;
+  }
+
+  const AV1Accelerator::Status status = accelerator_->SetStream(
+      base::make_span(stream_, stream_size_), decrypt_config_.get());
+  if (status != AV1Accelerator::Status::kOk) {
+    on_error_ = true;
+    return;
   }
 }
 

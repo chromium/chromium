@@ -118,6 +118,14 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
     // called for them beforehand).
     // Returns true when successful, false otherwise.
     virtual bool OutputPicture(const AV1Picture& pic) = 0;
+
+    // Notifies the accelerater whenever there is a new stream to process.
+    // The lifetime of the stream is determined by the caller of
+    // AV1Decoder::SetStream(). `data` spans passed to SubmitDecode() will be
+    // contained in `stream` (in fact exactly the same span as `stream` in the
+    // current implementation).
+    virtual Status SetStream(base::span<const uint8_t> stream,
+                             const DecryptConfig* decrypt_config);
   };
 
   AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,

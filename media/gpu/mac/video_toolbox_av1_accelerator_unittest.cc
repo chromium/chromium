@@ -63,6 +63,7 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeRaw) {
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
+  accelerator_->SetStream(base::make_span(frame_data), nullptr);
   accelerator_->SubmitDecode(*pic, sequence_header, ref_frames, tile_buffers,
                              base::make_span(frame_data));
   accelerator_->OutputPicture(*pic);
@@ -78,8 +79,9 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeRaw) {
 TEST_F(VideoToolboxAV1AcceleratorTest, DecodeSuperframe) {
   // Sequence Header OBU from bear-av1.webm.
   // A valid sequence header is required to extract the av1c.
-  constexpr uint8_t frame_data[] = {0x0a, 0x0b, 0x00, 0x00, 0x00, 0x04, 0x3c,
-                                    0xff, 0xbc, 0xfb, 0xf9, 0x80, 0x40};
+  constexpr uint8_t superframe_data[] = {0x0a, 0x0b, 0x00, 0x00, 0x00,
+                                         0x04, 0x3c, 0xff, 0xbc, 0xfb,
+                                         0xf9, 0x80, 0x40};
 
   libgav1::ObuSequenceHeader sequence_header = {};
   sequence_header.profile = libgav1::kProfile0;
@@ -100,12 +102,13 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeSuperframe) {
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample));
-  EXPECT_CALL(*this, OnOutput(_));
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillRepeatedly(SaveArg<0>(&sample));
+  EXPECT_CALL(*this, OnOutput(_)).Times(2);
+  accelerator_->SetStream(base::make_span(superframe_data), nullptr);
   accelerator_->SubmitDecode(*pic1, sequence_header, ref_frames, tile_buffers,
-                             base::make_span(frame_data));
+                             base::make_span(superframe_data));
   accelerator_->SubmitDecode(*pic2, sequence_header, ref_frames, tile_buffers,
-                             base::make_span(frame_data));
+                             base::make_span(superframe_data));
   accelerator_->OutputPicture(*pic2);
 
   // Verify `sample`.
@@ -116,7 +119,19 @@ TEST_F(VideoToolboxAV1AcceleratorTest, DecodeSuperframe) {
   // Once AV1Decoder splits frame data into frames, this will be a constructed
   // superframe. For now, we assume that the original data is already a
   // superframe.
-  EXPECT_THAT(data, ElementsAreArray(frame_data));
+  EXPECT_THAT(data, ElementsAreArray(superframe_data));
+
+  // Submit `show_existing_frame` frame.
+  constexpr uint8_t show_existing_frame_data[] = {0x01, 0x02, 0x03, 0x04};
+  accelerator_->SetStream(base::make_span(show_existing_frame_data), nullptr);
+  accelerator_->OutputPicture(*pic1);
+
+  // Verify `sample`.
+  CMBlockBufferRef buf2 = CMSampleBufferGetDataBuffer(sample.get());
+  std::vector<uint8_t> data2(CMBlockBufferGetDataLength(buf2));
+  CMBlockBufferCopyDataBytes(buf2, 0, CMBlockBufferGetDataLength(buf2),
+                             data2.data());
+  EXPECT_THAT(data2, ElementsAreArray(show_existing_frame_data));
 }
 
 }  // namespace media

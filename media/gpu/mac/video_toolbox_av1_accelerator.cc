@@ -29,6 +29,64 @@ VideoToolboxAV1Accelerator::~VideoToolboxAV1Accelerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+AV1Decoder::AV1Accelerator::Status VideoToolboxAV1Accelerator::SetStream(
+    base::span<const uint8_t> stream,
+    const DecryptConfig* decrypt_config) {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  temporal_unit_data_.reset();
+  format_processed_ = false;
+
+  // Create block buffer.
+  OSStatus status = CMBlockBufferCreateEmpty(
+      /*structure_allocator=*/kCFAllocatorDefault,
+      /*sub_block_capacity=*/0,
+      /*flags=*/0, temporal_unit_data_.InitializeInto());
+  if (status != noErr) {
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMBlockBufferCreateWithMemoryBlock()";
+    return Status::kFail;
+  }
+
+  // Allocate memory.
+  status =
+      CMBlockBufferAppendMemoryBlock(/*the_buffer=*/temporal_unit_data_.get(),
+                                     /*memory_block=*/nullptr,
+                                     /*block_length=*/stream.size(),
+                                     /*block_allocator=*/kCFAllocatorDefault,
+                                     /*custom_block_source=*/nullptr,
+                                     /*offset_to_data=*/0,
+                                     /*data_length=*/stream.size(),
+                                     /*flags=*/0);
+  if (status != noErr) {
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMBlockBufferAppendMemoryBlock()";
+    return Status::kFail;
+  }
+
+  status = CMBlockBufferAssureBlockMemory(temporal_unit_data_.get());
+  if (status != noErr) {
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMBlockBufferAssureBlockMemory()";
+    return Status::kFail;
+  }
+
+  // Copy the data.
+  status = CMBlockBufferReplaceDataBytes(
+      /*sourceBytes=*/stream.data(),
+      /*destinationBuffer=*/temporal_unit_data_.get(),
+      /*offsetIntoDestination=*/0,
+      /*dataLength=*/stream.size());
+  if (status != noErr) {
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMBlockBufferReplaceDataBytes()";
+    return Status::kFail;
+  }
+
+  return Status::kOk;
+}
+
 scoped_refptr<AV1Picture> VideoToolboxAV1Accelerator::CreateAV1Picture(
     bool apply_grain) {
   DVLOG(4) << __func__;
@@ -45,90 +103,48 @@ VideoToolboxAV1Accelerator::Status VideoToolboxAV1Accelerator::SubmitDecode(
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // AV1Decoder calls SubmitDecode() for each frame, but `data` is always the
-  // whole DecoderBuffer. We will assume that there is exactly one output
-  // frame in the buffer, and wait for OutputPicture() before handling another
-  // SubmitDecode().
-  // TODO(crbug.com/1493614): Fixup AV1Decoder to provide the individual frame
-  // data, and build a temporal unit.
-  if (have_temporal_unit_) {
+  // It's only necessary to process format the once per temporal unit.
+  if (format_processed_) {
     return Status::kOk;
-  } else {
-    have_temporal_unit_ = true;
   }
-
-  size_t data_size = data.size();
 
   // Update `active_format_`.
   if (!ProcessFormat(pic, sequence_header, data)) {
     return Status::kFail;
   }
 
-  // Create block buffer.
-  base::apple::ScopedCFTypeRef<CMBlockBufferRef> temporal_unit_data;
-  OSStatus status = CMBlockBufferCreateEmpty(
-      /*structure_allocator=*/kCFAllocatorDefault,
-      /*sub_block_capacity=*/0,
-      /*flags=*/0, temporal_unit_data.InitializeInto());
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "CMBlockBufferCreateWithMemoryBlock()";
-    return Status::kFail;
-  }
+  format_processed_ = true;
 
-  // Allocate memory.
-  status =
-      CMBlockBufferAppendMemoryBlock(/*the_buffer=*/temporal_unit_data.get(),
-                                     /*memory_block=*/nullptr,
-                                     /*block_length=*/data_size,
-                                     /*block_allocator=*/kCFAllocatorDefault,
-                                     /*custom_block_source=*/nullptr,
-                                     /*offset_to_data=*/0,
-                                     /*data_length=*/data_size,
-                                     /*flags=*/0);
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "CMBlockBufferAppendMemoryBlock()";
-    return Status::kFail;
-  }
+  return Status::kOk;
+}
 
-  status = CMBlockBufferAssureBlockMemory(temporal_unit_data.get());
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "CMBlockBufferAssureBlockMemory()";
-    return Status::kFail;
-  }
+bool VideoToolboxAV1Accelerator::OutputPicture(const AV1Picture& pic) {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Copy the data.
-  status = CMBlockBufferReplaceDataBytes(
-      /*sourceBytes=*/data.data(),
-      /*destinationBuffer=*/temporal_unit_data.get(),
-      /*offsetIntoDestination=*/0,
-      /*dataLength=*/data.size());
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "CMBlockBufferReplaceDataBytes()";
-    return Status::kFail;
+  if (!temporal_unit_data_ || !active_format_) {
+    return false;
   }
 
   // Wrap the temporal unit in a sample.
+  size_t data_size = CMBlockBufferGetDataLength(temporal_unit_data_.get());
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  status = CMSampleBufferCreate(/*allocator=*/kCFAllocatorDefault,
-                                /*dataBuffer=*/temporal_unit_data.get(),
-                                /*dataReady=*/true,
-                                /*makeDataReadyCallback=*/nullptr,
-                                /*makeDataReadyRefcon=*/nullptr,
-                                /*formatDescription=*/active_format_.get(),
-                                /*numSamples=*/1,
-                                /*numSampleTimingEntries=*/0,
-                                /*sampleTimingArray=*/nullptr,
-                                /*numSampleSizeEntries=*/1,
-                                /*sampleSizeArray=*/&data_size,
-                                sample.InitializeInto());
+  OSStatus status = CMSampleBufferCreate(
+      /*allocator=*/kCFAllocatorDefault,
+      /*dataBuffer=*/temporal_unit_data_.get(),
+      /*dataReady=*/true,
+      /*makeDataReadyCallback=*/nullptr,
+      /*makeDataReadyRefcon=*/nullptr,
+      /*formatDescription=*/active_format_.get(),
+      /*numSamples=*/1,
+      /*numSampleTimingEntries=*/0,
+      /*sampleTimingArray=*/nullptr,
+      /*numSampleSizeEntries=*/1,
+      /*sampleSizeArray=*/&data_size, sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMSampleBufferCreate()";
-    return Status::kFail;
+    return false;
   }
 
   // Submit for decoding.
@@ -140,14 +156,7 @@ VideoToolboxAV1Accelerator::Status VideoToolboxAV1Accelerator::SubmitDecode(
   // Schedule output.
   output_cb_.Run(base::WrapRefCounted(const_cast<AV1Picture*>(&pic)));
 
-  return Status::kOk;
-}
-
-bool VideoToolboxAV1Accelerator::OutputPicture(const AV1Picture& pic) {
-  DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  have_temporal_unit_ = false;
+  temporal_unit_data_.reset();
 
   return true;
 }
