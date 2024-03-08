@@ -11,32 +11,38 @@
 
 namespace remoting {
 
-// The UI implementations maintain corresponding definitions of this
-// enumeration in remoting/protocol/errors.cc and
-// android/java/src/org/chromium/chromoting/jni/ConnectionListener.java
-// Be sure to update these locations if you make any changes to the ordering.
+// If this enum is modified, please also modify the enums in these file:
+// * chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h:
+//     ExtendedStartCrdSessionResultCode
+// * remoting/base/errors.cc: kErrorCodeNames
+// * remoting/host/mojom/desktop_session.mojom: ProtocolErrorCode
+// * tools/metrics/histograms/metadata/enterprise/enums.xml:
+//     EnterpriseCrdSessionResultCode
+//
+// DO NOT change existing values in this enum, since it would lead to version
+// skew problems.
 enum class ErrorCode {
   OK = 0,
-  PEER_IS_OFFLINE,
-  SESSION_REJECTED,
-  INCOMPATIBLE_PROTOCOL,
-  AUTHENTICATION_FAILED,
-  INVALID_ACCOUNT,
-  CHANNEL_CONNECTION_ERROR,
-  SIGNALING_ERROR,
-  SIGNALING_TIMEOUT,
-  HOST_OVERLOAD,
-  MAX_SESSION_LENGTH,
-  HOST_CONFIGURATION_ERROR,
-  UNKNOWN_ERROR,
-  ELEVATION_ERROR,
-  HOST_CERTIFICATE_ERROR,
-  HOST_REGISTRATION_ERROR,
-  EXISTING_ADMIN_SESSION,
-  AUTHZ_POLICY_CHECK_FAILED,
-  DISALLOWED_BY_POLICY,
-  LOCATION_AUTHZ_POLICY_CHECK_FAILED,
-  UNAUTHORIZED_ACCOUNT,
+  PEER_IS_OFFLINE = 1,
+  SESSION_REJECTED = 2,
+  INCOMPATIBLE_PROTOCOL = 3,
+  AUTHENTICATION_FAILED = 4,
+  INVALID_ACCOUNT = 5,
+  CHANNEL_CONNECTION_ERROR = 6,
+  SIGNALING_ERROR = 7,
+  SIGNALING_TIMEOUT = 8,
+  HOST_OVERLOAD = 9,
+  MAX_SESSION_LENGTH = 10,
+  HOST_CONFIGURATION_ERROR = 11,
+  UNKNOWN_ERROR = 12,
+  ELEVATION_ERROR = 13,
+  HOST_CERTIFICATE_ERROR = 14,
+  HOST_REGISTRATION_ERROR = 15,
+  EXISTING_ADMIN_SESSION = 16,
+  AUTHZ_POLICY_CHECK_FAILED = 17,
+  DISALLOWED_BY_POLICY = 18,
+  LOCATION_AUTHZ_POLICY_CHECK_FAILED = 19,
+  UNAUTHORIZED_ACCOUNT = 20,
   ERROR_CODE_MAX = UNAUTHORIZED_ACCOUNT,
 };
 
