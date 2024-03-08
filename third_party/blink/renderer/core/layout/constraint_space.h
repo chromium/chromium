@@ -889,32 +889,7 @@ class CORE_EXPORT ConstraintSpace final {
       kSubgridData        // A nested grid with subgridded columns/rows.
     };
 
-    explicit RareData(const BfcOffset bfc_offset)
-        : bfc_offset(bfc_offset),
-          data_union_type(static_cast<unsigned>(DataUnionType::kNone)),
-          is_line_clamp_context(false),
-          is_pushed_by_floats(false),
-          is_restricted_block_size_table_cell(false),
-          hide_table_cell_if_empty(false),
-          block_direction_fragmentation_type(
-              static_cast<unsigned>(kFragmentNone)),
-          is_block_fragmentation_forced_off(false),
-          is_monolithic_overflow_propagation_disabled(false),
-          requires_content_before_breaking(false),
-          is_inside_balanced_columns(false),
-          should_ignore_forced_breaks(false),
-          is_in_column_bfc(false),
-          is_past_break(false),
-          min_block_size_should_encompass_intrinsic_size(false),
-          has_override_min_max_block_sizes(false),
-          uses_orthogonal_fallback_inline_size(false),
-          min_break_appeal(kBreakAppealLastResort),
-          propagate_child_break_values(false),
-          is_at_fragmentainer_start(false),
-          should_repeat(false),
-          is_inside_repeatable_content(false),
-          should_text_box_trim_start(false),
-          should_text_box_trim_end(false) {}
+    explicit RareData(const BfcOffset bfc_offset) : bfc_offset(bfc_offset) {}
     RareData(const RareData& other)
         : percentage_resolution_size(other.percentage_resolution_size),
           replaced_percentage_resolution_block_size(
@@ -1323,32 +1298,35 @@ class CORE_EXPORT ConstraintSpace final {
     LayoutUnit fragmentainer_block_size = kIndefiniteSize;
     LayoutUnit fragmentainer_offset;
 
-    unsigned data_union_type : 3;
+    unsigned data_union_type : 3 = static_cast<unsigned>(DataUnionType::kNone);
 
-    unsigned is_line_clamp_context : 1;
-    unsigned is_pushed_by_floats : 1;
+    unsigned is_line_clamp_context : 1 = false;
+    unsigned is_pushed_by_floats : 1 = false;
 
-    unsigned is_restricted_block_size_table_cell : 1;
-    unsigned hide_table_cell_if_empty : 1;
+    unsigned is_restricted_block_size_table_cell : 1 = false;
+    unsigned hide_table_cell_if_empty : 1 = false;
 
-    unsigned block_direction_fragmentation_type : 2;
-    unsigned is_block_fragmentation_forced_off : 1;
-    unsigned is_monolithic_overflow_propagation_disabled : 1;
-    unsigned requires_content_before_breaking : 1;
-    unsigned is_inside_balanced_columns : 1;
-    unsigned should_ignore_forced_breaks : 1;
-    unsigned is_in_column_bfc : 1;
-    unsigned is_past_break : 1;
-    unsigned min_block_size_should_encompass_intrinsic_size : 1;
-    unsigned has_override_min_max_block_sizes : 1;
-    unsigned uses_orthogonal_fallback_inline_size : 1;
-    unsigned min_break_appeal : kBreakAppealBitsNeeded;
-    unsigned propagate_child_break_values : 1;
-    unsigned is_at_fragmentainer_start : 1;
-    unsigned should_repeat : 1;
-    unsigned is_inside_repeatable_content : 1;
-    unsigned should_text_box_trim_start : 1;
-    unsigned should_text_box_trim_end : 1;
+    unsigned block_direction_fragmentation_type : 2 =
+        static_cast<unsigned>(kFragmentNone);
+    unsigned is_block_fragmentation_forced_off : 1 = false;
+    unsigned is_monolithic_overflow_propagation_disabled : 1 = false;
+    unsigned requires_content_before_breaking : 1 = false;
+    unsigned is_inside_balanced_columns : 1 = false;
+    unsigned should_ignore_forced_breaks : 1 = false;
+    unsigned is_in_column_bfc : 1 = false;
+    unsigned is_past_break : 1 = false;
+    unsigned min_block_size_should_encompass_intrinsic_size : 1 = false;
+    unsigned has_override_min_max_block_sizes : 1 = false;
+    unsigned uses_orthogonal_fallback_inline_size : 1 = false;
+    unsigned min_break_appeal
+        : kBreakAppealBitsNeeded =
+              static_cast<unsigned>(kBreakAppealLastResort);
+    unsigned propagate_child_break_values : 1 = false;
+    unsigned is_at_fragmentainer_start : 1 = false;
+    unsigned should_repeat : 1 = false;
+    unsigned is_inside_repeatable_content : 1 = false;
+    unsigned should_text_box_trim_start : 1 = false;
+    unsigned should_text_box_trim_end : 1 = false;
 
    private:
     struct BlockData {
@@ -1549,33 +1527,9 @@ class CORE_EXPORT ConstraintSpace final {
         : Bitfields({WritingMode::kHorizontalTb, TextDirection::kLtr}) {}
 
     explicit Bitfields(WritingDirectionMode writing_direction)
-        : has_rare_data(false),
-          adjoining_object_types(static_cast<unsigned>(kAdjoiningNone)),
-          writing_mode(
+        : writing_mode(
               static_cast<unsigned>(writing_direction.GetWritingMode())),
-          direction(static_cast<unsigned>(writing_direction.Direction())),
-          is_anonymous(false),
-          is_new_formatting_context(false),
-          is_orthogonal_writing_mode_root(false),
-          is_painted_atomically(false),
-          is_hidden_for_paint(false),
-          use_first_line_style(false),
-          ancestor_has_clearance_past_adjoining_floats(false),
-          baseline_algorithm_type(
-              static_cast<unsigned>(BaselineAlgorithmType::kDefault)),
-          cache_slot(static_cast<unsigned>(LayoutResultCacheSlot::kLayout)),
-          inline_auto_behavior(
-              static_cast<unsigned>(AutoSizeBehavior::kFitContent)),
-          block_auto_behavior(
-              static_cast<unsigned>(AutoSizeBehavior::kFitContent)),
-          is_fixed_inline_size(false),
-          is_fixed_block_size(false),
-          is_initial_block_size_indefinite(false),
-          is_table_cell_child(false),
-          is_restricted_block_size_table_cell_child(false),
-          percentage_inline_storage(kSameAsAvailable),
-          percentage_block_storage(kSameAsAvailable),
-          replaced_percentage_block_storage(kSameAsAvailable) {}
+          direction(static_cast<unsigned>(writing_direction.Direction())) {}
 
     bool MaySkipLayout(const Bitfields& other) const {
       return adjoining_object_types == other.adjoining_object_types &&
@@ -1607,36 +1561,44 @@ class CORE_EXPORT ConstraintSpace final {
                  other.is_restricted_block_size_table_cell_child;
     }
 
-    unsigned has_rare_data : 1;
-    unsigned adjoining_object_types : 3;  // AdjoiningObjectTypes
+    unsigned has_rare_data : 1 = false;
+    unsigned adjoining_object_types : 3 =
+        static_cast<unsigned>(AdjoiningObjectTypeValue::kAdjoiningNone);
     unsigned writing_mode : 3;
     unsigned direction : 1;
 
-    unsigned is_anonymous : 1;
-    unsigned is_new_formatting_context : 1;
-    unsigned is_orthogonal_writing_mode_root : 1;
+    unsigned is_anonymous : 1 = false;
+    unsigned is_new_formatting_context : 1 = false;
+    unsigned is_orthogonal_writing_mode_root : 1 = false;
 
-    unsigned is_painted_atomically : 1;
-    unsigned is_hidden_for_paint : 1;
-    unsigned use_first_line_style : 1;
-    unsigned ancestor_has_clearance_past_adjoining_floats : 1;
+    unsigned is_painted_atomically : 1 = false;
+    unsigned is_hidden_for_paint : 1 = false;
+    unsigned use_first_line_style : 1 = false;
+    unsigned ancestor_has_clearance_past_adjoining_floats : 1 = false;
 
-    unsigned baseline_algorithm_type : 1;
+    unsigned baseline_algorithm_type : 1 =
+        static_cast<unsigned>(BaselineAlgorithmType::kDefault);
 
-    unsigned cache_slot : 1;
+    unsigned cache_slot : 1 =
+        static_cast<unsigned>(LayoutResultCacheSlot::kLayout);
 
     // Size constraints.
-    unsigned inline_auto_behavior : 2;  // AutoSizeBehavior
-    unsigned block_auto_behavior : 2;   // AutoSizeBehavior
-    unsigned is_fixed_inline_size : 1;
-    unsigned is_fixed_block_size : 1;
-    unsigned is_initial_block_size_indefinite : 1;
-    unsigned is_table_cell_child : 1;
-    unsigned is_restricted_block_size_table_cell_child : 1;
+    unsigned inline_auto_behavior : 2 =
+        static_cast<unsigned>(AutoSizeBehavior::kFitContent);
+    unsigned block_auto_behavior : 2 =
+        static_cast<unsigned>(AutoSizeBehavior::kFitContent);
+    unsigned is_fixed_inline_size : 1 = false;
+    unsigned is_fixed_block_size : 1 = false;
+    unsigned is_initial_block_size_indefinite : 1 = false;
+    unsigned is_table_cell_child : 1 = false;
+    unsigned is_restricted_block_size_table_cell_child : 1 = false;
 
-    unsigned percentage_inline_storage : 2;          // PercentageStorage
-    unsigned percentage_block_storage : 2;           // PercentageStorage
-    unsigned replaced_percentage_block_storage : 2;  // PercentageStorage
+    unsigned percentage_inline_storage : 2 =
+        static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
+    unsigned percentage_block_storage : 2 =
+        static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
+    unsigned replaced_percentage_block_storage : 2 =
+        static_cast<unsigned>(PercentageStorage::kSameAsAvailable);
   };
 
   // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,
