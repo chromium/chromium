@@ -645,9 +645,8 @@ bool AutofillProfile::operator==(const AutofillProfile& profile) const {
 
 bool AutofillProfile::IsSubsetOf(const AutofillProfileComparator& comparator,
                                  const AutofillProfile& profile) const {
-  FieldTypeSet supported_types;
-  GetSupportedTypes(&supported_types);
-  return IsSubsetOfForFieldSet(comparator, profile, supported_types);
+  return IsSubsetOfForFieldSet(comparator, profile,
+                               GetDatabaseStoredTypesOfAutofillProfile());
 }
 
 bool AutofillProfile::IsSubsetOfForFieldSet(
@@ -671,11 +670,9 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     if (value.empty()) {
       continue;
     }
-
     // TODO(crbug.com/1417975): Use rewriter rules for all kAddressHome types.
-    if (type == ADDRESS_HOME_ADDRESS || type == ADDRESS_HOME_STREET_ADDRESS ||
-        type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2 ||
-        type == ADDRESS_HOME_LINE3) {
+    if (type == ADDRESS_HOME_STREET_ADDRESS || type == ADDRESS_HOME_LINE1 ||
+        type == ADDRESS_HOME_LINE2 || type == ADDRESS_HOME_LINE3) {
       // This will compare street addresses after applying appropriate address
       // rewriter rules to both values, so that for example US streets like
       // `Main Street` and `main st` evaluate to equal.
