@@ -758,11 +758,19 @@ void UnretainedDanglingRawPtrDetectedDumpWithoutCrashing(uintptr_t id) {
 }
 
 void UnretainedDanglingRawPtrDetectedCrash(uintptr_t id) {
+  static const char unretained_dangling_ptr_footer[] =
+      "\n"
+      "\n"
+      "Please check for more information on:\n"
+      "https://chromium.googlesource.com/chromium/src/+/main/docs/"
+      "unretained_dangling_ptr_guide.md\n";
   debug::TaskTrace task_trace;
   debug::StackTrace stack_trace;
   LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
              << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
-             << task_trace << stack_trace;
+             << task_trace << '\n'
+             << "Stack trace:\n"
+             << stack_trace << unretained_dangling_ptr_footer;
   ImmediateCrash();
 }
 
