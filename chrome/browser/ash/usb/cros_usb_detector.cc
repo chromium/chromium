@@ -439,6 +439,8 @@ CrosUsbDetector::CrosUsbDetector() {
   g_cros_usb_detector = this;
 
   guest_os_classes_without_notif_.emplace_back(
+      UsbFilterByClassCode(USB_CLASS_CDC_DATA));
+  guest_os_classes_without_notif_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_HID));
   guest_os_classes_without_notif_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_PHYSICAL));
