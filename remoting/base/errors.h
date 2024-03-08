@@ -7,9 +7,13 @@
 
 #include <string>
 
-#include "remoting/proto/error_code.pb.h"
-
 namespace remoting {
+
+// Workaround a dependency issue with management_ui_handler_unittest.cc, which
+// includes chrome/browser/ash without checking the platform.
+namespace proto {
+enum ErrorCode : int;
+}  // namespace proto
 
 // If this enum is modified, please also modify the enums in these file:
 // * chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h:

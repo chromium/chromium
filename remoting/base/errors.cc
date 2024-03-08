@@ -5,6 +5,7 @@
 #include "remoting/base/errors.h"
 
 #include "remoting/base/name_value_map.h"
+#include "remoting/proto/error_code.pb.h"
 
 namespace remoting {
 
