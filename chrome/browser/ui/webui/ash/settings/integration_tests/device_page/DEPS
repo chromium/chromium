@@ -1,0 +1,6 @@
+specific_include_rules = {
+  'device_settings_interactive_uitest\.cc': [
+    '+ash/shell.h',
+    '+device/udev_linux/fake_udev_loader.h',
+  ],
+}
