@@ -121,6 +121,9 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 // See also kLocalUpmMinGmsVersionParam below.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
 
+// Enables UPM M4 that no longer needs Password sync engine to sync passwords.
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore);
+
 // A parameter for both the NoMigration and WithMigration features above. It
 // dictates the min value of base::android::BuildInfo::gms_version_code() for
 // the flag take effect.

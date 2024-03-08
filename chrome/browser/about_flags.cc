@@ -11019,6 +11019,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableVcnGrayOutForMerchantOptOut)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"upm-sync-only-in-gms-core",
+     flag_descriptions::kUnifiedPasswordManagerSyncOnlyInGMSCoreName,
+     flag_descriptions::kUnifiedPasswordManagerSyncOnlyInGMSCoreDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -4553,6 +4553,16 @@ const char
         "Warning: Highly experimental. May lead to loss of passwords and "
         "impact performance.";
 
+const char kUnifiedPasswordManagerSyncOnlyInGMSCoreName[] =
+    "Password sync moves entirely to Google Mobile Services";
+const char kUnifiedPasswordManagerSyncOnlyInGMSCoreDescription[] =
+    "Password Sync engine is no longer needed to for syncing passwords, "
+    "because passwords live in the Google Mobile Services device storage. "
+    "Users "
+    "should experience fewer errors."
+    "Warning: Highly experimental. May lead to loss of passwords and "
+    "impact performance.";
+
 const char kUpdateMenuBadgeName[] = "Force show update menu badge";
 const char kUpdateMenuBadgeDescription[] =
     "When enabled, a badge will be shown on the app menu button if the update "

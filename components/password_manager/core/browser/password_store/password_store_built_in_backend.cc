@@ -19,6 +19,11 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#endif
+
 namespace password_manager {
 
 namespace {
@@ -54,7 +59,9 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     std::unique_ptr<LoginDatabase> login_db,
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
-    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier) {
+    PrefService* prefs,
+    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier)
+    : pref_service_(prefs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
@@ -80,7 +87,19 @@ void PasswordStoreBuiltInBackend::Shutdown(
 }
 
 bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
+#if BUILDFLAG(IS_ANDROID)
+  CHECK(pref_service_);
+  // If `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled then
+  // PasswordStoreBuiltInBackend is only created for profile store.
+  return !(pref_service_->GetBoolean(
+               password_manager::prefs::kEmptyProfileStoreLoginDatabase) &&
+           base::FeatureList::IsEnabled(
+               password_manager::features::
+                   kUnifiedPasswordManagerSyncOnlyInGMSCore)) &&
+         is_database_initialized_successfully_;
+#else
   return is_database_initialized_successfully_;
+#endif
 }
 
 void PasswordStoreBuiltInBackend::InitBackend(

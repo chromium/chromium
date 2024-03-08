@@ -8059,6 +8059,14 @@
     "expiry_milestone": 126
   },
   {
+    "name": "upm-sync-only-in-gms-core",
+    "owners": [
+      "sygiet@google.com",
+      "vasilii@chromium.org"
+    ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "upstream-trusted-reports-firmware",
     "owners": [ "rishabhagr@chromium.org" ],
     "expiry_milestone": 125

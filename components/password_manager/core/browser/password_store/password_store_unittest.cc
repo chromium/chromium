@@ -205,7 +205,7 @@ class PasswordStoreTest : public testing::Test {
     return new PasswordStore(std::make_unique<PasswordStoreBuiltInBackend>(
         std::make_unique<LoginDatabase>(
             test_login_db_file_path(), password_manager::IsAccountStore(false)),
-        syncer::WipeModelUponSyncDisabledBehavior::kNever));
+        syncer::WipeModelUponSyncDisabledBehavior::kNever, &pref_service_));
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }

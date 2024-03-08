@@ -67,7 +67,8 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
-              syncer::WipeModelUponSyncDisabledBehavior::kAlways));
+              syncer::WipeModelUponSyncDisabledBehavior::kAlways,
+              browser_state->GetPrefs()));
 
   ps->Init(browser_state->GetPrefs(), /*affiliated_match_helper=*/nullptr);
 

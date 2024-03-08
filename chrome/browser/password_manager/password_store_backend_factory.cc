@@ -106,7 +106,7 @@ CreateProfilePasswordStoreBackend(
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
       password_manager::CreateLoginDatabaseForProfileStorage(
           login_db_directory, /*is_empty_cb=*/base::NullCallback()),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+      syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs);
 #else  // BUILDFLAG(IS_ANDROID) && !USE_LEGACY_PASSWORD_STORE_BACKEND
   // base::Unretained() is safe, `prefs` outlives all keyed services, including
   // the PasswordStore (LoginDatabase's owner).
@@ -120,7 +120,7 @@ CreateProfilePasswordStoreBackend(
   auto built_in_backend =
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(profile_login_db),
-          syncer::WipeModelUponSyncDisabledBehavior::kNever);
+          syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs);
 
   if (password_manager::PasswordStoreAndroidBackendBridgeHelper::
           CanCreateBackend()) {
@@ -146,8 +146,8 @@ CreateAccountPasswordStoreBackend(
           CanCreateBackend()) {
     // Can happen if the downstream code is not available.
     return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-        std::move(login_db),
-        syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+        std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
+        prefs);
   }
 
   // Note: The built-in backend is backed by the login database and Chrome
@@ -157,13 +157,13 @@ CreateAccountPasswordStoreBackend(
   return std::make_unique<password_manager::PasswordStoreProxyBackend>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
-          syncer::WipeModelUponSyncDisabledBehavior::kAlways),
+          syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs),
       std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
           prefs, affiliations_prefetcher, password_manager::kAccountStore),
       prefs, password_manager::kAccountStore);
 #else
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
       std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-      std::move(unsynced_deletions_notifier));
+      prefs, std::move(unsynced_deletions_notifier));
 #endif
 }

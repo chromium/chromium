@@ -109,7 +109,8 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
       base::MakeRefCounted<password_manager::PasswordStore>(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
-              GetWipeModelUponSyncDisabledBehaviorForProfileStore()));
+              GetWipeModelUponSyncDisabledBehaviorForProfileStore(),
+              ChromeBrowserState::FromBrowserState(context)->GetPrefs()));
 
   AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForBrowserState(context);

@@ -73,7 +73,8 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
   auto password_store = base::MakeRefCounted<password_manager::PasswordStore>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
-          syncer::WipeModelUponSyncDisabledBehavior::kAlways));
+          syncer::WipeModelUponSyncDisabledBehavior::kAlways,
+          browser_state->GetPrefs()));
 
   AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
