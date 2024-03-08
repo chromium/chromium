@@ -6,12 +6,9 @@ import("//build/config/features.gni")
 import("//media/media_options.gni")
 import("//remoting/remoting_options.gni")
 
-static_library("errors") {
-  sources = [
-    "errors.cc",
-    "errors.h",
-  ]
-  deps = [ "//remoting/base:base" ]
+source_set("errors") {
+  sources = [ "errors.h" ]
+  deps = [ "//remoting/base:errors" ]
 }
 
 static_library("transport") {
@@ -253,6 +250,7 @@ static_library("protocol") {
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/base:logging",
+    "//remoting/base:name_value_map",
     "//remoting/codec:decoder",
     "//remoting/proto:internal_structs",
     "//remoting/proto/remoting/v1:network_traversal_proto",

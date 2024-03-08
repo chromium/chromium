@@ -280,7 +280,7 @@ void DisconnectWindowGtk::OnClicked(GtkButton* button) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (client_session_control_.get()) {
-    client_session_control_->DisconnectSession(protocol::OK);
+    client_session_control_->DisconnectSession(ErrorCode::OK);
   }
 }
 
@@ -288,7 +288,7 @@ gboolean DisconnectWindowGtk::OnDelete(GtkWidget* window, GdkEvent* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (client_session_control_.get()) {
-    client_session_control_->DisconnectSession(protocol::OK);
+    client_session_control_->DisconnectSession(ErrorCode::OK);
   }
   return TRUE;
 }

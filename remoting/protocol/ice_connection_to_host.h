@@ -107,7 +107,7 @@ class IceConnectionToHost : public ConnectionToHost,
 
   // Internal state of the connection.
   State state_ = INITIALIZING;
-  ErrorCode error_ = OK;
+  ErrorCode error_ = ErrorCode::OK;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

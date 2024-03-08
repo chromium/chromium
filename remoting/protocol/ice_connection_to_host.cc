@@ -50,7 +50,7 @@ void IceConnectionToHost::Connect(
 
   event_callback_ = event_callback;
 
-  SetState(CONNECTING, OK);
+  SetState(CONNECTING, ErrorCode::OK);
 }
 
 void IceConnectionToHost::Disconnect(ErrorCode error) {
@@ -109,7 +109,7 @@ void IceConnectionToHost::OnSessionStateChange(Session::State state) {
       break;
 
     case Session::AUTHENTICATED:
-      SetState(AUTHENTICATED, OK);
+      SetState(AUTHENTICATED, ErrorCode::OK);
 
       // Setup control channel.
       control_dispatcher_ = std::make_unique<ClientControlDispatcher>();
@@ -144,7 +144,7 @@ void IceConnectionToHost::OnSessionStateChange(Session::State state) {
 
     case Session::CLOSED:
       CloseChannels();
-      SetState(CLOSED, OK);
+      SetState(CLOSED, ErrorCode::OK);
       break;
 
     case Session::FAILED:
@@ -157,8 +157,9 @@ void IceConnectionToHost::OnSessionStateChange(Session::State state) {
       // versions may not be in sync. It should be easy to do after we
       // are finished moving the client plugin to NaCl.
       CloseChannels();
-      if (state_ == CONNECTED && session_->error() == SIGNALING_TIMEOUT) {
-        SetState(CLOSED, OK);
+      if (state_ == CONNECTED &&
+          session_->error() == ErrorCode::SIGNALING_TIMEOUT) {
+        SetState(CLOSED, ErrorCode::OK);
       } else {
         SetState(FAILED, session_->error());
       }
@@ -183,7 +184,7 @@ void IceConnectionToHost::OnChannelInitialized(
 
 void IceConnectionToHost::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
-  session_->Close(OK);
+  session_->Close(ErrorCode::OK);
 }
 
 void IceConnectionToHost::OnVideoChannelStatus(bool active) {
@@ -215,7 +216,7 @@ void IceConnectionToHost::NotifyIfChannelsReady() {
   // Start forwarding clipboard and input events.
   clipboard_forwarder_.set_clipboard_stub(control_dispatcher_.get());
   event_forwarder_.set_input_stub(event_dispatcher_.get());
-  SetState(CONNECTED, OK);
+  SetState(CONNECTED, ErrorCode::OK);
 }
 
 void IceConnectionToHost::CloseChannels() {
@@ -230,7 +231,7 @@ void IceConnectionToHost::CloseChannels() {
 void IceConnectionToHost::SetState(State state, ErrorCode error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // |error| should be specified only when |state| is set to FAILED.
-  DCHECK(state == FAILED || error == OK);
+  DCHECK(state == FAILED || error == ErrorCode::OK);
 
   if (state != state_) {
     state_ = state;

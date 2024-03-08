@@ -288,7 +288,7 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     if (!ParseErrorCode(error_code_tag->BodyText(), &error_code)) {
       LOG(WARNING) << "Unknown error-code received "
                    << error_code_tag->BodyText();
-      error_code = UNKNOWN_ERROR;
+      error_code = ErrorCode::UNKNOWN_ERROR;
     }
   }
 
@@ -389,7 +389,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
     reason_tag->AddElement(
         new XmlElement(QName(kJingleNamespace, ValueToName(kReasons, reason))));
 
-    if (error_code != UNKNOWN_ERROR) {
+    if (error_code != ErrorCode::UNKNOWN_ERROR) {
       XmlElement* error_code_tag =
           new XmlElement(QName(kChromotingXmlNamespace, "error-code"));
       jingle_tag->AddElement(error_code_tag);

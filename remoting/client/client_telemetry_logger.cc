@@ -170,31 +170,31 @@ ChromotingEvent::SessionState ClientTelemetryLogger::TranslateState(
 ChromotingEvent::ConnectionError ClientTelemetryLogger::TranslateError(
     protocol::ErrorCode error) {
   switch (error) {
-    case protocol::OK:
+    case ErrorCode::OK:
       return ChromotingEvent::ConnectionError::NONE;
-    case protocol::PEER_IS_OFFLINE:
+    case ErrorCode::PEER_IS_OFFLINE:
       return ChromotingEvent::ConnectionError::HOST_OFFLINE;
-    case protocol::SESSION_REJECTED:
+    case ErrorCode::SESSION_REJECTED:
       return ChromotingEvent::ConnectionError::SESSION_REJECTED;
-    case protocol::INCOMPATIBLE_PROTOCOL:
+    case ErrorCode::INCOMPATIBLE_PROTOCOL:
       return ChromotingEvent::ConnectionError::INCOMPATIBLE_PROTOCOL;
-    case protocol::AUTHENTICATION_FAILED:
+    case ErrorCode::AUTHENTICATION_FAILED:
       return ChromotingEvent::ConnectionError::AUTHENTICATION_FAILED;
-    case protocol::INVALID_ACCOUNT:
+    case ErrorCode::INVALID_ACCOUNT:
       return ChromotingEvent::ConnectionError::INVALID_ACCOUNT;
-    case protocol::CHANNEL_CONNECTION_ERROR:
+    case ErrorCode::CHANNEL_CONNECTION_ERROR:
       return ChromotingEvent::ConnectionError::P2P_FAILURE;
-    case protocol::SIGNALING_ERROR:
+    case ErrorCode::SIGNALING_ERROR:
       return ChromotingEvent::ConnectionError::NETWORK_FAILURE;
-    case protocol::SIGNALING_TIMEOUT:
+    case ErrorCode::SIGNALING_TIMEOUT:
       return ChromotingEvent::ConnectionError::NETWORK_FAILURE;
-    case protocol::HOST_OVERLOAD:
+    case ErrorCode::HOST_OVERLOAD:
       return ChromotingEvent::ConnectionError::HOST_OVERLOAD;
-    case protocol::MAX_SESSION_LENGTH:
+    case ErrorCode::MAX_SESSION_LENGTH:
       return ChromotingEvent::ConnectionError::MAX_SESSION_LENGTH;
-    case protocol::HOST_CONFIGURATION_ERROR:
+    case ErrorCode::HOST_CONFIGURATION_ERROR:
       return ChromotingEvent::ConnectionError::HOST_CONFIGURATION_ERROR;
-    case protocol::UNKNOWN_ERROR:
+    case ErrorCode::UNKNOWN_ERROR:
       return ChromotingEvent::ConnectionError::UNKNOWN_ERROR;
     default:
       NOTREACHED();

@@ -86,7 +86,7 @@ struct JingleMessage {
   // Value from the <google:remoting:error-code> tag if it is present in the
   // message. Useful mainly for session-terminate messages. If it's UNKNOWN,
   // or reason is UNKNOWN_REASON, this field will be ignored in the xml output.
-  ErrorCode error_code = UNKNOWN_ERROR;
+  ErrorCode error_code = ErrorCode::UNKNOWN_ERROR;
 };
 
 struct JingleMessageReply {

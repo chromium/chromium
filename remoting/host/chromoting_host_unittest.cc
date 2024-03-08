@@ -163,7 +163,7 @@ class ChromotingHostTest : public testing::Test {
         client_ptr->OnConnectionChannelsConnected();
       }
     } else {
-      client_ptr->OnConnectionClosed(protocol::AUTHENTICATION_FAILED);
+      client_ptr->OnConnectionClosed(ErrorCode::AUTHENTICATION_FAILED);
     }
   }
 
@@ -341,7 +341,7 @@ TEST_F(ChromotingHostTest, Reconnect) {
 
   // Disconnect first client.
   ExpectClientDisconnected(0);
-  client1_->OnConnectionClosed(protocol::OK);
+  client1_->OnConnectionClosed(ErrorCode::OK);
 
   // Connect second client.
   ExpectClientConnected(1);
@@ -349,7 +349,7 @@ TEST_F(ChromotingHostTest, Reconnect) {
 
   // Disconnect second client.
   ExpectClientDisconnected(1);
-  client2_->OnConnectionClosed(protocol::OK);
+  client2_->OnConnectionClosed(ErrorCode::OK);
 }
 
 TEST_F(ChromotingHostTest, ConnectWhenAnotherClientIsConnected) {
@@ -369,7 +369,7 @@ TEST_F(ChromotingHostTest, ConnectWhenAnotherClientIsConnected) {
 
   // Disconnect second client.
   ExpectClientDisconnected(1);
-  client2_->OnConnectionClosed(protocol::OK);
+  client2_->OnConnectionClosed(ErrorCode::OK);
 }
 
 TEST_F(ChromotingHostTest, IncomingSessionAccepted) {

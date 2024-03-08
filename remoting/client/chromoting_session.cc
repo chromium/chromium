@@ -500,9 +500,9 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
   if (session_context_->info.host_ftl_id.empty()) {
     // Simulate a CONNECTING state to make sure it doesn't skew telemetry.
     OnConnectionState(protocol::ConnectionToHost::State::CONNECTING,
-                      protocol::OK);
+                      ErrorCode::OK);
     OnConnectionState(protocol::ConnectionToHost::State::FAILED,
-                      protocol::INCOMPATIBLE_PROTOCOL);
+                      ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 

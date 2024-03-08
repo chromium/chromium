@@ -447,6 +447,7 @@ static_library("common") {
     "//media",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:errors",
     "//remoting/host/file_transfer:common",
     "//remoting/host/input_monitor",
     "//remoting/host/mojom",

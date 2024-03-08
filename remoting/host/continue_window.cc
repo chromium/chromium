@@ -55,7 +55,7 @@ void ContinueWindow::DisconnectSession() {
 
   disconnect_timer_.Stop();
   if (client_session_control_) {
-    client_session_control_->DisconnectSession(protocol::MAX_SESSION_LENGTH);
+    client_session_control_->DisconnectSession(ErrorCode::MAX_SESSION_LENGTH);
   }
 }
 

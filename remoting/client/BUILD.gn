@@ -46,6 +46,7 @@ static_library("client") {
     "//components/webrtc:thread_wrapper",
     "//mojo/core/embedder",
     "//remoting/base:authorization",
+    "//remoting/base:name_value_map",
     "//remoting/client/audio",
     "//remoting/client/input",
     "//remoting/client/notification",

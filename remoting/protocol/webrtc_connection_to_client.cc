@@ -181,10 +181,11 @@ void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
     case Session::FAILED:
       control_dispatcher_.reset();
       event_dispatcher_.reset();
-      transport_->Close(state == Session::CLOSED ? OK : session_->error());
+      transport_->Close(state == Session::CLOSED ? ErrorCode::OK
+                                                 : session_->error());
       transport_.reset();
       event_handler_->OnConnectionClosed(
-          state == Session::CLOSED ? OK : session_->error());
+          state == Session::CLOSED ? ErrorCode::OK : session_->error());
       break;
   }
 }
@@ -291,7 +292,7 @@ void WebrtcConnectionToClient::OnChannelClosed(
 
   LOG(ERROR) << "Channel " << channel_dispatcher->channel_name()
              << " was closed unexpectedly.";
-  Disconnect(INCOMPATIBLE_PROTOCOL);
+  Disconnect(ErrorCode::INCOMPATIBLE_PROTOCOL);
 }
 
 bool WebrtcConnectionToClient::allChannelsConnected() {

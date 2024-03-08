@@ -242,7 +242,8 @@ void It2MeNativeMessagingHostLacros::OnNatPolicyChanged(
 void It2MeNativeMessagingHostLacros::OnHostStateError(int64_t error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(error_code, 0);
-  LOG_IF(WARNING, error_code >= protocol::ErrorCode::ERROR_CODE_MAX)
+  LOG_IF(WARNING, static_cast<int>(error_code) >=
+                      static_cast<int>(protocol::ErrorCode::ERROR_CODE_MAX))
       << "|error_code| is greater than the max known error_code.";
   SendErrorAndExit(static_cast<protocol::ErrorCode>(error_code));
 }

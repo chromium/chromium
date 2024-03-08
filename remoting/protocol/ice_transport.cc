@@ -167,7 +167,7 @@ void IceTransport::OnChannelRouteChange(IceTransportChannel* channel,
 }
 
 void IceTransport::OnChannelFailed(IceTransportChannel* channel) {
-  event_handler_->OnIceTransportError(CHANNEL_CONNECTION_ERROR);
+  event_handler_->OnIceTransportError(ErrorCode::CHANNEL_CONNECTION_ERROR);
 }
 
 void IceTransport::OnChannelDeleted(IceTransportChannel* channel) {
@@ -203,7 +203,8 @@ void IceTransport::SendTransportInfo() {
 
 void IceTransport::OnChannelError(int error) {
   LOG(ERROR) << "Data channel failed, error=" << error;
-  event_handler_->OnIceTransportError(error ? CHANNEL_CONNECTION_ERROR : OK);
+  event_handler_->OnIceTransportError(
+      error ? ErrorCode::CHANNEL_CONNECTION_ERROR : ErrorCode::OK);
 }
 
 }  // namespace remoting::protocol

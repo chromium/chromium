@@ -66,23 +66,23 @@ ErrorCode AuthRejectionReasonToErrorCode(
     Authenticator::RejectionReason reason) {
   switch (reason) {
     case Authenticator::RejectionReason::INVALID_CREDENTIALS:
-      return AUTHENTICATION_FAILED;
+      return ErrorCode::AUTHENTICATION_FAILED;
     case Authenticator::RejectionReason::PROTOCOL_ERROR:
-      return INCOMPATIBLE_PROTOCOL;
+      return ErrorCode::INCOMPATIBLE_PROTOCOL;
     case Authenticator::RejectionReason::INVALID_ACCOUNT_ID:
-      return INVALID_ACCOUNT;
+      return ErrorCode::INVALID_ACCOUNT;
     case Authenticator::RejectionReason::TOO_MANY_CONNECTIONS:
-      return SESSION_REJECTED;
+      return ErrorCode::SESSION_REJECTED;
     case Authenticator::RejectionReason::REJECTED_BY_USER:
-      return SESSION_REJECTED;
+      return ErrorCode::SESSION_REJECTED;
     case Authenticator::RejectionReason::AUTHZ_POLICY_CHECK_FAILED:
     // TODO: b/323068262 - Add error code for REAUTHZ_POLICY_CHECK_FAILED.
     case Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED:
-      return AUTHZ_POLICY_CHECK_FAILED;
+      return ErrorCode::AUTHZ_POLICY_CHECK_FAILED;
     case Authenticator::RejectionReason::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
-      return LOCATION_AUTHZ_POLICY_CHECK_FAILED;
+      return ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
     case Authenticator::RejectionReason::UNAUTHORIZED_ACCOUNT:
-      return UNAUTHORIZED_ACCOUNT;
+      return ErrorCode::UNAUTHORIZED_ACCOUNT;
   }
 }
 
@@ -200,7 +200,7 @@ JingleSession::JingleSession(JingleSessionManager* session_manager)
     : session_manager_(session_manager),
       event_handler_(nullptr),
       state_(INITIALIZING),
-      error_(OK),
+      error_(ErrorCode::OK),
       message_queue_(new OrderedMessageQueue) {}
 
 JingleSession::~JingleSession() {
@@ -273,7 +273,7 @@ void JingleSession::InitializeIncomingConnection(
   if (!config_) {
     LOG(WARNING) << "Rejecting connection from " << peer_address_.id()
                  << " because no compatible configuration has been found.";
-    Close(INCOMPATIBLE_PROTOCOL);
+    Close(ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 }
@@ -288,7 +288,7 @@ void JingleSession::AcceptIncomingConnection(
       initiate_message.description->authenticator_message();
 
   if (!first_auth_message) {
-    Close(INCOMPATIBLE_PROTOCOL);
+    Close(ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 
@@ -381,24 +381,24 @@ void JingleSession::Close(protocol::ErrorCode error) {
     // Send session-terminate message with the appropriate error code.
     JingleMessage::Reason reason;
     switch (error) {
-      case OK:
+      case ErrorCode::OK:
         reason = JingleMessage::SUCCESS;
         break;
-      case SESSION_REJECTED:
-      case AUTHENTICATION_FAILED:
-      case INVALID_ACCOUNT:
+      case ErrorCode::SESSION_REJECTED:
+      case ErrorCode::AUTHENTICATION_FAILED:
+      case ErrorCode::INVALID_ACCOUNT:
         reason = JingleMessage::DECLINE;
         break;
-      case INCOMPATIBLE_PROTOCOL:
+      case ErrorCode::INCOMPATIBLE_PROTOCOL:
         reason = JingleMessage::INCOMPATIBLE_PARAMETERS;
         break;
-      case HOST_OVERLOAD:
+      case ErrorCode::HOST_OVERLOAD:
         reason = JingleMessage::CANCEL;
         break;
-      case MAX_SESSION_LENGTH:
+      case ErrorCode::MAX_SESSION_LENGTH:
         reason = JingleMessage::EXPIRED;
         break;
-      case HOST_CONFIGURATION_ERROR:
+      case ErrorCode::HOST_CONFIGURATION_ERROR:
         reason = JingleMessage::FAILED_APPLICATION;
         break;
       default:
@@ -415,7 +415,7 @@ void JingleSession::Close(protocol::ErrorCode error) {
   error_ = error;
 
   if (state_ != FAILED && state_ != CLOSED) {
-    if (error != OK) {
+    if (error != ErrorCode::OK) {
       SetState(FAILED);
     } else {
       SetState(CLOSED);
@@ -481,7 +481,7 @@ void JingleSession::OnMessageResponse(JingleMessage::ActionType request_type,
   // |response| will be nullptr if the request timed out.
   if (!response) {
     LOG(ERROR) << type_str << " request timed out.";
-    Close(SIGNALING_TIMEOUT);
+    Close(ErrorCode::SIGNALING_TIMEOUT);
     return;
   } else {
     const std::string& type =
@@ -493,7 +493,7 @@ void JingleSession::OnMessageResponse(JingleMessage::ActionType request_type,
 
       // TODO(sergeyu): There may be different reasons for error
       // here. Parse the response stanza to find failure reason.
-      Close(PEER_IS_OFFLINE);
+      Close(ErrorCode::PEER_IS_OFFLINE);
     }
   }
 }
@@ -523,7 +523,7 @@ void JingleSession::OnTransportInfoResponse(
   if (type != "result") {
     LOG(ERROR) << "Received error in response to transport-info message: \""
                << response->Str() << "\". Terminating the session.";
-    Close(PEER_IS_OFFLINE);
+    Close(ErrorCode::PEER_IS_OFFLINE);
   }
 }
 
@@ -589,12 +589,12 @@ void JingleSession::OnAccept(std::unique_ptr<JingleMessage> message,
       message->description->authenticator_message();
   if (!auth_message) {
     DLOG(WARNING) << "Received session-accept without authentication message ";
-    Close(INCOMPATIBLE_PROTOCOL);
+    Close(ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 
   if (!InitializeConfigFromDescription(message->description.get())) {
-    Close(INCOMPATIBLE_PROTOCOL);
+    Close(ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 
@@ -619,7 +619,7 @@ void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
     LOG(WARNING) << "Received unexpected authenticator message "
                  << message->info->Str();
     std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
-    Close(INCOMPATIBLE_PROTOCOL);
+    Close(ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 
@@ -663,47 +663,47 @@ void JingleSession::OnTerminate(std::unique_ptr<JingleMessage> message,
   std::move(reply_callback).Run(JingleMessageReply::NONE);
 
   error_ = message->error_code;
-  if (error_ == UNKNOWN_ERROR) {
+  if (error_ == ErrorCode::UNKNOWN_ERROR) {
     // get error code from message.reason for compatibility with older versions
     // that do not add <error-code>.
     switch (message->reason) {
       case JingleMessage::SUCCESS:
         if (state_ == CONNECTING) {
-          error_ = SESSION_REJECTED;
+          error_ = ErrorCode::SESSION_REJECTED;
         } else {
-          error_ = OK;
+          error_ = ErrorCode::OK;
         }
         break;
       case JingleMessage::DECLINE:
-        error_ = AUTHENTICATION_FAILED;
+        error_ = ErrorCode::AUTHENTICATION_FAILED;
         break;
       case JingleMessage::CANCEL:
-        error_ = HOST_OVERLOAD;
+        error_ = ErrorCode::HOST_OVERLOAD;
         break;
       case JingleMessage::EXPIRED:
-        error_ = MAX_SESSION_LENGTH;
+        error_ = ErrorCode::MAX_SESSION_LENGTH;
         break;
       case JingleMessage::INCOMPATIBLE_PARAMETERS:
-        error_ = INCOMPATIBLE_PROTOCOL;
+        error_ = ErrorCode::INCOMPATIBLE_PROTOCOL;
         break;
       case JingleMessage::FAILED_APPLICATION:
-        error_ = HOST_CONFIGURATION_ERROR;
+        error_ = ErrorCode::HOST_CONFIGURATION_ERROR;
         break;
       case JingleMessage::GENERAL_ERROR:
-        error_ = CHANNEL_CONNECTION_ERROR;
+        error_ = ErrorCode::CHANNEL_CONNECTION_ERROR;
         break;
       default:
-        error_ = UNKNOWN_ERROR;
+        error_ = ErrorCode::UNKNOWN_ERROR;
     }
-  } else if (error_ == SESSION_REJECTED) {
+  } else if (error_ == ErrorCode::SESSION_REJECTED) {
     // For backward compatibility, we still use AUTHENTICATION_FAILED for
     // SESSION_REJECTED error.
     // TODO(zijiehe): Handle SESSION_REJECTED error in WebApp. Tracked by
     // http://crbug.com/618036.
-    error_ = AUTHENTICATION_FAILED;
+    error_ = ErrorCode::AUTHENTICATION_FAILED;
   }
 
-  if (error_ != OK) {
+  if (error_ != ErrorCode::OK) {
     SetState(FAILED);
   } else {
     SetState(CLOSED);

@@ -333,12 +333,14 @@ class ConnectionTest : public testing::Test,
 
     {
       testing::InSequence sequence;
+      EXPECT_CALL(
+          client_event_handler_,
+          OnConnectionState(ConnectionToHost::CONNECTING, ErrorCode::OK));
+      EXPECT_CALL(
+          client_event_handler_,
+          OnConnectionState(ConnectionToHost::AUTHENTICATED, ErrorCode::OK));
       EXPECT_CALL(client_event_handler_,
-                  OnConnectionState(ConnectionToHost::CONNECTING, OK));
-      EXPECT_CALL(client_event_handler_,
-                  OnConnectionState(ConnectionToHost::AUTHENTICATED, OK));
-      EXPECT_CALL(client_event_handler_,
-                  OnConnectionState(ConnectionToHost::CONNECTED, OK))
+                  OnConnectionState(ConnectionToHost::CONNECTED, ErrorCode::OK))
           .WillOnce(
               InvokeWithoutArgs(this, &ConnectionTest::OnClientConnected));
     }
@@ -471,9 +473,9 @@ INSTANTIATE_TEST_SUITE_P(Webrtc, ConnectionTest, ::testing::Values(true));
 
 TEST_P(ConnectionTest, RejectConnection) {
   EXPECT_CALL(client_event_handler_,
-              OnConnectionState(ConnectionToHost::CONNECTING, OK));
+              OnConnectionState(ConnectionToHost::CONNECTING, ErrorCode::OK));
   EXPECT_CALL(client_event_handler_,
-              OnConnectionState(ConnectionToHost::CLOSED, OK));
+              OnConnectionState(ConnectionToHost::CLOSED, ErrorCode::OK));
 
   client_connection_->Connect(
       std::move(owned_client_session_),
@@ -492,10 +494,10 @@ TEST_P(ConnectionTest, MAYBE_Disconnect) {
   Connect();
 
   EXPECT_CALL(client_event_handler_,
-              OnConnectionState(ConnectionToHost::CLOSED, OK));
-  EXPECT_CALL(host_event_handler_, OnConnectionClosed(OK));
+              OnConnectionState(ConnectionToHost::CLOSED, ErrorCode::OK));
+  EXPECT_CALL(host_event_handler_, OnConnectionClosed(ErrorCode::OK));
 
-  client_session_->Close(OK);
+  client_session_->Close(ErrorCode::OK);
   base::RunLoop().RunUntilIdle();
 }
 

@@ -54,3 +54,7 @@ source_set("internal_stubs") {
     "//third_party/protobuf:protobuf_lite",
   ]
 }
+
+proto_library("error_code_proto") {
+  sources = [ "error_code.proto" ]
+}

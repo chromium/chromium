@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.proto;
+
+// Error codes associated with Chromoting that are used across all critical user
+// journeys.  In this way, we don't need to rewrite error code translation logic
+// for the same error for each new user journey.
+//
+// Next Tag: 51
+enum ErrorCode {
+  // No error was specified when the protobuf was logged. This value should
+  // never be set explicitly.
+  UNSPECIFIED_ERROR = 0;
+  // An error occurred but was not of any type represented by the values below.
+  UNEXPECTED = 18;
+  // No errors.
+  NONE = 1;
+  // Unavailable to reach the host in the signaling channel despite the
+  // directory reporting the host as online.
+  HOST_UNREACHABLE = 2;
+  // The host has gone offline.  This usually occurs when the client copy of the
+  // host list is out of sync with the Chromoting Directory.
+  HOST_IS_OFFLINE = 25;
+  // Connection rejected since the host is not started.
+  SESSION_REJECTED = 3;
+  // The protocol does not match between host and client.
+  INCOMPATIBLE_PROTOCOL = 4;
+  // A network issue has prevented the remote connection.
+  NETWORK_FAILURE = 5;
+  // The access code provided does not match the expected code.
+  INVALID_ACCESS_CODE = 6;
+  // The plugin on the client side is missing.
+  MISSING_PLUGIN = 7;
+  // Authentication has failed for the connection.
+  AUTHENTICATION_FAILED = 8;
+  // Connection rejected by the host due to an overload of failed login
+  // attempts.
+  HOST_OVERLOAD = 9;
+  // There has been an issue connecting peer-to-peer.
+  P2P_FAILURE = 10;
+  // Connection dropped since the client computer is sleeping.
+  CLIENT_SUSPENDED = 11;
+  // The plugin fails to initialize as Native Client is disabled.
+  NACL_DISABLED = 12;
+  // Maximum session duration has been reached.
+  MAX_SESSION_LENGTH = 13;
+  // Host failed to initialize the session.
+  HOST_CONFIGURATION_ERROR = 14;
+  // Host failed to initialize the session.
+  NACL_PLUGIN_CRASHED = 15;
+  // Host security policies do not allow connections from client.
+  INVALID_ACCOUNT = 16;
+  // Connection fails due to invalid third-party authentication token.
+  INVALID_THIRD_PARTY_TOKEN = 17;
+  // Connection fails due to an error in connecting the signaling channel.
+  SIGNALING_ERROR = 26;
+  // Connection fails due to the jingle messages timing out.
+  SIGNALING_TIMEOUT = 27;
+  // The user canceled an operation.
+  CANCELED = 38;
+  // The remote user rejected a support request.
+  REJECTED_BY_USER = 39;
+  // The user was not authorized to connect to the host (per BeyondCorp policy).
+  AUTHZ_POLICY_CHECK_FAILED = 40;
+  // Video playback failed on the client since it was blocked by the browser.
+  PLAYBACK_DISALLOWED = 41;
+  // The user was not authorized to connect to the host (not policy related).
+  UNAUTHORIZED_ACCOUNT = 42;
+  // The SessionAuthz connection reauthorization failed.
+  REAUTHORIZATION_FAILED = 43;
+  // The client has gone offline.
+  CLIENT_IS_OFFLINE = 44;
+  // The host failed to launch an elevated process.
+  ELEVATION_ERROR = 45;
+  // The host failed to generate a certificate.
+  HOST_CERTIFICATE_ERROR = 46;
+  // Host registration failed.
+  HOST_REGISTRATION_ERROR = 47;
+  // Failure to start the session as there is an existing admin session ongoing
+  // on the host device.
+  EXISTING_ADMIN_SESSION = 48;
+  // Failed because RemoteAccessHostAllowEnterpriseRemoteSupportConnections
+  // policy is disabled.
+  DISALLOWED_BY_POLICY = 49;
+  // Failure because the client is not authorized to connect to the host device
+  // based on their current location due to a policy defined by the third party
+  // auth service.
+  LOCATION_AUTHZ_POLICY_CHECK_FAILED = 50;
+
+  reserved 19, 20, 21, 22, 23, 24, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37;
+}

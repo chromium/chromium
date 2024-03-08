@@ -348,7 +348,7 @@ void DisconnectWindowWin::EndDialog() {
   auto_hide_timer_.Stop();
 
   if (client_session_control_) {
-    client_session_control_->DisconnectSession(protocol::OK);
+    client_session_control_->DisconnectSession(ErrorCode::OK);
   }
 }
 
@@ -375,7 +375,7 @@ void DisconnectWindowWin::ShowDialog() {
 
     // If the window still isn't visible, then disconnect the session.
     if (!IsWindowVisible(hwnd_)) {
-      client_session_control_->DisconnectSession(protocol::OK);
+      client_session_control_->DisconnectSession(ErrorCode::OK);
     }
   }
   was_auto_hidden_ = false;

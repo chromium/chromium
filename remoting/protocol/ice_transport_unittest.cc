@@ -212,7 +212,7 @@ class IceTransportTest : public testing::Test {
   std::unique_ptr<MessagePipe> client_message_pipe_;
   std::unique_ptr<MessagePipe> host_message_pipe_;
 
-  ErrorCode error_ = OK;
+  ErrorCode error_ = ErrorCode::OK;
 };
 
 // crbug.com/1224862: Tests are flaky on Mac.
@@ -291,7 +291,7 @@ TEST_F(IceTransportTest, MAYBE_FailedChannelAuth) {
   run_loop_->Run();
 
   EXPECT_FALSE(host_message_pipe_);
-  EXPECT_EQ(CHANNEL_CONNECTION_ERROR, error_);
+  EXPECT_EQ(ErrorCode::CHANNEL_CONNECTION_ERROR, error_);
 
   client_transport_->GetChannelFactory()->CancelChannelCreation(kChannelName);
 }
@@ -322,7 +322,7 @@ TEST_F(IceTransportTest, TestBrokenTransport) {
   // Verify that neither of the two ends of the channel is connected.
   EXPECT_FALSE(client_message_pipe_);
   EXPECT_FALSE(host_message_pipe_);
-  EXPECT_EQ(CHANNEL_CONNECTION_ERROR, error_);
+  EXPECT_EQ(ErrorCode::CHANNEL_CONNECTION_ERROR, error_);
 
   client_transport_->GetChannelFactory()->CancelChannelCreation(kChannelName);
   host_transport_->GetChannelFactory()->CancelChannelCreation(kChannelName);

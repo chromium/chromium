@@ -75,7 +75,7 @@ class FakeSession : public Session {
   std::unique_ptr<FakeAuthenticator> authenticator_;
   raw_ptr<Transport, DanglingUntriaged> transport_;
 
-  ErrorCode error_ = OK;
+  ErrorCode error_ = ErrorCode::OK;
   bool closed_ = false;
 
   base::WeakPtr<FakeSession> peer_;

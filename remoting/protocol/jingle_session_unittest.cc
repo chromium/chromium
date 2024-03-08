@@ -474,7 +474,7 @@ TEST_F(JingleSessionTest, TestIncompatibleProtocol) {
   client_server_->set_protocol_config(std::move(config));
   ConnectClient(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
 
-  EXPECT_EQ(INCOMPATIBLE_PROTOCOL, client_session_->error());
+  EXPECT_EQ(ErrorCode::INCOMPATIBLE_PROTOCOL, client_session_->error());
   EXPECT_FALSE(host_session_);
 }
 
@@ -494,7 +494,7 @@ TEST_F(JingleSessionTest, TestLegacyIceConnection) {
   client_server_->set_protocol_config(std::move(config));
   ConnectClient(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
 
-  EXPECT_EQ(INCOMPATIBLE_PROTOCOL, client_session_->error());
+  EXPECT_EQ(ErrorCode::INCOMPATIBLE_PROTOCOL, client_session_->error());
   EXPECT_FALSE(host_session_);
 }
 
@@ -635,7 +635,7 @@ TEST_F(JingleSessionTest, ImmediatelyCloseSessionAfterConnect) {
           FakeAuthenticator::CLIENT, auth_config,
           client_signal_strategy_->GetLocalAddress().id(), kNormalizedHostJid));
 
-  client_session_->Close(HOST_OVERLOAD);
+  client_session_->Close(ErrorCode::HOST_OVERLOAD);
   base::RunLoop().RunUntilIdle();
   // We should only send a SESSION_TERMINATE message if the session has been
   // closed before SESSION_INITIATE message.

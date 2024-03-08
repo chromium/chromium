@@ -126,7 +126,7 @@ class FakeConnectionToClient : public ConnectionToClient {
   scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
 
   bool is_connected_ = true;
-  ErrorCode disconnect_error_ = OK;
+  ErrorCode disconnect_error_ = ErrorCode::OK;
 };
 
 }  // namespace remoting::protocol

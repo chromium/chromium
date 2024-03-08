@@ -425,7 +425,7 @@ WebrtcTransport::WebrtcTransport(
 
 WebrtcTransport::~WebrtcTransport() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Close(OK);
+  Close(ErrorCode::OK);
 }
 
 webrtc::PeerConnectionInterface* WebrtcTransport::peer_connection() {
@@ -535,7 +535,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
           kDisableAuthenticationSwitchName);
 #endif
       if (!ignore_error) {
-        Close(AUTHENTICATION_FAILED);
+        Close(ErrorCode::AUTHENTICATION_FAILED);
         return true;
       }
     }
@@ -727,7 +727,7 @@ void WebrtcTransport::Close(ErrorCode error) {
                       std::move(event_data_channel_),
                       std::move(peer_connection_wrapper_));
 
-  if (error != OK) {
+  if (error != ErrorCode::OK) {
     event_handler_->OnWebrtcTransportError(error);
   }
 }
@@ -765,14 +765,14 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
 
   if (!description) {
     LOG(ERROR) << "PeerConnection offer creation failed: " << error;
-    Close(CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
     return;
   }
 
   std::string description_sdp;
   if (!description->ToString(&description_sdp)) {
     LOG(ERROR) << "Failed to serialize description.";
-    Close(CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
     return;
   }
 
@@ -790,7 +790,7 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   if (!description) {
     LOG(ERROR) << "Failed to parse the session description: "
                << parse_error.description << " line: " << parse_error.line;
-    Close(CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
     return;
   }
 
@@ -829,7 +829,7 @@ void WebrtcTransport::OnLocalDescriptionSet(bool success,
 
   if (!success) {
     LOG(ERROR) << "Failed to set local description: " << error;
-    Close(CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
     return;
   }
 
@@ -855,7 +855,7 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
 
   if (!success) {
     LOG(ERROR) << "Failed to set remote description: " << error;
-    Close(CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
     return;
   }
 
@@ -1190,7 +1190,7 @@ void WebrtcTransport::AddPendingCandidatesIfPossible() {
     for (const auto& candidate : pending_incoming_candidates_) {
       if (!peer_connection()->AddIceCandidate(candidate.get())) {
         LOG(ERROR) << "Failed to add incoming candidate";
-        Close(INCOMPATIBLE_PROTOCOL);
+        Close(ErrorCode::INCOMPATIBLE_PROTOCOL);
         return;
       }
     }

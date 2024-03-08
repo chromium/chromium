@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/webrtc/thread_wrapper.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
@@ -341,7 +342,8 @@ void FtlSignalingPlayground::OnSessionStateChange(
 
     case protocol::Session::CLOSED:
     case protocol::Session::FAILED:
-      LOG(ERROR) << "Session failed/closed. Error: " << session_->error();
+      LOG(ERROR) << "Session failed/closed. Error: "
+                 << ErrorCodeToString(session_->error());
       break;
   }
 

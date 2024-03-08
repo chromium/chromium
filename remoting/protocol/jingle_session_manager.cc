@@ -110,16 +110,16 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
       ErrorCode error;
       switch (response) {
         case OVERLOAD:
-          error = HOST_OVERLOAD;
+          error = ErrorCode::HOST_OVERLOAD;
           break;
 
         case DECLINE:
-          error = SESSION_REJECTED;
+          error = ErrorCode::SESSION_REJECTED;
           break;
 
         default:
           NOTREACHED();
-          error = SESSION_REJECTED;
+          error = ErrorCode::SESSION_REJECTED;
       }
 
       session->Close(error);

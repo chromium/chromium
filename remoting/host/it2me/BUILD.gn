@@ -33,7 +33,7 @@ source_set("helpers") {
   deps = [
     ":constants",
     "//base",
-    "//remoting/base",
+    "//remoting/base:name_value_map",
   ]
 }
 

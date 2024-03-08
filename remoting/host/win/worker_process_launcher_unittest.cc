@@ -348,7 +348,7 @@ void WorkerProcessLauncherTest::DisconnectServer() {
 
 void WorkerProcessLauncherTest::SendFakeMessageToLauncher() {
   if (desktop_session_state_handler_) {
-    desktop_session_state_handler_->DisconnectSession(protocol::OK);
+    desktop_session_state_handler_->DisconnectSession(ErrorCode::OK);
   }
 }
 

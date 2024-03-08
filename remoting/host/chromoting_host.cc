@@ -100,7 +100,7 @@ ChromotingHost::~ChromotingHost() {
 
   // Disconnect all of the clients.
   while (!clients_.empty()) {
-    clients_.front()->DisconnectSession(protocol::OK);
+    clients_.front()->DisconnectSession(ErrorCode::OK);
   }
 
   // Destroy the session manager to make sure that |signal_strategy_| does not
@@ -174,7 +174,7 @@ void ChromotingHost::OnSessionAuthenticating(ClientSession* client) {
     LOG(WARNING) << "Disconnecting client " << client->client_jid()
                  << " due to"
                     " an overload of failed login attempts.";
-    client->DisconnectSession(protocol::HOST_OVERLOAD);
+    client->DisconnectSession(ErrorCode::HOST_OVERLOAD);
     return;
   }
   login_backoff_.InformOfRequest(false);
@@ -189,7 +189,7 @@ void ChromotingHost::OnSessionAuthenticated(ClientSession* client) {
   base::WeakPtr<ChromotingHost> self = weak_factory_.GetWeakPtr();
   while (clients_.size() > 1) {
     clients_[(clients_.front().get() == client) ? 1 : 0]->DisconnectSession(
-        protocol::OK);
+        ErrorCode::OK);
 
     // Quit if the host was destroyed.
     if (!self) {

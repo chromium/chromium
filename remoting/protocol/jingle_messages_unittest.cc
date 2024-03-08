@@ -549,13 +549,14 @@ TEST(JingleMessageTest, RemotingErrorCode) {
       "</gr:error-code>"
       "</jingle></cli:iq>";
 
-  for (int i = OK; i <= ERROR_CODE_MAX; i++) {
+  for (int i = static_cast<int>(ErrorCode::OK);
+       i <= static_cast<int>(ErrorCode::ERROR_CODE_MAX); i++) {
     ErrorCode error = static_cast<ErrorCode>(i);
     std::string message_str = kTestSessionTerminateMessageBegin;
     message_str.append(ErrorCodeToString(error));
     message_str.append(kTestSessionTerminateMessageEnd);
     JingleMessage message;
-    if (error == UNKNOWN_ERROR) {
+    if (error == ErrorCode::UNKNOWN_ERROR) {
       // We do not include UNKNOWN_ERROR in xml output, so VerifyXml will fail.
       ParseJingleMessageFromXml(message_str.c_str(), &message);
     } else {

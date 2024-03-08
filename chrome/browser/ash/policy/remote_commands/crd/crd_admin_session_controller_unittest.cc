@@ -830,8 +830,8 @@ TEST_F(
   InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
-  observer.OnHostStateError(
-      remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY);
+  observer.OnHostStateError(static_cast<int64_t>(
+      remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY));
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
@@ -891,7 +891,7 @@ TEST_F(CrdAdminSessionControllerTest,
                  << "Failure for error code " << base::ToString(error_code));
     SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
-    observer.OnHostStateError(error_code);
+    observer.OnHostStateError(static_cast<int64_t>(error_code));
 
     Response response = WaitForResponse();
     ASSERT_TRUE(response.HasError());
@@ -1126,8 +1126,8 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
       InitWithReconnectableSession(session_controller());
   ASSERT_TRUE(curtain_controller().IsEnabled());
 
-  observer.OnHostStateError(
-      remoting::protocol::ErrorCode::AUTHENTICATION_FAILED);
+  observer.OnHostStateError(static_cast<int64_t>(
+      remoting::protocol::ErrorCode::AUTHENTICATION_FAILED));
   FlushForTesting(observer);
 
   EXPECT_FALSE(curtain_controller().IsEnabled());
