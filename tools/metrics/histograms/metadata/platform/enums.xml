@@ -547,6 +547,14 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
 </enum>
 
+<enum name="FlexCpuIsaLevel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="x86-64-v1"/>
+  <int value="2" label="x86-64-v2"/>
+  <int value="3" label="x86-64-v3"/>
+  <int value="4" label="x86-64-v4"/>
+</enum>
+
 <enum name="FwupdReturnValue">
   <int value="0" label="Success"/>
   <int value="1" label="Error"/>

@@ -589,6 +589,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.FlexCpuIsaLevel" enum="FlexCpuIsaLevel"
+    expires_after="2024-09-01">
+  <owner>nicholasbishop@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    ChromeOS Flex runs on a wide range of x86-64 CPUs. This metric categorizes
+    the CPU by its ISA level.
+
+    This metric is only recorded on ChromeOS Flex devices. It is recorded once
+    per boot.
+  </summary>
+</histogram>
+
 <histogram name="Platform.FlexHwis.PermissionCheckResult"
     enum="ChromeOSRevenHwisPermission" expires_after="2024-08-03">
   <owner>tinghaolin@google.com</owner>
