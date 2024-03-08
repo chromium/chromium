@@ -188,8 +188,8 @@ GlanceablesTasksView::GlanceablesTasksView(
   // spec.
   CHECK(layer());
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{16.f});
-  SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
+  SetBackground(views::CreateThemedSolidBackground(
+      cros_tokens::kCrosSysSystemOnBaseOpaque));
   SetBorder(nullptr);
 
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
