@@ -10,11 +10,13 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
 // View for a Picker item which can be selected.
-class ASH_EXPORT PickerItemView : public views::Button {
+class ASH_EXPORT PickerItemView : public views::Button,
+                                  public views::WidgetObserver {
   METADATA_HEADER(PickerItemView, views::Button)
 
  public:
@@ -53,6 +55,9 @@ class ASH_EXPORT PickerItemView : public views::Button {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   void SelectItem();
 
   void SetHasPreview();
@@ -76,6 +81,7 @@ class ASH_EXPORT PickerItemView : public views::Button {
   // Corner radius of the item background and highlight.
   int corner_radius_ = 0;
 
+  // Owned by the bubble widget.
   raw_ptr<PickerPreviewBubbleView> preview_bubble_view_;
 };
 

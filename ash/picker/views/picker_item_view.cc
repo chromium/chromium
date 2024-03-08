@@ -98,7 +98,11 @@ void PickerItemView::OnMouseEntered(const ui::MouseEvent&) {
   if (!has_preview || preview_bubble_view_ != nullptr) {
     return;
   }
+
+  // Observe the destruction of the widget to keep `preview_bubble_view_` from
+  // dangling.
   preview_bubble_view_ = new PickerPreviewBubbleView(this);
+  preview_bubble_view_->GetWidget()->AddObserver(this);
 }
 
 void PickerItemView::OnMouseExited(const ui::MouseEvent&) {
@@ -106,6 +110,11 @@ void PickerItemView::OnMouseExited(const ui::MouseEvent&) {
     return;
   }
   ClosePreviewBubble();
+}
+
+void PickerItemView::OnWidgetDestroying(views::Widget* widget) {
+  widget->RemoveObserver(this);
+  preview_bubble_view_ = nullptr;
 }
 
 void PickerItemView::SetCornerRadius(int corner_radius) {
