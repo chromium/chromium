@@ -705,7 +705,7 @@ template("single_apple_toolchain") {
         # with another output file.
 
         _pch_output_dir = "{{target_out_dir}}/{{module_name}}:pch/"
-        outputs += [ _pch_output_dir ]
+        outputs += [ "$_pch_output_dir/{{module_name}}.stamp" ]
 
         # Include the version of the compiler on the command-line. This causes
         # `ninja` to consider all the compilation output to be dirty when the

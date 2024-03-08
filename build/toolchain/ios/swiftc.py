@@ -87,6 +87,12 @@ def compile_module(module, sources, settings, extras, tmpdir):
   if not os.path.exists(settings.pch_output_dir):
     os.makedirs(settings.pch_output_dir)
 
+  stamp = os.path.join(settings.pch_output_dir, f'{module}.stamp')
+  if os.path.exists(stamp):
+    os.unlink(stamp)
+  with open(stamp, 'w') as stamp_file:
+    stamp_file.write('')
+
   for key in output_file_map:
     path = output_file_map[key]['object']
     if os.path.exists(path):
