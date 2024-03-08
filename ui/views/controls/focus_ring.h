@@ -106,6 +106,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // ViewObserver:
   void OnViewFocused(View* view) override;
   void OnViewBlurred(View* view) override;
+  void OnViewLayoutInvalidated(View* view) override;
 
  private:
   FocusRing();

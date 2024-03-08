@@ -929,6 +929,11 @@ void View::Layout(PassKey) {
 }
 
 void View::InvalidateLayout() {
+  if (invalidating_) {
+    return;
+  }
+
+  base::AutoReset<bool> invalidating(&invalidating_, true);
   // We should never need to invalidate during a layout call; this tracks
   // how many times that is happening.
   ++invalidates_during_layout_;
@@ -936,6 +941,11 @@ void View::InvalidateLayout() {
   // Always invalidate up. This is needed to handle the case of us already being
   // valid, but not our parent.
   needs_layout_ = true;
+
+  for (ViewObserver& observer : observers_) {
+    observer.OnViewLayoutInvalidated(this);
+  }
+
   if (HasLayoutManager()) {
     GetLayoutManager()->InvalidateLayout();
   }

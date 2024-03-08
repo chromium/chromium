@@ -309,6 +309,10 @@ void FocusRing::OnViewBlurred(View* view) {
   RefreshLayer();
 }
 
+void FocusRing::OnViewLayoutInvalidated(View* view) {
+  InvalidateLayout();
+}
+
 FocusRing::FocusRing() {
   // Don't allow the view to process events.
   SetCanProcessEventsWithinSubtree(false);

@@ -89,6 +89,12 @@ class VIEWS_EXPORT ViewObserver {
                                      const void* key,
                                      int64_t old_value) {}
 
+  // Called when the observed view's layout is invalidated.
+  // This is useful to invalidate other views in response to the observed
+  // view's layout invalidation, for example, when the view to be invalidated
+  // has style dependency on the observed view.
+  virtual void OnViewLayoutInvalidated(View* observed_view) {}
+
  protected:
   virtual ~ViewObserver() = default;
 };

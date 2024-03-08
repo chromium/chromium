@@ -598,12 +598,6 @@ void FeatureTile::RemoveLayerFromRegions(ui::Layer* layer) {
   ink_drop_container_->RemoveLayerFromRegions(layer);
 }
 
-void FeatureTile::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // Manual updating of the focus ring is necessary due to b/326983304, where it
-  // fails to update when the bounds of a view with a `FlexLayout` change.
-  views::FocusRing::Get(this)->InvalidateLayout();
-}
-
 ui::ColorId FeatureTile::GetIconColorId() const {
   if (!GetEnabled()) {
     return cros_tokens::kCrosSysDisabled;

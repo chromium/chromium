@@ -2350,6 +2350,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // it is happening.
   int invalidates_during_layout_ = 0;
 
+  // Whether this view is in the middle of InvalidateLayout().
+  bool invalidating_ = false;
+
   // The View's LayoutManager defines the sizing heuristics applied to child
   // Views. The default is absolute positioning according to bounds_.
   std::unique_ptr<LayoutManager> layout_manager_;
