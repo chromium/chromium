@@ -145,41 +145,14 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerDown(url);
   }
-  // For pointer down link selection heuristics, we first call |MaybePrerender|
-  // to check whether it is safe to prerender the |url| and if so we request to
-  // prerender the |url| and return. Otherwise, by calling
-  // |ShouldWaitForPrerenderResult| we check whether there is an active
-  // prerender is in progress for |url| or will return if there is one. We then
-  // call |MaybePrefetch| to check whether prefetching the |url| is safe and if
-  // so we request the new prefetch and return. Otherwise, we call
-  // |ShouldWaitForPrefetchResult| to check whether there is an active prefetch
-  // in progress for the |url| and return if there is one. At last, we request a
-  // preconnect for the |url| if prefetching the |url| is not allowed or has
-  // failed before.
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerDownHeuristics)) {
-    if (MaybePrerender(url, preloading_predictor::kUrlPointerDownOnAnchor)) {
-      AddPreloadingPrediction(url,
-                              preloading_predictor::kUrlPointerDownOnAnchor);
-      return;
-    }
-    if (ShouldWaitForPrerenderResult(url)) {
-      return;
-    }
-
-    if (MaybePrefetch(url, preloading_predictor::kUrlPointerDownOnAnchor)) {
-      AddPreloadingPrediction(url,
-                              preloading_predictor::kUrlPointerDownOnAnchor);
-      return;
-    }
-    // Ideally it is preferred to fallback to preconnect asynchronously if a
-    // prefetch attempt fails. We should revisit it later perhaps after having
-    // data showing it is worth doing so.
-    if (ShouldWaitForPrefetchResult(url)) {
-      return;
-    }
+    constexpr bool fallback_to_preconnect = true;
+    MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
+                        fallback_to_preconnect);
+  } else {
+    preconnector_.MaybePreconnect(url);
   }
-  preconnector_.MaybePreconnect(url);
 }
 
 void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
@@ -218,27 +191,38 @@ void PreloadingDecider::OnPointerHover(
 
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerHoverHeuristics)) {
-    // First try to prerender the |url|, if not possible try to prefetch,
-    // otherwise try to preconnect to it.
-    if (MaybePrerender(url, preloading_predictor::kUrlPointerHoverOnAnchor)) {
-      AddPreloadingPrediction(url,
-                              preloading_predictor::kUrlPointerHoverOnAnchor);
-      return;
-    }
-    if (ShouldWaitForPrerenderResult(url)) {
-      return;
-    }
-
-    if (MaybePrefetch(url, preloading_predictor::kUrlPointerHoverOnAnchor)) {
-      AddPreloadingPrediction(url,
-                              preloading_predictor::kUrlPointerHoverOnAnchor);
-      return;
-    }
-    // ditto (async fallback)
-    if (ShouldWaitForPrefetchResult(url)) {
-      return;
-    }
+    // Preconnecting on hover events should not be done if the link is not safe
+    // to prefetch or prerender.
+    constexpr bool fallback_to_preconnect = false;
+    MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
+                        fallback_to_preconnect);
   }
+}
+
+void PreloadingDecider::MaybeEnactCandidate(
+    const GURL& url,
+    const PreloadingPredictor& predictor,
+    bool fallback_to_preconnect) {
+  if (MaybePrerender(url, predictor)) {
+    AddPreloadingPrediction(url, predictor);
+    return;
+  }
+  if (ShouldWaitForPrerenderResult(url)) {
+    // If there is a prerender in progress already, don't attempt a prefetch.
+    return;
+  }
+
+  if (MaybePrefetch(url, predictor)) {
+    AddPreloadingPrediction(url, predictor);
+    return;
+  }
+  // Ideally it is preferred to fallback to preconnect asynchronously if a
+  // prefetch attempt fails. We should revisit it later perhaps after having
+  // data showing it is worth doing so.
+  if (!fallback_to_preconnect || ShouldWaitForPrefetchResult(url)) {
+    return;
+  }
+  preconnector_.MaybePreconnect(url);
 }
 
 void PreloadingDecider::AddStandbyCandidate(
