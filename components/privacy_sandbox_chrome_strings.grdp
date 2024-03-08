@@ -210,7 +210,7 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_HEADING" desc="A description that appear beneath the 'Blocked topics' title. The ad topics setting could be on but no topics appears in the list. This is part of the text that explains why.">
     No blocked topics
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" desc="A button associated with each of the user's topics. If the user clicks 'Block', that topic will get moved to the 'Topics you blocked' page.">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" desc="A button associated with each of the user's topics. If the user clicks 'Block', that topic will get moved to the 'Topics you blocked' page." formatter_data="android_java">
     Block
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_A11Y_LABEL" desc="A button label read by screen readers that indicates which topic will get blocked. The full 'pool of topics' is published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md">

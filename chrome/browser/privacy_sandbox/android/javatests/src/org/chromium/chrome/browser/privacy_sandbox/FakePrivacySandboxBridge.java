@@ -20,6 +20,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final Set<Topic> mCurrentTopTopics = new LinkedHashSet<>();
     private final Set<Topic> mBlockedTopics = new LinkedHashSet<>();
     private final Set<Topic> mFirstLevelTopics = new LinkedHashSet<>();
+    private final Set<Topic> mChildTopics = new LinkedHashSet<>();
     private final Set<String> mCurrentFledgeSites = new LinkedHashSet<>();
     private final Set<String> mBlockedFledgeSites = new LinkedHashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
@@ -44,6 +45,13 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         mFirstLevelTopics.clear();
         for (String name : topics) {
             mFirstLevelTopics.add(getOrCreateTopic(name));
+        }
+    }
+
+    public void setChildTopics(String... topics) {
+        mChildTopics.clear();
+        for (String name : topics) {
+            mChildTopics.add(getOrCreateTopic(name));
         }
     }
 
@@ -124,7 +132,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
 
     @Override
     public Topic[] getChildTopicsCurrentlyAssigned(int topicId, int taxonomyVersion) {
-        return new Topic[] {};
+        return mChildTopics.toArray(new Topic[] {});
     }
 
     @Override
