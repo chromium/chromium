@@ -10,6 +10,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
+#include "ash/system/input_device_settings/input_device_settings_logging.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
@@ -347,6 +348,16 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
     category = HasDefaultSettings(pref_service)
                    ? SettingsUpdatedMetricsInfo::Category::kDefault
                    : SettingsUpdatedMetricsInfo::Category::kFirstEver;
+  }
+  if (category == SettingsUpdatedMetricsInfo::Category::kSynced) {
+    PR_LOG(INFO, Feature::IDS)
+        << GetMouseSettingsLog("Synced with latest settings", *mouse);
+  } else if (category == SettingsUpdatedMetricsInfo::Category::kDefault) {
+    PR_LOG(INFO, Feature::IDS)
+        << GetMouseSettingsLog("Using default settings", *mouse);
+  } else {
+    PR_LOG(INFO, Feature::IDS)
+        << GetMouseSettingsLog("First time connected", *mouse);
   }
   if (features::IsPeripheralCustomizationEnabled()) {
     const auto& button_remappings_dict =
