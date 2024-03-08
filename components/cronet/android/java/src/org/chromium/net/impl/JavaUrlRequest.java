@@ -1001,10 +1001,10 @@ final class JavaUrlRequest extends UrlRequestBase {
                     () -> {
                         try {
                             mCallback.onCanceled(JavaUrlRequest.this, info);
-                            maybeReportMetrics();
                         } catch (Exception exception) {
                             Log.e(TAG, "Exception in onCanceled method", exception);
                         }
+                        maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
                     });
         }
@@ -1014,10 +1014,10 @@ final class JavaUrlRequest extends UrlRequestBase {
                     () -> {
                         try {
                             mCallback.onSucceeded(JavaUrlRequest.this, info);
-                            maybeReportMetrics();
                         } catch (Exception exception) {
                             Log.e(TAG, "Exception in onSucceeded method", exception);
                         }
+                        maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
                     });
         }
@@ -1028,10 +1028,10 @@ final class JavaUrlRequest extends UrlRequestBase {
                     () -> {
                         try {
                             mCallback.onFailed(JavaUrlRequest.this, urlResponseInfo, e);
-                            maybeReportMetrics();
                         } catch (Exception exception) {
                             Log.e(TAG, "Exception in onFailed method", exception);
                         }
+                        maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
                     };
             try {
