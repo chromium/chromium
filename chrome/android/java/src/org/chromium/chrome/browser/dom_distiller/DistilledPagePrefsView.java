@@ -21,10 +21,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
-
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
@@ -43,13 +40,15 @@ public class DistilledPagePrefsView extends LinearLayout
     // XML layout for View.
     private static final int VIEW_LAYOUT = R.layout.distilled_page_prefs_view;
 
-    // RadioGroup for color mode buttons.
-    private RadioGroup mRadioGroup;
-
     // Buttons for color mode.
     private final Map<Integer /* Theme */, RadioButton> mColorModeButtons;
 
-    private final DistilledPagePrefs mDistilledPagePrefs;
+    private final NumberFormat mPercentageFormatter;
+
+    // RadioGroup for color mode buttons.
+    private RadioGroup mRadioGroup;
+
+    private DistilledPagePrefs mDistilledPagePrefs;
 
     // Text field showing font scale percentage.
     private TextView mFontScaleTextView;
@@ -60,8 +59,6 @@ public class DistilledPagePrefsView extends LinearLayout
     // Spinner for choosing a font family.
     private Spinner mFontFamilySpinner;
 
-    private final NumberFormat mPercentageFormatter;
-
     /**
      * Creates a DistilledPagePrefsView.
      *
@@ -70,25 +67,16 @@ public class DistilledPagePrefsView extends LinearLayout
      */
     public DistilledPagePrefsView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        mDistilledPagePrefs =
-                DomDistillerServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
-                        .getDistilledPagePrefs();
         mColorModeButtons = new HashMap<Integer /* Theme */, RadioButton>();
         mPercentageFormatter = NumberFormat.getPercentInstance(Locale.getDefault());
     }
 
-    public static DistilledPagePrefsView create(Context context) {
-        return (DistilledPagePrefsView) LayoutInflater.from(context).inflate(VIEW_LAYOUT, null);
-    }
-
-    public static void showDialog(Context context) {
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog);
-        builder.setView(DistilledPagePrefsView.create(context));
-        builder.show();
+    public static DistilledPagePrefsView create(
+            Context context, DistilledPagePrefs distilledPagePrefs) {
+        DistilledPagePrefsView prefsView =
+                (DistilledPagePrefsView) LayoutInflater.from(context).inflate(VIEW_LAYOUT, null);
+        prefsView.initDistilledPagePrefs(distilledPagePrefs);
+        return prefsView;
     }
 
     @Override
@@ -98,12 +86,18 @@ public class DistilledPagePrefsView extends LinearLayout
         mColorModeButtons.put(Theme.LIGHT, initializeAndGetButton(R.id.light_mode, Theme.LIGHT));
         mColorModeButtons.put(Theme.DARK, initializeAndGetButton(R.id.dark_mode, Theme.DARK));
         mColorModeButtons.put(Theme.SEPIA, initializeAndGetButton(R.id.sepia_mode, Theme.SEPIA));
-        mColorModeButtons.get(mDistilledPagePrefs.getTheme()).setChecked(true);
 
         mFontScaleSeekBar = (SeekBar) findViewById(R.id.font_size);
         mFontScaleTextView = (TextView) findViewById(R.id.font_size_percentage);
 
         mFontFamilySpinner = (Spinner) findViewById(R.id.font_family);
+    }
+
+    private void initDistilledPagePrefs(DistilledPagePrefs distilledPagePrefs) {
+        assert distilledPagePrefs != null;
+        mDistilledPagePrefs = distilledPagePrefs;
+
+        mColorModeButtons.get(mDistilledPagePrefs.getTheme()).setChecked(true);
         initFontFamilySpinner();
 
         // Setting initial progress on font scale seekbar.

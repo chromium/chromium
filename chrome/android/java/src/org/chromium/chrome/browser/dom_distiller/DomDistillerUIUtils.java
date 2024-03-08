@@ -13,8 +13,9 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 
 /** Java implementation of dom_distiller::android::DistillerUIHandleAndroid. */
 @JNINamespace("dom_distiller::android")
@@ -25,28 +26,21 @@ public final class DomDistillerUIUtils {
      */
     @CalledByNative
     public static void openSettings(WebContents webContents) {
-        Activity activity = getActivityFromWebContents(webContents);
+        if (webContents == null) return;
 
-        if (webContents != null && activity != null) {
-            RecordUserAction.record("DomDistiller_DistilledPagePrefsOpened");
-            AlertDialog.Builder builder =
-                    new AlertDialog.Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog);
-            builder.setView(DistilledPagePrefsView.create(activity));
-            builder.show();
-        }
-    }
+        Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
+        if (activity == null) return;
 
-    /**
-     * @param webContents The WebContents to get the Activity from.
-     * @return The Activity associated with the WebContents.
-     */
-    private static Activity getActivityFromWebContents(WebContents webContents) {
-        if (webContents == null) return null;
-
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
-
-        return window.getActivity().get();
+        RecordUserAction.record("DomDistiller_DistilledPagePrefsOpened");
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog);
+        builder.setView(
+                DistilledPagePrefsView.create(
+                        activity,
+                        DomDistillerServiceFactory.getForProfile(
+                                        Profile.fromWebContents(webContents))
+                                .getDistilledPagePrefs()));
+        builder.show();
     }
 
     private DomDistillerUIUtils() {}
