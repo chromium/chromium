@@ -71,6 +71,12 @@ class TestTextIntersectionObserver extends TestSuite implements
     this.invisibleNodes.push(node);
     this.invisibleNodeNames += ':' + node.nodeName;
   }
+  enterVisibleNode(node: Node): void {
+    this.visibleText += '+<' + node.nodeName + '>';
+  }
+  leaveVisibleNode(node: Node): void {
+    this.visibleText += '+</' + node.nodeName + '>';
+  }
   end(): void {
     this.flowState += '-end';
   }
@@ -149,7 +155,7 @@ class TestTextIntersectionObserver extends TestSuite implements
     this.timer.moveAhead(/* ms= */ 10, /* times= */ 6);  // -> 60ms total
 
     // Check that the visit happened.
-    expectEq(this.visibleText, '+Small');
+    expectEq(this.visibleText, '+<BODY>+<DIV>+Small+</DIV>+</BODY>');
     expectEq(this.invisibleNodeNames, ':HEAD:DIV:DIV');
     expectEq(this.invisibleNodes[1], d1);
     expectEq(this.invisibleNodes[2], d3);
@@ -185,7 +191,7 @@ class TestTextIntersectionObserver extends TestSuite implements
     currentObserver?.hits([{target: d1, isIntersecting: true}]);
     this.timer.moveAhead(/* ms= */ 10, /* times= */ 6);  // -> 60ms total
     // Check that the visit happened.
-    expectEq(this.visibleText, '+Hello');
+    expectEq(this.visibleText, '+<BODY>+<DIV>+Hello+</DIV>+</BODY>');
     expectEq(this.invisibleNodeNames, ':HEAD:DIV:DIV');
     expectEq(this.invisibleNodes[1], d2);
     expectEq(this.invisibleNodes[2], d3);
@@ -197,13 +203,15 @@ class TestTextIntersectionObserver extends TestSuite implements
     // But before text extraction, make it invisible.
     currentObserver?.hits([{target: d2, isIntersecting: false}]);
     this.timer.moveAhead(/* ms= */ 10, /* times= */ 6);  // -> 140ms total
-    expectEq(this.visibleText, '+Hello');
+    expectEq(this.visibleText, '+<BODY>+<DIV>+Hello+</DIV>+</BODY>');
     expectEq(this.flowState, 'idle-begin-end-begin-end');
 
     // Make d3 visible.
     currentObserver?.hits([{target: d3, isIntersecting: true}]);
     this.timer.moveAhead(/* ms= */ 10, /* times= */ 6);  // -> 200ms total
-    expectEq(this.visibleText, '+Hello+World');
+    expectEq(
+        this.visibleText,
+        '+<BODY>+<DIV>+Hello+</DIV>+</BODY>+<BODY>+<DIV>+World+</DIV>+</BODY>');
     expectEq(this.flowState, 'idle-begin-end-begin-end-begin-end');
 
     // d1 and d3 should not be observed anymore, d2 should.
