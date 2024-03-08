@@ -508,7 +508,7 @@ TEST_F(TemplateURLServiceUtilLoadTest,
       .data_version = kCurrentDataVersion,
       .milestone = kCurrentMilestone,
       .country = kEeaCountryId,
-      .keyword_engines_count = 12u,
+      .keyword_engines_count = 8u,
       .use_extended_list = true};
   const KeywordTestMetadata kNoUpdate = {.data_version = 0,
                                          .milestone = 0,
@@ -517,7 +517,7 @@ TEST_F(TemplateURLServiceUtilLoadTest,
                                          .use_extended_list = true};
 
   // Initial state: nothing. Simulates a fresh install.
-  // The function should populate the profile with 12 engines and current
+  // The function should populate the profile with 8 engines and current
   // metadata.
   auto output = SimulateFromDatabaseState({});
   EXPECT_EQ(output, kDefaultUpdatedState);
