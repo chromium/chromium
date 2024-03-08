@@ -140,14 +140,15 @@ function mergeSingleChildren(map) {
   };
 }
 
-function generateHtml(map, commitHash) {
+function generateHtml(map, commitHash, isFiltered) {
   const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
+  const shortCommitHash = commitHash.slice(0, 8);
 
   return `
     <!DOCTYPE html>
     <html lang="en">
     <meta charset="utf-8">
-    <title>BiDi-CDP Mapper</title>
+    <title>BiDi-CDP Mapper WPT test pass rate</title>
     <style>
       body { font-family: Roboto, serif; font-size: 13px; color: #202124; }
       .path { font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; line-height: 180%; padding: 5px 18px; margin: 0; }
@@ -183,7 +184,15 @@ function generateHtml(map, commitHash) {
     <div class="top">
       <div class="header">
         <div class="headings">
-          <h1>WPT test results for <a href="${getCommitLink(commitHash)}">${commitHash.substring(0, 8)}</a> (${date})</h1>
+          <h1>
+            WPT test results
+            ${
+              isFiltered
+                ? ' matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>'
+                : ''
+            }
+            for <a href="${linkCommit(commitHash)}">${shortCommitHash}</a>
+            @ <time>${date}</time>
           <h2>${map.stat.pass} / ${map.stat.all} (${
             map.stat.all - map.stat.pass
           } remaining)</h2>
@@ -205,35 +214,35 @@ function generateHtml(map, commitHash) {
           toggle.innerText = toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
 
           const toHide = document.querySelectorAll(\`.\${toggleState}-name\`);
-          for(const element of toHide){
+          for (const element of toHide){
             element.classList.add("hidden");
           }
 
           toggleState = toggleState === 'short' ? 'long' : 'short';
           const toShow = document.querySelectorAll(\`.\${toggleState}-name\`);
-          for(const element of toShow){
-            element.classList.remove("hidden");
+          for (const element of toShow){
+            element.classList.remove('hidden');
           }
-        })
+        });
 
         const expand = document.querySelector('.expand');
         let expandState = 'collapse';
         expand.addEventListener('click', () => {
           document.body.querySelectorAll('details')
             .forEach((element) => {
-              if(expandState === 'collapse'){
+              if (expandState === 'collapse') {
                 element.setAttribute('open', true);
               } else {
                 element.removeAttribute('open');
               }
             });
           expand.innerText = expandState.charAt(0).toUpperCase() + expandState.slice(1);
-          if(expandState === 'collapse'){
-              expandState = 'expand';
+          if (expandState === 'collapse') {
+            expandState = 'expand';
           } else {
             expandState = 'collapse';
           }
-        })
+        });
       </script>
     </div>`;
 }
@@ -292,10 +301,14 @@ function generateSubtestReport(subtest) {
       </div>`;
 }
 
-function getCommitLink(commitHash) {
+function linkCommit(commitHash) {
   return `https://github.com/GoogleChromeLabs/chromium-bidi/commit/${commitHash}`;
 }
 
-export function generateReport(rawReport, commitHash) {
-  return generateHtml(groupTests(flattenTests(rawReport)), commitHash);
+export function generateReport(reportData, commitHash) {
+  return generateHtml(
+    groupTests(flattenTests(reportData)),
+    commitHash,
+    reportData.isFiltered
+  );
 }

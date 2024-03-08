@@ -17,6 +17,7 @@
 import child_process from 'child_process';
 import fs from 'fs';
 
+import {apply2023Filter} from './filter-2023.mjs';
 import {generateReport} from './formatter.mjs';
 
 function getCurrentCommit() {
@@ -28,19 +29,19 @@ function getCurrentCommit() {
 }
 
 function readReport(filePath) {
-  const rawReport = fs.readFileSync(filePath);
-  return JSON.parse(rawReport);
+  const json = fs.readFileSync(filePath, 'utf8');
+  return JSON.parse(json);
 }
 
-function getReportPath() {
-  return process.argv.slice(2)[0];
-}
+const jsonPath = process.argv[2];
+const outputPath = process.argv[3];
+const filteredOutputPath = process.argv[4];
+const reportData = readReport(jsonPath);
+const filteredReportData = apply2023Filter(reportData);
+const currentCommit = getCurrentCommit();
 
-function getOutputPath() {
-  return process.argv.slice(2)[1];
-}
-
+fs.writeFileSync(outputPath, generateReport(reportData, currentCommit));
 fs.writeFileSync(
-  getOutputPath(),
-  generateReport(readReport(getReportPath()), getCurrentCommit())
+  filteredOutputPath,
+  generateReport(filteredReportData, currentCommit)
 );

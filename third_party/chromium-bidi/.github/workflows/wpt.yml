@@ -57,7 +57,9 @@ jobs:
       - name: Prepare Pages
         run: |
           mkdir -p out/site
+          cp out/wptreport.json out/site/wptreport.json
           cp out/wptreport.html out/site/index.html
+          cp out/wptreport-2023.html out/site/2023.html
       - name: Setup Pages
         uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4.0.0
       - name: Upload Pages artifact
