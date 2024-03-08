@@ -1232,6 +1232,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+    @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_confirmed() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
@@ -1278,6 +1279,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+    @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_failedSignin() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo = mSigninTestRule.addAccountAndWaitForSeeding(NEW_ACCOUNT_NAME);
