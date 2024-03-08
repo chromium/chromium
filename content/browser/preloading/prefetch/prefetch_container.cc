@@ -903,6 +903,13 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
     PrefetchProbeResult probe_result) const {
   prefetch_container_->probe_result_ = probe_result;
 
+  // It's possible for the prefetch to fail (e.g., due to a network error) while
+  // the origin probe is running. We avoid overwriting the status in that case.
+  if (TriggeringOutcomeFromStatus(GetPrefetchStatus()) ==
+      PreloadingTriggeringOutcome::kFailure) {
+    return;
+  }
+
   switch (probe_result) {
     case PrefetchProbeResult::kNoProbing:
     case PrefetchProbeResult::kDNSProbeSuccess:
@@ -1154,6 +1161,15 @@ void PrefetchContainer::UpdateServingPageMetrics() {
   if (HasPrefetchStatus()) {
     serving_page_metrics_container_->SetPrefetchStatus(GetPrefetchStatus());
   }
+}
+
+void PrefetchContainer::SimulateAttemptAtRequestStartForTest() {
+  if (attempt_) {
+    attempt_->SetEligibility(PreloadingEligibility::kEligible);
+    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+  }
+  SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
+  SetPrefetchStatus(PrefetchStatus::kPrefetchNotFinishedInTime);
 }
 
 void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {

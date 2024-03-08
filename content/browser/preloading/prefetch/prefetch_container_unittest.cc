@@ -511,6 +511,7 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/std::nullopt,
           /*prefetch_document_manager=*/nullptr);
+  prefetch_container->SimulateAttemptAtRequestStartForTest();
 
   network::URLLoaderCompletionStatus completion_status;
   completion_status.encoded_data_length = 100;
@@ -1148,6 +1149,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       blink::mojom::Referrer(),
       /*no_vary_search_expected=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container->SimulateAttemptAtRequestStartForTest();
 
   auto pending_request =
       MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());

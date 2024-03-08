@@ -415,10 +415,14 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasPreloadingAttempt() { return !!attempt_; }
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
-  // Simulates a prefetch container that reaches the interceptor. It sets the
-  // `attempt_` to the correct state: `PreloadingEligibility::kEligible`,
+  // Simulates a prefetch container that has started its request. It sets the
+  //`attempt_` to the correct state: `PreloadingEligibility::kEligible`,
   // `PreloadingHoldbackStatus::kAllowed` and
   // `PreloadingTriggeringOutcome::kReady`.
+  void SimulateAttemptAtRequestStartForTest();
+  // Simulates a prefetch container that reaches the interceptor. Similar to
+  // |SimulateAttemptAtRequestStartForTest| but also marks the prefetch as
+  // completed.
   void SimulateAttemptAtInterceptorForTest();
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 

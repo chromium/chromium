@@ -119,8 +119,8 @@ MakeManuallyServableStreamingURLLoaderForTest(
       base::BindOnce([](network::mojom::URLResponseHead* head) {
         return std::optional<PrefetchErrorOnResponseReceived>();
       }),
-      base::BindOnce(
-          [](const network::URLLoaderCompletionStatus& completion_status) {}),
+      base::BindOnce(&PrefetchContainer::OnPrefetchComplete,
+                     prefetch_container->GetWeakPtr()),
       base::BindRepeating([](const net::RedirectInfo& redirect_info,
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
