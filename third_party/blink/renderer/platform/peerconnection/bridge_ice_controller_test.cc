@@ -921,12 +921,12 @@ TEST_F(BridgeIceControllerTest, HandlesPruneRequest) {
       .WillRepeatedly(Return(connection_set));
 
   const std::vector<const Connection*> conns_to_prune{conn};
-  const std::vector<const IceConnection> valid_ice_conns_to_prune{
+  const std::vector<IceConnection> valid_ice_conns_to_prune{
       IceConnection(conn)};
   const std::vector<const Connection*> partial_conns_to_prune{conn_two};
-  const std::vector<const IceConnection> mixed_ice_conns_to_prune{
+  const std::vector<IceConnection> mixed_ice_conns_to_prune{
       IceConnection(conn_two), IceConnection(conn_three)};
-  const std::vector<const IceConnection> invalid_ice_conns_to_prune{
+  const std::vector<IceConnection> invalid_ice_conns_to_prune{
       IceConnection(conn_three)};
 
   EXPECT_CALL(agent, PruneConnections(ElementsAreArray(conns_to_prune)));
