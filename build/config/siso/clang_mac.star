@@ -96,6 +96,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
             {
                 "name": "clang/cc",
@@ -108,6 +109,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
             {
                 "name": "clang/objcxx",
@@ -120,6 +122,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
             {
@@ -133,6 +136,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
             {
@@ -147,6 +151,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
             {
                 "name": "clang-coverage/cc",
@@ -160,6 +165,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
             },
             {
                 "name": "clang-coverage/objcxx",
@@ -173,6 +179,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
             {
@@ -187,6 +194,7 @@ def __step_config(ctx, step_config):
                 "platform_ref": "clang",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
+                "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
             },
         ])
