@@ -114,6 +114,13 @@ void ExtensionNotificationHandler::DisableNotifications(Profile* profile,
       notifier_id, false /* enabled */);
 }
 
+// There are not settings to open, but on the chance the notification shows with
+// the "Open Settings" prompt, this will no-op.
+void ExtensionNotificationHandler::OpenSettings(Profile* profile,
+                                                const GURL& origin) {
+  return;
+}
+
 void ExtensionNotificationHandler::SendEvent(
     Profile* profile,
     const ExtensionId& extension_id,

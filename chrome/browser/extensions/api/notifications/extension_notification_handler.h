@@ -43,6 +43,7 @@ class ExtensionNotificationHandler : public NotificationHandler {
                const std::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
   void DisableNotifications(Profile* profile, const GURL& origin) override;
+  void OpenSettings(Profile* profile, const GURL& origin) override;
 
  protected:
   // Overriden in unit tests.
