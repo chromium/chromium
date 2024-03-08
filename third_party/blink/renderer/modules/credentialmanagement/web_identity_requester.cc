@@ -19,7 +19,7 @@ WebIdentityRequester::WebIdentityRequester(ExecutionContext* context,
     : execution_context_(context), requirement_(requirement) {}
 
 WebIdentityRequester::ResolverAndProviders::ResolverAndProviders(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
     Vector<KURL> providers)
     : resolver_(resolver), providers_(std::move(providers)) {}
 
@@ -34,7 +34,7 @@ void WebIdentityRequester::OnRequestToken(
     mojom::blink::TokenErrorPtr error,
     bool is_auto_selected) {
   for (const auto& resolver_and_providers : resolvers_and_providers_) {
-    ScriptPromiseResolver* resolver = resolver_and_providers->resolver_;
+    auto& resolver = resolver_and_providers->resolver_;
     const Vector<KURL>& providers = resolver_and_providers->providers_;
 
     switch (status) {
@@ -99,7 +99,7 @@ void WebIdentityRequester::RequestToken() {
 }
 
 void WebIdentityRequester::AppendGetCall(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
     const HeapVector<Member<IdentityProviderRequestOptions>>& providers,
     mojom::blink::RpContext rp_context,
     mojom::blink::RpMode rp_mode) {
@@ -168,7 +168,7 @@ void WebIdentityRequester::InsertScopedAbortState(
 }
 
 void WebIdentityRequester::InitWindowOnloadEventListener(
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver) {
   window_onload_event_listener_ =
       MakeGarbageCollected<WebIdentityWindowOnloadEventListener>(
           resolver->DomWindow()->document(), WrapPersistent(this));
@@ -176,7 +176,8 @@ void WebIdentityRequester::InitWindowOnloadEventListener(
                                           window_onload_event_listener_);
 }
 
-void WebIdentityRequester::StartDelayTimer(ScriptPromiseResolver* resolver) {
+void WebIdentityRequester::StartDelayTimer(
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver) {
   DCHECK(!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
       execution_context_));
 

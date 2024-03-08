@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
+class Cache;
 class CacheStorageBlobClientList;
 class MultiCacheQueryOptions;
 class ScriptState;
@@ -41,9 +41,9 @@ class CacheStorage final : public ScriptWrappable,
 
   ~CacheStorage() override;
 
-  ScriptPromise open(ScriptState*,
-                     const String& cache_name,
-                     ExceptionState& exception_state);
+  ScriptPromiseTyped<Cache> open(ScriptState*,
+                                 const String& cache_name,
+                                 ExceptionState& exception_state);
   ScriptPromiseTyped<IDLBoolean> has(ScriptState*,
                                      const String& cache_name,
                                      ExceptionState& exception_state);
@@ -52,10 +52,10 @@ class CacheStorage final : public ScriptWrappable,
                                         ExceptionState& exception_state);
   ScriptPromiseTyped<IDLSequence<IDLString>> keys(ScriptState*,
                                                   ExceptionState&);
-  ScriptPromise match(ScriptState* script_state,
-                      const V8RequestInfo* request,
-                      const MultiCacheQueryOptions* options,
-                      ExceptionState& exception_state);
+  ScriptPromiseTyped<Response> match(ScriptState* script_state,
+                                     const V8RequestInfo* request,
+                                     const MultiCacheQueryOptions* options,
+                                     ExceptionState& exception_state);
 
   bool HasPendingActivity() const override;
   void Trace(Visitor*) const override;
@@ -77,7 +77,7 @@ class CacheStorage final : public ScriptWrappable,
 
   void OpenImpl(const String& cache_name,
                 int64_t trace_id,
-                ScriptPromiseResolver* resolver);
+                ScriptPromiseResolverTyped<Cache>* resolver);
   void HasImpl(const String& cache_name,
                int64_t trace_id,
                ScriptPromiseResolverTyped<IDLBoolean>* resolver);
@@ -86,17 +86,17 @@ class CacheStorage final : public ScriptWrappable,
                   ScriptPromiseResolverTyped<IDLBoolean>* resolver);
   void KeysImpl(int64_t trace_id,
                 ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver);
-  ScriptPromise MatchImpl(ScriptState*,
-                          const Request*,
-                          const MultiCacheQueryOptions*,
-                          ExceptionState& exception_state);
+  ScriptPromiseTyped<Response> MatchImpl(ScriptState*,
+                                         const Request*,
+                                         const MultiCacheQueryOptions*,
+                                         ExceptionState& exception_state);
   void MatchImplHelper(const MultiCacheQueryOptions* options,
                        mojom::blink::FetchAPIRequestPtr mojo_request,
                        mojom::blink::MultiCacheQueryOptionsPtr mojo_options,
                        bool in_related_fetch_event,
                        bool in_range_fetch_event,
                        int64_t trace_id,
-                       ScriptPromiseResolver* resolver);
+                       ScriptPromiseResolverTyped<Response>* resolver);
 
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
   Member<CacheStorageBlobClientList> blob_client_list_;

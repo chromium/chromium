@@ -50,10 +50,11 @@ void AbortRequest(ScriptState* script_state) {
   CredentialManagerProxy::From(script_state)->DigitalIdentityRequest()->Abort();
 }
 
-void OnCompleteRequest(ScriptPromiseResolver* resolver,
-                       std::unique_ptr<ScopedAbortState> scoped_abort_state,
-                       RequestDigitalIdentityStatus status,
-                       const WTF::String& token) {
+void OnCompleteRequest(
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    RequestDigitalIdentityStatus status,
+    const WTF::String& token) {
   switch (status) {
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -101,9 +102,10 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
          !options.digital()->providers().empty();
 }
 
-ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
+ScriptPromiseTyped<IDLNullable<Credential>>
+DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
     const CredentialRequestOptions& options,
     ExceptionState& exception_state) {
   CHECK(IsDigitalIdentityCredentialType(options));
@@ -126,7 +128,7 @@ ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
         "Digital identity API currently does not support multiple "
         "providers.");
     resolver->Detach();
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLNullable<Credential>>();
   }
 
   // TODO(http://crbug.com/325425533) Determine whether real world identity API
@@ -138,7 +140,7 @@ ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
         "The 'identity-credentials-get` feature is not enabled in this "
         "document.");
     resolver->Detach();
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLNullable<Credential>>();
   }
 
   UseCounter::Count(resolver->GetExecutionContext(),

@@ -685,7 +685,7 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
 }
 
 void OnStoreComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver) {
-  auto* resolver = scoped_resolver->Release();
+  auto* resolver = scoped_resolver->Release()->DowncastTo<Credential>();
   AssertSecurityRequirementsBeforeResponse(
       resolver, RequiredOriginType::kSecureAndSameWithAncestors);
   resolver->Resolve();
@@ -704,7 +704,8 @@ void OnGetComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
                    RequiredOriginType required_origin_type,
                    CredentialManagerError error,
                    CredentialInfoPtr credential_info) {
-  auto* resolver = scoped_resolver->Release();
+  auto* resolver =
+      scoped_resolver->Release()->DowncastTo<IDLNullable<Credential>>();
 
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (error != CredentialManagerError::SUCCESS) {
@@ -757,7 +758,8 @@ void OnMakePublicKeyCredentialComplete(
     AuthenticatorStatus status,
     MakeCredentialAuthenticatorResponsePtr credential,
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
-  auto* resolver = scoped_resolver->Release();
+  auto* resolver =
+      scoped_resolver->Release()->DowncastTo<IDLNullable<Credential>>();
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
     DCHECK(!credential);
@@ -884,7 +886,8 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
     AuthenticatorStatus status,
     MakeCredentialAuthenticatorResponsePtr credential,
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
-  auto* resolver = scoped_resolver->Release();
+  auto* resolver =
+      scoped_resolver->Release()->DowncastTo<IDLNullable<Credential>>();
   const auto required_origin_type =
       RuntimeEnabledFeatures::WebAuthAllowCreateInCrossOriginFrameEnabled()
           ? RequiredOriginType::
@@ -926,7 +929,8 @@ void OnGetAssertionComplete(
     AuthenticatorStatus status,
     GetAssertionAuthenticatorResponsePtr credential,
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
-  auto* resolver = scoped_resolver->Release();
+  auto* resolver =
+      scoped_resolver->Release()->DowncastTo<IDLNullable<Credential>>();
   const auto required_origin_type = RequiredOriginType::kSecure;
 
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
@@ -1029,7 +1033,7 @@ void OnGetAssertionComplete(
   }
 }
 
-void OnSmsReceive(ScriptPromiseResolver* resolver,
+void OnSmsReceive(ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
                   std::unique_ptr<ScopedAbortState> scoped_abort_state,
                   base::TimeTicks start_time,
                   mojom::blink::SmsStatus status,
@@ -1306,13 +1310,14 @@ AuthenticationCredentialsContainer::AuthenticationCredentialsContainer(
     Navigator& navigator)
     : Supplement<Navigator>(navigator) {}
 
-ScriptPromise AuthenticationCredentialsContainer::get(
-    ScriptState* script_state,
-    const CredentialRequestOptions* options,
-    ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLNullable<Credential>>
+AuthenticationCredentialsContainer::get(ScriptState* script_state,
+                                        const CredentialRequestOptions* options,
+                                        ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   if (IsDigitalIdentityCredentialType(*options)) {
@@ -1535,8 +1540,8 @@ ScriptPromise AuthenticationCredentialsContainer::get(
   }
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
-    return GetForIdentity(script_state, resolver, promise, *options,
-                          *options->identity(), exception_state);
+    GetForIdentity(script_state, resolver, *options, *options->identity());
+    return promise;
   }
 
   Vector<KURL> providers;
@@ -1581,12 +1586,13 @@ ScriptPromise AuthenticationCredentialsContainer::get(
   return promise;
 }
 
-ScriptPromise AuthenticationCredentialsContainer::store(
+ScriptPromiseTyped<Credential> AuthenticationCredentialsContainer::store(
     ScriptState* script_state,
     Credential* credential,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<Credential>>(
+      script_state);
+  auto promise = resolver->Promise();
 
   if (!(credential->IsFederatedCredential() ||
         credential->IsPasswordCredential())) {
@@ -1633,12 +1639,15 @@ ScriptPromise AuthenticationCredentialsContainer::store(
   return promise;
 }
 
-ScriptPromise AuthenticationCredentialsContainer::create(
+ScriptPromiseTyped<IDLNullable<Credential>>
+AuthenticationCredentialsContainer::create(
     ScriptState* script_state,
     const CredentialCreationOptions* options,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   RequiredOriginType required_origin_type;
   if (IsForPayment(options, resolver->GetExecutionContext())) {
@@ -1977,25 +1986,22 @@ void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {
   CredentialsContainer::Trace(visitor);
 }
 
-ScriptPromise AuthenticationCredentialsContainer::GetForIdentity(
+void AuthenticationCredentialsContainer::GetForIdentity(
     ScriptState* script_state,
-    ScriptPromiseResolver* resolver,
-    const ScriptPromise& promise,
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
     const CredentialRequestOptions& options,
-    const IdentityCredentialRequestOptions& identity_options,
-    ExceptionState& exception_state) {
+    const IdentityCredentialRequestOptions& identity_options) {
   // Common errors for FedCM and WebIdentityDigitalCredential.
   if (identity_options.providers().size() == 0) {
-    exception_state.ThrowTypeError("Need at least one identity provider.");
-    resolver->Detach();
-    return ScriptPromise();
+    resolver->RejectWithTypeError("Need at least one identity provider.");
+    return;
   }
 
   auto* signal = options.getSignalOr(nullptr);
   if (signal && signal->aborted()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "Request has been aborted."));
-    return promise;
+    return;
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -2009,11 +2015,10 @@ ScriptPromise AuthenticationCredentialsContainer::GetForIdentity(
           ->GetContentSecurityPolicyForCurrentWorld();
   if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context) &&
       identity_options.providers().size() > 1) {
-    exception_state.ThrowTypeError(
+    resolver->RejectWithTypeError(
         "Multiple providers specified but FedCmMultipleIdentityProviders "
         "flag is disabled.");
-    resolver->Detach();
-    return ScriptPromise();
+    return;
   }
 
   // Log the UseCounter only when the WebID flag is enabled.
@@ -2054,17 +2059,15 @@ ScriptPromise AuthenticationCredentialsContainer::GetForIdentity(
     // validating |provider|, and making sure the calling context is legal.
     // Some of this has not been spec'd yet.
     if (!provider->hasConfigURL()) {
-      exception_state.ThrowTypeError("Missing the provider's configURL.");
-      resolver->Detach();
-      return ScriptPromise();
+      resolver->RejectWithTypeError("Missing the provider's configURL.");
+      return;
     }
 
     KURL provider_url(provider->configURL());
 
     if (!provider->hasClientId()) {
-      exception_state.ThrowTypeError("Missing the provider's clientId.");
-      resolver->Detach();
-      return ScriptPromise();
+      resolver->RejectWithTypeError("Missing the provider's clientId.");
+      return;
     }
 
     String client_id = provider->clientId();
@@ -2075,13 +2078,13 @@ ScriptPromise AuthenticationCredentialsContainer::GetForIdentity(
           DOMExceptionCode::kInvalidStateError,
           String::Format("Provider %i information is incomplete.",
                          provider_index)));
-      return promise;
+      return;
     }
     // We disallow redirects (in idp_network_request_manager.cc), so it is
     // enough to check the initial URL here.
     if (IdentityCredential::IsRejectingPromiseDueToCSP(policy, resolver,
                                                        provider_url)) {
-      return promise;
+      return;
     }
 
     mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
@@ -2110,7 +2113,7 @@ ScriptPromise AuthenticationCredentialsContainer::GetForIdentity(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Conditional mediation is not supported for this credential type"));
-    return promise;
+    return;
   }
   if (options.mediation() == "silent") {
     mediation_requirement = CredentialMediationRequirement::kSilent;
@@ -2161,7 +2164,7 @@ ScriptPromise AuthenticationCredentialsContainer::GetForIdentity(
     // web_identity_requester_.
     web_identity_requester_->StartDelayTimer(resolver);
 
-    return promise;
+    return;
   }
 
   if (scoped_abort_state) {
@@ -2171,8 +2174,6 @@ ScriptPromise AuthenticationCredentialsContainer::GetForIdentity(
 
   web_identity_requester_->AppendGetCall(resolver, identity_options.providers(),
                                          rp_context, rp_mode);
-
-  return promise;
 }
 
 }  // namespace blink

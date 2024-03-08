@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -24,13 +25,13 @@ class MODULES_EXPORT CredentialsContainer : public ScriptWrappable {
   ~CredentialsContainer() override = default;
 
   // credentials_container.idl
-  virtual ScriptPromise get(ScriptState*,
-                            const CredentialRequestOptions*,
-                            ExceptionState&) = 0;
-  virtual ScriptPromise store(ScriptState*, Credential*, ExceptionState&) = 0;
-  virtual ScriptPromise create(ScriptState*,
-                               const CredentialCreationOptions*,
-                               ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLNullable<Credential>>
+  get(ScriptState*, const CredentialRequestOptions*, ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<Credential> store(ScriptState*,
+                                               Credential*,
+                                               ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLNullable<Credential>>
+  create(ScriptState*, const CredentialCreationOptions*, ExceptionState&) = 0;
   virtual ScriptPromise preventSilentAccess(ScriptState*) = 0;
 
   void Trace(Visitor*) const override;

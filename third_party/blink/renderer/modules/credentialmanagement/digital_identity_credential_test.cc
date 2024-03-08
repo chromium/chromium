@@ -72,7 +72,9 @@ TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
       /*enabled=*/true);
 
   ScriptState* script_state = context.GetScriptState();
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<Credential>>>(
+          script_state);
   auto promise = DiscoverDigitalIdentityCredentialFromExternalSource(
       script_state, resolver, *CreateValidOptions(),
       IGNORE_EXCEPTION_FOR_TESTING);

@@ -9,7 +9,7 @@
     Exposed=(Window,Worker)
 ] interface CacheStorage {
   [CallWith=ScriptState, MeasureAs=CacheStorageRead, RaisesException]
-  Promise<any> match(RequestInfo request,
+  Promise<Response> match(RequestInfo request,
                      optional MultiCacheQueryOptions options = {});
 
   [CallWith=ScriptState, MeasureAs=CacheStorageRead, RaisesException]

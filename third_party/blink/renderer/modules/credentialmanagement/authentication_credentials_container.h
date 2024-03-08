@@ -22,7 +22,6 @@ class CredentialRequestOptions;
 class IdentityCredentialRequestOptions;
 class ExceptionState;
 class Navigator;
-class ScriptPromise;
 class ScriptState;
 
 class MODULES_EXPORT AuthenticationCredentialsContainer final
@@ -34,27 +33,24 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
   explicit AuthenticationCredentialsContainer(Navigator&);
 
   // CredentialsContainer:
-  ScriptPromise get(ScriptState*,
-                    const CredentialRequestOptions*,
-                    ExceptionState&) override;
-  ScriptPromise store(ScriptState*,
-                      Credential*,
-                      ExceptionState& exception_state) override;
-  ScriptPromise create(ScriptState*,
-                       const CredentialCreationOptions*,
-                       ExceptionState&) override;
+  ScriptPromiseTyped<IDLNullable<Credential>>
+  get(ScriptState*, const CredentialRequestOptions*, ExceptionState&) override;
+  ScriptPromiseTyped<Credential>
+  store(ScriptState*, Credential*, ExceptionState& exception_state) override;
+  ScriptPromiseTyped<IDLNullable<Credential>> create(
+      ScriptState*,
+      const CredentialCreationOptions*,
+      ExceptionState&) override;
   ScriptPromise preventSilentAccess(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 
  private:
   // get() implementation for FedCM and WebIdentityDigitalCredential.
-  ScriptPromise GetForIdentity(ScriptState*,
-                               ScriptPromiseResolver* resolver,
-                               const ScriptPromise& promise,
-                               const CredentialRequestOptions&,
-                               const IdentityCredentialRequestOptions&,
-                               ExceptionState&);
+  void GetForIdentity(ScriptState*,
+                      ScriptPromiseResolverTyped<IDLNullable<Credential>>*,
+                      const CredentialRequestOptions&,
+                      const IdentityCredentialRequestOptions&);
 
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;

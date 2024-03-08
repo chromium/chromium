@@ -10,12 +10,11 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
-
+class Credential;
 class CredentialCreationOptions;
 class CredentialRequestOptions;
 class ExceptionState;
 class Navigator;
-class ScriptPromise;
 class ScriptState;
 
 class MODULES_EXPORT IdentityCredentialsContainer final
@@ -27,13 +26,15 @@ class MODULES_EXPORT IdentityCredentialsContainer final
   explicit IdentityCredentialsContainer(Navigator&);
 
   // CredentialsContainer.idl
-  ScriptPromise get(ScriptState*,
-                    const CredentialRequestOptions*,
-                    ExceptionState&) override;
-  ScriptPromise store(ScriptState*, Credential*, ExceptionState&) override;
-  ScriptPromise create(ScriptState*,
-                       const CredentialCreationOptions*,
-                       ExceptionState&) override;
+  ScriptPromiseTyped<IDLNullable<Credential>>
+  get(ScriptState*, const CredentialRequestOptions*, ExceptionState&) override;
+  ScriptPromiseTyped<Credential> store(ScriptState*,
+                                       Credential*,
+                                       ExceptionState&) override;
+  ScriptPromiseTyped<IDLNullable<Credential>> create(
+      ScriptState*,
+      const CredentialCreationOptions*,
+      ExceptionState&) override;
   ScriptPromise preventSilentAccess(ScriptState*) override;
 
   void Trace(Visitor*) const override;

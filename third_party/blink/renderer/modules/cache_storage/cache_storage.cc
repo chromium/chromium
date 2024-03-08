@@ -124,17 +124,17 @@ void CacheStorage::OnCacheStorageAllowed(base::OnceCallback<void()> callback,
                                     kSecurityErrorMessage);
 }
 
-ScriptPromise CacheStorage::open(ScriptState* script_state,
-                                 const String& cache_name,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<Cache> CacheStorage::open(ScriptState* script_state,
+                                             const String& cache_name,
+                                             ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
                          "name", CacheStorageTracedValue(cache_name));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<Cache>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -149,7 +149,7 @@ ScriptPromise CacheStorage::open(ScriptState* script_state,
 
 void CacheStorage::OpenImpl(const String& cache_name,
                             int64_t trace_id,
-                            ScriptPromiseResolver* resolver) {
+                            ScriptPromiseResolverTyped<Cache>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -168,7 +168,7 @@ void CacheStorage::OpenImpl(const String& cache_name,
           [](GlobalFetch::ScopedFetcher* fetcher,
              CacheStorageBlobClientList* blob_client_list,
              base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolverTyped<Cache>* resolver,
              mojom::blink::OpenResultPtr result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Open",
@@ -391,10 +391,11 @@ void CacheStorage::KeysImpl(
           base::TimeTicks::Now(), trace_id)));
 }
 
-ScriptPromise CacheStorage::match(ScriptState* script_state,
-                                  const V8RequestInfo* request,
-                                  const MultiCacheQueryOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<Response> CacheStorage::match(
+    ScriptState* script_state,
+    const V8RequestInfo* request,
+    const MultiCacheQueryOptions* options,
+    ExceptionState& exception_state) {
   DCHECK(request);
   Request* request_object = nullptr;
   switch (request->GetContentType()) {
@@ -405,17 +406,18 @@ ScriptPromise CacheStorage::match(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException()) {
-        return ScriptPromise();
+        return ScriptPromiseTyped<Response>();
       }
       break;
   }
   return MatchImpl(script_state, request_object, options, exception_state);
 }
 
-ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
-                                      const Request* request,
-                                      const MultiCacheQueryOptions* options,
-                                      ExceptionState& exception_state) {
+ScriptPromiseTyped<Response> CacheStorage::MatchImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const MultiCacheQueryOptions* options,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   mojom::blink::FetchAPIRequestPtr mojo_request =
       request->CreateFetchAPIRequest();
@@ -435,9 +437,9 @@ ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
                          "request", CacheStorageTracedValue(mojo_request),
                          "options", CacheStorageTracedValue(mojo_options));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<Response>>(
       script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (request->method() != http_names::kGET && !options->ignoreMethod()) {
     resolver->Resolve();
@@ -462,7 +464,7 @@ void CacheStorage::MatchImplHelper(
     bool in_related_fetch_event,
     bool in_range_fetch_event,
     int64_t trace_id,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<Response>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -482,7 +484,7 @@ void CacheStorage::MatchImplHelper(
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const MultiCacheQueryOptions* options,
              int64_t trace_id, CacheStorage* self,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolverTyped<Response>* resolver,
              mojom::blink::MatchResultPtr result) {
             base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
             if (!options->hasCacheName() || options->cacheName().empty()) {

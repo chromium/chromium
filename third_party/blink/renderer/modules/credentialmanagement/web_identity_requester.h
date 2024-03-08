@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
-
+class Credential;
 class IdentityProviderRequestOptions;
 class WebIdentityWindowOnloadEventListener;
 
@@ -38,7 +38,7 @@ class MODULES_EXPORT WebIdentityRequester final
   void RequestToken();
   // Invoked at least once per token request, can be multiple times.
   void AppendGetCall(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
       const HeapVector<Member<IdentityProviderRequestOptions>>& providers,
       mojom::blink::RpContext rp_context,
       mojom::blink::RpMode rp_mode);
@@ -48,7 +48,8 @@ class MODULES_EXPORT WebIdentityRequester final
   // Starts the timer for recording the duration from when RequestToken is
   // called directly to when RequestToken would be called if invoked through
   // WebIdentityRequester.
-  void StartDelayTimer(ScriptPromiseResolver* resolver);
+  void StartDelayTimer(
+      ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver);
   // Stops the timer for recording the duration from when RequestToken is
   // called directly to when RequestToken would be called if invoked through
   // WebIdentityRequester.
@@ -62,15 +63,17 @@ class MODULES_EXPORT WebIdentityRequester final
 
  private:
   struct ResolverAndProviders : public GarbageCollected<ResolverAndProviders> {
-    ResolverAndProviders(ScriptPromiseResolver* resolver,
-                         Vector<KURL> providers);
+    ResolverAndProviders(
+        ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+        Vector<KURL> providers);
     void Trace(Visitor*) const;
 
-    const Member<ScriptPromiseResolver> resolver_;
+    const Member<ScriptPromiseResolverTyped<IDLNullable<Credential>>> resolver_;
     const Vector<KURL> providers_;
   };
 
-  void InitWindowOnloadEventListener(ScriptPromiseResolver* resolver);
+  void InitWindowOnloadEventListener(
+      ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver);
 
   // A vector of pointers to mojom class objects. Each mojom class object
   // corresponds to parameters of a navigator.credentials.get call and contains

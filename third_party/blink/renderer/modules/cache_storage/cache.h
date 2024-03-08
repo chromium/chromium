@@ -62,10 +62,10 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   Cache& operator=(const Cache&) = delete;
 
   // From Cache.idl:
-  ScriptPromise match(ScriptState* script_state,
-                      const V8RequestInfo* request,
-                      const CacheQueryOptions* options,
-                      ExceptionState& exception_state);
+  ScriptPromiseTyped<Response> match(ScriptState* script_state,
+                                     const V8RequestInfo* request,
+                                     const CacheQueryOptions* options,
+                                     ExceptionState& exception_state);
   ScriptPromiseTyped<IDLSequence<Response>> matchAll(ScriptState*,
                                                      ExceptionState&);
   ScriptPromiseTyped<IDLSequence<Response>> matchAll(
@@ -107,10 +107,10 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   class ResponseBodyLoader;
   class FetchHandler;
 
-  ScriptPromise MatchImpl(ScriptState*,
-                          const Request*,
-                          const CacheQueryOptions*,
-                          ExceptionState&);
+  ScriptPromiseTyped<Response> MatchImpl(ScriptState*,
+                                         const Request*,
+                                         const CacheQueryOptions*,
+                                         ExceptionState&);
   ScriptPromiseTyped<IDLSequence<Response>> MatchAllImpl(
       ScriptState*,
       const Request*,
