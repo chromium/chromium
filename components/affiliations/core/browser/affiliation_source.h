@@ -25,9 +25,9 @@ class AffiliationSource {
   class Observer {
    public:
     // Notifies the observer that a new facet has been added.
-    virtual void OnFacetsAdded(const std::vector<FacetURI>& facets) = 0;
+    virtual void OnFacetsAdded(std::vector<FacetURI> facets) = 0;
     // Notifies the observer that a facet has been removed.
-    virtual void OnFacetsRemoved(const std::vector<FacetURI>& facets) = 0;
+    virtual void OnFacetsRemoved(std::vector<FacetURI> facets) = 0;
 
    protected:
     virtual ~Observer() = default;

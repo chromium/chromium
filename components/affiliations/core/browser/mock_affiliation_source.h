@@ -28,11 +28,8 @@ class MockAffiliationSourceObserver : public AffiliationSource::Observer {
   MockAffiliationSourceObserver();
   ~MockAffiliationSourceObserver() override;
 
-  MOCK_METHOD(void, OnFacetsAdded, (const std::vector<FacetURI>&), (override));
-  MOCK_METHOD(void,
-              OnFacetsRemoved,
-              (const std::vector<FacetURI>&),
-              (override));
+  MOCK_METHOD(void, OnFacetsAdded, (std::vector<FacetURI>), (override));
+  MOCK_METHOD(void, OnFacetsRemoved, (std::vector<FacetURI>), (override));
 };
 
 }  // namespace affiliations

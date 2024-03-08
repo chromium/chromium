@@ -24,7 +24,7 @@ bool IsFacetValidForAffiliation(const FacetURI& facet) {
 PasswordAffiliationSourceAdapter::PasswordAffiliationSourceAdapter(
     PasswordStoreInterface* store,
     AffiliationSource::Observer* observer)
-    : store_(*store), observer_(*observer) {}
+    : store_(store), observer_(*observer) {}
 
 PasswordAffiliationSourceAdapter::~PasswordAffiliationSourceAdapter() = default;
 
@@ -35,7 +35,49 @@ void PasswordAffiliationSourceAdapter::GetFacets(
 }
 
 void PasswordAffiliationSourceAdapter::StartObserving() {
-  // TODO(b/328037758): Implement PasswordStoreInterface::Observer.
+  scoped_observation_.Observe(store_);
+}
+
+void PasswordAffiliationSourceAdapter::OnLoginsChanged(
+    PasswordStoreInterface* /*store*/,
+    const PasswordStoreChangeList& changes) {
+  std::vector<FacetURI> facets_added;
+  std::vector<FacetURI> facets_removed;
+  for (const PasswordStoreChange& change : changes) {
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(change.form().signon_realm);
+
+    if (!facet_uri.is_valid()) {
+      continue;
+    }
+
+    if (!IsFacetValidForAffiliation(facet_uri)) {
+      continue;
+    }
+
+    if (change.type() == PasswordStoreChange::ADD) {
+      facets_added.push_back(std::move(facet_uri));
+    } else if (change.type() == PasswordStoreChange::REMOVE) {
+      facets_removed.push_back(std::move(facet_uri));
+    }
+  }
+  // When the primary key for a login is updated, `changes` will contain both a
+  // REMOVE and ADD change for that login. Cached affiliation data should not be
+  // deleted in this case. A simple solution is to call `added` events always
+  // before `removed` -- the trimming logic will detect that there is an active
+  // prefetch and not delete the corresponding data.
+  if (!facets_added.empty()) {
+    observer_->OnFacetsAdded(std::move(facets_added));
+  }
+  if (!facets_removed.empty()) {
+    observer_->OnFacetsRemoved(std::move(facets_removed));
+  }
+}
+
+void PasswordAffiliationSourceAdapter::OnLoginsRetained(
+    PasswordStoreInterface* store,
+    const std::vector<PasswordForm>& retained_passwords) {
+  // TODO(b/328037758): Handle retained passwords.
 }
 
 void PasswordAffiliationSourceAdapter::OnGetPasswordStoreResults(

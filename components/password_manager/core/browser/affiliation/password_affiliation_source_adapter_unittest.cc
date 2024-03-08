@@ -26,6 +26,7 @@ using ::affiliations::FacetURI;
 using ::affiliations::MockAffiliationSourceObserver;
 using ::testing::AssertionFailure;
 using ::testing::AssertionSuccess;
+using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -85,6 +86,7 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
                            /*affiliated_match_helper=*/nullptr);
     adapter_ = std::make_unique<PasswordAffiliationSourceAdapter>(
         password_store(), mock_source_observer());
+    RunUntilIdle();
   }
 
   void TearDown() override {
@@ -101,6 +103,11 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
 
   void AddLoginAndWait(const PasswordForm& form) {
     password_store()->AddLogin(form);
+    RunUntilIdle();
+  }
+
+  void RemoveLoginAndWait(const PasswordForm& form) {
+    password_store_->RemoveLogin(form);
     RunUntilIdle();
   }
 
@@ -128,6 +135,8 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
     return mock_source_observer_.get();
   }
 
+  PasswordAffiliationSourceAdapter* adapter() { return adapter_.get(); }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -139,14 +148,11 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
 
 // Verifies that facets no facets are returned if the password store is empty.
 TEST_F(PasswordAffiliationSourceAdapterTest, GetFacetsReturnsNoCredentials) {
-  RunUntilIdle();
   EXPECT_TRUE(ExpectAdapterToReturnFacets({}));
 }
 
 // Verifies that facets for web domain credentials are available via GetFacets.
 TEST_F(PasswordAffiliationSourceAdapterTest, GetFacetsForWebOnlyCredentials) {
-  RunUntilIdle();
-
   AddLoginAndWait(GetTestCredential(kTestWebRealmAlpha1));
   AddLoginAndWait(GetTestCredential(kTestWebRealmAlpha2));
 #if !BUILDFLAG(IS_ANDROID)
@@ -162,8 +168,6 @@ TEST_F(PasswordAffiliationSourceAdapterTest, GetFacetsForWebOnlyCredentials) {
 // via GetFacets.
 TEST_F(PasswordAffiliationSourceAdapterTest,
        GetFacetsForAndroidOnlyCredentials) {
-  RunUntilIdle();
-
   AddLoginAndWait(GetTestCredential(kTestAndroidRealmAlpha3));
   AddLoginAndWait(GetTestCredential(kTestAndroidRealmBeta2));
   AddLoginAndWait(GetTestBlocklistedAndroidCredentials(kTestAndroidRealmBeta3));
@@ -181,8 +185,6 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
 // are available via GetFacets.
 TEST_F(PasswordAffiliationSourceAdapterTest,
        GetFacetsForAllTypesOfCredentials) {
-  RunUntilIdle();
-
   AddLoginAndWait(GetTestCredential(kTestWebRealmAlpha1));
   AddLoginAndWait(GetTestCredential(kTestWebRealmAlpha2));
   AddLoginAndWait(GetTestCredential(kTestAndroidRealmAlpha3));
@@ -200,6 +202,99 @@ TEST_F(PasswordAffiliationSourceAdapterTest,
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma),
       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta3)};
   EXPECT_TRUE(ExpectAdapterToReturnFacets(expected_facets));
+}
+
+// Verifies that the observer is signaled that new domains have been added after
+// the adapter started observing the password store. It also tests that changes
+// are no-op before StartObserving.
+TEST_F(PasswordAffiliationSourceAdapterTest,
+       SignalsCredentialsAddedAfterStartObserving) {
+  EXPECT_CALL(*mock_source_observer(), OnFacetsAdded).Times(0);
+  AddLoginAndWait(GetTestCredential(kTestAndroidRealmBeta2));
+
+  adapter()->StartObserving();
+
+  EXPECT_CALL(*mock_source_observer(),
+              OnFacetsAdded(ElementsAre(
+                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3))));
+  AddLoginAndWait(GetTestCredential(kTestAndroidRealmAlpha3));
+}
+
+// Verifies that the observer is signaled that domains have been removed
+// after the adapter started observing the password store.
+TEST_F(PasswordAffiliationSourceAdapterTest,
+       SignalsCredentialsRemovedAfterStartObserving) {
+  EXPECT_CALL(*mock_source_observer(), OnFacetsAdded).Times(0);
+  AddLoginAndWait(GetTestCredential(kTestAndroidRealmBeta2));
+
+  adapter()->StartObserving();
+
+  EXPECT_CALL(*mock_source_observer(),
+              OnFacetsRemoved(ElementsAre(
+                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2))));
+  RemoveLoginAndWait(GetTestCredential(kTestAndroidRealmBeta2));
+}
+
+// Verifies that updating a login's primary key triggers the observer, signaling
+// a domain addition followed by a removal. This precise sequence prevents
+// redundant affiliation requests.
+TEST_F(PasswordAffiliationSourceAdapterTest,
+       SignalsAddedBeforeRemovedForPrimaryKeyUpdates) {
+  AddLoginAndWait(GetTestCredential(kTestAndroidRealmAlpha3));
+
+  adapter()->StartObserving();
+  {
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*mock_source_observer(),
+                OnFacetsAdded(ElementsAre(
+                    FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3))));
+    EXPECT_CALL(*mock_source_observer(),
+                OnFacetsRemoved(ElementsAre(
+                    FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3))));
+  }
+
+  PasswordForm old_form(GetTestCredential(kTestAndroidRealmAlpha3));
+  PasswordForm new_form(old_form);
+  new_form.username_value = u"NewUserName";
+  password_store()->UpdateLoginWithPrimaryKey(new_form, old_form);
+  RunUntilIdle();
+}
+
+// Adds and removes credentials for the same domain, and expects that the
+// observer is signaled for added and removed domains on each repeated login.
+TEST_F(PasswordAffiliationSourceAdapterTest,
+       DuplicateCredentialsArePrefetchWithMultiplicity) {
+  adapter()->StartObserving();
+  std::vector<FacetURI> expected_facets;
+
+  EXPECT_CALL(*mock_source_observer(),
+              OnFacetsAdded(ElementsAre(
+                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3))))
+      .Times(3);
+
+  PasswordForm form(GetTestCredential(kTestAndroidRealmAlpha3));
+  AddLoginAndWait(form);
+
+  PasswordForm form2(form);
+  form2.username_value = u"JohnDoe2";
+  AddLoginAndWait(form2);
+
+  PasswordForm form3(form);
+  form3.username_value = u"JohnDoe3";
+  AddLoginAndWait(form3);
+
+  EXPECT_TRUE(ExpectAdapterToReturnFacets(
+      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
+       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
+       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3)}));
+
+  EXPECT_CALL(*mock_source_observer(),
+              OnFacetsRemoved(ElementsAre(
+                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3))))
+      .Times(3);
+  RemoveLoginAndWait(form);
+  RemoveLoginAndWait(form2);
+  RemoveLoginAndWait(form3);
 }
 
 }  // namespace password_manager
