@@ -176,15 +176,11 @@ inline LayoutUnit ResolveMaxBlockLength(
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr,
     Length::AnchorEvaluator* anchor_evaluator = nullptr) {
-  if (LIKELY(BlockLengthUnresolvable(constraint_space, length,
-                                     override_percentage_resolution_size)))
-    return LayoutUnit::Max();
-
   // TODO(https://crbug.com/313072): Ensure that we don't do math on
   // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
-      /* use_intrinsic_size */ false, override_available_size,
+      /* use_intrinsic_size */ true, override_available_size,
       override_percentage_resolution_size, anchor_evaluator,
       []() { return LayoutUnit::Max(); });
 }
