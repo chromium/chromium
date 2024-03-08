@@ -37,24 +37,38 @@ RecoveryKeyStoreController::OngoingUpdate::operator=(OngoingUpdate&&) = default;
 RecoveryKeyStoreController::OngoingUpdate::~OngoingUpdate() = default;
 
 RecoveryKeyStoreController::RecoveryKeyStoreController(
-    CoreAccountInfo account_info,
     std::unique_ptr<RecoveryKeyProvider> recovery_key_provider,
     std::unique_ptr<RecoveryKeyStoreConnection> connection,
-    Observer* observer,
-    base::Time last_update,
-    base::TimeDelta update_period)
-    : account_info_(std::move(account_info)),
-      recovery_key_provider_(std::move(recovery_key_provider)),
+    Observer* observer)
+    : recovery_key_provider_(std::move(recovery_key_provider)),
       connection_(std::move(connection)),
-      observer_(observer),
-      update_period_(update_period) {
+      observer_(observer) {
   CHECK(recovery_key_provider_);
   CHECK(connection_);
   CHECK(observer_);
+}
+
+RecoveryKeyStoreController::~RecoveryKeyStoreController() = default;
+
+void RecoveryKeyStoreController::StartPeriodicUploads(
+    CoreAccountInfo account_info,
+    base::Time last_update,
+    base::TimeDelta update_period) {
+  // Cancel scheduled and in-progress uploads, if any.
+  if (account_info_) {
+    StopPeriodicUploads();
+  }
+
+  CHECK(!account_info_);
+  CHECK(!next_update_timer_.IsRunning());
+  CHECK(!ongoing_update_);
 
   // Schedule the next update. If an update has occurred previously, delay the
   // update by the remainder of the partially elapsed `update_period`. Note that
   // `last_update` may actually be in the future.
+  account_info_ = account_info;
+  update_period_ = update_period;
+
   auto now = base::Time::Now();
   last_update = std::min(now, last_update);
   base::TimeDelta delay;
@@ -65,7 +79,11 @@ RecoveryKeyStoreController::RecoveryKeyStoreController(
   ScheduleNextUpdate(delay);
 }
 
-RecoveryKeyStoreController::~RecoveryKeyStoreController() = default;
+void RecoveryKeyStoreController::StopPeriodicUploads() {
+  account_info_.reset();
+  next_update_timer_.Stop();
+  ongoing_update_.reset();
+}
 
 void RecoveryKeyStoreController::ScheduleNextUpdate(base::TimeDelta delay) {
   next_update_timer_.Start(FROM_HERE, delay, this,
@@ -99,7 +117,7 @@ void RecoveryKeyStoreController::OnGetCurrentRecoveryKeyStoreData(
                              key.asymmetric_key_pair().public_key().end())});
   }
   ongoing_update_->request = connection_->UpdateRecoveryKeyStore(
-      account_info_, std::move(*vault),
+      *account_info_, std::move(*vault),
       base::BindOnce(&RecoveryKeyStoreController::OnUpdateRecoveryKeyStore,
                      weak_factory_.GetWeakPtr(),
                      std::move(uploaded_application_keys)));

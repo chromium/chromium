@@ -89,7 +89,8 @@ class RecoveryKeyStoreConnectionImplTest : public testing::Test {
   std::unique_ptr<RecoveryKeyStoreConnection> connection_ =
       std::make_unique<RecoveryKeyStoreConnectionImpl>(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_),
+              &test_url_loader_factory_)
+              ->Clone(),
           std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
               signin::AccessTokenInfo(
                   "test access token",
@@ -131,7 +132,8 @@ TEST_F(RecoveryKeyStoreConnectionImplTest,
   // RecoveryKeyStoreConnection requests.
   auto connection = std::make_unique<RecoveryKeyStoreConnectionImpl>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_),
+          &test_url_loader_factory_)
+          ->Clone(),
       std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
           base::unexpected(TrustedVaultAccessTokenFetcher::FetchingError::
                                kPersistentAuthError)));

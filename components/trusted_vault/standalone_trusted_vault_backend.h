@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/recovery_key_store_controller.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -40,7 +41,8 @@ namespace trusted_vault {
 // sequence.
 class StandaloneTrustedVaultBackend
     : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>,
-      public TrustedVaultDegradedRecoverabilityHandler::Delegate {
+      public TrustedVaultDegradedRecoverabilityHandler::Delegate,
+      public RecoveryKeyStoreController::Observer {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
@@ -71,6 +73,16 @@ class StandaloneTrustedVaultBackend
   // |connection| can be null, in this case functionality that involves
   // interaction with vault service (such as device registration, keys
   // downloading, etc.) will be disabled.
+  // |recovery_key_provider| and |recovery_key_store_connection| may be null, in
+  // which case |SetRecoveryKeyStoreUploadEnabled()| must not be called.
+  StandaloneTrustedVaultBackend(
+      const base::FilePath& file_path,
+      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<TrustedVaultConnection> connection,
+      std::unique_ptr<RecoveryKeyStoreController::RecoveryKeyProvider>
+          recovery_key_provider,
+      std::unique_ptr<RecoveryKeyStoreConnection>
+          recovery_key_store_connection);
   StandaloneTrustedVaultBackend(
       const base::FilePath& file_path,
       std::unique_ptr<Delegate> delegate,
@@ -130,6 +142,13 @@ class StandaloneTrustedVaultBackend
                                 int method_type_hint,
                                 base::OnceClosure cb);
 
+  // Changes the state of periodic recovery key store uploads. This must only be
+  // called if a non-null |RecoveryKeyStoreControllerFactory| was passed at
+  // construction. Recovery key store uploads are only supported for the primary
+  // account.
+  void SetRecoveryKeyStoreUploadEnabled(const CoreAccountInfo& account_info,
+                                        bool is_enabled);
+
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
   std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
@@ -150,6 +169,11 @@ class StandaloneTrustedVaultBackend
   bool HasPendingTrustedRecoveryMethodForTesting() const;
 
   bool AreConnectionRequestsThrottledForTesting();
+
+  // RecoveryKeyStoreController::Observer:
+  void OnUpdateRecoveryKeyStore(
+      const std::vector<RecoveryKeyStoreController::ApplicationKey>&
+          application_keys) override;
 
   // Specifies how long requests shouldn't be retried after encountering
   // transient error. Note, that this doesn't affect requests related to
@@ -182,6 +206,10 @@ class StandaloneTrustedVaultBackend
   // Attempts to honor the pending operation stored in
   // |pending_trusted_recovery_method_|.
   void MaybeProcessPendingTrustedRecoveryMethod();
+
+  // Initiate periodic recovery key store uploads if the on-disk state indicates
+  // that they should be.
+  void MaybeStartRecoveryKeyStoreUploads();
 
   // Called when device registration for |gaia_id| is completed (either
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
@@ -235,6 +263,11 @@ class StandaloneTrustedVaultBackend
   // kTrustedVaultServiceURLSwitch is not valid, consider making it non-nullable
   // even in this case and clean up related logic.
   const std::unique_ptr<TrustedVaultConnection> connection_;
+
+  // Schedules periodic updates to the recovery key store service once enabled
+  // via `SetRecoveryKeyStoreUploadEnabled()`. May be null, in which case
+  // `SetRecoveryKeyStoreUploadEnabled()` must not be called.
+  std::unique_ptr<RecoveryKeyStoreController> recovery_key_store_controller_;
 
   trusted_vault_pb::LocalTrustedVault data_;
 

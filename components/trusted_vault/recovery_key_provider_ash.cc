@@ -40,6 +40,9 @@ RecoveryKeyProviderAsh::RecoveryKeyProviderAsh(
       account_id_(std::move(account_id)),
       device_id_(std::move(device_id)) {
   CHECK(user_data_auth_client_task_runner_);
+  // The instance is created on the main thread, but lives on the
+  // `StandadloneTrustedVaultBackend` utility thread.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 RecoveryKeyProviderAsh::~RecoveryKeyProviderAsh() = default;

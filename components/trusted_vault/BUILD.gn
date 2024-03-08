@@ -144,9 +144,15 @@ static_library("test_support") {
     "test/fake_trusted_vault_access_token_fetcher.h",
     "test/fake_trusted_vault_client.cc",
     "test/fake_trusted_vault_client.h",
+    "test/mock_recovery_key_store_connection.cc",
+    "test/mock_recovery_key_store_connection.h",
   ]
 
-  deps = [ "//components/signin/public/identity_manager" ]
+  deps = [
+    "//components/signin/public/identity_manager",
+    "//components/trusted_vault/proto",
+    "//testing/gmock",
+  ]
 
   public_deps = [
     ":trusted_vault",

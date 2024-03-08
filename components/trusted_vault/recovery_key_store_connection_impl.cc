@@ -61,9 +61,10 @@ void ProcessUpdateVaultResponseResponse(
 }  // namespace
 
 RecoveryKeyStoreConnectionImpl::RecoveryKeyStoreConnectionImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        pending_url_loader_factory,
     std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher)
-    : url_loader_factory_(url_loader_factory),
+    : pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       access_token_fetcher_(std::move(access_token_fetcher)) {}
 
 RecoveryKeyStoreConnectionImpl::~RecoveryKeyStoreConnectionImpl() = default;
@@ -80,11 +81,23 @@ RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kPatch,
       GURL(kUpdateVaultUrl), vault.SerializeAsString(),
-      /*max_retry_duration=*/base::Seconds(0), url_loader_factory_,
+      /*max_retry_duration=*/base::Seconds(0), URLLoaderFactory(),
       access_token_fetcher_->Clone(), std::move(record_fetch_status_to_uma));
   request->FetchAccessTokenAndSendRequest(
       base::BindOnce(&ProcessUpdateVaultResponseResponse, std::move(callback)));
   return request;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+RecoveryKeyStoreConnectionImpl::URLLoaderFactory() {
+  // `url_loader_factory_` is created lazily, because it needs to be done on
+  // the backend sequence, while this class ctor is called on UI thread.
+  if (!url_loader_factory_) {
+    CHECK(pending_url_loader_factory_);
+    url_loader_factory_ = network::SharedURLLoaderFactory::Create(
+        std::move(pending_url_loader_factory_));
+  }
+  return url_loader_factory_;
 }
 
 }  // namespace trusted_vault

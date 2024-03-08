@@ -20,6 +20,7 @@
 #include "components/trusted_vault/recovery_key_provider_ash.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
 #include "components/trusted_vault/recovery_key_store_controller.h"
+#include "components/trusted_vault/test/mock_recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -99,19 +100,6 @@ class GetRecoverableKeyStoresReplyBuilder {
   user_data_auth::GetRecoverableKeyStoresReply reply_ = {};
 };
 
-class MockRecoveryKeyStoreConnection : public RecoveryKeyStoreConnection {
- public:
-  MockRecoveryKeyStoreConnection() = default;
-  ~MockRecoveryKeyStoreConnection() override = default;
-
-  MOCK_METHOD(std::unique_ptr<Request>,
-              UpdateRecoveryKeyStore,
-              (const CoreAccountInfo& account_info,
-               const trusted_vault_pb::Vault& request,
-               UpdateRecoveryKeyStoreCallback callback),
-              (override));
-};
-
 class MockRecoveryKeyStoreControllerObserver
     : public RecoveryKeyStoreController::Observer {
  public:
@@ -182,10 +170,14 @@ class RecoveryKeyStoreControllerAshTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault(), account_id_,
         kTestDeviceId);
     controller_ = std::make_unique<RecoveryKeyStoreController>(
-        account_info_, std::move(recovery_key_provider),
-        std::move(connection_holder_), &observer_, /*last_update=*/last_update,
-        /*update_period=*/update_period);
+        std::move(recovery_key_provider), std::move(connection_holder_),
+        &observer_);
+    controller_->StartPeriodicUploads(account_info_,
+                                      /*last_update=*/last_update,
+                                      /*update_period=*/update_period);
   }
+
+  void StopController() { controller_->StopPeriodicUploads(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -308,6 +300,24 @@ TEST_F(RecoveryKeyStoreControllerAshTest, ShouldScheduleUpdateAfterError) {
       UpdateRecoveryKeyStoreStatus::kSuccess);
   ExpectObserverUpdateWithPasskeyApplicationKey();
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
+}
+
+TEST_F(RecoveryKeyStoreControllerAshTest, ShouldCeaseUploadsAfterStopping) {
+  ExpectGetRecoverableKeyStoresCallAndReply(
+      GetRecoverableKeyStoresReplyBuilder().AddPinKeyStore().Build());
+  ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
+      UpdateRecoveryKeyStoreStatus::kSuccess);
+  ExpectObserverUpdateWithPasskeyApplicationKey();
+  StartController(/*last_update=*/base::Time(),
+                  /*update_period=*/kTestUpdatePeriod);
+
+  // Allow the initial upload to proceed.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  StopController();
+
+  // No further uploads should occur.
+  task_environment_.FastForwardBy(2 * kTestUpdatePeriod);
 }
 
 }  // namespace

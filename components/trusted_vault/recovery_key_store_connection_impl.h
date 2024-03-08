@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 struct CoreAccountInfo;
 
@@ -22,7 +23,8 @@ namespace trusted_vault {
 class RecoveryKeyStoreConnectionImpl : public RecoveryKeyStoreConnection {
  public:
   RecoveryKeyStoreConnectionImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          pending_url_loader_factory,
       std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher);
   ~RecoveryKeyStoreConnectionImpl() override;
 
@@ -32,6 +34,10 @@ class RecoveryKeyStoreConnectionImpl : public RecoveryKeyStoreConnection {
       UpdateRecoveryKeyStoreCallback callback) override;
 
  private:
+  scoped_refptr<network::SharedURLLoaderFactory> URLLoaderFactory();
+
+  std::unique_ptr<network::PendingSharedURLLoaderFactory>
+      pending_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
 };

@@ -65,15 +65,14 @@ class RecoveryKeyStoreController {
         const std::vector<ApplicationKey>& application_keys) = 0;
   };
 
+  static constexpr base::TimeDelta kDefaultUpdatePeriod = base::Hours(23);
+
   // `recovery_key_provider`, `connection` and `observer` must not be null.
   // `observer` must outlive `this`.
   RecoveryKeyStoreController(
-      CoreAccountInfo account_info,
       std::unique_ptr<RecoveryKeyProvider> recovery_key_provider,
       std::unique_ptr<RecoveryKeyStoreConnection> connection,
-      Observer* observer,
-      base::Time last_update,
-      base::TimeDelta update_period);
+      Observer* observer);
 
   RecoveryKeyStoreController(const RecoveryKeyStoreController&) = delete;
 
@@ -81,6 +80,20 @@ class RecoveryKeyStoreController {
       delete;
 
   ~RecoveryKeyStoreController();
+
+  // Enables periodic uploads to the recovery key store service for the account
+  // identified by `account_info`. `last_update` is the time of the most recent
+  // successful key store upload. `update_period` determines the frequency
+  // of future uploads.
+  //
+  // Any uploads that are already scheduled or in-flight will be stopped. (I.e.,
+  // concurrent scheduling for multiple accounts is not implemented.)
+  void StartPeriodicUploads(CoreAccountInfo account_info,
+                            base::Time last_update,
+                            base::TimeDelta update_period);
+
+  // Disables future uploads to the recovery key store service.
+  void StopPeriodicUploads();
 
  private:
   struct OngoingUpdate {
@@ -100,12 +113,12 @@ class RecoveryKeyStoreController {
                                 UpdateRecoveryKeyStoreStatus status);
   void CompleteUpdateRequest(const std::vector<ApplicationKey>& result);
 
-  const CoreAccountInfo account_info_;
   std::unique_ptr<RecoveryKeyProvider> recovery_key_provider_;
   std::unique_ptr<RecoveryKeyStoreConnection> connection_;
   raw_ptr<Observer> observer_;
 
-  const base::TimeDelta update_period_;
+  std::optional<CoreAccountInfo> account_info_;
+  base::TimeDelta update_period_;
   base::OneShotTimer next_update_timer_;
 
   std::optional<OngoingUpdate> ongoing_update_;

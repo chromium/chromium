@@ -16,11 +16,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -28,7 +30,10 @@
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "components/trusted_vault/recovery_key_store_connection.h"
+#include "components/trusted_vault/recovery_key_store_controller.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/test/mock_recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -167,6 +172,20 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
               (override));
 };
 
+class FakeRecoveryKeyProvider
+    : public RecoveryKeyStoreController::RecoveryKeyProvider {
+ public:
+  void GetCurrentRecoveryKeyStoreData(
+      RecoveryKeyStoreDataCallback callback) override {
+    trusted_vault_pb::Vault vault;
+    vault.set_vault_metadata("test vault metadata");
+    vault.set_recovery_key("test recovery key");
+    vault.add_application_keys()->set_key_name(
+        "security_domain_member_key_encrypted_locally");
+    std::move(callback).Run(std::move(vault));
+  }
+};
+
 class StandaloneTrustedVaultBackendTest : public testing::Test {
  public:
   StandaloneTrustedVaultBackendTest()
@@ -191,8 +210,19 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
     connection_ = connection.get();
 
-    backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-        file_path_, std::move(delegate), std::move(connection));
+    if (use_recovery_key_store_) {
+      auto recovery_key_store_connection =
+          std::make_unique<testing::NiceMock<MockRecoveryKeyStoreConnection>>();
+      recovery_key_store_connection_ = recovery_key_store_connection.get();
+
+      backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
+          file_path_, std::move(delegate), std::move(connection),
+          std::make_unique<FakeRecoveryKeyProvider>(),
+          std::move(recovery_key_store_connection));
+    } else {
+      backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
+          file_path_, std::move(delegate), std::move(connection));
+    }
     backend_->SetClockForTesting(&clock_);
     backend_->ReadDataFromDisk();
 
@@ -274,6 +304,14 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
                                 device_private_key_material.end());
   }
 
+  MockRecoveryKeyStoreConnection* recovery_key_store_connection() {
+    return recovery_key_store_connection_;
+  }
+
+  void set_use_recovery_key_store(bool use_recovery_key_store) {
+    use_recovery_key_store_ = use_recovery_key_store;
+  }
+
  private:
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
@@ -283,6 +321,9 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
       connection_ = nullptr;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
+  bool use_recovery_key_store_ = false;
+  raw_ptr<testing::NiceMock<MockRecoveryKeyStoreConnection>>
+      recovery_key_store_connection_ = nullptr;
 };
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -2135,6 +2176,53 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       .Run(TrustedVaultDownloadKeysStatus::kSuccess,
            {kInitialTrustedVaultKey, kNewTrustedVaultKey},
            kInitialLastKeyVersion + 1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldUploadRecoveryKeyStore) {
+  // Use mock time to verify the persisted last update timestamp.
+  base::test::SingleThreadTaskEnvironment environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  set_use_recovery_key_store(true);
+  ResetBackend();
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  SetPrimaryAccountWithUnknownAuthError(account_info);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*recovery_key_store_connection(),
+              UpdateRecoveryKeyStore(account_info, _, _))
+      .WillOnce([&](const CoreAccountInfo& account_info,
+                    const trusted_vault_pb::Vault& request,
+                    RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback
+                        callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindLambdaForTesting(
+                [&run_loop, cb = std::move(callback)]() mutable {
+                  std::move(cb).Run(UpdateRecoveryKeyStoreStatus::kSuccess);
+                  run_loop.Quit();
+                }));
+        return std::make_unique<RecoveryKeyStoreConnection::Request>();
+      });
+
+  const auto start_upload_time = base::Time::Now();
+  backend()->SetRecoveryKeyStoreUploadEnabled(account_info, true);
+
+  // Wait for recovery key store upload to complete.
+  run_loop.Run();
+
+  // Verify the persisted RecoveryKeyStoreState.
+  const trusted_vault_pb::LocalTrustedVault proto =
+      ReadLocalTrustedVaultFile(file_path());
+  ASSERT_THAT(proto.user_size(), Eq(1));
+  EXPECT_TRUE(proto.user(0)
+                  .recovery_key_store_state()
+                  .recovery_key_store_upload_enabled());
+  EXPECT_LE(start_upload_time.InMillisecondsSinceUnixEpoch(),
+            proto.user(0)
+                .recovery_key_store_state()
+                .last_recovery_key_store_update_millis_since_unix_epoch());
 }
 
 }  // namespace
