@@ -14,10 +14,13 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/account_id/account_id.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 
@@ -33,11 +36,29 @@ base::FilePath GetAccountSeaPenWallpaperDir(
   return storage_directory.Append(account_id.GetAccountIdKey());
 }
 
+std::vector<uint32_t> GetImageIdsImpl(const base::FilePath& storage_directory,
+                                      const AccountId& account_id) {
+  std::vector<base::FilePath> jpg_paths;
+
+  base::FileEnumerator jpg_enumerator(
+      GetAccountSeaPenWallpaperDir(storage_directory, account_id),
+      /*recursive=*/false, base::FileEnumerator::FILES, "*.jpg");
+  for (base::FilePath jpg_path = jpg_enumerator.Next(); !jpg_path.empty();
+       jpg_path = jpg_enumerator.Next()) {
+    jpg_paths.push_back(jpg_path);
+  }
+
+  return GetIdsFromFilePaths(jpg_paths);
+}
+
 }  // namespace
 
 SeaPenWallpaperManager::SeaPenWallpaperManager(
     WallpaperFileManager* wallpaper_file_manager)
-    : wallpaper_file_manager_(wallpaper_file_manager) {
+    : wallpaper_file_manager_(wallpaper_file_manager),
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 }
@@ -87,6 +108,14 @@ void SeaPenWallpaperManager::DeleteSeaPenImage(
     DeleteRecentSeaPenImageCallback callback) {
   wallpaper_file_manager_->RemoveImageFromDisk(
       std::move(callback), GetFilePathForImageId(account_id, image_id));
+}
+
+void SeaPenWallpaperManager::GetImageIds(const AccountId& account_id,
+                                         GetImageIdsCallback callback) {
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetImageIdsImpl, storage_directory_, account_id),
+      std::move(callback));
 }
 
 void SeaPenWallpaperManager::SaveSeaPenImage(

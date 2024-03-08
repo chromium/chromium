@@ -31,6 +31,7 @@
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/system/time/time_of_day.h"
 #include "ash/wallpaper/online_wallpaper_manager.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"

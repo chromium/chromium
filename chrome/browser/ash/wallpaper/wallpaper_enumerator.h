@@ -23,10 +23,6 @@ void EnumerateLocalWallpaperFiles(
     Profile* profile,
     base::OnceCallback<void(const std::vector<base::FilePath>&)> callback);
 
-void EnumerateJpegFilesFromDir(
-    Profile* profile,
-    const base::FilePath& wallpaper_dir,
-    base::OnceCallback<void(const std::vector<base::FilePath>&)> callback);
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WALLPAPER_WALLPAPER_ENUMERATOR_H_

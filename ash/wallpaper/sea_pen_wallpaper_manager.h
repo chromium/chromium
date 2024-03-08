@@ -6,20 +6,25 @@
 #define ASH_WALLPAPER_SEA_PEN_WALLPAPER_MANAGER_H_
 
 #include "ash/ash_export.h"
-
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace ash {
 
-// Helper class to process wallpapers of type `kSeaPen`.
+// A utility class to save / load / delete / enumerate SeaPen images on disk.
+// Accessible via a singleton getter.
 class ASH_EXPORT SeaPenWallpaperManager {
  public:
   explicit SeaPenWallpaperManager(WallpaperFileManager* wallpaper_file_manager);
@@ -71,6 +76,13 @@ class ASH_EXPORT SeaPenWallpaperManager {
                          uint32_t image_id,
                          DeleteRecentSeaPenImageCallback callback);
 
+  using GetImageIdsCallback =
+      base::OnceCallback<void(const std::vector<uint32_t>& ids)>;
+
+  // GetImageIds calls `callback` with a vector of available saved on disk
+  // SeaPen image ids for `account_id`.
+  void GetImageIds(const AccountId& account_id, GetImageIdsCallback callback);
+
  private:
   void SaveSeaPenImage(const AccountId& account_id,
                        uint32_t image_id,
@@ -89,6 +101,8 @@ class ASH_EXPORT SeaPenWallpaperManager {
 
   // Not owned. Utility class for saving and loading wallpaper image files.
   raw_ptr<WallpaperFileManager> wallpaper_file_manager_;
+
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::WeakPtrFactory<SeaPenWallpaperManager> weak_factory_{this};
 };

@@ -13,12 +13,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
+#include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
-#include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,11 +36,9 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -167,7 +166,9 @@ base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
 class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
  public:
   PersonalizationAppSeaPenProviderImplTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+      : sea_pen_wallpaper_manager_(
+            SeaPenWallpaperManager(&wallpaper_file_manager_)),
+        scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSeaPen, features::kFeatureManagementSeaPen}, {});
@@ -187,6 +188,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
 
     ASSERT_TRUE(profile_manager_.SetUp());
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+    sea_pen_wallpaper_manager_.SetStorageDirectory(GetTempDirectory());
   }
 
   // Set up the profile for an account. This can be used to set up the profile
@@ -210,6 +212,8 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
         sea_pen_provider_remote_.BindNewPipeAndPassReceiver());
   }
 
+  base::FilePath GetTempDirectory() { return scoped_temp_dir_.GetPath(); }
+
   mojo::Remote<ash::personalization_app::mojom::SeaPenProvider>&
   sea_pen_provider_remote() {
     return sea_pen_provider_remote_;
@@ -229,22 +233,19 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     return scoped_temp_dir_.GetPath();
   }
 
-  base::FilePath GetSeaPenFileDirectory(const AccountId& account_id) {
-    return GetTempFileDirectory().Append("sea_pen").Append(
-        account_id.GetAccountIdKey());
-  }
-
   void CreateSeaPenFilesForTesting(
       const AccountId& account_id,
       std::vector<uint32_t> sea_pen_ids,
       const std::string& file_content = CreateJpgBytes()) {
-    base::FilePath sea_pen_dir = GetSeaPenFileDirectory(account_id);
+    base::FilePath sea_pen_dir =
+        sea_pen_wallpaper_manager_.GetFilePathForImageId(account_id, 0u)
+            .DirName();
     ASSERT_TRUE(base::CreateDirectory(sea_pen_dir));
 
     for (const uint32_t& sea_pen_id : sea_pen_ids) {
       base::FilePath sea_pen_file_path =
-          sea_pen_dir.Append(base::NumberToString(sea_pen_id))
-              .AddExtension(".jpg");
+          sea_pen_wallpaper_manager_.GetFilePathForImageId(account_id,
+                                                           sea_pen_id);
       ASSERT_TRUE(base::WriteFile(sea_pen_file_path, file_content));
     }
   }
@@ -275,6 +276,8 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   TestWallpaperController test_wallpaper_controller_;
+  WallpaperFileManager wallpaper_file_manager_;
+  SeaPenWallpaperManager sea_pen_wallpaper_manager_;
   content::TestWebUI web_ui_;
   InProcessDataDecoder in_process_data_decoder_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -419,10 +422,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
 
-  auto chromeos_wallpaper_dir_override_ =
-      std::make_unique<base::ScopedPathOverride>(
-          chrome::DIR_CHROMEOS_WALLPAPERS, GetTempFileDirectory());
-
   // Create two images in the Sea Pen directory for the 1st user, then get the
   // list of the recent images.
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1, kSeaPenId2});
@@ -533,10 +532,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   const base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   const base::test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
 
-  auto chromeos_wallpaper_dir_override_ =
-      std::make_unique<base::ScopedPathOverride>(
-          chrome::DIR_CHROMEOS_WALLPAPERS, GetTempFileDirectory());
-
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
@@ -572,10 +567,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithInvalidFilePath) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
 
-  auto chromeos_wallpaper_dir_override_ =
-      std::make_unique<base::ScopedPathOverride>(
-          chrome::DIR_CHROMEOS_WALLPAPERS, GetTempFileDirectory());
-
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
@@ -600,10 +591,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithDecodingFailure) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
 
-  auto chromeos_wallpaper_dir_override_ =
-      std::make_unique<base::ScopedPathOverride>(
-          chrome::DIR_CHROMEOS_WALLPAPERS, GetTempFileDirectory());
-
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1},
                               "invalid image data");
 
@@ -627,10 +614,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithInvalidFormatMetadata) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
-
-  auto chromeos_wallpaper_dir_override_ =
-      std::make_unique<base::ScopedPathOverride>(
-          chrome::DIR_CHROMEOS_WALLPAPERS, GetTempFileDirectory());
 
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
 
@@ -658,10 +641,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithMissingFieldMetadata) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
-
-  auto chromeos_wallpaper_dir_override_ =
-      std::make_unique<base::ScopedPathOverride>(
-          chrome::DIR_CHROMEOS_WALLPAPERS, GetTempFileDirectory());
 
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
 

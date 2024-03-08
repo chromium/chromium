@@ -5,38 +5,21 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl.h"
 
 #include <memory>
-#include <string>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
-#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
-#include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_paths.h"
-#include "components/account_id/account_id.h"
 #include "components/manta/features.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash::personalization_app {
-
-namespace {
-
-base::FilePath GetSeaPenDir(const AccountId& account_id) {
-  base::FilePath wallpaper_dir;
-  CHECK(
-      base::PathService::Get(chrome::DIR_CHROMEOS_WALLPAPERS, &wallpaper_dir));
-  return wallpaper_dir.Append("sea_pen").Append(account_id.GetAccountIdKey());
-}
-
-}  // namespace
 
 PersonalizationAppSeaPenProviderImpl::PersonalizationAppSeaPenProviderImpl(
     content::WebUI* web_ui,
@@ -59,7 +42,7 @@ void PersonalizationAppSeaPenProviderImpl::BindInterface(
 }
 
 void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImageInternal(
-    uint32_t id,
+    const uint32_t id,
     SelectRecentSeaPenImageCallback callback) {
   ash::WallpaperController* wallpaper_controller = WallpaperController::Get();
   DCHECK(wallpaper_controller);
@@ -69,26 +52,27 @@ void PersonalizationAppSeaPenProviderImpl::SelectRecentSeaPenImageInternal(
 
 void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImagesInternal(
     GetRecentSeaPenImagesCallback callback) {
-  // TODO(b/324297539) move file enumeration to SeaPenWallpaperManager.
-  ash::EnumerateJpegFilesFromDir(
-      profile_, GetSeaPenDir(GetAccountId(profile_)),
-      base::BindOnce(&GetIdsFromFilePaths).Then(std::move(callback)));
+  auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
+  DCHECK(sea_pen_wallpaper_manager);
+  sea_pen_wallpaper_manager->GetImageIds(GetAccountId(profile_),
+                                         std::move(callback));
 }
 
 void PersonalizationAppSeaPenProviderImpl::
-    GetRecentSeaPenImageThumbnailInternal(uint32_t id,
+    GetRecentSeaPenImageThumbnailInternal(const uint32_t id,
                                           DecodeImageCallback callback) {
+  auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
+  DCHECK(sea_pen_wallpaper_manager);
   image_util::DecodeImageFile(
       base::BindOnce(
           &PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageInfo,
           weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)),
-      GetSeaPenDir(GetAccountId(profile_))
-          .Append(base::NumberToString(id))
-          .AddExtension(".jpg"));
+      sea_pen_wallpaper_manager->GetFilePathForImageId(GetAccountId(profile_),
+                                                       id));
 }
 
 void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageInfo(
-    uint32_t id,
+    const uint32_t id,
     DecodeImageCallback callback,
     const gfx::ImageSkia& image) {
   ash::WallpaperController* wallpaper_controller = WallpaperController::Get();

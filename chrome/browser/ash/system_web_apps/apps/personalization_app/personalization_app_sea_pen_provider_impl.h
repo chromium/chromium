@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
-#include "base/files/file_path.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

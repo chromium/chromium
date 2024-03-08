@@ -43,8 +43,6 @@ std::string CreateJpgBytes() {
   return std::string(data.begin(), data.end());
 }
 
-}  // namespace
-
 class SeaPenWallpaperManagerTest : public AshTestBase {
  public:
   SeaPenWallpaperManagerTest() = default;
@@ -60,8 +58,6 @@ class SeaPenWallpaperManagerTest : public AshTestBase {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     sea_pen_wallpaper_manager()->SetStorageDirectory(GetTempFileDirectory());
   }
-
-  void TearDown() override { AshTestBase::TearDown(); }
 
   base::FilePath GetTempFileDirectory() { return scoped_temp_dir_.GetPath(); }
 
@@ -186,6 +182,84 @@ TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
           kAccountId1, new_image_id)));
 }
 
+TEST_F(SeaPenWallpaperManagerTest, GetImageIds) {
+  // Create images in the temp directory.
+  for (uint32_t i = 1; i <= 5; i++) {
+    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), i * i},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        decode_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(decode_sea_pen_image_future.Wait());
+  }
+
+  {
+    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
+    sea_pen_wallpaper_manager()->GetImageIds(
+        kAccountId1, get_image_ids_future.GetCallback());
+    EXPECT_THAT(get_image_ids_future.Take(),
+                testing::UnorderedElementsAre(1, 4, 9, 16, 25));
+  }
+
+  {
+    base::test::TestFuture<bool> delete_recent_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->DeleteSeaPenImage(
+        kAccountId1, 16u, delete_recent_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(delete_recent_sea_pen_image_future.Take());
+  }
+
+  {
+    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
+    sea_pen_wallpaper_manager()->GetImageIds(
+        kAccountId1, get_image_ids_future.GetCallback());
+    EXPECT_THAT(get_image_ids_future.Take(),
+                testing::UnorderedElementsAre(1, 4, 9, 25));
+  }
+}
+
+TEST_F(SeaPenWallpaperManagerTest, GetImageIdsMultipleAccounts) {
+  {
+    // Create an image for account 1.
+    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), 77},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        decode_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(decode_sea_pen_image_future.Wait());
+  }
+
+  const std::string kUser2 = "user2@test.com";
+  const AccountId kAccountId2 = AccountId::FromUserEmailGaiaId(kUser2, kUser2);
+  ASSERT_NE(kAccountId1.GetAccountIdKey(), kAccountId2.GetAccountIdKey());
+
+  {
+    // Create an image for account 2.
+    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+        kAccountId2, {CreateJpgBytes(), 987654321},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        decode_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(decode_sea_pen_image_future.Wait());
+  }
+
+  {
+    // Retrieve images for account 1.
+    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
+    sea_pen_wallpaper_manager()->GetImageIds(
+        kAccountId1, get_image_ids_future.GetCallback());
+    EXPECT_THAT(get_image_ids_future.Take(), testing::UnorderedElementsAre(77));
+  }
+
+  {
+    // Retrieve images for account 2.
+    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
+    sea_pen_wallpaper_manager()->GetImageIds(
+        kAccountId2, get_image_ids_future.GetCallback());
+    EXPECT_THAT(get_image_ids_future.Take(),
+                testing::UnorderedElementsAre(987654321));
+  }
+}
+
 TEST_F(SeaPenWallpaperManagerTest, GetFilePathForImageId) {
   EXPECT_EQ(
       GetTempFileDirectory()
@@ -207,4 +281,5 @@ TEST_F(SeaPenWallpaperManagerTest, GetFilePathForImageId) {
                                                                22222));
 }
 
+}  // namespace
 }  // namespace ash
