@@ -12,6 +12,7 @@
 #include <components/exo/wayland/protocol/aura-shell-client-protocol.h>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
@@ -342,6 +343,15 @@ class OzonePlatformWayland : public OzonePlatform,
       // arbitrary position.
       properties->supports_global_screen_coordinates =
           kDefaultScreenCoordinateEnabled;
+
+#if BUILDFLAG(IS_LINUX)
+      // TODO(crbug.com/40800718): Revisit (and maybe remove) once proper
+      // support, probably backed by org.freedesktop.portal.Screenshot.PickColor
+      // API is implemented. Note: this is restricted to Linux Desktop as Lacros
+      // implements it at a higher level layer using ChromeOS' mojo croapi.
+      properties->supports_color_picker_dialog = false;
+#endif
+
       initialised = true;
     }
 

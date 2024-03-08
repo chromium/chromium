@@ -8,6 +8,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//chrome/browser/buildflags.gni")
@@ -12519,6 +12520,10 @@ if (is_chromeos) {
         "//content/test:test_support",
         "//extensions/browser",
       ]
+    }
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
     }
   }
 }

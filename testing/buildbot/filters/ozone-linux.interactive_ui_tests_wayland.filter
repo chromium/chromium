@@ -68,3 +68,6 @@
 # possible on Linux Wayland.
 -TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
 -TabDragging/DetachToBrowserTabDragControllerTest.Revert*
+
+# TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
+-EyeDropperViewAuraInteractiveTest.*

@@ -226,7 +226,6 @@
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/scoped_add_feature_flags.h"
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"    // nogncheck
@@ -242,9 +241,14 @@
 #include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "base/scoped_add_feature_flags.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(IS_OZONE)
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
     g_chrome_content_gpu_client = LAZY_INSTANCE_INITIALIZER;
@@ -469,19 +473,6 @@ void RedirectLacrosLogging() {
 void SetCrashpadUploadConsentPostLogin() {
   crash_reporter::SetUploadConsent(
       crash_reporter::GetClientCollectStatsConsent());
-}
-
-void AddFeatureFlagsToCommandLine(
-    const chromeos::BrowserParamsProxy& init_params) {
-  base::ScopedAddFeatureFlags flags(base::CommandLine::ForCurrentProcess());
-
-  if (init_params.IsVariableRefreshRateAlwaysOn()) {
-    flags.EnableIfNotSet(features::kEnableVariableRefreshRateAlwaysOn);
-  }
-
-  if (init_params.IsPdfOcrEnabled()) {
-    flags.EnableIfNotSet(features::kPdfOcr);
-  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -810,6 +801,31 @@ void OnResourceExhausted() {
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_OZONE)
+void AddFeatureFlagsToCommandLine() {
+  CHECK(!base::FeatureList::GetInstance());
+  base::ScopedAddFeatureFlags flags(base::CommandLine::ForCurrentProcess());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const auto& init_params = *chromeos::BrowserParamsProxy::Get();
+  if (init_params.IsVariableRefreshRateAlwaysOn()) {
+    flags.EnableIfNotSet(features::kEnableVariableRefreshRateAlwaysOn);
+  }
+
+  if (init_params.IsPdfOcrEnabled()) {
+    flags.EnableIfNotSet(features::kPdfOcr);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Disable currently unsupported web features per platform properties.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_color_picker_dialog) {
+    flags.DisableIfNotSet(features::kEyeDropper);
+  }
+}
+#endif  // BUILDFLAG(IS_OZONE)
+
 }  // namespace
 
 ChromeMainDelegate::ChromeMainDelegate()
@@ -936,11 +952,15 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // Set Lacros's default paths.
   const auto& init_params = *chromeos::BrowserParamsProxy::Get();
   chrome::SetLacrosDefaultPathsFromInitParams(init_params.DefaultPaths().get());
-
-  // Must be added before feature list is created otherwise the added flag won't
-  // be picked up.
-  AddFeatureFlagsToCommandLine(init_params);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_OZONE)
+  // Initialize Ozone platform and add required feature flags as per platform's
+  // properties. Must be added before feature list is created otherwise the
+  // added flag won't be picked up.
+  ui::OzonePlatform::PreEarlyInitialization();
+  AddFeatureFlagsToCommandLine();
+#endif  // BUILDFLAG(IS_OZONE)
 
   // The DBus initialization above is needed for FeatureList creation here;
   // features are needed for Mojo initialization; and Mojo initialization is

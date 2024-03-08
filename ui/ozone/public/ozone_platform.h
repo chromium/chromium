@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"
@@ -143,6 +144,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Indicates that the platform allows client applications to manipulate
     // global screen coordinates. Wayland, for example, disallow it by design.
     bool supports_global_screen_coordinates = true;
+
+    // Whether the platform supports system/shell integrated color picker
+    // dialog. An example is XDG Desktop Portal provided PickColor dialog.
+    bool supports_color_picker_dialog = true;
   };
 
   // Groups platform properties that can only be known at run time.
@@ -387,6 +392,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   bool initialized_ui_ = false;
   bool initialized_gpu_ = false;
   bool prearly_initialized_ = false;
+  bool pre_feature_list_initialized_ = false;
 
   // This value is checked on multiple threads. Declaring it volatile makes
   // modifications to |single_process_| visible by other threads. Mutex is not

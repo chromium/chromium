@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
@@ -225,6 +226,10 @@ static_library("test_support") {
       "//chromeos/lacros/dbus",
       "//chromeos/startup",
     ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 
   if (enable_plugins && enable_nacl) {

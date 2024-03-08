@@ -8,6 +8,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/features.gni")
 import("//build/config/locales.gni")
+import("//build/config/ozone.gni")
 import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -340,6 +341,10 @@ if (!is_android && !is_mac) {
             "//chromeos/startup",
             "//ui/base",
           ]
+        }
+
+        if (use_ozone) {
+          deps += [ "//ui/ozone" ]
         }
       }
 
