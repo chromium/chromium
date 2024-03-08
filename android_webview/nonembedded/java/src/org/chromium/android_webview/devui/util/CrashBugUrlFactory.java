@@ -22,32 +22,32 @@ import java.util.Locale;
 public class CrashBugUrlFactory {
     // There is a limit on the length of this query string, see https://crbug.com/1015923
     // TODO(https://crbug.com/1052295): add assert statement to check the length of this String.
-    private static final String CRASH_REPORT_TEMPLATE =
+    @VisibleForTesting
+    public static final String CRASH_REPORT_TEMPLATE =
             ""
-                    + "Build fingerprint: %s\n"
-                    + "Android API level: %s\n"
-                    + "Crashed WebView version: %s\n"
-                    + "DevTools version: %s\n"
-                    + "Application: %s\n"
-                    + "If this app is available on Google Play, please include a URL:\n"
-                    + "\n"
+                    + "* Build fingerprint: %s\n"
+                    + "* Android API level: %s\n"
+                    + "* Crashed WebView version: %s\n"
+                    + "* DevTools version: %s\n"
+                    + "* Application: %s\n"
+                    + "* If this app is available on Google Play, please include a URL: \n"
                     + "\n"
                     + "Steps to reproduce:\n"
-                    + "(1)\n"
-                    + "(2)\n"
-                    + "(3)\n"
                     + "\n"
+                    + "1. \n"
+                    + "2. \n"
+                    + "3. \n"
                     + "\n"
                     + "Expected result:\n"
                     + "(What should have happened?)\n"
                     + "\n"
-                    + "\n"
                     + "<Any additional comments, you want to share>"
                     + "\n"
+                    + "---\n"
+                    + "**DO NOT CHANGE BELOW THIS LINE**\n"
                     + "\n"
-                    + "****DO NOT CHANGE BELOW THIS LINE****\n"
-                    + "Crash ID: http://crash/%s\n"
-                    + "Instructions for triaging this report (Chromium members only): "
+                    + "* Crash ID: http://crash/%s\n"
+                    + "* Instructions for triaging this report (Chromium members only): "
                     + "https://bit.ly/2SM1Y9t\n";
 
     private final CrashInfo mCrashInfo;
