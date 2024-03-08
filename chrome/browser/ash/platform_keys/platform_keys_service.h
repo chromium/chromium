@@ -28,8 +28,9 @@ class ClientCertStore;
 
 namespace ash::platform_keys {
 
-using EncryptCallback =
-    base::OnceCallback<void(std::vector<uint8_t> encrypted_data,
+// This callback is used for both encrypting and decrypting.
+using EncryptDecryptCallback =
+    base::OnceCallback<void(std::vector<uint8_t> output_data,
                             chromeos::platform_keys::Status status)>;
 
 using GenerateKeyCallback =
@@ -158,18 +159,28 @@ class PlatformKeysService : public KeyedService {
   // to store the key pair on. |callback| will be invoked with the resulting
   // public key or an error status.
   virtual void GenerateECKey(chromeos::platform_keys::TokenId token_id,
-                             const std::string& named_curve,
+                             std::string named_curve,
                              GenerateKeyCallback callback) = 0;
 
-  // Encrypts the |data| string using a symmetric key. Currently only
+  // Decrypts the |encrypted_data| buffer using a symmetric key. Currently only
+  // AES-CBC |decrypt_algorithm| is supported and it requires a 16-byte
+  // initialization vector |init_vector|.
+  virtual void DecryptAES(chromeos::platform_keys::TokenId token_id,
+                          std::vector<uint8_t> key_id,
+                          std::vector<uint8_t> encrypted_data,
+                          std::string decrypt_algorithm,
+                          std::vector<uint8_t> init_vector,
+                          EncryptDecryptCallback callback) = 0;
+
+  // Encrypts the |data| buffer using a symmetric key. Currently only
   // AES-CBC |encrypt_algorithm| is supported and it requires a 16-byte
   // initialization vector |init_vector|.
   virtual void EncryptAES(chromeos::platform_keys::TokenId token_id,
                           std::vector<uint8_t> key_id,
                           std::vector<uint8_t> data,
-                          const std::string& encrypt_algorithm,
+                          std::string encrypt_algorithm,
                           std::vector<uint8_t> init_vector,
-                          EncryptCallback callback) = 0;
+                          EncryptDecryptCallback callback) = 0;
 
   // Digests |data|, applies PKCS1 padding and afterwards signs the data with
   // the private key matching |public_key_spki_der|. If the key is not found in
@@ -375,14 +386,20 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                       bool sw_backed,
                       GenerateKeyCallback callback) override;
   void GenerateECKey(chromeos::platform_keys::TokenId token_id,
-                     const std::string& named_curve,
+                     std::string named_curve,
                      GenerateKeyCallback callback) override;
   void EncryptAES(chromeos::platform_keys::TokenId token_id,
                   std::vector<uint8_t> key_id,
                   std::vector<uint8_t> data,
-                  const std::string& encrypt_algorithm,
+                  std::string encrypt_algorithm,
                   std::vector<uint8_t> init_vector,
-                  EncryptCallback callback) override;
+                  EncryptDecryptCallback callback) override;
+  void DecryptAES(chromeos::platform_keys::TokenId token_id,
+                  std::vector<uint8_t> key_id,
+                  std::vector<uint8_t> encrypted_data,
+                  std::string decrypt_algorithm,
+                  std::vector<uint8_t> init_vector,
+                  EncryptDecryptCallback callback) override;
   void SignRsaPkcs1(std::optional<chromeos::platform_keys::TokenId> token_id,
                     std::vector<uint8_t> data,
                     std::vector<uint8_t> public_key_spki_der,
@@ -438,6 +455,13 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   bool IsSetMapToSoftokenAttrsForTesting();
 
  private:
+  void EncryptDecryptAES(chromeos::platform_keys::TokenId token_id,
+                         std::vector<uint8_t>& key_id,
+                         std::vector<uint8_t>& input_data,
+                         std::string& encrypt_algorithm,
+                         std::vector<uint8_t>& init_vector,
+                         EncryptDecryptCallback callback,
+                         chromeos::platform_keys::OperationType operation_type);
   void OnDelegateShutDown();
 
   std::unique_ptr<PlatformKeysServiceImplDelegate> const delegate_;

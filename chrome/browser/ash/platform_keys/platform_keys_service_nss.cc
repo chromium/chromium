@@ -71,6 +71,7 @@ using ServiceWeakPtr = ::base::WeakPtr<PlatformKeysServiceImpl>;
 using ::chromeos::platform_keys::HashAlgorithm;
 using ::chromeos::platform_keys::KeyAttributeType;
 using ::chromeos::platform_keys::KeyType;
+using ::chromeos::platform_keys::OperationType;
 using ::chromeos::platform_keys::Status;
 using ::chromeos::platform_keys::TokenId;
 using ::content::BrowserContext;
@@ -266,7 +267,7 @@ class GenerateECKeyState : public NSSOperationState {
                      TokenId token_id,
                      GenerateKeyCallback callback)
       : NSSOperationState(weak_ptr),
-        named_curve_(named_curve),
+        named_curve_(std::move(named_curve)),
         token_id_(token_id),
         callback_(std::move(callback)) {}
 
@@ -305,58 +306,62 @@ class GenerateECKeyState : public NSSOperationState {
   GenerateKeyCallback callback_;
 };
 
-class EncryptState : public NSSOperationState {
+class EncryptDecryptState : public NSSOperationState {
  public:
-  EncryptState(ServiceWeakPtr weak_ptr,
-               std::vector<uint8_t> key_id,
-               std::vector<uint8_t> data,
-               const std::string& encrypt_algorithm,
-               std::vector<uint8_t> init_vector,
-               EncryptCallback callback)
+  EncryptDecryptState(ServiceWeakPtr weak_ptr,
+                      std::vector<uint8_t> key_id,
+                      std::vector<uint8_t> input_data,
+                      std::string algorithm,
+                      std::vector<uint8_t> init_vector,
+                      const OperationType operation_type,
+                      EncryptDecryptCallback callback)
       : NSSOperationState(weak_ptr),
         key_id_(std::move(key_id)),
-        data_(std::move(data)),
-        encrypt_algorithm_(encrypt_algorithm),
+        input_data_(std::move(input_data)),
+        algorithm_(std::move(algorithm)),
         init_vector_(std::move(init_vector)),
+        operation_type_(operation_type),
         callback_(std::move(callback)) {}
 
-  ~EncryptState() override = default;
+  ~EncryptDecryptState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, /*encrypted_data=*/std::vector<uint8_t>(), status);
+    CallBack(from, /*output_data=*/std::vector<uint8_t>(), status);
   }
 
-  void OnSuccess(const base::Location& from,
-                 std::vector<uint8_t> encrypted_data) {
-    CallBack(from, std::move(encrypted_data), Status::kSuccess);
+  void OnSuccess(const base::Location& from, std::vector<uint8_t> output_data) {
+    CallBack(from, std::move(output_data), Status::kSuccess);
   }
 
   // Symmetric key id.
   const std::vector<uint8_t> key_id_;
 
-  // The data that will be encrypted.
-  const std::vector<uint8_t> data_;
+  // The data that will be encrypted/decrypted.
+  const std::vector<uint8_t> input_data_;
 
-  // Determines the hash algorithm that is used to encrypt.
-  const std::string encrypt_algorithm_;
+  // Determines the algorithm that is used to encrypt/decrypt.
+  const std::string algorithm_;
 
-  // Initializition vector that is required for encryption.
+  // Initializition vector that is required for encryption/decryption.
   // Must have a length of 16 bytes.
   const std::vector<uint8_t> init_vector_;
 
+  // Specifies the operation, i.e. encryption or decryption.
+  const OperationType operation_type_;
+
  private:
   void CallBack(const base::Location& from,
-                std::vector<uint8_t> encrypted_data,
+                std::vector<uint8_t> output_data,
                 Status status) {
     auto bound_callback =
-        base::BindOnce(std::move(callback_), std::move(encrypted_data), status);
+        base::BindOnce(std::move(callback_), std::move(output_data), status);
     content::GetUIThreadTaskRunner({})->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
   }
 
   // Must be called on origin thread, therefore use CallBack().
-  EncryptCallback callback_;
+  EncryptDecryptCallback callback_;
 };
 
 class SignState : public NSSOperationState {
@@ -1017,16 +1022,17 @@ void GenerateECKeyWithDB(std::unique_ptr<GenerateECKeyState> state,
       base::BindOnce(&GenerateECKeyOnWorkerThread, std::move(state)));
 }
 
-// Does the actual AES encryption on a worker thread.
-// Used by EncryptAESWithDB().
-void EncryptAESOnWorkerThread(std::unique_ptr<EncryptState> state) {
+// Does the actual AES encryption/decryption on a worker thread.
+// Used by EncryptDecryptAESWithDB().
+void EncryptDecryptAESOnWorkerThread(
+    std::unique_ptr<EncryptDecryptState> state) {
   if (!state->slot_) {
     LOG(ERROR) << "No slot.";
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
 
-  if (state->encrypt_algorithm_ != "AES-CBC") {
+  if (state->algorithm_ != "AES-CBC") {
     LOG(ERROR) << "Only AES-CBC encryption is supported.";
     state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
     return;
@@ -1049,25 +1055,37 @@ void EncryptAESOnWorkerThread(std::unique_ptr<EncryptState> state) {
   SECItem sec_iv{siUTF8String, iv.data(), static_cast<unsigned int>(iv.size())};
   // Input string might be padded so its length would be a multiple of 16, which
   // means the encrypted string could be larger than the initial one.
-  std::vector<uint8_t> result(state->data_.size() + 16);
-  unsigned int result_len;
+  std::vector<uint8_t> result(state->input_data_.size() + 16);
+  unsigned int result_len = 0;
 
-  if (PK11_Encrypt(key.get(), CKM_AES_CBC_PAD, &sec_iv, result.data(),
-                   &result_len, result.size(), state->data_.data(),
-                   state->data_.size()) != SECSuccess) {
-    LOG(ERROR) << "Encryption failed.";
-    state->OnError(FROM_HERE, Status::kErrorInternal);
-    return;
+  if (state->operation_type_ == OperationType::kEncrypt) {
+    if (PK11_Encrypt(key.get(), CKM_AES_CBC_PAD, &sec_iv, result.data(),
+                     &result_len, result.size(), state->input_data_.data(),
+                     state->input_data_.size()) != SECSuccess) {
+      LOG(ERROR) << "Encryption failed.";
+      state->OnError(FROM_HERE, Status::kErrorInternal);
+      return;
+    }
+  } else if (state->operation_type_ == OperationType::kDecrypt) {
+    if (PK11_Decrypt(key.get(), CKM_AES_CBC_PAD, &sec_iv, result.data(),
+                     &result_len, result.size(), state->input_data_.data(),
+                     state->input_data_.size()) != SECSuccess) {
+      LOG(ERROR) << "Decryption failed.";
+      state->OnError(FROM_HERE, Status::kErrorInternal);
+      return;
+    }
+  } else {
+    NOTREACHED();
   }
 
   result.resize(result_len);
   state->OnSuccess(FROM_HERE, std::move(result));
 }
 
-// Continues AES encryption with the obtained NSSCertDatabase.
-// Used by EncryptAES().
-void EncryptAESWithDB(std::unique_ptr<EncryptState> state,
-                      net::NSSCertDatabase* cert_db) {
+// Continues AES encryption/decryption with the obtained NSSCertDatabase.
+// Used by EncryptDecryptAES().
+void EncryptDecryptAESWithDB(std::unique_ptr<EncryptDecryptState> state,
+                             net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
@@ -1075,7 +1093,7 @@ void EncryptAESWithDB(std::unique_ptr<EncryptState> state,
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&EncryptAESOnWorkerThread, std::move(state)));
+      base::BindOnce(&EncryptDecryptAESOnWorkerThread, std::move(state)));
 }
 
 // Checks whether |input_length| is lower or equal to the maximum input length
@@ -1863,11 +1881,12 @@ void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
 }
 
 void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
-                                            const std::string& named_curve,
+                                            const std::string named_curve,
                                             GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GenerateECKeyState>(
-      weak_factory_.GetWeakPtr(), named_curve, token_id, std::move(callback));
+      weak_factory_.GetWeakPtr(), std::move(named_curve), token_id,
+      std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
@@ -1880,17 +1899,19 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
                   delegate_.get(), state_ptr);
 }
 
-void PlatformKeysServiceImpl::EncryptAES(
+void PlatformKeysServiceImpl::EncryptDecryptAES(
     chromeos::platform_keys::TokenId token_id,
-    std::vector<uint8_t> key_id,
-    std::vector<uint8_t> data,
-    const std::string& encrypt_algorithm,
-    std::vector<uint8_t> init_vector,
-    EncryptCallback callback) {
+    std::vector<uint8_t>& key_id,
+    std::vector<uint8_t>& input_data,
+    std::string& algorithm,
+    std::vector<uint8_t>& init_vector,
+    EncryptDecryptCallback callback,
+    OperationType operation_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto state = std::make_unique<EncryptState>(
-      weak_factory_.GetWeakPtr(), std::move(key_id), std::move(data),
-      encrypt_algorithm, std::move(init_vector), std::move(callback));
+  auto state = std::make_unique<EncryptDecryptState>(
+      weak_factory_.GetWeakPtr(), std::move(key_id), std::move(input_data),
+      std::move(algorithm), std::move(init_vector), operation_type,
+      std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;
@@ -1903,8 +1924,31 @@ void PlatformKeysServiceImpl::EncryptAES(
   // The NSSCertDatabase object is not required. But in case it's not available
   // we would get more informative status codes and we can double check that we
   // use a key of the correct token.
-  GetCertDatabase(token_id, base::BindOnce(&EncryptAESWithDB, std::move(state)),
+  GetCertDatabase(token_id,
+                  base::BindOnce(&EncryptDecryptAESWithDB, std::move(state)),
                   delegate_.get(), state_ptr);
+}
+
+void PlatformKeysServiceImpl::DecryptAES(
+    chromeos::platform_keys::TokenId token_id,
+    std::vector<uint8_t> key_id,
+    std::vector<uint8_t> encrypted_data,
+    std::string decrypt_algorithm,
+    std::vector<uint8_t> init_vector,
+    EncryptDecryptCallback callback) {
+  EncryptDecryptAES(token_id, key_id, encrypted_data, decrypt_algorithm,
+                    init_vector, std::move(callback), OperationType::kDecrypt);
+}
+
+void PlatformKeysServiceImpl::EncryptAES(
+    chromeos::platform_keys::TokenId token_id,
+    std::vector<uint8_t> key_id,
+    std::vector<uint8_t> data,
+    std::string encrypt_algorithm,
+    std::vector<uint8_t> init_vector,
+    EncryptDecryptCallback callback) {
+  EncryptDecryptAES(token_id, key_id, data, encrypt_algorithm, init_vector,
+                    std::move(callback), OperationType::kEncrypt);
 }
 
 void PlatformKeysServiceImpl::SignRsaPkcs1(

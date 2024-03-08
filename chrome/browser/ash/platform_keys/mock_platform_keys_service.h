@@ -54,8 +54,18 @@ class MockPlatformKeysService : public PlatformKeysService {
   MOCK_METHOD(void,
               GenerateECKey,
               (chromeos::platform_keys::TokenId token_id,
-               const std::string& named_curve,
+               std::string named_curve,
                GenerateKeyCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              DecryptAES,
+              (chromeos::platform_keys::TokenId token_id,
+               std::vector<uint8_t> key_id,
+               std::vector<uint8_t> encrypted_data,
+               std::string decrypt_algorithm,
+               std::vector<uint8_t> init_vector,
+               EncryptDecryptCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -63,9 +73,9 @@ class MockPlatformKeysService : public PlatformKeysService {
               (chromeos::platform_keys::TokenId token_id,
                std::vector<uint8_t> key_id,
                std::vector<uint8_t> data,
-               const std::string& encrypt_algorithm,
+               std::string encrypt_algorithm,
                std::vector<uint8_t> init_vector,
-               EncryptCallback callback),
+               EncryptDecryptCallback callback),
               (override));
 
   MOCK_METHOD(void,

@@ -34,6 +34,8 @@ enum HashAlgorithm {
   HASH_ALGORITHM_SHA512
 };
 
+enum class OperationType { kEncrypt, kDecrypt };
+
 // Supported token IDs.
 // A token is a store for keys or certs and can provide cryptographic
 // operations.
