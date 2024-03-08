@@ -131,7 +131,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
-#include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"

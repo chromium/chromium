@@ -100,6 +100,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/embedder_support",
     "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:test_support",
     "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service",
     "//components/site_engagement/content",

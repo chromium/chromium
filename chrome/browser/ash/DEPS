@@ -4,6 +4,7 @@ include_rules = [
 
   "+components/guest_os",
   "+components/qr_code_generator",
+  "+components/metrics/structured/test/test_structured_metrics_recorder.h",
   "+dbus",
 
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
@@ -239,7 +240,6 @@ include_rules = [
   "+chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h",
   "+chrome/browser/metrics/structured/event_logging_features.h",
   "+chrome/browser/metrics/structured/test/structured_metrics_mixin.h",
-  "+chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h",
   "+chrome/browser/net/chrome_network_delegate.h",
   "+chrome/browser/net/fake_nss_service.h",
   "+chrome/browser/net/nss_service.h",

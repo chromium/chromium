@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 
 namespace metrics::structured {
 

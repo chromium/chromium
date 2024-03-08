@@ -239,6 +239,8 @@ static_library("test_support") {
     "test/test_key_data_provider.h",
     "test/test_structured_metrics_provider.cc",
     "test/test_structured_metrics_provider.h",
+    "test/test_structured_metrics_recorder.cc",
+    "test/test_structured_metrics_recorder.h",
   ]
   deps = [
     ":structured",
