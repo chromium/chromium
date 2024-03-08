@@ -210,7 +210,7 @@
           {
             "name": "areaName",
             "type": "string",
-            "description": "The name of the storage area (<code>\"sync\"</code>, <code>\"local\"</code> or <code>\"managed\"</code>) the changes are for."
+            "description": "The name of the storage area (<code>\"local\"</code>, <code>\"managed\"</code>, <code>\"session\"</code>, or <code>\"sync\"</code>) the changes are for."
           }
         ]
       }
@@ -261,7 +261,7 @@
       },
       "managed": {
         "$ref": "StorageArea",
-        "description": "Items in the <code>managed</code> storage area are set by the domain administrator, and are read-only for the extension; trying to modify this namespace results in an error.",
+        "description": "Items in the <code>managed</code> storage area are set by an enterprise policy configured by the domain administrator, and are read-only for the extension; trying to modify this namespace results in an error. For information on configuring a policy, see <a href='/docs/extensions/reference/manifest/storage'>Manifest for storage areas</a>.",
         "value": [ "managed" ]
       },
       "session" : {
