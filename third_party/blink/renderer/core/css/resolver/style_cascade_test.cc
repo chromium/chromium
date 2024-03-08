@@ -90,6 +90,7 @@ struct AddOptions {
   unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
   bool is_try_style = false;
+  bool is_try_tactics_style = false;
   bool is_invisible = false;
 };
 
@@ -143,6 +144,7 @@ class TestCascade {
          .layer_order = options.layer_order,
          .is_inline_style = options.is_inline_style,
          .is_try_style = options.is_try_style,
+         .is_try_tactics_style = options.is_try_tactics_style,
          .is_invisible = options.is_invisible});
   }
 
@@ -4004,6 +4006,39 @@ TEST_F(StyleCascadeTest, TryStyle) {
   cascade.Add("top:3px", {.is_try_style = true});
   cascade.Apply();
   EXPECT_EQ("3px", cascade.ComputedValue("top"));
+}
+
+TEST_F(StyleCascadeTest, TryTacticsStyle) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("position:absolute");
+  cascade.Add("top:1px");
+  cascade.Add("top:2px", {.is_try_style = true});
+  cascade.Add("top:3px", {.is_try_tactics_style = true});
+  cascade.Apply();
+  EXPECT_EQ("3px", cascade.ComputedValue("top"));
+}
+
+TEST_F(StyleCascadeTest, TryTacticsStyleRevertLayer) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("position:absolute");
+  cascade.Add("top:1px");
+  cascade.Add("top:2px", {.is_try_style = true});
+  cascade.Add("top:revert-layer", {.is_try_tactics_style = true});
+  cascade.Apply();
+  EXPECT_EQ("2px", cascade.ComputedValue("top"));
+}
+
+TEST_F(StyleCascadeTest, TryTacticsStyleRevertTo) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("position:absolute");
+  cascade.Add("top:1px");
+  cascade.Add("top:2px", {.is_try_style = true});
+  cascade.Add("bottom:3px", {.is_try_style = true});
+  cascade.Add(FlipRevertSet("bottom", "top"), {.is_try_tactics_style = true});
+  cascade.Add(FlipRevertSet("top", "bottom"), {.is_try_tactics_style = true});
+  cascade.Apply();
+  EXPECT_EQ("3px", cascade.ComputedValue("top"));
+  EXPECT_EQ("2px", cascade.ComputedValue("bottom"));
 }
 
 TEST_F(StyleCascadeTest, LhUnitCycle) {

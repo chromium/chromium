@@ -15,13 +15,15 @@ struct Options {
   uint16_t tree_order = 0;
   bool is_inline_style = false;
   bool is_try_style = false;
+  bool is_try_tactics_style = false;
   uint16_t layer_order = 0;
   uint32_t position = 0;
 };
 
 CascadePriority Priority(Options o) {
   return CascadePriority(o.origin, o.important, o.tree_order, o.is_inline_style,
-                         o.is_try_style, o.layer_order, o.position);
+                         o.is_try_style, o.is_try_tactics_style, o.layer_order,
+                         o.position);
 }
 
 CascadePriority AuthorPriority(uint16_t tree_order, uint32_t position) {
@@ -375,9 +377,38 @@ TEST(CascadePriorityTest, TryStyle) {
   EXPECT_LT(Priority({.is_try_style = true}),
             Priority({.origin = CascadeOrigin::kTransition}));
 
-  // Fallback styles generate a separate layer.
+  // Try styles generate a separate layer.
   EXPECT_NE(Priority({.is_try_style = true}).ForLayerComparison(),
             Priority({}).ForLayerComparison());
+}
+
+TEST(CascadePriorityTest, TryTacticsStyle) {
+  // Should be stronger than try-style.
+  EXPECT_GE(Priority({.is_try_tactics_style = true}),
+            Priority({.is_try_style = true}));
+
+  // Should be stronger than inline styles.
+  EXPECT_GE(Priority({.is_try_tactics_style = true}),
+            Priority({.is_inline_style = true}));
+
+  // Should be stronger than author cascade layers.
+  EXPECT_GE(Priority({.is_try_tactics_style = true}),
+            Priority({.layer_order = 1000}));
+
+  // Should be weaker than important in the same origin
+  EXPECT_LT(Priority({.is_try_tactics_style = true}),
+            Priority({.important = true}));
+
+  // Should be weaker than a stronger origin.
+  EXPECT_LT(Priority({.is_try_tactics_style = true}),
+            Priority({.origin = CascadeOrigin::kTransition}));
+
+  // Try-tactics styles generate a separate layer.
+  EXPECT_NE(Priority({.is_try_tactics_style = true}).ForLayerComparison(),
+            Priority({}).ForLayerComparison());
+  // Also a separate layer vs. the try styles.
+  EXPECT_NE(Priority({.is_try_tactics_style = true}).ForLayerComparison(),
+            Priority({.is_try_style = true}).ForLayerComparison());
 }
 
 TEST(CascadePriorityTest, ForLayerComparison) {

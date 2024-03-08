@@ -69,6 +69,9 @@ struct CORE_EXPORT MatchedProperties {
     // Try styles come from position-try-options.
     // https://drafts.csswg.org/css-anchor-position-1/#fallback
     bool is_try_style;
+    // Try-tactics style come from <try-tactic>.
+    // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+    bool is_try_tactics_style;
     // See CSSSelector::IsInvisible.
     bool is_invisible;
   };
@@ -93,6 +96,7 @@ struct AddMatchedPropertiesOptions {
   unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
   bool is_try_style = false;
+  bool is_try_tactics_style = false;
   bool is_invisible = false;
 };
 

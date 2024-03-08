@@ -72,7 +72,8 @@ class CORE_EXPORT CascadePriority {
   // The declaration is important if this bit is set on the encoded priority.
   static constexpr uint64_t kImportantBit = 19;            // of high_bits_
   static constexpr uint64_t kOriginImportanceOffset = 16;  // of high_bits_
-  static constexpr uint64_t kIsTryStyleOffset = 53;        // of low_bits_
+  static constexpr uint64_t kIsTryTacticsStyleOffset = 54;  // of low_bits_
+  static constexpr uint64_t kIsTryStyleOffset = 53;         // of low_bits_
   static constexpr uint64_t kIsInlineStyleOffset = 52;     // of low_bits_
   static constexpr uint64_t kLayerOrderOffset = 36;        // of low_bits_
   static constexpr uint64_t kPositionOffset = 4;           // of low_bits_
@@ -88,11 +89,32 @@ class CORE_EXPORT CascadePriority {
 
   CascadePriority() : low_bits_(0), high_bits_(0) {}
   explicit CascadePriority(CascadeOrigin origin)
-      : CascadePriority(origin, false, 0, false, false, 0, 0) {}
+      : CascadePriority(origin,
+                        /* important */ false,
+                        /* tree_order */ 0,
+                        /* is_inline_style */ false,
+                        /* is_try_style */ false,
+                        /* is_try_tactics_style */ false,
+                        /* layer_order */ 0,
+                        /* position */ 0) {}
   CascadePriority(CascadeOrigin origin, bool important)
-      : CascadePriority(origin, important, 0, false, false, 0, 0) {}
+      : CascadePriority(origin,
+                        important,
+                        /* tree_order */ 0,
+                        /* is_inline_style */ false,
+                        /* is_try_style */ false,
+                        /* is_try_tactics_style */ false,
+                        /* layer_order */ 0,
+                        /* position */ 0) {}
   CascadePriority(CascadeOrigin origin, bool important, uint16_t tree_order)
-      : CascadePriority(origin, important, tree_order, false, false, 0, 0) {}
+      : CascadePriority(origin,
+                        important,
+                        tree_order,
+                        /* is_inline_style */ false,
+                        /* is_try_style */ false,
+                        /* is_try_tactics_style */ false,
+                        /* layer_order */ 0,
+                        /* position */ 0) {}
 
   // For an explanation of 'tree_order', see css-scoping:
   // https://drafts.csswg.org/css-scoping/#shadow-cascading
@@ -101,13 +123,16 @@ class CORE_EXPORT CascadePriority {
                   uint16_t tree_order,
                   bool is_inline_style,
                   bool is_try_style,
+                  bool is_try_tactics_style,
                   uint16_t layer_order,
                   uint32_t position)
       : CascadePriority(
             static_cast<uint64_t>(position) << kPositionOffset |
                 EncodeLayerOrder(layer_order, important) << kLayerOrderOffset |
                 static_cast<uint64_t>(is_inline_style) << kIsInlineStyleOffset |
-                static_cast<uint64_t>(is_try_style) << kIsTryStyleOffset,
+                static_cast<uint64_t>(is_try_style) << kIsTryStyleOffset |
+                static_cast<uint64_t>(is_try_tactics_style)
+                    << kIsTryTacticsStyleOffset,
             EncodeTreeOrder(tree_order, important) |
                 EncodeOriginImportance(origin, important)
                     << kOriginImportanceOffset) {}
@@ -189,6 +214,7 @@ class CORE_EXPORT CascadePriority {
   //  Bit 36-51: layer_order (encoded)
   //  Bit    52: is_inline_style
   //  Bit    53: is_try_style
+  //  Bit    54: is_try_tactics_style
   uint64_t low_bits_;
 
   //  Bit  0-15: tree_order (encoded)
