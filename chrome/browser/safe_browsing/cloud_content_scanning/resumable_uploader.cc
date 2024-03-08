@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_status_code.h"
@@ -34,10 +35,22 @@ constexpr char kUploadHeaderContentTypeHeader[] =
     "X-Goog-Upload-Header-Content-Type";
 constexpr char kUploadStatusHeader[] = "X-Goog-Upload-Status";
 constexpr char kUploadUrlHeader[] = "X-Goog-Upload-Url";
+constexpr char kUploadOffsetHeader[] = "X-Goog-Upload-Offset";
 // Content type of the upload contents.
 constexpr char kUploadContentType[] = "application/octet-stream";
 // Content type of metadata.
 constexpr char kMetadataContentType[] = "application/json";
+
+std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
+    const base::FilePath& path) {
+  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
+  // user clicking "Open Now" without causing download errors.
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                            base::File::FLAG_WIN_SHARE_DELETE);
+
+  return ConnectorDataPipeGetter::CreateResumablePipeGetter(std::move(file));
+}
+
 }  // namespace
 
 ResumableUploadRequest::ResumableUploadRequest(
@@ -94,6 +107,11 @@ void ResumableUploadRequest::SetMetadataRequestHeaders(
   } else {
     SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
   }
+}
+
+void ResumableUploadRequest::Start() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  SendMetadataRequest();
 }
 
 // static
@@ -153,11 +171,11 @@ void ResumableUploadRequest::SendMetadataRequest() {
                                      kMetadataContentType);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&ResumableUploadRequest::OnMetadataUploadComplete,
+      base::BindOnce(&ResumableUploadRequest::OnMetadataUploadCompleted,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ResumableUploadRequest::OnMetadataUploadComplete(
+void ResumableUploadRequest::OnMetadataUploadCompleted(
     std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   int response_code = 0;
@@ -173,7 +191,91 @@ void ResumableUploadRequest::OnMetadataUploadComplete(
     return;
   }
 
-  // TODO(b/322005479): Add SendContent() logics.
+  SendContentSoon();
+}
+
+void ResumableUploadRequest::SendContentSoon() {
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->method = "POST";
+  request->url = GURL(upload_url_);
+  // Only sends content smaller than 50MB, in a single request.
+  request->headers.SetHeader(kUploadCommandHeader, "upload, finalize");
+  request->headers.SetHeader(kUploadOffsetHeader, "0");
+
+  // TODO(b/322005992): Add retry logics.
+  switch (data_source_) {
+    case FILE:
+      file_access::RequestFilesAccessForSystem(
+          {path_},
+          base::BindOnce(&ResumableUploadRequest::CreateDatapipe,
+                         weak_factory_.GetWeakPtr(), std::move(request)));
+      break;
+    case PAGE:
+      OnDataPipeCreated(std::move(request),
+                        ConnectorDataPipeGetter::CreateResumablePipeGetter(
+                            std::move(page_region_)));
+      break;
+    // Resumable upload currently does not support paste.
+    case STRING:
+      NOTREACHED();
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+// TODO(b/328415950): Move the data pipe creation logics to
+// connector_upload_request.
+void ResumableUploadRequest::CreateDatapipe(
+    std::unique_ptr<network::ResourceRequest> request,
+    file_access::ScopedFileAccess file_access) {
+  scoped_file_access_ =
+      std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&CreateFileDataPipeGetterBlocking, path_),
+      base::BindOnce(&ResumableUploadRequest::OnDataPipeCreated,
+                     weak_factory_.GetWeakPtr(), std::move(request)));
+}
+
+void ResumableUploadRequest::OnDataPipeCreated(
+    std::unique_ptr<network::ResourceRequest> request,
+    std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter) {
+  scoped_file_access_.reset();
+  if (!data_pipe_getter) {
+    std::move(callback_).Run(/*success=*/false, 0, "");
+    return;
+  }
+
+  data_pipe_getter_ = std::move(data_pipe_getter);
+  SendContentNow(std::move(request));
+}
+
+void ResumableUploadRequest::SendContentNow(
+    std::unique_ptr<network::ResourceRequest> request) {
+  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
+  data_pipe_getter_->Clone(data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  request->request_body = new network::ResourceRequestBody();
+  request->request_body->AppendDataPipe(std::move(data_pipe_getter));
+
+  url_loader_ =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
+  url_loader_->SetAllowHttpErrorResults(true);
+  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&ResumableUploadRequest::OnSendContentCompleted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ResumableUploadRequest::OnSendContentCompleted(
+    std::optional<std::string> response_body) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  int response_code = 0;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
+
+  Finish(url_loader_->NetError(), response_code, std::move(response_body));
 }
 
 bool ResumableUploadRequest::CanUploadContent(

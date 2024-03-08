@@ -102,10 +102,6 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
-  ConnectorDataPipeGetter* data_pipe_getter_for_testing() {
-    return data_pipe_getter_.get();
-  }
-
   void SetRequestHeaders(network::ResourceRequest* request);
 
  private:

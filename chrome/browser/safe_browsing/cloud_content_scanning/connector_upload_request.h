@@ -68,6 +68,10 @@ class ConnectorUploadRequest {
 
   virtual ~ConnectorUploadRequest();
 
+  ConnectorDataPipeGetter* data_pipe_getter_for_testing() {
+    return data_pipe_getter_.get();
+  }
+
   void set_access_token(const std::string& access_token);
 
  protected:

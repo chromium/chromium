@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "chrome/browser/enterprise/connectors/test/uploader_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -23,6 +24,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+constexpr char kUploadUrl[] =
+    "http://uploads.google.com?upload_id=ABC&upload_protocol=resumable";
 
 using ::testing::_;
 
@@ -202,7 +206,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
                                 const std::string& response_data) {
                       run_loop.Quit();
                     }));
-  mock_request->SendMetadataRequest();
+  mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   EXPECT_EQ(metadata_content_type, "application/json");
@@ -237,7 +241,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
                       EXPECT_EQ("response", response_data);
                       run_loop.Quit();
                     }));
-  mock_request->SendMetadataRequest();
+  mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0U);
@@ -276,7 +280,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
                       EXPECT_EQ("response", response_data);
                       run_loop.Quit();
                     }));
-  mock_request->SendMetadataRequest();
+  mock_request->Start();
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0U);
@@ -289,4 +293,164 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
 
   run_loop.Run();
 }
+
+class ResumableUploadSendContentRequestTest
+    : public ResumableUploadRequestTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool is_file_request() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ResumableUploadSendContentRequestTest,
+                         testing::Bool());
+
+TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
+  base::RunLoop run_loop;
+  std::string content_upload_method;
+  std::string content_upload_command;
+  std::string content_upload_offset;
+
+  std::unique_ptr<MockResumableUploadRequest> mock_request =
+      is_file_request()
+          ? CreateFileRequest(
+                "file content",
+                base::BindLambdaForTesting(
+                    [&run_loop](bool success, int http_status,
+                                const std::string& response_data) {
+                      EXPECT_TRUE(success);
+                      EXPECT_EQ(net::HTTP_OK, http_status);
+                      EXPECT_EQ("final_response", response_data);
+                      run_loop.Quit();
+                    }))
+          : CreatePageRequest(
+                "page content",
+                base::BindLambdaForTesting(
+                    [&run_loop](bool success, int http_status,
+                                const std::string& response_data) {
+                      EXPECT_TRUE(success);
+                      EXPECT_EQ(net::HTTP_OK, http_status);
+                      EXPECT_EQ("final_response", response_data);
+                      run_loop.Quit();
+                    }));
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (request.url == GURL(kUploadUrl)) {
+          content_upload_method = request.method;
+          request.headers.GetHeader("X-Goog-Upload-Command",
+                                    &content_upload_command);
+          request.headers.GetHeader("X-Goog-Upload-Offset",
+                                    &content_upload_offset);
+          auto content_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                    "final");
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl), std::move(content_response_head),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        } else {
+          NOTREACHED();
+        }
+      }));
+  mock_request->Start();
+  run_loop.Run();
+
+  if (is_file_request()) {
+    EXPECT_EQ("file content",
+              enterprise_connectors::test::GetBodyFromFileOrPageRequest(
+                  mock_request->data_pipe_getter_for_testing()));
+  } else {
+    EXPECT_EQ("page content",
+              enterprise_connectors::test::GetBodyFromFileOrPageRequest(
+                  mock_request->data_pipe_getter_for_testing()));
+  }
+  EXPECT_EQ(content_upload_method, "POST");
+  EXPECT_EQ(content_upload_command, "upload, finalize");
+  EXPECT_EQ(content_upload_offset, "0");
+}
+
+TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
+  base::RunLoop run_loop;
+  std::string content_upload_method;
+  std::string content_upload_command;
+  std::string content_upload_offset;
+
+  std::unique_ptr<MockResumableUploadRequest> mock_request =
+      is_file_request()
+          ? CreateFileRequest(
+                "file content",
+                base::BindLambdaForTesting(
+                    [&run_loop](bool success, int http_status,
+                                const std::string& response_data) {
+                      EXPECT_FALSE(success);
+                      EXPECT_EQ(net::HTTP_UNAUTHORIZED, http_status);
+                      EXPECT_EQ("final_response", response_data);
+                      run_loop.Quit();
+                    }))
+          : CreatePageRequest(
+                "page content",
+                base::BindLambdaForTesting(
+                    [&run_loop](bool success, int http_status,
+                                const std::string& response_data) {
+                      EXPECT_FALSE(success);
+                      EXPECT_EQ(net::HTTP_UNAUTHORIZED, http_status);
+                      EXPECT_EQ("final_response", response_data);
+                      run_loop.Quit();
+                    }));
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (request.url == GURL(kUploadUrl)) {
+          content_upload_method = request.method;
+          request.headers.GetHeader("X-Goog-Upload-Command",
+                                    &content_upload_command);
+          request.headers.GetHeader("X-Goog-Upload-Offset",
+                                    &content_upload_offset);
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl),
+              network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        } else {
+          NOTREACHED();
+        }
+      }));
+
+  mock_request->Start();
+  run_loop.Run();
+
+  if (is_file_request()) {
+    EXPECT_EQ("file content",
+              enterprise_connectors::test::GetBodyFromFileOrPageRequest(
+                  mock_request->data_pipe_getter_for_testing()));
+  } else {
+    EXPECT_EQ("page content",
+              enterprise_connectors::test::GetBodyFromFileOrPageRequest(
+                  mock_request->data_pipe_getter_for_testing()));
+  }
+  EXPECT_EQ(content_upload_method, "POST");
+  EXPECT_EQ(content_upload_command, "upload, finalize");
+  EXPECT_EQ(content_upload_offset, "0");
+}
+
 }  // namespace safe_browsing

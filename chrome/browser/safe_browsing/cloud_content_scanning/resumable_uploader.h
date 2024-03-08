@@ -89,12 +89,36 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // Set the headers for the given metadata `request`.
   void SetMetadataRequestHeaders(network::ResourceRequest* request);
 
+  // Start the upload. This must be called on the UI thread. When complete, this
+  // will call `callback_` on the UI thread.
+  virtual void Start();
+
+ private:
   // Send the metadata information about the file/page to the server.
   void SendMetadataRequest();
 
- private:
   // Called whenever a metadata request finishes (on success or failure).
-  void OnMetadataUploadComplete(std::optional<std::string> response_body);
+  void OnMetadataUploadCompleted(std::optional<std::string> response_body);
+
+  // Initialize `data_pipe_getter_`
+  void CreateDatapipe(std::unique_ptr<network::ResourceRequest> request,
+                      file_access::ScopedFileAccess file_access);
+
+  // Called after `data_pipe_getter_` has been initialized.
+  void OnDataPipeCreated(
+      std::unique_ptr<network::ResourceRequest> request,
+      std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter);
+
+  // Called after a metadata request finishes successfully and provides a
+  // `upload_url_`.
+  void SendContentSoon();
+
+  // Called after `data_pipe_getter_` is known to be initialized to a correct
+  // state.
+  void SendContentNow(std::unique_ptr<network::ResourceRequest> request);
+
+  // Called whenever a content request finishes (on success or failure).
+  void OnSendContentCompleted(std::optional<std::string> response_body);
 
   // Returns true if all of the following conditions are met:
   //    1. The HTTP status is OK.
