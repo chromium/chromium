@@ -17,8 +17,139 @@ struct StartSessionEventParams {
   LaunchType launch_type;
 };
 
+enum Mode {
+  kPhoto,
+  kVideo,
+  kScan,
+  kPortrait,
+};
+
+enum Facing {
+  kEnvironment,
+  kUser,
+  kExternal,
+  kUnknown,
+};
+
+enum GridType {
+  kNone,
+  k3X3,
+  k4X4,
+  kGolden,
+};
+
+enum TimerType {
+  kNone,
+  k3Seconds,
+  k10Seconds,
+};
+
+enum ShutterType {
+  kUnknown,
+  kAssistant,
+  kKeyboard,
+  kMouse,
+  kTouch,
+  kVolumeKey,
+};
+
+enum AndroidIntentResultType {
+  kNotIntent,
+  kConfirmed,
+  kCanceled,
+};
+
+enum ResolutionLevel {
+  kUnknown,
+  k4K,
+  kQuadHD,
+  kFullHD,
+  kHD,
+  k360P,
+  kFull,
+  kMedium,
+};
+
+enum AspectRatioSet {
+  kOthers,
+  k4To3,
+  k16To9,
+  kSquare,
+};
+
+struct PhotoDetails {
+  bool is_video_snapshot;
+};
+
+enum RecordType {
+  kNotRecording,
+  kNormal,
+  kGif,
+  kTimelapse,
+};
+
+enum GifResultType {
+  kNotGif,
+  kRetake,
+  kShare,
+  kSave,
+};
+
+struct NormalVideoDetails {
+};
+
+struct GifVideoDetails {
+  GifResultType gif_result_type;
+};
+
+struct TimelapseVideoDetails {
+  int32 timelapse_speed;
+};
+
+union RecordTypeDetails {
+  NormalVideoDetails normal_video_details;
+  GifVideoDetails gif_video_details;
+  TimelapseVideoDetails timelapse_video_details;
+};
+
+struct VideoDetails {
+  bool is_muted;
+  int32 fps;
+  bool ever_paused;
+
+  // In milliseconds.
+  int32 duration;
+
+  RecordTypeDetails record_type_details;
+};
+
+union CaptureDetails {
+  PhotoDetails photo_details;
+  VideoDetails video_details;
+};
+
+struct CaptureEventParams {
+  Mode mode;
+  Facing facing;
+  bool is_mirrored;
+  GridType grid_type;
+  TimerType timer_type;
+  ShutterType shutter_type;
+  AndroidIntentResultType android_intent_result_type;
+  bool is_window_maximized;
+  bool is_window_portrait;
+  int32 resolution_width;
+  int32 resolution_height;
+  ResolutionLevel resolution_level;
+  AspectRatioSet aspect_ratio_set;
+  CaptureDetails? capture_details;
+};
+
 // This interface is used by CCA to send metrics to CrOS Events.
 interface EventsSender {
   // Sends an event to indicate a CCA session is started.
   SendStartSessionEvent(StartSessionEventParams params);
+
+  // Sends an event to indicate a capture is happened.
+  SendCaptureEvent(CaptureEventParams params);
 };

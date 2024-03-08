@@ -36,9 +36,20 @@ export type {
   WifiConfig,
 } from '../../mojom/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
 export {
+  AndroidIntentResultType,
+  AspectRatioSet,
+  Facing,
+  GifResultType,
+  GridType,
   LaunchType,
+  Mode,
+  RecordType,
+  ResolutionLevel,
+  ShutterType,
+  TimerType,
 } from '../../mojom/ash/webui/camera_app_ui/events_sender.mojom-webui.js';
 export type {
+  CaptureEventParams,
   EventsSenderRemote,
 } from '../../mojom/ash/webui/camera_app_ui/events_sender.mojom-webui.js';
 export {

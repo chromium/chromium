@@ -953,6 +953,122 @@
     </metric>
   </event>
 
+  <event name="CameraApp.Capture">
+    <summary>
+      Event recorded when the camera app executes a capture.
+    </summary>
+    <metric name="Mode" type="int">
+      <summary>
+        The mode where the capture happens.
+      </summary>
+    </metric>
+    <metric name="Facing" type="int">
+      <summary>
+        The facing of the capturing camera.
+      </summary>
+    </metric>
+    <metric name="IsMirrored" type="int">
+      <summary>
+        Boolean indicating whether the camera preview is mirrored when the capture
+        happens.
+      </summary>
+    </metric>
+    <metric name="GridType" type="int">
+      <summary>
+        The applied grid setting when the capture happens.
+      </summary>
+    </metric>
+    <metric name="TimerType" type="int">
+      <summary>
+        The applied timer setting when the capture happens.
+      </summary>
+    </metric>
+    <metric name="ShutterType" type="int">
+      <summary>
+        The shutter type which triggers the camera capture.
+      </summary>
+    </metric>
+    <metric name="AndroidIntentResultType" type="int">
+      <summary>
+        The type of Android intent result which the capture leads to.
+      </summary>
+    </metric>
+    <metric name="IsWindowMaximized" type="int">
+      <summary>
+        Boolean indicating whether the window is maximized when the capture happens.
+      </summary>
+    </metric>
+    <metric name="IsWindowPortrait" type="int">
+      <summary>
+        Boolean indicating whether the window is in portrait orientation when the
+        capture happens.
+      </summary>
+    </metric>
+    <metric name="ResolutionWidth" type="int">
+      <summary>
+        The width of the capture resolution.
+      </summary>
+    </metric>
+    <metric name="ResolutionHeight" type="int">
+      <summary>
+        The height of the capture resolution.
+      </summary>
+    </metric>
+    <metric name="ResolutionLevel" type="int">
+      <summary>
+        The level that the capture resolution falls within.
+      </summary>
+    </metric>
+    <metric name="AspectRatioSet" type="int">
+      <summary>
+        The aspect ratio set that the capture aspect ratio falls within.
+      </summary>
+    </metric>
+    <metric name="IsVideoSnapshot" type="int">
+      <summary>
+        Boolean indicating whether the photo is a snapshot taken during video
+        recording.
+      </summary>
+    </metric>
+    <metric name="IsMuted" type="int">
+      <summary>
+        Boolean indicating whether the video is recorded with mic muted.
+      </summary>
+    </metric>
+    <metric name="Fps" type="int">
+      <summary>
+        The targeting frame rate of the video recording. 0 if the capture is not
+        recording.
+      </summary>
+    </metric>
+    <metric name="EverPaused" type="int">
+      <summary>
+        Boolean indicating whether the user has ever paused the recording.
+      </summary>
+    </metric>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the captured video in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordType" type="int">
+      <summary>
+        The type of the video recording.
+      </summary>
+    </metric>
+    <metric name="GifResultType" type="int">
+      <summary>
+        The type of the GIF recording result.
+      </summary>
+    </metric>
+    <metric name="TimelapseSpeed" type="int">
+      <summary>
+        The acceleration speed that time-lapse feature applied. 0 if the capture is
+        not time-lapse.
+      </summary>
+    </metric>
+  </event>
+
   <event name="OOBE.GaiaSigninRequested" force_record="true">
     <summary>
       Recorded after the password is entered for authentication in the GAIA Sign-

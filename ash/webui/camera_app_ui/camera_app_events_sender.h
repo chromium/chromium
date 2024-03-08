@@ -27,9 +27,10 @@ class CameraAppEventsSender : public camera_app::mojom::EventsSender {
   void SendStartSessionEvent(
       camera_app::mojom::StartSessionEventParamsPtr params) override;
 
- private:
-  bool CanSendEvents();
+  void SendCaptureEvent(
+      camera_app::mojom::CaptureEventParamsPtr params) override;
 
+ private:
   std::string system_language_;
 
   mojo::ReceiverSet<camera_app::mojom::EventsSender> receivers_;
