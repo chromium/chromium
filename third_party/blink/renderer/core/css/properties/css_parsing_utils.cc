@@ -7200,6 +7200,13 @@ CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
     if (!dashed_ident && (dashed_ident = ConsumeDashedIdent(range, context))) {
       continue;
     }
+    if (context.Mode() == kUASheetMode && !dashed_ident) {
+      CSSCustomIdentValue* value = ConsumeCustomIdent(range, context);
+      if (value && value->Value().StartsWith("-internal-")) {
+        dashed_ident = value;
+        continue;
+      }
+    }
     if (has_tactic) {
       break;
     }

@@ -696,8 +696,8 @@ bool ConsumeIfDelimiter(T& range_or_stream, UChar c) {
   return true;
 }
 
-CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange&,
-                                         const CSSParserContext&);
+CORE_EXPORT CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange&,
+                                                     const CSSParserContext&);
 CSSValue* ConsumePositionTryOptions(CSSParserTokenRange&,
                                     const CSSParserContext&);
 
