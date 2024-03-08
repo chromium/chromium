@@ -495,11 +495,7 @@ void ShoppingServiceTestBase::MergeProductInfoData(
 }
 
 int ShoppingServiceTestBase::GetProductInfoCacheOpenURLCount(const GURL& url) {
-  auto it = shopping_service_->product_info_cache_.find(url.spec());
-  if (it == shopping_service_->product_info_cache_.end())
-    return 0;
-
-  return it->second->pages_with_url_open;
+  return shopping_service_->commerce_info_cache_.GetUrlRefCount(url);
 }
 
 const ProductInfo* ShoppingServiceTestBase::GetFromProductInfoCache(

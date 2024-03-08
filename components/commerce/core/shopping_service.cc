@@ -288,14 +288,12 @@ void ShoppingService::ScheduleProductInfoLocalExtraction(WebWrapper* web) {
     return;
   }
 
-  auto it = product_info_cache_.find(url.spec());
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(url);
 
-  if (it == product_info_cache_.end() ||
-      !it->second->needs_local_extraction_run) {
+  if (!entry || !entry->needs_local_extraction_run) {
     return;
   }
-
-  ProductInfoCacheEntry* entry = it->second.get();
 
   // If there's already a task scheduled, cancel it.
   if (entry->run_local_extraction_task.get()) {
@@ -324,9 +322,9 @@ void ShoppingService::TryRunningLocalExtractionForProductInfo(
   }
 
   // Make sure we actually need the local extraction to run based on the cache.
-  auto it = product_info_cache_.find(web->GetLastCommittedURL().spec());
-  if (it == product_info_cache_.end() ||
-      !it->second->needs_local_extraction_run) {
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(web->GetLastCommittedURL());
+  if (!entry || !entry->needs_local_extraction_run) {
     return;
   }
 
@@ -351,16 +349,17 @@ void ShoppingService::RunLocalExtractionForProductInfoForShoppingPage(
     return;
   }
 
-  auto it = product_info_cache_.find(url.spec());
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(url);
 
   // If there is both an entry in the cache and the local extraction fallback
   // needs to run, run it.
-  if (it != product_info_cache_.end() &&
-      it->second->needs_local_extraction_run && web_extractor_ && web.get()) {
+  if (entry && entry->needs_local_extraction_run && web_extractor_ &&
+      web.get()) {
     // Since we're about to run the JS, flip the flag in the cache.
-    it->second->needs_local_extraction_run = false;
+    entry->needs_local_extraction_run = false;
 
-    it->second->local_extraction_execution_start_time = base::Time::Now();
+    entry->local_extraction_execution_start_time = base::Time::Now();
 
     web_extractor_->ExtractMetaInfo(
         web.get(),
@@ -384,16 +383,17 @@ void ShoppingService::OnProductInfoLocalExtractionResult(
 
   // If there was no entry, do nothing. Most likely this means the page
   // navigated before the script finished running.
-  auto it = product_info_cache_.find(url.spec());
-  if (it == product_info_cache_.end()) {
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(url);
+  if (!entry) {
     return;
   }
 
   base::UmaHistogramTimes(
       kProductInfoLocalExtractionTime,
-      base::Time::Now() - it->second->local_extraction_execution_start_time);
+      base::Time::Now() - entry->local_extraction_execution_start_time);
 
-  ProductInfo* cached_info = it->second->product_info.get();
+  ProductInfo* cached_info = entry->product_info.get();
 
   bool pdp_detected_by_client = false;
   bool pdp_detected_by_server = false;
@@ -453,14 +453,7 @@ void ShoppingService::UpdateProductInfoCacheForInsertion(const GURL& url) {
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = product_info_cache_.find(url.spec());
-  if (it != product_info_cache_.end()) {
-    it->second->pages_with_url_open++;
-  } else {
-    product_info_cache_.emplace(url.spec(),
-                                std::make_unique<ProductInfoCacheEntry>());
-    product_info_cache_[url.spec()]->pages_with_url_open++;
-  }
+  commerce_info_cache_.AddRef(url);
 }
 
 void ShoppingService::UpdateProductInfoCache(
@@ -469,41 +462,30 @@ void ShoppingService::UpdateProductInfoCache(
     std::unique_ptr<ProductInfo> info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = product_info_cache_.find(url.spec());
-  if (it == product_info_cache_.end())
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(url);
+  if (!entry) {
     return;
+  }
 
-  it->second->needs_local_extraction_run = needs_js;
-  it->second->product_info = std::move(info);
+  entry->needs_local_extraction_run = needs_js;
+  entry->product_info = std::move(info);
 }
 
 const ProductInfo* ShoppingService::GetFromProductInfoCache(const GURL& url) {
-  auto it = product_info_cache_.find(url.spec());
-  if (it == product_info_cache_.end())
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(url);
+  if (!entry) {
     return nullptr;
+  }
 
-  return it->second->product_info.get();
+  return entry->product_info.get();
 }
 
 void ShoppingService::UpdateProductInfoCacheForRemoval(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Check if the previously navigated URL cache needs to be cleared. If more
-  // than one tab was open with the same URL, keep it in the cache but decrement
-  // the internal count.
-  auto it = product_info_cache_.find(url.spec());
-  if (it != product_info_cache_.end()) {
-    ProductInfoCacheEntry* entry = it->second.get();
-    if (entry->pages_with_url_open <= 1) {
-      if (entry->run_local_extraction_task.get()) {
-        entry->run_local_extraction_task->Cancel();
-        entry->run_local_extraction_task.reset();
-      }
-      product_info_cache_.erase(it);
-    } else {
-      entry->pages_with_url_open--;
-    }
-  }
+  commerce_info_cache_.RemoveRef(url);
 }
 
 void ShoppingService::PDPMetricsCallback(

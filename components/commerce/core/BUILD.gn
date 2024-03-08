@@ -15,6 +15,19 @@ source_set("public") {
   ]
 }
 
+source_set("commerce_info_cache") {
+  sources = [
+    "commerce_info_cache.cc",
+    "commerce_info_cache.h",
+  ]
+
+  deps = [
+    ":commerce_types",
+    "//base",
+    "//url",
+  ]
+}
+
 source_set("feature_list") {
   sources = [
     "commerce_feature_list.cc",
@@ -220,6 +233,7 @@ static_library("shopping_service") {
 
   deps = [
     ":commerce_constants",
+    ":commerce_info_cache",
     ":commerce_subscription_db_content_proto",
     ":discounts_db_content_proto",
     ":feature_list",
@@ -317,6 +331,7 @@ source_set("shopping_service_unit_tests") {
 
   sources = [
     "bookmark_update_manager_unittest.cc",
+    "commerce_info_cache_unittest.cc",
     "discounts_storage_unittest.cc",
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
@@ -329,6 +344,7 @@ source_set("shopping_service_unit_tests") {
 
   deps = [
     ":account_checker_test_support",
+    ":commerce_info_cache",
     ":discounts_db_content_proto",
     ":metrics",
     ":pref_names",

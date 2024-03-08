@@ -22,6 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/commerce/core/account_checker.h"
+#include "components/commerce/core/commerce_info_cache.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
@@ -675,10 +676,9 @@ class ShoppingService : public KeyedService,
   std::unique_ptr<ShoppingPowerBookmarkDataProvider>
       shopping_power_bookmark_data_provider_;
 
-  // This is a cache that maps URL to a cache entry that may or may not contain
-  // product info.
-  std::unordered_map<std::string, std::unique_ptr<ProductInfoCacheEntry>>
-      product_info_cache_;
+  // A cache that retains commerce information for a URL as long as at least one
+  // instance of the URL is open in a tab or mainteined by some other subsystem.
+  CommerceInfoCache commerce_info_cache_;
 
   // This is a cache that maps URL to a cache entry that may or may not contain
   // price insights info.
