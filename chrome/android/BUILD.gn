@@ -2866,6 +2866,11 @@ if (current_toolchain == default_toolchain) {
       "//ui/base:goldctl",
     ]
 
+    if (enable_chrome_android_internal) {
+      data_deps +=
+          [ "//clank/build/bot/filters:chrome_public_unit_test_apk_filters" ]
+    }
+
     # Required by //build/config/android/test/resource_overlay:javatests
     enforce_resource_overlays_in_tests = true
 

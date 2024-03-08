@@ -3156,6 +3156,10 @@ test("net_unittests") {
       "base/network_interfaces_linux_unittest.cc",
     ]
     shard_timeout = 300
+
+    if (enable_chrome_android_internal) {
+      data_deps += [ "//clank/build/bot/filters:net_unittests_filters" ]
+    }
   }
 
   if (is_win) {

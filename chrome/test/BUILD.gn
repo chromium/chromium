@@ -7582,6 +7582,11 @@ test("unit_tests") {
       "//ui/android",
       "//ui/events/devices:test_support",
     ]
+
+    if (enable_chrome_android_internal) {
+      data_deps += [ "//clank/build/bot/filters:unit_tests_filters" ]
+    }
+
     if (dfmify_dev_ui) {
       sources += [
         "//chrome/browser/dev_ui/android/dev_ui_loader_throttle_unittest.cc",
