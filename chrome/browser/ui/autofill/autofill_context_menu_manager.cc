@@ -365,33 +365,38 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems(
 
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
     ContentAutofillDriver& driver) {
-  if (personal_data_manager_->GetProfilesToSuggest().empty()) {
-    return false;
-  }
-
-  return ShouldAddAddressManualFallbackForAutocompleteUnrecognized(driver) ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillForUnclassifiedFieldsAvailable);
-}
-
-bool AutofillContextMenuManager::
-    ShouldAddAddressManualFallbackForAutocompleteUnrecognized(
-        ContentAutofillDriver& driver) {
+  // If the field is of address type and there is information in the profile to
+  // fill it, we always show the fallback option.
+  // TODO(crbug.com/1493361): Remove the following code block once feature is
+  // cleaned up. At that point, we can only check whether a profile exists or if
+  // the user is not in incognito mode. Whether the field can be filled will be
+  // irrelevant.
   AutofillField* field =
       GetAutofillField(driver.GetAutofillManager(), driver.GetFrameToken());
-
-  if (!field || FieldTypeGroupToFormType(field->Type().group()) !=
-                    FormType::kAddressForm) {
-    return false;
+  if (field && FieldTypeGroupToFormType(field->Type().group()) ==
+                   FormType::kAddressForm) {
+    // Show the context menu entry for address fields, which can be filled
+    // with at least one of the user's profiles.
+    CHECK(personal_data_manager_);
+    if (base::ranges::any_of(personal_data_manager_->GetProfiles(),
+                             [field](AutofillProfile* profile) {
+                               return profile->HasInfo(
+                                   field->Type().GetStorableType());
+                             })) {
+      return true;
+    }
   }
 
-  // Only show the context menu entry for address fields, which can be filled
-  // with at least one of the user's profiles.
-  CHECK(personal_data_manager_);
-  return base::ranges::any_of(
-      personal_data_manager_->GetProfiles(), [field](AutofillProfile* profile) {
-        return profile->HasInfo(field->Type().GetStorableType());
-      });
+  // Also add the manual fallback option if:
+  // 1. The user has a profile stored, or
+  // 2. The user does not have a profile stored and is not in incognito mode.
+  // This is done so that users can be prompted to create an address profile.
+  const bool has_profile = !personal_data_manager_->GetProfiles().empty();
+  const bool is_incognito =
+      driver.GetAutofillManager().client().IsOffTheRecord();
+  return (has_profile || !is_incognito) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillForUnclassifiedFieldsAvailable);
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
