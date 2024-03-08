@@ -121,11 +121,6 @@ BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
              "BlockInsecurePrivateNetworkRequestsDeprecationTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables disallowing MIDI permission by default.
-BASE_FEATURE(kBlockMidiByDefault,
-             "BlockMidiByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Broker file operations on disk cache in the Network Service.
 // This is no-op if the network service is hosted in the browser process.
 BASE_FEATURE(kBrokerFileOperationsOnDiskCacheInNetworkService,

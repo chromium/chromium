@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -50,7 +51,10 @@ ScriptPromise MIDIAccessInitializer::Start() {
 
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   permission_service_->RequestPermission(
-      CreateMidiPermissionDescriptor(options_->hasSysex() && options_->sysex()),
+      CreateMidiPermissionDescriptor(
+          base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)
+              ? true
+              : options_->hasSysex() && options_->sysex()),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
       WTF::BindOnce(&MIDIAccessInitializer::OnPermissionsUpdated,
                     WrapPersistent(this)));

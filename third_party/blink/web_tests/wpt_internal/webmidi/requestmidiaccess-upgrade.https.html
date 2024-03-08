@@ -8,8 +8,8 @@ import {MockMIDIService} from './resources/mock-midiservice.js';
 
 const mock = new MockMIDIService();
 promise_test(async () => {
-  // Obtain the first MIDIAccess instance without a sysex permission.
-  await test_driver.set_permission({name: 'midi'}, 'granted');
+  // Obtain the first MIDIAccess instance
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
   const nosysex_access = await navigator.requestMIDIAccess();
 
   // See if a sysex message can not be sent over the first instance.

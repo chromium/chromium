@@ -8,7 +8,6 @@
 #include "base/no_destructor.h"
 #include "components/permissions/android/core_jni/PermissionsAndroidFeatureMap_jni.h"
 #include "components/permissions/features.h"
-#include "content/public/common/content_features.h"
 
 namespace permissions {
 
@@ -20,7 +19,6 @@ namespace {
 // components/permissions/features.h).
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidApproximateLocationPermissionSupport,
-    &::features::kBlockMidiByDefault,
     &features::kOneTimePermission,
 };
 

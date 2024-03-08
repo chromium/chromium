@@ -20,10 +20,10 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -40,7 +40,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
  public:
   MidiPermissionsFlowInteractiveUITest() {
-    feature_list_.InitAndEnableFeature(features::kBlockMidiByDefault);
+    feature_list_.InitAndEnableFeature(blink::features::kBlockMidiByDefault);
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -158,9 +158,6 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           })));
 }
 
-// TODO(b/315345075): Add a test for the behavior of the MIDI toggle in page
-// info.
-
 // Display blockage indicator of MIDI when blocked.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        BlockedMidiPermissionIndicator) {
@@ -184,7 +181,6 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                 element_view->get_tooltip_text_for_testing(),
                 l10n_util::GetStringUTF16(IDS_BLOCKED_MIDI_SYSEX_MESSAGE));
           })));
-  // TODO(b/315345075): Add a check for the strings displayed in the bubble.
 }
 
 // Display in-use indicator of MIDI when allowed.
@@ -208,5 +204,4 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                 element_view->get_tooltip_text_for_testing(),
                 l10n_util::GetStringUTF16(IDS_ALLOWED_MIDI_SYSEX_MESSAGE));
           })));
-  // TODO(b/315345075): Add a check for the strings displayed in the bubble.
 }

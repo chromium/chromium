@@ -128,10 +128,6 @@ public class PageInfoDiscoverabilityTest {
                             .value(ContentSettingsType.MEDIASTREAM_MIC, true));
             parameters.add(
                     new ParameterSet()
-                            .name("RequestType.kMidi")
-                            .value(ContentSettingsType.MIDI, false));
-            parameters.add(
-                    new ParameterSet()
                             .name("RequestType.kMidiSysex")
                             .value(ContentSettingsType.MIDI_SYSEX, true));
             // No associated ContentSettingsType

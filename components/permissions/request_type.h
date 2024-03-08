@@ -42,7 +42,6 @@ enum class RequestType {
   kLocalFonts,
 #endif
   kMicStream,
-  kMidi,
   kMidiSysex,
   kMultipleDownloads,
 #if BUILDFLAG(IS_ANDROID)

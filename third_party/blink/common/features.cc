@@ -61,6 +61,11 @@ BASE_FEATURE(kAllowBFCacheWhenClosedMediaStreamTrack,
              "AllowBFCacheWhenClosedMediaStreamTrack",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Block all MIDI access with the MIDI_SYSEX permission
+BASE_FEATURE(kBlockMidiByDefault,
+             "BlockMidiByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kComputePressureRateObfuscationMitigation,
              "ComputePressureRateObfuscationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);

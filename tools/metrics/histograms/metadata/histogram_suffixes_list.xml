@@ -2689,7 +2689,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="CapturedSurfaceControl"
       label="Captured Surface Control permission"/>
   <suffix name="Geolocation" label="Geolocation permission"/>
-  <suffix name="Midi" label="Midi permission"/>
   <suffix name="MidiSysEx" label="Midi SysEx permission"/>
   <suffix name="MultipleDownload" label="Multiple downloads permission"/>
   <suffix name="Nfc" label="NFC permission"/>

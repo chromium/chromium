@@ -25,7 +25,8 @@ function assert_available_in_iframe(
 }
 
 function run_permission_default_header_policy_tests(
-    cross_origin, feature_name, error_name, feature_promise_factory) {
+    cross_origin, feature_name, allow_attributes, error_name,
+    feature_promise_factory) {
   // This may be the version of the page loaded up in an iframe. If so, just
   // post the result of running the feature promise back to the parent.
   if (location.hash == '#iframe') {
@@ -76,7 +77,7 @@ function run_permission_default_header_policy_tests(
   async_test(
       t => {
         assert_available_in_iframe(
-            feature_name, t, cross_origin_frame_url, '#OK', feature_name);
+            feature_name, t, cross_origin_frame_url, '#OK', allow_attributes);
       },
       'Feature policy "' + feature_name +
           '" can be enabled in cross-origin iframes using "allow" attribute.');

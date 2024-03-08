@@ -1273,7 +1273,7 @@ TEST_F(PermissionRequestManagerTest,
   std::unique_ptr<MockPermissionRequest> request_clipboard =
       CreateAndAddRequest(RequestType::kClipboard, /*should_be_seen=*/true, 2);
   std::unique_ptr<MockPermissionRequest> request_midi =
-      CreateAndAddRequest(RequestType::kMidi, /*should_be_seen=*/true, 3);
+      CreateAndAddRequest(RequestType::kMidiSysex, /*should_be_seen=*/true, 3);
 
   for (auto* kRequest :
        {request_midi.get(), request_clipboard.get(), request_camera.get()}) {

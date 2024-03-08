@@ -14,7 +14,7 @@ import {MockMIDIService} from './resources/mock-midiservice.js';
 const mock = new MockMIDIService();
 
 promise_test(async t => {
-  await test_driver.set_permission({name: 'midi'}, 'granted');
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
 
   mock.setStartSessionResult(Result.INITIALIZATION_ERROR);
   return promise_rejects_dom(t, 'InvalidStateError',

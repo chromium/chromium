@@ -15,6 +15,7 @@ mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
 run_permission_default_header_policy_tests(
   location.protocol + '//localhost:' + location.port,
   'geolocation',
+  'geolocation',
   'GeolocationPositionError',
   function() { return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject); }); });

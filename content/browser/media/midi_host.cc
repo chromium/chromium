@@ -20,6 +20,7 @@
 #include "media/midi/midi_message_queue.h"
 #include "media/midi/midi_service.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 namespace {
@@ -125,7 +126,7 @@ void MidiHost::ReceiveMidiData(uint32_t port,
     if (message.empty())
       break;
 
-    if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+    if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
       // MIDI devices may send messages even if the renderer doesn't have
       // permission to receive them. Don't kill the renderer as SendData() does.
       if (!has_midi_permission_) {
@@ -232,7 +233,7 @@ void MidiHost::SendData(uint32_t port,
   // Blink running in a renderer checks permission to raise a SecurityError
   // in JavaScript. The actual permission check for security purposes
   // happens here in the browser process.
-  if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
     if (!has_midi_permission_ && !base::Contains(data, kSysExByte)) {
       has_midi_permission_ =
           ChildProcessSecurityPolicyImpl::GetInstance()->CanSendMidiMessage(

@@ -107,7 +107,6 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT;
       break;
-    case RequestType::kMidi:
     case RequestType::kMidiSysex:
       message_id = IDS_MIDI_SYSEX_INFOBAR_TEXT;
       break;
@@ -297,7 +296,6 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;
       break;
-    case RequestType::kMidi:
     case RequestType::kMidiSysex:
       message_id = IDS_MIDI_SYSEX_PERMISSION_FRAGMENT;
       break;

@@ -51,7 +51,6 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/ssl_status.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -2415,10 +2414,7 @@ TEST_F(PageInfoTest, WithoutPageSpecificContentSettings) {
   page_info();
 }
 
-TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowkMidiAllowSysex) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kBlockMidiByDefault);
-
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowSysex) {
   std::set<ContentSettingsType> expected_visible_permissions;
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -2433,116 +2429,6 @@ TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowkMidiAllowSysex) {
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());
 
-  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
-                                     CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW);
-  page_info()->PresentSitePermissionsForTesting();
-  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-}
-
-TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowMidi) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
-
-  std::set<ContentSettingsType> expected_visible_permissions;
-
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  page_info()->PresentSitePermissionsForTesting();
-
-#if BUILDFLAG(IS_ANDROID)
-  // Geolocation is always allowed to pass through to Android-specific logic to
-  // check for DSE settings (so expect 1 item), but isn't actually shown later
-  // on because this test isn't testing with a default search engine origin.
-  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
-#endif
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-
-  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
-                                     CONTENT_SETTING_ALLOW);
-  page_info()->PresentSitePermissionsForTesting();
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-}
-
-TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidi) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
-
-  std::set<ContentSettingsType> expected_visible_permissions;
-
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  page_info()->PresentSitePermissionsForTesting();
-
-#if BUILDFLAG(IS_ANDROID)
-  // Geolocation is always allowed to pass through to Android-specific logic to
-  // check for DSE settings (so expect 1 item), but isn't actually shown later
-  // on because this test isn't testing with a default search engine origin.
-  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
-#endif
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-
-  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
-                                     CONTENT_SETTING_BLOCK);
-  page_info()->PresentSitePermissionsForTesting();
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-}
-
-TEST_F(PageInfoTest,
-       MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidiAllowSysex) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
-
-  std::set<ContentSettingsType> expected_visible_permissions;
-
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  page_info()->PresentSitePermissionsForTesting();
-
-#if BUILDFLAG(IS_ANDROID)
-  // Geolocation is always allowed to pass through to Android-specific logic to
-  // check for DSE settings (so expect 1 item), but isn't actually shown later
-  // on because this test isn't testing with a default search engine origin.
-  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
-#endif
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-
-  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
-                                     CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(
-      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_BLOCK);
-  page_info()->PresentSitePermissionsForTesting();
-  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-}
-
-TEST_F(PageInfoTest,
-       MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowkMidiAllowSysex) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kBlockMidiByDefault);
-
-  std::set<ContentSettingsType> expected_visible_permissions;
-
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  page_info()->PresentSitePermissionsForTesting();
-
-#if BUILDFLAG(IS_ANDROID)
-  // Geolocation is always allowed to pass through to Android-specific logic to
-  // check for DSE settings (so expect 1 item), but isn't actually shown later
-  // on because this test isn't testing with a default search engine origin.
-  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
-#endif
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-
-  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
-                                     CONTENT_SETTING_ALLOW);
   map->SetContentSettingDefaultScope(
       url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW);
   page_info()->PresentSitePermissionsForTesting();

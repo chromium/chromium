@@ -5,13 +5,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -25,7 +25,7 @@ class MidiBrowserTest : public ContentBrowserTest {
   ~MidiBrowserTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(features::kBlockMidiByDefault);
+    feature_list_.InitAndDisableFeature(blink::features::kBlockMidiByDefault);
     ContentBrowserTest::SetUp();
   }
 
@@ -75,7 +75,7 @@ class MidiBrowserTestBlockMidiByDefault : public ContentBrowserTest {
   ~MidiBrowserTestBlockMidiByDefault() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kBlockMidiByDefault);
+    feature_list_.InitAndEnableFeature(blink::features::kBlockMidiByDefault);
     ContentBrowserTest::SetUp();
   }
 

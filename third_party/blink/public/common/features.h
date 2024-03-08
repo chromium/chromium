@@ -198,6 +198,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBlockingDownloadsInAdFrameWithoutUserActivation);
 
+// Block all MIDI access with the MIDI_SYSEX permission
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockMidiByDefault);
+
 // Boost the priority of the first N not-small images.
 // crbug.com/1431169
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostImagePriority);

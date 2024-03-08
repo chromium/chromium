@@ -3531,7 +3531,7 @@ Called by update_net_error_codes.py.-->
   <int value="99" label="USB Chooser Data"/>
   <int value="100" label="Cookies setting"/>
   <int value="101" label="Get Display Media Set Select All Screens"/>
-  <int value="102" label="MIDI"/>
+  <int value="102" label="(Obsolete) MIDI"/>
   <int value="103" label="All Screens Media API"/>
   <int value="104" label="Cookie Controls Metadata"/>
   <int value="105" label="3PCD Trial"/>

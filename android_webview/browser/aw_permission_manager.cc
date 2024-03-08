@@ -21,7 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 using blink::PermissionType;
@@ -174,7 +174,7 @@ class AwPermissionManager::PendingRequest {
     }
     DCHECK(!IsCompleted());
     results[result->second] = status;
-    if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+    if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
       if (type == PermissionType::MIDI && status == PermissionStatus::GRANTED) {
         content::ChildProcessSecurityPolicy::GetInstance()
             ->GrantSendMidiMessage(render_process_id);

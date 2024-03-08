@@ -96,7 +96,7 @@ function checkOutputMap(outputs) {
 }
 
 promise_test(async t => {
-  await test_driver.set_permission({name: 'midi'}, 'granted');
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
   const access = await navigator.requestMIDIAccess();
 
   // Validate the values of the attributes on the access.
@@ -124,7 +124,13 @@ promise_test(async t => {
   // Test sending system exclusive messages. These should throw, since we don't have sysex access.
   assert_throws_dom('InvalidAccessError', () => output.send([0xf0, 0x45, 0xf7]));
 
-  // Now test System Exclusive access - our test mock should not allow this type of access.
+  // Now test System Exclusive access without System Exclusive
+  // permission - our test mock should not allow this type of access.
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'denied');
+  // Although not strictly necessary, also set the basic MIDI permission to
+  // 'granted' to test that it doesn't accidently grant the ability to use
+  // System Exclusive messages
+  await test_driver.set_permission({name: 'midi', sysex: false}, 'granted');
   return promise_rejects_dom(t, 'SecurityError',
       navigator.requestMIDIAccess({sysex: true}));
 }, 'basic MIDI access is functional');
