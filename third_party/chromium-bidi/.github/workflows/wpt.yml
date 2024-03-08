@@ -166,6 +166,7 @@ jobs:
           node tools/wpt-report-builder/builder.mjs
           out/wptreport.json
           out/wptreport.html
+          out/wptreport-2023.html
       - name: Upload expectations
         if: success() || failure()
         uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
