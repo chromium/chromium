@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import android.content.Context;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class HistorySyncCoordinator {
     /*Delegate for the History Sync MVC */
     public interface HistorySyncDelegate {
-        void dismissHistorySync();
+        void dismiss();
 
         boolean isLargeScreen();
     }
@@ -29,12 +28,11 @@ public class HistorySyncCoordinator {
     private boolean mIsDestroyed;
 
     public HistorySyncCoordinator(
-            Context context,
+            LayoutInflater inflater,
             HistorySyncDelegate delegate,
             Profile profile,
             @SigninAccessPoint int accessPoint) {
-        mMediator = new HistorySyncMediator(context, delegate, profile, accessPoint);
-        LayoutInflater inflater = LayoutInflater.from(context);
+        mMediator = new HistorySyncMediator(inflater.getContext(), delegate, profile, accessPoint);
         mView = inflateView(inflater, delegate);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(

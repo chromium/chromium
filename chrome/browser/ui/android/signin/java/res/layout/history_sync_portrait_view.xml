@@ -8,7 +8,6 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@macro/default_bg_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"

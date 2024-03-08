@@ -68,7 +68,7 @@ public class HistorySyncFirstRunFragment extends Fragment
 
     /** Implements {@link HistorySyncDelegate} */
     @Override
-    public void dismissHistorySync() {
+    public void dismiss() {
         getPageDelegate().advanceToNextPage();
         mHistorySyncCoordinator.destroy();
         mHistorySyncCoordinator = null;
@@ -87,7 +87,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
-                        getContext(), this, profile, SigninAccessPoint.START_PAGE);
+                        getLayoutInflater(), this, profile, SigninAccessPoint.START_PAGE);
         mFragmentView.removeAllViews();
         mFragmentView.addView(mHistorySyncCoordinator.getView());
     }

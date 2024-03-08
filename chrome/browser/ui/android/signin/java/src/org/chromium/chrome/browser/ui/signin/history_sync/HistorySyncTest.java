@@ -16,6 +16,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import android.view.LayoutInflater;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -115,7 +117,7 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismiss();
     }
 
     @Test
@@ -130,7 +132,7 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismiss();
     }
 
     @Test
@@ -146,7 +148,7 @@ public class HistorySyncTest {
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
 
         histogramWatcher.assertExpected();
-        verify(mHistorySyncDelegateMock).dismissHistorySync();
+        verify(mHistorySyncDelegateMock).dismiss();
     }
 
     private void buildHistorySyncCoordinator() {
@@ -154,7 +156,7 @@ public class HistorySyncTest {
                 () -> {
                     mHistorySyncCoordinator =
                             new HistorySyncCoordinator(
-                                    mActivityTestRule.getActivity(),
+                                    LayoutInflater.from(mActivityTestRule.getActivity()),
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
                                     SIGNIN_ACCESS_POINT);

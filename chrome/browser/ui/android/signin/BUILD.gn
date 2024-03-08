@@ -27,7 +27,6 @@ android_library("java") {
     "//components/browser_ui/device_lock/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
-    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",

@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.app.Activity;
-import android.content.res.Configuration;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
@@ -21,7 +23,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -40,9 +41,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
-public class SigninAndHistoryOptInCoordinator
-        implements SigninAccountPickerCoordinator.Delegate,
-                HistorySyncCoordinator.HistorySyncDelegate {
+public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoordinator.Delegate {
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final ViewGroup mContainerView;
@@ -58,7 +57,6 @@ public class SigninAndHistoryOptInCoordinator
     private final @HistoryOptInMode int mHistoryOptInMode;
 
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
-    private HistorySyncCoordinator mHistorySyncCoordinator;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
@@ -169,26 +167,6 @@ public class SigninAndHistoryOptInCoordinator
             mAccountPickerCoordinator.destroy();
             mAccountPickerCoordinator = null;
         }
-
-        if (mHistorySyncCoordinator != null) {
-            mHistorySyncCoordinator.destroy();
-            mHistorySyncCoordinator = null;
-        }
-    }
-
-    /** Implements {@link HistorySyncDelegate} */
-    @Override
-    public void dismissHistorySync() {
-        mHistorySyncCoordinator.destroy();
-        mHistorySyncCoordinator = null;
-        onFlowComplete();
-    }
-
-    /** Implements {@link HistorySyncDelegate} */
-    @Override
-    public boolean isLargeScreen() {
-        Configuration configuration = mActivity.getResources().getConfiguration();
-        return configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     private void onProfileAvailable(Profile profile) {
@@ -279,20 +257,18 @@ public class SigninAndHistoryOptInCoordinator
                         .with(
                                 ModalDialogProperties.CONTROLLER,
                                 new ModalDialogProperties.Controller() {
-                                    // Button interactions are implemented as HistorySyncProperties.
                                     @Override
                                     public void onClick(
-                                            PropertyModel model, @ButtonType int buttonType) {}
+                                            PropertyModel model, @ButtonType int buttonType) {
+                                        // TODO(crbug.com/41493758): To implement.
+                                    }
 
                                     @Override
                                     public void onDismiss(
                                             PropertyModel model,
                                             @DialogDismissalCause int dismissalCause) {
-                                        if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync();
-                                        } else {
-                                            onFlowComplete();
-                                        }
+                                        // TODO(crbug.com/41493758): Better handle dismissal.
+                                        onFlowComplete();
                                     }
                                 })
                         .with(
@@ -300,12 +276,8 @@ public class SigninAndHistoryOptInCoordinator
                                 new OnBackPressedCallback(true) {
                                     @Override
                                     public void handleOnBackPressed() {
-                                        // TODO(crbug.com/41493758): Better handle back press.
-                                        if (mHistorySyncCoordinator != null) {
-                                            dismissHistorySync();
-                                        } else {
-                                            onFlowComplete();
-                                        }
+                                        // TODO(crbug.com/41493758): Better handle dismissal.
+                                        onFlowComplete();
                                     }
                                 })
                         .build();
@@ -317,11 +289,14 @@ public class SigninAndHistoryOptInCoordinator
     }
 
     private @NonNull View getDialogContentView() {
-        Profile profile = mProfileSupplier.get();
-        assert profile != null;
-        mHistorySyncCoordinator =
-                new HistorySyncCoordinator(mActivity, this, profile, mSigninAccessPoint);
-        return mHistorySyncCoordinator.getView();
+        // TODO(crbug.com/41493766): Remove the lines below and use the new history-sync
+        // opt-in view in the dialog.
+        View dialogContentView = new View(mActivity);
+        dialogContentView.setLayoutParams(
+                new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        dialogContentView.setBackgroundColor(Color.CYAN);
+        dialogContentView.setMinimumHeight(200);
+        return dialogContentView;
     }
 
     private void onFlowComplete() {
