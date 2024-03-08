@@ -49,7 +49,7 @@ void LensUntrustedUI::CreatePageHandler(
                                      std::move(page));
 }
 
-LensUntrustedUI::~LensUntrustedUI() {}
+LensUntrustedUI::~LensUntrustedUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LensUntrustedUI)
 

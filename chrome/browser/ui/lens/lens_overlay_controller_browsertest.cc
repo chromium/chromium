@@ -19,13 +19,8 @@ namespace {
 using State = LensOverlayController::State;
 
 class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
- public:
-  LensOverlayControllerBrowserTest() {
-    feature_list_.InitAndEnableFeature(lens::features::kLensOverlay);
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
