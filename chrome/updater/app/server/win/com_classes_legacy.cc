@@ -1085,9 +1085,17 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
 
 namespace {
 
-void SendPing(UpdaterScope scope, const std::string& app_id, HRESULT hr) {
+struct ErrorParams {
+  int error_code = 0;
+  int extra_code1 = 0;
+};
+
+void SendPing(UpdaterScope scope,
+              const std::string& app_id,
+              ErrorParams error_params) {
   AppServerWin::PostRpcTask(base::BindOnce(
-      [](UpdaterScope scope, const std::string& app_id, HRESULT hr) {
+      [](UpdaterScope scope, const std::string& app_id,
+         ErrorParams error_params) {
         scoped_refptr<Configurator> config =
             GetAppServerWinInstance()->config();
         scoped_refptr<PersistedData> persisted_data =
@@ -1108,12 +1116,12 @@ void SendPing(UpdaterScope scope, const std::string& app_id, HRESULT hr) {
             app_command_data,
             {.event_type =
                  update_client::protocol_request::kEventAppCommandComplete,
-             .result = SUCCEEDED(hr),
-             .error_code = hr,
-             .extra_code1 = 0},
+             .result = SUCCEEDED(error_params.error_code),
+             .error_code = error_params.error_code,
+             .extra_code1 = error_params.extra_code1},
             base::DoNothing());
       },
-      scope, app_id, hr));
+      scope, app_id, error_params));
 }
 
 }  // namespace
@@ -1149,25 +1157,40 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   }
 
   const HRESULT hr = app_command_runner_->Run(substitutions, process_);
-  if (send_pings_) {
-    if (SUCCEEDED(hr)) {
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::WithBaseSyncPrimitives()})
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(
-                         [](base::Process process) {
-                           int exit_code = -1;
-                           return process.WaitForExitWithTimeout(
-                                      kWaitForAppInstaller, &exit_code)
-                                      ? exit_code
-                                      : HRESULT_FROM_WIN32(ERROR_TIMEOUT);
-                         },
-                         process_.Duplicate())
-                         .Then(base::BindOnce(&SendPing, scope_, app_id_)));
-    } else {
-      SendPing(scope_, app_id_, hr);
-    }
+  if (!send_pings_) {
+    return hr;
   }
+  if (FAILED(hr)) {
+    VLOG(2) << __func__ << ": AppCommand failed to launch: " << hr;
+    SendPing(scope_, app_id_,
+             {
+                 .error_code = hr,
+                 .extra_code1 = kErrorAppCommandLaunchFailed,
+             });
+    return hr;
+  }
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives()})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     [](base::Process process) -> ErrorParams {
+                       int exit_code = -1;
+                       if (process.WaitForExitWithTimeout(kWaitForAppInstaller,
+                                                          &exit_code)) {
+                         VLOG(2) << "AppCommand completed: " << exit_code;
+                         return {
+                             .error_code = exit_code,
+                             .extra_code1 = 0,
+                         };
+                       }
+                       VLOG(2) << "AppCommand timed out.";
+                       return {
+                           .error_code = HRESULT_FROM_WIN32(ERROR_TIMEOUT),
+                           .extra_code1 = kErrorAppCommandTimedOut,
+                       };
+                     },
+                     process_.Duplicate())
+                     .Then(base::BindOnce(&SendPing, scope_, app_id_)));
   return hr;
 }
 

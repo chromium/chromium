@@ -292,6 +292,16 @@ inline constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
 // Windows, only `.exe` and `.msi` extensions are supported.
 inline constexpr int kErrorInvalidFileExtension = kCustomInstallErrorBase + 4;
 
+// The app command failed to launch. This code is reported in the `extra_code1`
+// in the ping, along with the actual error code that caused that launch failure
+// in `error`.
+inline constexpr int kErrorAppCommandLaunchFailed = kCustomInstallErrorBase + 5;
+
+// The app command timed out. This code is reported in the `extra_code1` in the
+// ping, along with the error code `HRESULT_FROM_WIN32(ERROR_TIMEOUT)` in
+// `error`.
+inline constexpr int kErrorAppCommandTimedOut = kCustomInstallErrorBase + 6;
+
 // Error codes.
 //
 // The server process may exit with any of these exit codes.

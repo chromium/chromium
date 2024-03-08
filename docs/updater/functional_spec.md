@@ -1506,6 +1506,17 @@ whatever changes they like on the system, so is outside the threat model.
 A ping with the value `kEventAppCommandComplete` = `41` is sent if usagestats
 are enabled after an app command completes execution.
 
+If the app command launched successfully, the result returned by the app command
+process will be reported in `error` in the ping.
+
+If the app command fails to launch, code `kErrorAppCommandLaunchFailed ` is
+reported in the `extra_code1` in the ping, along with the actual error code that
+caused that launch failure in `error`.
+
+If the app command times out, code `kErrorAppCommandTimedOut` is reported in the
+`extra_code1` in the ping, along with the error code
+`HRESULT_FROM_WIN32(ERROR_TIMEOUT)` in `error`.
+
 ### Policy Status API
 The feature allows Chrome and other applications to query the policies that are
 currently in effect.
