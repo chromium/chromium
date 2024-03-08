@@ -239,6 +239,10 @@ void V4L2StatelessVideoDecoder::ApplyResolutionChange() {
   input_queue_.reset();
   output_queue_.reset();
 
+  // The driver can be busy cleaning up the resources that were freed up by
+  // resting the queues.
+  base::PlatformThread::Sleep(base::Milliseconds(2));
+
   // TODO(frkoenig): There only needs to be a single buffer in order to
   // decode. This should be investigated later to see if additional buffers
   // provide better performance.
