@@ -30,6 +30,11 @@
 class Profile;
 
 namespace ash::cloud_upload {
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest, OnGetDriveMetadata_WhenNoMetadata);
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
+                     OnGetDriveMetadata_WhenInvalidAlternateUrl);
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
+                     OnGetDriveMetadata_WhenHostIsUnexpected);
 
 // Manages the "upload to Drive" workflow after user confirmation on the upload
 // dialog. Instantiated by the static `Upload` method. Starts with moving the
@@ -52,6 +57,13 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
 
   DriveUploadHandler(const DriveUploadHandler&) = delete;
   DriveUploadHandler& operator=(const DriveUploadHandler&) = delete;
+
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenNoMetadata);
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenInvalidAlternateUrl);
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenHostIsUnexpected);
 
  private:
   friend base::RefCounted<DriveUploadHandler>;
