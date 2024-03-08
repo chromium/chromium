@@ -33,7 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
       static_cast<quick_answers::QuickAnswersView*>(
           quick_answers_view_widget->GetContentsView());
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerDictionaryIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      omnibox::kAnswerDictionaryIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(quick_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);
@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
       rich_answers_view_widget->GetContentsView());
   expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerDictionaryIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      omnibox::kAnswerDictionaryIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
       static_cast<quick_answers::QuickAnswersView*>(
           quick_answers_view_widget->GetContentsView());
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerTranslationIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      omnibox::kAnswerTranslationIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(quick_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
       rich_answers_view_widget->GetContentsView());
   expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerTranslationIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      omnibox::kAnswerTranslationIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
       static_cast<quick_answers::QuickAnswersView*>(
           quick_answers_view_widget->GetContentsView());
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerCalculatorIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      omnibox::kAnswerCalculatorIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(quick_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
       rich_answers_view_widget->GetContentsView());
   expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerCalculatorIcon, cros_tokens::kCrosSysSystemBaseElevated,
+      omnibox::kAnswerCalculatorIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);

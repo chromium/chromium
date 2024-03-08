@@ -14,7 +14,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -38,11 +38,11 @@ void AddAlternativeUnits(views::View* container_view,
     box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
         dest_amount_text, GetFontList(TypographyToken::kCrosButton1),
         kContentTextWidth,
-        /*is_multi_line=*/false, cros_tokens::kCrosSysOnSurface));
+        /*is_multi_line=*/false, ui::kColorSysOnSurface));
     box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
         unit_conversion.dest_rule().unit_name(),
         GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
-        /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+        /*is_multi_line=*/false, ui::kColorSysSecondary));
   }
 }
 
@@ -87,7 +87,7 @@ void RichAnswersUnitConversionView::AddConversionResultText() {
   content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
       unit_conversion_result_.result_text,
       GetFontList(TypographyToken::kCrosDisplay5), kContentTextWidth,
-      /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface));
+      /*is_multi_line=*/true, ui::kColorSysOnSurface));
 }
 
 void RichAnswersUnitConversionView::MaybeAddFormulaInformation() {
@@ -107,7 +107,7 @@ void RichAnswersUnitConversionView::MaybeAddFormulaInformation() {
       l10n_util::GetStringUTF8(
           IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_FORMULA_LABEL_TEXT),
       GetFontList(TypographyToken::kCrosBody2Italic), kContentTextWidth,
-      /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+      /*is_multi_line=*/false, ui::kColorSysSecondary));
 
   views::BoxLayoutView* subcontent_view =
       content_view_->AddChildView(CreateHorizontalBoxLayoutView());
@@ -115,7 +115,7 @@ void RichAnswersUnitConversionView::MaybeAddFormulaInformation() {
   subcontent_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
       formula_description_text.value(),
       GetFontList(TypographyToken::kCrosBody2), kContentTextWidth,
-      /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface));
+      /*is_multi_line=*/true, ui::kColorSysOnSurface));
 }
 
 BEGIN_METADATA(RichAnswersUnitConversionView)

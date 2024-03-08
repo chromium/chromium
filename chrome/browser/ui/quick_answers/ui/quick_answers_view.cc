@@ -25,7 +25,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -613,7 +612,7 @@ void QuickAnswersView::AddDefaultResultTypeIcon() {
   auto* result_type_icon_circle = result_type_icon_container->AddChildView(
       std::make_unique<views::FlexLayoutView>());
   result_type_icon_circle->SetBackground(
-      views::CreateThemedRoundedRectBackground(cros_tokens::kCrosSysPrimary,
+      views::CreateThemedRoundedRectBackground(ui::kColorSysPrimary,
                                                kResultTypeIconContainerRadius));
   result_type_icon_circle->SetBorder(
       views::CreateEmptyBorder(kResultTypeIconCircleInsets));
@@ -625,7 +624,7 @@ void QuickAnswersView::AddDefaultResultTypeIcon() {
       std::make_unique<views::ImageView>());
   result_type_icon_->SetImage(
       ui::ImageModel::FromVectorIcon(GetResultTypeIcon(ResultType::kNoResult),
-                                     cros_tokens::kCrosSysSystemBaseElevated,
+                                     ui::kColorSysBaseContainerElevated,
                                      /*icon_size=*/kResultTypeIconSizeDip));
 }
 
@@ -701,7 +700,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   if (result_type_icon_ && quick_answer.result_type != ResultType::kNoResult) {
     result_type_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         GetResultTypeIcon(quick_answer.result_type),
-        cros_tokens::kCrosSysSystemBaseElevated,
+        ui::kColorSysBaseContainerElevated,
         /*icon_size=*/kResultTypeIconSizeDip));
   }
 
@@ -786,13 +785,13 @@ void QuickAnswersView::UpdateQuickAnswerResult(
             Label::CustomFont{gfx::FontList(
                 {quick_answers::kRobotoFont}, gfx::Font::NORMAL,
                 kExpansionIndicatorLabelFontSize, gfx::Font::Weight::MEDIUM)}));
-    expansion_indicator_label->SetEnabledColorId(
-        cros_tokens::kTextColorProminent);
+    expansion_indicator_label->SetEnabledColorId(ui::kColorSysPrimary);
 
     auto* expansion_indicator_icon = expansion_indicator_view->AddChildView(
         std::make_unique<views::ImageView>());
     expansion_indicator_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kCaretDownIcon, cros_tokens::kTextColorProminent,
+        vector_icons::kCaretDownIcon,
+        GetColorProvider()->GetColor(ui::kColorSysPrimary),
         /*icon_size=*/kExpansionIndicatorIconSizeDip));
     expansion_indicator_icon->SetBorder(
         views::CreateEmptyBorder(kExpansionIndicatorIconBorderDip));

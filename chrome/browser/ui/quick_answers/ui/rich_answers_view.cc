@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
@@ -21,7 +20,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/themed_vector_icon.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -166,7 +164,7 @@ void RichAnswersView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   search_link_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
+      GetColorProvider()->GetColor(ui::kColorSysPrimary));
 }
 
 void RichAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -252,14 +250,14 @@ void RichAnswersView::AddResultTypeIcon() {
   auto* vector_icon_container =
       main_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   vector_icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysPrimary, kRichAnswersIconContainerRadius));
+      ui::kColorSysPrimary, kRichAnswersIconContainerRadius));
   vector_icon_container->SetBorder(
       views::CreateEmptyBorder(kRichAnswersIconBorderDip));
 
   vector_icon_ =
       vector_icon_container->AddChildView(std::make_unique<views::ImageView>());
   vector_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      GetResultTypeIcon(result_type_), cros_tokens::kCrosSysSystemBaseElevated,
+      GetResultTypeIcon(result_type_), ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kRichAnswersIconSizeDip));
 
   main_view_->SetFlexForView(vector_icon_container, /*flex=*/0);
@@ -274,7 +272,7 @@ views::View* RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
   settings_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
-                                     cros_tokens::kColorPrimary,
+                                     ui::kColorSysOnSurface,
                                      /*icon_size=*/kSettingsButtonSizeDip));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT));
@@ -296,7 +294,7 @@ void RichAnswersView::AddHeaderViewsTo(views::View* container_view,
       box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
           header_text, GetFontList(TypographyToken::kCrosButton2),
           kContentHeaderWidth,
-          /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+          /*is_multi_line=*/false, ui::kColorSysSecondary));
 
   views::View* settings_button_view = AddSettingsButtonTo(box_layout_view);
 

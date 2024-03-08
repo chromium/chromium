@@ -51,7 +51,6 @@ source_set("quick_answers") {
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
     "//content/public/browser",
-    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/views/controls/webview",
     "//ui/wm",
   ]
