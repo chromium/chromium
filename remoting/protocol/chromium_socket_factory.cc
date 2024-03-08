@@ -455,8 +455,7 @@ rtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateClientTcpSocket(
     const std::string& user_agent,
     const rtc::PacketSocketTcpOptions& opts) {
   auto socket = std::make_unique<StreamPacketSocket>();
-  if (!socket->InitClientTcp(local_address, remote_address, proxy_info,
-                             user_agent, opts)) {
+  if (!socket->InitClientTcp(local_address, remote_address, opts)) {
     return nullptr;
   }
   return socket.release();
