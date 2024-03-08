@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/features.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
@@ -110,6 +111,13 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
                   prefService:browser_state_->GetPrefs()
           initialAccountState:initialAccountState];
     mediator_.consumer = consumer_;
+  }
+
+  void CreateManageSyncSettingsMediator(
+      SyncSettingsAccountState initialAccountState,
+      BOOL isEEAAccount) {
+    CreateManageSyncSettingsMediator(initialAccountState);
+    mediator_.isEEAAccount = isEEAAccount;
   }
 
   void SimulateFirstSetupSyncOnWithConsentEnabled() {
@@ -585,4 +593,61 @@ TEST_F(ManageSyncSettingsMediatorTest, TestPersonalizeGoogleServicesItem) {
 
   EXPECT_EQ(PersonalizeGoogleServicesItemType,
             base::apple::ObjCCastStrict<TableViewItem>(items[1]).type);
+}
+
+// Test that the PersonalizeGoogleServices item open the Personalized Google
+// Services settings for EEA users.
+TEST_F(ManageSyncSettingsMediatorTest, TestPersonalizeGoogleServicesItemEEA) {
+  // Enable the LinkedServicesSettings flag.
+  feature_list_.InitAndEnableFeature(kLinkedServicesSettingIos);
+
+  // Create mediator with a signed-in account.
+  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSignedIn, true);
+  SimulateFirstSetupSyncOffWithSignedInAccount();
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Create mock command handler
+  id mockCommandHandler =
+      OCMProtocolMock(@protocol(ManageSyncSettingsCommandHandler));
+  mediator_.commandHandler = mockCommandHandler;
+  OCMExpect([mockCommandHandler openPersonalizeGoogleServices]);
+
+  // Get section items.
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+
+  // Test item behavior for EEA users.
+  [mediator_ didSelectItem:items[1] cellRect:CGRectZero];
+
+  EXPECT_OCMOCK_VERIFY(mockCommandHandler);
+}
+
+// Test that the PersonalizeGoogleServices item open the Web and App activity
+// settings for non EEA users.
+TEST_F(ManageSyncSettingsMediatorTest,
+       TestPersonalizeGoogleServicesItemNonEEA) {
+  // Enable the LinkedServicesSettings flag.
+  feature_list_.InitAndEnableFeature(kLinkedServicesSettingIos);
+
+  // Create mediator with a signed-in account.
+  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSignedIn, false);
+  SimulateFirstSetupSyncOffWithSignedInAccount();
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Create mock command handler
+  id mockCommandHandler =
+      OCMProtocolMock(@protocol(ManageSyncSettingsCommandHandler));
+  mediator_.commandHandler = mockCommandHandler;
+  OCMExpect([mockCommandHandler openWebAppActivityDialog]);
+
+  // Get section items.
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+
+  // Test item behavior for EEA users.
+  [mediator_ didSelectItem:items[1] cellRect:CGRectZero];
+
+  EXPECT_OCMOCK_VERIFY(mockCommandHandler);
 }

@@ -12,6 +12,9 @@
 // Opens the "Web & App Activity" dialog.
 - (void)openWebAppActivityDialog;
 
+// Open the "Personalize Google Services" page.
+- (void)openPersonalizeGoogleServices;
+
 // Opens the "Data from Chrome sync" web page.
 - (void)openDataFromChromeSyncWebPage;
 

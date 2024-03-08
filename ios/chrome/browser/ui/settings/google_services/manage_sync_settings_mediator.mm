@@ -1262,8 +1262,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       [self.commandHandler openDataFromChromeSyncWebPage];
       break;
     case PersonalizeGoogleServicesItemType:
-      // TODO(crbug.com/324091979): Different behavior for EEA users.
-      [self.commandHandler openWebAppActivityDialog];
+      if (self.isEEAAccount) {
+        [self.commandHandler openPersonalizeGoogleServices];
+      } else {
+        [self.commandHandler openWebAppActivityDialog];
+      }
       break;
     case PrimaryAccountReauthErrorItemType: {
       id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(

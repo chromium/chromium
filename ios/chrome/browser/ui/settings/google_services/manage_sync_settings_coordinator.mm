@@ -362,6 +362,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                                      self.viewController, YES);
 }
 
+- (void)openPersonalizeGoogleServices {
+  // TODO(crbug.com/324091979): Different behavior for EEA users.
+}
+
 - (void)openDataFromChromeSyncWebPage {
   if ([self.delegate
           respondsToSelector:@selector
