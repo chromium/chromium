@@ -21074,6 +21074,7 @@ from previous Chrome versions.
   <int value="101973012" label="OmniboxConsumesImeInsets:enabled"/>
   <int value="103347629" label="WinrtSensorsImplementation:enabled"/>
   <int value="103560544" label="ViewportHeightClientHintHeader:disabled"/>
+  <int value="103677701" label="LogoPolish:disabled"/>
   <int value="103932290" label="show-autofill-type-predictions"/>
   <int value="104175200" label="AccessibilityFaceGaze:enabled"/>
   <int value="105046382" label="ParallelDownloading:disabled"/>
@@ -21858,6 +21859,7 @@ from previous Chrome versions.
   <int value="441096714" label="WebBluetoothConfirmPairingSupport:disabled"/>
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
+  <int value="444461915" label="LogoPolish:enabled"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>
   <int value="445240121" label="CdmStorageDatabase:disabled"/>
   <int value="445851683" label="LauncherFuzzyMatchAcrossProviders:disabled"/>

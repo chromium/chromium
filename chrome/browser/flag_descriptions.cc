@@ -4177,6 +4177,10 @@ const char kInterestFeedV2Description[] =
 const char kInterestFeedV2HeartsName[] = "Interest Feed v2 Hearts";
 const char kInterestFeedV2HeartsDescription[] = "Enable hearts on Feedv2.";
 
+const char kLogoPolishName[] = "Logo Polish";
+const char kLogoPolishDescription[] =
+    "Enable bigger logo size for Start surface and NTP.";
+
 const char kMagicStackAndroidName[] = "Magic Stack Android";
 const char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "

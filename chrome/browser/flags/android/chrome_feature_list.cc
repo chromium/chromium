@@ -222,6 +222,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIncognitoScreenshot,
     &kInstantStart,
     &kLensOnQuickActionSearchWidget,
+    &kLogoPolish,
     &kMagicStackAndroid,
     &kMultiInstanceApplicationStatusCleanup,
     &kNewTabSearchEngineUrlAndroid,
@@ -673,6 +674,8 @@ BASE_FEATURE(kIncognitoScreenshot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLogoPolish, "LogoPolish", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMagicStackAndroid,
              "MagicStackAndroid",

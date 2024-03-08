@@ -314,6 +314,7 @@ public abstract class ChromeFeatureList {
     public static final String KID_FRIENDLY_CONTENT_FEED = "KidFriendlyContentFeed";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
+    public static final String LOGO_POLISH = "LogoPolish";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
@@ -582,6 +583,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
     public static final CachedFlag sInstantStart = newCachedFlag(INSTANT_START, false);
+    public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, false);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
@@ -708,6 +710,7 @@ public abstract class ChromeFeatureList {
                     sGridTabSwitcherAndroidAnimations,
                     sIncognitoReauthenticationForAndroid,
                     sInstantStart,
+                    sLogoPolish,
                     sMagicStackAndroid,
                     sMultiInstanceApplicationStatusCleanup,
                     sNewTabSearchEngineUrlAndroid,

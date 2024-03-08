@@ -2452,6 +2452,30 @@ const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
      std::size(kSurfacePolish_logo_in_toolbar), nullptr},
 };
 
+const FeatureEntry::FeatureParam kLogoPolish_large[] = {
+    {"polish_logo_size_large", "true"},
+    {"polish_logo_size_medium", "false"},
+    {"polish_logo_size_small", "false"}};
+
+const FeatureEntry::FeatureParam kLogoPolish_medium[] = {
+    {"polish_logo_size_large", "false"},
+    {"polish_logo_size_medium", "true"},
+    {"polish_logo_size_small", "false"}};
+
+const FeatureEntry::FeatureParam kLogoPolish_small[] = {
+    {"polish_logo_size_large", "false"},
+    {"polish_logo_size_medium", "false"},
+    {"polish_logo_size_small", "true"}};
+
+const FeatureEntry::FeatureVariation kLogoPolishVariations[] = {
+    {"Logo height is 84dp", kLogoPolish_large, std::size(kLogoPolish_large),
+     nullptr},
+    {"Logo height is 76dp", kLogoPolish_medium, std::size(kLogoPolish_medium),
+     nullptr},
+    {"Logo height is 68dp", kLogoPolish_small, std::size(kLogoPolish_small),
+     nullptr},
+};
+
 const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_small[] = {
     {"push_down_feed_small", "true"}};
 
@@ -6954,6 +6978,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMagicStackAndroid,
                                     kMagicStackAndroidVariations,
                                     "MagicStackAndroid")},
+
+    {"enable-logo-polish", flag_descriptions::kLogoPolishName,
+     flag_descriptions::kLogoPolishDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLogoPolish,
+                                    kLogoPolishVariations,
+                                    "LogoPolish")},
 
     {"search-in-cct", flag_descriptions::kSearchInCCTName,
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,

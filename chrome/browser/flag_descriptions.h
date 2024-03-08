@@ -2462,6 +2462,9 @@ extern const char kInterestFeedV2Description[];
 extern const char kInterestFeedV2HeartsName[];
 extern const char kInterestFeedV2HeartsDescription[];
 
+extern const char kLogoPolishName[];
+extern const char kLogoPolishDescription[];
+
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 

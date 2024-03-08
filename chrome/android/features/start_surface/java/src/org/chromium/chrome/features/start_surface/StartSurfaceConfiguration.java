@@ -112,6 +112,21 @@ public class StartSurfaceConfiguration {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, true);
 
+    private static final String LOGO_POLISH_LARGE_SIZE_PARAM = "polish_logo_size_large";
+    public static final BooleanCachedFieldTrialParameter LOGO_POLISH_LARGE_SIZE =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_LARGE_SIZE_PARAM, false);
+
+    private static final String LOGO_POLISH_MEDIUM_SIZE_PARAM = "polish_logo_size_medium";
+    public static final BooleanCachedFieldTrialParameter LOGO_POLISH_MEDIUM_SIZE =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_MEDIUM_SIZE_PARAM, false);
+
+    private static final String LOGO_POLISH_SMALL_SIZE_PARAM = "polish_logo_size_small";
+    public static final BooleanCachedFieldTrialParameter LOGO_POLISH_SMALL_SIZE =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_SMALL_SIZE_PARAM, false);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";
