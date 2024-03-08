@@ -673,6 +673,8 @@ TEST(AXEventGeneratorTest, ActiveDescendantChanged) {
   update.nodes[0].int_attributes.clear();
   update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                                   3);
+  event_generator.RegisterEventOnNode(
+      AXEventGenerator::Event::RELATED_NODE_CHANGED, update.nodes[0].id);
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,
@@ -1269,6 +1271,8 @@ TEST(AXEventGeneratorTest, OtherAttributeChanged) {
   std::vector<int> ids = {2};
   update.nodes[5].AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
                                       ids);
+  event_generator.RegisterEventOnNode(
+      AXEventGenerator::Event::RELATED_NODE_CHANGED, update.nodes[0].id);
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,
@@ -1356,6 +1360,8 @@ TEST(AXEventGeneratorTest, MenuItemSelected) {
   update.nodes[0].int_attributes.clear();
   update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                                   3);
+  event_generator.RegisterEventOnNode(
+      AXEventGenerator::Event::RELATED_NODE_CHANGED, update.nodes[0].id);
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,
@@ -1889,6 +1895,8 @@ TEST(AXEventGeneratorTest, ActiveDescendantChangeOnDescendant) {
   // create all of the node's children. Since node 3 already exists and remains
   // in the tree, that (re)created child is reporting a new parent.
   update.node_id_to_clear = 2;
+  event_generator.RegisterEventOnNode(
+      AXEventGenerator::Event::RELATED_NODE_CHANGED, update.nodes[0].id);
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,
@@ -2060,10 +2068,10 @@ TEST(AXEventGeneratorTest, IntListPropertyChanges) {
           HasEventAtNode(AXEventGenerator::Event::FLOW_FROM_CHANGED, 1),
           HasEventAtNode(AXEventGenerator::Event::FLOW_FROM_CHANGED, 2),
           HasEventAtNode(AXEventGenerator::Event::FLOW_TO_CHANGED, 3),
-          HasEventAtNode(AXEventGenerator::Event::LABELED_BY_CHANGED, 4),
-          HasEventAtNode(AXEventGenerator::Event::RELATED_NODE_CHANGED, 2),
-          HasEventAtNode(AXEventGenerator::Event::RELATED_NODE_CHANGED, 3),
-          HasEventAtNode(AXEventGenerator::Event::RELATED_NODE_CHANGED, 4)));
+          HasEventAtNode(AXEventGenerator::Event::LABELED_BY_CHANGED, 4)
+          // Related node changed not fired because it requires explicit
+          // registration.
+          ));
 }
 
 TEST(AXEventGeneratorTest, AriaBusyChanged) {
@@ -2169,6 +2177,8 @@ TEST(AXEventGeneratorTest, FlowToChanged) {
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddIntListAttribute(ax::mojom::IntListAttribute::kFlowtoIds,
                                       {4, 5, 6});
+  event_generator.RegisterEventOnNode(
+      AXEventGenerator::Event::RELATED_NODE_CHANGED, update.nodes[0].id);
 
   EXPECT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
@@ -2197,6 +2207,8 @@ TEST(AXEventGeneratorTest, ControlsChanged) {
   std::vector<int> ids = {2};
   update.nodes[0].AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
                                       ids);
+  event_generator.RegisterEventOnNode(
+      AXEventGenerator::Event::RELATED_NODE_CHANGED, update.nodes[0].id);
   EXPECT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,

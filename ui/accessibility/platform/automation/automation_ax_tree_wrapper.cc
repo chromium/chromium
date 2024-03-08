@@ -303,6 +303,8 @@ void AutomationAXTreeWrapper::EventListenerAdded(
     const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
     AXNode* node) {
   node_id_to_events_[node->id()].insert(event_type);
+
+  event_generator_.RegisterEventOnNode(std::get<1>(event_type), node->id());
 }
 
 void AutomationAXTreeWrapper::EventListenerRemoved(
@@ -314,6 +316,8 @@ void AutomationAXTreeWrapper::EventListenerRemoved(
     if (it->second.empty())
       node_id_to_events_.erase(it);
   }
+
+  event_generator_.UnregisterEventOnNode(std::get<1>(event_type), node->id());
 }
 
 bool AutomationAXTreeWrapper::HasEventListener(

@@ -279,6 +279,22 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
                       tree_->event_data()->event_intents);
 }
 
+void AXEventGenerator::RegisterEventOnNode(Event event_type, AXNodeID node_id) {
+  registered_event_to_node_ids_[event_type].insert(node_id);
+}
+
+void AXEventGenerator::UnregisterEventOnNode(Event event_type,
+                                             AXNodeID node_id) {
+  auto it = registered_event_to_node_ids_.find(event_type);
+  if (it == registered_event_to_node_ids_.end()) {
+    return;
+  }
+  registered_event_to_node_ids_[event_type].erase(node_id);
+  if (registered_event_to_node_ids_[event_type].empty()) {
+    registered_event_to_node_ids_.erase(event_type);
+  }
+}
+
 void AXEventGenerator::OnIgnoredWillChange(
     AXTree* tree,
     AXNode* node,
@@ -983,6 +999,22 @@ void AXEventGenerator::FireValueInTextFieldChangedEventIfNecessary(
 
 void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
                                                 AXNode* target_node) {
+  auto it = registered_event_to_node_ids_.find(Event::RELATED_NODE_CHANGED);
+  if (it == registered_event_to_node_ids_.end()) {
+    return;
+  }
+
+  AXNode* registered_node = target_node;
+  while (registered_node) {
+    if (it->second.contains(registered_node->id())) {
+      break;
+    }
+    registered_node = registered_node->parent();
+  }
+  if (!registered_node) {
+    return;
+  }
+
   AXNodeID target_id = target_node->id();
   std::set<AXNode*> source_nodes;
   auto callback = [&](const auto& entry) {
