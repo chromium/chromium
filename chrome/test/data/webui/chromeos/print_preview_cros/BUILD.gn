@@ -15,6 +15,8 @@ build_webui_tests("build_webui_tests") {
   ]
 
   files = [
+    "destination_select_controller_test.ts",
+    "destination_select_test.ts",
     "event_utils_test.ts",
     "fake_print_preview_page_handler_test.ts",
     "print_preview_cros_app_test.ts",

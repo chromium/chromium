@@ -15,6 +15,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "js/data/print_ticket_manager.ts",
+    "js/destination_select_controller.ts",
     "js/summary_panel_controller.ts",
     "js/fakes/fake_print_preview_page_handler.ts",
     "js/utils/event_utils.ts",
@@ -23,6 +24,7 @@ build_webui("build") {
   ]
 
   web_component_files = [
+    "js/destination_select.ts",
     "js/print_preview_cros_app.ts",
     "js/summary_panel.ts",
   ]
