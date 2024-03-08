@@ -3544,8 +3544,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardCacheBrowserTestWithFlagForScreenReader,
                          ::testing::Bool());
 
+// TODO(crbug.com/328681322): Disabled due to flakiness on Linux and
+// Linux-chromeos.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ScreenReaderOn DISABLED_ScreenReaderOn
+#else
+#define MAYBE_ScreenReaderOn ScreenReaderOn
+#endif
 IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
-                       ScreenReaderOn) {
+                       MAYBE_ScreenReaderOn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
