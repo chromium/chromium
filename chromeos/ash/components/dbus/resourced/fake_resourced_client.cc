@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -67,6 +69,29 @@ void FakeResourcedClient::ReportBrowserProcesses(
   }
 }
 
+void FakeResourcedClient::SetProcessState(base::ProcessId process_id,
+                                          resource_manager::ProcessState state,
+                                          SetQoSStateCallback callback) {
+  process_state_history_.push_back({process_id, state});
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), set_process_state_result_));
+}
+
+void FakeResourcedClient::SetThreadState(base::ProcessId process_id,
+                                         base::PlatformThreadId thread_id,
+                                         resource_manager::ThreadState state,
+                                         SetQoSStateCallback callback) {
+  thread_state_history_.push_back({process_id, thread_id, state});
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), set_thread_state_result_));
+}
+
+void FakeResourcedClient::WaitForServiceToBeAvailable(
+    dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
+  pending_service_available_.push_back(std::move(callback));
+}
+
 void FakeResourcedClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -88,6 +113,36 @@ void FakeResourcedClient::FakeArcVmMemoryPressure(PressureLevelArcVm level,
   for (auto& observer : arcvm_observers_) {
     observer.OnMemoryPressure(level, reclaim_target_kb);
   }
+}
+
+bool FakeResourcedClient::TriggerServiceAvailable(bool available) {
+  if (pending_service_available_.empty()) {
+    return false;
+  }
+  for (auto& callback : pending_service_available_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), available));
+  }
+  pending_service_available_.clear();
+  return true;
+}
+
+const std::vector<std::pair<base::ProcessId, resource_manager::ProcessState>>&
+FakeResourcedClient::GetProcessStateHistory() const {
+  return process_state_history_;
+}
+
+const std::vector<FakeResourcedClient::SetThreadStateRequest>&
+FakeResourcedClient::GetThreadStateHistory() const {
+  return thread_state_history_;
+}
+
+void FakeResourcedClient::SetProcessStateResult(dbus::DBusResult result) {
+  set_process_state_result_ = result;
+}
+
+void FakeResourcedClient::SetThreadStateResult(dbus::DBusResult result) {
+  set_thread_state_result_ = result;
 }
 
 void FakeResourcedClient::AddArcContainerObserver(

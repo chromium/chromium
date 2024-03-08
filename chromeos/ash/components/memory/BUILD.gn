@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//chromeos/ash/components/dbus/resourced",
     "//components/memory_pressure",
+    "//dbus",
     "//mojo/core/embedder",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//testing/gmock",

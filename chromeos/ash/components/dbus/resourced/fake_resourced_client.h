@@ -19,6 +19,12 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   FakeResourcedClient(const FakeResourcedClient&) = delete;
   FakeResourcedClient& operator=(const FakeResourcedClient&) = delete;
 
+  struct SetThreadStateRequest {
+    base::ProcessId process_id;
+    base::PlatformThreadId thread_id;
+    resource_manager::ThreadState state;
+  };
+
   // ResourcedClient:
   void SetGameModeWithTimeout(
       GameMode game_mode,
@@ -34,6 +40,14 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   void ReportBrowserProcesses(Component component,
                               const std::vector<Process>& processes) override;
+
+  void SetProcessState(base::ProcessId,
+                       resource_manager::ProcessState,
+                       SetQoSStateCallback) override;
+  void SetThreadState(base::ProcessId,
+                      base::PlatformThreadId,
+                      resource_manager::ThreadState,
+                      SetQoSStateCallback) override;
 
   void set_total_system_memory(uint64_t mem_kb) {
     total_system_memory_kb_ = mem_kb;
@@ -69,11 +83,31 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   void AddArcVmObserver(ArcVmObserver* observer) override;
   void RemoveArcVmObserver(ArcVmObserver* observer) override;
 
+  void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
+
   void FakeArcVmMemoryPressure(PressureLevelArcVm level,
                                uint64_t reclaim_target_kb);
 
   void AddArcContainerObserver(ArcContainerObserver* observer) override;
   void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
+
+  // Unblock registered WaitForServiceToBeAvailable() calls.
+  //
+  // Return `true` if at least 1 WaitForServiceToBeAvailable() has been
+  // called.
+  bool TriggerServiceAvailable(bool available);
+  // Return the list of process states that have been requested via
+  // SetProcessState().
+  const std::vector<std::pair<base::ProcessId, resource_manager::ProcessState>>&
+  GetProcessStateHistory() const;
+  // Return the list of thread states that have been requested via
+  // SetThreadState().
+  const std::vector<SetThreadStateRequest>& GetThreadStateHistory() const;
+  // Set response for next SetProcessState() calls.
+  void SetProcessStateResult(dbus::DBusResult);
+  // Set response for next SetThreadState() calls.
+  void SetThreadStateResult(dbus::DBusResult);
 
  private:
   std::optional<GameMode> set_game_mode_response_;
@@ -90,6 +124,15 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   std::vector<int32_t> lacros_background_pids_;
   std::vector<Process> ash_browser_processes_;
   std::vector<Process> lacros_browser_processes_;
+
+  std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>
+      pending_service_available_;
+  std::vector<std::pair<base::ProcessId, resource_manager::ProcessState>>
+      process_state_history_;
+  std::vector<SetThreadStateRequest> thread_state_history_;
+
+  dbus::DBusResult set_process_state_result_ = dbus::DBusResult::kSuccess;
+  dbus::DBusResult set_thread_state_result_ = dbus::DBusResult::kSuccess;
 
   base::ObserverList<Observer> observers_;
   base::ObserverList<ArcVmObserver> arcvm_observers_;

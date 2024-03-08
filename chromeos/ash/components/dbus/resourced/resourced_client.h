@@ -8,9 +8,13 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/memory_pressure/reclaim_target.h"
+#include "dbus/dbus_result.h"
+#include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/resource_manager/dbus-constants.h"
 
 #include <cstdint>
 #include <vector>
@@ -159,6 +163,19 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
       Component component,
       const std::vector<Process>& processes) = 0;
 
+  using SetQoSStateCallback = base::OnceCallback<void(dbus::DBusResult)>;
+
+  // Set qos state of a process.
+  virtual void SetProcessState(base::ProcessId,
+                               resource_manager::ProcessState,
+                               SetQoSStateCallback) = 0;
+
+  // Set qos state of a thread.
+  virtual void SetThreadState(base::ProcessId,
+                              base::PlatformThreadId,
+                              resource_manager::ThreadState,
+                              SetQoSStateCallback) = 0;
+
   // Adds an observer to the observer list to listen on memory pressure events.
   virtual void AddObserver(Observer* observer) = 0;
 
@@ -176,6 +193,15 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   virtual void AddArcContainerObserver(ArcContainerObserver* observer) = 0;
 
   virtual void RemoveArcContainerObserver(ArcContainerObserver* observer) = 0;
+
+  // Registers |callback| to run when the ResourceManager service becomes
+  // available. If the service is already available, or if connecting to the
+  // name-owner-changed signal fails, |callback| will be run once
+  // asynchronously.
+  // Otherwise, |callback| will be run once in the future after the service
+  // becomes available.
+  virtual void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
  protected:
   ResourcedClient();

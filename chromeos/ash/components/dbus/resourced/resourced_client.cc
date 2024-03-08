@@ -11,6 +11,7 @@
 #include "base/process/process_metrics.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/resource_manager/resource_manager.pb.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
@@ -79,6 +80,15 @@ class ResourcedClientImpl : public ResourcedClient {
   void ReportBrowserProcesses(Component component,
                               const std::vector<Process>& processes) override;
 
+  void SetProcessState(base::ProcessId process_id,
+                       resource_manager::ProcessState state,
+                       SetQoSStateCallback callback) override;
+
+  void SetThreadState(base::ProcessId process_id,
+                      base::PlatformThreadId thread_id,
+                      resource_manager::ThreadState state,
+                      SetQoSStateCallback callback) override;
+
   void AddObserver(Observer* observer) override;
 
   void RemoveObserver(Observer* observer) override;
@@ -90,6 +100,9 @@ class ResourcedClientImpl : public ResourcedClient {
   void AddArcContainerObserver(ArcContainerObserver* observer) override;
 
   void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
+
+  void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 
  private:
   // D-Bus response handlers.
@@ -111,6 +124,16 @@ class ResourcedClientImpl : public ResourcedClient {
   void MemoryPressureArcVmReceived(dbus::Signal* signal);
 
   void MemoryPressureArcContainerReceived(dbus::Signal* signal);
+
+  void HandleSetProcessStateResponse(base::ProcessId process_id,
+                                     SetQoSStateCallback callback,
+                                     dbus::Response* response,
+                                     dbus::ErrorResponse* error);
+
+  void HandleSetThreadStateResponse(base::PlatformThreadId thread_id,
+                                    SetQoSStateCallback callback,
+                                    dbus::Response* response,
+                                    dbus::ErrorResponse* error);
 
   // Member variables.
 
@@ -279,6 +302,30 @@ void ResourcedClientImpl::MemoryPressureArcContainerReceived(
   }
 }
 
+void ResourcedClientImpl::HandleSetProcessStateResponse(
+    base::ProcessId process_id,
+    SetQoSStateCallback callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error) {
+  dbus::DBusResult result = dbus::DBusResult::kSuccess;
+  if (response == nullptr) {
+    result = dbus::GetResult(error);
+  }
+  std::move(callback).Run(result);
+}
+
+void ResourcedClientImpl::HandleSetThreadStateResponse(
+    base::PlatformThreadId thread_id,
+    SetQoSStateCallback callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error) {
+  dbus::DBusResult result = dbus::DBusResult::kSuccess;
+  if (response == nullptr) {
+    result = dbus::GetResult(error);
+  }
+  std::move(callback).Run(result);
+}
+
 void ResourcedClientImpl::MemoryPressureConnected(
     const std::string& interface_name,
     const std::string& signal_name,
@@ -434,6 +481,42 @@ void ResourcedClientImpl::ReportBrowserProcesses(
                      base::DoNothing());
 }
 
+void ResourcedClientImpl::SetProcessState(base::ProcessId process_id,
+                                          resource_manager::ProcessState state,
+                                          SetQoSStateCallback callback) {
+  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
+                               resource_manager::kSetProcessStateMethod);
+  dbus::MessageWriter writer(&method_call);
+
+  writer.AppendUint32(process_id);
+  writer.AppendByte(static_cast<uint8_t>(state));
+
+  proxy_->CallMethodWithErrorResponse(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&ResourcedClientImpl::HandleSetProcessStateResponse,
+                     weak_factory_.GetWeakPtr(), process_id,
+                     std::move(callback)));
+}
+
+void ResourcedClientImpl::SetThreadState(base::ProcessId process_id,
+                                         base::PlatformThreadId thread_id,
+                                         resource_manager::ThreadState state,
+                                         SetQoSStateCallback callback) {
+  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
+                               resource_manager::kSetThreadStateMethod);
+  dbus::MessageWriter writer(&method_call);
+
+  writer.AppendUint32(process_id);
+  writer.AppendUint32(thread_id);
+  writer.AppendByte(static_cast<uint8_t>(state));
+
+  proxy_->CallMethodWithErrorResponse(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&ResourcedClientImpl::HandleSetThreadStateResponse,
+                     weak_factory_.GetWeakPtr(), thread_id,
+                     std::move(callback)));
+}
+
 void ResourcedClientImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -458,6 +541,11 @@ void ResourcedClientImpl::AddArcContainerObserver(
 void ResourcedClientImpl::RemoveArcContainerObserver(
     ArcContainerObserver* observer) {
   arc_container_observers_.RemoveObserver(observer);
+}
+
+void ResourcedClientImpl::WaitForServiceToBeAvailable(
+    dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
+  proxy_->WaitForServiceToBeAvailable(std::move(callback));
 }
 
 }  // namespace
