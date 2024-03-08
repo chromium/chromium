@@ -456,6 +456,10 @@ export class AllSitesElement extends AllSitesElementBase {
     this.$.menu.get().showAt(target);
   }
 
+  private shouldShowClearAllButton_(): boolean {
+    return this.filteredList_.length > 0;
+  }
+
   private shouldShowFpsLearnMore_(): boolean {
     return this.isFpsFiltered_() && this.filteredList_ &&
         this.filteredList_.length > 0;

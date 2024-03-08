@@ -9,7 +9,7 @@ import type {AllSitesElement, SiteGroup} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, DeleteBrowsingDataAction, MetricsBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -679,6 +679,29 @@ suite('DisableFirstPartySets', function() {
             await metricsBrowserProxy.whenCalled(
                 'recordDeleteBrowsingDataAction'));
       });
+
+  test('clear all button is hidden when the list is empty', async function() {
+    // Start with an empty list should hide clear all button.
+    assertEquals(testElement.$.allSitesList.items!.length, 0);
+    const clearAllButton = testElement.$.clearAllButton;
+    assertFalse(isVisible(clearAllButton));
+
+    // Add an entry to site group map.
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+    testElement.siteGroupMap.set(
+        siteGroup.groupingKey, structuredClone(siteGroup));
+    testElement.forceListUpdateForTesting();
+    await flushTasks();
+
+    // Ensure list is populated and clear all button is shown.
+    assertEquals(testElement.$.allSitesList.items!.length, 1);
+    assertTrue(isVisible(clearAllButton));
+
+    // Clearing all data should re-hide the button.
+    clearDataViaClearAllButton('action-button');
+    assertEquals(testElement.$.allSitesList.items!.length, 0);
+    assertFalse(isVisible(clearAllButton));
+  });
 
   function removeFirstOrigin() {
     const siteEntries =
