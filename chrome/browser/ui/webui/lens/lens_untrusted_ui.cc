@@ -32,8 +32,6 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kLensUntrustedResources, kLensUntrustedResourcesSize),
       IDR_LENS_UNTRUSTED_LENS_OVERLAY_HTML);
-  html_source->OverrideCrossOriginOpenerPolicy("same-origin");
-  html_source->OverrideCrossOriginEmbedderPolicy("require-corp");
 }
 
 void LensUntrustedUI::BindInterface(
