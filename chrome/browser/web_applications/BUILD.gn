@@ -89,6 +89,8 @@ source_set("web_applications") {
     "install_bounce_metric.h",
     "isolated_web_apps/check_isolated_web_app_bundle_installability_command.cc",
     "isolated_web_apps/check_isolated_web_app_bundle_installability_command.h",
+    "isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc",
+    "isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h",
     "isolated_web_apps/error/uma_logging.cc",
     "isolated_web_apps/error/uma_logging.h",
     "isolated_web_apps/error/unusable_swbn_file_error.cc",

@@ -1812,7 +1812,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       treat_as_error = True,
       excluded_paths = _TEST_CODE_EXCLUDED_PATHS + (
         '^chrome/browser/about_flags.cc',
-        '^chrome/browser/chrome_content_browser_client.cc',
+        '^chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc',
         '^chrome/browser/ui/startup/bad_flags_prompt.cc',
         '^content/shell/browser/shell_content_browser_client.cc'
       )
