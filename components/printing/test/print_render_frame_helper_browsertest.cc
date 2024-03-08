@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -1389,12 +1390,12 @@ class PrintRenderFrameHelperPreviewTest
       bool expected_all_pages_have_custom_orientation) {
     const mojom::PageSizeMargins* page_layout = preview_ui()->page_layout();
     ASSERT_TRUE(page_layout);
-    EXPECT_EQ(expected_content_width, page_layout->content_width);
-    EXPECT_EQ(expected_content_height, page_layout->content_height);
-    EXPECT_EQ(expected_margin_top, page_layout->margin_top);
-    EXPECT_EQ(expected_margin_bottom, page_layout->margin_bottom);
-    EXPECT_EQ(expected_margin_left, page_layout->margin_left);
-    EXPECT_EQ(expected_margin_right, page_layout->margin_right);
+    EXPECT_EQ(expected_content_width, std::round(page_layout->content_width));
+    EXPECT_EQ(expected_content_height, std::round(page_layout->content_height));
+    EXPECT_EQ(expected_margin_top, std::round(page_layout->margin_top));
+    EXPECT_EQ(expected_margin_bottom, std::round(page_layout->margin_bottom));
+    EXPECT_EQ(expected_margin_left, std::round(page_layout->margin_left));
+    EXPECT_EQ(expected_margin_right, std::round(page_layout->margin_right));
     EXPECT_EQ(expected_all_pages_have_custom_size,
               preview_ui()->all_pages_have_custom_size());
     EXPECT_EQ(expected_all_pages_have_custom_orientation,
@@ -1766,7 +1767,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(576, 637, 89, 66, 20, 16, true, true);
+  VerifyDefaultPageLayout(576, 637, 90, 65, 20, 16, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);

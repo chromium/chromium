@@ -269,12 +269,12 @@ ParamWithFitToPageScale<mojom::PrintParamsPtr> FitPrintParamsToPage(
     content_width *= scale_factor;
     content_height *= scale_factor;
   }
-  result.param->margin_top = static_cast<int>(
+  result.param->margin_top =
       (default_page_size_height - css_page_size_height * scale_factor) / 2 +
-      (result.param->margin_top * scale_factor));
-  result.param->margin_left = static_cast<int>(
+      (result.param->margin_top * scale_factor);
+  result.param->margin_left =
       (default_page_size_width - css_page_size_width * scale_factor) / 2 +
-      (result.param->margin_left * scale_factor));
+      (result.param->margin_left * scale_factor);
   result.param->content_size = gfx::SizeF(content_width, content_height);
   result.param->page_size.SetSize(default_page_size_width,
                                   default_page_size_height);
@@ -285,9 +285,8 @@ ParamWithFitToPageScale<mojom::PrintParamsPtr> FitPrintParamsToPage(
 
 mojom::PageSizeMarginsPtr CalculatePageLayoutFromPrintParams(
     const mojom::PrintParams& params) {
-  // TODO(crbug.com/1480958): Consider not rounding the values.
-  float content_width = std::round(params.content_size.width());
-  float content_height = std::round(params.content_size.height());
+  float content_width = params.content_size.width();
+  float content_height = params.content_size.height();
 
   float margin_bottom =
       params.page_size.height() - content_height - params.margin_top;
