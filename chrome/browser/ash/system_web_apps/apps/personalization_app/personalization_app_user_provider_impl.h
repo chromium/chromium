@@ -142,9 +142,9 @@ class PersonalizationAppUserProviderImpl
   mojo::Receiver<ash::personalization_app::mojom::UserProvider> user_receiver_{
       this};
 
-  std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
-
   scoped_refptr<base::SequencedTaskRunner> image_encoding_task_runner_;
+
+  std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
 
   base::WeakPtrFactory<PersonalizationAppUserProviderImpl> weak_ptr_factory_{
       this};

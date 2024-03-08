@@ -91,12 +91,9 @@ PersonalizationAppUserProviderImpl::PersonalizationAppUserProviderImpl(
               PersonalizationAppUserProviderImpl::CameraImageDecoder>()),
       image_encoding_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
-  ash::UserImageManager* user_image_manager =
-      ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
-  user_image_manager->DownloadProfileImage();
-  user_image_file_selector_ =
-      std::make_unique<ash::UserImageFileSelector>(web_ui);
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
+      user_image_file_selector_(
+          std::make_unique<ash::UserImageFileSelector>(web_ui)) {
   camera_presence_notifier_ =
       std::make_unique<CameraPresenceNotifier>(base::BindRepeating(
           &PersonalizationAppUserProviderImpl::OnCameraPresenceCheckDone,

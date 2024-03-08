@@ -80,11 +80,6 @@ class UserImageManager {
   // Deletes user image and the corresponding image file.
   virtual void DeleteUserImage() = 0;
 
-  // Starts downloading the profile image for the user.  If user's image
-  // index is `USER_IMAGE_PROFILE`, newly downloaded image is immediately
-  // set as user's current picture.
-  virtual void DownloadProfileImage() = 0;
-
   // Returns the result of the last successful profile image download, if any.
   // Otherwise, returns an empty bitmap.
   virtual const gfx::ImageSkia& DownloadedProfileImage() const = 0;
