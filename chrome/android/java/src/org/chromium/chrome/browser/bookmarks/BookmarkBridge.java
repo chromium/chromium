@@ -235,7 +235,10 @@ class BookmarkBridge {
      * @param ignoreVisibility Whether the visible while empty logic, found in BookmarkClient, is
      *     used when gathering nodes. When true, all folders are shown regardless of client defined
      *     visibility. When false, the client defined visibility rules are used. See
-     *     components/bookmarks/browser/bookmark_client.h for more information.
+     *     components/bookmarks/browser/bookmark_client.h for more information. When account
+     *     bookmarks are active, only a subset of the local folders are included when this is true.
+     *     This is to avoid overloading the user with a lof of unnecessary local folders (folders
+     *     included are the local Mobile and Reading List folders).
      * @return The top level folders, including special folders (managed bookmarks, reading list,
      *     partner bookmarks).
      */

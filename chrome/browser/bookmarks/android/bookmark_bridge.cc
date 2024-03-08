@@ -503,12 +503,21 @@ bool BookmarkBridge::IsPermanentFolderVisible(bool ignore_visibility,
     return false;
   }
 
+  bool is_account_bookmark = IsAccountBookmarkImpl(folder);
   if (ignore_visibility) {
-    return true;
+    // When butter is active ignore_visibility only applies to a subset of local
+    // folder to avoid overwhelming the user with unnecessary folders
+    // (crbug.com/325070543).
+    if (!is_account_bookmark &&
+        AreAccountBookmarkFoldersActive(/*env=*/nullptr)) {
+      return folder->IsVisible();
+    } else {
+      return true;
+    }
   }
 
   // Account folders only need to rely on the visibility.
-  if (IsAccountBookmarkImpl(folder)) {
+  if (is_account_bookmark) {
     return folder->IsVisible();
   }
 

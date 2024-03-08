@@ -363,16 +363,34 @@ TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
 // TODO(crbug.com/1509189): Also enable bookmark account folders here.
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
+
+  // The 2 folders should be: mobile bookmarks, reading list.
   std::vector<const BookmarkNode*> folders =
       bookmark_bridge()->GetTopLevelFolderIdsImpl(
           /*ignore_visibility=*/false);
-
-  // The 2 folders should be: mobile bookmarks, reading list.
   EXPECT_EQ(2u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
   EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
+
+  // All account and some local folders should be included when ignore
+  // visibility is true.
+  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
+      /*ignore_visibility=*/true);
+  EXPECT_EQ(6u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
+  EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
+  EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
+  EXPECT_EQ(u"Mobile bookmarks", folders[4]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
+  EXPECT_EQ(u"Reading list", folders[5]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[5]));
 
   // Adding a bookmark to the bookmark bar will include it in the top level
   // folders that are returned.
