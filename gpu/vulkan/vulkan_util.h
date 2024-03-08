@@ -110,9 +110,7 @@ VulkanQueuePresentKHRHook(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
 
 COMPONENT_EXPORT(VULKAN)
 bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
-                                const GPUInfo& gpu_info,
-                                const std::string& enable_by_device_name,
-                                bool disabled);
+                                const GPUInfo& gpu_info);
 
 COMPONENT_EXPORT(VULKAN)
 VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout);

@@ -409,9 +409,7 @@ VkResult VulkanQueuePresentKHRHook(VkQueue queue,
 }
 
 bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
-                                const GPUInfo& gpu_info,
-                                const std::string& enable_by_device_name,
-                                bool disabled) {
+                                const GPUInfo& gpu_info) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
 #if !BUILDFLAG(IS_ANDROID)
@@ -425,9 +423,6 @@ bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_fd";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_fd";
 #endif
-  if (disabled) {
-    return false;
-  }
 
   // If Chrome and ANGLE share the same VkQueue, they can share vulkan
   // resource without those extensions.
@@ -458,17 +453,6 @@ bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
     return false;
 
   const auto& device_info = vulkan_info.physical_devices.front();
-
-  auto enable_patterns = base::SplitString(
-      enable_by_device_name, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const auto& enable_pattern : enable_patterns) {
-    if (base::MatchPattern(device_info.properties.deviceName, enable_pattern))
-      return true;
-  }
-
-  if (disabled) {
-    return false;
-  }
 
   if (device_info.properties.vendorID == kVendorARM) {
     int emui_version = GetEMUIVersion();
