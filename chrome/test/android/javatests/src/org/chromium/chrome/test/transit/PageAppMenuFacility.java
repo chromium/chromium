@@ -4,20 +4,24 @@
 
 package org.chromium.chrome.test.transit;
 
-import org.chromium.base.ThreadUtils;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
  * The app menu shown when pressing ("...") in a Tab.
- *
- * <p>TODO(crbug.com/1489724): Actually show the menu in the screen; this just calls
- * #onMenuOrKeyboardAction() at the moment.
  */
 public class PageAppMenuFacility extends StationFacility<BasePageStation> {
+    public static final ViewElement NEW_TAB_MENU_ITEM =
+            ViewElement.sharedViewElement(withId(R.id.new_tab_menu_id));
+    public static final ViewElement NEW_INCOGNITO_TAB_MENU_ITEM =
+            ViewElement.sharedViewElement(withId(R.id.new_incognito_tab_menu_id));
 
     private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
@@ -29,7 +33,8 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        // TODO(crbug.com/1489724): Add menu items as elements to wait for.
+        elements.declareView(NEW_TAB_MENU_ITEM);
+        elements.declareView(NEW_INCOGNITO_TAB_MENU_ITEM);
     }
 
     /** Selects "New tab" from the app menu. */
@@ -42,16 +47,7 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
                         /* incognito= */ false,
                         /* isOpeningTab= */ true);
 
-        return Trip.travelSync(
-                mStation,
-                destination,
-                (t) ->
-                        ThreadUtils.postOnUiThread(
-                                () ->
-                                        mChromeTabbedActivityTestRule
-                                                .getActivity()
-                                                .onMenuOrKeyboardAction(
-                                                        R.id.new_tab_menu_id, true)));
+        return Trip.travelSync(mStation, destination, t -> NEW_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Selects "New Incognito tab" from the app menu. */
@@ -65,14 +61,6 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
                         /* isOpeningTab= */ true);
 
         return Trip.travelSync(
-                mStation,
-                destination,
-                (t) ->
-                        ThreadUtils.postOnUiThread(
-                                () ->
-                                        mChromeTabbedActivityTestRule
-                                                .getActivity()
-                                                .onMenuOrKeyboardAction(
-                                                        R.id.new_incognito_tab_menu_id, true)));
+                mStation, destination, t -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
     }
 }
