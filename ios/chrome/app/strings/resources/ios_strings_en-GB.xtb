@@ -208,7 +208,7 @@
 <translation id="2050196510205866090">{count,plural, =1{{count} saved payment method available above your keyboard.}other{{count} saved payment methods available above your keyboard.}}</translation>
 <translation id="2055515971416882518">Open "Settings."</translation>
 <translation id="2059166748188874810">Municipality</translation>
-<translation id="2062410130322589403">A guide of your privacy choices</translation>
+<translation id="2062410130322589403">A guide to your privacy choices</translation>
 <translation id="20638360198452347">Unit type selector</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
