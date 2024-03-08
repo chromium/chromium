@@ -71,6 +71,7 @@ class AtpJSApiTest : public testing::Test {
 
   // Any additional JS files at these paths will be loaded during
   // SetUpTestEnvironment.
+  // Note!!! This should not be alphabetical order, but import order.
   virtual const std::vector<std::string> GetJSFilePathsToLoad() const = 0;
 
   std::string LoadScriptFromFile(const std::string& file_path) {
@@ -1242,6 +1243,8 @@ class AutomationJSApiTest : public AtpJSApiTest {
         "ui/accessibility/mojom/ax_tree_id.mojom-lite.js",
         "ui/accessibility/mojom/ax_action_data.mojom-lite.js",
         "services/accessibility/public/mojom/automation_client.mojom-lite.js",
+        "services/accessibility/features/javascript/chrome_event.js",
+        "services/accessibility/features/javascript/automation_internal.js",
         "services/accessibility/features/javascript/automation.js",
     };
   }
@@ -1328,6 +1331,45 @@ TEST_F(AutomationJSApiTest, GetFocuses) {
       });
     });
   )JS");
+  WaitForJSTestComplete();
+}
+
+// Ensures that chrome.automation.addTreeChangeObserver() receives updates.
+// Note that this test is not to test all possible observer variants, but rather
+// to confirm that atp dispatches event to observers.
+// TODO(B:327035268): Implement test infrastructure to send multiple tree
+// changes. This is necessary to test correctly removing observers.
+TEST_F(AutomationJSApiTest, AutomationObservers) {
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.automation.addTreeChangeObserver("allTreeChanges", function(change) {
+      if (change.type == 'nodeCreated' && change.target.role == 'button') {
+        remote.testComplete(/*success=*/true);
+      }
+    });
+  )JS");
+
+  std::vector<ui::AXTreeUpdate> updates;
+  updates.emplace_back();
+  auto& tree_update = updates.back();
+  tree_update.has_tree_data = true;
+  tree_update.root_id = 1;
+  auto& tree_data = tree_update.tree_data;
+  tree_data.tree_id = client_->desktop_tree_id();
+  tree_data.focus_id = 2;
+  tree_update.nodes.emplace_back();
+  auto& node_data1 = tree_update.nodes.back();
+  node_data1.id = 1;
+  node_data1.role = ax::mojom::Role::kDesktop;
+  node_data1.child_ids.push_back(2);
+  tree_update.nodes.emplace_back();
+  auto& node_data2 = tree_update.nodes.back();
+  node_data2.id = 2;
+  node_data2.role = ax::mojom::Role::kButton;
+  std::vector<ui::AXEvent> events;
+  client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                   events);
+
   WaitForJSTestComplete();
 }
 

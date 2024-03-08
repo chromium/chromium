@@ -6,21 +6,31 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "gin/function_template.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/automation_impl.h"
 #include "services/accessibility/features/bindings_isolate_holder.h"
+#include "services/accessibility/features/v8_utils.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
+#include "v8-function.h"
+#include "v8-value.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-template.h"
 
 namespace ax {
+namespace {
 
+static const char kJSAutomationInternalV8Listeners[] =
+    "automationInternalV8Listeners";
+static const char kJSCallListeners[] = "callListeners";
+
+}  // namespace
 AutomationInternalBindings::AutomationInternalBindings(
     BindingsIsolateHolder* isolate_holder,
     mojo::PendingAssociatedReceiver<mojom::Automation> automation)
@@ -90,6 +100,23 @@ void AutomationInternalBindings::RouteHandlerFunction(
 ui::TreeChangeObserverFilter
 AutomationInternalBindings::ParseTreeChangeObserverFilter(
     const std::string& filter) const {
+  // TODO(b:327258691): Share const strings between c++ and js for event names.
+  if (filter == "none") {
+    return ui::TreeChangeObserverFilter::kNone;
+  }
+  if (filter == "noTreeChanges") {
+    return ui::TreeChangeObserverFilter::kNoTreeChanges;
+  }
+  if (filter == "liveRegionTreeChanges") {
+    return ui::TreeChangeObserverFilter::kLiveRegionTreeChanges;
+  }
+  if (filter == "textMarkerChanges") {
+    return ui::TreeChangeObserverFilter::kTextMarkerChanges;
+  }
+  if (filter == "allTreeChanges") {
+    return ui::TreeChangeObserverFilter::kAllTreeChanges;
+  }
+
   return ui::TreeChangeObserverFilter::kAllTreeChanges;
 }
 
@@ -118,8 +145,23 @@ AutomationInternalBindings::GetLocalizedStringForImageAnnotationStatus(
 
 std::string AutomationInternalBindings::GetTreeChangeTypeString(
     ax::mojom::Mutation change_type) const {
-  // TODO(crbug.com/1357889): Implement based on Automation API.
-  return ui::ToString(change_type);
+  // TODO(b:327258691): Share const strings between c++ and js for event names.
+  switch (change_type) {
+    case ax::mojom::Mutation::kNone:
+      return "none";
+    case ax::mojom::Mutation::kNodeCreated:
+      return "nodeCreated";
+    case ax::mojom::Mutation::kSubtreeCreated:
+      return "subtreeCreated";
+    case ax::mojom::Mutation::kNodeChanged:
+      return "nodeChanged";
+    case ax::mojom::Mutation::kTextChanged:
+      return "textChanged";
+    case ax::mojom::Mutation::kNodeRemoved:
+      return "nodeRemoved";
+    case ax::mojom::Mutation::kSubtreeUpdateEnd:
+      return "subtreeUpdateEnd";
+  }
 }
 
 std::string AutomationInternalBindings::GetEventTypeString(
@@ -132,7 +174,54 @@ std::string AutomationInternalBindings::GetEventTypeString(
 void AutomationInternalBindings::DispatchEvent(
     const std::string& event_name,
     const base::Value::List& event_args) const {
-  // TODO(crbug.com/1357889): Send the event to V8.
+  v8::HandleScope handle_scope(GetIsolate());
+  v8::Local<v8::Context> context = GetContext();
+  v8::Context::Scope context_scope(context);
+
+  // Here, a helper function defined in js is invoked to retrieve the event
+  // object that contains all the listeners. Then, we dispatch the event to all
+  // listeners.
+  v8::Local<v8::String> func_name =
+      v8::String::NewFromUtf8(GetIsolate(), kJSAutomationInternalV8Listeners)
+          .ToLocalChecked();
+  v8::Local<v8::Value> func_value =
+      context->Global()->Get(context, func_name).ToLocalChecked();
+  v8::Local<v8::Function> get_event_listeners_from_name_function =
+      v8::Local<v8::Function>::Cast(func_value);
+
+  // Prepare the argument for the 'getEventListenersFromName' call
+  v8::Local<v8::Value> args[] = {
+      v8::String::NewFromUtf8(GetIsolate(), event_name.c_str())
+          .ToLocalChecked()};
+
+  // Call the 'getEventListenersFromName' function using the event that needs to
+  // be dispatched. The return value is an object containing all listeners to
+  // that event.
+  v8::Local<v8::Value> result = get_event_listeners_from_name_function
+                                    ->Call(context, context->Global(), 1, args)
+                                    .ToLocalChecked();
+  CHECK(result->IsObject()) << "Unknown event type: " << event_name;
+
+  v8::Local<v8::Object> event_listeners_object =
+      v8::Local<v8::Object>::Cast(result);
+
+  v8::Local<v8::String> method_name =
+      v8::String::NewFromUtf8(GetIsolate(), kJSCallListeners).ToLocalChecked();
+  v8::Local<v8::Value> method_value =
+      event_listeners_object->Get(context, method_name).ToLocalChecked();
+  v8::Local<v8::Function> method = v8::Local<v8::Function>::Cast(method_value);
+
+  std::vector<v8::Local<v8::Value>> js_event_args;
+  for (const base::Value& value : event_args) {
+    v8::Local<v8::Value> js_event_arg =
+        V8ValueConverter ::GetInstance()->ConvertToV8Value(value, context);
+    js_event_args.push_back(js_event_arg);
+  }
+
+  v8::MaybeLocal<v8::Value> unused_result =
+      method->Call(context, event_listeners_object, js_event_args.size(),
+                   js_event_args.data());
+  CHECK(!unused_result.IsEmpty());
 }
 
 }  // namespace ax

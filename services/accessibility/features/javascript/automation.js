@@ -2142,12 +2142,49 @@ AutomationRootNode.actionRequestCounter = 0;
  */
 AutomationRootNode.actionRequestIDToCallback = {};
 
+// A class to export utility functions to other files in automation.
+class AutomationUtil {
+  constructor() {
+    /**
+     * Global map of tree change observers.
+     * @public {Object<number, TreeChangeObserver>}
+     */
+    this.treeChangeObserverMap = {};
+
+    /**
+     * The id for the next tree change observer.
+     * @public
+     * @type {number}
+     */
+    this.nextTreeChangeObserverId = 1;
+  }
+
+  removeTreeChangeObserver(observer) {
+    for (const id in this.treeChangeObserverMap) {
+      if (this.treeChangeObserverMap[id] === observer) {
+        natives.RemoveTreeChangeObserver(id);
+        delete this.treeChangeObserverMap[id];
+        return;
+      }
+    }
+  }
+
+  addTreeChangeObserver(filter, observer) {
+    this.removeTreeChangeObserver(observer);
+    const id = this.nextTreeChangeObserverId++;
+    natives.AddTreeChangeObserver(id, filter);
+    this.treeChangeObserverMap[id] = observer;
+  }
+}
+
+automationUtil = new AutomationUtil();
+
 // Shim class for Automation API. Compare to
 // extensions/renderer/resources/automation/automation_custom_bindings.js.
 class AtpAutomation {
   constructor() {
-    const AutomationInternalApi = ax.mojom.AutomationClient;
-    this.automationClientRemote_ = AutomationInternalApi.getRemote();
+    const AutomationClient = ax.mojom.AutomationClient;
+    this.automationClientRemote_ = AutomationClient.getRemote();
 
     /** @private {?string} */
     this.desktopId_ = null;
@@ -2225,7 +2262,41 @@ class AtpAutomation {
     }
   }
 
+  removeTreeChangeObserver(observer) {
+    automationUtil.removeTreeChangeObserver(observer);
+  }
+
+  addTreeChangeObserver(filter, observer) {
+    automationUtil.addTreeChangeObserver(filter, observer);
+  }
+
   // TODO(b/262638176): Add other chrome.automation methods.
 };
+
+automationInternal.onTreeChange.addListener(function(
+    observerID, treeID, nodeID, changeType) {
+  const tree = AutomationRootNode.getOrCreate(treeID);
+  if (!tree) {
+    return;
+  }
+
+  const node = tree.get(nodeID);
+  if (!node) {
+    return;
+  }
+
+  const observer = automationUtil.treeChangeObserverMap[observerID];
+  if (!observer) {
+    return;
+  }
+
+  try {
+    observer({target: node, type: changeType});
+  } catch (e) {
+    exceptionHandler.handle(
+        'Error in tree change observer for ' + changeType, e);
+  }
+});
+
 
 chrome.automation = new AtpAutomation();

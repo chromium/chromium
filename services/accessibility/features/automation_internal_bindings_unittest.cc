@@ -5,6 +5,9 @@
 #include "services/accessibility/features/automation_internal_bindings.h"
 
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "gin/public/context_holder.h"
@@ -120,6 +123,15 @@ class AutomationInternalBindingsTest : public testing::Test {
         automation.InitWithNewEndpointAndPassRemote());
     test_isolate_holder_->InstallAutomation(std::move(automation));
     test_isolate_holder_->StartTestV8AndBindAutomation();
+
+    // Many automation functions, when called, cause events to be dispatched.
+    // Here, because we are not loading the full automation API (just the
+    // bindings), we load only what is necessary to dispatch the events to
+    // listeners (AutomationInternal and its dependencies).
+    ASSERT_TRUE(test_isolate_holder_->ExecuteScriptInContext(LoadScriptFromFile(
+        "services/accessibility/features/javascript/chrome_event.js")));
+    ASSERT_TRUE(test_isolate_holder_->ExecuteScriptInContext(LoadScriptFromFile(
+        "services/accessibility/features/javascript/automation_internal.js")));
   }
 
   void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
@@ -135,6 +147,17 @@ class AutomationInternalBindingsTest : public testing::Test {
                               const ui::AXRelativeBounds& bounds) {
     test_isolate_holder_->GetAutomationBindings()
         ->DispatchAccessibilityLocationChange(tree_id, node_id, bounds);
+  }
+
+  std::string LoadScriptFromFile(const std::string& file_path) {
+    base::FilePath gen_test_data_root;
+    base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_test_data_root);
+    base::FilePath source_path =
+        gen_test_data_root.Append(FILE_PATH_LITERAL(file_path));
+    std::string script;
+    EXPECT_TRUE(base::ReadFileToString(source_path, &script))
+        << "Could not load script from " << file_path;
+    return script;
   }
 
  protected:
