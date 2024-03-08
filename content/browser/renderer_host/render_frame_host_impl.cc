@@ -2354,14 +2354,7 @@ WebExposedIsolationLevel RenderFrameHostImpl::GetWebExposedIsolationLevel() {
     return WebExposedIsolationLevel::kNotIsolated;
   }
 
-  WebExposedIsolationLevel weil = GetProcess()->GetWebExposedIsolationLevel();
-  if (weil >= WebExposedIsolationLevel::kMaybeIsolatedApplication) {
-    return WebExposedIsolationLevel::kIsolatedApplication;
-  }
-  if (weil >= WebExposedIsolationLevel::kMaybeIsolated) {
-    return WebExposedIsolationLevel::kIsolated;
-  }
-  return WebExposedIsolationLevel::kNotIsolated;
+  return GetProcess()->GetWebExposedIsolationLevel();
 }
 
 const GURL& RenderFrameHostImpl::GetLastCommittedURL() const {

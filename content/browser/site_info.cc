@@ -556,7 +556,7 @@ std::string SiteInfo::GetDebugString() const {
 
   if (web_exposed_isolation_info_.is_isolated_application() &&
       web_exposed_isolation_level_ <
-          WebExposedIsolationLevel::kMaybeIsolatedApplication) {
+          WebExposedIsolationLevel::kIsolatedApplication) {
     debug_string += ", application isolation not inherited";
   }
 
@@ -879,24 +879,21 @@ WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevel(
     return WebExposedIsolationLevel::kNotIsolated;
   }
   if (!web_exposed_isolation_info.is_isolated_application()) {
-    return WebExposedIsolationLevel::kMaybeIsolated;
+    return WebExposedIsolationLevel::kIsolated;
   }
   // The "application isolation" level cannot be delegated cross-origin.
   url::Origin origin =
       GetPossiblyOverriddenOriginFromUrl(url_info.url, url_info.origin);
   return web_exposed_isolation_info.origin() == origin
-             ? WebExposedIsolationLevel::kMaybeIsolatedApplication
-             : WebExposedIsolationLevel::kMaybeIsolated;
+             ? WebExposedIsolationLevel::kIsolatedApplication
+             : WebExposedIsolationLevel::kIsolated;
 }
 
 // static
 WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
-  // We don't return kMaybeIsolatedApplication here because that isolation
-  // level can't be delegated cross-origin, and we don't know the origin of
-  // content that will use this SiteInstance.
   return web_exposed_isolation_info.is_isolated()
-             ? WebExposedIsolationLevel::kMaybeIsolated
+             ? WebExposedIsolationLevel::kIsolated
              : WebExposedIsolationLevel::kNotIsolated;
 }
 

@@ -268,8 +268,8 @@ std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
   } else {
     is_usb_unrestricted =
         render_frame_host_ &&
-        render_frame_host_->GetWebExposedIsolationLevel() >=
-            content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+        render_frame_host_->GetWebExposedIsolationLevel() ==
+            content::WebExposedIsolationLevel::kIsolatedApplication;
   }
   if (is_usb_unrestricted) {
     classes.clear();

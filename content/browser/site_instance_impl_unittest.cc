@@ -1697,7 +1697,7 @@ TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
   EXPECT_TRUE(isolated_same_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_FALSE(isolated_same_origin.web_exposed_isolation_info()
                    .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             isolated_same_origin.web_exposed_isolation_level());
 
   // Cross-origin SiteInfos in an isolated BrowsingInstance should be isolated.
@@ -1706,7 +1706,7 @@ TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
   EXPECT_TRUE(isolated_cross_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_FALSE(isolated_cross_origin.web_exposed_isolation_info()
                    .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             isolated_cross_origin.web_exposed_isolation_level());
 
   // Same-origin SiteInfos in an isolated application BrowsingInstance should
@@ -1717,7 +1717,7 @@ TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
       isolated_app_same_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_TRUE(isolated_app_same_origin.web_exposed_isolation_info()
                   .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
             isolated_app_same_origin.web_exposed_isolation_level());
 
   // Cross-origin SiteInfos in an isolated application BrowsingInstance should
@@ -1728,7 +1728,7 @@ TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
       isolated_app_cross_origin.web_exposed_isolation_info().is_isolated());
   EXPECT_TRUE(isolated_app_cross_origin.web_exposed_isolation_info()
                   .is_isolated_application());
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             isolated_app_cross_origin.web_exposed_isolation_level());
 }
 

@@ -23,8 +23,8 @@ BrowserProcessContextData::CloneProcessContextData() const {
 bool BrowserProcessContextData::IsIsolatedApplication() const {
   return content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
              process_->GetBrowserContext()) &&
-         process_->GetWebExposedIsolationLevel() >=
-             content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+         process_->GetWebExposedIsolationLevel() ==
+             content::WebExposedIsolationLevel::kIsolatedApplication;
 }
 
 }  // namespace extensions

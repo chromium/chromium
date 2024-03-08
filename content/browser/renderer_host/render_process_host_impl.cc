@@ -3213,7 +3213,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
 
   GetRendererInterface()->SetIsCrossOriginIsolated(
       process_lock.GetWebExposedIsolationLevel() >=
-      WebExposedIsolationLevel::kMaybeIsolated);
+      WebExposedIsolationLevel::kIsolated);
 
   GetRendererInterface()->SetIsIsolatedContext(IsIsolatedContext(this));
 

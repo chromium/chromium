@@ -54,21 +54,11 @@ enum class WebExposedIsolationLevel {
   // The frame or worker is in a cross-origin isolated process and agent
   // cluster, allowed to access web platform APIs gated on
   // [CrossOriginIsolated].
-  //
-  // TODO(clamy): Remove this "maybe" status once it is possible to determine
-  // conclusively whether the document is capable of calling cross-origin
-  // isolated APIs by examining the active document policy.
-  kMaybeIsolated,
   kIsolated,
 
   // The frame or worker is in a cross-origin isolated process and agent cluster
   // that supports application isolation, allowing access to web platform APIs
   // gated on both [CrossOriginIsolated] and [DirectSocketEnabled].
-  //
-  // TODO(clamy): Remove this "maybe" status once it is possible to determine
-  // conclusively whether the document is capable of calling cross-origin
-  // isolated APIs by examining the active document policy.
-  kMaybeIsolatedApplication,
   kIsolatedApplication
 };
 

@@ -25,8 +25,8 @@ bool BrowserFrameContextData::IsIsolatedApplication() const {
   return frame_ &&
          content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
              frame_->GetBrowserContext()) &&
-         frame_->GetWebExposedIsolationLevel() >=
-             content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+         frame_->GetWebExposedIsolationLevel() ==
+             content::WebExposedIsolationLevel::kIsolatedApplication;
 }
 
 std::unique_ptr<FrameContextData>

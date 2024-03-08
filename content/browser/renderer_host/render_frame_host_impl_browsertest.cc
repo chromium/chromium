@@ -5369,10 +5369,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                                 "/set-header?"
                                 "Cross-Origin-Opener-Policy: same-origin&"
                                 "Cross-Origin-Embedder-Policy: require-corp")));
-  // Status can be kIsolated or kMaybeIsolated.
-  EXPECT_LT(WebExposedIsolationLevel::kNotIsolated,
-            root_frame_host()->GetWebExposedIsolationLevel());
-  EXPECT_GT(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+  // Status is kIsolated.
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 }
 
@@ -5451,7 +5449,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
                              "Cross-Origin-Embedder-Policy: require-corp&"
                              "Cross-Origin-Resource-Policy: cross-origin");
   EXPECT_TRUE(NavigateToURL(shell(), non_app_url));
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             root_frame_host()->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
@@ -5469,7 +5467,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   )";
   EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, non_app_url, "")));
   RenderFrameHost* non_app_child_frame = ChildFrameAt(root_frame_host(), 0);
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             non_app_child_frame->GetWebExposedIsolationLevel());
@@ -5479,7 +5477,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, non_app_url,
                                         "cross-origin-isolated 'none'")));
   non_app_child_frame = ChildFrameAt(root_frame_host(), 1);
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             non_app_child_frame->GetWebExposedIsolationLevel());
@@ -5497,7 +5495,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
       /*site_instance=*/nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(app_shell, app_url));
   RenderFrameHost* app_frame = app_shell->web_contents()->GetPrimaryMainFrame();
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
@@ -5507,7 +5505,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   EXPECT_TRUE(ExecJs(
       app_shell, JsReplace(create_iframe, app_url, "cross-origin-isolated")));
   RenderFrameHost* app_child_frame = ChildFrameAt(app_frame, 0);
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
             app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
             app_child_frame->GetWebExposedIsolationLevel());
@@ -5517,7 +5515,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, app_url,
                                           "cross-origin-isolated 'none'")));
   app_child_frame = ChildFrameAt(app_frame, 1);
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolatedApplication,
             app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             app_child_frame->GetWebExposedIsolationLevel());
@@ -5530,7 +5528,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, non_app_url,
                                           "cross-origin-isolated")));
   non_app_child_frame = ChildFrameAt(app_frame, 2);
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             non_app_child_frame->GetWebExposedIsolationLevel());
@@ -5540,7 +5538,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   EXPECT_TRUE(ExecJs(app_shell, JsReplace(create_iframe, non_app_url,
                                           "cross-origin-isolated 'none'")));
   non_app_child_frame = ChildFrameAt(app_frame, 3);
-  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
             non_app_child_frame->GetProcess()->GetWebExposedIsolationLevel());
   EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             non_app_child_frame->GetWebExposedIsolationLevel());
