@@ -130,25 +130,27 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     return typeof token?.translation === 'string';
   }
 
+  private clearSelectedChipState() {
+    this.selectedChip_ = null;
+    this.options_ = null;
+  }
+
   private onClickChip_(event: Event&{model: {token: ChipToken}}) {
     assert(this.isChip_(event.model.token), 'Token must be a chip');
-    this.selectedChip_ = event.model.token;
-    assert(
-        this.seaPenTemplate_.options.has(this.selectedChip_.id),
-        'options must exist');
-    this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
+    if (this.selectedChip_?.id === event.model.token.id) {
+      this.clearSelectedChipState();
+    } else {
+      this.selectedChip_ = event.model.token;
+      assert(
+          this.seaPenTemplate_.options.has(this.selectedChip_.id),
+          'options must exist');
+      this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
+    }
   }
 
   private onClickInspire_() {
     this.selectedOptions_ =
         getDefaultOptions(this.seaPenTemplate_, /*random=*/ true);
-    if (this.selectedChip_) {
-      // The selected chip translation might have changed due to randomized
-      // option. Notifies the UI to update its value.
-      this.set(
-          `selectedChip_.translation`,
-          this.selectedOptions_.get(this.selectedChip_.id)?.translation);
-    }
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
     this.onClickSearchButton_();
@@ -156,8 +158,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
     const selectedOptions = getDefaultOptions(template);
-    this.selectedChip_ = null;
-    this.options_ = null;
+    this.clearSelectedChipState();
     this.selectedOptions_ = selectedOptions;
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
@@ -227,7 +228,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private onClickSearchButton_() {
-    this.options_ = null;
+    this.clearSelectedChipState();
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(this.getSeaPenTemplateId_());

@@ -243,9 +243,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     selectedOption = seaPenOptionsElement.shadowRoot!.querySelector(
                          '#options cr-button[aria-selected]') as HTMLElement;
-    assertEquals(
-        selectedOption!.innerText, optionText,
-        'the option should now be selected');
+    assertTrue(!selectedOption, 'Clicking the chip again will hide options.');
   });
 
   test('inspires me', async () => {
@@ -290,6 +288,39 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertTrue(
         optionText === chips[1]!.innerText,
         'selected option should match text');
+  });
+
+  test('inspire click clears selected chip', async () => {
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    initElement(SeaPenRouterElement, {basePath: '/base'});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+    const chips =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.chip-text');
+    const inspireButton =
+        seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
+
+    // Select a chip.
+    chips[0]!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    let unselected =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.unselected');
+    assertTrue(
+        unselected.length > 0, 'template should have unselected elements');
+
+    // Click inspire button.
+    inspireButton!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    unselected =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.unselected');
+    assertEquals(
+        0, unselected.length, 'template should be in the default state');
   });
 
   test('clicking inspire button triggers search', async () => {
