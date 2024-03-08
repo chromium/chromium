@@ -1031,6 +1031,11 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
       NOTREACHED();
       break;
     }
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED: {
+      // TODO(b/327392327): Implement UX for this danger type.
+      NOTREACHED();
+      break;
+    }
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:

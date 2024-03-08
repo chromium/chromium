@@ -99,6 +99,8 @@ download::DownloadDangerType ToContentDownloadDangerType(
       return download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED;
     case DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
+    case DownloadDangerType::BLOCKED_SCAN_FAILED:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
     case DownloadDangerType::INVALID:
       NOTREACHED();
       return download::DOWNLOAD_DANGER_TYPE_MAX;
@@ -154,6 +156,8 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
       return DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+      return DownloadDangerType::BLOCKED_SCAN_FAILED;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return DownloadDangerType::INVALID;

@@ -441,6 +441,8 @@ download::DownloadDangerType SavePackageDangerType(
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE;
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
       return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
+    case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
 
     default:
       NOTREACHED();
@@ -701,7 +703,9 @@ bool ChromeDownloadManagerDelegate::IsDangerTypeBlocked(
   return danger_type == download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE ||
          danger_type ==
              download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED ||
-         danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
+         danger_type ==
+             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK ||
+         danger_type == download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
 }
 
 bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
@@ -1469,6 +1473,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         danger_type =
             download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
         break;
+      case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
+        danger_type = download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
+        break;
     }
     DCHECK_NE(danger_type,
               download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
@@ -1588,6 +1595,7 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
     case safe_browsing::DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case safe_browsing::DownloadCheckResult::BLOCKED_TOO_LARGE:
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+    case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
       enterprise_connectors::RunSavePackageScanningCallback(item,
                                                             /*allowed*/ false);
       break;

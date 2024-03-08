@@ -123,6 +123,7 @@ bool IsDownloadAllowedBySafeBrowsing(
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case Result::DEEP_SCANNED_FAILED:
+    case Result::BLOCKED_SCAN_FAILED:
       NOTREACHED();
       return true;
   }

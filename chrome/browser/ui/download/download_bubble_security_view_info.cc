@@ -181,6 +181,10 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
       }
       return;
     }
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED: {
+      // TODO(b/327392327): Implement UX for this danger type.
+      return;
+    }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
@@ -476,6 +480,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       return;
   }

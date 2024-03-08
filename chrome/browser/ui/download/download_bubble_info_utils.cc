@@ -48,6 +48,7 @@ IconAndColor IconAndColorForInterrupted(const DownloadUIModel& model) {
   switch (model.GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return IconAndColor{features::IsChromeRefresh2023()
                               ? &views::kInfoChromeRefreshIcon
                               : &views::kInfoIcon,
@@ -198,6 +199,7 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
@@ -315,6 +317,7 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
@@ -427,6 +430,7 @@ DownloadBubbleProgressBar ProgressBarForDownload(const DownloadUIModel& model) {
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

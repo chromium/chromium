@@ -78,6 +78,7 @@ DownloadDangerType IntToDownloadDangerType(int danger_type) {
     case DownloadDangerType::DEEP_SCANNED_FAILED:
     case DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING:
+    case DownloadDangerType::BLOCKED_SCAN_FAILED:
       return static_cast<DownloadDangerType>(danger_type);
 
     case DownloadDangerType::INVALID:
@@ -149,6 +150,8 @@ std::ostream& operator<<(std::ostream& stream, DownloadDangerType danger_type) {
     case DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING:
       return stream
              << "history::DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING";
+    case DownloadDangerType::BLOCKED_SCAN_FAILED:
+      return stream << "history::DownloadDangerType::BLOCKED_SCAN_FAILED";
   }
   NOTREACHED();
   return stream;

@@ -97,6 +97,7 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
+    case DownloadCheckResult::BLOCKED_SCAN_FAILED:
       callback.Run(deep_scan_result);
       return;
   }

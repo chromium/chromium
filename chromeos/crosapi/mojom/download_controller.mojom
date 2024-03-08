@@ -46,6 +46,7 @@ enum DownloadDangerType {
   [MinVersion=1] kDownloadDangerTypeDeepScannedFailed = 20,
   [MinVersion=2] kDownloadDangerTypePromptForLocalPasswordScanning = 21,
   [MinVersion=2] kDownloadDangerTypeAsyncLocalPasswordScanning = 22,
+  [MinVersion=3] kDownloadDangerTypeBlockedScanFailed = 23,
 };
 
 // This mirrors `download::DownloadItem::InsecureDownloadStatus`, anything

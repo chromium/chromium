@@ -433,6 +433,7 @@ chromium-metrics-reviews@google.com.
   <int value="21"
       label="DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
   <int value="22" label="DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING"/>
+  <int value="23" label="DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED"/>
 </enum>
 
 <enum name="DownloadLaterDialogChoice">

@@ -28,6 +28,7 @@ enum DangerType {
   kDeepScannedSafe,
   kDeepScannedOpenedDangerous,
   kBlockedUnsupportedFileType,
+  kBlockedScanFailed,
 };
 
 // Represents the state of a download in the UI.

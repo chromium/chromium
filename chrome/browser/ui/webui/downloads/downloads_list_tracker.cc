@@ -97,6 +97,8 @@ downloads::mojom::DangerType GetDangerType(
       return downloads::mojom::DangerType::kDeepScannedOpenedDangerous;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return downloads::mojom::DangerType::kBlockedUnsupportedFileType;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+      return downloads::mojom::DangerType::kBlockedScanFailed;
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:

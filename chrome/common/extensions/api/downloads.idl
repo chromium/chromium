@@ -143,7 +143,8 @@ namespace downloads {
     deepScannedOpenedDangerous,
     promptForScanning,
     promptForLocalPasswordScanning,
-    accountCompromise
+    accountCompromise,
+    blockedScanFailed
   };
 
   // <dl><dt>in_progress</dt>

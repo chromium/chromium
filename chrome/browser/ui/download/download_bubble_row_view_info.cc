@@ -214,6 +214,7 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
@@ -262,6 +263,7 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

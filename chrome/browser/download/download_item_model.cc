@@ -375,6 +375,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return false;
   }
   NOTREACHED();
@@ -1007,6 +1008,7 @@ bool DownloadItemModel::IsEphemeralWarning() const {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return false;
   }
 }
@@ -1079,7 +1081,8 @@ bool DownloadItemModel::ShouldShowDropdown() const {
           download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED ||
       GetDangerType() == download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE ||
       GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE) {
+          download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE ||
+      GetDangerType() == download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED) {
     return false;
   }
 

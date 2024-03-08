@@ -70,6 +70,7 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
       DownloadCheckResult::BLOCKED_TOO_LARGE,
       DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED,
       DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE,
+      DownloadCheckResult::BLOCKED_SCAN_FAILED,
       DownloadCheckResult::POTENTIALLY_UNWANTED,
       DownloadCheckResult::SENSITIVE_CONTENT_WARNING,
       DownloadCheckResult::PROMPT_FOR_SCANNING,
@@ -198,6 +199,7 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return EventResult::UNKNOWN;
@@ -242,6 +244,7 @@ EventResult GetEventResult(DownloadCheckResult download_result,
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
+    case DownloadCheckResult::BLOCKED_SCAN_FAILED:
       return EventResult::BLOCKED;
 
     default:
@@ -666,6 +669,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
              analysis_settings_.block_password_protected_files) {
     download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
   }
+  // TODO(b/327392327): Add fail closed enum (`BLOCKED_SCAN_FAILED`) logic here.
 
   LogDeepScanResult(download_result, trigger_,
                     DownloadItemWarningData::IsEncryptedArchive(item_));

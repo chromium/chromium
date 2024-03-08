@@ -102,6 +102,10 @@ enum DownloadDangerType {
   // password locally for further scanning.
   DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING = 22,
 
+  // Download scan is unsuccessful, and should be blocked according to the
+  // policy.
+  DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED = 23,
+
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
   DOWNLOAD_DANGER_TYPE_MAX

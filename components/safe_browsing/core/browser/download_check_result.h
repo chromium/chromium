@@ -32,7 +32,8 @@ enum class DownloadCheckResult {
   DEEP_SCANNED_FAILED = 16,
   PROMPT_FOR_LOCAL_PASSWORD_SCANNING = 17,
   ASYNC_LOCAL_PASSWORD_SCANNING = 18,
-  kMaxValue = ASYNC_LOCAL_PASSWORD_SCANNING,
+  BLOCKED_SCAN_FAILED = 19,
+  kMaxValue = BLOCKED_SCAN_FAILED,
 };
 
 }  // namespace safe_browsing
