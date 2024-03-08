@@ -678,10 +678,15 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
   source->AddBoolean("customizeChromeEnabled",
                      customize_chrome::IsSidePanelEnabled());
-  source->AddBoolean(
-      "wallpaperSearchButtonEnabled",
+  bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
-          customize_chrome::IsWallpaperSearchEnabledForProfile(profile_));
+      customize_chrome::IsWallpaperSearchEnabledForProfile(profile_);
+  source->AddBoolean("wallpaperSearchButtonEnabled",
+                     wallpaper_search_button_enabled);
+  source->AddBoolean("wallpaperSearchButtonAnimationEnabled",
+                     wallpaper_search_button_enabled &&
+                         base::FeatureList::IsEnabled(
+                             ntp_features::kNtpWallpaperSearchButtonAnimation));
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
