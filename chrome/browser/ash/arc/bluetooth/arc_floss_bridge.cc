@@ -328,7 +328,9 @@ void ArcFlossBridge::CreateBluetoothListenSocket(
                                            std::move(callback));
   auto connection_state_changed_callback = base::BindRepeating(
       &ArcFlossBridge::OnConnectionStateChanged, weak_factory_.GetWeakPtr(),
-      sock_wrapper.get(), socket_ready_callback_id);
+      // TODO(crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
+      base::UnsafeDanglingUntriaged(sock_wrapper.get()),
+      socket_ready_callback_id);
   floss::ResponseCallback<floss::FlossDBusClient::BtifStatus>
       response_callback =
           base::BindOnce(&ArcFlossBridge::OnCreateListenSocketCallback,
