@@ -2134,7 +2134,7 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
-  gfx::Size layer_bounds(200, 200);
+  gfx::Size layer_bounds(2000, 2000);
   gfx::Rect recorded_bounds(0, 0, 150, 150);
 
   scoped_refptr<FakeRasterSource> pending_raster_source =
@@ -2169,15 +2169,34 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   active_layer()->DidDraw(nullptr);
 
   // Changed tiling rect is snapped.
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
+  EXPECT_EQ(gfx::Rect(0, 0, 248, 248),
             active_layer()->HighResTiling()->tiling_rect());
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1u, data.num_missing_tiles);
   EXPECT_EQ(0u, data.num_incomplete_tiles);
-  EXPECT_EQ(40000, data.checkerboarded_visible_content_area);
-  EXPECT_EQ(17500, data.checkerboarded_no_recording_content_area);
+  EXPECT_EQ(61504, data.checkerboarded_visible_content_area);
+  EXPECT_EQ(39004, data.checkerboarded_no_recording_content_area);
   EXPECT_EQ(22500, data.checkerboarded_needs_raster_content_area);
   EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
+
+  // Initialize all tiles with resources.
+  for (size_t i = 0; i < active_layer()->tilings()->num_tilings(); i++) {
+    host_impl()->tile_manager()->InitializeTilesWithResourcesForTesting(
+        active_layer()->tilings()->tiling_at(i)->AllTilesForTesting());
+  }
+
+  render_pass = viz::CompositorRenderPass::Create();
+  active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+  data = AppendQuadsData();
+  active_layer()->AppendQuads(render_pass.get(), &data);
+  active_layer()->DidDraw(nullptr);
+  EXPECT_EQ(4u, render_pass->quad_list.size());
+  EXPECT_EQ(0u, data.num_missing_tiles);
+  EXPECT_EQ(0u, data.num_incomplete_tiles);
+  EXPECT_EQ(0, data.checkerboarded_visible_content_area);
+  EXPECT_EQ(0, data.checkerboarded_no_recording_content_area);
+  EXPECT_EQ(0, data.checkerboarded_needs_raster_content_area);
+  EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenActiveAllReady) {
@@ -6356,12 +6375,15 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   SetupPendingTree(active_raster_source);
   ActivateTree();
 
+  EXPECT_FALSE(active_raster_source->HasRecordings());
+  EXPECT_FALSE(active_layer()->CanHaveTilings());
   active_layer()->SetContentsOpaque(true);
   active_layer()->SetSafeOpaqueBackgroundColor(SkColors::kWhite);
   active_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(0, 0, 1000, 1000);
   active_layer()->UpdateTiles();
 
+  ASSERT_EQ(0u, active_layer()->tilings()->num_tilings());
   ASSERT_FALSE(active_layer()->HighResTiling());
 
   AppendQuadsData data;
@@ -6369,10 +6391,11 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   active_layer()->AppendQuads(render_pass.get(), &data);
   active_layer()->DidDraw(nullptr);
 
-  // One checkerboard quad.
-  EXPECT_EQ(1u, render_pass->quad_list.size());
+  // No checkerboard quads.
+  EXPECT_EQ(0u, render_pass->quad_list.size());
+  EXPECT_EQ(1u, render_pass->shared_quad_state_list.size());
 
-  auto* shared_quad_state = render_pass->quad_list.begin()->shared_quad_state;
+  auto* shared_quad_state = render_pass->shared_quad_state_list.front();
   // We should use scale 1 here, so the layer rect should be full layer bounds
   // and the transform should be identity.
   EXPECT_EQ(gfx::Rect(1000, 10000), shared_quad_state->quad_layer_rect);
