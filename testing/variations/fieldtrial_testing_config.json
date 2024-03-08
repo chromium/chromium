@@ -2999,6 +2999,38 @@
             ]
         }
     ],
+    "CastAppMenuExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithOrderingChange",
+                    "params": {
+                        "cast_listed_first": "true"
+                    },
+                    "enable_features": [
+                        "CastAppMenuExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutOrderingChange",
+                    "params": {
+                        "cast_listed_first": "false"
+                    },
+                    "enable_features": [
+                        "CastAppMenuExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastFallbackCRLRevocation": [
         {
             "platforms": [
