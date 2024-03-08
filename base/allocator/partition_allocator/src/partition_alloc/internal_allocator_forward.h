@@ -12,8 +12,8 @@
 #include "partition_alloc/partition_alloc_forward.h"
 
 // Internal Allocator can be used to get heap allocations required to
-// implement Partition Allocator's feature.
-// As Internal Allocator being Partition Allocator with minimal configuration,
+// implement PartitionAlloc's feature.
+// As Internal Allocator being PartitionAlloc with minimal configuration,
 // it is not allowed to use this allocator for PA's core implementation to avoid
 // reentrancy issues. Also don't use this when satisfying the very first PA-E
 // allocation of the process.

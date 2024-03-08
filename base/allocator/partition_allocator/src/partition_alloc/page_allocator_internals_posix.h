@@ -170,7 +170,7 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
                                    PageTag page_tag,
                                    int file_descriptor_for_shared_alloc) {
 #if BUILDFLAG(IS_APPLE)
-  // Use a custom tag to make it easier to distinguish Partition Alloc regions
+  // Use a custom tag to make it easier to distinguish PartitionAlloc regions
   // in vmmap(1). Tags between 240-255 are supported.
   int fd = file_descriptor_for_shared_alloc == -1
                ? VM_MAKE_TAG(static_cast<int>(page_tag))

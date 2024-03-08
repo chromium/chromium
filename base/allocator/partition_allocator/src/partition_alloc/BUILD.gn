@@ -82,7 +82,7 @@ _add_configs = []
 if (!is_debug || partition_alloc_optimized_debug) {
   _remove_configs += [ "//build/config/compiler:default_optimization" ]
 
-  # Partition alloc is relatively hot (>1% of cycles for users of CrOS).
+  # PartitionAlloc is relatively hot (>1% of cycles for users of CrOS).
   # Use speed-focused optimizations for it.
   _add_configs += [ "//build/config/compiler:optimize_speed" ]
 } else {
@@ -170,9 +170,9 @@ buildflag_header("partition_alloc_buildflags") {
 
   # TODO(crbug.com/1151236): Need to refactor the following buildflags.
   # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
-  # partition alloc. For partition alloc,
+  # PartitionAlloc. For PartitionAlloc,
   # gen/base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h
-  # defines and partition alloc includes the header file. For chrome,
+  # defines and PartitionAlloc includes the header file. For chrome,
   # gen/base/allocator/buildflags.h defines and chrome includes.
   flags = [
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",

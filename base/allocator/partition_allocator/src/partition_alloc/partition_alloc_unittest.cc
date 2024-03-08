@@ -1486,7 +1486,7 @@ TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
   for (size_t size : kSizes) {
     size_t requested_size = size - ExtraAllocSize(allocator);
     // For regular slot-span allocations, confirm the size fills the entire
-    // slot. Otherwise the test would be ineffective, as Partition Alloc has no
+    // slot. Otherwise the test would be ineffective, as PartitionAlloc has no
     // ability to check against the actual allocated size.
     // Single-slot slot-spans and direct map don't have that problem.
     if (size <= MaxRegularSlotSpanSize()) {
