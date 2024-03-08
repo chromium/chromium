@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
@@ -31,8 +32,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
@@ -40,14 +43,16 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.No
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Integration tests for the sign-in and history sync opt-in flow. */
-@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DoNotBatch(reason = "This test relies on native initialization")
+@Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class SigninAndHistoryOptInIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -63,8 +68,6 @@ public class SigninAndHistoryOptInIntegrationTest {
             RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
     private Activity mActivity;
-
-    private SigninAndHistoryOptInCoordinator mCoordinator;
 
     @Before
     public void setUp() {
@@ -93,14 +96,50 @@ public class SigninAndHistoryOptInIntegrationTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        // Verify that the history opt-in dialog is shown.
-        onView(withId(R.id.modal_dialog_view)).check(matches(isDisplayed()));
-
-        // Verify signed-in state and flow completion.
+        // Verify signed-in state.
         mSigninTestRule.waitForSignin(accountInfo);
 
-        // TODO(crbug.com/41493758): Verify that history sync & MSBB are enabled, and the flow is
-        // completed.
+        // Verify that the history opt-in dialog is shown and accept.
+        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_primary)).perform(click());
+
+        // Verify history sync state.
+        SyncTestUtil.waitForHistorySyncEnabled();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    public void testWithExistingAccount_signIn_optOutHistorySync() {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+
+        launchActivity(
+                SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED);
+
+        // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Verify signed-in state.
+        mSigninTestRule.waitForSignin(accountInfo);
+
+        // Verify that the history opt-in dialog is shown and decline.
+        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_secondary)).perform(click());
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     @Test
@@ -118,14 +157,18 @@ public class SigninAndHistoryOptInIntegrationTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        // Verify that the history opt-in dialog is shown.
-        onView(withId(R.id.modal_dialog_view)).check(matches(isDisplayed()));
-
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(accountInfo);
 
-        // TODO(crbug.com/41493758): Verify that history sync is enabled and create test for
-        // suppressed history prompt. Verify flow completion.
+        // Verify that the history opt-in dialog is shown and accept.
+        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_primary)).perform(click());
+
+        // Verify history sync state.
+        SyncTestUtil.waitForHistorySyncEnabled();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
     }
 
     @Test
@@ -149,7 +192,31 @@ public class SigninAndHistoryOptInIntegrationTest {
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
 
-        // TODO(crbug.com/41493758): Verify that history sync is not enabled.
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testWithExistingAccount_refuseSignIn_noHistoryOptIn() {
+        mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        launchActivity(
+                SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED);
+
+        // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_dismiss_button),
+                                withParent(withId(R.id.account_picker_state_collapsed))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Verify that no account is signed-in and that history sync is not enabled.
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+
+        // TODO(crbug.com/41493758): Verify flow completion.
     }
 
     @Test
@@ -163,7 +230,8 @@ public class SigninAndHistoryOptInIntegrationTest {
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
 
-        // TODO(crbug.com/41493758): Verify that history sync is not enabled.
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     private void launchActivity(

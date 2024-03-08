@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
-import android.view.LayoutInflater;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
@@ -152,7 +151,7 @@ public class HistorySyncRenderTest {
                 () -> {
                     mHistorySyncCoordinator =
                             new HistorySyncCoordinator(
-                                    LayoutInflater.from(mActivityTestRule.getActivity()),
+                                    mActivityTestRule.getActivity(),
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
                                     SigninAccessPoint.UNKNOWN);

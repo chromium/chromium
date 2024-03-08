@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.text.Spanned;
@@ -377,11 +376,7 @@ public class FirstRunActivitySigninAndSyncTest {
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        Configuration configuration = mFirstRunActivity.getResources().getConfiguration();
-        boolean isLargeScreenOrLandscape =
-                configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE)
-                        || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE;
-        clickButton(isLargeScreenOrLandscape ? R.id.button_primary : R.id.positive_button);
+        clickButton(R.id.button_primary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
         SyncTestUtil.waitForHistorySyncEnabled();
@@ -441,11 +436,7 @@ public class FirstRunActivitySigninAndSyncTest {
         completeAutoDeviceLockIfNeeded();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
 
-        Configuration configuration = mFirstRunActivity.getResources().getConfiguration();
-        boolean isLargeScreenOrLandscape =
-                configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE)
-                        || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE;
-        clickButton(isLargeScreenOrLandscape ? R.id.button_secondary : R.id.negative_button);
+        clickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 

@@ -21,7 +21,6 @@ class HistorySyncView extends LinearLayout {
     private ImageView mAccountImage;
     private Button mDeclineButton;
     private Button mAcceptButton;
-    private DualControlLayout mButtonBar;
 
     public HistorySyncView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -35,22 +34,12 @@ class HistorySyncView extends LinearLayout {
         mAccountImage = findViewById(R.id.account_image);
         TextView title = findViewById(R.id.sync_consent_title);
         TextView subtitle = findViewById(R.id.sync_consent_subtitle);
-
-        mAcceptButton = findViewById(R.id.positive_button);
-        mDeclineButton = findViewById(R.id.negative_button);
-        if (mAcceptButton == null) {
-            // The landscape layout does not have accept and decline buttons. Create the button bar.
-            createButtonBar();
-        }
-
         TextView detailsDescription = findViewById(R.id.sync_consent_details_description);
 
         // TODO(crbug.com/1520791): Confirm that these are the correct title and subtitle strings.
         // Using group C from the strings variation experiment as a placeholder in the meantime.
         title.setText(R.string.history_sync_consent_title_c);
         subtitle.setText(R.string.history_sync_consent_subtitle_c);
-        mDeclineButton.setText(R.string.no_thanks);
-        mAcceptButton.setText(R.string.signin_accept_button);
         detailsDescription.setText(R.string.sync_consent_details_description);
     }
 
@@ -66,13 +55,16 @@ class HistorySyncView extends LinearLayout {
         return mAcceptButton;
     }
 
-    void createButtonBarForTablets() {
-        mAcceptButton.setVisibility(GONE);
-        mDeclineButton.setVisibility(GONE);
-        createButtonBar();
-        mDeclineButton.setText(R.string.no_thanks);
+    void createButtons(boolean isButtonBar) {
+        if (isButtonBar) {
+            createButtonBar();
+        }
+        mAcceptButton = findViewById(R.id.button_primary);
+        assert mAcceptButton != null;
         mAcceptButton.setText(R.string.signin_accept_button);
-        mButtonBar.setVisibility(VISIBLE);
+        mDeclineButton = findViewById(R.id.button_secondary);
+        assert mDeclineButton != null;
+        mDeclineButton.setText(R.string.no_thanks);
     }
 
     private void createButtonBar() {
@@ -82,9 +74,9 @@ class HistorySyncView extends LinearLayout {
         mDeclineButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
-        mButtonBar = findViewById(R.id.dual_control_button_bar);
-        mButtonBar.addView(mAcceptButton);
-        mButtonBar.addView(mDeclineButton);
-        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
+        DualControlLayout buttonBar = findViewById(R.id.dual_control_button_bar);
+        buttonBar.addView(mAcceptButton);
+        buttonBar.addView(mDeclineButton);
+        buttonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
     }
 }
