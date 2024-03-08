@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/files/file_path.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -302,6 +303,47 @@ TEST_F(FileSystemUtilTest, GetExternalFileSystemRootURIString) {
   const std::string url_string =
       GetExternalFileSystemRootURIString(kOriginURL, kMountName);
   EXPECT_EQ("filesystem:http://foo/external/X%2520Y/", url_string);
+}
+
+base::File::Error Convert(base::File::Error error) {
+  return storage::NetErrorToFileError(net::FileErrorToNetError(error));
+}
+
+// base::File::Error should be the same when converted to a net::Error and back
+// again.
+TEST_F(FileSystemUtilTest, FileErrorToNetErrorAndBackAgain) {
+  base::File::Error converts_correctly[] = {
+      base::File::FILE_OK,
+      base::File::FILE_ERROR_FAILED,
+      base::File::FILE_ERROR_EXISTS,
+      base::File::FILE_ERROR_NOT_FOUND,
+      base::File::FILE_ERROR_ACCESS_DENIED,
+      base::File::FILE_ERROR_TOO_MANY_OPENED,
+      base::File::FILE_ERROR_NO_MEMORY,
+      base::File::FILE_ERROR_NO_SPACE,
+      base::File::FILE_ERROR_INVALID_OPERATION,
+      base::File::FILE_ERROR_ABORT,
+      base::File::FILE_ERROR_INVALID_URL,
+  };
+  for (base::File::Error error : converts_correctly) {
+    EXPECT_EQ(error, Convert(error))
+        << "Expected " << base::File::ErrorToString(error) << " but got "
+        << base::File::ErrorToString(Convert(error));
+  }
+
+  // These errors don't convert back to themselves. This test documents the
+  // current situation, but these will ideally be fixed with b/325848400.
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED,
+            Convert(base::File::FILE_ERROR_IN_USE));
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED,
+            Convert(base::File::FILE_ERROR_NOT_A_DIRECTORY));
+  EXPECT_EQ(base::File::FILE_ERROR_ACCESS_DENIED,
+            Convert(base::File::FILE_ERROR_SECURITY));
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED,
+            Convert(base::File::FILE_ERROR_NOT_A_FILE));
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED,
+            Convert(base::File::FILE_ERROR_NOT_EMPTY));
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED, Convert(base::File::FILE_ERROR_IO));
 }
 
 }  // namespace
