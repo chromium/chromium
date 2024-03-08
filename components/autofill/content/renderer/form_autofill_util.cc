@@ -1812,10 +1812,8 @@ bool IsWebElementVisible(const WebElement& element) {
     return size.width() >= kMinPixelSize && size.height() >= kMinPixelSize;
   };
   return !element.IsNull() && IsWebElementFocusableForAutofill(element) &&
-         (!base::FeatureList::IsEnabled(
-              features::kAutofillDetectFieldVisibility) ||
-          (IsCheckableElement(element) || HasMinSize(element.GetClientSize()) ||
-           HasMinSize(element.GetScrollSize())));
+         (IsCheckableElement(element) || HasMinSize(element.GetClientSize()) ||
+          HasMinSize(element.GetScrollSize()));
 }
 
 uint64_t GetMaxLength(const WebFormControlElement& element) {
@@ -1939,6 +1937,9 @@ void WebFormControlElementToFormField(
   field->aria_label = GetAriaLabel(element.GetDocument(), element);
   field->aria_description = GetAriaDescription(element.GetDocument(), element);
 
+  const bool kAutofillDetectFieldVisibilityEnabled =
+      base::FeatureList::IsEnabled(features::kAutofillDetectFieldVisibility);
+
   // Traverse up through shadow hosts to see if we can gather missing
   // attributes.
   // TODO(crbug.com/1268085): Make sure this works for all shadow DOM cases,
@@ -1983,7 +1984,9 @@ void WebFormControlElementToFormField(
   field->is_autofilled = element.IsAutofilled();
   field->is_user_edited = element.UserHasEditedTheField();
   field->is_focusable = IsWebElementFocusableForAutofill(element);
-  field->is_visible = IsWebElementVisible(element);
+  field->is_visible = kAutofillDetectFieldVisibilityEnabled
+                          ? IsWebElementVisible(element)
+                          : field->is_focusable;
   field->should_autocomplete =
       element.AutoComplete() &&
       !(field->parsed_autocomplete.has_value() &&
