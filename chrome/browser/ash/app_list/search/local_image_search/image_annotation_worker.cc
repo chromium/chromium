@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -35,8 +36,9 @@ using Mode = ::ash::string_matching::TokenizedString::Mode;
 constexpr int kMaxFileSizeBytes = 2e+7;    // ~ 20MiB
 constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
 constexpr int kOcrMinWordLength = 3;
+constexpr int kRetryDelay = 2;  // For exponential delays.
+constexpr int kMaxNumRetries = 10;
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
-constexpr base::TimeDelta kRetryDelay = base::Seconds(1);
 constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
 
 // These values persist to logs. Entries should not be renumbered and numeric
@@ -215,9 +217,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
              << use_ocr_ << " ICA: " << is_ica_dlc_installed << "/" << use_ica_
              << ". Waiting.";
 
-    if (num_retries_left_ > 0) {
-      num_retries_left_ -= 1;
-    } else {
+    if (num_retries_passed_ > kMaxNumRetries) {
       if (use_ica_ && !is_ica_dlc_installed) {
         LOG(ERROR) << "Failed to initialize ICA.";
         LogStatusUma(Status::kFailedToInitializeIca);
@@ -235,7 +235,8 @@ void ImageAnnotationWorker::OnDlcInstalled() {
         FROM_HERE,
         base::BindOnce(&ImageAnnotationWorker::OnDlcInstalled,
                        weak_ptr_factory_.GetWeakPtr()),
-        kRetryDelay);
+        base::Seconds(std::pow(kRetryDelay, num_retries_passed_)));
+    num_retries_passed_ += 1;
     return;
   }
 
