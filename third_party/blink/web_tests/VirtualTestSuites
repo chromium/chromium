@@ -254,7 +254,9 @@
     "bases": ["animations"],
     "args": ["--enable-threaded-compositing",
              "--disable-composited-antialiasing"],
-    "expires": "Jul 1, 2023"
+    "owners": ["kevers@chromium.org",
+               "blink-interactions@google.com"],
+    "expires": "Jul 1, 2024"
   },
 
   "The skipped base test requires a compositor to pass as root scrollbar scrolling",
