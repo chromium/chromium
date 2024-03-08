@@ -847,6 +847,10 @@ inline constexpr char kPineScreenshotTakenDuration[] =
 inline constexpr char kPineScreenshotEncodeAndSaveDuration[] =
     "ash.pine.sreenshot_encode_and_save_duration";
 
+// A boolean pref indicating whether the Pine onboarding dialog should be shown.
+inline constexpr char kShouldShowPineOnboarding[] =
+    "ash.pine.should_show_pine_onboarding";
+
 // A boolean pref that specifies if the cellular setup notification can be
 // shown or not. This notification should be shown post-OOBE if the user has a
 // cellular-capable device but no available cellular networks. It should only be

@@ -28,6 +28,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/wm/core/window_util.h"
 
@@ -308,6 +309,14 @@ void SystemDialogDelegateView::SetDescriptionAccessibleName(
   description_->SetAccessibleName(accessible_name);
 }
 
+void SystemDialogDelegateView::SetAcceptButtonVisible(bool visible) {
+  button_container_->accept_button()->SetVisible(visible);
+}
+
+void SystemDialogDelegateView::SetCancelButtonVisible(bool visible) {
+  button_container_->cancel_button()->SetVisible(visible);
+}
+
 void SystemDialogDelegateView::SetAcceptButtonText(
     const std::u16string& accept_text) {
   button_container_->SetAcceptText(accept_text);
@@ -318,6 +327,11 @@ void SystemDialogDelegateView::SetCancelButtonText(
   button_container_->SetCancelText(cancel_text);
 }
 
+void SystemDialogDelegateView::SetButtonContainerAlignment(
+    views::LayoutAlignment alignment) {
+  button_container_->SetMainAxisAlignment(alignment);
+}
+
 void SystemDialogDelegateView::SetTopContentAlignment(
     views::LayoutAlignment alignment) {
   SetViewCrossAxisAlignment(contents_[ContentType::kTop], alignment);
@@ -326,10 +340,6 @@ void SystemDialogDelegateView::SetTopContentAlignment(
 void SystemDialogDelegateView::SetMiddleContentAlignment(
     views::LayoutAlignment alignment) {
   SetViewCrossAxisAlignment(contents_[ContentType::kMiddle], alignment);
-}
-
-void SystemDialogDelegateView::SetAcceptButtonVisible(bool visible) {
-  button_container_->accept_button()->SetVisible(visible);
 }
 
 void SystemDialogDelegateView::SetTitleMargins(const gfx::Insets& margins) {

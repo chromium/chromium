@@ -9,6 +9,10 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 struct PineContentsData;
@@ -26,6 +30,10 @@ class ASH_EXPORT PineController {
   const PineContentsData* pine_contents_data() const {
     return pine_contents_data_.get();
   }
+
+  // Shows the onboarding message. If `restore_on` is true, only the
+  // "Continue" button will be shown. Otherwise shows both buttons.
+  void MaybeShowPineOnboardingMessage(bool restore_on);
 
   // Starts an overview session with the pine contents view if certain
   // conditions are met. Uses fake for testing only data.
@@ -53,6 +61,9 @@ class ASH_EXPORT PineController {
   void OnPineImageDecoded(const gfx::ImageSkia& pine_image);
 
   void StartPineOverviewSession();
+
+  // The first-time experience onboarding dialog.
+  std::unique_ptr<views::Widget> onboarding_widget_;
 
   // Stores the data needed to display the pine dialog. Created on login, and
   // deleted after the user interacts with the dialog. If the user exits

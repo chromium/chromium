@@ -111,9 +111,10 @@ class PineBrowserTest : public InProcessBrowserTest {
 
     // Set the restore pref setting as "Ask every time". This will ensure the
     // pine dialog comes up on the next session.
-    ProfileManager::GetActiveUserProfile()->GetPrefs()->SetInteger(
-        prefs::kRestoreAppsAndPagesPrefName,
-        static_cast<int>(RestoreOption::kAskEveryTime));
+    auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+    prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
+                      static_cast<int>(RestoreOption::kAskEveryTime));
+    prefs->SetBoolean(prefs::kShouldShowPineOnboarding, false);
   }
 
  private:

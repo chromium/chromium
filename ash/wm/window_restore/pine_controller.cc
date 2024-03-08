@@ -9,7 +9,13 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_ash.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/system_dialog_delegate_view.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -18,10 +24,20 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/layout/flex_layout.h"
 
 namespace ash {
 
 namespace {
+
+// TODO(sophiewen): Remove these when we get assets from UX.
+constexpr int kOnboardingMessageWidth = 500;
+constexpr int kOnboardingMessageHeight = 200;
 
 // Records the UMA metrics for the pine screenshot taken on the last shutdown.
 // Resets the prefs used to store the metrics across shutdowns.
@@ -63,11 +79,78 @@ bool ShouldShowPineImage(const gfx::ImageSkia& pine_image) {
   return is_image_landscape == is_display_landscape;
 }
 
+PrefService* GetActivePrefService() {
+  return Shell::Get()->session_controller()->GetActivePrefService();
+}
+
+// Returns true if this is the first time login and we should show the pine
+// onboarding message.
+bool ShouldShowPineOnboarding() {
+  PrefService* prefs = GetActivePrefService();
+  return prefs && prefs->GetBoolean(prefs::kShouldShowPineOnboarding);
+}
+
 }  // namespace
 
 PineController::PineController() = default;
 
 PineController::~PineController() = default;
+
+void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
+  if (onboarding_widget_) {
+    return;
+  }
+
+  // Comment out this block while testing.
+  if (!ShouldShowPineOnboarding()) {
+    return;
+  }
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  params.parent =
+      root_window->GetChildById(ash::kShellWindowId_SystemModalContainer);
+  gfx::Rect centered_bounds(
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window));
+  centered_bounds.ClampToCenteredSize(
+      gfx::Size(kOnboardingMessageWidth, kOnboardingMessageHeight));
+  params.bounds = centered_bounds;
+  params.name = "PineOnboardingWidget";
+  onboarding_widget_ = std::make_unique<views::Widget>(std::move(params));
+
+  auto* dialog = onboarding_widget_->SetContentsView(
+      std::make_unique<SystemDialogDelegateView>());
+  // Since no additional view was set, the buttons will be center aligned.
+  dialog->SetButtonContainerAlignment(views::LayoutAlignment::kCenter);
+  dialog->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCollapseMargins(true);
+  dialog->SetTitleText(l10n_util::GetStringUTF16(
+      restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_TITLE
+                 : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_TITLE));
+  dialog->SetDescription(l10n_util::GetStringUTF16(
+      restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_DESCRIPTION
+                 : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_DESCRIPTION));
+  dialog->SetAcceptButtonText(l10n_util::GetStringUTF16(
+      restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_ACCEPT
+                 : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_ACCEPT));
+  if (restore_on) {
+    // If the user had the restore pref set as "Ask every time", don't show the
+    // Cancel button.
+    dialog->SetCancelButtonVisible(false);
+  } else {
+    dialog->SetCancelButtonText(
+        l10n_util::GetStringUTF16(IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_CANCEL));
+  }
+
+  onboarding_widget_->Show();
+  GetActivePrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, false);
+}
 
 void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   auto data = std::make_unique<PineContentsData>();
@@ -107,6 +190,9 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 void PineController::MaybeStartPineOverviewSession(
     std::unique_ptr<PineContentsData> pine_contents_data) {
   CHECK(features::IsForestFeatureEnabled());
+  if (ShouldShowPineOnboarding()) {
+    return;
+  }
 
   if (OverviewController::Get()->InOverviewSession()) {
     return;
