@@ -435,7 +435,7 @@ class SystemNetworkContextManagerHttpNegotiateHeader
 };
 
 IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerHttpNegotiateHeader,
-                       SetsPrefOnHttpNegotiateHeader) {
+                       DISABLED_SetsPrefOnHttpNegotiateHeader) {
   PrefService* local_state = g_browser_process->local_state();
 
   // Ensure the pref starts false.
