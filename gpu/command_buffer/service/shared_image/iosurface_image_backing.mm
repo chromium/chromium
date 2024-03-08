@@ -769,6 +769,9 @@ class IOSurfaceImageBacking::DawnRepresentation final
   const gfx::Size io_surface_size_;
   const wgpu::TextureFormat wgpu_format_;
   const std::vector<wgpu::TextureFormat> view_formats_;
+
+  // NOTE: `usage_` and `texture_` are valid only within the duration of a
+  // BeginAccess()/EndAccess() pair.
   wgpu::TextureUsage usage_;
   wgpu::Texture texture_;
 };
@@ -784,8 +787,9 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
 
   usage_ = wgpu_texture_usage;
 
-  auto texture = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
-  if (texture && iosurface_backing->WGPUTextureHasOngoingAccess(texture)) {
+  texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
+
+  if (texture_ && iosurface_backing->WGPUTextureHasOngoingAccess(texture_)) {
     // If there is already an ongoing access for this texture, then the
     // necessary work for starting the access (i.e., waiting on fences and
     // informing SharedTextureMemory) already happened as part of the initial
@@ -795,8 +799,8 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     // that already has an ongoing access (at the internal wgpu::Texture
     // level), so short-circuiting out here is not simply an optimization but
     // is actually necessary.
-    iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture);
-    return texture;
+    iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture_);
+    return texture_;
   }
 
   wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
@@ -835,7 +839,6 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   begin_access_desc.fences = shared_fences.data();
   begin_access_desc.signaledValues = signaled_values.data();
 
-  texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
   if (!texture_) {
     texture_ =
         CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
@@ -862,9 +865,12 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
 
 void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   if (!texture_) {
-    // The only valid case in which this could occur is if
+    // The only valid cases in which this could occur are (a) if
     // SharedTextureMemory::BeginAccess() failed, in which case we already
-    // called EndAccess() on the backing when we detected the failure.
+    // called EndAccess() on the backing when we detected the failure, or (b)
+    // this is a call from the destructor after another EndAccess() had already
+    // been made, in which case we already executed the below code on the first
+    // call (resulting in setting `texture_` to null).
     return;
   }
 
@@ -881,6 +887,8 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   // fences or end the access at the level of SharedTextureMemory. That work
   // will happen when the last ongoing Dawn access finishes.
   if (iosurface_backing->WGPUTextureHasOngoingAccess(texture_)) {
+    texture_ = nullptr;
+    usage_ = wgpu::TextureUsage::None;
     return;
   }
 

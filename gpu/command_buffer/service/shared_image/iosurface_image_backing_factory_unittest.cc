@@ -1639,6 +1639,99 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest,
   EXPECT_NE(texture_0.Get(), texture_2.Get());
 }
 
+// Tests that destroying an access/representation from the Graphite device does
+// not end the underlying access on Dawn's SharedTextureMemory if there is a
+// second access still open with the same usage.
+TEST_P(IOSurfaceImageBackingFactoryGMBTest,
+       Dawn_SecondAccessFromGraphiteDeviceStaysOpenWhenFirstDestroyed) {
+  if ((get_gr_context_type() != GrContextType::kGraphiteDawn) ||
+      GetDawnBackendType() != wgpu::BackendType::Metal) {
+    GTEST_SKIP();
+  }
+
+  auto format = get_format();
+  if (format.is_multi_plane()) {
+    // This test does a copy from one Dawn texture to another, which is not
+    // supported with a multiplanar texture as the source texture.
+    GTEST_SKIP();
+  }
+
+  gfx::Size size(256, 256);
+  uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+
+  const bool should_succeed = can_create_gmb_shared_image(get_format());
+  auto shared_image = CreateSharedImage(size, format, usage, color_space);
+  if (!should_succeed) {
+    EXPECT_FALSE(shared_image);
+    return;
+  }
+  ASSERT_TRUE(shared_image);
+  auto mailbox = shared_image->mailbox();
+
+  auto* context_provider = context_state_->dawn_context_provider();
+  auto device = context_provider->GetDevice();
+
+  auto dawn_representation_0 = shared_image_representation_factory_.ProduceDawn(
+      mailbox, device, context_provider->backend_type(), {}, context_state_);
+  auto dawn_scoped_access_0 = dawn_representation_0->BeginScopedAccess(
+      wgpu::TextureUsage::CopySrc,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+  auto dawn_representation_1 = shared_image_representation_factory_.ProduceDawn(
+      mailbox, device, context_provider->backend_type(), {}, context_state_);
+  auto dawn_scoped_access_1 = dawn_representation_1->BeginScopedAccess(
+      wgpu::TextureUsage::CopySrc,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+  wgpu::Texture texture_0(dawn_scoped_access_0->texture());
+  wgpu::Texture texture_1(dawn_scoped_access_1->texture());
+
+  // The texture created for the first access should be cached and reused by the
+  // second access.
+  EXPECT_EQ(texture_0.Get(), texture_1.Get());
+
+  // Destroy the first access and representation.
+  dawn_scoped_access_0.reset();
+  dawn_representation_0.reset();
+
+  // Do a Dawn submit using the texture to verify that the the destruction of
+  // the first access and representation should not have resulted in
+  // SharedTextureMemory::EndAccess() being called.
+  auto dst = CreateSharedImage(size, format, usage, color_space);
+  auto dst_rep = shared_image_representation_factory_.ProduceDawn(
+      dst->mailbox(), device, context_provider->backend_type(), {},
+      context_state_);
+  auto dst_scoped_access = dst_rep->BeginScopedAccess(
+      wgpu::TextureUsage::CopyDst,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  wgpu::Texture dst_texture(dst_scoped_access->texture());
+
+  wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+
+  wgpu::ImageCopyTexture copy_src;
+  copy_src.texture = texture_1;
+  wgpu::ImageCopyTexture copy_dst;
+  copy_dst.texture = dst_texture;
+  wgpu::Extent3D copy_size;
+  copy_size.width = size.width();
+  copy_size.height = size.height();
+
+  encoder.CopyTextureToTexture(&copy_src, &copy_dst, &copy_size);
+  wgpu::CommandBuffer commands = encoder.Finish();
+
+  // There should have been no errors signaled by Dawn before the submit.
+  ASSERT_FALSE(context_provider->GetResetStatus());
+
+  // Do the submit and verify that it did not result in a Dawn validation error
+  // (which it will if the destruction of the first scoped access representation
+  // has resulted in SharedTextureMemory::EndAccess() being called on the
+  // texture).
+  wgpu::Queue queue = device.GetQueue();
+  queue.Submit(1, &commands);
+  EXPECT_FALSE(context_provider->GetResetStatus());
+}
+
 const auto kScanoutFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
