@@ -57,13 +57,12 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames);
 
 // Fills a vector of display names of "virtual files" in the data store, but
-// does not actually retrieve the file contents. Display names are assured to
-// be unique. Method is called on drag enter of the Chromium drop target, when
-// only the display names are needed. Method only returns true if |filenames|
-// is not empty.
+// does not actually retrieve the file contents. Display names are assured to be
+// unique. Method is called on drag enter of the Chromium drop target, when only
+// the display names are needed. If there are no display names, returns nullopt.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-bool GetVirtualFilenames(IDataObject* data_object,
-                         std::vector<base::FilePath>* filenames);
+std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
+    IDataObject* data_object);
 
 // Retrieves "virtual file" contents via creation of intermediary temp files.
 // Method is called on dropping on the Chromium drop target. Since creating

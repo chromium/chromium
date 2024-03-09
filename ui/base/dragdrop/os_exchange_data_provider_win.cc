@@ -606,25 +606,28 @@ bool OSExchangeDataProviderWin::HasVirtualFilenames() const {
   return clipboard_util::HasVirtualFilenames(source_object_.Get());
 }
 
-bool OSExchangeDataProviderWin::GetVirtualFilenames(
-    std::vector<FileInfo>* filenames) const {
+std::optional<std::vector<FileInfo>>
+OSExchangeDataProviderWin::GetVirtualFilenames() const {
   // ui_base_clipboard can't use FileInfo struct which is part of ui_base, so
   // use FilePath instead.
   // TODO(https://crbug.com/950360): ui_base_clipboard can't use FileInfo struct
   // which is part of ui_base (layering issue).
-  std::vector<base::FilePath> display_names;
-  bool success =
-      clipboard_util::GetVirtualFilenames(source_object_.Get(), &display_names);
-
-  if (success) {
-    // On dragenter scenarios, need a placeholder file path for drag metadata
-    // checks without actually creating the temp file.
-    base::FilePath temp_path(FILE_PATH_LITERAL("temp.tmp"));
-
-    for (const auto& display_name : display_names)
-      filenames->push_back(FileInfo(temp_path, display_name));
+  std::optional<std::vector<base::FilePath>> display_names =
+      clipboard_util::GetVirtualFilenames(source_object_.Get());
+  if (!display_names) {
+    return std::nullopt;
   }
-  return success;
+
+  // On dragenter scenarios, need a placeholder file path for drag metadata
+  // checks without actually creating the temp file.
+  base::FilePath temp_path(FILE_PATH_LITERAL("temp.tmp"));
+
+  std::vector<FileInfo> result;
+  for (const auto& display_name : display_names.value()) {
+    result.emplace_back(temp_path, display_name);
+  }
+
+  return result;
 }
 
 void OSExchangeDataProviderWin::GetVirtualFilesAsTempFiles(

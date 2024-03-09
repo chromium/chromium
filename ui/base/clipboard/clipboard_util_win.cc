@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -382,18 +383,21 @@ struct FileGroupDescriptorData<FILEGROUPDESCRIPTORA> {
 // Use template parameter of FILEGROUPDESCRIPTORW for retrieving Unicode data
 // and FILEGROUPDESCRIPTORA for ascii.
 template <typename FileGroupDescriptorType>
-bool GetVirtualFilenames(IDataObject* data_object,
-                         std::vector<base::FilePath>* filenames) {
+std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
+    IDataObject* data_object) {
   STGMEDIUM medium;
 
   if (!FileGroupDescriptorData<FileGroupDescriptorType>::get(data_object,
-                                                             &medium))
-    return false;
+                                                             &medium)) {
+    return std::nullopt;
+  }
+
+  std::vector<base::FilePath> filenames;
 
   {
     base::win::ScopedHGlobal<FileGroupDescriptorType*> fgd(medium.hGlobal);
     if (!fgd.data()) {
-      return false;
+      return std::nullopt;
     }
 
     unsigned int num_files = fgd->cItems;
@@ -416,14 +420,14 @@ bool GetVirtualFilenames(IDataObject* data_object,
         continue;
       }
       base::FilePath display_name = GetUniqueVirtualFilename(
-          ConvertString(fgd->fgd[i].cFileName), *filenames, &uniquifier);
+          ConvertString(fgd->fgd[i].cFileName), filenames, &uniquifier);
 
-      filenames->push_back(display_name);
+      filenames.push_back(display_name);
     }
   }
 
   ReleaseStgMedium(&medium);
-  return !filenames->empty();
+  return filenames;
 }
 
 template <typename FileGroupDescriptorType>
@@ -639,26 +643,25 @@ STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames) {
   return storage;
 }
 
-bool GetVirtualFilenames(IDataObject* data_object,
-                         std::vector<base::FilePath>* filenames) {
-  DCHECK(data_object && filenames);
+std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
+    IDataObject* data_object) {
+  DCHECK(data_object);
   if (!HasVirtualFilenames(data_object))
-    return false;
+    return std::nullopt;
 
   // Nothing prevents the drag source app from using the CFSTR_FILEDESCRIPTORA
   // ANSI format (e.g., it could be that it doesn't support Unicode). So need to
   // check for both the ANSI and Unicode file group descriptors.
-  if (ui::GetVirtualFilenames<FILEGROUPDESCRIPTORW>(data_object, filenames)) {
-    // file group descriptor using Unicode.
-    return true;
+
+  // Unicode.
+  std::optional<std::vector<base::FilePath>> filenames =
+      ui::GetVirtualFilenames<FILEGROUPDESCRIPTORW>(data_object);
+  if (filenames) {
+    return filenames;
   }
 
-  if (ui::GetVirtualFilenames<FILEGROUPDESCRIPTORA>(data_object, filenames)) {
-    // file group descriptor using ascii.
-    return true;
-  }
-
-  return false;
+  // ASCII.
+  return ui::GetVirtualFilenames<FILEGROUPDESCRIPTORA>(data_object);
 }
 
 void GetVirtualFilesAsTempFiles(
@@ -668,15 +671,16 @@ void GetVirtualFilesAsTempFiles(
                                          /*display name*/ base::FilePath>>&)>
         callback) {
   // Retrieve the display names of the virtual files.
-  std::vector<base::FilePath> display_names;
-  if (!GetVirtualFilenames(data_object, &display_names)) {
+  std::optional<std::vector<base::FilePath>> display_names =
+      GetVirtualFilenames(data_object);
+  if (!display_names) {
     std::move(callback).Run({});
     return;
   }
 
   // Write the file contents to global memory.
   std::vector<HGLOBAL> memory_backed_contents;
-  for (size_t i = 0; i < display_names.size(); i++) {
+  for (size_t i = 0; i < display_names.value().size(); i++) {
     HGLOBAL hdata = CopyFileContentsToHGlobal(data_object, i);
     memory_backed_contents.push_back(hdata);
   }
@@ -684,7 +688,7 @@ void GetVirtualFilesAsTempFiles(
   // Queue a task to actually write the temp files on a worker thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&WriteAllFileContentsToTempFiles, display_names,
+      base::BindOnce(&WriteAllFileContentsToTempFiles, display_names.value(),
                      memory_backed_contents),
       std::move(callback));  // callback on the UI thread
 }

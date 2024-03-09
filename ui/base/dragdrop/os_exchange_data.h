@@ -172,7 +172,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // retrieves the display names but not the temp file paths. The temp files
   // are only created upon drop via a call to the async method
   // GetVirtualFilesAsTempFiles.
-  bool GetVirtualFilenames(std::vector<FileInfo>* file_names) const;
+  std::optional<std::vector<FileInfo>> GetVirtualFilenames() const;
 
   // Retrieves "virtual file" contents via creation of intermediary temp files.
   // Method is called on dropping on the Chromium drop target. Since creating

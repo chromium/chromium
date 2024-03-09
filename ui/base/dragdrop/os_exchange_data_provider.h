@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual bool HasFileContents() const = 0;
 #if BUILDFLAG(IS_WIN)
   virtual bool HasVirtualFilenames() const = 0;
-  virtual bool GetVirtualFilenames(std::vector<FileInfo>* file_names) const = 0;
+  virtual std::optional<std::vector<FileInfo>> GetVirtualFilenames() const = 0;
   virtual void GetVirtualFilesAsTempFiles(
       base::OnceCallback<
           void(const std::vector<std::pair</*temp path*/ base::FilePath,

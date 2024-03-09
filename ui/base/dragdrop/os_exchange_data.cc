@@ -145,9 +145,9 @@ bool OSExchangeData::HasVirtualFilenames() const {
   return provider_->HasVirtualFilenames();
 }
 
-bool OSExchangeData::GetVirtualFilenames(
-    std::vector<FileInfo>* filenames) const {
-  return provider_->GetVirtualFilenames(filenames);
+std::optional<std::vector<FileInfo>> OSExchangeData::GetVirtualFilenames()
+    const {
+  return provider_->GetVirtualFilenames();
 }
 
 void OSExchangeData::GetVirtualFilesAsTempFiles(

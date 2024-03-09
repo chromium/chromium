@@ -758,7 +758,12 @@ void WebContentsViewAura::PrepareDropData(
   // (will return empty vector if there are any non-virtual files in the data
   // store).
   if (ShouldIncludeVirtualFiles(*drop_data)) {
-    data.GetVirtualFilenames(&drop_data->filenames);
+    std::optional<std::vector<ui::FileInfo>> virtual_filenames =
+        data.GetVirtualFilenames();
+    if (virtual_filenames) {
+      base::ranges::move(virtual_filenames.value(),
+                         std::back_inserter(drop_data->filenames));
+    }
   }
 #endif
 

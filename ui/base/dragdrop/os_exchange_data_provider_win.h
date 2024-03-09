@@ -175,7 +175,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
                       std::u16string* title) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool HasVirtualFilenames() const override;
-  bool GetVirtualFilenames(std::vector<FileInfo>* filenames) const override;
+  std::optional<std::vector<FileInfo>> GetVirtualFilenames() const override;
   void GetVirtualFilesAsTempFiles(
       base::OnceCallback<
           void(const std::vector<std::pair<base::FilePath, base::FilePath>>&)>

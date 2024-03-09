@@ -466,12 +466,14 @@ TEST_F(OSExchangeDataWinTest, VirtualFiles) {
                                                      tymed);
 
     OSExchangeData copy(data.provider().Clone());
-    std::vector<FileInfo> file_infos;
-    EXPECT_TRUE(copy.GetVirtualFilenames(&file_infos));
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
-    for (size_t i = 0; i < file_infos.size(); i++) {
-      EXPECT_EQ(kTestFilenamesAndContents[i].first, file_infos[i].display_name);
-      EXPECT_EQ(kPathPlaceholder, file_infos[i].path);
+    std::optional<std::vector<FileInfo>> file_infos =
+        copy.GetVirtualFilenames();
+    ASSERT_TRUE(file_infos.has_value());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
+    for (size_t i = 0; i < file_infos.value().size(); i++) {
+      EXPECT_EQ(kTestFilenamesAndContents[i].first,
+                file_infos.value()[i].display_name);
+      EXPECT_EQ(kPathPlaceholder, file_infos.value()[i].path);
     }
 
     base::FilePath temp_dir;
@@ -550,9 +552,9 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesRealFilesPreferred) {
     EXPECT_EQ(kTestFilenames.size(), real_filenames.size());
     EXPECT_EQ(kTestFilenames, real_filenames);
 
-    std::vector<FileInfo> file_infos;
-    EXPECT_FALSE(copy.GetVirtualFilenames(&file_infos));
-    EXPECT_EQ(static_cast<size_t>(0), file_infos.size());
+    std::optional<std::vector<FileInfo>> file_infos =
+        copy.GetVirtualFilenames();
+    EXPECT_FALSE(file_infos.has_value());
 
     // Callback for GetVirtualFilesAsTempFiles is executed when all virtual
     // files are backed by temp files.
@@ -589,15 +591,16 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNames) {
                                                      tymed);
 
     OSExchangeData copy(data.provider().Clone());
-    std::vector<FileInfo> file_infos;
-    EXPECT_TRUE(copy.GetVirtualFilenames(&file_infos));
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
-    for (size_t i = 0; i < file_infos.size(); i++) {
+    std::optional<std::vector<FileInfo>> file_infos =
+        copy.GetVirtualFilenames();
+    ASSERT_TRUE(file_infos.has_value());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
+    for (size_t i = 0; i < file_infos.value().size(); i++) {
       // Check that display name is unique.
       for (size_t j = 0; j < i; j++) {
         EXPECT_FALSE(base::FilePath::CompareEqualIgnoreCase(
-            file_infos[j].display_name.value(),
-            file_infos[i].display_name.value()));
+            file_infos.value()[j].display_name.value(),
+            file_infos.value()[i].display_name.value()));
       }
     }
 
@@ -616,7 +619,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNames) {
     // RunUntilIdle assures all async tasks are run.
     task_environment_.RunUntilIdle();
 
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
     for (size_t i = 0; i < retrieved_virtual_files_.size(); i++) {
       // Check that display name is unique.
       for (size_t j = 0; j < i; j++) {
@@ -673,15 +676,16 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNamesCaseInsensitivity) {
                                                      tymed);
 
     OSExchangeData copy(data.provider().Clone());
-    std::vector<FileInfo> file_infos;
-    EXPECT_TRUE(copy.GetVirtualFilenames(&file_infos));
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
-    for (size_t i = 0; i < file_infos.size(); i++) {
+    std::optional<std::vector<FileInfo>> file_infos =
+        copy.GetVirtualFilenames();
+    ASSERT_TRUE(file_infos.has_value());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
+    for (size_t i = 0; i < file_infos.value().size(); i++) {
       // Check that display name is unique.
       for (size_t j = 0; j < i; j++) {
         EXPECT_FALSE(base::FilePath::CompareEqualIgnoreCase(
-            file_infos[j].display_name.value(),
-            file_infos[i].display_name.value()));
+            file_infos.value()[j].display_name.value(),
+            file_infos.value()[i].display_name.value()));
       }
     }
 
@@ -700,7 +704,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNamesCaseInsensitivity) {
     // RunUntilIdle assures all async tasks are run.
     task_environment_.RunUntilIdle();
 
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
     for (size_t i = 0; i < retrieved_virtual_files_.size(); i++) {
       // Check that display name is unique.
       for (size_t j = 0; j < i; j++) {
@@ -780,19 +784,20 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
                                                      tymed);
 
     OSExchangeData copy(data.provider().Clone());
-    std::vector<FileInfo> file_infos;
-    EXPECT_TRUE(copy.GetVirtualFilenames(&file_infos));
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
-    for (size_t i = 0; i < file_infos.size(); i++) {
+    std::optional<std::vector<FileInfo>> file_infos =
+        copy.GetVirtualFilenames();
+    ASSERT_TRUE(file_infos.has_value());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
+    for (size_t i = 0; i < file_infos.value().size(); i++) {
       // Check that display name does not contain invalid characters.
       EXPECT_EQ(std::wstring::npos,
-                file_infos[i].display_name.value().find_first_of(
+                file_infos.value()[i].display_name.value().find_first_of(
                     kInvalidFileNameCharacters));
       // Check that display name is unique.
       for (size_t j = 0; j < i; j++) {
         EXPECT_FALSE(base::FilePath::CompareEqualIgnoreCase(
-            file_infos[j].display_name.value(),
-            file_infos[i].display_name.value()));
+            file_infos.value()[j].display_name.value(),
+            file_infos.value()[i].display_name.value()));
       }
     }
 
@@ -811,7 +816,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
     // RunUntilIdle assures all async tasks are run.
     task_environment_.RunUntilIdle();
 
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
     for (size_t i = 0; i < retrieved_virtual_files_.size(); i++) {
       // Check that display name does not contain invalid characters.
       EXPECT_EQ(std::wstring::npos,
@@ -875,11 +880,13 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesEmptyContents) {
                                                      tymed);
 
     OSExchangeData copy(data.provider().Clone());
-    std::vector<FileInfo> file_infos;
-    EXPECT_TRUE(copy.GetVirtualFilenames(&file_infos));
-    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
-    for (size_t i = 0; i < file_infos.size(); i++) {
-      EXPECT_EQ(kTestFilenamesAndContents[i].first, file_infos[i].display_name);
+    std::optional<std::vector<FileInfo>> file_infos =
+        copy.GetVirtualFilenames();
+    ASSERT_TRUE(file_infos.has_value());
+    EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.value().size());
+    for (size_t i = 0; i < file_infos.value().size(); i++) {
+      EXPECT_EQ(kTestFilenamesAndContents[i].first,
+                file_infos.value()[i].display_name);
     }
 
     base::FilePath temp_dir;
