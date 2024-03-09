@@ -12,6 +12,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -51,6 +52,12 @@ void UndoDucking(AudioDeviceID output_device_id) {
 #endif
 
 namespace media {
+
+// Helper feature used to investigate the effects of removing the HW latency
+// compensation from microphones. See crbug.com/324128089.
+BASE_FEATURE(kIncludeMicrophonHardwareDelayMacOS,
+             "IncludeMicrophoneHardwareDelayMacOS",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Number of blocks of buffers used in the |fifo_|.
 const int kNumberOfBlocksBufferInFifo = 2;
@@ -233,9 +240,11 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 
     // The hardware latency is fixed and will not change during the call.
 #if BUILDFLAG(IS_MAC)
-  hardware_latency_ = core_audio_mac::GetHardwareLatency(
-      audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
-      format_.mSampleRate);
+  if (base::FeatureList::IsEnabled(kIncludeMicrophonHardwareDelayMacOS)) {
+    hardware_latency_ = core_audio_mac::GetHardwareLatency(
+        audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
+        format_.mSampleRate);
+  }
 #else
   AudioManagerIOS* manager_ios = static_cast<AudioManagerIOS*>(manager_);
   hardware_latency_ = base::Seconds(manager_ios->HardwareLatency(
