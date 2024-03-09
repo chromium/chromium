@@ -957,6 +957,8 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioDeviceUsbLabel", IDS_SETTINGS_AUDIO_DEVICE_USB_LABEL},
       {"audioInputDeviceTitle", IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE},
       {"audioInputAllowAGCTitle", IDS_SETTINGS_AUDIO_INPUT_ALLOW_AGC_TITLE},
+      {"audioHfpMicSrTitle", IDS_SETTINGS_AUDIO_HFP_MIC_SR_TITLE},
+      {"audioHfpMicSrDescription", IDS_SETTINGS_AUDIO_HFP_MIC_SR_DESCRIPTION},
       {"audioInputGainTitle", IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE},
       {"audioInputMuteButtonAriaLabelMuted",
        IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED},
@@ -1919,6 +1921,9 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("enableForceRespectUiGainsToggle",
                           IsShowForceRespectUiGainsToggleEnabled());
+
+  html_source->AddBoolean("enableAudioHfpMicSRToggle",
+                          features::IsAudioHFPMicSRToggleEnabled());
 
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());

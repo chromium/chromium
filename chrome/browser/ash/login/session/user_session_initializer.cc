@@ -319,6 +319,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     if (base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle)) {
       CrasAudioHandler::Get()->RefreshForceRespectUiGainsState();
     }
+
+    if (features::IsAudioHFPMicSRToggleEnabled()) {
+      CrasAudioHandler::Get()->RefreshHfpMicSrState();
+    }
   }
 }
 

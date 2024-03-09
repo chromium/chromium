@@ -3243,6 +3243,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_ALLOW_AGC_DESCRIPTION" desc="In Device Settings, the description of the allowance of AGC toggle under the input section in audio settings subpage." translateable="false">
     Some apps can automatically adjust mic volume(gain control) to optimize(audio).
   </message>
+  <message name="IDS_SETTINGS_AUDIO_HFP_MIC_SR_TITLE" desc="In Device Settings, the title of the super resolution toggle under the input section in audio settings subpage.">
+    Bluetooth Super Resolution
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_HFP_MIC_SR_DESCRIPTION" desc="In Device Settings, the description of the allowance of AGC toggle under the input section in audio settings subpage.">
+    Improve the quality of Bluetooth mic sound by upscaling low-res audio to high-res.
+  </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE" desc="In Device Settings, the title of the slider under the input section in audio settings subpage. This slider controls the microphone's gain setting.">
     Volume
   </message>

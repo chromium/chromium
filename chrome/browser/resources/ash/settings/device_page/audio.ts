@@ -120,11 +120,22 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         value: true,
         observer: SettingsAudioElement.prototype.onAllowAGCEnabledChanged,
       },
+
+      isHfpMicSrEnabled: {
+        type: Boolean,
+        observer: SettingsAudioElement.prototype.onHfpMicSrEnabledChanged,
+      },
+
+      showHfpMicSr: {
+        type: Boolean,
+      },
     };
   }
 
   protected isAllowAGCEnabled: boolean;
   protected showAllowAGC: boolean;
+  protected isHfpMicSrEnabled: boolean;
+  protected showHfpMicSr: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private audioSystemProperties_: AudioSystemProperties;
@@ -139,6 +150,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private startupSoundEnabled_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
   private powerSoundsHidden_: boolean;
+  private isHfpMicSrSupported_: boolean;
 
   constructor() {
     super();
@@ -186,6 +198,13 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         (activeInputDevice?.forceRespectUiGainsState ===
          AudioEffectState.kNotEnabled);
     this.outputVolume_ = this.audioSystemProperties_.outputVolumePercent;
+    this.isHfpMicSrEnabled =
+        (activeInputDevice?.hfpMicSrState === AudioEffectState.kEnabled);
+    this.isHfpMicSrSupported_ = activeInputDevice !== undefined &&
+        !(activeInputDevice?.hfpMicSrState === AudioEffectState.kNotSupported);
+    this.showHfpMicSr =
+        (this.isHfpMicSrSupported_ &&
+         loadTimeData.getBoolean('enableAudioHfpMicSRToggle'));
   }
 
   getIsOutputMutedForTest(): boolean {
@@ -240,6 +259,21 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     }
 
     this.crosAudioConfig_.setForceRespectUiGainsEnabled(!enabled);
+  }
+
+  /** Handles updates to hfp mic sr state. */
+  protected onHfpMicSrEnabledChanged(
+      enabled: SettingsAudioElement['isHfpMicSrEnabled'],
+      previousEnabled: SettingsAudioElement['isHfpMicSrEnabled']): void {
+    // Polymer triggers change event on all assignment to
+    // `isHfpMicSrEnabled_` even if the value is logically unchanged.
+    // Check previous value before calling `setHfpMicSrEnabled` to test
+    // if value actually updated.
+    if (previousEnabled === undefined || previousEnabled === enabled) {
+      return;
+    }
+
+    this.crosAudioConfig_.setHfpMicSrEnabled(enabled);
   }
 
   /**
