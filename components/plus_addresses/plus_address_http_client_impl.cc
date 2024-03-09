@@ -285,12 +285,6 @@ void PlusAddressHttpClientImpl::GetAllPlusAddressesInternal(
   if (!auth_token.has_value()) {
     return;
   }
-  // Fail early if the URL Loader is already in-use. We never expect this method
-  // to be called in quick succession.
-  if (loader_for_sync_) {
-    DCHECK(false);
-    return;
-  }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = net::HttpRequestHeaders::kGetMethod;

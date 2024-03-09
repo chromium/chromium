@@ -84,11 +84,7 @@ PlusAddressService::PlusAddressService(
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
           plus_address_http_client_.get())),
       excluded_sites_(GetAndParseExcludedSites()) {
-  if (pref_service) {
-    // Clear the pref to always force a poll on service construction.
-    pref_service->ClearPref(prefs::kPlusAddressLastFetchedTime);
-    CreateAndStartTimer();
-  }
+  CreateAndStartTimer();
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
@@ -274,20 +270,17 @@ bool PlusAddressService::is_enabled() const {
 }
 
 void PlusAddressService::CreateAndStartTimer() {
-  if (!is_enabled() || !pref_service_ ||
-      !features::kSyncWithEnterprisePlusAddressServer.Get() ||
-      repeating_timer_) {
+  if (!is_enabled() || !features::kSyncWithEnterprisePlusAddressServer.Get() ||
+      polling_timer_.IsRunning()) {
     return;
   }
-  repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
-      pref_service_, prefs::kPlusAddressLastFetchedTime,
-      /*delay=*/features::kEnterprisePlusAddressTimerDelay.Get(),
-      /*task=*/
+  SyncPlusAddressMapping();
+  polling_timer_.Start(
+      FROM_HERE, features::kEnterprisePlusAddressTimerDelay.Get(),
       base::BindRepeating(&PlusAddressService::SyncPlusAddressMapping,
                           // base::Unretained(this) is safe here since the timer
                           // that is created has same lifetime as this service.
                           base::Unretained(this)));
-  repeating_timer_->Start();
 }
 
 void PlusAddressService::SyncPlusAddressMapping() {
@@ -410,7 +403,7 @@ void PlusAddressService::HandleSignout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   plus_address_by_site_.clear();
   plus_addresses_.clear();
-  repeating_timer_.reset();
+  polling_timer_.Stop();
   if (webdata_service_) {
     webdata_service_->ClearPlusProfiles();
   }

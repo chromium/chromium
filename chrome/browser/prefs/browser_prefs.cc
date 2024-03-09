@@ -1024,6 +1024,9 @@ constexpr char kOsCryptAppBoundFixedDataPrefName[] =
 // Deprecated 02/2024.
 constexpr char kOfferReaderMode[] = "dom_distiller.offer_reader_mode";
 
+// Deprecated 03/2024.
+constexpr char kPlusAddressLastFetchedTime[] = "plus_address.last_fetched_time";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1452,6 +1455,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 02/2024.
   registry->RegisterBooleanPref(kOfferReaderMode, false);
+
+  // Deprecated 03/2024.
+  registry->RegisterTimePref(kPlusAddressLastFetchedTime, base::Time());
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2735,6 +2741,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 02/2024, but DO NOT REMOVE after the usual year!
   // TODO(crbug.com/40282890): Remove ~one year after full launch.
   browser_sync::MaybeMigrateSyncingUserToSignedIn(profile_path, profile_prefs);
+
+  profile_prefs->ClearPref(kPlusAddressLastFetchedTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

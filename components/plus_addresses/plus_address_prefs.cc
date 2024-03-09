@@ -10,7 +10,7 @@
 namespace plus_addresses {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kPlusAddressLastFetchedTime, base::Time());
+  // TODO(b/328747582): Implement pref for disabling the entire service.
 }
 
 }  // namespace plus_addresses

@@ -13,6 +13,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -28,7 +29,6 @@ class PrefService;
 
 namespace signin {
 class IdentityManager;
-class PersistentRepeatingTimer;
 }  // namespace signin
 
 namespace plus_addresses {
@@ -122,7 +122,7 @@ class PlusAddressService : public KeyedService,
 
   // Gets the up-to-date mapping from the remote server from the
   // PlusAddressHttpClient and returns it via `callback`.
-  // This is only intended to be called by the `repeating_timer_`.
+  // This is only intended to be called by `polling_timer_`.
   //
   // TODO (crbug.com/1467623): Make this private when testing improves.
   // Virtual to allow overriding the behavior in tests.
@@ -139,9 +139,8 @@ class PlusAddressService : public KeyedService,
  protected:
   // Creates and starts a timer to keep `plus_address_by_site_` and
   // `plus_addresses` in sync with a remote plus address server.
-  //
-  // This has no effect if this service is not enabled, `pref_service_` is null
-  // or `repeating_timer_` has already been created.
+  // This has no effect if this service is not enabled or the timer is already
+  // running.
   void CreateAndStartTimer();
 
   // Checks whether `error` is a `HTTP_FORBIDDEN` network error and, if there
@@ -191,7 +190,7 @@ class PlusAddressService : public KeyedService,
 
   // A timer to periodically retrieve all plus addresses from a remote server
   // to keep this service in sync.
-  std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
+  base::RepeatingTimer polling_timer_;
 
   // Handles requests to a remote server that this service uses.
   std::unique_ptr<PlusAddressHttpClient> plus_address_http_client_;

@@ -9,10 +9,6 @@ class PrefRegistrySimple;
 
 namespace plus_addresses {
 namespace prefs {
-// An unsynced time pref keeping track of the last time the PlusAddress service
-// periodically fetched all plus addresses from the remote server.
-inline constexpr char kPlusAddressLastFetchedTime[] =
-    "plus_address.last_fetched_time";
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
