@@ -1245,16 +1245,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="PolicySuppressed"/>
 </enum>
 
-<enum name="OncRecommendedFieldsWorkaroundAction">
-  <int value="0"
-      label="Enabled by feature, ONC NetworkConfiguration not affected"/>
-  <int value="1" label="Enabled by feature, ONC NetworkConfiguration affected"/>
-  <int value="2"
-      label="Disabled by feature, ONC NetworkConfiguration not affected"/>
-  <int value="3"
-      label="Disabled by feature, ONC NetworkConfiguration affected"/>
-</enum>
-
 <enum name="PasspointMatch">
   <int value="0" label="No match"/>
   <int value="1" label="Service not found"/>

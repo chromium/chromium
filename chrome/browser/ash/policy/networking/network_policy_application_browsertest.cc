@@ -21,7 +21,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -91,9 +90,6 @@ constexpr char kUserIdentity[] = "user_identity";
 
 constexpr char kTestDomain[] = "test_domain";
 constexpr char kTestDeviceId[] = "test_device_id";
-
-constexpr char kOncRecommendedFieldsWorkaroundActionHistogram[] =
-    "Network.Ethernet.Policy.OncRecommendedFieldsWorkaroundAction";
 
 // Records all values that shill service property had during the lifetime of
 // ServicePropertyValueWatcher. Only supports string properties at the moment.
@@ -821,34 +817,6 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
 
   testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
   PolicyMap current_policy_;
-};
-
-// A variant of NetworkPolicyApplicationTest which ensures that
-// the feature DisablePolicyEthernetRecommendedWorkaround is activated.
-class NetworkPolicyApplicationNoEthernetWorkaroundTest
-    : public NetworkPolicyApplicationTest {
- public:
-  NetworkPolicyApplicationNoEthernetWorkaroundTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        policy::kDisablePolicyEthernetRecommendedWorkaround);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// A variant of NetworkPolicyApplicationTest which ensures that
-// the feature DisablePolicyEthernetRecommendedWorkaround is not activated.
-class NetworkPolicyApplicationEthernetWorkaroundTest
-    : public NetworkPolicyApplicationTest {
- public:
-  NetworkPolicyApplicationEthernetWorkaroundTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        policy::kDisablePolicyEthernetRecommendedWorkaround);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A variant of NetworkPolicyApplicationTest which enables the
@@ -1873,11 +1841,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
 // Tests that re-applying Ethernet policy retains a manually-set IP address.
 // This is a regression test for b/183676832 and b/180365271.
-// This variant of the test runs with
-// "DisablePolicyEthernetRecommendedWorkaround" feature not activated, so the
-// "treat Ethernet IP address as Recommended by default" workaround is applied.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
-                       RetainEthernetIPAddr) {
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
   constexpr char kEthernetGuid[] = "{EthernetGuid}";
 
   shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
@@ -1885,29 +1849,29 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
                                          shill::kStateOnline, /*visible=*/true);
 
   {
-    base::HistogramTester histogram_tester;
-    // For Ethernet, not mentioning "Recommended" currently means that the IP
-    // address is editable by the user.
-    std::string kDeviceONC1 = base::StringPrintf(R"(
-      {
-        "NetworkConfigurations": [
-          {
-            "GUID": "%s",
-            "Name": "EthernetName",
-            "Type": "Ethernet",
-            "Ethernet": {
-               "Authentication": "None"
-            }
-          }
-        ]
-      })",
+    std::string kDeviceONCEverythingRecommended =
+        base::StringPrintf(R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "%s",
+          "Name": "EthernetName",
+          "Type": "Ethernet",
+          "Ethernet": {
+             "Authentication": "None"
+          },
+          "StaticIPConfig": {
+             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix",
+                             "NameServers"]
+          },
+          "Recommended": ["IPAddressConfigType", "NameServersConfigType"]
+        }
+      ]
+    })",
 
-                                                 kEthernetGuid);
-    SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
-    // Expect "Enabled by feature, ONC NetworkConfiguration eligible".
-    histogram_tester.ExpectUniqueSample(
-        kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kEnabledAndAffected*/ 1, /*count=*/1);
+                           kEthernetGuid);
+    SetDeviceOpenNetworkConfiguration(kDeviceONCEverythingRecommended,
+                                      /*wait_applied=*/true);
   }
 
   {
@@ -1953,7 +1917,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
   }
 
   {
-    base::HistogramTester histogram_tester;
     // Modify the policy: Force custom nameserver, but allow IP address to be
     // modifiable.
     std::string kDeviceONC2 = base::StringPrintf(R"(
@@ -1977,10 +1940,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
     })",
                                                  kEthernetGuid);
     SetDeviceOpenNetworkConfiguration(kDeviceONC2, /*wait_applied=*/true);
-    // Expect "Enabled by feature, ONC NetworkConfiguration not eligible".
-    histogram_tester.ExpectUniqueSample(
-        kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kEnabledAndNotAffected*/ 0, /*count=*/1);
   }
 
   // Verify that the Static IP is still active, and the custom name server has
@@ -2247,241 +2206,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   }
 }
 
-// Tests that when the kDisablePolicyEthernetRecommendedWorkaround feature is
-// enabled, Ethernet policy behaves like wifi when nothing is "Recommended" -
-// all fields are policy-enforced, including IP address and name servers.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
-                       NothingRecommended) {
-  constexpr char kEthernetGuid[] = "{EthernetGuid}";
-
-  shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
-                                         "ethernet_any", shill::kTypeEthernet,
-                                         shill::kStateOnline, /*visible=*/true);
-
-  base::HistogramTester histogram_tester;
-
-  // For Ethernet, not mentioning "Recommended" currently means that the IP
-  // address is not editable by the user.
-  std::string kDeviceONCNothingRecommended = base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          }
-        }
-      ]
-    })",
-                                                                kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCNothingRecommended,
-                                    /*wait_applied=*/true);
-  // Expect "Disabled by feature, ONC NetworkConfiguration eligible".
-  histogram_tester.ExpectUniqueSample(
-      kOncRecommendedFieldsWorkaroundActionHistogram,
-      /*sample=kDisabledAndAffected*/ 3, /*count=*/1);
-
-  {
-    const base::Value::Dict* eth_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(eth_service_properties);
-    EXPECT_THAT(
-        *eth_service_properties,
-        DictionaryHasValue(shill::kGuidProperty, base::Value(kEthernetGuid)));
-  }
-
-  // Check that IP address and name servers are policy enforced.
-  {
-    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
-    ASSERT_TRUE(properties);
-    EXPECT_EQ(properties->ip_address_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyEnforced);
-    EXPECT_EQ(properties->name_servers_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyEnforced);
-  }
-
-  // Simulate the UI trying to set the IP address / nameservers.
-  {
-    auto properties = network_mojom::ConfigProperties::New();
-    properties->type_config =
-        network_mojom::NetworkTypeConfigProperties::NewEthernet(
-            network_mojom::EthernetConfigProperties::New());
-    properties->ip_address_config_type =
-        ::onc::network_config::kIPConfigTypeStatic;
-    properties->static_ip_config = network_mojom::IPConfigProperties::New();
-    properties->static_ip_config->ip_address = "192.168.1.44";
-    properties->static_ip_config->gateway = "192.168.1.1";
-    properties->static_ip_config->routing_prefix = 4;
-    ASSERT_NO_FATAL_FAILURE(
-        CrosNetworkConfigSetProperties(kEthernetGuid, std::move(properties)));
-  }
-
-  // Verify that the Static IP config has not been applied.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
-                IsEmpty());
-  }
-}
-
-// Tests that when the kDisablePolicyEthernetRecommendedWorkaround feature is
-// enabled and policy "Recommends" IP Address or NameServers, they are
-// modifiable.
-// Also tests that when going back to not "Recommending" those, they become
-// unmodifiable and switch back to DHCP.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
-                       RetainEthernetIPAddr) {
-  constexpr char kEthernetGuid[] = "{EthernetGuid}";
-
-  shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
-                                         "ethernet_any", shill::kTypeEthernet,
-                                         shill::kStateOnline, /*visible=*/true);
-
-  base::HistogramTester histogram_tester;
-
-  // Modify the policy: Explicitly recommend both IP address and Nameservers,
-  // allowing the user to modify them.
-  std::string kDeviceONCEverythingRecommended =
-      base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          },
-          "StaticIPConfig": {
-             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix",
-                             "NameServers"]
-          },
-          "Recommended": ["IPAddressConfigType", "NameServersConfigType"]
-        }
-      ]
-    })",
-                         kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCEverythingRecommended,
-                                    /*wait_applied=*/true);
-  // Expect "Disabled by feature, ONC NetworkConfiguration not eligible".
-  histogram_tester.ExpectUniqueSample(
-      kOncRecommendedFieldsWorkaroundActionHistogram,
-      /*sample=kDisabledAndAffected*/ 2, /*count=*/1);
-
-  // Check that IP address is modifiable and policy-recommended.
-  {
-    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
-    ASSERT_TRUE(properties);
-    EXPECT_EQ(properties->ip_address_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyRecommended);
-  }
-
-  // Simulate setting an IP address through the UI.
-  {
-    auto properties = network_mojom::ConfigProperties::New();
-    properties->type_config =
-        network_mojom::NetworkTypeConfigProperties::NewEthernet(
-            network_mojom::EthernetConfigProperties::New());
-    properties->ip_address_config_type =
-        ::onc::network_config::kIPConfigTypeStatic;
-    properties->static_ip_config = network_mojom::IPConfigProperties::New();
-    properties->static_ip_config->ip_address = "192.168.1.44";
-    properties->static_ip_config->gateway = "192.168.1.1";
-    properties->static_ip_config->routing_prefix = 4;
-    ASSERT_NO_FATAL_FAILURE(
-        CrosNetworkConfigSetProperties(kEthernetGuid, std::move(properties)));
-  }
-
-  // Verify that the Static IP config has been applied.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
-              "192.168.1.44");
-  }
-
-  // Modify the policy: Force custom nameserver, but allow IP address to be
-  // modifiable.
-  std::string kDeviceONCIpRecommended = base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          },
-          "StaticIPConfig": {
-             "NameServers": ["8.8.3.1", "8.8.2.1"],
-             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix"]
-          },
-          "NameServersConfigType": "Static",
-          "Recommended": ["IPAddressConfigType"]
-        }
-      ]
-    })",
-                                                           kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCIpRecommended,
-                                    /*wait_applied=*/true);
-
-  // Verify that the Static IP is still active, and the custom name server has
-  // been applied.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
-              "192.168.1.44");
-    EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
-                ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
-  }
-
-  // For Ethernet, not mentioning "Recommended" currently means that the IP
-  // address is not editable by the user.
-  std::string kDeviceONCNothingRecommended = base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "IPAddressConfigType": "DHCP",
-          "NameServersConfigType": "DHCP",
-          "Ethernet": {
-             "Authentication": "None"
-          }
-        }
-      ]
-    })",
-                                                                kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCNothingRecommended,
-                                    /*wait_applied=*/true);
-
-  // Check that IP address is not modifiable.
-  {
-    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
-    ASSERT_TRUE(properties);
-    EXPECT_EQ(properties->ip_address_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyEnforced);
-  }
-
-  // Verify that the Static IP is gone.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
-                IsEmpty());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                        RetainEthernetIPAddrUnmanagedToManaged) {
   constexpr char kEthernetGuidUnmanaged[] = "{orig_guid_ethernet_any}";
   constexpr char kEthernetGuidManaged[] = "{EthernetGuid}";
