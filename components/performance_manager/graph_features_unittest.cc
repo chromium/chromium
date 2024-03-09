@@ -71,7 +71,7 @@ TEST_F(GraphFeaturesTest, EnableDefault) {
   features.ConfigureGraph(&graph);
   EXPECT_EQ(graph_owned_count, graph.GraphOwnedCountForTesting());
   EXPECT_EQ(6u, graph.GraphRegisteredCountForTesting());
-  EXPECT_EQ(9u, graph.NodeDataDescriberCountForTesting());
+  EXPECT_EQ(10u, graph.NodeDataDescriberCountForTesting());
   // Ensure the GraphRegistered objects can be queried directly.
   EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));

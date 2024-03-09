@@ -31,6 +31,7 @@
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "components/performance_manager/resource_attribution/graph_change.h"
+#include "components/performance_manager/resource_attribution/node_data_describers.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -431,9 +432,7 @@ base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
     const CPUTimeResult& result = it->second;
     const base::TimeDelta measurement_interval =
         result.metadata.measurement_time - result.start_time;
-    dict.Set("algorithm", static_cast<int>(result.metadata.algorithm));
-    dict.Set("measurement_time", performance_manager::TimeSinceEpochToValue(
-                                     result.metadata.measurement_time));
+    dict.Merge(DescribeResultMetadata(result.metadata));
     dict.Set("measurement_interval",
              performance_manager::TimeDeltaToValue(measurement_interval));
     dict.Set("cumulative_cpu",

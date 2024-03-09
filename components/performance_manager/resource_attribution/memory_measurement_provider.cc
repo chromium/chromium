@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -17,6 +18,7 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
+#include "components/performance_manager/resource_attribution/node_data_describers.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
 
@@ -40,8 +42,29 @@ void MemoryMeasurementProvider::SetDelegateFactoryForTesting(
 
 void MemoryMeasurementProvider::RequestMemorySummary(ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  measurement_delegate_->RequestMemorySummary(base::BindOnce(
-      &MemoryMeasurementProvider::OnMemorySummary, std::move(callback)));
+  measurement_delegate_->RequestMemorySummary(
+      base::BindOnce(&MemoryMeasurementProvider::OnMemorySummary,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+base::Value::Dict MemoryMeasurementProvider::DescribeFrameNodeData(
+    const FrameNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
+}
+
+base::Value::Dict MemoryMeasurementProvider::DescribePageNodeData(
+    const PageNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
+}
+
+base::Value::Dict MemoryMeasurementProvider::DescribeProcessNodeData(
+    const ProcessNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
+}
+
+base::Value::Dict MemoryMeasurementProvider::DescribeWorkerNodeData(
+    const WorkerNode* node) const {
+  return DescribeContextData(node->GetResourceContext());
 }
 
 void MemoryMeasurementProvider::OnMemorySummary(
@@ -49,6 +72,8 @@ void MemoryMeasurementProvider::OnMemorySummary(
     MemoryMeasurementDelegate::MemorySummaryMap process_summaries) {
   using MemorySummaryMeasurement =
       MemoryMeasurementDelegate::MemorySummaryMeasurement;
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QueryResultMap results;
 
   // Adds the memory from `summary` to a MemorySummaryResult for `context`.
@@ -103,7 +128,25 @@ void MemoryMeasurementProvider::OnMemorySummary(
           }
         });
   }
+  cached_results_ = results;
   std::move(callback).Run(std::move(results));
+}
+
+base::Value::Dict MemoryMeasurementProvider::DescribeContextData(
+    const ResourceContext& context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::Value::Dict dict;
+  const auto it = cached_results_.find(context);
+  if (it != cached_results_.end()) {
+    const MemorySummaryResult& result =
+        it->second.memory_summary_result.value();
+    dict.Merge(DescribeResultMetadata(result.metadata));
+    dict.Set("resident_set_size_kb",
+             base::NumberToString(result.resident_set_size_kb));
+    dict.Set("private_footprint_kb",
+             base::NumberToString(result.private_footprint_kb));
+  }
+  return dict;
 }
 
 }  // namespace resource_attribution

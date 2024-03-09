@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_util.h"
 #include "base/types/variant_util.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
@@ -206,8 +207,10 @@ void QueryScheduler::OnPassedToGraph(Graph* graph) {
   graph_ = graph;
   graph_->RegisterObject(this);
   memory_provider_.emplace(graph);
+  graph->GetNodeDataDescriberRegistry()->RegisterDescriber(
+      base::OptionalToPtr(memory_provider_), "ResourceAttr.Memory");
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(&cpu_monitor_,
-                                                           "CpuAttribution");
+                                                           "ResourceAttr.CPU");
   SchedulerTaskRunner::GetInstance()->OnSchedulerPassedToGraph(graph);
 }
 
@@ -221,6 +224,8 @@ void QueryScheduler::OnTakenFromGraph(Graph* graph) {
   if (cpu_query_count_ > 0) {
     cpu_monitor_.StopMonitoring();
   }
+  graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(
+      base::OptionalToPtr(memory_provider_));
   memory_provider_.reset();
 }
 
