@@ -8,6 +8,7 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/print_backend.h"
+#include "printing/backend/print_backend_test_constants.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -157,6 +158,17 @@ printing::PrinterSemanticCapsAndDefaults ConstructPrinterCapabilities() {
       gfx::Size(kMediaSizeWidth, kMediaSizeHeight));
   capabilities.papers.push_back(paper);
   capabilities.collate_capable = true;
+
+  std::vector<printing::AdvancedCapabilityValue> media_source_values{
+      {"auto", /*display_name=*/""},
+      {"left", /*display_name=*/""},
+      {"right", /*display_name=*/""}};
+  printing::AdvancedCapability media_source(
+      "media-source", /*display_name=*/"",
+      printing::AdvancedCapability::Type::kString,
+      /*default_value=*/"", std::move(media_source_values));
+  capabilities.advanced_capabilities.emplace_back(std::move(media_source));
+
   return capabilities;
 }
 
@@ -238,9 +250,11 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicketInvalidVendorItem) {
+  // Even though this CJT has an invalid vendor item, it should parse correctly.
+  // It will fail when the CJT is checked vs the printer capabilities.
   base::Value::Dict cjt_ticket =
       base::test::ParseJsonDict(kInvalidVendorItemCjt);
-  EXPECT_FALSE(ParsePrintTicket(std::move(cjt_ticket)));
+  EXPECT_TRUE(ParsePrintTicket(std::move(cjt_ticket)));
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket_IncompleteCjt) {
@@ -343,6 +357,46 @@ TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilitiesCompatibility_Collate) {
   printing::PrinterSemanticCapsAndDefaults capabilities =
       ConstructPrinterCapabilities();
   capabilities.collate_capable = false;
+  EXPECT_FALSE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+}
+
+TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilitiesCompatibility_Advanced) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilities();
+  settings->advanced_settings().emplace("finishings", "trim");
+  settings->advanced_settings().emplace("media-source", "right");
+  EXPECT_TRUE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+}
+
+TEST(PrintingApiUtilsTest,
+     CheckSettingsAndCapabilitiesCompatibility_AdvancedBadAttribute) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilities();
+  settings->advanced_settings().emplace("unsupported-name", "trim");
+  EXPECT_FALSE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+}
+
+TEST(PrintingApiUtilsTest,
+     CheckSettingsAndCapabilitiesCompatibility_AdvancedBadValue) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilities();
+  settings->advanced_settings().emplace("media-source", "unsupported-value");
+  EXPECT_FALSE(
+      CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+}
+
+TEST(PrintingApiUtilsTest,
+     CheckSettingsAndCapabilitiesCompatibility_AdvancedInvalidValue) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilities();
+  settings->advanced_settings().emplace("finishings", 123);
   EXPECT_FALSE(
       CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
 }
