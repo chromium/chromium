@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DestinationManager} from './data/destination_manager.js';
+
 /**
  * @fileoverview
  * 'destination-select-controller' defines events and event handlers to
@@ -12,9 +14,10 @@
 // DestinationSelectController defines functionality used to update the
 // `destination-select` element.
 export class DestinationSelectController extends EventTarget {
-  // TODO(b/323421684): Use destination manager to determine if there are
-  // destinations available or if initial fetch is still in progress.
+  private destinationManager = DestinationManager.getInstance();
+
+  // Returns whether destination manager has fetched initial destinations.
   shouldShowLoading(): boolean {
-    return true;
+    return !this.destinationManager.hasInitialDestinationsLoaded();
   }
 }
