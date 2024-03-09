@@ -117,6 +117,21 @@ const std::u16string& GameDashboardContext::GetRecordingDuration() const {
                                      : recording_duration_;
 }
 
+void GameDashboardContext::MaybeStackAboveWidget(views::Widget* widget) {
+  DCHECK(widget);
+  if (welcome_dialog_widget_) {
+    welcome_dialog_widget_->StackAboveWidget(widget);
+  }
+
+  if (main_menu_widget_) {
+    main_menu_widget_->StackAboveWidget(widget);
+  }
+
+  if (toolbar_widget_) {
+    toolbar_widget_->StackAboveWidget(widget);
+  }
+}
+
 void GameDashboardContext::SetToolbarSnapLocation(
     ToolbarSnapLocation new_location) {
   toolbar_snap_location_ = new_location;

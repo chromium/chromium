@@ -80,9 +80,18 @@ std::string GameDashboardController::GetArcAppName(
 GameDashboardContext* GameDashboardController::GetGameDashboardContext(
     aura::Window* window) const {
   DCHECK(window);
-  game_window_contexts_.find(window);
   auto it = game_window_contexts_.find(window);
   return it != game_window_contexts_.end() ? it->second.get() : nullptr;
+}
+
+void GameDashboardController::MaybeStackAboveWidget(aura::Window* window,
+                                                    views::Widget* widget) {
+  DCHECK(widget);
+  DCHECK(window);
+
+  if (auto* context = GetGameDashboardContext(window)) {
+    context->MaybeStackAboveWidget(widget);
+  }
 }
 
 void GameDashboardController::StartCaptureSession(

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -1079,6 +1080,11 @@ void DisplayOverlayController::SetInputMappingVisible(
   if (IsBeta() && input_mapping_widget_) {
     if (visible) {
       input_mapping_widget_->ShowInactive();
+      // ash::GameDashboardController::Get() is empty for the unit test.
+      if (auto* gd_controller = ash::GameDashboardController::Get()) {
+        gd_controller->MaybeStackAboveWidget(touch_injector_->window(),
+                                             input_mapping_widget_.get());
+      }
     } else {
       input_mapping_widget_->Hide();
     }

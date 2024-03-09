@@ -64,6 +64,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // game window, otherwise nullptr.
   GameDashboardContext* GetGameDashboardContext(aura::Window* window) const;
 
+  // Stacks all of the `window`'s Game Dashboard widgets on top of `widget`.
+  void MaybeStackAboveWidget(aura::Window* window, views::Widget* widget);
+
   // Represents the start of the `context`'s game window capture session.
   // Sets `context` as the `active_recording_context_`, and requests
   // `CaptureModeController` to start a capture session for the `context`'s game

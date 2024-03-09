@@ -66,6 +66,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   const std::u16string& GetRecordingDuration() const;
 
+  // Stacks Game Dashboard UI widgets above `widget` if it is needed.
+  void MaybeStackAboveWidget(views::Widget* widget);
+
   // Reassigns the new `toolbar_snap_location_` and performs an animation as the
   // toolbar moves to its new location.
   void SetToolbarSnapLocation(ToolbarSnapLocation new_location);
