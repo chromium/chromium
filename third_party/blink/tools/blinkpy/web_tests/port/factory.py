@@ -690,6 +690,10 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             ],
             metavar='TYPE',
             help=f'Test types to run (choices: {", ".join(test_types)})')
+        testing_group.add_argument('--no-virtual-tests',
+                                   action='store_true',
+                                   default=None,
+                                   help=('Do not run virtual tests.'))
         testing_group.add_argument('--no-wpt-internal',
                                    action='store_false',
                                    dest='run_wpt_internal',

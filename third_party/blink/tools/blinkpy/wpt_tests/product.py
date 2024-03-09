@@ -87,8 +87,11 @@ class Product:
 
     @property
     def default_webdriver_binary(self):
-        """Path to the default webdriver binary, if available."""
-        return None
+        if self._host.platform.is_win():
+            path = 'chromedriver.exe'
+        else:
+            path = 'chromedriver'  #linux and mac
+        return self._port.build_path(path)
 
 
 class Chrome(Product):
@@ -104,14 +107,6 @@ class Chrome(Product):
             self.default_webdriver_binary,
         }
 
-    @property
-    def default_webdriver_binary(self):
-        if self._host.platform.is_win():
-            path = 'chromedriver.exe'
-        else:
-            path = 'chromedriver'  #linux and mac
-        return self._port.build_path(path)
-
 
 class ContentShell(Product):
     name = 'content_shell'
@@ -122,6 +117,8 @@ class ContentShell(Product):
             **super().product_specific_options(),
             'binary':
             self._port.path_to_driver(),
+            'webdriver_binary':
+            self.default_webdriver_binary,
         }
 
 
