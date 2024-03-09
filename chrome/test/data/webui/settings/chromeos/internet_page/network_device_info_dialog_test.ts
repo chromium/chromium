@@ -82,11 +82,11 @@ suite('<network-device-info-dialog>', () => {
         deviceInfoDialog.shadowRoot!.querySelector<HTMLCanvasElement>(
             '#qrCodeCanvas');
     assertTrue(!!qrCodeCanvas);
-    assertEquals(10, qrCodeCanvas.width);
-    assertEquals(10, qrCodeCanvas.height);
-    assertDeepEquals([[0, 0, 10, 10]], canvasContext.getClearRectCalls());
+    assertEquals(50, qrCodeCanvas.width);
+    assertEquals(50, qrCodeCanvas.height);
+    assertDeepEquals([[0, 0, 50, 50]], canvasContext.getClearRectCalls());
     assertDeepEquals(
-        [[0, 0, 5, 5], [5, 5, 5, 5]], canvasContext.getFillRectCalls());
+        [[20, 20, 5, 5], [25, 25, 5, 5]], canvasContext.getFillRectCalls());
   });
 
   test('Should display IMEI', async () => {

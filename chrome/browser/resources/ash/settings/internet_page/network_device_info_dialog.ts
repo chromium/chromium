@@ -20,8 +20,12 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {getTemplate} from './network_device_info_dialog.html.js';
 
-// The size of each tile in pixels.
+// The size of each tile/module in pixels.
 const QR_CODE_TILE_SIZE = 5;
+
+// The quiet zone offset in tiles/modules surrounding a QR code.
+const QUIET_ZONE_OFFSET = 4;
+
 // Styling for filled tiles in the QR code.
 const QR_CODE_FILL_STYLE = '#000000';
 
@@ -106,7 +110,8 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       if (!qrCode) {
         return;
       }
-      this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE;
+      this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE +
+          2 * QUIET_ZONE_OFFSET * QR_CODE_TILE_SIZE;
       flush();
       const context = this.getCanvasContext_();
       if (!context) {
@@ -115,8 +120,10 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
       context.fillStyle = QR_CODE_FILL_STYLE;
       let index = 0;
-      for (let x = 0; x < qrCode.size; x++) {
-        for (let y = 0; y < qrCode.size; y++) {
+      for (let x = QUIET_ZONE_OFFSET; x < qrCode.size + QUIET_ZONE_OFFSET;
+           x++) {
+        for (let y = QUIET_ZONE_OFFSET; y < qrCode.size + QUIET_ZONE_OFFSET;
+             y++) {
           if (qrCode.data[index]) {
             context.fillRect(
                 x * QR_CODE_TILE_SIZE, y * QR_CODE_TILE_SIZE, QR_CODE_TILE_SIZE,
