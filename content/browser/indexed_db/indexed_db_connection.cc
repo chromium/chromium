@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/database_impl.h"
+#include "content/browser/indexed_db/indexed_db_connection.h"
 
 #include <set>
 #include <utility>

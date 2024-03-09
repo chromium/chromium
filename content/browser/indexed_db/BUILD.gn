@@ -8,8 +8,6 @@ source_set("indexed_db") {
   public = [ "indexed_db_control_wrapper.h" ]
 
   sources = [
-    "database_impl.cc",
-    "database_impl.h",
     "features.cc",
     "features.h",
     "file_path_util.cc",
@@ -28,6 +26,8 @@ source_set("indexed_db") {
     "indexed_db_callback_helpers.h",
     "indexed_db_compaction_task.cc",
     "indexed_db_compaction_task.h",
+    "indexed_db_connection.cc",
+    "indexed_db_connection.h",
     "indexed_db_connection_coordinator.cc",
     "indexed_db_connection_coordinator.h",
     "indexed_db_context_impl.cc",
