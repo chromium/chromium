@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] @font-face from shadow applies to a slotted element
+  assert_equals: expected 160 but got 80
+Harness: the test ran to completion.
+

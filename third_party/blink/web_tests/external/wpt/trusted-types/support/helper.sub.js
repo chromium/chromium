@@ -158,9 +158,10 @@ function assert_throws_no_trusted_type_set_ns(tag, attribute, value) {
   });
 }
 
-function assert_element_accepts_non_trusted_type_set_ns(tag, attribute, value, expected) {
-  let elem = document.createElement(tag);
-  elem.setAttributeNS(namespace, attribute, value);
-  let attr_node = elem.getAttributeNodeNS(namespace, attribute);
+function assert_element_accepts_non_trusted_type_set_ns(tag, attribute, value, expected,
+                                                        elementNamespace, attributeNamespace) {
+  let elem = document.createElementNS(elementNamespace, tag);
+  elem.setAttributeNS(attributeNamespace, attribute, value);
+  let attr_node = elem.getAttributeNodeNS(attributeNamespace, attribute);
   assert_equals(attr_node.value + "", expected);
 }

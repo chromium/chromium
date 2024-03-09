@@ -1,10 +1,10 @@
 This is a wdspec test.
 [FAIL] test_cancel
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  asyncio.exceptions.TimeoutError
 [FAIL] test_default
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  asyncio.exceptions.TimeoutError
 [FAIL] test_provideCredentials
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  asyncio.exceptions.TimeoutError
 [FAIL] test_provideCredentials_wrong_credentials
-  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+  asyncio.exceptions.TimeoutError
 Harness: the test ran to completion.

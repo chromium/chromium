@@ -1,4 +1,3 @@
 This is a testharness.js-based test.
-[FAIL] el-image
-  assert_equals: <image data-testname="el-image" data-expectedrole="image" class="ex"></image> expected "image" but got "none"
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Selector passed in verifyRolesBySelector(".ex") should match at least one element.
 Harness: the test ran to completion.
