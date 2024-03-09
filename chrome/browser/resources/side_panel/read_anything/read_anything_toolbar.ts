@@ -110,6 +110,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       textStyleOptions_: Array,
       textStyleToggles_: Array,
       paused: Boolean,
+      hasContent: Boolean,
       selectedVoice: Object,
       availableVoices: Array,
       localeToDisplayName: Object,
@@ -304,6 +305,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
   private readonly paused: boolean;
+
+  // If Read Anything has content. If it doesn't, certain toolbar buttons
+  // like the play / pause button should be disabled. This is set from
+  // the parent element via one way data binding.
+  private readonly hasContent: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
