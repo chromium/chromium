@@ -5,6 +5,7 @@
 #ifndef ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_
 #define ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_
 
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -38,6 +39,14 @@ inline constexpr gfx::Insets kItemsContainerInsets = gfx::Insets::VH(15, 15);
 
 // The desired image size for each window's icon.
 inline constexpr int kAppImageSize = 64;
+
+// The text color for `PineItemView` and `PineItemOverflowView`.
+inline constexpr ui::ColorId kPineItemTextColor =
+    cros_tokens::kCrosSysOnSurface;
+
+// The background color behind each app displayed in `PineItemsContainerView`.
+inline constexpr ui::ColorId kIconBackgroundColor =
+    cros_tokens::kCrosSysSystemOnBase;
 
 }  // namespace ash::pine
 

@@ -55,8 +55,8 @@ PineItemsOverflowView::PineItemsOverflowView(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetBetweenChildSpacing(kOverflowIconSpacing)
-          .SetBackground(views::CreateRoundedRectBackground(
-              SK_ColorLTGRAY, kOverflowBackgroundRounding))
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              pine::kIconBackgroundColor, kOverflowBackgroundRounding))
           .AddChildren(
               views::Builder<views::BoxLayoutView>()
                   .CopyAddressTo(&top_row_view_)
@@ -90,7 +90,7 @@ PineItemsOverflowView::PineItemsOverflowView(
               // display.
               .SetText(base::FormatNumber(elements - kOverflowMaxThreshold))
               .SetPreferredSize(kOverflowCountPreferredSize)
-              .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
+              .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
               .SetBackground(views::CreateThemedRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
                   kOverflowCountBackgroundRounding))
@@ -135,7 +135,7 @@ PineItemsOverflowView::PineItemsOverflowView(
   views::Label* remaining_windows_label;
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&remaining_windows_label)
-                   .SetEnabledColor(SK_ColorBLACK)
+                   .SetEnabledColorId(pine::kPineItemTextColor)
                    .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                               pine::kItemTitleFontSize,
                                               gfx::Font::Weight::BOLD))

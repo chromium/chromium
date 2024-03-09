@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_restore/pine_contents_view.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -20,6 +22,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -38,8 +42,7 @@ namespace {
 
 // TODO(http://b/322359738): Localize all these strings.
 // TODO(http://b/322360273): Match specs.
-// TODO(http://b/322360373): Replace all hardcoded colors with tokens.
-// TODO(hewer): Update `SetFontList()` to use
+// TODO(http://b/328459389): Update `SetFontList()` to use
 // `ash::TypographyProvider`.
 
 constexpr gfx::Size kItemsContainerPreferredSize(
@@ -63,7 +66,7 @@ constexpr gfx::Insets kContextMenuLabelInsets = gfx::Insets::VH(0, 16);
 
 PineContentsView::PineContentsView() {
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysBaseElevated, kContentsRounding));
+      cros_tokens::kCrosSysSystemBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -81,7 +84,7 @@ PineContentsView::PineContentsView() {
           .AddChildren(
               // Title.
               views::Builder<views::Label>()
-                  .SetEnabledColor(SK_ColorBLACK)
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
                   .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                              kContentsTitleFontSize,
                                              gfx::Font::Weight::BOLD))
@@ -90,7 +93,7 @@ PineContentsView::PineContentsView() {
                       l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_TITLE)),
               // Description.
               views::Builder<views::Label>()
-                  .SetEnabledColor(SK_ColorBLACK)
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
                   .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                              kContentsDescriptionFontSize,
                                              gfx::Font::Weight::NORMAL))
@@ -130,8 +133,8 @@ PineContentsView::PineContentsView() {
                           weak_ptr_factory_.GetWeakPtr()),
                       kSettingsIcon, kSettingsIconSize))
                   .CopyAddressTo(&settings_button_)
-                  .SetBackground(views::CreateRoundedRectBackground(
-                      SK_ColorWHITE, kSettingsIconSize))
+                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                      cros_tokens::kCrosSysSystemOnBase, kSettingsIconSize))
                   .SetTooltipText(
                       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS)))
           .Build());
@@ -174,11 +177,22 @@ std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
-  widget->GetLayer()->SetFillsBoundsOpaquely(false);
   widget->SetContentsView(std::move(contents_view));
   // Overview uses custom animations so remove the default ones.
   wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
                                              wm::ANIMATE_NONE);
+  auto* layer = widget->GetLayer();
+  layer->SetFillsBoundsOpaquely(false);
+
+  // Add blur to help with contrast between the background and the text. Uses
+  // the same settings as the Quick Settings menu, i.e., `TrayBubbleView`.
+  if (features::IsBackgroundBlurEnabled()) {
+    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
+    layer->SetIsFastRoundedCorner(true);
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
   return widget;
 }
 

@@ -12,6 +12,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
@@ -50,13 +51,14 @@ class PineItemView : public views::BoxLayoutView {
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
-    AddChildView(views::Builder<views::ImageView>()
-                     .CopyAddressTo(&image_view_)
-                     .SetBackground(views::CreateRoundedRectBackground(
-                         SK_ColorLTGRAY, kItemIconBackgroundRounding))
-                     .SetImageSize(kItemIconPreferredSize)
-                     .SetPreferredSize(pine::kItemIconBackgroundPreferredSize)
-                     .Build());
+    AddChildView(
+        views::Builder<views::ImageView>()
+            .CopyAddressTo(&image_view_)
+            .SetBackground(views::CreateThemedRoundedRectBackground(
+                pine::kIconBackgroundColor, kItemIconBackgroundRounding))
+            .SetImageSize(kItemIconPreferredSize)
+            .SetPreferredSize(pine::kItemIconBackgroundPreferredSize)
+            .Build());
 
     // Add nested `BoxLayoutView`s, so we can have the title of the window on
     // top, and a row of favicons on the bottom.
@@ -67,7 +69,7 @@ class PineItemView : public views::BoxLayoutView {
             .SetBetweenChildSpacing(kTitleFaviconSpacing)
             .AddChildren(
                 views::Builder<views::Label>()
-                    .SetEnabledColor(SK_ColorBLACK)
+                    .SetEnabledColorId(pine::kPineItemTextColor)
                     .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                                pine::kItemTitleFontSize,
                                                gfx::Font::Weight::BOLD))
@@ -172,8 +174,8 @@ PineItemsContainerView::PineItemsContainerView(
   const int elements = static_cast<int>(apps_infos.size());
   CHECK_GT(elements, 0);
 
-  SetBackground(views::CreateRoundedRectBackground(SK_ColorWHITE,
-                                                   kItemsContainerRounding));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemBaseElevated, kItemsContainerRounding));
   SetBetweenChildSpacing(pine::kItemsContainerChildSpacing);
   SetInsideBorderInsets(kItemsContainerInsets);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
