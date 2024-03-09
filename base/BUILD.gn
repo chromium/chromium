@@ -3551,13 +3551,6 @@ test("base_unittests") {
     "vlog_unittest.cc",
   ]
 
-  if (use_blink) {
-    sources += [
-      "memory/shared_memory_switch_unittest.cc",
-      "metrics/histogram_shared_memory_unittest.cc",
-    ]
-  }
-
   if (!is_cronet_build) {
     # location_unittest.cc fails gn check for tracing-shimmed Cronet builds.
     # Cronet buildbot do not run base_unittests, so exclusing this test
@@ -3632,9 +3625,11 @@ test("base_unittests") {
     "//tools/metrics/histograms/enums.xml",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "allocator/partition_allocator/src/partition_alloc/tagging_unittest.cc",
+      "memory/shared_memory_switch_unittest.cc",
+      "metrics/histogram_shared_memory_unittest.cc",
     ]
 
     data_deps += [ "//base/test:test_proto_descriptor" ]
