@@ -356,6 +356,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="SAFETY_CHECK"/>
   <int value="2" label="PROMOSLINGER_REFERRAL"/>
   <int value="3" label="DOWNLOAD_BUBBLE_SUBPAGE"/>
+  <int value="4" label="DOWNLOAD_BUTTON_IPH_PROMO"/>
+  <int value="5" label="DOWNLOAD_PAGE_ROW_PROMO"/>
 </enum>
 
 <enum name="SafeBrowsingRTConsumerVersionReason">
