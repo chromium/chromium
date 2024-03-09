@@ -12,7 +12,7 @@ namespace partition_alloc {
 
 // StatsReporter is a wrapper to invoke TRACE_EVENT_BEGIN/END, TRACE_COUNTER1,
 // and UmaHistogramTimes. It is used to just remove trace_log and uma
-// dependencies from partition allocator.
+// dependencies from PartitionAlloc.
 class StatsReporter {
  public:
   virtual void ReportTraceEvent(internal::StatsCollector::ScannerId id,
