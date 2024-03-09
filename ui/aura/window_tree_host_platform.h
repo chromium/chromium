@@ -57,6 +57,20 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
     return platform_window_.get();
   }
 
+  // Returns `PlatformWindow` for the platform. If
+  // `PlatformWindowFactoryDelegateForTesting` is set, it uses the delegate.
+  std::unique_ptr<ui::PlatformWindow> CreatePlatformWindow(
+      ui::PlatformWindowInitProperties properties);
+
+  class PlatformWindowFactoryDelegateForTesting {
+   public:
+    virtual ~PlatformWindowFactoryDelegateForTesting() = default;
+    virtual std::unique_ptr<ui::PlatformWindow> Create(
+        WindowTreeHostPlatform*) = 0;
+  };
+  static void SetPlatformWindowFactoryDelegateForTesting(
+      PlatformWindowFactoryDelegateForTesting* delegate);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::string GetUniqueId() const override;
 #endif

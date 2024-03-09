@@ -29,6 +29,11 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "ui/aura/window_tree_host_platform.h"    // nogncheck
+#include "ui/platform_window/stub/stub_window.h"  // nogncheck
+#endif
+
 namespace views {
 
 namespace {
@@ -493,5 +498,59 @@ TEST_F(DesktopWindowTreeHostPlatformTest, CanFullscreen) {
   widget->widget_delegate()->SetCanFullscreen(false);
   EXPECT_FALSE(host_platform->CanFullscreen());
 }
+
+#if !BUILDFLAG(IS_FUCHSIA)
+class ScopedPlatformWindowFactoryDelegate
+    : public aura::WindowTreeHostPlatform::
+          PlatformWindowFactoryDelegateForTesting {
+ public:
+  ScopedPlatformWindowFactoryDelegate() {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        this);
+  }
+  ScopedPlatformWindowFactoryDelegate(
+      const ScopedPlatformWindowFactoryDelegate&) = delete;
+  ScopedPlatformWindowFactoryDelegate& operator=(
+      const ScopedPlatformWindowFactoryDelegate&) = delete;
+  ~ScopedPlatformWindowFactoryDelegate() override {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        nullptr);
+  }
+
+  std::unique_ptr<ui::PlatformWindow> Create(
+      aura::WindowTreeHostPlatform* host) override {
+    return std::make_unique<ui::StubWindow>(host, false);
+  }
+};
+
+TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = nullptr;
+  params.remove_standard_frame = true;
+  params.bounds = gfx::Rect(100, 100, 100, 100);
+  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  std::unique_ptr<ScopedPlatformWindowFactoryDelegate>
+      scoped_platform_window_factory_delegate(
+          new ScopedPlatformWindowFactoryDelegate);
+  std::unique_ptr<Widget> widget =
+      CreateWidgetWithNativeWidgetWithParams(std::move(params));
+  scoped_platform_window_factory_delegate.reset();
+
+  // Calling `Widget::Show()` for a widget initially created as minimized does
+  // not cause the widget to get activated yet. (i.e. stays minimized). This
+  // happens specifically when the widget is created as part of a session
+  // restore and `Widget::Show()` is called for initialization and not to
+  // actually show the widget. The widget will use `Widget::saved_show_state_`
+  // to pass to the native widget and window tree host. Essentially this is
+  // testing that `DesktopWindowTreeHostPlatform` does not get activated if
+  // `DesktopWindowTreeHostPlatform::Show()` is called with
+  // `ui::SHOW_STATE_MINIMIZED`.
+  widget->Show();
+  EXPECT_FALSE(widget->IsActive());
+
+  widget->Show();
+  EXPECT_TRUE(widget->IsActive());
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace views

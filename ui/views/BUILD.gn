@@ -1526,6 +1526,9 @@ test("views_unittests") {
         sources += [
           "widget/desktop_aura/desktop_window_tree_host_platform_unittest.cc",
         ]
+        if (is_linux || is_chromeos) {
+          deps += [ "//ui/platform_window/stub:stub" ]
+        }
       }
       if (is_linux || is_chromeos) {
         sources += [ "widget/desktop_aura/desktop_window_tree_host_platform_impl_unittest.cc" ]

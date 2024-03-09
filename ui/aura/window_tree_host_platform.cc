@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
@@ -43,6 +44,11 @@
 
 namespace aura {
 
+namespace {
+WindowTreeHostPlatform::PlatformWindowFactoryDelegateForTesting*
+    g_platform_window_factory_delegate_for_testing = nullptr;
+}
+
 // static
 std::unique_ptr<WindowTreeHost> WindowTreeHost::Create(
     ui::PlatformWindowInitProperties properties) {
@@ -72,14 +78,7 @@ void WindowTreeHostPlatform::CreateAndSetPlatformWindow(
   // end up propagating unneeded bounds change event when it is first notified
   // through OnBoundsChanged, which may lead to unneeded re-layouts, etc.
   size_in_pixels_ = properties.bounds.size();
-#if BUILDFLAG(IS_OZONE)
-  platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
-      this, std::move(properties));
-#elif BUILDFLAG(IS_WIN)
-  platform_window_ = std::make_unique<ui::WinWindow>(this, properties.bounds);
-#else
-  NOTIMPLEMENTED();
-#endif
+  platform_window_ = CreatePlatformWindow(std::move(properties));
 }
 
 void WindowTreeHostPlatform::SetPlatformWindow(
@@ -199,6 +198,30 @@ void WindowTreeHostPlatform::OnCursorVisibilityChangedNative(bool show) {
 void WindowTreeHostPlatform::LockMouse(Window* window) {
   window->SetCapture();
   WindowTreeHost::LockMouse(window);
+}
+
+std::unique_ptr<ui::PlatformWindow>
+WindowTreeHostPlatform::CreatePlatformWindow(
+    ui::PlatformWindowInitProperties properties) {
+  if (g_platform_window_factory_delegate_for_testing) {
+    return g_platform_window_factory_delegate_for_testing->Create(this);
+  }
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
+      this, std::move(properties));
+#elif BUILDFLAG(IS_WIN)
+  return std::make_unique<ui::WinWindow>(this, properties.bounds);
+#else
+  NOTIMPLEMENTED();
+  return nullptr;
+#endif
+}
+
+// static
+void WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+    PlatformWindowFactoryDelegateForTesting* delegate) {
+  CHECK_IS_TEST();
+  g_platform_window_factory_delegate_for_testing = delegate;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
