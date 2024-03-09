@@ -22,6 +22,7 @@ source_set("pdf_viewer_private") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/common/extensions/api",
+    "//components/pdf/common:constants",
     "//components/prefs",
     "//extensions/browser",
     "//url",

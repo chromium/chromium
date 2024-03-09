@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
+#include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "url/url_constants.h"
@@ -151,6 +152,12 @@ PdfViewerPrivateSetPdfDocumentTitleFunction::Run() {
   if (!web_contents) {
     return RespondNow(Error("Could not find a valid web contents."));
   }
+
+  // Title should only be set for full-page PDFs.
+  // MIME type associated with sender `WebContents` must be `application/pdf`
+  // for a full-page PDF.
+  EXTENSION_FUNCTION_VALIDATE(web_contents->GetContentsMimeType() ==
+                              pdf::kPDFMimeType);
 
   std::optional<SetPdfDocumentTitle::Params> params =
       SetPdfDocumentTitle::Params::Create(args());
