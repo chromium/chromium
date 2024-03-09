@@ -278060,6 +278060,19 @@
      ]
     ],
     "errors": {
+     "unknown-ancillary-error-recovery-2.html": [
+      "23191fe39f714875f1692d9499f971e4254e288b",
+      [
+       null,
+       [
+        [
+         "/png/errors/unknown-ancillary-error-recovery-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "unknown-ancillary-error-recovery.html": [
       "df37153fd76026be581c4da33f9df0fd60e2c05b",
       [
@@ -378611,6 +378624,10 @@
     ],
     "errors": {
      "support": {
+      "invalid-unknown-ancillary-after-IDAT.png": [
+       "e9c9e7ee02598ab11189049b455b39ce8b72db57",
+       []
+      ],
       "invalid-unknown-ancillary.png": [
        "21373a5a5aff91c2755cdc9a7f381da29658850c",
        []
@@ -378620,6 +378637,10 @@
        []
       ]
      },
+     "unknown-ancillary-error-recovery-2-ref.html": [
+      "cfa2cbb6f14cc95cb5930dab38fa3fb11bda49bd",
+      []
+     ],
      "unknown-ancillary-error-recovery-ref.html": [
       "cfa2cbb6f14cc95cb5930dab38fa3fb11bda49bd",
       []
