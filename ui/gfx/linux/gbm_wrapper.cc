@@ -312,7 +312,7 @@ class Device final : public ui::GbmDevice {
     // do the create/import modifiers validation loop below using a separate set
     // of 1x1 BOs which are destroyed before creating the final BO creation used
     // to instantiate the returned GbmBuffer.
-    gfx::Size size =
+    gfx::Size size_for_verification =
 #if BUILDFLAG(IS_LINUX)
         gfx::Size(1, 1);
 #else
@@ -324,16 +324,18 @@ class Device final : public ui::GbmDevice {
 
     while (!valid_modifiers && !filtered_modifiers.empty()) {
       created_bo = gbm_bo_create_with_modifiers(
-          device_, size.width(), size.height(), format,
-          filtered_modifiers.data(), filtered_modifiers.size());
+          device_, size_for_verification.width(),
+          size_for_verification.height(), format, filtered_modifiers.data(),
+          filtered_modifiers.size());
       if (!created_bo) {
         return nullptr;
       }
 
       const int planes_count = gbm_bo_get_plane_count(created_bo);
       struct gbm_import_fd_modifier_data fd_data = {
-          .width = base::checked_cast<uint32_t>(size.width()),
-          .height = base::checked_cast<uint32_t>(size.height()),
+          .width = base::checked_cast<uint32_t>(size_for_verification.width()),
+          .height =
+              base::checked_cast<uint32_t>(size_for_verification.height()),
           .format = format,
           .num_fds = base::checked_cast<uint32_t>(planes_count),
           .modifier = gbm_bo_get_modifier(created_bo)};
@@ -358,7 +360,7 @@ class Device final : public ui::GbmDevice {
             GetFilteredModifiers(format, flags, filtered_modifiers);
       }
 
-      if (!valid_modifiers || size != requested_size) {
+      if (!valid_modifiers || size_for_verification != requested_size) {
         gbm_bo_destroy(created_bo);
         created_bo = nullptr;
       }
@@ -374,8 +376,10 @@ class Device final : public ui::GbmDevice {
       PLOG_IF(ERROR, !created_bo) << "Failed to create BO with modifiers.";
     }
 
-    return created_bo ? CreateBufferForBO(created_bo, format, size, flags)
-                      : nullptr;
+    // TODO(327768768): Add a test for this about size.
+    return created_bo
+               ? CreateBufferForBO(created_bo, format, requested_size, flags)
+               : nullptr;
   }
 
   std::unique_ptr<ui::GbmBuffer> CreateBufferFromHandle(
