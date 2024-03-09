@@ -410,6 +410,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Consume local compile hints, streaming"/>
   <int value="9" label="Consume crowdsourced compile hints streaming"/>
   <int value="10" label="Produce compile hints, streaming"/>
+  <int value="11" label="No compile hints, classic script, no streaming"/>
+  <int value="12" label="No compile hints, module, no streaming"/>
+  <int value="13" label="No compile hints, streaming"/>
 </enum>
 
 </enums>

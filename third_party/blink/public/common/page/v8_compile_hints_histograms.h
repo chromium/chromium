@@ -24,7 +24,10 @@ enum class Status {
   kConsumeLocalCompileHintsStreaming = 8,
   kConsumeCrowdsourcedCompileHintsStreaming = 9,
   kProduceCompileHintsStreaming = 10,
-  kMaxValue = kProduceCompileHintsStreaming
+  kNoCompileHintsClassicNonStreaming = 11,
+  kNoCompileHintsModuleNonStreaming = 12,
+  kNoCompileHintsStreaming = 13,
+  kMaxValue = kNoCompileHintsStreaming
 };
 
 }  // namespace blink::v8_compile_hints

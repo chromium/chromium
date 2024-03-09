@@ -48,7 +48,8 @@ TEST_F(CompileHintsForStreamingTest, NoCrowdsourcedNoLocal) {
   base::HistogramTester histogram_tester;
   auto compile_hints_for_streaming =
       std::move(builder).Build(/*cached_metadata=*/nullptr);
-  histogram_tester.ExpectTotalCount(kStatusHistogram, 0);
+  histogram_tester.ExpectUniqueSample(kStatusHistogram,
+                                      Status::kNoCompileHintsStreaming, 1);
   EXPECT_FALSE(compile_hints_for_streaming);
 }
 
@@ -176,7 +177,8 @@ TEST_F(CompileHintsForStreamingTest, ProduceCrowdsourcedHint) {
   EXPECT_FALSE(compile_hints_for_streaming->GetCompileHintCallback());
   EXPECT_FALSE(compile_hints_for_streaming->GetCompileHintCallbackData());
 #else  // BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
-  histogram_tester.ExpectTotalCount(kStatusHistogram, 0);
+  histogram_tester.ExpectUniqueSample(kStatusHistogram,
+                                      Status::kNoCompileHintsStreaming, 1);
   EXPECT_FALSE(compile_hints_for_streaming);
 #endif
 }

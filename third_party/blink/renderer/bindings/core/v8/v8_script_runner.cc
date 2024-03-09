@@ -223,13 +223,19 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
     }
-    case v8::ScriptCompiler::kProduceCompileHints:
+    case v8::ScriptCompiler::kProduceCompileHints: {
       base::UmaHistogramEnumeration(
           v8_compile_hints::kStatusHistogram,
           v8_compile_hints::Status::kProduceCompileHintsClassicNonStreaming);
-      [[fallthrough]];
+      v8::ScriptCompiler::Source source(code, origin);
+      return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
+                                         compile_options, no_cache_reason);
+    }
     case v8::ScriptCompiler::kNoCompileOptions:
     case v8::ScriptCompiler::kEagerCompile: {
+      base::UmaHistogramEnumeration(
+          v8_compile_hints::kStatusHistogram,
+          v8_compile_hints::Status::kNoCompileHintsClassicNonStreaming);
       v8::ScriptCompiler::Source source(code, origin);
       return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
@@ -380,16 +386,16 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         code, origin);
   } else {
     switch (compile_options) {
+      // TODO(chromium:1406506): Compile hints for modules.
+      case v8::ScriptCompiler::kProduceCompileHints:
       case v8::ScriptCompiler::kConsumeCompileHints:
-        // TODO(chromium:1406506): Compile hints for modules.
         compile_options = v8::ScriptCompiler::kNoCompileOptions;
         ABSL_FALLTHROUGH_INTENDED;
       case v8::ScriptCompiler::kNoCompileOptions:
-      case v8::ScriptCompiler::kEagerCompile:
-      case v8::ScriptCompiler::kProduceCompileHints: {
+      case v8::ScriptCompiler::kEagerCompile: {
         base::UmaHistogramEnumeration(
             v8_compile_hints::kStatusHistogram,
-            v8_compile_hints::Status::kProduceCompileHintsModuleNonStreaming);
+            v8_compile_hints::Status::kNoCompileHintsModuleNonStreaming);
         v8::ScriptCompiler::Source source(code, origin);
         script = v8::ScriptCompiler::CompileModule(
             isolate, &source, compile_options, no_cache_reason);

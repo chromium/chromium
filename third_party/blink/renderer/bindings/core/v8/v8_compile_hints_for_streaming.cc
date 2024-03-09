@@ -47,6 +47,8 @@ CompileHintsForStreaming::Builder::Build(
         std::make_unique<v8_compile_hints::V8LocalCompileHintsConsumer>(
             cached_metadata.get());
     if (local_compile_hints_consumer->IsRejected()) {
+      base::UmaHistogramEnumeration(kStatusHistogram,
+                                    Status::kNoCompileHintsStreaming);
       return nullptr;
     }
     // For now, we can only consume local or crowdsourced compile hints, but
@@ -70,6 +72,8 @@ CompileHintsForStreaming::Builder::Build(
     // For producing a local compile hints.
     return std::make_unique<CompileHintsForStreaming>(base::PassKey<Builder>());
   }
+  base::UmaHistogramEnumeration(kStatusHistogram,
+                                Status::kNoCompileHintsStreaming);
   return nullptr;
 }
 
