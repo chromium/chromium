@@ -581,6 +581,11 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
       // file name first.
       std::wstring sanitized_name = ui::RemoveEnvVarFromFileName<wchar_t>(
           virtual_path_.BaseName().value(), L"%");
+      // remove leading "." to avoid resorting to potential extension
+      // bug: 41486690
+      while (!sanitized_name.empty() && sanitized_name.back() == L'.') {
+          sanitized_name.pop_back();
+      }
       if (sanitized_name.empty()) {
         sanitized_name = base::UTF8ToWide(
             l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
