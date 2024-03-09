@@ -229,7 +229,7 @@ class FloatingWorkspaceService : public KeyedService,
   // When sync passes an error status to floating workspace service,
   // floating workspace service should send notification to user asking
   // whether to restore the most recent FWS desk from local storage.
-  void HandleSyncEror();
+  void HandleSyncError();
 
   // When floating workspace service waited long enough but no desk is
   // restored floating workspace service should send notification to user

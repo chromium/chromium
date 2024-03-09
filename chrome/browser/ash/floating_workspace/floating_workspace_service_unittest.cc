@@ -743,6 +743,52 @@ TEST_F(
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,
+       PreventNetworkIssueNotifFromFiringAfterRestoreAttemptOrRestoreHappened) {
+  PopulateAppsCache();
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now()),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceService::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service());
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  ASSERT_TRUE(mock_desks_client()->restored_desk_template());
+  EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
+            base::UTF8ToUTF16(template_name));
+  // Disconnect from internet. Make sure no notification is sent since restore
+  // happened already.
+  CleanUpTestNetworkDevices();
+  task_environment().RunUntilIdle();
+  EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
+  // Sanity check. Add network back and make sure notification is still gone.
+  AddTestNetworkDevice();
+  network_handler_test_helper()->ResetDevicesAndServices();
+  network_handler_test_helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "online",
+            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID":
+            false})");
+  task_environment().RunUntilIdle();
+  floating_workspace_service->DefaultNetworkChanged(
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
+  EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
+}
+
+TEST_F(FloatingWorkspaceServiceV2Test,
        NoNetworkNotificationLogicWhenSyncIsInactiveAndOnceSyncIsActiveAgain) {
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());

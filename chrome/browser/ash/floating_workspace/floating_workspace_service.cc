@@ -273,7 +273,7 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
         return;
       }
       StopProgressBarNotification();
-      HandleSyncEror();
+      HandleSyncError();
       break;
     }
   }
@@ -293,9 +293,12 @@ void FloatingWorkspaceService::OnNetworkStateOrSyncServiceStateChanged() {
   if (!floating_workspace_util::IsInternetConnected() ||
       (sync_service_ && !sync_service_->IsSyncFeatureActive())) {
     // Only send notification if there's no notification currently or the
-    // current notification is the same one that we want to display.
-    if (notification_ == nullptr ||
-        notification_->id() != kNotificationForNoNetworkConnection) {
+    // current notification is the same one that we want to display. If the
+    // restore should not run, then there's no need to display the notification
+    // either.
+    if (should_run_restore_ &&
+        (notification_ == nullptr ||
+         notification_->id() != kNotificationForNoNetworkConnection)) {
       StopProgressBarNotification();
       SendNotification(kNotificationForNoNetworkConnection);
     }
@@ -769,7 +772,7 @@ FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
   return std::nullopt;
 }
 
-void FloatingWorkspaceService::HandleSyncEror() {
+void FloatingWorkspaceService::HandleSyncError() {
   SendNotification(kNotificationForSyncErrorOrTimeOut);
 }
 
