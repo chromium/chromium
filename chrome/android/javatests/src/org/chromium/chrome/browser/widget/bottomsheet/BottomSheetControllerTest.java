@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 
 import android.graphics.Rect;
 import android.view.MotionEvent;
@@ -26,8 +25,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.util.Batch;
@@ -50,6 +47,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -103,11 +101,10 @@ public class BottomSheetControllerTest {
     private TestBottomSheetContent mBackInterceptingContent;
     private ScrimCoordinator mScrimCoordinator;
     private int mSuppressionToken;
-    @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    private TestEdgeToEdgeController mEdgeToEdgeController;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mActivity = sActivityTestRule.getActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -139,6 +136,7 @@ public class BottomSheetControllerTest {
                     mPeekableContent = new TestBottomSheetContent(mActivity);
                     mNonPeekableContent = new TestBottomSheetContent(mActivity);
                     mNonPeekableContent.setPeekHeight(BottomSheetContent.HeightMode.DISABLED);
+                    mEdgeToEdgeController = new TestEdgeToEdgeController();
                     mActivity
                             .getEdgeToEdgeControllerSupplierForTesting()
                             .set(mEdgeToEdgeController);
@@ -189,7 +187,7 @@ public class BottomSheetControllerTest {
                     mSheetController.hideContent(mLowPriorityContent, false);
                 });
 
-        doReturn(100).when(mEdgeToEdgeController).getBottomInset();
+        mEdgeToEdgeController.bottomInset = 100;
 
         requestContentInSheet(mLowPriorityContent, true);
         float transYWithBottomInset = bottomSheet.getTranslationY();
@@ -1182,5 +1180,34 @@ public class BottomSheetControllerTest {
                 .getBottomSheetBackPressHandler()
                 .getHandleBackPressChangedSupplier()
                 .get();
+    }
+
+    private class TestEdgeToEdgeController implements EdgeToEdgeController {
+        public int bottomInset;
+
+        @Override
+        public void destroy() {}
+
+        @Override
+        public int getBottomInset() {
+            return bottomInset;
+        }
+
+        @Override
+        public boolean isEdgeToEdgeActive() {
+            return false;
+        }
+
+        @Override
+        public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {}
+
+        @Override
+        public void unregisterAdjuster(EdgeToEdgePadAdjuster adjuster) {}
+
+        @Override
+        public void registerObserver(ChangeObserver changeObserver) {}
+
+        @Override
+        public void unregisterObserver(ChangeObserver changeObserver) {}
     }
 }

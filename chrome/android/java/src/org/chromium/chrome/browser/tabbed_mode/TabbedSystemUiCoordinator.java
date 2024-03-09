@@ -13,6 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 
 /**
  * A UI coordinator that manages the system status bar and bottom navigation bar for
@@ -30,18 +31,25 @@ public class TabbedSystemUiCoordinator {
      * @param window The {@link Window} associated with the containing activity.
      * @param tabModelSelector The {@link TabModelSelector} for the containing activity.
      * @param layoutManagerSupplier {@link LayoutManager} associated with the containing activity.
-     * @param mFullscreenManager The {@link FullscreenManager} used for containing activity
+     * @param fullscreenManager The {@link FullscreenManager} used for containing activity
+     * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when
+     *     the UI is being drawn edge to edge.
      */
     public TabbedSystemUiCoordinator(
             Window window,
             TabModelSelector tabModelSelector,
             @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager mFullscreenManager) {
+            FullscreenManager fullscreenManager,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
                     new TabbedNavigationBarColorController(
-                            window, tabModelSelector, layoutManagerSupplier, mFullscreenManager);
+                            window,
+                            tabModelSelector,
+                            layoutManagerSupplier,
+                            fullscreenManager,
+                            edgeToEdgeControllerSupplier);
         }
     }
 

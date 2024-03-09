@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -14,6 +15,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -29,6 +31,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -36,6 +40,7 @@ import org.chromium.ui.util.ColorUtils;
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
 @RequiresApi(Build.VERSION_CODES.O_MR1)
 class TabbedNavigationBarColorController {
+    private static final String TAG = "NavBarColorCntrller";
     private final Window mWindow;
     private final ViewGroup mRootView;
     private final Context mContext;
@@ -56,6 +61,11 @@ class TabbedNavigationBarColorController {
     private boolean mIsInFullscreen;
     private float mNavigationBarScrimFraction;
 
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
+    private EdgeToEdgeController mEdgeToEdgeController;
+    @Nullable private ChangeObserver mEdgeToEdgeChangeObserver;
+
     /**
      * Creates a new {@link TabbedNavigationBarColorController} instance.
      *
@@ -65,13 +75,17 @@ class TabbedNavigationBarColorController {
      * @param layoutManagerSupplier An {@link ObservableSupplier} for the {@link LayoutManager}
      *     associated with the containing activity.
      * @param fullscreenManager The {@link FullscreenManager} used to determine if fullscreen is
-     *     enabled
+     *     enabled.
+     * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when
+     *     the UI is being drawn edge to edge so the navigation bar color can be changed
+     *     appropriately.
      */
     TabbedNavigationBarColorController(
             Window window,
             TabModelSelector tabModelSelector,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
 
         mWindow = window;
@@ -109,6 +123,21 @@ class TabbedNavigationBarColorController {
         layoutManagerSupplier.addObserver(
                 mCallbackController.makeCancelable(this::setLayoutManager));
 
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mEdgeToEdgeRegisterChangeObserverCallback =
+                (controller) -> {
+                    if (mEdgeToEdgeController != null) {
+                        mEdgeToEdgeController.unregisterObserver(mEdgeToEdgeChangeObserver);
+                    }
+                    mEdgeToEdgeController = controller;
+                    mEdgeToEdgeChangeObserver =
+                            (bottomInset) -> {
+                                updateNavigationBarColor(bottomInset);
+                            };
+                    mEdgeToEdgeController.registerObserver(mEdgeToEdgeChangeObserver);
+                };
+        mEdgeToEdgeControllerSupplier.addObserver(mEdgeToEdgeRegisterChangeObserverCallback);
+
         // TODO(https://crbug.com/806054): Observe tab loads to restrict black bottom nav to
         // incognito NTP.
 
@@ -126,6 +155,11 @@ class TabbedNavigationBarColorController {
             mCallbackController = null;
         }
         mFullScreenManager.removeObserver(mFullscreenObserver);
+        if (mEdgeToEdgeControllerSupplier.get() != null && mEdgeToEdgeChangeObserver != null) {
+            mEdgeToEdgeControllerSupplier.get().unregisterObserver(mEdgeToEdgeChangeObserver);
+            mEdgeToEdgeChangeObserver = null;
+        }
+        mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeRegisterChangeObserverCallback);
     }
 
     /**
@@ -157,7 +191,8 @@ class TabbedNavigationBarColorController {
     }
 
     @SuppressLint("NewApi")
-    private void updateNavigationBarColor() {
+    private void updateNavigationBarColor(@Nullable Integer bottomInset) {
+        boolean toEdge = bottomInset != null && bottomInset != 0;
         boolean forceDarkNavigation = mTabModelSelector.isIncognitoSelected();
 
         forceDarkNavigation &= !UiUtils.isSystemUiThemingDisabled();
@@ -165,16 +200,22 @@ class TabbedNavigationBarColorController {
 
         mForceDarkNavigationBarColor = forceDarkNavigation;
         final @ColorInt int navigationBarColor =
-                getNavigationBarColor(mForceDarkNavigationBarColor);
+                toEdge ? Color.TRANSPARENT : getNavigationBarColor(mForceDarkNavigationBarColor);
 
         if (navigationBarColor == mNavigationBarColor) return;
 
         mNavigationBarColor = navigationBarColor;
 
         mWindow.setNavigationBarColor(mNavigationBarColor);
+        if (toEdge) return;
         setNavigationBarDividerColor();
         UiUtils.setNavigationBarIconColor(
                 mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
+    }
+
+    @SuppressLint("NewApi")
+    private void updateNavigationBarColor() {
+        updateNavigationBarColor(null);
     }
 
     @SuppressLint("NewApi")

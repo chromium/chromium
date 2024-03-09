@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
@@ -49,6 +50,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -339,5 +341,25 @@ public class EdgeToEdgeInstrumentationTest {
                 "User action is not recorded",
                 userActionTester.getActions().contains("MobilePageLoadedWithToEdge"));
         mEligibleHistograms.assertExpected("Incorrect histogram recordings");
+    }
+
+    @Test
+    @MediumTest
+    public void testNavigationBarColor() {
+        goToNormal();
+        int originalNavigationBarColor = SemanticColorUtils.getBottomSystemNavColor(mActivity);
+
+        goToEdge();
+        assertEquals(
+                "Navigation bar should be transparent in edge to edge.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        goToNormal();
+        assertEquals(
+                "Navigation bar should have the right color when transitioning away from edge to"
+                        + " edge,",
+                originalNavigationBarColor,
+                mActivity.getWindow().getNavigationBarColor());
     }
 }
