@@ -518,6 +518,19 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
       weak_ptr_factory_.GetWeakPtr());
 
   (new AnimationObserver(on_animation_end))->StartObserving();
+
+  // Unblock deferred task now.
+  // TODO(b/328339021, b/323098858): This is the mitigation against a bug
+  // that animation observation has race condition.
+  // Can be in a part of better architecture.
+  AddLoginTimeMarker("BootTime.Login4");
+  base::UmaHistogramCustomTimes(
+      "BootTime.Login4", base::TimeTicks::Now() - primary_user_logged_in_,
+      base::Milliseconds(100), base::Seconds(100), 100);
+  login_animation_finished_timer_.Stop();
+  if (!post_login_deferred_task_runner_->Started()) {
+    post_login_deferred_task_runner_->Start();
+  }
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
@@ -600,6 +613,7 @@ void LoginUnlockThroughputRecorder::AddLoginTimeMarker(
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login2");
     REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login3");
+    REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login4");
     REPORT_LOGIN_THROUGHPUT_EVENT(
         "Ash.UnlockAnimation.Smoothness.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Smoothness.TabletMode");
@@ -683,11 +697,6 @@ void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
       base::Milliseconds(100), base::Seconds(100), 100);
 
   LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
-
-  login_animation_finished_timer_.Stop();
-  if (!post_login_deferred_task_runner_->Started()) {
-    post_login_deferred_task_runner_->Start();
-  }
 }
 
 void LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired() {

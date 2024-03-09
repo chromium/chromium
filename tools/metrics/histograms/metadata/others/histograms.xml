@@ -2015,11 +2015,39 @@ chromium-metrics-reviews@google.com.
   <owner>xiyuan@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
-    Chrome OS: The time it takes from when sign-in authentication begins to when
+    Chrome OS: The time it takes from when sign-in authentication ends to when
     the login animation finishes. This marks the end of the login process, as
     the user's session should be usable at this point.
 
     This does not replace the BootTime.Login2 histogram.
+
+    Warning: this does not include the cryptohome authentication period, unlike
+    BootTime.Login2.
+
+    TODO(b/328690294): we should have new metrics with the fix, and deprecate
+    this one.
+  </summary>
+</histogram>
+
+<histogram name="BootTime.Login4" units="ms" expires_after="never">
+<!-- expires-never: This is going to be a primary metric for the ChromeOS login. -->
+
+  <owner>xiyuan@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Chrome OS: The time it takes from when sign-in authentication ends to when
+    the login finishes. This marks the end of the login process, as the user's
+    session should be usable at this point.
+
+    This is very close to BootTime.Login3, but animation part is not included.
+    The purpose is to make sure animation waiting part is negligible by
+    comparing to BootTime.Login3.
+
+    Warning: this does not include the cryptohome authentication period, unlike
+    BootTime.Login2.
+
+    TODO(b/328690294): deprecate with BootTime.Login3.
   </summary>
 </histogram>
 
