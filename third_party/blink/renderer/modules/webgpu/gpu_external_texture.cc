@@ -163,6 +163,13 @@ void ExternalTextureCache::ExpireTask() {
 void ExternalTextureCache::ReferenceUntilGPUIsFinished(
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture) {
   CHECK(mailbox_texture);
+  ExecutionContext* execution_context = device()->GetExecutionContext();
+
+  // If device has no valid execution context. Release
+  // the mailbox immediately.
+  if (!execution_context) {
+    return;
+  }
 
   // Keep mailbox texture alive until callback returns.
   auto* callback = BindWGPUOnceCallback(
@@ -175,7 +182,7 @@ void ExternalTextureCache::ReferenceUntilGPUIsFinished(
                                                 callback->AsUserdata());
 
   // Ensure commands are flushed.
-  device()->EnsureFlush(ToEventLoop(device()->GetExecutionContext()));
+  device()->EnsureFlush(ToEventLoop(execution_context));
 }
 
 // static
