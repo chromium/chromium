@@ -77071,7 +77071,6 @@
     { "name": "rockfordnetworks.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "rootsland.de", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "rootsland.net", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "roszdravnadzor.gov.ru", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "ruero.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "rxcarbon.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "sainsburysbusinessdirect.co.uk", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
