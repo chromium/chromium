@@ -7,7 +7,7 @@
 
 // This is the allocator that is used for allocations that are not on the
 // traced, garbage collected heap. It uses FastMalloc for collections,
-// but uses the partition allocator for the backing store of the collections.
+// but uses the PartitionAlloc for the backing store of the collections.
 
 #include <string.h>
 
