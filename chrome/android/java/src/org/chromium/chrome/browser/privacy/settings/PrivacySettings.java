@@ -71,6 +71,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     private static final String PREF_TRACKING_PROTECTION = "tracking_protection";
+    private static final String PREF_IP_PROTECTION = "ip_protection";
     @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
 
     @VisibleForTesting
@@ -83,6 +84,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         getActivity().setTitle(R.string.prefs_privacy_security);
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
+
+        Preference ipProtectionPreference = findPreference(PREF_IP_PROTECTION);
+        ipProtectionPreference.setVisible(shouldShowIpProtectionUI());
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
         // Overwrite the click listener to pass a correct referrer to the fragment.
@@ -290,6 +294,14 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             : R.string.text_off);
         }
 
+        Preference ipProtectionPref = findPreference(PREF_IP_PROTECTION);
+        if (ipProtectionPref != null) {
+            ipProtectionPref.setSummary(
+                    UserPrefs.get(getProfile()).getBoolean(Pref.IP_PROTECTION_ENABLED)
+                            ? R.string.text_on
+                            : R.string.text_off);
+        }
+
         Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
         if (preloadPagesPreference != null) {
             preloadPagesPreference.setSummary(
@@ -376,6 +388,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private boolean showTrackingProtectionUI() {
         return UserPrefs.get(getProfile()).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
+    }
+
+    private boolean shouldShowIpProtectionUI() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }
 
     @Override

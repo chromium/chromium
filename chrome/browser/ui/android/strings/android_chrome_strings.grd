@@ -1501,6 +1501,11 @@ Your Google account may have other forms of browsing history like searches and a
         Manage third-party cookies and tracking protections
       </message>
 
+      <!-- IP protection -->
+      <message name="IDS_IP_PROTECTION_TITLE" desc="IP Protection preference item title." translateable="false">
+        Hide your IP address
+      </message>
+
       <!-- Safety check -->
       <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">
         Safety check

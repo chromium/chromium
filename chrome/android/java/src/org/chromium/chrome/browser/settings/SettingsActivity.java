@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentVi
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
+import org.chromium.chrome.browser.privacy_sandbox.ChromeIpProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
@@ -97,6 +98,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -632,6 +634,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof TopicsManageFragment) {
             ((TopicsManageFragment) fragment)
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
+        }
+        if (fragment instanceof IpProtectionSettingsFragment) {
+            ((IpProtectionSettingsFragment) fragment)
+                    .setIProtectionDelegate(new ChromeIpProtectionDelegate(mProfile));
         }
     }
 

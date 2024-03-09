@@ -977,6 +977,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/privacy/settings/IncognitoLockSettings.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java",
+  "java/src/org/chromium/chrome/browser/privacy_sandbox/ChromeIpProtectionDelegate.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/ChromeTrackingProtectionDelegate.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionNoticeController.java",
   "java/src/org/chromium/chrome/browser/provider/BaseColumns.java",

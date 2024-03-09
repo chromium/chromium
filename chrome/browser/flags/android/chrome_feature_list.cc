@@ -321,6 +321,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kPermissionsPromptSurvey,
+    &privacy_sandbox::kIpProtectionUx,
     &privacy_sandbox::kPrivacySandboxAdsNoticeCCT,
     &plus_addresses::features::kFeature,
     &privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
