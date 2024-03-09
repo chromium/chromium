@@ -14,6 +14,7 @@
 namespace blink {
 
 class ExceptionState;
+class PushSubscription;
 class PushSubscriptionOptionsInit;
 class ScriptState;
 class ServiceWorkerRegistration;
@@ -29,10 +30,12 @@ class MODULES_EXPORT PushManager final : public ScriptWrappable {
   static Vector<String> supportedContentEncodings();
 
   // Web-exposed methods:
-  ScriptPromise subscribe(ScriptState* script_state,
-                          const PushSubscriptionOptionsInit* options_init,
-                          ExceptionState& exception_state);
-  ScriptPromise getSubscription(ScriptState* script_state);
+  ScriptPromiseTyped<PushSubscription> subscribe(
+      ScriptState* script_state,
+      const PushSubscriptionOptionsInit* options_init,
+      ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLNullable<PushSubscription>> getSubscription(
+      ScriptState* script_state);
   ScriptPromiseTyped<V8PermissionState> permissionState(
       ScriptState* script_state,
       const PushSubscriptionOptionsInit* options,

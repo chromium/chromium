@@ -36,7 +36,6 @@ class PaymentAddress;
 class PaymentDetailsInit;
 class PaymentRequestUpdateEvent;
 class PaymentResponse;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT PaymentRequest final
@@ -74,10 +73,10 @@ class MODULES_EXPORT PaymentRequest final
 
   ~PaymentRequest() override;
 
-  ScriptPromise show(ScriptState*, ExceptionState&);
-  ScriptPromise show(ScriptState*,
-                     ScriptPromise details_promise,
-                     ExceptionState&);
+  ScriptPromiseTyped<PaymentResponse> show(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<PaymentResponse> show(ScriptState*,
+                                           ScriptPromise details_promise,
+                                           ExceptionState&);
   ScriptPromise abort(ScriptState*, ExceptionState&);
 
   const String& id() const { return id_; }
@@ -179,7 +178,7 @@ class MODULES_EXPORT PaymentRequest final
   String shipping_option_;
   String shipping_type_;
   HashSet<String> method_names_;
-  Member<ScriptPromiseResolver>
+  Member<ScriptPromiseResolverTyped<PaymentResponse>>
       accept_resolver_;  // the resolver for the show() promise.
   Member<ScriptPromiseResolver> complete_resolver_;
   Member<ScriptPromiseResolver> retry_resolver_;

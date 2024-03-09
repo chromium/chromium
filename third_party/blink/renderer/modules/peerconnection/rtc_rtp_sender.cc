@@ -874,10 +874,13 @@ void RTCRtpSender::ClearLastReturnedParameters() {
   last_returned_parameters_ = nullptr;
 }
 
-ScriptPromise RTCRtpSender::getStats(ScriptState* script_state) {
+ScriptPromiseTyped<RTCStatsReport> RTCRtpSender::getStats(
+    ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<RTCStatsReport>>(
+          script_state);
+  auto promise = resolver->Promise();
   sender_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
                                   WrapPersistent(resolver)));
   return promise;

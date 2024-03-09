@@ -7,7 +7,7 @@
 namespace blink {
 
 void WebRTCStatsReportCallbackResolver(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<RTCStatsReport>* resolver,
     std::unique_ptr<RTCStatsReportPlatform> report) {
   DCHECK(ExecutionContext::From(resolver->GetScriptState())->IsContextThread());
   resolver->Resolve(MakeGarbageCollected<RTCStatsReport>(std::move(report)));

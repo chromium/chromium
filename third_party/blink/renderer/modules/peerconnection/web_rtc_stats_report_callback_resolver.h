@@ -13,8 +13,9 @@
 
 namespace blink {
 
-void WebRTCStatsReportCallbackResolver(ScriptPromiseResolver*,
-                                       std::unique_ptr<RTCStatsReportPlatform>);
+void WebRTCStatsReportCallbackResolver(
+    ScriptPromiseResolverTyped<RTCStatsReport>*,
+    std::unique_ptr<RTCStatsReportPlatform>);
 
 }  // namespace blink
 

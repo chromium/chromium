@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_status_listener.h"
@@ -22,7 +23,6 @@ namespace blink {
 class ExecutionContext;
 class NavigatorBase;
 class PermissionStatus;
-class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
 enum class PermissionType;
@@ -40,9 +40,15 @@ class Permissions final : public ScriptWrappable,
 
   explicit Permissions(NavigatorBase&);
 
-  ScriptPromise query(ScriptState*, const ScriptValue&, ExceptionState&);
-  ScriptPromise request(ScriptState*, const ScriptValue&, ExceptionState&);
-  ScriptPromise revoke(ScriptState*, const ScriptValue&, ExceptionState&);
+  ScriptPromiseTyped<PermissionStatus> query(ScriptState*,
+                                             const ScriptValue&,
+                                             ExceptionState&);
+  ScriptPromiseTyped<PermissionStatus> request(ScriptState*,
+                                               const ScriptValue&,
+                                               ExceptionState&);
+  ScriptPromiseTyped<PermissionStatus> revoke(ScriptState*,
+                                              const ScriptValue&,
+                                              ExceptionState&);
   ScriptPromiseTyped<IDLSequence<PermissionStatus>>
   requestAll(ScriptState*, const HeapVector<ScriptValue>&, ExceptionState&);
 
@@ -57,7 +63,7 @@ class Permissions final : public ScriptWrappable,
   mojom::blink::PermissionService* GetService(ExecutionContext*);
   void ServiceConnectionError();
 
-  void TaskComplete(ScriptPromiseResolver* resolver,
+  void TaskComplete(ScriptPromiseResolverTyped<PermissionStatus>* resolver,
                     mojom::blink::PermissionDescriptorPtr descriptor,
                     mojom::blink::PermissionStatus result);
 

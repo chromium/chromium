@@ -64,14 +64,14 @@ bool ValidateOptions(blink::PushSubscriptionOptions* options,
 }
 }  // namespace
 
-ScriptPromise PushManager::subscribe(
+ScriptPromiseTyped<PushSubscription> PushManager::subscribe(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options_init,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<PushSubscription>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -79,27 +79,28 @@ ScriptPromise PushManager::subscribe(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "subscribe() is not allowed in fenced frames.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<PushSubscription>();
   }
 
   if (!registration_->active()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kAbortError,
         "Subscription failed - no active Service Worker");
-    return ScriptPromise();
+    return ScriptPromiseTyped<PushSubscription>();
   }
 
   PushSubscriptionOptions* options =
       PushSubscriptionOptions::FromOptionsInit(options_init, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return ScriptPromiseTyped<PushSubscription>();
 
   if (!ValidateOptions(options, exception_state))
-    return ScriptPromise();
+    return ScriptPromiseTyped<PushSubscription>();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<PushSubscription>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   // The window is the only reasonable context from which to ask the
   // user for permission to use the Push API. The embedder should persist the
@@ -111,24 +112,27 @@ ScriptPromise PushManager::subscribe(
     messaging_client->Subscribe(
         registration_, options,
         LocalFrame::HasTransientUserActivation(window->GetFrame()),
-        std::make_unique<PushSubscriptionCallbacks>(resolver, registration_));
+        std::make_unique<PushSubscriptionCallbacks>(resolver,
+                                                    /*null_allowed=*/false));
   } else {
     GetPushProvider(registration_)
         ->Subscribe(options, LocalFrame::HasTransientUserActivation(nullptr),
-                    std::make_unique<PushSubscriptionCallbacks>(resolver,
-                                                                registration_));
+                    std::make_unique<PushSubscriptionCallbacks>(
+                        resolver, /*null_allowed=*/false));
   }
 
   return promise;
 }
 
-ScriptPromise PushManager::getSubscription(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLNullable<PushSubscription>> PushManager::getSubscription(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<PushSubscription>>>(script_state);
+  auto promise = resolver->Promise();
 
   GetPushProvider(registration_)
-      ->GetSubscription(
-          std::make_unique<PushSubscriptionCallbacks>(resolver, registration_));
+      ->GetSubscription(std::make_unique<PushSubscriptionCallbacks>(
+          resolver, /*null_allowed=*/true));
   return promise;
 }
 

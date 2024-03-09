@@ -68,6 +68,7 @@ namespace blink {
 class ExceptionState;
 class MediaStreamTrack;
 class RTCAnswerOptions;
+class RTCCertificate;
 class RTCConfiguration;
 class RTCDataChannel;
 class RTCDTMFSender;
@@ -83,6 +84,7 @@ class RTCRtpTransceiverInit;
 class RTCSctpTransport;
 class RTCSessionDescription;
 class RTCSessionDescriptionInit;
+class RTCStatsReport;
 class ScriptState;
 class V8RTCPeerConnectionErrorCallback;
 class V8RTCSessionDescriptionCallback;
@@ -109,18 +111,16 @@ class MODULES_EXPORT RTCPeerConnection final
                     ExceptionState&);
   ~RTCPeerConnection() override;
 
-  ScriptPromise createOffer(ScriptState*,
-                            const RTCOfferOptions*,
-                            ExceptionState&);
+  ScriptPromiseTyped<RTCSessionDescriptionInit>
+  createOffer(ScriptState*, const RTCOfferOptions*, ExceptionState&);
   ScriptPromise createOffer(ScriptState*,
                             V8RTCSessionDescriptionCallback*,
                             V8RTCPeerConnectionErrorCallback*,
                             const RTCOfferOptions*,
                             ExceptionState&);
 
-  ScriptPromise createAnswer(ScriptState*,
-                             const RTCAnswerOptions*,
-                             ExceptionState&);
+  ScriptPromiseTyped<RTCSessionDescriptionInit>
+  createAnswer(ScriptState*, const RTCAnswerOptions*, ExceptionState&);
   ScriptPromise createAnswer(ScriptState*,
                              V8RTCSessionDescriptionCallback*,
                              V8RTCPeerConnectionErrorCallback*,
@@ -158,7 +158,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   // Certificate management
   // http://w3c.github.io/webrtc-pc/#sec.cert-mgmt
-  static ScriptPromise generateCertificate(
+  static ScriptPromiseTyped<RTCCertificate> generateCertificate(
       ScriptState* script_state,
       const V8AlgorithmIdentifier* keygen_algorithm,
       ExceptionState& exception_state);
@@ -193,9 +193,9 @@ class MODULES_EXPORT RTCPeerConnection final
 
   void removeStream(MediaStream*, ExceptionState&);
 
-  ScriptPromise getStats(ScriptState* script_state,
-                         MediaStreamTrack* selector,
-                         ExceptionState&);
+  ScriptPromiseTyped<RTCStatsReport> getStats(ScriptState* script_state,
+                                              MediaStreamTrack* selector,
+                                              ExceptionState&);
 
   const HeapVector<Member<RTCRtpTransceiver>>& getTransceivers() const;
   const HeapVector<Member<RTCRtpSender>>& getSenders() const;
@@ -246,7 +246,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   // Called in response to CreateOffer / CreateAnswer to update `last_offer_` or
   // `last_answer_`.
-  void NoteSdpCreated(const RTCSessionDescription&);
+  void NoteSdpCreated(const RTCSessionDescriptionInit&);
   // Utility to report SDP usage of setLocalDescription / setRemoteDescription.
   enum class SetSdpOperationType {
     kSetLocalDescription,
@@ -309,7 +309,7 @@ class MODULES_EXPORT RTCPeerConnection final
   static int PeerConnectionCountLimit();
 
   static void GenerateCertificateCompleted(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<RTCCertificate>* resolver,
       rtc::scoped_refptr<rtc::RTCCertificate> certificate);
 
   // Called by RTCIceTransport::OnStateChange to update the ice connection

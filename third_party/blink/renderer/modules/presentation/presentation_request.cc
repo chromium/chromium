@@ -198,13 +198,14 @@ bool PresentationRequest::HasPendingActivity() const {
              PresentationAvailabilityProperty::kPending;
 }
 
-ScriptPromise PresentationRequest::start(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
+ScriptPromiseTyped<PresentationConnection> PresentationRequest::start(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The PresentationRequest is no longer associated to a frame.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<PresentationConnection>();
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -213,12 +214,13 @@ ScriptPromise PresentationRequest::start(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         "PresentationRequest::start() requires user gesture.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<PresentationConnection>();
   }
 
   PresentationController* controller = PresentationController::From(*window);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<PresentationConnection>>(
+          script_state, exception_state.GetContext());
 
   controller->GetPresentationService()->StartPresentation(
       urls_,
@@ -228,20 +230,22 @@ ScriptPromise PresentationRequest::start(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise PresentationRequest::reconnect(ScriptState* script_state,
-                                             const String& id,
-                                             ExceptionState& exception_state) {
+ScriptPromiseTyped<PresentationConnection> PresentationRequest::reconnect(
+    ScriptState* script_state,
+    const String& id,
+    ExceptionState& exception_state) {
   PresentationController* controller =
       PresentationController::FromContext(GetExecutionContext());
   if (!controller) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The PresentationRequest is no longer associated to a frame.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<PresentationConnection>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<PresentationConnection>>(
+          script_state, exception_state.GetContext());
 
   ControllerPresentationConnection* existing_connection =
       controller->FindExistingConnection(urls_, id);

@@ -115,7 +115,7 @@ ScriptPromiseTyped<WebPrinterAttributes> WebPrinter::fetchAttributes(
   return fetch_attributes_resolver_->Promise();
 }
 
-ScriptPromise WebPrinter::printJob(
+ScriptPromiseTyped<WebPrintJob> WebPrinter::printJob(
     ScriptState* script_state,
     const String& job_name,
     const WebPrintDocumentDescription* document,
@@ -124,11 +124,11 @@ ScriptPromise WebPrinter::printJob(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<WebPrintJob>();
   }
 
   if (!ValidatePrintJobTemplateAttributes(pjt_attributes, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<WebPrintJob>();
   }
 
   auto attributes =
@@ -136,8 +136,9 @@ ScriptPromise WebPrinter::printJob(
           pjt_attributes);
   attributes->job_name = job_name;
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<WebPrintJob>>(
+          script_state, exception_state.GetContext());
   printer_->Print(document->data()->AsMojoBlob(), std::move(attributes),
                   resolver->WrapCallbackInScriptScope(WTF::BindOnce(
                       &WebPrinter::OnPrint, WrapPersistent(this))));
@@ -171,7 +172,7 @@ void WebPrinter::OnFetchAttributes(
   fetch_attributes_resolver_ = nullptr;
 }
 
-void WebPrinter::OnPrint(ScriptPromiseResolver* resolver,
+void WebPrinter::OnPrint(ScriptPromiseResolverTyped<WebPrintJob>* resolver,
                          mojom::blink::WebPrintResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

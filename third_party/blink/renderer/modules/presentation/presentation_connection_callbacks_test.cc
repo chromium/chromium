@@ -49,7 +49,8 @@ TEST(PresentationConnectionCallbacksTest, HandleSuccess) {
   V8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<PresentationConnection>>(
+          scope.GetScriptState());
   resolver->Promise().Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   PresentationConnectionCallbacks callbacks(resolver, MakeRequest(&scope));
@@ -83,7 +84,8 @@ TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
   PresentationInfoPtr info = PresentationInfo::New(
       url_test_helpers::ToKURL(kPresentationUrl), kPresentationId);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<PresentationConnection>>(
+          scope.GetScriptState());
   resolver->Promise().Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   auto* connection = ControllerPresentationConnection::Take(
@@ -118,7 +120,8 @@ TEST(PresentationConnectionCallbacksTest, HandleError) {
   V8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<PresentationConnection>>(
+          scope.GetScriptState());
   resolver->Promise().Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
   PresentationConnectionCallbacks callbacks(resolver, MakeRequest(&scope));

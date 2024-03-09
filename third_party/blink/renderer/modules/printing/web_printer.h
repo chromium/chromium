@@ -18,6 +18,7 @@ namespace blink {
 class ExceptionState;
 class ExecutionContext;
 class WebPrintDocumentDescription;
+class WebPrintJob;
 class WebPrintJobTemplateAttributes;
 class WebPrinterAttributes;
 
@@ -33,11 +34,12 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   ScriptPromiseTyped<WebPrinterAttributes> fetchAttributes(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromise printJob(ScriptState* script_state,
-                         const String& job_name,
-                         const WebPrintDocumentDescription* document,
-                         const WebPrintJobTemplateAttributes* pjt_attributes,
-                         ExceptionState& exception_state);
+  ScriptPromiseTyped<WebPrintJob> printJob(
+      ScriptState* script_state,
+      const String& job_name,
+      const WebPrintDocumentDescription* document,
+      const WebPrintJobTemplateAttributes* pjt_attributes,
+      ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 
@@ -45,7 +47,7 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   void OnFetchAttributes(ScriptPromiseResolverTyped<WebPrinterAttributes>*,
                          mojom::blink::WebPrinterFetchResultPtr result);
 
-  void OnPrint(ScriptPromiseResolver* resolver,
+  void OnPrint(ScriptPromiseResolverTyped<WebPrintJob>* resolver,
                mojom::blink::WebPrintResultPtr result);
 
   Member<WebPrinterAttributes> attributes_;
