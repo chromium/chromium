@@ -65,9 +65,37 @@ constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
 constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
 constexpr int kSourceRowSpacing = 8;
-// The space between the two feedback buttons is 16, but we subtract 4 for the
-// padding to the left of the thumbs-down button.
-constexpr int kFeedbackButtonSpacing = 12;
+
+// The below constants for the feedback buttons and cutout dimensions refer to
+// the following spec, where an order is designated for the first, second, and
+// third curves of the cutout in the content section's bottom-right corner:
+// http://screen/9K4tXBZXihWN9KA.
+constexpr int kFeedbackButtonIconSize = 20;
+constexpr int kFeedbackButtonIconPaddingAbove = 8;
+constexpr int kFeedbackButtonIconPaddingBetween = 16;
+constexpr int kFeedbackButtonIconPaddingLeft = 12;
+
+// Width of the cutout in the content section's bottom-right corner, not
+// including the rounded corner immediately to its left.
+constexpr int kCutoutWidth = kFeedbackButtonIconPaddingLeft +
+                             kFeedbackButtonIconSize * 2 +
+                             kFeedbackButtonIconPaddingBetween;
+// Height of the cutout in the content section's bottom-right corner, not
+// including the rounded corner immediately above it.
+constexpr int kCutoutHeight =
+    kFeedbackButtonIconSize + kFeedbackButtonIconPaddingAbove;
+
+// Radius of the cutout's first and third curves.
+constexpr SkScalar kCutoutConvexRadius = 10.f;
+// Radius of the cutout's second curve.
+constexpr SkScalar kCutoutConcaveRadius = 12.f;
+
+// A feedback button is a "small" `IconButton`, meaning it has a button (view)
+// size of 24px and an icon size of 20px. The feedback button's icon is aligned
+// to the rightmost edge of the view, creating 4px of padding to the left of the
+// icon. Subtract that padding from the expected space between the two icons.
+// NOTE: Changes to the feedback buttons' size will affect this constant.
+constexpr int kFeedbackButtonSpacing = kFeedbackButtonIconPaddingBetween - 4;
 
 // Options for a feedback button.
 enum FeedbackType {
@@ -116,11 +144,13 @@ std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
 // Container for scrollable content in the Mahi panel, including the summary and
 // outlines section or the Q&A section. Clips its own bounds to present its
 // contents within a round-cornered container with a cutout in the bottom-right.
-class ContentScrollView : public views::ScrollView {
+class ContentScrollView : public views::ScrollView,
+                          public views::ViewTargeterDelegate {
   METADATA_HEADER(ContentScrollView, views::ScrollView)
 
  public:
   ContentScrollView() {
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase);
     SetProperty(views::kFlexBehaviorKey,
                 views::FlexSpecification(views::FlexSpecification(
@@ -155,39 +185,16 @@ class ContentScrollView : public views::ScrollView {
     constexpr auto horizontal_offset = SkPoint::Make(radius, 0.f);
     constexpr auto vertical_offset = SkPoint::Make(0.f, radius);
 
-    // The below constants for the feedback buttons and cutout dimensions refer
-    // to the following spec, where I also designate an order for the cutout's
-    // "first", "second", and "third" curves: http://screen/9K4tXBZXihWN9KA.
+    // The following spec indicates the order of the cutout's first, second, and
+    // third curves: http://screen/9K4tXBZXihWN9KA.
+    const auto cutout_curve1_end_x = width - kCutoutWidth;
+    const auto cutout_curve1_end_y = height - kCutoutConvexRadius;
 
-    constexpr auto feedback_button_size = 20;
-    constexpr auto feedback_button_padding_above = 8;
-    constexpr auto feedback_button_padding_between = 16;
-    constexpr auto feedback_button_padding_left = 12;
-
-    // Radius of the cutout's first and third curves.
-    constexpr auto cutout_convex_radius = 10.f;
-    // Radius of the cutout's second curve.
-    constexpr auto cutout_concave_radius = 12.f;
-
-    // Width of the cutout in the bottom-right corner, not including the rounded
-    // corner immediately to its left.
-    const auto cutout_width = feedback_button_padding_left +
-                              feedback_button_size * 2 +
-                              feedback_button_padding_between;
-    // Height of the cutout in the bottom-right corner, not including the
-    // rounded corner immediately above it.
-    const auto cutout_height =
-        feedback_button_size + feedback_button_padding_above;
-
-    const auto cutout_curve1_end_x = width - cutout_width;
-    const auto cutout_curve1_end_y = height - cutout_convex_radius;
-
-    const auto cutout_curve2_end_x =
-        cutout_curve1_end_x + cutout_concave_radius;
-    const auto cutout_curve2_end_y = height - cutout_height;
+    const auto cutout_curve2_end_x = cutout_curve1_end_x + kCutoutConcaveRadius;
+    const auto cutout_curve2_end_y = height - kCutoutHeight;
 
     const auto cutout_curve3_end_x = width;
-    const auto cutout_curve3_end_y = cutout_curve2_end_y - cutout_convex_radius;
+    const auto cutout_curve3_end_y = cutout_curve2_end_y - kCutoutConvexRadius;
 
     auto clip_path =
         SkPathBuilder()
@@ -200,17 +207,17 @@ class ContentScrollView : public views::ScrollView {
             // horizontal line connecting it to the bottom-left rounded corner.
             .arcTo(SkPoint::Make(cutout_curve1_end_x, height),
                    SkPoint::Make(cutout_curve1_end_x, cutout_curve1_end_y),
-                   cutout_convex_radius)
+                   kCutoutConvexRadius)
             // Draw the cutout's second curve and a vertical line connecting it
             // to the first curve.
             .arcTo(SkPoint::Make(cutout_curve1_end_x, cutout_curve2_end_y),
                    SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
-                   cutout_concave_radius)
+                   kCutoutConcaveRadius)
             // Draw the cutout's third curve and a horizontal line connecting
             // it to the second curve.
             .arcTo(SkPoint::Make(cutout_curve3_end_x, cutout_curve2_end_y),
                    SkPoint::Make(cutout_curve3_end_x, cutout_curve3_end_y),
-                   cutout_convex_radius)
+                   kCutoutConvexRadius)
             // Draw the top-right rounded corner and a vertical line connecting
             // it to the bottom-right corner's cutout.
             .arcTo(top_right, top_right - horizontal_offset, radius)
@@ -220,6 +227,16 @@ class ContentScrollView : public views::ScrollView {
             .close()
             .detach();
     SetClipPath(clip_path);
+  }
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    const gfx::Rect contents_bounds = GetContentsBounds();
+    const gfx::Rect corner_cutout_region = gfx::Rect(
+        contents_bounds.width() - kCutoutWidth,
+        contents_bounds.height() - kCutoutHeight, kCutoutWidth, kCutoutHeight);
+    return !rect.Intersects(corner_cutout_region);
   }
 };
 
@@ -328,8 +345,6 @@ MahiPanelView::MahiPanelView() {
       views::Builder<views::View>()
           .SetUseDefaultFillLayout(true)
           .AddChildren(
-              views::Builder<views::View>(
-                  std::make_unique<ContentScrollView>()),
               // Add buttons for the user to give feedback on the content.
               views::Builder<views::BoxLayoutView>()
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -341,7 +356,9 @@ MahiPanelView::MahiPanelView() {
                   .AddChildren(views::Builder<views::View>(
                                    CreateFeedbackButton(THUMBS_UP)),
                                views::Builder<views::View>(
-                                   CreateFeedbackButton(THUMBS_DOWN))))
+                                   CreateFeedbackButton(THUMBS_DOWN))),
+              views::Builder<views::View>(
+                  std::make_unique<ContentScrollView>()))
           .Build());
 
   auto footer_row = std::make_unique<views::BoxLayoutView>();
