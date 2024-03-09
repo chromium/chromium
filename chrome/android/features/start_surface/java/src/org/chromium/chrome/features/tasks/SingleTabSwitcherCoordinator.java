@@ -388,7 +388,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
 
     @Override
     public String getModuleContextMenuHideText(Context context) {
-        return null;
+        return context.getResources()
+                .getQuantityString(R.plurals.home_modules_context_menu_hide_tab, 1);
     }
 
     @VisibleForTesting

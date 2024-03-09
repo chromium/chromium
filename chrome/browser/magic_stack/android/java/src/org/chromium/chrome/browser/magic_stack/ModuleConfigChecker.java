@@ -11,9 +11,4 @@ public interface ModuleConfigChecker {
      * method should be called after profile is initialized.
      */
     boolean isEligible();
-
-    /** Returns whether the module can be turned on or off in settings. */
-    default boolean isConfigurable() {
-        return true;
-    }
 }

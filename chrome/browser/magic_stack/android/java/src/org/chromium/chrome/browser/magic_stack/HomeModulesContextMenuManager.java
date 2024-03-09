@@ -15,8 +15,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -46,21 +44,15 @@ public class HomeModulesContextMenuManager {
 
     private final ModuleDelegate mModuleDelegate;
     private final Point mContextMenuStartPosition;
-    private final HomeModulesConfigManager mHomeModuleConfigManager;
-
-    private Boolean mHasModuleToCustomize;
 
     /**
      * @param moduleDelegate The instance of magic stack {@link ModuleDelegate}.
      * @param startPosition The starting position to show the context menu.
      */
     public HomeModulesContextMenuManager(
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Point startPosition,
-            @NonNull HomeModulesConfigManager homeModulesConfigManager) {
+            @NonNull ModuleDelegate moduleDelegate, @NonNull Point startPosition) {
         mModuleDelegate = moduleDelegate;
         mContextMenuStartPosition = startPosition;
-        mHomeModuleConfigManager = homeModulesConfigManager;
     }
 
     /**
@@ -133,13 +125,8 @@ public class HomeModulesContextMenuManager {
     /** Returns whether to show a context menu item. */
     @VisibleForTesting
     boolean shouldShowItem(@ContextMenuItemId int itemId, @NonNull ModuleProvider moduleProvider) {
-        if (mHasModuleToCustomize == null) {
-            mHasModuleToCustomize = mHomeModuleConfigManager.hasModuleShownInSettings();
-        }
-        if (itemId == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS && mHasModuleToCustomize) {
-            return true;
-        } else if (itemId == ContextMenuItemId.HIDE_MODULE
-                && moduleProvider.getModuleType() != ModuleType.SINGLE_TAB) {
+        if (itemId == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS
+                || itemId == ContextMenuItemId.HIDE_MODULE) {
             return true;
         }
 
@@ -174,9 +161,5 @@ public class HomeModulesContextMenuManager {
     /** Returns the starting position of the context menu. */
     Point getContextMenuOffset() {
         return mContextMenuStartPosition;
-    }
-
-    void resetHasModuleToCustomizeForTesting() {
-        mHasModuleToCustomize = null;
     }
 }

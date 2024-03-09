@@ -129,8 +129,7 @@ public class HomeModulesConfigManager {
         @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
         for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
             ModuleConfigChecker configChecker = entry.getValue();
-            if (!configChecker.isConfigurable()
-                    || configChecker.isEligible() && getPrefModuleTypeEnabled(entry.getKey())) {
+            if (configChecker.isEligible() && getPrefModuleTypeEnabled(entry.getKey())) {
                 enabledModuleList.add(entry.getKey());
             }
         }
@@ -143,7 +142,7 @@ public class HomeModulesConfigManager {
         @ModuleType List<Integer> moduleListShownInSettings = new ArrayList<>();
         for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
             ModuleConfigChecker configChecker = entry.getValue();
-            if (configChecker.isEligible() && configChecker.isConfigurable()) {
+            if (configChecker.isEligible()) {
                 moduleListShownInSettings.add(entry.getKey());
             }
         }
@@ -153,7 +152,7 @@ public class HomeModulesConfigManager {
     /** Returns whether it has any module to configure in settings. */
     public boolean hasModuleShownInSettings() {
         for (ModuleConfigChecker moduleConfigChecker : mModuleConfigCheckerMap.values()) {
-            if (moduleConfigChecker.isConfigurable() && moduleConfigChecker.isEligible()) {
+            if (moduleConfigChecker.isEligible()) {
                 return true;
             }
         }
@@ -164,6 +163,11 @@ public class HomeModulesConfigManager {
     String getSettingsPreferenceKey(@ModuleType int moduleType) {
         assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
 
+        // SINGLE_TAB and TAB_RESUMPTION modules are controlled by the same preference key.
+        if (moduleType == ModuleType.SINGLE_TAB) {
+            return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                    String.valueOf(ModuleType.TAB_RESUMPTION));
+        }
         return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
     }
 

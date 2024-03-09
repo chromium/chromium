@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.text.TextUtils;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +46,8 @@ public class HomeModulesConfigManagerUnitTest {
     @Test
     public void testSetAndGetPrefModuleTypeEnabled() {
         String priceChangePreferenceKey =
-                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(1));
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.PRICE_CHANGE));
 
         HomeModulesStateListener listener = Mockito.mock(HomeModulesStateListener.class);
         mHomeModulesConfigManager.addListener(listener);
@@ -69,62 +72,74 @@ public class HomeModulesConfigManagerUnitTest {
 
     @Test
     public void testGetEnabledModuleList() {
-        registerModuleConfigChecker(2);
+        registerModuleConfigChecker(1);
 
-        // Verifies that:
-        // 1) a not configurable module is always enabled.
-        // 2) a configurable module needs to a) eligible to build and b) enabled in
-        // settings to be treated as enabled.
-        when(mModuleConfigCheckerList.get(0).isConfigurable()).thenReturn(false);
-        when(mModuleConfigCheckerList.get(1).isConfigurable()).thenReturn(true);
-        when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(true);
-        mHomeModulesConfigManager.setPrefModuleTypeEnabled(1, true);
-        assertTrue(mHomeModulesConfigManager.getPrefModuleTypeEnabled(1));
-        Set<Integer> expectedSet = Set.of(0, 1);
+        // Verifies that a module is enabled if it is eligible to build and is enabled in settings.
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(false);
+        mHomeModulesConfigManager.setPrefModuleTypeEnabled(0, true);
+        assertTrue(mHomeModulesConfigManager.getPrefModuleTypeEnabled(0));
+        assertTrue(mHomeModulesConfigManager.getEnabledModuleSet().isEmpty());
+
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
+        Set<Integer> expectedSet = Set.of(0);
         assertEquals(expectedSet, mHomeModulesConfigManager.getEnabledModuleSet());
 
-        when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(false);
-        expectedSet = Set.of(0);
-        assertEquals(expectedSet, mHomeModulesConfigManager.getEnabledModuleSet());
-
-        when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(true);
-        mHomeModulesConfigManager.setPrefModuleTypeEnabled(1, false);
-        assertFalse(mHomeModulesConfigManager.getPrefModuleTypeEnabled(1));
-        expectedSet = Set.of(0);
-        assertEquals(expectedSet, mHomeModulesConfigManager.getEnabledModuleSet());
+        mHomeModulesConfigManager.setPrefModuleTypeEnabled(0, false);
+        assertFalse(mHomeModulesConfigManager.getPrefModuleTypeEnabled(0));
+        assertTrue(mHomeModulesConfigManager.getEnabledModuleSet().isEmpty());
     }
 
     @Test
     public void testGetModuleListShownInSettings() {
-        registerModuleConfigChecker(2);
+        registerModuleConfigChecker(1);
 
         // Verifies that there isn't any module shown in the settings.
-        when(mModuleConfigCheckerList.get(0).isConfigurable()).thenReturn(false);
-        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
-        when(mModuleConfigCheckerList.get(1).isConfigurable()).thenReturn(true);
-        when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(false);
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(false);
         assertTrue(mHomeModulesConfigManager.getModuleListShownInSettings().isEmpty());
 
-        // Verifies the list contains the module which is configurable and eligible to build.
-        when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(true);
-        List<Integer> expectedList = List.of(1);
+        // Verifies the list contains the module which eligible to build.
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
+        List<Integer> expectedList = List.of(0);
         assertEquals(expectedList, mHomeModulesConfigManager.getModuleListShownInSettings());
     }
 
     @Test
     public void testHasModuleShownInSettings() {
-        registerModuleConfigChecker(2);
+        registerModuleConfigChecker(1);
 
         // Verifies that there isn't any module shown in the settings.
-        when(mModuleConfigCheckerList.get(0).isConfigurable()).thenReturn(false);
-        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
-        when(mModuleConfigCheckerList.get(1).isConfigurable()).thenReturn(true);
-        when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(false);
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(false);
         assertFalse(mHomeModulesConfigManager.hasModuleShownInSettings());
 
-        // Verifies the list contains the module which is configurable and eligible to build.
-        when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(true);
+        // Verifies the list contains the module which is eligible to build.
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
         assertTrue(mHomeModulesConfigManager.hasModuleShownInSettings());
+    }
+
+    @Test
+    public void testGetSettingsPreferenceKey() {
+        String tabResumptionPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.TAB_RESUMPTION));
+        String priceChangePreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.PRICE_CHANGE));
+
+        assertFalse(TextUtils.equals(tabResumptionPreferenceKey, priceChangePreferenceKey));
+
+        // Verifies that the SINGLE_TAB and TAB_RESUMPTION modules are shared with the same
+        // preference key.
+        assertEquals(
+                tabResumptionPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.SINGLE_TAB));
+        assertEquals(
+                tabResumptionPreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_RESUMPTION));
+
+        // Verifies that the PRICE_CHANGE has its own preference key.
+        assertEquals(
+                priceChangePreferenceKey,
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));
     }
 
     @Test

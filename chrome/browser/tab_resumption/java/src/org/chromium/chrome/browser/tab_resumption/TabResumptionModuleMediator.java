@@ -145,7 +145,9 @@ public class TabResumptionModuleMediator {
     }
 
     String getModuleContextMenuHideText(Context context) {
+        SuggestionBundle bundle = mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
         return context.getResources()
-                .getString(R.string.tab_resumption_module_other_devices_context_menu_hide);
+                .getQuantityString(
+                        R.plurals.home_modules_context_menu_hide_tab, bundle.entries.size());
     }
 }

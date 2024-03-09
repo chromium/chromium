@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,9 +49,9 @@ public class HomeModulesContextMenuManagerUnitTest {
     @Mock private ContextMenu mContextMenu;
     @Mock private View mView;
     @Mock private Context mContext;
-    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     private @ModuleType int mModuleType;
+    private String mContextMenuHide = "Hide module";
     private Point mPoint = new Point(0, 0);
     private HomeModulesContextMenuManager mManager;
 
@@ -61,9 +60,8 @@ public class HomeModulesContextMenuManagerUnitTest {
         mModuleType = ModuleType.SINGLE_TAB;
         doReturn(mContext).when(mView).getContext();
         doReturn(mModuleType).when(mModuleProvider).getModuleType();
-        mManager =
-                new HomeModulesContextMenuManager(
-                        mModuleDelegate, mPoint, mHomeModulesConfigManager);
+        when(mModuleProvider.getModuleContextMenuHideText(any())).thenReturn(mContextMenuHide);
+        mManager = new HomeModulesContextMenuManager(mModuleDelegate, mPoint);
     }
 
     @Test
@@ -81,25 +79,10 @@ public class HomeModulesContextMenuManagerUnitTest {
     @Test
     @SmallTest
     public void testShouldShowItem() {
-        // Verifies that the "customize" menu item is default shown for all modules.
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
+        // Verifies that the "customize" and "hide" menu items are default shown for all modules.
         assertTrue(
                 mManager.shouldShowItem(
                         ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS, mModuleProvider));
-
-        // Verifies that the "customize" menu item is removed when there isn't any module to
-        // customize.
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
-        mManager.resetHasModuleToCustomizeForTesting();
-        assertFalse(
-                mManager.shouldShowItem(
-                        ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS, mModuleProvider));
-
-        // Verifies that the "hide module" menu item is shown for all modules except the single tab
-        // module.
-        assertEquals(ModuleType.SINGLE_TAB, mModuleProvider.getModuleType());
-        assertFalse(mManager.shouldShowItem(ContextMenuItemId.HIDE_MODULE, mModuleProvider));
-        when(mModuleProvider.getModuleType()).thenReturn(ModuleType.PRICE_CHANGE);
         assertTrue(mManager.shouldShowItem(ContextMenuItemId.HIDE_MODULE, mModuleProvider));
 
         // Cases for a customized menu item.
@@ -121,16 +104,14 @@ public class HomeModulesContextMenuManagerUnitTest {
                         eq(ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS),
                         eq(Menu.NONE),
                         anyInt());
+        MenuItem menuItem2 = Mockito.mock(MenuItem.class);
+        when(mContextMenu.add(anyString())).thenReturn(menuItem2);
 
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
         mManager.createContextMenu(mContextMenu, mView, mModuleProvider);
-        verify(menuItem1, never()).setOnMenuItemClickListener(any());
-        verify(mModuleProvider, never()).onContextMenuCreated();
 
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
-        mManager.resetHasModuleToCustomizeForTesting();
-        mManager.createContextMenu(mContextMenu, mView, mModuleProvider);
+        // Verifies context menu items SHOW_CUSTOMIZE_SETTINGS and HIDE_MODULE are shown.
         verify(menuItem1).setOnMenuItemClickListener(any());
+        verify(menuItem2).setOnMenuItemClickListener(any());
         verify(mModuleProvider).onContextMenuCreated();
     }
 }

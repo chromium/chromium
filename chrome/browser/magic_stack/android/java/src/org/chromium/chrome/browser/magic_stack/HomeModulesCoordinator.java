@@ -96,9 +96,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         mHomeModulesContextMenuManager =
                 new HomeModulesContextMenuManager(
-                        this,
-                        moduleDelegateHost.getContextMenuStartPoint(),
-                        mHomeModulesConfigManager);
+                        this, moduleDelegateHost.getContextMenuStartPoint());
         mProfileSupplier = profileSupplier;
 
         mModel = new ModelList();
@@ -261,17 +259,37 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     /** Reacts when the home modules' specific module type is disabled or enabled. */
     void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {
+        // The single tab module and the tab resumption modules are controlled by the same
+        // preference key. Once it is turned on or off, both modules will be enabled or disabled.
         if (isEnabled) {
             // If the mEnabledModuleSet hasn't been initialized yet, skip here.
             if (mEnabledModuleSet != null) {
-                mEnabledModuleSet.add(moduleType);
+                if (moduleType == ModuleType.SINGLE_TAB
+                        || moduleType == ModuleType.TAB_RESUMPTION) {
+                    mEnabledModuleSet.add(ModuleType.SINGLE_TAB);
+                    mEnabledModuleSet.add(ModuleType.TAB_RESUMPTION);
+                } else {
+                    mEnabledModuleSet.add(moduleType);
+                }
             }
         } else {
             // If the mEnabledModuleSet hasn't been initialized yet, skip here.
             if (mEnabledModuleSet != null) {
-                mEnabledModuleSet.remove(moduleType);
+                if (moduleType == ModuleType.SINGLE_TAB
+                        || moduleType == ModuleType.TAB_RESUMPTION) {
+                    mEnabledModuleSet.remove(ModuleType.SINGLE_TAB);
+                    mEnabledModuleSet.remove(ModuleType.TAB_RESUMPTION);
+                } else {
+                    mEnabledModuleSet.remove(moduleType);
+                }
             }
+
             removeModule(moduleType);
+            if (moduleType == ModuleType.SINGLE_TAB) {
+                removeModule(ModuleType.TAB_RESUMPTION);
+            } else if (moduleType == ModuleType.TAB_RESUMPTION) {
+                removeModule(ModuleType.SINGLE_TAB);
+            }
         }
     }
 
