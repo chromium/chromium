@@ -102,7 +102,11 @@ class GraphBuilder final {
 
   // Operation serialization helpers for operations not directly declared in the
   // mojom::Operation union.
-  OperatorOffset SerializeUnaryOperator(
+  //
+  // Serialize an operation with a single input and a single output operand.
+  // The caller must either provide both `builtin_options_type` and
+  // `builtin_options`, or neither.
+  OperatorOffset SerializeUnaryOperation(
       ::tflite::BuiltinOperator code,
       uint64_t input_operand_id,
       uint64_t output_operand_id,
