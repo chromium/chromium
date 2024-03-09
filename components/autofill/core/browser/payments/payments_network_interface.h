@@ -464,10 +464,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   ~PaymentsNetworkInterface() override;
 
   // Starts fetching the OAuth2 token in anticipation of future Payments
-  // requests. Called as an optimization, but not strictly necessary. Should
-  // *not* be called in advance of GetCardUploadDetails or UploadCard because
-  // identifying information should not be sent until the user has explicitly
-  // accepted an upload prompt.
+  // requests. Called as an optimization, but not strictly necessary.
   void Prepare();
 
   // The user has interacted with a credit card form and may attempt to unmask a
