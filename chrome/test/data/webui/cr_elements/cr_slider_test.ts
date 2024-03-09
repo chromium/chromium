@@ -9,7 +9,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue, assertNotReached} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
@@ -388,30 +388,40 @@ suite('cr-slider', function() {
               .transition);
     }
 
-    function assertTransition() {
-      function getValue(propName: string) {
-        return `${propName} 0.08s ease 0s`;
-      }
-
-      assertEquals(
-          getValue('margin-inline-start'),
-          getComputedStyle(crSlider.shadowRoot!.querySelector('#knobAndLabel')!)
-              .transition);
-      assertEquals(
-          getValue('width'),
-          getComputedStyle(crSlider.shadowRoot!.querySelector('#bar')!)
-              .transition);
-    }
-
-    assertNoTransition();
-    pointerDown(.5);
-    assertTransition();
-
     const knobAndLabel =
         crSlider.shadowRoot!.querySelector<HTMLElement>('#knobAndLabel')!;
 
-    await eventToPromise('transitionend', knobAndLabel);
+    type TransitionEventName = 'transitionstart'|'transitionend';
+    function whenTransitionEvent(eventName: TransitionEventName):
+        Promise<void> {
+      return new Promise(resolve => {
+        knobAndLabel.addEventListener(
+            eventName, function f(e: TransitionEvent) {
+              if (e.target !== knobAndLabel) {
+                // Ignore any events coming from the paper-ripple or #label.
+                return;
+              }
+
+              if (e.propertyName !== 'margin-left') {
+                // Ignore all other property transitions, as 'margin-inline-end'
+                // (surfaced as 'margin-left') is what actually moves the knob
+                // along the horizontal axis.
+                return;
+              }
+              knobAndLabel.removeEventListener(eventName, f);
+              resolve();
+            });
+      });
+    }
+
+    const whenTransitionStart = whenTransitionEvent('transitionstart');
+    const whenTransitionEnd = whenTransitionEvent('transitionend');
+
     assertNoTransition();
+    pointerDown(.5);
+    await Promise.all([whenTransitionStart, whenTransitionEnd]);
+    assertNoTransition();
+
     // Other operations that change the value do not have transitions.
     pointerMove(0);
     assertNoTransition();
@@ -425,11 +435,27 @@ suite('cr-slider', function() {
 
     // Check that the slider is not stuck with a transition when the value
     // does not change.
+    function unexpectedEventListener(e: TransitionEvent) {
+      if (e.target !== knobAndLabel) {
+        // Ignore any events coming from the paper-ripple or #label.
+        return;
+      }
+      knobAndLabel.removeEventListener(
+          e.type as TransitionEventName, unexpectedEventListener);
+      assertNotReached(`Unexpected '${e.type}' event for '${e.propertyName}'`);
+    }
+    knobAndLabel.addEventListener('transitionstart', unexpectedEventListener);
+    knobAndLabel.addEventListener('transitionend', unexpectedEventListener);
+
+    // Need to yield here, otherwise for some unknown odd reason the events that
+    // would cause this test to fail above are not fired, when they should.
+    await new Promise<void>(resolve => window.setTimeout(() => resolve(), 1));
+
     crSlider.value = 0;
     pointerDown(0);
-    assertTransition();
-    await eventToPromise('transitionend', knobAndLabel);
-    assertNoTransition();
+
+    // Wait a bit to allow for any undesired events to surface.
+    await new Promise<void>(resolve => window.setTimeout(() => resolve(), 150));
   });
 
   test('getRatio()', () => {
