@@ -274,9 +274,7 @@ struct VideoCaptureImpl::BufferContext
 struct VideoCaptureImpl::VideoFrameInitData {
   media::mojom::blink::ReadyBufferPtr ready_buffer;
   scoped_refptr<BufferContext> buffer_context;
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   bool is_webgpu_compatible = false;
-#endif
   absl::variant<scoped_refptr<media::VideoFrame>,
                 std::unique_ptr<gfx::GpuMemoryBuffer>>
       frame_or_buffer;
@@ -471,11 +469,12 @@ VideoCaptureImpl::CreateVideoFrameInitData(
 #if BUILDFLAG(IS_CHROMEOS)
       video_frame_init_data.is_webgpu_compatible =
           buffer_handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
-#endif
-
-#if BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC)
       video_frame_init_data.is_webgpu_compatible =
           media::IOSurfaceIsWebGPUCompatible(buffer_handle.io_surface.get());
+#elif BUILDFLAG(IS_WIN)
+      video_frame_init_data.is_webgpu_compatible =
+          buffer_handle.type == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
 #endif
       // No need to propagate shared memory region further as it's already
       // exposed by |buffer_context->data()|.
@@ -734,10 +733,8 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   frame->metadata().allow_overlay = true;
   frame->metadata().read_lock_fences_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   frame->metadata().is_webgpu_compatible =
       video_frame_init_data.is_webgpu_compatible;
-#endif
   video_frame_init_data.frame_or_buffer = frame;
   return true;
 }
