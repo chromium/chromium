@@ -10,7 +10,7 @@ import type {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue, assertNotReached} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
@@ -129,8 +129,10 @@ suite('cr-slider', function() {
     assertEquals(97, crSlider.value);
   });
 
-  test('key events with key down intervals', () => {
+  test('key events with key down intervals', async () => {
     crSlider.keyPressSliderIncrement = 10;
+    await microtasksFinished();
+
     pressArrowRight();
     assertEquals(10, crSlider.value);
     pressPageUp();
@@ -230,11 +232,12 @@ suite('cr-slider', function() {
     assertEquals(61, crSlider.value);
   });
 
-  test('markers', () => {
+  test('markers', async () => {
     const markersElement =
         crSlider.shadowRoot!.querySelector<HTMLElement>('#markers')!;
     assertTrue(markersElement.hidden);
     crSlider.markerCount = 10;
+    await microtasksFinished();
     assertFalse(markersElement.hidden);
     flush();
     const markers =
@@ -244,10 +247,12 @@ suite('cr-slider', function() {
       assertTrue(marker.classList.contains('inactive-marker'));
     });
     crSlider.value = 100;
+    await microtasksFinished();
     markers.forEach(marker => {
       assertTrue(marker.classList.contains('active-marker'));
     });
     crSlider.value = 50;
+    await microtasksFinished();
     markers.slice(0, 5).forEach(marker => {
       assertTrue(marker.classList.contains('active-marker'));
     });
@@ -256,22 +261,26 @@ suite('cr-slider', function() {
     });
   });
 
-  test('ticks and aria', () => {
+  test('ticks and aria', async () => {
     crSlider.value = 2;
     crSlider.ticks = [1, 2, 4, 8];
+    await microtasksFinished();
+
     assertEquals('1', crSlider.getAttribute('aria-valuemin'));
     assertEquals('8', crSlider.getAttribute('aria-valuemax'));
     assertEquals('4', crSlider.getAttribute('aria-valuetext'));
     assertEquals('4', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
-        '', crSlider.shadowRoot!.querySelector('#label')!.innerHTML.trim());
+        '', crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
     assertEquals(2, crSlider.value);
     pressArrowRight();
     assertEquals(3, crSlider.value);
+    await microtasksFinished();
     assertEquals('8', crSlider.getAttribute('aria-valuetext'));
     assertEquals('8', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
-        '', crSlider.shadowRoot!.querySelector('#label')!.innerHTML.trim());
+        '', crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
+
     crSlider.value = 2;
     crSlider.ticks = [
       {
@@ -289,76 +298,94 @@ suite('cr-slider', function() {
         label: 'Third',
       },
     ];
+    await microtasksFinished();
+
     assertEquals('1', crSlider.getAttribute('aria-valuemin'));
     assertEquals('3', crSlider.getAttribute('aria-valuemax'));
     assertEquals('Third', crSlider.getAttribute('aria-valuetext'));
     assertEquals(
         'Third',
-        crSlider.shadowRoot!.querySelector('#label')!.innerHTML.trim());
+        crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
     assertEquals('3', crSlider.getAttribute('aria-valuenow'));
     pressArrowLeft();
+    await microtasksFinished();
     assertEquals('Second', crSlider.getAttribute('aria-valuetext'));
     assertEquals('20', crSlider.getAttribute('aria-valuenow'));
     assertEquals(
         'Second',
-        crSlider.shadowRoot!.querySelector('#label')!.innerHTML.trim());
+        crSlider.shadowRoot!.querySelector('#label')!.textContent!.trim());
   });
 
-  test('disabled whenever public |disabled| is true', () => {
+  test('disabled whenever public |disabled| is true', async () => {
     crSlider.disabled = true;
     crSlider.ticks = [];
+    await microtasksFinished();
     checkDisabled(true);
+
     crSlider.ticks = [1];
+    await microtasksFinished();
     checkDisabled(true);
+
     crSlider.ticks = [1, 2, 3];
+    await microtasksFinished();
     checkDisabled(true);
   });
 
-  test('not disabled or snaps when |ticks| is empty', () => {
+  test('not disabled or snaps when |ticks| is empty', async () => {
     assertFalse(crSlider.disabled);
     crSlider.ticks = [];
+    await microtasksFinished();
     checkDisabled(false);
     assertFalse(crSlider.snaps);
     assertEquals(0, crSlider.min);
     assertEquals(100, crSlider.max);
   });
 
-  test('effectively disabled when only one tick', () => {
+  test('effectively disabled when only one tick', async () => {
     assertFalse(crSlider.disabled);
     crSlider.ticks = [1];
+    await microtasksFinished();
     checkDisabled(true);
     assertFalse(crSlider.snaps);
     assertEquals(0, crSlider.min);
     assertEquals(100, crSlider.max);
   });
 
-  test('not disabled and |snaps| true when |ticks.length| > 0', () => {
+  test('not disabled and |snaps| true when |ticks.length| > 0', async () => {
     assertFalse(crSlider.disabled);
     crSlider.ticks = [1, 2, 3];
+    await microtasksFinished();
     checkDisabled(false);
     assertTrue(crSlider.snaps);
     assertEquals(0, crSlider.min);
     assertEquals(2, crSlider.max);
   });
 
-  test('disabled, max, min and snaps update when ticks is mutated', () => {
-    assertFalse(crSlider.disabled);
-    checkDisabled(false);
+  test(
+      'disabled, max, min and snaps update when ticks is mutated', async () => {
+        assertFalse(crSlider.disabled);
+        checkDisabled(false);
 
-    // Single tick is effectively disabled.
-    crSlider.push('ticks', 1);
-    checkDisabled(true);
-    assertFalse(crSlider.snaps);
-    assertEquals(0, crSlider.min);
-    assertEquals(100, crSlider.max);
+        // Single tick is effectively disabled.
+        let ticks = crSlider.ticks.slice() as number[];
+        ticks.push(1);
+        crSlider.ticks = ticks;
+        await microtasksFinished();
+        checkDisabled(true);
+        assertFalse(crSlider.snaps);
+        assertEquals(0, crSlider.min);
+        assertEquals(100, crSlider.max);
 
-    // Multiple ticks is enabled.
-    crSlider.push('ticks', 2);
-    checkDisabled(false);
-    assertTrue(crSlider.snaps);
-    assertEquals(0, crSlider.min);
-    assertEquals(1, crSlider.max);
-  });
+        // Multiple ticks is enabled.
+        ticks = crSlider.ticks.slice();
+        ticks.push(2);
+        crSlider.ticks = ticks;
+        await microtasksFinished();
+        checkDisabled(false);
+        assertTrue(crSlider.snaps);
+        assertEquals(0, crSlider.min);
+        assertEquals(1, crSlider.max);
+      });
 
   test('value updated before dragging-changed event handled', () => {
     const wait = new Promise<void>(resolve => {
@@ -424,13 +451,16 @@ suite('cr-slider', function() {
 
     // Other operations that change the value do not have transitions.
     pointerMove(0);
+    await microtasksFinished();
     assertNoTransition();
     assertEquals(0, crSlider.value);
     pointerUp();
     pressArrowRight();
+    await microtasksFinished();
     assertNoTransition();
     assertEquals(1, crSlider.value);
     crSlider.value = 50;
+    await microtasksFinished();
     assertNoTransition();
 
     // Check that the slider is not stuck with a transition when the value
@@ -452,6 +482,7 @@ suite('cr-slider', function() {
     await new Promise<void>(resolve => window.setTimeout(() => resolve(), 1));
 
     crSlider.value = 0;
+    await microtasksFinished();
     pointerDown(0);
 
     // Wait a bit to allow for any undesired events to surface.
@@ -469,16 +500,20 @@ suite('cr-slider', function() {
     assertEquals(.5, crSlider.getRatio());
   });
 
-  test('cr-slider-value-changed event when mouse clicked', () => {
-    const wait = eventToPromise('cr-slider-value-changed', crSlider);
+  test('cr-slider-value-changed event when mouse clicked', async () => {
+    assertEquals(0, crSlider.value);
+    const whenFired = eventToPromise('cr-slider-value-changed', crSlider);
     pointerDown(.1);
-    return wait;
+    await whenFired;
+    assertEquals(10, crSlider.value);
   });
 
-  test('cr-slider-value-changed event when key pressed', () => {
-    const wait = eventToPromise('cr-slider-value-changed', crSlider);
+  test('cr-slider-value-changed event when key pressed', async () => {
+    assertEquals(0, crSlider.value);
+    const whenFired = eventToPromise('cr-slider-value-changed', crSlider);
     pressArrowRight();
-    return wait;
+    await whenFired;
+    assertEquals(1, crSlider.value);
   });
 
   test(
@@ -487,7 +522,7 @@ suite('cr-slider', function() {
         crSlider.min = -100;
         crSlider.max = 1000;
         crSlider.value = -50;
-        await flushTasks();
+        await microtasksFinished();
         assertEquals(-50, crSlider.value);
 
         crSlider.min = 0;
@@ -497,7 +532,7 @@ suite('cr-slider', function() {
         // when min/max and value change at the same time.
         assertEquals(150, crSlider.value);
 
-        await flushTasks();
+        await microtasksFinished();
         assertEquals(100, crSlider.value);
 
         crSlider.max = 25;
@@ -518,7 +553,7 @@ suite('cr-slider', function() {
     assertTrue(
         crSlider.shadowRoot!.querySelector<HTMLElement>('#container')!.hidden);
     crSlider.value = 0;
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(
         crSlider.shadowRoot!.querySelector<HTMLElement>('#container')!.hidden);
   });

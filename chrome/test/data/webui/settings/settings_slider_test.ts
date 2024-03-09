@@ -9,7 +9,7 @@ import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-help
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrSliderElement,SettingsSliderElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
@@ -40,38 +40,39 @@ suite('SettingsSlider', function() {
   function press(key: string) {
     keyDownOn(crSlider, 0, [], key);
     keyUpOn(crSlider, 0, [], key);
+    return microtasksFinished();
   }
 
   function pressArrowRight() {
-    press('ArrowRight');
+    return press('ArrowRight');
   }
 
   function pressArrowLeft() {
-    press('ArrowLeft');
+    return press('ArrowLeft');
   }
 
   function pressPageUp() {
-    press('PageUp');
+    return press('PageUp');
   }
 
   function pressPageDown() {
-    press('PageDown');
+    return press('PageDown');
   }
 
   function pressArrowUp() {
-    press('ArrowUp');
+    return press('ArrowUp');
   }
 
   function pressArrowDown() {
-    press('ArrowDown');
+    return press('ArrowDown');
   }
 
   function pressHome() {
-    press('Home');
+    return press('Home');
   }
 
   function pressEnd() {
-    press('End');
+    return press('End');
   }
 
   function pointerEvent(eventType: string, ratio: number) {
@@ -150,43 +151,43 @@ suite('SettingsSlider', function() {
     slider.ticks = ticks;
     await checkSliderValueFromPref(30, 4);
 
-    pressArrowRight();
+    await pressArrowRight();
     assertEquals(5, crSlider.value);
     assertEquals(64, slider.pref.value);
 
-    pressArrowRight();
+    await pressArrowRight();
     assertEquals(6, crSlider.value);
     assertEquals(128, slider.pref.value);
 
-    pressArrowRight();
+    await pressArrowRight();
     assertEquals(6, crSlider.value);
     assertEquals(128, slider.pref.value);
 
-    pressArrowLeft();
+    await pressArrowLeft();
     assertEquals(5, crSlider.value);
     assertEquals(64, slider.pref.value);
 
-    pressPageUp();
+    await pressPageUp();
     assertEquals(6, crSlider.value);
     assertEquals(128, slider.pref.value);
 
-    pressPageDown();
+    await pressPageDown();
     assertEquals(5, crSlider.value);
     assertEquals(64, slider.pref.value);
 
-    pressHome();
+    await pressHome();
     assertEquals(0, crSlider.value);
     assertEquals(2, slider.pref.value);
 
-    pressArrowDown();
+    await pressArrowDown();
     assertEquals(0, crSlider.value);
     assertEquals(2, slider.pref.value);
 
-    pressArrowUp();
+    await pressArrowUp();
     assertEquals(1, crSlider.value);
     assertEquals(4, slider.pref.value);
 
-    pressEnd();
+    await pressEnd();
     assertEquals(6, crSlider.value);
     assertEquals(128, slider.pref.value);
   });
@@ -196,34 +197,35 @@ suite('SettingsSlider', function() {
 
     slider.scale = 10;
     slider.max = 4;
-    pressArrowRight();
+
+    await pressArrowRight();
     assertEquals(3, crSlider.value);
     assertEquals(.3, slider.pref.value);
 
-    pressArrowRight();
+    await pressArrowRight();
     assertEquals(4, crSlider.value);
     assertEquals(.4, slider.pref.value);
 
-    pressArrowRight();
+    await pressArrowRight();
     assertEquals(4, crSlider.value);
     assertEquals(.4, slider.pref.value);
 
-    pressHome();
+    await pressHome();
     assertEquals(0, crSlider.value);
     assertEquals(0, slider.pref.value);
 
-    pressEnd();
+    await pressEnd();
     assertEquals(4, crSlider.value);
     assertEquals(.4, slider.pref.value);
 
     await checkSliderValueFromPref(.25, 2.5);
     assertEquals(.25, slider.pref.value);
 
-    pressPageUp();
+    await pressPageUp();
     assertEquals(3.5, crSlider.value);
     assertEquals(.35, slider.pref.value);
 
-    pressPageUp();
+    await pressPageUp();
     assertEquals(4, crSlider.value);
     assertEquals(.4, slider.pref.value);
   });
@@ -236,6 +238,7 @@ suite('SettingsSlider', function() {
     assertEquals(3, crSlider.value);
     assertEquals(4, slider.pref.value);
     pointerUp();
+    await eventToPromise('dragging-changed', crSlider);
     assertEquals(3, crSlider.value);
     assertEquals(16, slider.pref.value);
 
@@ -254,6 +257,7 @@ suite('SettingsSlider', function() {
     assertEquals(2, crSlider.value);
     assertEquals(4, slider.pref.value);
     pointerUp();
+    await eventToPromise('dragging-changed', crSlider);
     assertEquals(2, crSlider.value);
     assertEquals(8, slider.pref.value);
   });
@@ -266,6 +270,7 @@ suite('SettingsSlider', function() {
     assertCloseTo(30, crSlider.value);
     assertEquals(2, slider.pref.value);
     pointerUp();
+    await eventToPromise('dragging-changed', crSlider);
     assertCloseTo(30, crSlider.value);
     assertCloseTo(3, slider.pref.value);
 
@@ -284,6 +289,7 @@ suite('SettingsSlider', function() {
     assertCloseTo(20, crSlider.value);
     assertCloseTo(1, slider.pref.value);
     pointerUp();
+    await eventToPromise('dragging-changed', crSlider);
     assertCloseTo(20, crSlider.value);
     assertCloseTo(2, slider.pref.value);
   });
