@@ -53,11 +53,13 @@ void UndoDucking(AudioDeviceID output_device_id) {
 
 namespace media {
 
+#if BUILDFLAG(IS_MAC)
 // Helper feature used to investigate the effects of removing the HW latency
 // compensation from microphones. See crbug.com/324128089.
 BASE_FEATURE(kIncludeMicrophonHardwareDelayMacOS,
              "IncludeMicrophoneHardwareDelayMacOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Number of blocks of buffers used in the |fifo_|.
 const int kNumberOfBlocksBufferInFifo = 2;
