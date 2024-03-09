@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -158,6 +159,15 @@ class ContentScrollView : public views::ScrollView,
                     views::MaximumFlexSizeRule::kUnbounded)));
     ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX);
     SetDrawOverflowIndicator(false);
+    auto scroll_bar = std::make_unique<RoundedScrollBar>(
+        RoundedScrollBar::Orientation::kVertical);
+    // Prevent the scroll bar from overlapping with any rounded corners or
+    // extending into the cutout region.
+    scroll_bar->SetInsets(gfx::Insets::TLBR(kContentScrollViewCornerRadius, 0,
+                                            kCutoutHeight + kCutoutConvexRadius,
+                                            0));
+    scroll_bar->SetSnapBackOnDragOutside(false);
+    SetVerticalScrollBar(std::move(scroll_bar));
     SetContents(views::Builder<views::View>()
                     .SetUseDefaultFillLayout(true)
                     .AddChild(views::Builder<SummaryOutlinesSection>())
