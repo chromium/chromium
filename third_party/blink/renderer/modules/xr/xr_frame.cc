@@ -301,10 +301,11 @@ XRFrame::getHitTestResultsForTransientInput(
       hit_test_source->Results());
 }
 
-ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
-                                    XRRigidTransform* offset_space_from_anchor,
-                                    XRSpace* space,
-                                    ExceptionState& exception_state) {
+ScriptPromiseTyped<XRAnchor> XRFrame::createAnchor(
+    ScriptState* script_state,
+    XRRigidTransform* offset_space_from_anchor,
+    XRSpace* space,
+    ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
   if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
@@ -375,7 +376,7 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
                                             maybe_plane_id, exception_state);
 }
 
-ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
+ScriptPromiseTyped<XRAnchor> XRFrame::CreateAnchorFromNonStationarySpace(
     ScriptState* script_state,
     const gfx::Transform& native_origin_from_anchor,
     XRSpace* space,

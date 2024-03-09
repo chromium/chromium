@@ -777,7 +777,7 @@ WebTransport::WebTransport(ScriptState* script_state,
       client_receiver_(this, context),
       inspector_transport_id_(CreateUniqueIdentifier()) {}
 
-ScriptPromise WebTransport::createUnidirectionalStream(
+ScriptPromiseTyped<WritableStream> WebTransport::createUnidirectionalStream(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createUnidirectionalStream() this=" << this;
@@ -788,7 +788,7 @@ ScriptPromise WebTransport::createUnidirectionalStream(
     // TODO(ricea): Should we wait if we're still connecting?
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<WritableStream>();
   }
 
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -796,11 +796,12 @@ ScriptPromise WebTransport::createUnidirectionalStream(
 
   if (!CreateStreamDataPipe(&data_pipe_producer, &data_pipe_consumer,
                             exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<WritableStream>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<WritableStream>>(
+          script_state, exception_state.GetContext());
   create_stream_resolvers_.insert(resolver);
   transport_remote_->CreateStream(
       std::move(data_pipe_consumer), mojo::ScopedDataPipeProducerHandle(),
@@ -817,7 +818,7 @@ ReadableStream* WebTransport::incomingUnidirectionalStreams() {
   return received_streams_;
 }
 
-ScriptPromise WebTransport::createBidirectionalStream(
+ScriptPromiseTyped<BidirectionalStream> WebTransport::createBidirectionalStream(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createBidirectionalStream() this=" << this;
@@ -828,25 +829,26 @@ ScriptPromise WebTransport::createBidirectionalStream(
     // TODO(ricea): We should wait if we are still connecting.
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<BidirectionalStream>();
   }
 
   mojo::ScopedDataPipeProducerHandle outgoing_producer;
   mojo::ScopedDataPipeConsumerHandle outgoing_consumer;
   if (!CreateStreamDataPipe(&outgoing_producer, &outgoing_consumer,
                             exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<BidirectionalStream>();
   }
 
   mojo::ScopedDataPipeProducerHandle incoming_producer;
   mojo::ScopedDataPipeConsumerHandle incoming_consumer;
   if (!CreateStreamDataPipe(&incoming_producer, &incoming_consumer,
                             exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<BidirectionalStream>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<BidirectionalStream>>(
+          script_state, exception_state.GetContext());
   create_stream_resolvers_.insert(resolver);
   transport_remote_->CreateStream(
       std::move(outgoing_consumer), std::move(incoming_producer),
@@ -1494,7 +1496,7 @@ void WebTransport::HandlePendingGetStatsResolvers(v8::Local<v8::Value> error) {
 }
 
 void WebTransport::OnCreateSendStreamResponse(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<WritableStream>* resolver,
     mojo::ScopedDataPipeProducerHandle producer,
     bool succeeded,
     uint32_t stream_id) {
@@ -1541,7 +1543,7 @@ void WebTransport::OnCreateSendStreamResponse(
 }
 
 void WebTransport::OnCreateBidirectionalStreamResponse(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<BidirectionalStream>* resolver,
     mojo::ScopedDataPipeProducerHandle outgoing_producer,
     mojo::ScopedDataPipeConsumerHandle incoming_consumer,
     bool succeeded,

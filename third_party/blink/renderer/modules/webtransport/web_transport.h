@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
+class BidirectionalStream;
 class DatagramDuplexStream;
 class ExceptionState;
 class IncomingStream;
@@ -68,10 +68,14 @@ class MODULES_EXPORT WebTransport final
   ~WebTransport() override;
 
   // WebTransport IDL implementation.
-  ScriptPromise createUnidirectionalStream(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<WritableStream> createUnidirectionalStream(
+      ScriptState*,
+      ExceptionState&);
   ReadableStream* incomingUnidirectionalStreams();
 
-  ScriptPromise createBidirectionalStream(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<BidirectionalStream> createBidirectionalStream(
+      ScriptState*,
+      ExceptionState&);
   ReadableStream* incomingBidirectionalStreams();
 
   DatagramDuplexStream* datagrams();
@@ -146,15 +150,16 @@ class MODULES_EXPORT WebTransport final
   void OnConnectionError();
   void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void HandlePendingGetStatsResolvers(v8::Local<v8::Value> error);
-  void OnCreateSendStreamResponse(ScriptPromiseResolver*,
+  void OnCreateSendStreamResponse(ScriptPromiseResolverTyped<WritableStream>*,
                                   mojo::ScopedDataPipeProducerHandle,
                                   bool succeeded,
                                   uint32_t stream_id);
-  void OnCreateBidirectionalStreamResponse(ScriptPromiseResolver*,
-                                           mojo::ScopedDataPipeProducerHandle,
-                                           mojo::ScopedDataPipeConsumerHandle,
-                                           bool succeeded,
-                                           uint32_t stream_id);
+  void OnCreateBidirectionalStreamResponse(
+      ScriptPromiseResolverTyped<BidirectionalStream>*,
+      mojo::ScopedDataPipeProducerHandle,
+      mojo::ScopedDataPipeConsumerHandle,
+      bool succeeded,
+      uint32_t stream_id);
   void OnGetStatsResponse(network::mojom::blink::WebTransportStatsPtr);
 
   bool DoesSubresourceFilterBlockConnection(const KURL& url);

@@ -372,7 +372,7 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
 
 void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     const String& label,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<GPURenderPipeline>* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPURenderPipeline render_pipeline,
     const char* message) {
@@ -410,7 +410,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
 
 void GPUDevice::OnCreateComputePipelineAsyncCallback(
     const String& label,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<GPUComputePipeline>* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPUComputePipeline compute_pipeline,
     const char* message) {
@@ -538,11 +538,13 @@ GPUComputePipeline* GPUDevice::createComputePipeline(
   return GPUComputePipeline::Create(this, descriptor);
 }
 
-ScriptPromise GPUDevice::createRenderPipelineAsync(
+ScriptPromiseTyped<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
     ScriptState* script_state,
     const GPURenderPipelineDescriptor* descriptor) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<GPURenderPipeline>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   v8::Isolate* isolate = script_state->GetIsolate();
   ExceptionState exception_state(isolate,
@@ -569,11 +571,13 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   return promise;
 }
 
-ScriptPromise GPUDevice::createComputePipelineAsync(
+ScriptPromiseTyped<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
     ScriptState* script_state,
     const GPUComputePipelineDescriptor* descriptor) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<GPUComputePipeline>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   std::string desc_label;
   OwnedProgrammableStage computeStage;

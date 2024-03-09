@@ -208,20 +208,21 @@ ScriptPromiseTyped<IDLSequence<USBDevice>> USB::getDevices(
   return resolver->Promise();
 }
 
-ScriptPromise USB::requestDevice(ScriptState* script_state,
-                                 const USBDeviceRequestOptions* options,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<USBDevice> USB::requestDevice(
+    ScriptState* script_state,
+    const USBDeviceRequestOptions* options,
+    ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The implementation did not support the requested type of object or "
         "operation.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<USBDevice>();
   }
 
   if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<USBDevice>();
   }
 
   EnsureServiceConnection();
@@ -229,12 +230,12 @@ ScriptPromise USB::requestDevice(ScriptState* script_state,
   if (!LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<USBDevice>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<USBDevice>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   auto mojo_options = mojom::blink::WebUsbRequestDeviceOptions::New();
   if (options->hasFilters()) {
     mojo_options->filters.reserve(options->filters().size());
@@ -312,7 +313,7 @@ void USB::OnGetDevices(
   get_devices_requests_.erase(resolver);
 }
 
-void USB::OnGetPermission(ScriptPromiseResolver* resolver,
+void USB::OnGetPermission(ScriptPromiseResolverTyped<USBDevice>* resolver,
                           UsbDeviceInfoPtr device_info) {
   DCHECK(get_permission_requests_.Contains(resolver));
 

@@ -49,9 +49,9 @@ class USB final : public EventTarget,
   // USB.idl
   ScriptPromiseTyped<IDLSequence<USBDevice>> getDevices(ScriptState*,
                                                         ExceptionState&);
-  ScriptPromise requestDevice(ScriptState*,
-                              const USBDeviceRequestOptions*,
-                              ExceptionState&);
+  ScriptPromiseTyped<USBDevice> requestDevice(ScriptState*,
+                                              const USBDeviceRequestOptions*,
+                                              ExceptionState&);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
 
@@ -73,7 +73,7 @@ class USB final : public EventTarget,
 
   void OnGetDevices(ScriptPromiseResolverTyped<IDLSequence<USBDevice>>*,
                     Vector<device::mojom::blink::UsbDeviceInfoPtr>);
-  void OnGetPermission(ScriptPromiseResolver*,
+  void OnGetPermission(ScriptPromiseResolverTyped<USBDevice>*,
                        device::mojom::blink::UsbDeviceInfoPtr);
 
   // DeviceManagerClient implementation.

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_score.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -179,9 +180,10 @@ class XRSession final : public EventTarget,
   ScriptPromise updateTargetFrameRate(float rate,
                                       ExceptionState&);
 
-  ScriptPromise requestReferenceSpace(ScriptState* script_state,
-                                      const String& type,
-                                      ExceptionState&);
+  ScriptPromiseTyped<XRReferenceSpace> requestReferenceSpace(
+      ScriptState* script_state,
+      const String& type,
+      ExceptionState&);
 
   // Helper, not IDL-exposed
   // |native_origin_from_anchor| is a matrix describing transform between native
@@ -191,7 +193,7 @@ class XRSession final : public EventTarget,
   // |maybe_plane_id| is an ID of the plane to which the anchor should be
   // attached - set to std::nullopt if the plane is not to be attached to any
   // plane.
-  ScriptPromise CreateAnchorHelper(
+  ScriptPromiseTyped<XRAnchor> CreateAnchorHelper(
       ScriptState* script_state,
       const gfx::Transform& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformationPtr&
@@ -219,20 +221,23 @@ class XRSession final : public EventTarget,
 
   XRInputSourceArray* inputSources(ScriptState*) const;
 
-  ScriptPromise requestHitTestSource(ScriptState* script_state,
-                                     XRHitTestOptionsInit* options,
-                                     ExceptionState& exception_state);
-  ScriptPromise requestHitTestSourceForTransientInput(
+  ScriptPromiseTyped<XRHitTestSource> requestHitTestSource(
+      ScriptState* script_state,
+      XRHitTestOptionsInit* options,
+      ExceptionState& exception_state);
+  ScriptPromiseTyped<XRTransientInputHitTestSource>
+  requestHitTestSourceForTransientInput(
       ScriptState* script_state,
       XRTransientInputHitTestOptionsInit* options_init,
       ExceptionState& exception_state);
 
-  ScriptPromise requestLightProbe(ScriptState* script_state,
-                                  XRLightProbeInit*,
-                                  ExceptionState&);
+  ScriptPromiseTyped<XRLightProbe> requestLightProbe(ScriptState* script_state,
+                                                     XRLightProbeInit*,
+                                                     ExceptionState&);
 
-  ScriptPromise getTrackedImageScores(ScriptState* script_state,
-                                      ExceptionState&);
+  ScriptPromiseTyped<IDLArray<V8XRImageTrackingScore>> getTrackedImageScores(
+      ScriptState* script_state,
+      ExceptionState&);
 
   // Called by JavaScript to manually end the session.
   ScriptPromise end(ScriptState* script_state, ExceptionState&);
@@ -431,16 +436,16 @@ class XRSession final : public EventTarget,
   void UpdateVisibilityState();
 
   void OnSubscribeToHitTestResult(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<XRHitTestSource>* resolver,
       device::mojom::SubscribeToHitTestResult result,
       uint64_t subscription_id);
 
   void OnSubscribeToHitTestForTransientInputResult(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<XRTransientInputHitTestSource>* resolver,
       device::mojom::SubscribeToHitTestResult result,
       uint64_t subscription_id);
 
-  void OnCreateAnchorResult(ScriptPromiseResolver* resolver,
+  void OnCreateAnchorResult(ScriptPromiseResolverTyped<XRAnchor>* resolver,
                             device::mojom::CreateAnchorResult result,
                             uint64_t id);
 
@@ -461,8 +466,10 @@ class XRSession final : public EventTarget,
       const device::mojom::blink::XRTrackedImagesData*);
   Member<FrozenArray<XRImageTrackingResult>> frame_tracked_images_;
   bool tracked_image_scores_available_ = false;
-  Vector<String> tracked_image_scores_;
-  HeapVector<Member<ScriptPromiseResolver>> image_scores_resolvers_;
+  Vector<V8XRImageTrackingScore> tracked_image_scores_;
+  using ImageScoreResolverType =
+      ScriptPromiseResolverTyped<IDLArray<V8XRImageTrackingScore>>;
+  HeapVector<Member<ImageScoreResolverType>> image_scores_resolvers_;
 
   void HandleShutdown();
 

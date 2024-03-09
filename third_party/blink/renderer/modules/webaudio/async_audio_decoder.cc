@@ -44,13 +44,14 @@
 
 namespace blink {
 
-void AsyncAudioDecoder::DecodeAsync(DOMArrayBuffer* audio_data,
-                                    float sample_rate,
-                                    V8DecodeSuccessCallback* success_callback,
-                                    V8DecodeErrorCallback* error_callback,
-                                    ScriptPromiseResolver* resolver,
-                                    BaseAudioContext* context,
-                                    ExceptionState& exception_state) {
+void AsyncAudioDecoder::DecodeAsync(
+    DOMArrayBuffer* audio_data,
+    float sample_rate,
+    V8DecodeSuccessCallback* success_callback,
+    V8DecodeErrorCallback* error_callback,
+    ScriptPromiseResolverTyped<AudioBuffer>* resolver,
+    BaseAudioContext* context,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DCHECK(audio_data);
 
@@ -78,7 +79,7 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
     float sample_rate,
     CrossThreadHandle<V8DecodeSuccessCallback> success_callback,
     CrossThreadHandle<V8DecodeErrorCallback> error_callback,
-    CrossThreadHandle<ScriptPromiseResolver> resolver,
+    CrossThreadHandle<ScriptPromiseResolverTyped<AudioBuffer>> resolver,
     CrossThreadHandle<BaseAudioContext> context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const ExceptionContext& exception_context) {
@@ -105,7 +106,7 @@ void AsyncAudioDecoder::NotifyComplete(
     V8DecodeSuccessCallback* success_callback,
     V8DecodeErrorCallback* error_callback,
     AudioBus* audio_bus,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<AudioBuffer>* resolver,
     BaseAudioContext* context,
     const ExceptionContext& exception_context) {
   DCHECK(IsMainThread());

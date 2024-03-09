@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_dom_overlay_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_session_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -36,8 +37,8 @@
 namespace blink {
 
 class Navigator;
-class ScriptPromiseResolver;
 class XRFrameProvider;
+class XRSession;
 class XRSessionInit;
 
 // Implementation of the XRSystem interface according to
@@ -93,10 +94,10 @@ class XRSystem final : public EventTarget,
       ScriptState*,
       const String&,
       ExceptionState& exception_state);
-  ScriptPromise requestSession(ScriptState*,
-                               const String&,
-                               XRSessionInit*,
-                               ExceptionState& exception_state);
+  ScriptPromiseTyped<XRSession> requestSession(ScriptState*,
+                                               const String&,
+                                               XRSessionInit*,
+                                               ExceptionState& exception_state);
 
   XRFrameProvider* frameProvider();
 
@@ -172,7 +173,7 @@ class XRSystem final : public EventTarget,
       : public GarbageCollected<PendingRequestSessionQuery> {
    public:
     PendingRequestSessionQuery(int64_t ukm_source_id,
-                               ScriptPromiseResolver* resolver,
+                               ScriptPromiseResolverTyped<XRSession>* resolver,
                                device::mojom::blink::XRSessionMode mode,
                                RequestedXRSessionFeatureSet required_features,
                                RequestedXRSessionFeatureSet optional_features);
@@ -274,7 +275,7 @@ class XRSystem final : public EventTarget,
         mojo::PendingRemote<device::mojom::blink::XRSessionMetricsRecorder>
             metrics_recorder = mojo::NullRemote());
 
-    Member<ScriptPromiseResolver> resolver_;
+    Member<ScriptPromiseResolverTyped<XRSession>> resolver_;
     const device::mojom::blink::XRSessionMode mode_;
     RequestedXRSessionFeatureSet required_features_;
     RequestedXRSessionFeatureSet optional_features_;

@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -21,11 +22,14 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
 class ScriptState;
 class USB;
 class USBConfiguration;
 class USBControlTransferParameters;
+class USBInTransferResult;
+class USBIsochronousInTransferResult;
+class USBIsochronousOutTransferResult;
+class USBOutTransferResult;
 
 class USBDevice : public ScriptWrappable,
                   public ExecutionContextLifecycleObserver {
@@ -82,38 +86,44 @@ class USBDevice : public ScriptWrappable,
                                          uint8_t interface_number,
                                          uint8_t alternate_setting,
                                          ExceptionState&);
-  ScriptPromise controlTransferIn(ScriptState*,
-                                  const USBControlTransferParameters* setup,
-                                  unsigned length,
-                                  ExceptionState&);
-  ScriptPromise controlTransferOut(ScriptState*,
-                                   const USBControlTransferParameters* setup,
-                                   ExceptionState&);
-  ScriptPromise controlTransferOut(ScriptState*,
-                                   const USBControlTransferParameters* setup,
-                                   const DOMArrayPiece& optional_data,
-                                   ExceptionState&);
+  ScriptPromiseTyped<USBInTransferResult> controlTransferIn(
+      ScriptState*,
+      const USBControlTransferParameters* setup,
+      unsigned length,
+      ExceptionState&);
+  ScriptPromiseTyped<USBOutTransferResult> controlTransferOut(
+      ScriptState*,
+      const USBControlTransferParameters* setup,
+      ExceptionState&);
+  ScriptPromiseTyped<USBOutTransferResult> controlTransferOut(
+      ScriptState*,
+      const USBControlTransferParameters* setup,
+      const DOMArrayPiece& optional_data,
+      ExceptionState&);
   ScriptPromise clearHalt(ScriptState*,
                           String direction,
                           uint8_t endpoint_number,
                           ExceptionState&);
-  ScriptPromise transferIn(ScriptState*,
-                           uint8_t endpoint_number,
-                           unsigned length,
-                           ExceptionState&);
-  ScriptPromise transferOut(ScriptState*,
-                            uint8_t endpoint_number,
-                            const DOMArrayPiece& data,
-                            ExceptionState&);
-  ScriptPromise isochronousTransferIn(ScriptState*,
-                                      uint8_t endpoint_number,
-                                      Vector<unsigned> packet_lengths,
-                                      ExceptionState&);
-  ScriptPromise isochronousTransferOut(ScriptState*,
-                                       uint8_t endpoint_number,
-                                       const DOMArrayPiece& data,
-                                       Vector<unsigned> packet_lengths,
-                                       ExceptionState&);
+  ScriptPromiseTyped<USBInTransferResult> transferIn(ScriptState*,
+                                                     uint8_t endpoint_number,
+                                                     unsigned length,
+                                                     ExceptionState&);
+  ScriptPromiseTyped<USBOutTransferResult> transferOut(
+      ScriptState*,
+      uint8_t endpoint_number,
+      const DOMArrayPiece& data,
+      ExceptionState&);
+  ScriptPromiseTyped<USBIsochronousInTransferResult> isochronousTransferIn(
+      ScriptState*,
+      uint8_t endpoint_number,
+      Vector<unsigned> packet_lengths,
+      ExceptionState&);
+  ScriptPromiseTyped<USBIsochronousOutTransferResult> isochronousTransferOut(
+      ScriptState*,
+      uint8_t endpoint_number,
+      const DOMArrayPiece& data,
+      Vector<unsigned> packet_lengths,
+      ExceptionState&);
   ScriptPromise reset(ScriptState*, ExceptionState&);
 
   // ExecutionContextLifecycleObserver interface.
@@ -162,25 +172,26 @@ class USBDevice : public ScriptWrappable,
                                      wtf_size_t alternate_index,
                                      ScriptPromiseResolver*,
                                      bool success);
-  void AsyncControlTransferIn(ScriptPromiseResolver*,
+  void AsyncControlTransferIn(ScriptPromiseResolverTyped<USBInTransferResult>*,
                               device::mojom::blink::UsbTransferStatus,
                               base::span<const uint8_t> data);
-  void AsyncControlTransferOut(uint32_t transfer_length,
-                               ScriptPromiseResolver*,
-                               device::mojom::blink::UsbTransferStatus);
+  void AsyncControlTransferOut(
+      uint32_t transfer_length,
+      ScriptPromiseResolverTyped<USBOutTransferResult>*,
+      device::mojom::blink::UsbTransferStatus);
   void AsyncClearHalt(ScriptPromiseResolver*, bool success);
-  void AsyncTransferIn(ScriptPromiseResolver*,
+  void AsyncTransferIn(ScriptPromiseResolverTyped<USBInTransferResult>*,
                        device::mojom::blink::UsbTransferStatus,
                        base::span<const uint8_t> data);
   void AsyncTransferOut(uint32_t transfer_length,
-                        ScriptPromiseResolver*,
+                        ScriptPromiseResolverTyped<USBOutTransferResult>*,
                         device::mojom::blink::UsbTransferStatus);
   void AsyncIsochronousTransferIn(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<USBIsochronousInTransferResult>*,
       base::span<const uint8_t> data,
       Vector<device::mojom::blink::UsbIsochronousPacketPtr>);
   void AsyncIsochronousTransferOut(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<USBIsochronousOutTransferResult>*,
       Vector<device::mojom::blink::UsbIsochronousPacketPtr>);
   void AsyncReset(ScriptPromiseResolver*, bool success);
 

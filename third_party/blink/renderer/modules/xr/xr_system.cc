@@ -465,7 +465,7 @@ XRSystem::PendingSupportsSessionQuery::mode() const {
 
 XRSystem::PendingRequestSessionQuery::PendingRequestSessionQuery(
     int64_t ukm_source_id,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<XRSession>* resolver,
     device::mojom::blink::XRSessionMode session_mode,
     RequestedXRSessionFeatureSet required_features,
     RequestedXRSessionFeatureSet optional_features)
@@ -1205,10 +1205,11 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
   return result;
 }
 
-ScriptPromise XRSystem::requestSession(ScriptState* script_state,
-                                       const String& mode,
-                                       XRSessionInit* session_init,
-                                       ExceptionState& exception_state) {
+ScriptPromiseTyped<XRSession> XRSystem::requestSession(
+    ScriptState* script_state,
+    const String& mode,
+    XRSessionInit* session_init,
+    ExceptionState& exception_state) {
   DVLOG(2) << __func__;
   // TODO(https://crbug.com/968622): Make sure we don't forget to call
   // metrics-related methods when the promise gets resolved/rejected.
@@ -1220,7 +1221,8 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
     // Document to get UkmRecorder anyway).
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNavigatorDetachedError);
-    return ScriptPromise();  // Will be rejected by generated bindings
+    return ScriptPromiseTyped<XRSession>();  // Will be rejected by generated
+                                             // bindings
   }
 
   device::mojom::blink::XRSessionMode session_mode = stringToSessionMode(mode);
@@ -1239,7 +1241,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
         .SetMode(static_cast<int64_t>(session_mode))
         .SetStatus(static_cast<int64_t>(SessionRequestStatus::kOtherError))
         .Record(DomWindow()->UkmRecorder());
-    return ScriptPromise();
+    return ScriptPromiseTyped<XRSession>();
   }
 
   // Parse required feature strings
@@ -1289,9 +1291,9 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<XRSession>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   PendingRequestSessionQuery* query =
       MakeGarbageCollected<PendingRequestSessionQuery>(

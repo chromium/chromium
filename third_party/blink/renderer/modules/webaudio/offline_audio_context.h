@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_CONTEXT_H_
 
 #include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -34,7 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-
+class AudioBuffer;
 class ExceptionState;
 class OfflineAudioContextOptions;
 class OfflineAudioDestinationHandler;
@@ -64,7 +66,8 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   uint32_t length() const { return total_render_frames_; }
 
-  ScriptPromise startOfflineRendering(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<AudioBuffer> startOfflineRendering(ScriptState*,
+                                                        ExceptionState&);
 
   ScriptPromise suspendContext(ScriptState*, double, ExceptionState&);
   ScriptPromise resumeContext(ScriptState*, ExceptionState&);
@@ -125,7 +128,7 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   HashSet<size_t, IntWithZeroKeyHashTraits<size_t>> scheduled_suspend_frames_
       GUARDED_BY(suspend_frames_lock_);
 
-  Member<ScriptPromiseResolver> complete_resolver_;
+  Member<ScriptPromiseResolverTyped<AudioBuffer>> complete_resolver_;
 
   // This flag is necessary to indicate the rendering has actually started or
   // running. Note that initial state of context is 'Suspended', which is the

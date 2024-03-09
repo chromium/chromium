@@ -117,7 +117,7 @@ GPUShaderModule::GPUShaderModule(GPUDevice* device,
     : DawnObject<WGPUShaderModule>(device, shader_module, label) {}
 
 void GPUShaderModule::OnCompilationInfoCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<GPUCompilationInfo>* resolver,
     WGPUCompilationInfoRequestStatus status,
     const WGPUCompilationInfo* info) {
   if (status != WGPUCompilationInfoRequestStatus_Success || !info) {
@@ -155,9 +155,12 @@ void GPUShaderModule::OnCompilationInfoCallback(
   resolver->Resolve(result);
 }
 
-ScriptPromise GPUShaderModule::getCompilationInfo(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<GPUCompilationInfo> GPUShaderModule::getCompilationInfo(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<GPUCompilationInfo>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   auto* callback =
       MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(

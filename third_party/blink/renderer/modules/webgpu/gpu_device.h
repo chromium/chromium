@@ -53,7 +53,6 @@ class GPUSupportedFeatures;
 class GPUSupportedLimits;
 class GPUTexture;
 class GPUTextureDescriptor;
-class ScriptPromiseResolver;
 class ScriptState;
 class V8GPUErrorFilter;
 
@@ -126,10 +125,10 @@ class GPUDevice final : public EventTarget,
   GPUComputePipeline* createComputePipeline(
       const GPUComputePipelineDescriptor* descriptor,
       ExceptionState& exception_state);
-  ScriptPromise createRenderPipelineAsync(
+  ScriptPromiseTyped<GPURenderPipeline> createRenderPipelineAsync(
       ScriptState* script_state,
       const GPURenderPipelineDescriptor* descriptor);
-  ScriptPromise createComputePipelineAsync(
+  ScriptPromiseTyped<GPUComputePipeline> createComputePipelineAsync(
       ScriptState* script_state,
       const GPUComputePipelineDescriptor* descriptor);
 
@@ -186,14 +185,15 @@ class GPUDevice final : public EventTarget,
                                WGPUErrorType type,
                                const char* message);
 
-  void OnCreateRenderPipelineAsyncCallback(const String& label,
-                                           ScriptPromiseResolver* resolver,
-                                           WGPUCreatePipelineAsyncStatus status,
-                                           WGPURenderPipeline render_pipeline,
-                                           const char* message);
+  void OnCreateRenderPipelineAsyncCallback(
+      const String& label,
+      ScriptPromiseResolverTyped<GPURenderPipeline>* resolver,
+      WGPUCreatePipelineAsyncStatus status,
+      WGPURenderPipeline render_pipeline,
+      const char* message);
   void OnCreateComputePipelineAsyncCallback(
       const String& label,
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<GPUComputePipeline>* resolver,
       WGPUCreatePipelineAsyncStatus status,
       WGPUComputePipeline compute_pipeline,
       const char* message);

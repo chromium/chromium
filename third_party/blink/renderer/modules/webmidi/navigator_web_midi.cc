@@ -124,7 +124,9 @@ ScriptPromise NavigatorWebMIDI::requestMIDIAccess(
     return ScriptPromise();
   }
 
-  return MIDIAccessInitializer::Start(script_state, options);
+  MIDIAccessInitializer* initializer =
+      MakeGarbageCollected<MIDIAccessInitializer>(script_state, options);
+  return initializer->Start(window);
 }
 
 }  // namespace blink

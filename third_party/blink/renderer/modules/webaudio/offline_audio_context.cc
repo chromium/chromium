@@ -149,7 +149,7 @@ void OfflineAudioContext::Trace(Visitor* visitor) const {
   BaseAudioContext::Trace(visitor);
 }
 
-ScriptPromise OfflineAudioContext::startOfflineRendering(
+ScriptPromiseTyped<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
@@ -162,7 +162,7 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
         DOMExceptionCode::kInvalidStateError,
         "cannot call startRendering on an OfflineAudioContext in a stopped "
         "state.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<AudioBuffer>();
   }
 
   // If the context is not in the suspended state (i.e. running), reject the
@@ -171,7 +171,7 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot startRendering when an OfflineAudioContext is " + state());
-    return ScriptPromise();
+    return ScriptPromiseTyped<AudioBuffer>();
   }
 
   // Can't call startRendering more than once.  Return a rejected promise now.
@@ -179,13 +179,14 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot call startRendering more than once");
-    return ScriptPromise();
+    return ScriptPromiseTyped<AudioBuffer>();
   }
 
   DCHECK(!is_rendering_started_);
 
-  complete_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  complete_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<AudioBuffer>>(
+          script_state, exception_state.GetContext());
 
   // Allocate the AudioBuffer to hold the rendered result.
   float sample_rate = DestinationHandler().SampleRate();
@@ -201,7 +202,7 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
             String::Number(number_of_channels) + ", " +
             String::Number(total_render_frames_) + ", " +
             String::Number(sample_rate) + ")");
-    return ScriptPromise();
+    return ScriptPromiseTyped<AudioBuffer>();
   }
 
   // Start rendering and return the promise.

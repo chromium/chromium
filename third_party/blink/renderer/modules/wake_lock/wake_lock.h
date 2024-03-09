@@ -9,6 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
@@ -24,9 +25,9 @@ namespace blink {
 
 class ExceptionState;
 class NavigatorBase;
-class ScriptPromiseResolver;
 class ScriptState;
 class WakeLockManager;
+class WakeLockSentinel;
 
 class MODULES_EXPORT WakeLock final : public ScriptWrappable,
                                       public Supplement<NavigatorBase>,
@@ -42,9 +43,9 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
 
   explicit WakeLock(NavigatorBase&);
 
-  ScriptPromise request(ScriptState*,
-                        V8WakeLockType type,
-                        ExceptionState& exception_state);
+  ScriptPromiseTyped<WakeLockSentinel> request(ScriptState*,
+                                               V8WakeLockType type,
+                                               ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 
@@ -52,11 +53,13 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   // While this could be part of request() itself, having it as a separate
   // function makes testing (which uses a custom ScriptPromiseResolver) a lot
   // easier.
-  void DoRequest(V8WakeLockType::Enum, ScriptPromiseResolver*);
+  void DoRequest(V8WakeLockType::Enum,
+                 ScriptPromiseResolverTyped<WakeLockSentinel>*);
 
-  void DidReceivePermissionResponse(V8WakeLockType::Enum,
-                                    ScriptPromiseResolver*,
-                                    mojom::blink::PermissionStatus);
+  void DidReceivePermissionResponse(
+      V8WakeLockType::Enum,
+      ScriptPromiseResolverTyped<WakeLockSentinel>*,
+      mojom::blink::PermissionStatus);
 
   // ExecutionContextLifecycleObserver implementation
   void ContextDestroyed() override;

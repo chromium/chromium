@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "services/device/public/mojom/wake_lock.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
@@ -18,7 +19,6 @@
 namespace blink {
 
 class ExecutionContext;
-class ScriptPromiseResolver;
 class WakeLockSentinel;
 
 // https://w3c.github.io/screen-wake-lock/#dfn-activelocks
@@ -28,7 +28,7 @@ class MODULES_EXPORT WakeLockManager final
  public:
   WakeLockManager(ExecutionContext*, V8WakeLockType::Enum);
 
-  void AcquireWakeLock(ScriptPromiseResolver*);
+  void AcquireWakeLock(ScriptPromiseResolverTyped<WakeLockSentinel>*);
   void ClearWakeLocks();
 
   void UnregisterSentinel(WakeLockSentinel*);

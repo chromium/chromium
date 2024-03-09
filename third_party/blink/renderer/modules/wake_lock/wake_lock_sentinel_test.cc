@@ -82,8 +82,9 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   auto* manager = MakeGarbageCollected<WakeLockManager>(
       context.DomWindow(), V8WakeLockType::Enum::kScreen);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise promise = resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto promise = resolver->Promise();
   manager->AcquireWakeLock(resolver);
   context.WaitForPromiseFulfillment(promise);
   auto* sentinel =
@@ -121,8 +122,9 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
       V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
 
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise screen_promise = screen_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto screen_promise = screen_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
   wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver);
@@ -157,8 +159,9 @@ TEST(WakeLockSentinelTest, HasPendingActivityConditions) {
   auto* manager = MakeGarbageCollected<WakeLockManager>(
       context.DomWindow(), V8WakeLockType::Enum::kScreen);
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise promise = resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolverTyped<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto promise = resolver->Promise();
   manager->AcquireWakeLock(resolver);
   context.WaitForPromiseFulfillment(promise);
   auto* sentinel =

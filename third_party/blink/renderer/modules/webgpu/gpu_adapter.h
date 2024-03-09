@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -16,11 +17,12 @@
 namespace blink {
 
 class GPU;
+class GPUAdapterInfo;
+class GPUDevice;
 class GPUDeviceDescriptor;
 class GPUSupportedFeatures;
 class GPUSupportedLimits;
 class GPUMemoryHeapInfo;
-class ScriptPromiseResolver;
 
 class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
   DEFINE_WRAPPERTYPEINFO();
@@ -43,10 +45,11 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
   bool SupportsMultiPlanarFormats() const;
   bool isCompatibilityMode() const;
 
-  ScriptPromise requestDevice(ScriptState* script_state,
-                              GPUDeviceDescriptor* descriptor);
+  ScriptPromiseTyped<GPUDevice> requestDevice(ScriptState* script_state,
+                                              GPUDeviceDescriptor* descriptor);
 
-  ScriptPromise requestAdapterInfo(ScriptState* script_state);
+  ScriptPromiseTyped<GPUAdapterInfo> requestAdapterInfo(
+      ScriptState* script_state);
 
   // Console warnings should generally be attributed to a GPUDevice, but in
   // cases where there is no device warnings can be surfaced here. It's expected
@@ -58,7 +61,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
  private:
   void OnRequestDeviceCallback(ScriptState* script_state,
                                const GPUDeviceDescriptor* descriptor,
-                               ScriptPromiseResolver* resolver,
+                               ScriptPromiseResolverTyped<GPUDevice>* resolver,
                                WGPURequestDeviceStatus status,
                                WGPUDevice dawn_device,
                                const char* error_message);
