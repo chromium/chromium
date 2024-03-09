@@ -1664,7 +1664,7 @@ bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetAcceptButtonLabel() const {
-  return u"Confirm (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_CONFIRM);
 }
 
 void AuthenticatorGPMPinSheetModel::OnAccept() {
