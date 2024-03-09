@@ -74,18 +74,19 @@ def _run_fuzzer_target(args):
         print(e.output)
         print(e.stderr)
         print("*** FULL FUZZING OUTPUT ABOVE ***")
+  valid_profiles = 0
   if os.path.exists(
       fullcorpus_profraw) and os.path.getsize(fullcorpus_profraw) > 0:
     llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse', fullcorpus_profraw,
       '-o', target_profdata]
     subprocess.check_call(llvm_profdata_cmd)
+    valid_profiles = 1
   else:
     # We failed to run the fuzzer with the whole corpus in one go. That probably
     # means one of the test cases caused a crash. Let's run each test
     # case one at a time. The resulting profraw files can be hundreds of MB
     # each so after each test case, we merge them into an accumulated
     # profdata file.
-    valid_profraws = 0
     for count, corpus_entry in enumerate(os.listdir(corpus_dir)):
       specific_test_case_profraw = os.path.join(
           profraw_dir, target + "_" + str(count) + ".profraw")
@@ -115,7 +116,7 @@ def _run_fuzzer_target(args):
                         ) and os.path.getsize(specific_test_case_profraw) > 0:
         # We recorded valid profraw, let's merge this into
         # the accumulating profdata
-        valid_profraws += 1
+        valid_profiles += 1
         prof_files_to_merge = [specific_test_case_profraw]
         temp_profdata = os.path.join(
           profraw_dir, target + "_accumlated.profraw")
@@ -137,11 +138,11 @@ def _run_fuzzer_target(args):
       # to ensure the profdata command line isn't too huge, partly
       # to reduce processing time to something reasonable, and partly
       # because profraw files are huge and can fill up bot disk space.
-      if valid_profraws > INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED:
+      if valid_profiles > INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED:
         print("Skipping remaining test cases, >%d valid profiles recorded." %
               INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED)
         break
-  if valid_profraws == 0:
+  if valid_profiles == 0:
     failed_targets.append(target)
     return
   verified_fuzzer_targets.append(target)
