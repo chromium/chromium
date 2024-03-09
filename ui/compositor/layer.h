@@ -515,7 +515,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Notifies the layer that the device scale factor has changed.
   void OnDeviceScaleFactorChanged(float device_scale_factor);
 
-  // Requets a copy of the layer's output as a texture or bitmap.
+  // Requests a copy of the layer's output as a texture or bitmap. If the request
+  // does not have the result task runner, this will be set to
+  // `base::SequencedTaskRunner::GetCurrentDefault()`.
   void RequestCopyOfOutput(std::unique_ptr<viz::CopyOutputRequest> request);
 
   // Invoked when scrolling performed by the cc::InputHandler is committed. This
