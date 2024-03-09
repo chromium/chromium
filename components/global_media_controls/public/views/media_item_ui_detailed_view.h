@@ -16,6 +16,10 @@
 #include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/global_media_controls/public/views/chapter_item_view.h"
+#endif
+
 namespace views {
 class BoxLayoutView;
 class Button;
@@ -123,6 +127,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   MediaItemUIFooter* GetFooterForTesting();
   MediaItemUIDeviceSelector* GetDeviceSelectorForTesting();
   views::View* GetDeviceSelectorSeparatorForTesting();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  views::View* GetChapterListViewForTesting();
+  base::flat_map<int, ChapterItemView*> GetChaptersForTesting();
+#endif
 
  private:
   friend class MediaItemUIDetailedViewTest;
@@ -193,6 +201,15 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> device_selector_view_separator_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The chapter list view, which will be built only for chrome os ash.
+  raw_ptr<views::View> chapter_list_view_ = nullptr;
+
+  // The current `ChapterItemView` for the chapter at the index of the chapter
+  // list.
+  base::flat_map<int, ChapterItemView*> chapters_;
+#endif
 };
 
 }  // namespace global_media_controls

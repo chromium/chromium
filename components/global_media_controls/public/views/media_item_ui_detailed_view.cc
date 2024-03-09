@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
+#include <memory>
 
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
@@ -11,6 +12,7 @@
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,6 +27,11 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/global_media_controls/public/views/chapter_item_view.h"
+#endif
 
 namespace global_media_controls {
 
@@ -449,6 +456,37 @@ void MediaItemUIDetailedView::UpdateWithMediaMetadata(
   artist_label_->SetText(metadata.artist);
 
   container_->OnMediaSessionMetadataChanged(metadata);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(media::kBackgroundListening)) {
+    return;
+  }
+
+  if (!chapter_list_view_ && metadata.chapters.empty()) {
+    return;
+  }
+
+  if (metadata.chapters.empty()) {
+    chapter_list_view_->RemoveAllChildViews();
+    return;
+  }
+
+  if (!chapter_list_view_) {
+    chapter_list_view_ = AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetInsideBorderInsets(gfx::Insets::TLBR(16, 8, 8, 8))
+            .Build());
+  } else {
+    chapter_list_view_->RemoveAllChildViews();
+  }
+
+  for (int index = 0; index < static_cast<int>(metadata.chapters.size());
+       index++) {
+    chapters_[index] = chapter_list_view_->AddChildView(
+        std::make_unique<ChapterItemView>(metadata.chapters[index], theme_));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void MediaItemUIDetailedView::UpdateWithMediaActions(
@@ -488,8 +526,15 @@ void MediaItemUIDetailedView::UpdateWithMediaArtwork(
 void MediaItemUIDetailedView::UpdateWithChapterArtwork(
     int index,
     const gfx::ImageSkia& image) {
-  // TODO(b/325142008) Update the chapter list view, which is not implemented
-  // yet.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(media::kBackgroundListening)) {
+    return;
+  }
+
+  if (auto it = chapters_.find(index); it != chapters_.end()) {
+    it->second->UpdateArtwork(image);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void MediaItemUIDetailedView::UpdateDeviceSelectorAvailability(
@@ -747,6 +792,17 @@ MediaItemUIDetailedView::GetDeviceSelectorForTesting() {
 views::View* MediaItemUIDetailedView::GetDeviceSelectorSeparatorForTesting() {
   return device_selector_view_separator_;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+views::View* MediaItemUIDetailedView::GetChapterListViewForTesting() {
+  return chapter_list_view_;
+}
+
+base::flat_map<int, ChapterItemView*>
+MediaItemUIDetailedView::GetChaptersForTesting() {
+  return chapters_;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BEGIN_METADATA(MediaItemUIDetailedView)
 END_METADATA

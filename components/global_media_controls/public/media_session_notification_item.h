@@ -272,6 +272,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   mojo::Receiver<media_session::mojom::MediaControllerImageObserver>
       favicon_observer_receiver_{this};
 
+  mojo::Receiver<media_session::mojom::MediaControllerImageObserver>
+      chapter_observer_receiver_{this};
+
   base::WeakPtrFactory<MediaSessionNotificationItem> weak_ptr_factory_{this};
 };
 

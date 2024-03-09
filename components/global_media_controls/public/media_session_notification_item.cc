@@ -171,6 +171,12 @@ void MediaSessionNotificationItem::MediaControllerImageChanged(
     return;
   }
 
+  if (type == media_session::mojom::MediaSessionImageType::kChapter) {
+    // Chapter images should be handled in `MediaControllerChapterImageChanged`
+    // method.
+    return;
+  }
+
   DCHECK_EQ(media_session::mojom::MediaSessionImageType::kArtwork, type);
 
   session_artwork_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
@@ -281,6 +287,7 @@ void MediaSessionNotificationItem::SetController(
   observer_receiver_.reset();
   artwork_observer_receiver_.reset();
   favicon_observer_receiver_.reset();
+  chapter_observer_receiver_.reset();
 
   is_bound_ = true;
   media_controller_remote_ = std::move(controller);
@@ -302,6 +309,11 @@ void MediaSessionNotificationItem::SetController(
         media_session::mojom::MediaSessionImageType::kSourceIcon,
         gfx::kFaviconSize, kMediaItemArtworkDesiredSize,
         favicon_observer_receiver_.BindNewPipeAndPassRemote());
+
+    media_controller_remote_->ObserveImages(
+        media_session::mojom::MediaSessionImageType::kChapter,
+        kMediaItemArtworkMinSize, kMediaItemArtworkDesiredSize,
+        chapter_observer_receiver_.BindNewPipeAndPassRemote());
   }
 
   MaybeHideOrShowNotification();
