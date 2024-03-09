@@ -891,7 +891,7 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged,
                                 ax::mojom::Role::kButton));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged,
-                                ax::mojom::Role::kPopUpButton));
+                                ax::mojom::Role::kComboBoxSelect));
   EXPECT_EQ(test_tooltip_text, combobox()->GetAccessibleName());
   ui::AXNodeData data;
   combobox()->GetAccessibleNodeData(&data);

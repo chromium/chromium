@@ -180,10 +180,7 @@ Combobox::Combobox(ui::ComboboxModel* model) {
                                                   GetCornerRadius());
   }
 
-  // `ax::mojom::Role::kComboBox` is for UI elements with a dropdown and
-  // an editable text field, which `views::Combobox` does not have. Use
-  // `ax::mojom::Role::kPopUpButton` to match an HTML <select> element.
-  SetAccessibilityProperties(ax::mojom::Role::kPopUpButton);
+  SetAccessibilityProperties(ax::mojom::Role::kComboBoxSelect);
 }
 
 Combobox::~Combobox() {
