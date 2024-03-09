@@ -35,6 +35,7 @@
 <translation id="1111021433905331574">[設定] &gt; [<ph name="APP_TITLE" />] でキーボードのバックライトの色を変更できます</translation>
 <translation id="1117719261843403176">モバイルデータのオンとオフを切り替える。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
+<translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> を更新する</translation>
 <translation id="1142002900084379065">最近の写真</translation>
 <translation id="114221662579355151">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> の情報ダイアログを開きます</translation>
@@ -1827,6 +1828,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
 <translation id="8255234195843591763">リセットして更新してください</translation>
+<translation id="8257510091797044096">デバイスをセットアップする</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8262312463845990408">再生を切り替える</translation>
 <translation id="8270450402312105425">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに戻してください}other{# 時間以内にデバイスを以前のバージョンに戻してください}}</translation>

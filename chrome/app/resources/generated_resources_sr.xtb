@@ -2124,6 +2124,7 @@
 <translation id="2569972178052279830">Назив продавца</translation>
 <translation id="257088987046510401">Теме</translation>
 <translation id="2571655996835834626">Промените подешавања која контролишу приступ веб-сајтова функцијама као што су колачићи, JavaScript, додатне компоненте, геолоцирање, микрофон, камера итд.</translation>
+<translation id="257175846174451436">Предложена је група картица</translation>
 <translation id="2572032849266859634">Одобрен је приступ за <ph name="VOLUME_NAME" /> само за читање.</translation>
 <translation id="2573276323521243649">Вратите се са странице за избор аватара</translation>
 <translation id="2573417407488272418">Направите резервну копију апликација и фајлова у одељку Фајлови &gt; Моји фајлови пре него што надоградите.</translation>
@@ -2658,6 +2659,7 @@
 <translation id="2981113813906970160">Прикажи велики курсор</translation>
 <translation id="2983102365694924129">На основу ваше активности на сајту. Ово подешавање је искључено.</translation>
 <translation id="2983373101216420412">Ниво напуњености батерије футроле <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984727013951557074">Фајл се још увек синхронизује са Диском.</translation>
 <translation id="2985348301114641460">Желите ли да пошаљете захтев администратору да инсталира „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Апликација <ph name="APP_NAME" /> је деинсталирала апликацију}one{Апликација <ph name="APP_NAME" /> је деинсталирала # апликацију}few{Апликација <ph name="APP_NAME" /> је деинсталирала # апликације}other{Апликација <ph name="APP_NAME" /> је деинсталирала # апликација}}</translation>
 <translation id="2987620471460279764">Текст који се дели са другог уређаја</translation>
@@ -4051,6 +4053,7 @@
 <translation id="4051177682900543628">тастер за претрагу + стрелица надесно</translation>
 <translation id="4052120076834320548">Сићушна</translation>
 <translation id="4052913941260326985">Направи QR кôд</translation>
+<translation id="4053833479432165765">&amp;Инсталирај страницу као апликацију…</translation>
 <translation id="4054070260844648638">Видљиво свима</translation>
 <translation id="4056908315660577142">Достигао/ла си временско ограничење које је родитељ подесио за Chrome апликацију<ph name="APP_NAME" />. Сутра имаш <ph name="TIME_LIMIT" /> на располагању.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4463,6 +4466,7 @@
 <translation id="4388650384344483842">Користите бар 8 знакова.</translation>
 <translation id="4389091756366370506">Корисник <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и још <ph name="NUMBER_OF_OTHER_SWITCHES" /> прекидача</translation>
+<translation id="4390569024397171409">Инсталирајте апликацију на <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Конфигурацију Bluetooth-а контролише <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Измените датотеку конфигурације</translation>
 <translation id="4393102500004843976">тастер за претрагу + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -5464,6 +5468,7 @@
 <translation id="5185386675596372454">Најновија верзија додатка „<ph name="EXTENSION_NAME" />“ је онемогућена јер захтева још дозвола.</translation>
 <translation id="5185500136143151980">Нема интернета</translation>
 <translation id="5186381005592669696">Прилагодите језик приказа за подржане апликације</translation>
+<translation id="5187641678926990264">&amp;Инсталирај страницу као апликацију…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Користи се <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Активирај порт</translation>
@@ -6106,6 +6111,7 @@
 <translation id="5696679855467848181">Тренутна PPD датотека у употреби: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Бирач емоџија</translation>
 <translation id="5698878456427040674">Проверите да ли је изабрани налог подржан.</translation>
+<translation id="5699227710146832453">Са уређаја</translation>
 <translation id="570043786759263127">Google Play апликације и услуге</translation>
 <translation id="5700761515355162635">Колачићи трећих страна су дозвољени</translation>
 <translation id="5700836101007545240">Администратор је онемогућио додавање везе</translation>
@@ -7964,6 +7970,7 @@
 <translation id="7168109975831002660">Минимална величина фонта</translation>
 <translation id="7169122689956315694">Укључите обавештења када су уређаји у близини</translation>
 <translation id="7170236477717446850">Слика профила</translation>
+<translation id="7170751905948784001">Информације о програмеру:</translation>
 <translation id="7171000599584840888">Додај профил…</translation>
 <translation id="7171259390164035663">Без регистрације</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Додај картицу у нову групу}one{Додај картице у нову групу}few{Додај картице у нову групу}other{Додај картице у нову групу}}</translation>
@@ -8773,6 +8780,7 @@
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ће моћи да прегледа датотеке у директоријуму <ph name="FOLDERNAME" /> док не затворите све картице овог сајта</translation>
 <translation id="777637629667389858">Кад сте пријављени, штити вас у свим Google услугама.</translation>
 <translation id="7776701556330691704">Није пронађен ниједан глас</translation>
+<translation id="7776950606649732730">Пробајте поново када се заврши синхронизација фајла.</translation>
 <translation id="7777624210360383048">Пречица <ph name="SHORTCUT" /> за: <ph name="EXTENSION_NAME" /></translation>
 <translation id="7779840061887151693">екран</translation>
 <translation id="7781335840981796660">Сви кориснички налози и локални подаци ће бити уклоњени.</translation>
@@ -8964,6 +8972,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да прегледа <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Додајте речи које провера правописа треба да прескаче</translation>
+<translation id="7920715534283810633">Отварање фајлова <ph name="FILE_NAMES" /> није успело</translation>
 <translation id="7921347341284348270">Не можете да прегледате обавештења телефона на овом управљаном налогу. Пробајте поново са другим налогом. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">Овај додатак може да чита и мења <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 додатак</translation>
@@ -10281,6 +10290,7 @@
 <translation id="8916476537757519021">Подоквир Без архивирања: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Да, омогући</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> корисника <ph name="GIVEN_NAME" /></translation>
+<translation id="8918900204934259333">Апликација  се инсталира…</translation>
 <translation id="891931289445130855">Избриши податке и дозволе</translation>
 <translation id="8920133120839850939">Изаберите картицу Још покрета, па укључите Листај странице да бисте се кретали назад и напред</translation>
 <translation id="8922624386829239660">Померај екран када миш додирује ивице екрана</translation>
@@ -10774,6 +10784,7 @@
 <translation id="992032470292211616">Додаци, апликације и теме могу да нашкоде уређају. Желите ли стварно да наставите?</translation>
 <translation id="992256792861109788">Ружичаста</translation>
 <translation id="992592832486024913">Онемогући ChromeVox (говорне повратне информације)</translation>
+<translation id="992653586748191655">Предложених група картица: <ph name="NUM" /></translation>
 <translation id="992778845837390402">У току је прављење резервне копије Linux података</translation>
 <translation id="993540765962421562">Инсталација је у току</translation>
 <translation id="994289308992179865">&amp;Понављај</translation>

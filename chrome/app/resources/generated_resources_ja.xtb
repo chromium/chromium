@@ -2245,6 +2245,7 @@
 <translation id="2669241540496514785"><ph name="APP_NAME" /> を開けませんでした</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> が Chrome タブを共有しています。</translation>
+<translation id="2670350619068134931">アニメーションを減らす</translation>
 <translation id="2670403088701171361">サイトにクリップボード内のテキストや画像へのアクセスを許可しない</translation>
 <translation id="2671451824761031126">ブックマークと設定をインポートしました</translation>
 <translation id="2672142220933875349">不正な crx ファイルです。解凍できませんでした。</translation>
@@ -4250,6 +4251,7 @@
 <translation id="4231141543165771749">ゲーム操作キーを閉じる</translation>
 <translation id="4231231258999726714">Steam for Chromebook を設定しています</translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
+<translation id="4232484478444192782">Android スマートフォンがあなたをサポートします。Wi-Fi とパスワードを転送中です。</translation>
 <translation id="4233739489690259993">この Chromebook は、セキュリティ アップデートとソフトウェア アップデートの提供が終了しました。最新のセキュリティと新機能でデバイスをアップグレードしましょう。特典の利用規約が適用されます。</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
 <translation id="4235976607074422892">スクロール速度</translation>
@@ -6122,6 +6124,7 @@
 <translation id="5713033452812927234">以前のデバイスからウィンドウを開いています</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> に接続しました</translation>
 <translation id="5713960379473463904">スペースの入力</translation>
+<translation id="5714100381896040477">画面上の動きを制限する</translation>
 <translation id="5715711091495208045">プラグイン ブローカー: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">今すぐ変更してください</translation>
 <translation id="5719854774000914513">サイトが HID デバイスへの接続を要求できるようにする</translation>
@@ -7330,6 +7333,7 @@
 <translation id="6675665718701918026">ポインティング デバイスが接続されました</translation>
 <translation id="6675985668044425385">サイトがうまく機能しない場合は、アドレスバーのトラッキング防止機能のオプションを使用してサードパーティ Cookie を有効にする方法があります。</translation>
 <translation id="6676212663108450937">音声を認識させる場合はヘッドフォンの使用をご検討ください</translation>
+<translation id="667752334740867460">Wi-Fi 情報を受信しています...</translation>
 <translation id="6678717876183468697">クエリ URL</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">速度</translation>

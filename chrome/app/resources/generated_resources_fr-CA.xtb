@@ -2128,6 +2128,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2569972178052279830">Nom du détaillant</translation>
 <translation id="257088987046510401">Thèmes</translation>
 <translation id="2571655996835834626">Modifiez les paramètres qui contrôlent l'accès des sites Web aux éléments comme les témoins, le code JavaScript, les plugiciels, la géolocalisation, le microphone, l'appareil photo, etc.</translation>
+<translation id="257175846174451436">Groupe d'onglets suggéré</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à <ph name="VOLUME_NAME" /> a été accordé.</translation>
 <translation id="2573276323521243649">Retour de la page de sélection d'avatar</translation>
 <translation id="2573417407488272418">Sauvegardez les applications et les fichiers dans Fichiers &gt; Mes fichiers avant la mise à niveau.</translation>
@@ -2662,6 +2663,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2981113813906970160">Afficher le grand curseur</translation>
 <translation id="2983102365694924129">En fonction de votre activité sur un site. Ce paramètre est désactivé.</translation>
 <translation id="2983373101216420412">Niveau de la pile de l'étui : <ph name="PERCENTAGE" /> %.</translation>
+<translation id="2984727013951557074">Le fichier est toujours en cours de synchronisation sur Disque.</translation>
 <translation id="2985348301114641460">Envoyer une demande à votre administrateur pour installer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> a désinstallé une application}one{<ph name="APP_NAME" /> a désinstallé # application}other{<ph name="APP_NAME" /> a désinstallé # applications}}</translation>
 <translation id="2987620471460279764">Texte partagé à partir d'un autre appareil</translation>
@@ -4055,6 +4057,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4051177682900543628">rechercher+flèche vers la droite</translation>
 <translation id="4052120076834320548">Très petite</translation>
 <translation id="4052913941260326985">Créer un code QR</translation>
+<translation id="4053833479432165765">&amp;Installer la page en tant qu'application…</translation>
 <translation id="4054070260844648638">Visible par tous</translation>
 <translation id="4056908315660577142">Tu as atteint la durée limite que ton parent a définie pour l'application Chrome <ph name="APP_NAME" />. Tu pourras l'utiliser de nouveau pendant <ph name="TIME_LIMIT" /> demain.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4387,7 +4390,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4327380114687339519">Menu Extensions</translation>
 <translation id="4330191372652740264">Eau glacée</translation>
 <translation id="4330387663455830245">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
-<translation id="4332976768901252016">Configurer les contrôles parentaux</translation>
+<translation id="4332976768901252016">Configurer les Contrôles parentaux</translation>
 <translation id="4333854382783149454">PKCS n° 1 SHA-1 avec chiffrement RSA</translation>
 <translation id="4334768748331667190">Vous ne verrez plus <ph name="MODULE_NAME" /></translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
@@ -4466,6 +4469,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4388650384344483842">Utiliser au moins huit caractères</translation>
 <translation id="4389091756366370506">Utilisateur <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et <ph name="NUMBER_OF_OTHER_SWITCHES" /> autres commutateurs</translation>
+<translation id="4390569024397171409">Installer l'application sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">La configuration du Bluetooth est contrôlée par <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifier le fichier de configuration</translation>
 <translation id="4393102500004843976">recherche+majuscule+<ph name="TOP_ROW_KEY" /></translation>
@@ -5467,6 +5471,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5185386675596372454">La nouvelle version de « <ph name="EXTENSION_NAME" /> » a été désactivée, car elle nécessite davantage d'autorisations.</translation>
 <translation id="5185500136143151980">Aucune connexion Internet</translation>
 <translation id="5186381005592669696">Personnalisez la langue d'affichage pour les applications prises en charge</translation>
+<translation id="5187641678926990264">&amp;Installer la page en tant qu'application…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Utilisation de <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Activer le port</translation>
@@ -6109,6 +6114,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5696679855467848181">Fichier PPD en cours d'utilisation : <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Sélecteur d'emoji</translation>
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est pris en charge.</translation>
+<translation id="5699227710146832453">À partir de votre</translation>
 <translation id="570043786759263127">Applications et services Google Play</translation>
 <translation id="5700761515355162635">Témoins tiers autorisés</translation>
 <translation id="5700836101007545240">Votre administrateur a désactivé l'ajout de connexion</translation>
@@ -7962,6 +7968,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7168109975831002660">Taille de police minimale</translation>
 <translation id="7169122689956315694">Activer les notifications lorsque des appareils se trouvent à proximité</translation>
 <translation id="7170236477717446850">Photo du profil</translation>
+<translation id="7170751905948784001">Renseignements sur le développeur :</translation>
 <translation id="7171000599584840888">Ajouter un profil…</translation>
 <translation id="7171259390164035663">Ne pas s'inscrire</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Ajouter un onglet au nouveau groupe}one{Ajouter un onglet au nouveau groupe}other{Ajouter des onglets au nouveau groupe}}</translation>
@@ -8771,6 +8778,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7776156998370251340"><ph name="ORIGIN" /> sera en mesure d'afficher les fichiers dans le dossier <ph name="FOLDERNAME" /> jusqu'à ce que vous fermiez tous les onglets pour ce site</translation>
 <translation id="777637629667389858">Vous protège dans l'ensemble des services Google lorsque vous êtes connecté.</translation>
 <translation id="7776701556330691704">Aucune voix trouvée</translation>
+<translation id="7776950606649732730">Réessayez une fois la synchronisation du fichier terminée.</translation>
 <translation id="7777624210360383048">Raccourci <ph name="SHORTCUT" /> pour <ph name="EXTENSION_NAME" /></translation>
 <translation id="7779840061887151693">affichage</translation>
 <translation id="7781335840981796660">Tous les comptes utilisateur et toutes les données locales seront supprimés.</translation>
@@ -8962,6 +8970,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> peut consulter <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Ajoutez les termes que le correcteur orthographique doit ignorer</translation>
+<translation id="7920715534283810633">Impossible d'ouvrir <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Vous ne pouvez pas afficher les notifications de votre téléphone sur ce compte géré. Réessayez avec un autre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">Cette extension peut lire et modifier <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extension</translation>
@@ -10276,6 +10285,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8916476537757519021">Sous-cadre de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8918900204934259333">Installation de l'application en cours…</translation>
 <translation id="891931289445130855">Supprimer les données et les autorisations</translation>
 <translation id="8920133120839850939">Sélectionnez l'onglet Plus de gestes, puis activez Naviguer d'une page à l'autre pour naviguer vers l'avant et l'arrière</translation>
 <translation id="8922624386829239660">Déplacer l'écran lorsque le pointeur de la souris touche les rebords de l'écran</translation>
@@ -10769,6 +10779,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="992032470292211616">Les extensions, les applications et les thèmes peuvent nuire à votre appareil. Voulez-vous vraiment continuer?</translation>
 <translation id="992256792861109788">Rose</translation>
 <translation id="992592832486024913">Désactiver ChromeVox (commentaires audio)</translation>
+<translation id="992653586748191655"><ph name="NUM" /> groupes d'onglets suggérés</translation>
 <translation id="992778845837390402">Sauvegarde Linux en cours…</translation>
 <translation id="993540765962421562">Installation en cours…</translation>
 <translation id="994289308992179865">Bouc&amp;le</translation>

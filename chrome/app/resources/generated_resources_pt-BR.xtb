@@ -2266,6 +2266,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2669241540496514785">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
 <translation id="2670102641511624474">O app <ph name="APP_NAME" /> está compartilhando uma guia do Chrome.</translation>
+<translation id="2670350619068134931">Animações reduzidas</translation>
 <translation id="2670403088701171361">Não permitir que os sites acessem os textos e imagens da área de transferência</translation>
 <translation id="2671451824761031126">Seus favoritos e configurações estão prontos</translation>
 <translation id="2672142220933875349">Arquivo crx defeituoso, a descompactação falhou.</translation>
@@ -4270,6 +4271,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4231141543165771749">Fechar controles do jogo</translation>
 <translation id="4231231258999726714">Como configurar o Steam para Chromebook</translation>
 <translation id="4232375817808480934">Configurar o Kerberos</translation>
+<translation id="4232484478444192782">Seu smartphone Android pode ajudar. A rede Wi-Fi e a senha estão sendo transferidas.</translation>
 <translation id="4233739489690259993">Seu Chromebook deixou de receber atualizações de segurança e de software. Troque por um novo dispositivo para ter a segurança e os recursos mais recentes. Oferta sujeita aos termos.</translation>
 <translation id="4235965441080806197">Cancelar login</translation>
 <translation id="4235976607074422892">Velocidade da rolagem</translation>
@@ -6146,6 +6148,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5713033452812927234">Abrindo janelas do dispositivo anterior</translation>
 <translation id="5713158217420111469">Conectado a <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Estilo da entrada de espaços</translation>
+<translation id="5714100381896040477">Limitar o movimento na tela</translation>
 <translation id="5715711091495208045">Agente do plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">Mude imediatamente</translation>
 <translation id="5719854774000914513">Os sites podem pedir para se conectar a dispositivos HID</translation>
@@ -7357,6 +7360,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6675665718701918026">Dispositivo apontador conectado</translation>
 <translation id="6675985668044425385">Se um site não funciona como esperado, ative os cookies de terceiros usando a opção "Proteção antirrastreamento" na barra de endereço.</translation>
 <translation id="6676212663108450937">Recomendamos o uso de fones de ouvido para treinar sua voz</translation>
+<translation id="667752334740867460">Recebendo informações do Wi-Fi…</translation>
 <translation id="6678717876183468697">URL de consulta</translation>
 <translation id="6680442031740878064">Disponível: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>

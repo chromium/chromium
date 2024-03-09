@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
 <translation id="1582732959743469162">การดำเนินการนี้จะหยุดการดาวน์โหลดที่ดำเนินอยู่ทั้งหมด</translation>
 <translation id="158591023028013564">{count,plural, =1{เพิ่มหน้าลงในเรื่องรออ่านแล้ว}other{เพิ่ม {count} หน้าลงในเรื่องรออ่านแล้ว}}</translation>
+<translation id="1587629076612412684">ปรับเปลี่ยนบริการ Google ในแบบของคุณ</translation>
 <translation id="1594034544529347967">เริ่ม</translation>
 <translation id="160275202205869636">เมื่อเปิดไว้ ระบบจะใช้และบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
 <translation id="1605405588277479165">ปิด - ไม่แนะนำ</translation>
@@ -1605,6 +1606,7 @@
 <translation id="9106655997975673326">จาก "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">ตรวจหารหัสผ่านที่ถูกละเมิด</translation>
 <translation id="9109699888944026290">{count,plural, =1{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}other{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}}</translation>
+<translation id="9110489518258031250">ควบคุมวิธีใช้ประวัติการท่องเว็บที่ซิงค์เพื่อปรับเปลี่ยนบริการอื่นๆ ของ Google ในแบบของคุณ</translation>
 <translation id="9120217828624527905">เปลี่ยนเป็นการแปลภาษาทั้งหน้า</translation>
 <translation id="9124387962554796433">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เหมาะกับคุณ</translation>
 <translation id="9137526406337347448">Google Services</translation>

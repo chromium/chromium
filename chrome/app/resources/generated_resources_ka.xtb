@@ -2126,6 +2126,7 @@
 <translation id="2569972178052279830">საცალო მოვაჭრის სახელი</translation>
 <translation id="257088987046510401">თემები</translation>
 <translation id="2571655996835834626">თქვენი პარამეტრების შეცვლა, რომლებიც მართავს ვებსაიტების წვდომას ისეთ ფუნქციებზე, როგორიცაა ქუქი-ჩანაწერები, JavaScript, დანამატები, გეოლოკაცია, მიკროფონი, კამერა და სხვა.</translation>
+<translation id="257175846174451436">შემოთავაზებულია ჩანართების ჯგუფი</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />-ზე მხოლოდ წაკითხვადი წვდომის უფლება მინიჭებულია.</translation>
 <translation id="2573276323521243649">ავატარის არჩევის გვერდიდან უკან დაბრუნება</translation>
 <translation id="2573417407488272418">ვერსიის განახლებამდე შექმენით აპებისა და ფაილების სარეზერვო ასლები აქ: ფაილები &gt; ჩემი ფაილები.</translation>
@@ -2660,6 +2661,7 @@
 <translation id="2981113813906970160">მაუსის დიდი ისრის ჩვენება</translation>
 <translation id="2983102365694924129">ეფუძნება თქვენს აქტივობას საიტზე. ეს პარამეტრი გამორთულია.</translation>
 <translation id="2983373101216420412">სათავსოს ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984727013951557074">ფაილის Drive-თან სინქრონიზაცია ჯერ კიდევ მიმდინარეობს.</translation>
 <translation id="2985348301114641460">გსურთ, გაუგზავნოთ ადმინისტრატორს „<ph name="EXTENSION_NAME" />“-ის ინსტალაციის მოთხოვნა?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" />-მა შეასრულა აპის დეინსტალაცია}other{<ph name="APP_NAME" />-მა შეასრულა # აპის დეინსტალაცია}}</translation>
 <translation id="2987620471460279764">სხვა მოწყობილობიდან გაზიარებული ტექსტი</translation>
@@ -4053,6 +4055,7 @@
 <translation id="4051177682900543628">search + მარჯვნივ მიმართული ისარი</translation>
 <translation id="4052120076834320548">ძალიან პატარა</translation>
 <translation id="4052913941260326985">QR &amp;კოდის შექმნა</translation>
+<translation id="4053833479432165765">გვერდის &amp;ინსტალაცია აპის სახით...</translation>
 <translation id="4054070260844648638">ხილულია ყველასთვის</translation>
 <translation id="4056908315660577142">მიღწეულია მშობლის მიერ <ph name="APP_NAME" />-ის Chrome აპზე დაწესებული დროის ლიმიტი. ხვალ შეგიძლიათ <ph name="TIME_LIMIT" /> გამოიყენოთ ის.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4465,6 +4468,7 @@
 <translation id="4388650384344483842">გამოიყენეთ მინიმუმ 8 სიმბოლო</translation>
 <translation id="4389091756366370506">მომხმარებლის <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> და <ph name="NUMBER_OF_OTHER_SWITCHES" /> სხვა გადამრთველი</translation>
+<translation id="4390569024397171409">დააინსტალირეთ აპი თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="439266289085815679">Bluetooth-ის კონფიგურაციას მართავს <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">კონფიგურაციის ფაილის რედაქტირება</translation>
 <translation id="4393102500004843976">search + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -5466,6 +5470,7 @@
 <translation id="5185386675596372454">„<ph name="EXTENSION_NAME" />“-ის უახლესი ვერსია გამორთულია, რადგან იგი მოითხოვს დამატებით ნებართვებს.</translation>
 <translation id="5185500136143151980">ინტერნეტთან კავშირი არ არის</translation>
 <translation id="5186381005592669696">მოირგეთ, რომელ ენაზე გამოჩნდეს მხარდაჭერილი აპები</translation>
+<translation id="5187641678926990264">გვერდის &amp;ინსტალაცია აპის სახით...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">გამოიყენება <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">პორტის გააქტიურება</translation>
@@ -6108,6 +6113,7 @@
 <translation id="5696679855467848181">ამჟამად გამოყენებული PPD ფაილი: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emoji-ების ამომრჩევი</translation>
 <translation id="5698878456427040674">შეამოწმეთ, მხარდაჭერილია თუ არა არჩეული ანგარიში.</translation>
+<translation id="5699227710146832453">თქვენი შემდეგი წყაროდან:</translation>
 <translation id="570043786759263127">Google Play აპები და სერვისები</translation>
 <translation id="5700761515355162635">მესამე მხარის ქუქი-ჩანაწერები დაშვებულია</translation>
 <translation id="5700836101007545240">კავშირის დამატება გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
@@ -7961,6 +7967,7 @@
 <translation id="7168109975831002660">შრიფტის მინიმალური ზომა</translation>
 <translation id="7169122689956315694">ჩართეთ შეტყობინებები, როცა მოწყობილობები ახლომახლოა</translation>
 <translation id="7170236477717446850">პროფილის სურათი</translation>
+<translation id="7170751905948784001">დეველოპერის ინფორმაცია:</translation>
 <translation id="7171000599584840888">პროფილის დამატება…</translation>
 <translation id="7171259390164035663">არ მსურს რეგისტრაცია</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ჩანართის დამატება ახალ ჯგუფში}other{ჩანართების დამატება ახალ ჯგუფში}}</translation>
@@ -8769,6 +8776,7 @@
 <translation id="7776156998370251340"><ph name="ORIGIN" /> შეძლებს „<ph name="FOLDERNAME" />“-ში არსებული ფაილების ნახვას ამ საიტის ყველა ჩანართის დახურვამდე</translation>
 <translation id="777637629667389858">როცა შესული ხართ სისტემაში, გიცავთ Google სერვისების ფარგლებში.</translation>
 <translation id="7776701556330691704">ხმები ვერ მოიძებნა</translation>
+<translation id="7776950606649732730">ცადეთ ხელახლა, როცა ფაილის სინქრონიზაცია დასრულდება.</translation>
 <translation id="7777624210360383048">მალსახმობი <ph name="SHORTCUT" /> გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
 <translation id="7779840061887151693">ეკრანი</translation>
 <translation id="7781335840981796660">მომხმარებლის ყველა ანგარიში და ლოკალური მონაცემები წაიშლება.</translation>
@@ -8960,6 +8968,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />წმ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის ნახვა</translation>
 <translation id="7920482456679570420">დაამატეთ სიტყვები, რომლებიც გსურთ, გამოტოვებული იყოს მართლწერის შემოწმებისას</translation>
+<translation id="7920715534283810633"><ph name="FILE_NAMES" /> ვერ იხსნება</translation>
 <translation id="7921347341284348270">თქვენი ტელეფონის შეტყობინებებს ამ მართულ ანგარიშზე ვერ ნახავთ. ცადეთ ხელახლა სხვა ანგარიშის გამოყენებით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">ამ გაფართოებას შეუძლია, წაიკითხოს და შეცვალოს <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 გაფართოება</translation>
@@ -10274,6 +10283,7 @@
 <translation id="8916476537757519021">ანონიმური ქვეჩარჩო: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">დიახ, თანახმა ვარ</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-ის <ph name="DEVICE_TYPE" /></translation>
+<translation id="8918900204934259333">აპი ინსტალირდება...</translation>
 <translation id="891931289445130855">მონაცემთა და ნებართვების წაშლა</translation>
 <translation id="8920133120839850939">უკან და წინ გადასასვლელად აირჩიეთ „მეტი ჟესტის“ ჩანართი, შემდეგ ჩართეთ გვერდებს შორის გადაფურცვლა</translation>
 <translation id="8922624386829239660">ეკრანის გადაადგილება, როცა მაუსი ეკრანის კიდეებს ეხება</translation>
@@ -10767,6 +10777,7 @@
 <translation id="992032470292211616">გაფართოებებმა, პროგრამებმა და თემებმა შეიძლება დააზიანოს თქვენი მოწყობილობა. ნამდვილად გსურთ გააგრძელოთ?</translation>
 <translation id="992256792861109788">ვარდისფერი</translation>
 <translation id="992592832486024913">ChromeVox-ის გამორთვა (ხმოვანი შეფასება)</translation>
+<translation id="992653586748191655">შემოთავაზებულია ჩანართების <ph name="NUM" /> ჯგუფი</translation>
 <translation id="992778845837390402">ამჟამად მიმდინარეობს Linux სარეზერვო კოპირება</translation>
 <translation id="993540765962421562">მიმდინარეობს ინსტალაცია</translation>
 <translation id="994289308992179865">&amp;ციკლი</translation>

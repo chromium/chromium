@@ -35,6 +35,7 @@
 <translation id="1111021433905331574">तपाईं सेटिङ &gt; <ph name="APP_TITLE" /> मा गई आफ्नो किबोर्डको ब्याकलाइटको रङ बदल्न सक्नुहुन्छ</translation>
 <translation id="1117719261843403176">मोबाइल डेटा टगल गर्नुहोस्। <ph name="STATE" />।</translation>
 <translation id="112308213915226829">तखता स्वत: लुकाउनुहोस्</translation>
+<translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> रिफ्रेस गर्नुहोस्</translation>
 <translation id="1142002900084379065">हालसालै खिचिएका फोटोहरू</translation>
 <translation id="114221662579355151">तपाईंले यसो गर्नुभयो भने <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> र क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> को जानकारीको डायलग खोल्नुहोस्</translation>
@@ -1826,6 +1827,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, फोनको ब्याट्री <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />,एप</translation>
 <translation id="8255234195843591763">अपडेट गर्न रिसेट गर्नुहोस्</translation>
+<translation id="8257510091797044096">आफ्नो डिभाइस सेटअप गर्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>

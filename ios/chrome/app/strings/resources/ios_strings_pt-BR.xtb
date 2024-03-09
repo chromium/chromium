@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Mensagem enviada.</translation>
 <translation id="1582732959743469162">Isso interromperá todo o progresso do download atual.</translation>
 <translation id="158591023028013564">{count,plural, =1{Página adicionada à Lista de leitura}one{{count} página adicionada à Lista de leitura}other{{count} páginas adicionadas à Lista de leitura}}</translation>
+<translation id="1587629076612412684">Personalizar Serviços do Google</translation>
 <translation id="1594034544529347967">Início</translation>
 <translation id="160275202205869636">Quando ativado, use e salve dados na sua Conta do Google. Quando essa opção está desativada, os dados são salvos apenas neste dispositivo.</translation>
 <translation id="1605405588277479165">Desativado (não recomendado)</translation>
@@ -1605,6 +1606,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Verificar senhas comprometidas</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nova senha para este site}one{Nova senha para este site}other{Novas senhas para este site}}</translation>
+<translation id="9110489518258031250">Controle como o histórico de navegação sincronizado pode ser usado para personalizar outros Serviços do Google</translation>
 <translation id="9120217828624527905">Mudar para tradução de página inteira</translation>
 <translation id="9124387962554796433">O Google pode usar seu histórico para personalizar a Pesquisa e outros Serviços do Google.</translation>
 <translation id="9137526406337347448">Serviços do Google</translation>

@@ -450,7 +450,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="3398320232533725830">Ouvrir le gestionnaire de favoris</translation>
 <translation id="3407392651057365886">Un plus grand nombre de pages est préchargé. Ces pages peuvent être préchargées via les serveurs de Google à la demande d'autres sites</translation>
 <translation id="3414952576877147120">Taille :</translation>
-<translation id="3421726884497337397">Choisir quand bloquer les cookies tiers</translation>
+<translation id="3421726884497337397">Choisissez quand bloquer les cookies tiers</translation>
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3430670036890315772">Si vous désactivez le verrouillage du profil, vos informations enregistrées seront supprimées</translation>
 <translation id="3435465986463792564">Vous pouvez gérer toutes vos fenêtres depuis ce menu</translation>
@@ -853,7 +853,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5524843473235508879">Redirection bloquée.</translation>
 <translation id="5548606607480005320">Contrôle de sécurité</translation>
 <translation id="5554520618550346933">Lorsque vous utilisez un mot de passe, Chrome vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
-<translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>
+<translation id="5555525474779371165">Choisissez votre mode de navigation sécurisée</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="555816257274242153">Suivi du prix arrêté</translation>
 <translation id="5561162485081632007">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent</translation>

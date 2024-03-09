@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">E-posten er sendt.</translation>
 <translation id="1582732959743469162">Dette stopper all fremdriften for den aktive nedlastingen.</translation>
 <translation id="158591023028013564">{count,plural, =1{Siden er lagt til på leselisten din}other{{count} sider er lagt til på leselisten din}}</translation>
+<translation id="1587629076612412684">Tilpass Google-tjenester</translation>
 <translation id="1594034544529347967">Starter</translation>
 <translation id="160275202205869636">Når dette er på, kan du bruke og lagre data i Google-kontoen din. Når dette er slått av, lagres data bare på denne enheten.</translation>
 <translation id="1605405588277479165">Av – anbefales ikke</translation>
@@ -517,6 +518,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3631443864840848029">Sørg for at du lagrer det nåværende passordet ditt for dette nettstedet.</translation>
 <translation id="3638472932233958418">Last inn nettsider på forhånd</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord lagres bare på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
+<translation id="3659297405161482746">Fant ingen betalingsmåter</translation>
 <translation id="3661160521073045932">En konfigurasjonsprofil er tilgjengelig</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3680970647557344817">Skjul Rediger bokmerke</translation>
@@ -1013,6 +1015,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6196207969502475924">Google Talesøk</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Lukk {COUNT} fane}other{Lukk {COUNT} faner}}</translation>
 <translation id="6210079381482819663">Faner som ikke brukes i <ph name="THRESHOLD" /> dager eller mer, flyttes hit. Du kan når som helst endre dette i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
+<translation id="6213281885682386884">Fant ingen adresser</translation>
 <translation id="6213567400989743524">Avviste varsler</translation>
 <translation id="6219550825416862075">Velkommen tilbake</translation>
 <translation id="6219688215832490856">Oversett aldri</translation>
@@ -1605,6 +1608,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9106655997975673326">Fra «<ph name="SOURCE_DEVICE" />»</translation>
 <translation id="9107664647686727385">Sjekk om du har passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nytt passord for dette nettstedet}other{Nye passord for dette nettstedet}}</translation>
+<translation id="9110489518258031250">Kontroller hvordan den synkroniserte nettleserloggen din kan brukes til å tilpasse andre Google-tjenester</translation>
 <translation id="9120217828624527905">Bytt til oversettelse av hele siden</translation>
 <translation id="9124387962554796433">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>

@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">メールを送信しました。</translation>
 <translation id="1582732959743469162">この操作を行うと、現在進行中のダウンロードは停止します。</translation>
 <translation id="158591023028013564">{count,plural, =1{リーディング リストにページを追加しました}other{リーディング リストに {count} 件のページを追加しました}}</translation>
+<translation id="1587629076612412684">Google サービスのカスタマイズ</translation>
 <translation id="1594034544529347967">開始</translation>
 <translation id="160275202205869636">オンにすると、Google アカウントのデータが使用、保存されます。オフにすると、データはこのデバイスのみに保存されます。</translation>
 <translation id="1605405588277479165">オフ - 推奨されません</translation>
@@ -1607,6 +1608,7 @@
 <translation id="9106655997975673326">「<ph name="SOURCE_DEVICE" />」から</translation>
 <translation id="9107664647686727385">不正使用されたパスワードがないか確認します</translation>
 <translation id="9109699888944026290">{count,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
+<translation id="9110489518258031250">同期された閲覧履歴を使用して他の Google サービスをカスタマイズする方法を管理します</translation>
 <translation id="9120217828624527905">ページ全体の翻訳に切り替え</translation>
 <translation id="9124387962554796433">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="9137526406337347448">Google サービス</translation>

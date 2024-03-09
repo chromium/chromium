@@ -207,7 +207,7 @@
 <translation id="2050196510205866090">{count,plural, =1{{count} mode de paiement enregistré disponible au-dessus de votre clavier.}one{{count} mode de paiement enregistré disponible au-dessus de votre clavier.}other{{count} modes de paiement enregistrés disponibles au-dessus de votre clavier.}}</translation>
 <translation id="2055515971416882518">Ouvrez "Réglages".</translation>
 <translation id="2059166748188874810">Municipalité</translation>
-<translation id="2062410130322589403">Guide de vos paramètres de confidentialité</translation>
+<translation id="2062410130322589403">Guide sur vos choix de confidentialité</translation>
 <translation id="20638360198452347">Sélecteur de type d'unité</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>

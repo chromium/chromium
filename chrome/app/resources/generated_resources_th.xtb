@@ -2250,6 +2250,7 @@
 <translation id="2669241540496514785">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> กำลังแชร์แท็บใน Chrome</translation>
+<translation id="2670350619068134931">ภาพเคลื่อนไหวที่ลดลง</translation>
 <translation id="2670403088701171361">ไม่อนุญาตให้เว็บไซต์ดูข้อความหรือรูปภาพในคลิปบอร์ด</translation>
 <translation id="2671451824761031126">บุ๊กมาร์กและการตั้งค่าของคุณพร้อมแล้ว</translation>
 <translation id="2672142220933875349">ไฟล์ crx ใช้ไม่ได้ การคลายการแพ็กล้มเหลว</translation>
@@ -4254,6 +4255,7 @@
 <translation id="4231141543165771749">ปิดการควบคุมเกม</translation>
 <translation id="4231231258999726714">กําลังตั้งค่า Steam สําหรับ Chromebook</translation>
 <translation id="4232375817808480934">กำหนดค่า Kerberos</translation>
+<translation id="4232484478444192782">โทรศัพท์ Android มีทุกอย่างที่คุณต้องการ กำลังโอน Wi-Fi และรหัสผ่าน</translation>
 <translation id="4233739489690259993">Chromebook ของคุณจะไม่ได้รับการอัปเดตความปลอดภัยและซอฟต์แวร์อีกต่อไป อัปเกรดอุปกรณ์เพื่อรับการรักษาความปลอดภัยและฟีเจอร์ใหม่ล่าสุด เป็นไปตามข้อกำหนดของข้อเสนอ</translation>
 <translation id="4235965441080806197">ยกเลิกการลงชื่อเข้าใช้</translation>
 <translation id="4235976607074422892">ความเร็วของการเลื่อน</translation>
@@ -6126,6 +6128,7 @@
 <translation id="5713033452812927234">กำลังเปิดหน้าต่างจากอุปกรณ์ก่อนหน้า</translation>
 <translation id="5713158217420111469">เชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
 <translation id="5713960379473463904">รูปแบบการป้อนช่องว่าง</translation>
+<translation id="5714100381896040477">จำกัดการเคลื่อนไหวบนหน้าจอ</translation>
 <translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">คุณควรเปลี่ยนรหัสผ่านดังกล่าวตอนนี้เลย</translation>
 <translation id="5719854774000914513">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
@@ -7334,6 +7337,7 @@
 <translation id="6675665718701918026">เชื่อมต่ออุปกรณ์ชี้ตำแหน่งแล้ว</translation>
 <translation id="6675985668044425385">หากเว็บไซต์ไม่ทำงานตามที่คาดไว้ คุณสามารถเปิดใช้คุกกี้ของบุคคลที่สามสำหรับเว็บไซต์ดังกล่าวได้ผ่านตัวเลือกการป้องกันการติดตามในแถบที่อยู่</translation>
 <translation id="6676212663108450937">โปรดพิจารณาใช้หูฟังขณะสอนให้ระบบรู้จำเสียง</translation>
+<translation id="667752334740867460">กำลังรับข้อมูล Wi-Fi...</translation>
 <translation id="6678717876183468697">URL ของคำค้นหา</translation>
 <translation id="6680442031740878064">พร้อมใช้งาน: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ความเร็ว</translation>

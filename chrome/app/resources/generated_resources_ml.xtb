@@ -2125,6 +2125,7 @@
 <translation id="2569972178052279830">ചില്ലറവ്യാപാരിയുടെ പേര്</translation>
 <translation id="257088987046510401">തീമുകള്‍‌</translation>
 <translation id="2571655996835834626">കുക്കികൾ, JavaScript, പ്ലഗിന്നുകൾ, ജിയോലൊക്കേഷൻ, മൈക്രോഫോൺ, ക്യാമറ മുതലായ ഫീച്ചറുകളിലേക്കുള്ള വെബ്‌സൈറ്റിൻ്റെ ആക്‌സസ് നിയന്ത്രിക്കുന്ന നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക.</translation>
+<translation id="257175846174451436">ടാബ് ഗ്രൂപ്പ് നിർദ്ദേശിച്ചു</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> എന്നതിലേക്ക് റീഡ് ഒൺലി ആക്‌സസ്സ് അനുവദിച്ചു.</translation>
 <translation id="2573276323521243649">അവതാർ തിരഞ്ഞെടുക്കൽ പേജിൽ നിന്ന് മടങ്ങുക</translation>
 <translation id="2573417407488272418">അപ്‌ഗ്രേഡ് ചെയ്യുന്നതിന് മുമ്പ്, ഫയലുകൾ &gt; എന്റെ ഫയലുകൾ എന്നതിലേക്ക് ആപ്പുകളും ഫയലുകളും ബാക്കപ്പെടുക്കുക.</translation>
@@ -2659,6 +2660,7 @@
 <translation id="2981113813906970160">വലിയ മൗസ് കഴ്‌സർ കാണിക്കുക</translation>
 <translation id="2983102365694924129">സൈറ്റിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റിയെ അടിസ്ഥാനമാക്കി. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
 <translation id="2983373101216420412">കെയ്‌സ് ബാറ്ററി നില <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984727013951557074">ഫയൽ ഇപ്പോഴും Drive-ലേക്ക് സമന്വയിപ്പിക്കുകയാണ്.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ഇൻസ്‌റ്റാൾ ചെയ്യാൻ നിങ്ങളുടെ അഡ്‌മിന് ഒരു അഭ്യർത്ഥന അയയ്ക്കണോ?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ഒരു ആപ്പ് അൺഇൻസ്റ്റാൾ ചെയ്തു}other{<ph name="APP_NAME" /> # ആപ്പുകൾ അൺഇൻസ്റ്റാൾ ചെയ്തു}}</translation>
 <translation id="2987620471460279764">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ട ടെക്‌സ്‌റ്റ്</translation>
@@ -4051,6 +4053,7 @@
 <translation id="4051177682900543628">തിരയൽ + വലത്തേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4052120076834320548">ചെറുത്</translation>
 <translation id="4052913941260326985">QR കോഡ് &amp;സൃഷ്ടിക്കുക</translation>
+<translation id="4053833479432165765">&amp;ആപ്പ് ആയി പേജ് ഇൻസ്റ്റാൾ ചെയ്യുക...</translation>
 <translation id="4054070260844648638">എല്ലാവര്‍ക്കും ദൃശ്യം</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ആപ്പിനായി നിങ്ങളുടെ രക്ഷിതാവ് സജ്ജീകരിച്ച സമയ പരിധിയിലെത്തി. നാളെ <ph name="TIME_LIMIT" /> സമയം നിങ്ങൾക്ക് അത് ഉപയോഗിക്കാം.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4463,6 +4466,7 @@
 <translation id="4388650384344483842">8 പ്രതീകങ്ങളെങ്കിലും ഉപയോഗിക്കുക</translation>
 <translation id="4389091756366370506">ഉപയോക്താവ്<ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> എന്നീ സ്വിച്ചുകളും മറ്റ് <ph name="NUMBER_OF_OTHER_SWITCHES" /> എണ്ണവും</translation>
+<translation id="4390569024397171409">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിലേക്ക് ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="439266289085815679">Bluetooth കോൺഫിഗറേഷൻ നിയന്ത്രിക്കുന്നത് <ph name="USER_EMAIL" /> ആണ്.</translation>
 <translation id="4392896746540753732">കോൺഫിഗറേഷൻ ഫയൽ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="4393102500004843976">തിരയൽ + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -5464,6 +5468,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" എന്നതിന്റെ ഏറ്റവും പുതിയ പതിപ്പിന് കൂടുതൽ അനുമതികൾ ആവശ്യമുള്ളതുകൊണ്ട് അത് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="5185500136143151980">ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="5186381005592669696">പിന്തുണയ്ക്കുന്ന ആപ്പുകൾക്കായി പ്രദർശന ഭാഷ ഇഷ്ടാനുസൃതമാക്കുക</translation>
+<translation id="5187641678926990264">&amp;ആപ്പ് ആയി പേജ് ഇൻസ്റ്റാൾ ചെയ്യുക...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="5190926251776387065">പോർട്ട് സജീവമാക്കുക</translation>
@@ -6107,6 +6112,7 @@
 <translation id="5696679855467848181">നിലവിലെ PPD ഉപയോഗത്തിലാണ്: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ഇമോജി പിക്കർ</translation>
 <translation id="5698878456427040674">തിരഞ്ഞെടുത്ത അക്കൗണ്ട് പിന്തുണയ്ക്കുന്നുണ്ടോയെന്ന് പരിശോധിക്കുക.</translation>
+<translation id="5699227710146832453">ഇനിപ്പറയുന്നതിൽ നിന്ന്</translation>
 <translation id="570043786759263127">Google Play ആപ്പുകളും സേവനങ്ങളും</translation>
 <translation id="5700761515355162635">മൂന്നാം-കക്ഷി കുക്കികൾ അനുവദനീയമാണ്</translation>
 <translation id="5700836101007545240">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ ‘കണക്ഷൻ ചേർക്കൽ‘ പ്രവർത്തനരഹിതമാക്കി</translation>
@@ -7961,6 +7967,7 @@
 <translation id="7168109975831002660">കുറഞ്ഞ ഫോണ്ട് വലിപ്പം</translation>
 <translation id="7169122689956315694">ഉപകരണങ്ങൾ സമീപത്തുള്ളപ്പോൾ അറിയിപ്പ് ഓണാക്കുക</translation>
 <translation id="7170236477717446850">പ്രൊഫൈൽ ചിത്രം</translation>
+<translation id="7170751905948784001">ഡെവലപ്പറുടെ വിവരങ്ങൾ:</translation>
 <translation id="7171000599584840888">പ്രൊഫൈൽ ചേർക്കുക...</translation>
 <translation id="7171259390164035663">എൻറോൾ ചെയ്യരുത്</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
@@ -8769,6 +8776,7 @@
 <translation id="7776156998370251340">ഈ സൈറ്റിനുള്ള എല്ലാ ടാബുകളും നിങ്ങൾ അടയ്ക്കുന്നത് വരെ <ph name="ORIGIN" />-ന് <ph name="FOLDERNAME" /> എന്നതിലെ ഫയലുകൾ കാണാനാവും.</translation>
 <translation id="777637629667389858">സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ, Google സേവനങ്ങളിലുടനീളം നിങ്ങളെ പരിരക്ഷിക്കുന്നു.</translation>
 <translation id="7776701556330691704">ശബ്‌ദമൊന്നും കണ്ടെത്തിയില്ല</translation>
+<translation id="7776950606649732730">ഫയൽ സമന്വയിപ്പിക്കൽ പൂർത്തിയായതിന് ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> എന്നതിനുള്ള <ph name="SHORTCUT" /> കുറുക്കുവഴി</translation>
 <translation id="7779840061887151693">ഡിസ്‌പ്ലേ</translation>
 <translation id="7781335840981796660">എല്ലാ ഉപയോക്തൃ അക്കൗണ്ടുകളും പ്രദേശിക ഡാറ്റയും നീക്കംചെയ്യും.</translation>
@@ -8960,6 +8968,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />സെക്കൻഡ്</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ന് <ph name="FILENAME" /> കാണാനാവും</translation>
 <translation id="7920482456679570420">സ്പെൽ ചെക്ക് ഒഴിവാക്കേണ്ട വാക്കുകൾ ചേർക്കുക</translation>
+<translation id="7920715534283810633"><ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>
 <translation id="7921347341284348270">ഈ മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ടിൽ നിങ്ങളുടെ ഫോണിന്റെ അറിയിപ്പുകൾ കാണാൻ കഴിയില്ല. മറ്റൊരു അക്കൗണ്ട് ഉപയോഗിച്ച് വീണ്ടും ശ്രമിക്കുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">ഈ വിപുലീകരണത്തിന് <ph name="HOST" /> വായിക്കാനും മാറ്റാനും കഴിയും</translation>
 <translation id="7922606348470480702">ഒരു വിപുലീകരണം</translation>
@@ -10274,6 +10283,7 @@
 <translation id="8916476537757519021">ആൾമാറാട്ട സബ്‌ഫ്രെയിം: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">അതെ, ഞാൻ തയ്യാറാണ്</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> എന്നയാളുടെ <ph name="DEVICE_TYPE" /></translation>
+<translation id="8918900204934259333">ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു…</translation>
 <translation id="891931289445130855">ഡാറ്റയും അനുമതികളും ഇല്ലാതാക്കുക</translation>
 <translation id="8920133120839850939">കൂടുതൽ ജെസ്ച്ചറുകൾ ടാബ് തിരഞ്ഞെടുക്കുക, തുടർന്ന് മുന്നിലേക്കും പിന്നിലേക്കും നാവിഗേറ്റ് ചെയ്യാൻ 'പേജുകൾക്കിടയിൽ സ്വൈപ്പ് ചെയ്യുക' ഓണാക്കുക</translation>
 <translation id="8922624386829239660">സ്ക്രീനിന്റെ അരികുകളിൽ മൗസ് എത്തുമ്പോൾ സ്ക്രീൻ നീക്കുക</translation>
@@ -10767,6 +10777,7 @@
 <translation id="992032470292211616">വിപുലീകരണങ്ങൾ, ആപ്പുകൾ, തീമുകൾ എന്നിവ നിങ്ങളുടെ ഉപകരണത്തിന് ദോഷകരമാകാം. തുടരാൻ നിങ്ങൾക്ക് താൽപ്പര്യമുണ്ടോ?</translation>
 <translation id="992256792861109788">പിങ്ക്</translation>
 <translation id="992592832486024913">ChromeVox (സ്‌പോക്കൺ ഫീഡ്‌ബാക്ക്) പ്രവർത്തനരഹിതമാക്കുക</translation>
+<translation id="992653586748191655"><ph name="NUM" /> ടാബ് ഗ്രൂപ്പുകൾ നിർദ്ദേശിച്ചു</translation>
 <translation id="992778845837390402">Linux ബാക്കപ്പ് ചെയ്യൽ നിലവിൽ പുരോഗതിയിലാണ്</translation>
 <translation id="993540765962421562">ഇൻസ്‌റ്റലേഷൻ പുരോഗമിക്കുകയാണ്</translation>
 <translation id="994289308992179865">&amp;ലൂപ്പുചെയ്യുക</translation>

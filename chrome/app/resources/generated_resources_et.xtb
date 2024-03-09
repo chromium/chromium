@@ -2132,6 +2132,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2569972178052279830">Jaemüüja nimi</translation>
 <translation id="257088987046510401">Teemad</translation>
 <translation id="2571655996835834626">Muutke seadeid, mis juhivad veebisaitide juurdepääsu funktsioonidele, näiteks küpsistele, JavaScriptile, pistikprogrammidele, asukoha määramise teenusele, mikrofonile, kaamerale jms.</translation>
+<translation id="257175846174451436">Soovitatud vahelehegrupp</translation>
 <translation id="2572032849266859634">On antud kirjutuskaitstud juurdepääs seadmele <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573276323521243649">Tagasi avatari valimise lehelt</translation>
 <translation id="2573417407488272418">Varundage rakendused ja failid enne versiooniuuendust jaotisse Failid &gt; Minu failid.</translation>
@@ -2665,6 +2666,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2981113813906970160">Kuva suur hiirekursor</translation>
 <translation id="2983102365694924129">Põhinevad teie tegevusel konkreetsel saidil. See seade on välja lülitatud.</translation>
 <translation id="2983373101216420412">Ümbrise akutase <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984727013951557074">Faili sünkroonitakse Drive'iga.</translation>
 <translation id="2985348301114641460">Kas saata administraatorile taotlus laienduse „<ph name="EXTENSION_NAME" />” installimiseks?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> on ühe rakenduse desinstallinud}other{<ph name="APP_NAME" /> on # rakendust desinstallinud}}</translation>
 <translation id="2987620471460279764">Muust seadmest jagatud tekst</translation>
@@ -4058,6 +4060,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4051177682900543628">otsing + paremnool</translation>
 <translation id="4052120076834320548">Tilluke</translation>
 <translation id="4052913941260326985">QR-koodi &amp;loomine</translation>
+<translation id="4053833479432165765">&amp;Installi leht rakendusena...</translation>
 <translation id="4054070260844648638">Nähtav kõigile</translation>
 <translation id="4056908315660577142">Jõudsid piiranguni, mille sinu vanem Chrome'i rakenduses <ph name="APP_NAME" /> määras. Homme saad seda kasutada <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4469,6 +4472,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4388650384344483842">Kasutage vähemalt 8 tähemärki</translation>
 <translation id="4389091756366370506">Kasutaja <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ja veel <ph name="NUMBER_OF_OTHER_SWITCHES" /> lülitit</translation>
+<translation id="4390569024397171409">Seadmesse <ph name="DEVICE_TYPE" /> rakenduse installimine</translation>
 <translation id="439266289085815679">Bluetoothi seadistust juhib <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Konfiguratsioonifaili muutmine</translation>
 <translation id="4393102500004843976">otsinguklahv + tõstuklahv + <ph name="TOP_ROW_KEY" /></translation>
@@ -5470,6 +5474,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5185386675596372454">Laienduse <ph name="EXTENSION_NAME" /> uusim versioon on keelatud, sest see nõuab rohkem õigusi.</translation>
 <translation id="5185500136143151980">Internetiühendus puudub</translation>
 <translation id="5186381005592669696">Toetatud rakenduste kuvakeele kohandamine</translation>
+<translation id="5187641678926990264">&amp;Installi leht rakendusena...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Kasutusel: <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Aktiveeri port</translation>
@@ -6112,6 +6117,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5696679855467848181">Praegune kasutuses olev PPD-fail: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emotikonide valija</translation>
 <translation id="5698878456427040674">Kontrollige, kas valitud kontot toetatakse.</translation>
+<translation id="5699227710146832453">Teie seadmest</translation>
 <translation id="570043786759263127">Google Play rakendused ja teenused</translation>
 <translation id="5700761515355162635">Kolmanda osapoole küpsisefailid on lubatud</translation>
 <translation id="5700836101007545240">Administraator on ühenduse lisamise keelanud</translation>
@@ -7964,6 +7970,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7168109975831002660">Fondi miinimumsuurus</translation>
 <translation id="7169122689956315694">Lülita märguanne sisse, kui seadmed on läheduses</translation>
 <translation id="7170236477717446850">Profiilipilt</translation>
+<translation id="7170751905948784001">Arendaja teave:</translation>
 <translation id="7171000599584840888">Lisa profiil …</translation>
 <translation id="7171259390164035663">Ära registreeri</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
@@ -8773,6 +8780,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> saab vaadata kaustas <ph name="FOLDERNAME" /> olevaid faile, kuni sulgete kõik selle saidi vahelehed</translation>
 <translation id="777637629667389858">Kui olete sisse logitud, kaitseb see teid Google'i teenustes.</translation>
 <translation id="7776701556330691704">Hääli ei leitud</translation>
+<translation id="7776950606649732730">Proovige uuesti, kui fail on sünkroonimise lõpetanud.</translation>
 <translation id="7777624210360383048">Laienduse <ph name="EXTENSION_NAME" /> otsetee <ph name="SHORTCUT" /></translation>
 <translation id="7779840061887151693">ekraan</translation>
 <translation id="7781335840981796660">Kõik kasutajakontod ja kohalikud andmed eemaldatakse.</translation>
@@ -8964,6 +8972,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> saab vaadata faili <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Lisage sõnad, mille soovite lasta õigekirjakontrollil vahele jätta</translation>
+<translation id="7920715534283810633">Faili <ph name="FILE_NAMES" /> ei saa avada</translation>
 <translation id="7921347341284348270">Te ei saa sellel hallatud kontol oma telefoni märguandeid vaadata. Proovige uuesti mõne teise kontoga. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">See laiendus saab saiti <ph name="HOST" /> lugeda ja muuta</translation>
 <translation id="7922606348470480702">1 laiendus</translation>
@@ -10279,6 +10288,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8916476537757519021">Inkognito alamraam: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Jah, olen nõus</translation>
 <translation id="8918637186205009138">Kasutaja <ph name="GIVEN_NAME" /> <ph name="DEVICE_TYPE" /></translation>
+<translation id="8918900204934259333">Rakenduse installimine...</translation>
 <translation id="891931289445130855">Kustuta andmed ja load</translation>
 <translation id="8920133120839850939">Valige vahekaart Rohkem liigutusi ja siis lülitage tagasi- ja edasinavigeerimiseks sisse valik Lehtede vahetamine pühkimisega</translation>
 <translation id="8922624386829239660">Liiguta ekraanikuva, kui hiirekursor puudutab kuva serva</translation>
@@ -10772,6 +10782,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="992032470292211616">Laiendused, rakendused ja teemad võivad teie seadet kahjustada. Kas soovite kindlasti jätkata?</translation>
 <translation id="992256792861109788">Roosa</translation>
 <translation id="992592832486024913">Keela ChromeVox (kõnena esitatud tagasiside)</translation>
+<translation id="992653586748191655"><ph name="NUM" /> soovitatud vahelehegruppi</translation>
 <translation id="992778845837390402">Linuxi varundamine on pooleli</translation>
 <translation id="993540765962421562">Installimine on pooleli</translation>
 <translation id="994289308992179865">&amp;Korda</translation>

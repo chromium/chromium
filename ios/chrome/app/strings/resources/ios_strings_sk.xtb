@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">E-mail bol odoslaný.</translation>
 <translation id="1582732959743469162">Tým zastavíte ďalší postup aktuálneho sťahovania.</translation>
 <translation id="158591023028013564">{count,plural, =1{Stránka bola pridaná do vášho čitateľského zoznamu}few{Do vášho čitateľského zoznamu boli pridané {count} stránky}many{{count} Pages added to your reading list}other{Do vášho čitateľského zoznamu bolo pridaných {count} stránok}}</translation>
+<translation id="1587629076612412684">Prispôsobte si služby Googlu</translation>
 <translation id="1594034544529347967">Začína sa</translation>
 <translation id="160275202205869636">Keď je toto nastavenie zapnuté, údaje používate a ukladáte vo svojom účte Google. Keď je vypnuté, údaje sa ukladajú iba do tohto zariadenia.</translation>
 <translation id="1605405588277479165">Vypnuté – neodporúča sa</translation>
@@ -1605,6 +1606,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9106655997975673326">Zo zariadenia <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Kontroluje, či neboli prelomené heslá</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nové heslo tohto webu}few{Nové heslá tohto webu}many{Nové heslá tohto webu}other{Nové heslá tohto webu}}</translation>
+<translation id="9110489518258031250">Ovládajte, ako sa môžu pomocou vašej synchronizovanej histórie prispôsobovať iné služby Googlu</translation>
 <translation id="9120217828624527905">Prepnite na preklad celej stránky</translation>
 <translation id="9124387962554796433">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie a ďalšie služby Googlu.</translation>
 <translation id="9137526406337347448">Služby Google</translation>

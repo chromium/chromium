@@ -442,7 +442,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3235242129752692527">Edita los detalles del evento y presiona "Guardar".</translation>
 <translation id="3240426699337459095">Vínculo copiado</translation>
 <translation id="3244271242291266297">MM</translation>
-<translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URL que visites</translation>
+<translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URLs que visites</translation>
 <translation id="3245744387817103524">No se pudo guardar el cambio.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3264775633254836593">Autocompletar contraseñas</translation>
@@ -823,7 +823,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="519530786644929958">Se produjo un error en la descarga y no se puede reintentar.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">¿Quieres permitir que "<ph name="SITE_NAME" />" use tu <ph name="PERMISSION" />?</translation>
-<translation id="5219295696240154694">Ayuda a mejorar la seguridad en la Web para todo el mundo</translation>
+<translation id="5219295696240154694">Ayuda a mejorar la seguridad en la Web para todos los usuarios</translation>
 <translation id="5220945116117011963">Crea eventos de calendario a partir de fechas</translation>
 <translation id="5221339005270097309">Verificando contraseñas…</translation>
 <translation id="5226568866393490213">Descartar advertencia</translation>

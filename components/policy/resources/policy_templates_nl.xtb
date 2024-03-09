@@ -7582,6 +7582,7 @@ Als je dit beleid niet toepast, worden wachtwoorden nooit onthouden en worden al
           Als dit beleid niet is ingesteld, is de linkermuisknop in eerste instantie de primaire muisknop. De gebruiker kan dit op elk gewenst moment veranderen.</translation>
 <translation id="7136237405361383549">Gebruik het standaard weergaveprogramma op basis van de configuratie voor praktijktests.</translation>
 <translation id="7138762292550697459">Minimale time-out van de JavaScript-functie setTimeout() beheren.</translation>
+<translation id="7138792262152376158">Volgt de reguliere beëindigingstijdlijnen voor de PrefixedVideoFullscreen API</translation>
 <translation id="714219487865269980">Markering toetsenbordfocus aanzetten</translation>
 <translation id="7144022711746703451">
       Dit beleid is verwijderd in M80 omdat WebDriver nu werkt met alle bestaande beleidsregels, en het dus niet langer nodig is.
@@ -7747,6 +7748,7 @@ De beleidswaarde is een lijst met base64-gecodeerde X.509-certificaten. Elk cert
 <translation id="7269263983506766969">Standaardprioriteit gebruiken voor audioproces</translation>
 <translation id="7270001383428188269">De ID voor dit clientcertificaat.</translation>
 <translation id="7271085005502526897">Homepage importeren uit standaardbrowser bij eerste uitvoering</translation>
+<translation id="7272043145652398361">Zet API's voor volledig scherm voor video met voorvoegsels uit</translation>
 <translation id="7272892848025145170">Bepaalt of de Kerberos-functionaliteit aanstaat. Kerberos is een verificatieprotocol dat kan worden gebruikt om web-apps en gedeelde bestanden te verifiëren.
 
 Als je dit beleid toepast, wordt de Kerberos-functionaliteit aangezet. Kerberos-accounts kunnen worden toegevoegd via zowel het beleid Kerberos-accounts configureren als de instellingen voor Kerberos-accounts op de pagina Kerberos-instellingen.
@@ -7950,6 +7952,7 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7459633275230216698">Dialoogvensters voor bestandsselectie toestaan</translation>
 <translation id="7462256705280836453">Kiezen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties kan worden uitgezet</translation>
 <translation id="7463055558720530430">Gebruikers toestaan in te stellen dat Kerberos-wachtwoorden worden onthouden</translation>
+<translation id="7463934096276667908">Zet API's voor volledig scherm voor video met voorvoegsels aan</translation>
 <translation id="7464058117970792805">Afdrukvoorbeeld aanzetten</translation>
 <translation id="7464991223784276288">Cookies van overeenkomende URL's beperken tot de huidige sessie</translation>
 <translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) controlenetwerkpakketten moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
@@ -8279,6 +8282,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7732907212083471072">Verwijderd beleid</translation>
 <translation id="7734212505800048991">
           Aanroepen van getDisplayMedia vanuit contexten die niet op de toelatingslijst zijn gezet, worden geweigerd.</translation>
+<translation id="7734846328530412287">De beschikbaarheid van de verouderde API voor volledig scherm voor video met voorvoegsels beheren</translation>
 <translation id="7736218466096907954">Als je het beleid toepast of niet instelt, wordt de nieuwe ballon-UI voor downloaden getoond in <ph name="PRODUCT_NAME" />.
 
       Als je het beleid niet toepast, blijft <ph name="PRODUCT_NAME" /> de oude plank-UI voor downloaden tonen.
@@ -9002,6 +9006,15 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
 <translation id="8331479227794770304">Plaktoetsen aanzetten</translation>
 <translation id="8332822245414537447">Controle van RSA-sleutelgebruik uitzetten</translation>
 <translation id="8334685561819743286">Automatische correctie op fysiek toetsenbord als gebruikers typen uitzetten</translation>
+<translation id="8336819406993366823">Als je het beleid instelt op <ph name="ENABLED_VALUE_NAME" />, kunnen de specifieke API's voor volledig scherm voor video met voorvoegsels (bijv. Video.webkitEnterFullscreen()) worden gebruikt via JavaScript.
+
+Als je het beleid instelt op <ph name="DISABLED_VALUE_NAME" />, kunnen de specifieke API's voor volledig scherm voor video met voorvoegsels niet worden gebruikt in JavaScript. Alleen de standaard-API's voor volledig scherm blijven over (bijvoorbeeld Element.requestFullscreen()).
+
+Als je het beleid instelt op <ph name="RUNTIME_ENABLED_VALUE_NAME" />, zorg je ervoor dat de functievlag waarvoor de runtime PrefixedFullscreenVideo is aangezet, bepaalt of de specifieke API's voor volledig scherm voor video met voorvoegsels beschikbaar zijn voor websites.
+
+Als je het beleid niet instelt, is het gedrag standaard ingesteld op <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
+
+Opmerking: Dit beleid is een tijdelijke oplossing om de overstap te maken van API's voor volledig scherm met webkit-voorvoegsels. Het beleid wordt voorlopig verwijderd in M130 of in de daaropvolgende releases.</translation>
 <translation id="8337114537412769126">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd tijdens voorgestelde zoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden voorgestelde zoekopdrachten gestuurd met de GET-methode.</translation>

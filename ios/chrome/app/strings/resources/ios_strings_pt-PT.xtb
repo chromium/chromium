@@ -518,6 +518,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3631443864840848029">Certifique-se de que está a guardar a sua palavra-passe atual para este site.</translation>
 <translation id="3638472932233958418">Pré-carregar Páginas Web</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, {email}.}other{{count} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google, {email}.}}</translation>
+<translation id="3659297405161482746">Não foram encontrados métodos de pagamento</translation>
 <translation id="3661160521073045932">Perfil de configuração disponível</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3680970647557344817">Ocultar Editar marcador</translation>
@@ -1014,6 +1015,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6196207969502475924">Pesquisa por Voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fechar {COUNT} separador}other{Fechar {COUNT} separadores}}</translation>
 <translation id="6210079381482819663">Os separadores que não são usados há <ph name="THRESHOLD" /> dias ou mais são movidos para aqui. Pode alterar esta definição em qualquer altura nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />.</translation>
+<translation id="6213281885682386884">Não foram encontradas moradas</translation>
 <translation id="6213567400989743524">Avisos ignorados</translation>
 <translation id="6219550825416862075">Damos-lhe as boas-vindas de volta</translation>
 <translation id="6219688215832490856">Nunca traduzir</translation>

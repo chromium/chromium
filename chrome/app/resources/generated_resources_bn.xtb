@@ -2266,6 +2266,7 @@
 <translation id="2669241540496514785"><ph name="APP_NAME" /> খোলা যায়নি</translation>
 <translation id="2669454659051515572">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> একটি Chrome ট্যাব শেয়ার করছে।</translation>
+<translation id="2670350619068134931">কমানো হয়েছে এমন অ্যানিমেশন</translation>
 <translation id="2670403088701171361">সাইটকে আপনার ক্লিপবোর্ডের টেক্সট অথবা ছবি দেখতে দেয় না</translation>
 <translation id="2671451824761031126">আপনার বুকমার্কস এবং সেটিংস প্রস্তুত আছে</translation>
 <translation id="2672142220933875349">খারাপ crx ফাইল, প্যাকমুক্ত করতে ব্যর্থ হয়েছে৷</translation>
@@ -4270,6 +4271,7 @@
 <translation id="4231141543165771749">গেম কন্ট্রোল বন্ধ করুন</translation>
 <translation id="4231231258999726714">Chromebook-এর জন্য Steam সেট-আপ করা হচ্ছে</translation>
 <translation id="4232375817808480934">Kerberos কনফিগার করুন</translation>
+<translation id="4232484478444192782">আপনার Android ফোন থেকে ট্রান্সফার করা হচ্ছে। আপনার ওয়াই ফাই ও পাসওয়ার্ড ট্রান্সফার করা হচ্ছে।</translation>
 <translation id="4233739489690259993">আপনার Chromebook আর নিরাপত্তা এবং সফ্টওয়্যার সংক্রান্ত আপডেট পাচ্ছে না। সর্বশেষ নিরাপত্তা এবং নতুন ফিচারের জন্য আপনার ডিভাইস আপগ্রেড করুন। অফার সংক্রান্ত শর্তাবলী প্রযোজ্য।</translation>
 <translation id="4235965441080806197">সাইন-ইন বাতিল করুন</translation>
 <translation id="4235976607074422892">স্ক্রল করার স্পিড</translation>
@@ -6147,6 +6149,7 @@
 <translation id="5713033452812927234">আপনার আগের ডিভাইস থেকে উইন্ডো খোলা হচ্ছে</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />-এর সাথে কানেক্ট করা রয়েছে</translation>
 <translation id="5713960379473463904">স্পেস ইনপুটের ধরন</translation>
+<translation id="5714100381896040477">স্ক্রিনের উপরে অ্যানিমেশন সীমিত করুন</translation>
 <translation id="5715711091495208045">প্লাগ-ইন ব্রোকার: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">আপনাকে এখনই এগুলি পরিবর্তন করতে হবে</translation>
 <translation id="5719854774000914513">সাইটগুলি HID ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
@@ -7359,6 +7362,7 @@
 <translation id="6675665718701918026">পয়েন্টিং ডিভাইস সংযুক্ত হয়েছে</translation>
 <translation id="6675985668044425385">কোনও সাইট প্রত্যাশা অনুযায়ী কাজ না করলে, আপনি সেই সাইটের জন্য, সার্চ ও অ্যাড্রেস বারে 'ট্র্যাকিং সংক্রান্ত সুরক্ষা' বিকল্পের মাধ্যমে থার্ড-পার্টি কুকি ব্যবহার করার অনুমতি দিতে পারেন।</translation>
 <translation id="6676212663108450937">আপনার ভয়েস ট্রেনিং করার সময় হেডফোন ব্যবহার করুন</translation>
+<translation id="667752334740867460">ওয়াই-ফাই সংক্রান্ত তথ্য রিসিভ করা হচ্ছে...</translation>
 <translation id="6678717876183468697">কোয়েরি URL</translation>
 <translation id="6680442031740878064">খালি জায়গা: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">দ্রুততা</translation>

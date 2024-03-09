@@ -2141,6 +2141,7 @@
 <translation id="2569972178052279830">Όνομα πωλητή λιανικής</translation>
 <translation id="257088987046510401">Θέματα</translation>
 <translation id="2571655996835834626">Αλλάξτε τις ρυθμίσεις που ελέγχουν την πρόσβαση των ιστοτόπων σε λειτουργίες, όπως είναι τα cookie, η JavaScript, οι προσθήκες, η γεωγραφική τοποθεσία, το μικρόφωνο, η κάμερα κ.λπ.</translation>
+<translation id="257175846174451436">Προτείνεται μία ομάδα καρτελών</translation>
 <translation id="2572032849266859634">Παραχωρήθηκε πρόσβαση ανάγνωσης σε <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573276323521243649">Επιστροφή από τη σελίδα επιλογής avatar</translation>
 <translation id="2573417407488272418">Δημιουργήστε αντίγραφα ασφαλείας εφαρμογών και αρχείων στην ενότητα Αρχεία &gt; Τα αρχεία μου πριν από την αναβάθμιση.</translation>
@@ -2674,6 +2675,7 @@
 <translation id="2981113813906970160">Εμφάνιση μεγάλου δείκτη ποντικιού</translation>
 <translation id="2983102365694924129">Βάσει της δραστηριότητάς σας σε έναν ιστότοπο. Αυτή η ρύθμιση είναι απενεργοποιημένη.</translation>
 <translation id="2983373101216420412">Επίπεδο μπαταρίας θήκης <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984727013951557074">Ο συγχρονισμός του αρχείου με το Drive βρίσκεται ακόμα σε εξέλιξη.</translation>
 <translation id="2985348301114641460">Αποστολή ενός αιτήματος στον διαχειριστή σας για την εγκατάσταση της επέκτασης <ph name="EXTENSION_NAME" />;</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Η εφαρμογή <ph name="APP_NAME" /> απεγκατέστησε μια εφαρμογή}other{Η εφαρμογή <ph name="APP_NAME" /> απεγκατέστησε # εφαρμογές}}</translation>
 <translation id="2987620471460279764">Κοινόχρηστο κείμενο από άλλη συσκευή</translation>
@@ -4067,6 +4069,7 @@
 <translation id="4051177682900543628">αναζήτηση + δεξί βέλος</translation>
 <translation id="4052120076834320548">Πάρα πολύ μικρό</translation>
 <translation id="4052913941260326985">Δημιουργία &amp;κωδικού QR</translation>
+<translation id="4053833479432165765">&amp;Εγκατάσταση σελίδας ως εφαρμογής…</translation>
 <translation id="4054070260844648638">Ορατό σε όλους</translation>
 <translation id="4056908315660577142">Συμπλήρωσες το χρονικό όριο που έχει θέσει ο γονέας σου για την εφαρμογή Chrome <ph name="APP_NAME" />. Μπορείς να τη χρησιμοποιήσεις πάλι αύριο για <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4478,6 +4481,7 @@
 <translation id="4388650384344483842">Χρησιμοποιήστε τουλάχιστον 8 χαρακτήρες</translation>
 <translation id="4389091756366370506">Χρήστης <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> και <ph name="NUMBER_OF_OTHER_SWITCHES" /> ακόμη διακόπτες</translation>
+<translation id="4390569024397171409">Εγκατάσταση εφαρμογής στη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="439266289085815679">Η διαμόρφωση Bluetooth ελέγχεται από τον χρήστη <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Επεξεργαστείτε το αρχείο διαμόρφωσης.</translation>
 <translation id="4393102500004843976">αναζήτηση + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -5480,6 +5484,7 @@
 <translation id="5185386675596372454">Η τελευταία έκδοση του " <ph name="EXTENSION_NAME" /> "έχει απενεργοποιηθεί, επειδή απαιτούνται περισσότερα δικαιώματα.</translation>
 <translation id="5185500136143151980">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="5186381005592669696">Προσαρμογή γλώσσας εμφάνισης για υποστηριζόμενες εφαρμογές</translation>
+<translation id="5187641678926990264">&amp;Εγκατάσταση σελίδας ως εφαρμογής…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Χρήση <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Ενεργοποίηση θύρας</translation>
@@ -6123,6 +6128,7 @@
 <translation id="5696679855467848181">Τρέχον αρχείο PPD που χρησιμοποιείται: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Εργαλείο επιλογής emoji</translation>
 <translation id="5698878456427040674">Ελέγξτε αν υποστηρίζεται ο επιλεγμένος λογαριασμός.</translation>
+<translation id="5699227710146832453">Από τη συσκευή</translation>
 <translation id="570043786759263127">Εφαρμογές και υπηρεσίες Google Play</translation>
 <translation id="5700761515355162635">Επιτρέπονται τα cookie τρίτου μέρους</translation>
 <translation id="5700836101007545240">Η προσθήκη σύνδεσης είναι απενεργοποιημένη από τον διαχειριστή σας</translation>
@@ -7975,6 +7981,7 @@
 <translation id="7168109975831002660">Ελάχιστο μέγεθος γραμματοσειράς</translation>
 <translation id="7169122689956315694">Ενεργοποίηση της ειδοποίησης όταν υπάρχουν συσκευές κοντά σας.</translation>
 <translation id="7170236477717446850">Φωτογραφία προφίλ</translation>
+<translation id="7170751905948784001">Πληροφορίες προγραμματιστή:</translation>
 <translation id="7171000599584840888">Προσθήκη προφίλ…</translation>
 <translation id="7171259390164035663">Να μην γίνει εγγραφή</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Προσθήκη καρτέλας σε νέα ομάδα}other{Προσθήκη καρτελών σε νέα ομάδα}}</translation>
@@ -8784,6 +8791,7 @@
 <translation id="7776156998370251340">Ο ιστότοπος <ph name="ORIGIN" /> θα μπορεί να βλέπει αρχεία στον φάκελο <ph name="FOLDERNAME" /> μέχρι να κλείσετε όλες τις καρτέλες για αυτόν τον ιστότοπο</translation>
 <translation id="777637629667389858">Όταν είστε συνδεδεμένοι, σας προστατεύει σε όλες τις υπηρεσίες Google.</translation>
 <translation id="7776701556330691704">Δεν βρέθηκαν φωνές</translation>
+<translation id="7776950606649732730">Δοκιμάστε ξανά αφού ολοκληρωθεί ο συγχρονισμός του αρχείου.</translation>
 <translation id="7777624210360383048">Συντόμευση <ph name="SHORTCUT" /> για <ph name="EXTENSION_NAME" /></translation>
 <translation id="7779840061887151693">οθόνη</translation>
 <translation id="7781335840981796660">Θα καταργηθούν όλοι οι λογαριασμοί χρηστών και τα τοπικά δεδομένα.</translation>
@@ -8975,6 +8983,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> δ.</translation>
 <translation id="7920363873148656176">Το <ph name="ORIGIN" /> μπορεί να προβάλλει το <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Προσθέστε λέξεις που θέλετε να παραβλέπονται κατά τον ορθογραφικό έλεγχο.</translation>
+<translation id="7920715534283810633">Δεν είναι δυνατό το άνοιγμα του αρχείου <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Δεν είναι δυνατή η προβολή των ειδοποιήσεων του τηλεφώνου σας στον συγκεκριμένο διαχειριζόμενο λογαριασμό. Δοκιμάστε ξανά με διαφορετικό λογαριασμό. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">Αυτή η επέκταση μπορεί να διαβάσει και να αλλάξει τον ιστότοπο <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 επέκταση</translation>
@@ -10288,6 +10297,7 @@
 <translation id="8916476537757519021">Υποπλαίσιο ανώνυμης περιήγησης: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ναι, συμφωνώ</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> του/της <ph name="GIVEN_NAME" /></translation>
+<translation id="8918900204934259333">Εγκατάσταση εφαρμογής…</translation>
 <translation id="891931289445130855">Διαγραφή δεδομένων και αδειών</translation>
 <translation id="8920133120839850939">Επιλέξτε την καρτέλα Περισσότερες κινήσεις και, στη συνέχεια, ενεργοποιήστε τη λειτουργία Ολίσθηση μεταξύ σελίδων για να πλοηγηθείτε πίσω και εμπρός</translation>
 <translation id="8922624386829239660">Μετακίνηση οθόνης όταν το ποντίκι αγγίζει τις άκρες της οθόνης</translation>
@@ -10781,6 +10791,7 @@
 <translation id="992032470292211616">Οι επεκτάσεις, οι εφαρμογές και τα θέματα ενδέχεται να βλάψουν τη συσκευή σας. Είστε βέβαιοι ότι θέλετε να συνεχίσετε;</translation>
 <translation id="992256792861109788">Ροζ</translation>
 <translation id="992592832486024913">Απενεργοποίηση ChromeVox (προφορικά σχόλια)</translation>
+<translation id="992653586748191655">Προτείνονται <ph name="NUM" /> ομάδες καρτελών</translation>
 <translation id="992778845837390402">Η δημιουργία αντιγράφου ασφαλείας Linux βρίσκεται σε εξέλιξη.</translation>
 <translation id="993540765962421562">Εγκατάσταση σε εξέλιξη</translation>
 <translation id="994289308992179865">&amp;Επανάληψη</translation>
