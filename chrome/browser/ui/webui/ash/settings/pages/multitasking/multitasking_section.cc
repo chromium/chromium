@@ -25,10 +25,11 @@ using chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts() {
+const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts(
+    const char* section_path) {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW,
-       mojom::kSystemPreferencesSectionPath,
+       section_path,
        mojom::SearchResultIcon::kSnapWindowSuggestions,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -52,7 +53,8 @@ MultitaskingSection::MultitaskingSection(Profile* profile,
 
   if (ash::features::IsFasterSplitScreenSetupEnabled()) {
     SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-    updater.AddSearchTags(GetSnapWindowSuggestionsSearchConcepts());
+    updater.AddSearchTags(
+        GetSnapWindowSuggestionsSearchConcepts(GetSectionPath()));
   }
 }
 
