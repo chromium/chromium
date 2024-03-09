@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/wm/overview/event_handler_delegate.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
@@ -19,6 +18,7 @@
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 
 namespace aura {
 class Window;
@@ -244,7 +244,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
 
   // Disable animations on the contained window while it is being managed by the
   // overview item.
-  ScopedAnimationDisabler animation_disabler_;
+  wm::ScopedAnimationDisabler animation_disabler_;
 
   // Force `OverviewItem` to be visible while overview is in progress. This is
   // to ensure that overview items are properly marked as visible during all

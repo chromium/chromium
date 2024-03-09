@@ -8,7 +8,6 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -40,6 +39,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
 
@@ -788,7 +788,7 @@ void ShellSurface::OnPreWindowStateTypeChange(
       // account by acquiring a compositor lock.
       MaybeSetCompositorLockForNextConfigure(kDefaultCompositorLockTimeoutMs);
     } else {
-      animations_disabler_ = std::make_unique<ash::ScopedAnimationDisabler>(
+      animations_disabler_ = std::make_unique<wm::ScopedAnimationDisabler>(
           widget_->GetNativeWindow());
     }
   }

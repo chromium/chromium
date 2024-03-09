@@ -500,6 +500,7 @@ void AnimateHideWindow_Minimize(aura::Window* window) {
 
   base::TimeDelta duration =
       base::Milliseconds(kLayerAnimationsForMinimizeDurationMS);
+
   hiding_settings.layer_animation_settings()->SetTransitionDuration(duration);
   window->layer()->SetVisible(false);
 
@@ -676,11 +677,9 @@ void CrossFadeAnimationAnimateNewLayerOnly(aura::Window* window,
 bool AnimateOnChildWindowVisibilityChanged(aura::Window* window, bool visible) {
   if (::wm::WindowAnimationsDisabled(window))
     return false;
-
   // Attempt to run CoreWm supplied animation types.
   if (::wm::AnimateOnChildWindowVisibilityChanged(window, visible))
     return true;
-
   // Otherwise try to run an Ash-specific animation.
   if (visible)
     return AnimateShowWindow(window);

@@ -16,7 +16,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -51,6 +50,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 
 namespace ash {
 
@@ -120,7 +120,7 @@ void HideFloatedWindow(aura::Window* floated_window) {
   // while the `Hide()` animation is still in progress, and this will
   // introduce a glitch.
   DCHECK(floated_window);
-  ScopedAnimationDisabler disabler(floated_window);
+  wm::ScopedAnimationDisabler disabler(floated_window);
   floated_window->Hide();
 }
 
@@ -131,7 +131,7 @@ void ShowFloatedWindow(aura::Window* floated_window) {
     return;
   }
 
-  ScopedAnimationDisabler disabler(floated_window);
+  wm::ScopedAnimationDisabler disabler(floated_window);
   floated_window->Show();
 }
 
@@ -253,7 +253,7 @@ class FloatScopedWindowTuckerDelegate : public ScopedWindowTucker::Delegate {
   }
 
   void OnAnimateTuckEnded(aura::Window* window) override {
-    ScopedAnimationDisabler disable(window);
+    wm::ScopedAnimationDisabler disable(window);
     window->Hide();
   }
 

@@ -33,7 +33,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_settings.h"
 #include "ash/rotator/screen_rotation_animator.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -105,6 +104,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
@@ -926,7 +926,7 @@ void RootWindowController::HideContextMenuNoAnimation() {
   views::Widget* submenu_widget =
       root_window_menu_model_adapter_->GetSubmenuWidget();
   DCHECK(submenu_widget);
-  ScopedAnimationDisabler disable(submenu_widget->GetNativeWindow());
+  wm::ScopedAnimationDisabler disable(submenu_widget->GetNativeWindow());
   root_window_menu_model_adapter_->Cancel();
 }
 

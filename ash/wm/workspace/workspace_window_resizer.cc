@@ -14,7 +14,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -52,6 +51,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 
 namespace ash {
 
@@ -926,7 +926,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
       // Since we saved the current bounds to the restore bounds, the restore
       // animation will use the current bounds as the target bounds, so we can
       // disable the animation here.
-      ScopedAnimationDisabler disabler(window_state()->window());
+      wm::ScopedAnimationDisabler disabler(window_state()->window());
       window_state()->Restore();
     }
     return;
@@ -946,7 +946,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
     // Since we saved the current bounds to the restore bounds, the restore
     // animation will use the current bounds as the target bounds, so we can
     // disable the animation here.
-    ScopedAnimationDisabler disabler(window_state()->window());
+    wm::ScopedAnimationDisabler disabler(window_state()->window());
     window_state()->Restore();
     return;
   }

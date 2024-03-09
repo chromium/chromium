@@ -11,7 +11,6 @@
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -2446,13 +2445,6 @@ void ShellSurfaceBase::CommitWidget() {
       }
     }
 
-    // TODO(crbug.com/325969457): Showing a widget in minimzied state will
-    // trigger minimized animation. This should probably be handled in `Widget`
-    // impl.
-    std::unique_ptr<ash::ScopedAnimationDisabler> disabler =
-        widget_->IsMinimized() ? std::make_unique<ash::ScopedAnimationDisabler>(
-                                     widget_->GetNativeWindow())
-                               : nullptr;
     ShowWidget(initially_activated_);
 
     if (has_grab_)

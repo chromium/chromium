@@ -1178,8 +1178,6 @@ component("ash") {
     "scalable_iph/scalable_iph_ash_notification_view.h",
     "scalable_iph/wallpaper_ash_notification_view.cc",
     "scalable_iph/wallpaper_ash_notification_view.h",
-    "scoped_animation_disabler.cc",
-    "scoped_animation_disabler.h",
     "screen_util.cc",
     "screen_util.h",
     "sensor_info/sensor_provider.cc",

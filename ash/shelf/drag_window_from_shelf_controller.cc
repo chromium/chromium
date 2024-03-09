@@ -13,7 +13,6 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
@@ -53,6 +52,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -177,7 +177,7 @@ class DragWindowFromShelfController::WindowsHider
   void RestoreWindowsVisibility() {
     for (aura::Window* window : hidden_windows_) {
       window->RemoveObserver(this);
-      ScopedAnimationDisabler disabler(window);
+      wm::ScopedAnimationDisabler disabler(window);
       window->Show();
       window->ClearProperty(kHideDuringWindowDragging);
     }

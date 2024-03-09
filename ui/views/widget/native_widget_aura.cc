@@ -5,6 +5,7 @@
 #include "ui/views/widget/native_widget_aura.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -55,6 +56,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/window_reorderer.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_animations.h"
@@ -722,6 +724,14 @@ void NativeWidgetAura::Show(ui::WindowShowState show_state,
       show_state == ui::SHOW_STATE_FULLSCREEN) {
     window_->SetProperty(aura::client::kShowStateKey, show_state);
   }
+  // Disable the window animation for an initially minimized widget, because it
+  // will create a detached layer tree for minimizing animation, which can be
+  // briefly visible.
+  std::optional<wm::ScopedAnimationDisabler> disabler;
+  if (show_state == ui::SHOW_STATE_MINIMIZED) {
+    disabler.emplace(window_);
+  }
+
   window_->Show();
   if (delegate_->CanActivate()) {
     if (show_state != ui::SHOW_STATE_INACTIVE)

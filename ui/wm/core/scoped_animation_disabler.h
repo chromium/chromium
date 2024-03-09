@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SCOPED_ANIMATION_DISABLER_H_
-#define ASH_SCOPED_ANIMATION_DISABLER_H_
+#ifndef UI_WM_CORE_SCOPED_ANIMATION_DISABLER_H_
+#define UI_WM_CORE_SCOPED_ANIMATION_DISABLER_H_
 
-#include "ash/ash_export.h"
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
 }
 
-namespace ash {
+namespace wm {
 
 // Helper class to perform window state changes without animations. Used to hide
 // /show/minimize windows without having their animation interfere with the ones
 // this class is in charge of.
-class ASH_EXPORT ScopedAnimationDisabler {
+class COMPONENT_EXPORT(UI_WM) ScopedAnimationDisabler {
  public:
   explicit ScopedAnimationDisabler(aura::Window* window);
   ScopedAnimationDisabler(const ScopedAnimationDisabler&) = delete;
@@ -26,9 +26,9 @@ class ASH_EXPORT ScopedAnimationDisabler {
 
  private:
   const raw_ptr<aura::Window> window_;
-  bool needs_disable_ = false;
+  bool was_animation_enabled_ = false;
 };
 
-}  // namespace ash
+}  // namespace wm
 
-#endif  // ASH_SCOPED_ANIMATION_DISABLER_H_
+#endif  // UI_WM_CORE_SCOPED_ANIMATION_DISABLER_H_

@@ -25,6 +25,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
 using aura::Window;
@@ -543,6 +544,25 @@ TEST_F(WindowAnimationsTest, DISABLED_CrossFadeAnimateNewLayerOnly) {
 
   WaitForMilliseconds(300);
   EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
+}
+
+// Tests that widgets that are created minimized have the correct restore
+// bounds.
+TEST_F(WindowAnimationsTest, NoMinimizedShowAnimation) {
+  ui::ScopedAnimationDurationScaleMode animation_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  views::UniqueWidgetPtr widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.bounds = gfx::Rect(600, 400);
+
+  widget->Init(std::move(params));
+  auto* layer = widget->GetNativeWindow()->layer();
+  widget->Show();
+  // The window should have the same layer because layer animation will recreate
+  // layer.
+  EXPECT_EQ(layer, widget->GetNativeWindow()->layer());
 }
 
 }  // namespace ash

@@ -18,9 +18,9 @@
 #include "components/exo/shell_surface_observer.h"
 #include "ui/base/ui_base_types.h"
 
-namespace ash {
+namespace wm {
 class ScopedAnimationDisabler;
-}  // namespace ash
+}  // namespace wm
 
 namespace ui {
 class CompositorLock;
@@ -283,7 +283,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // TODO(tluk): Screen position changes should be merged into Configure().
   void OnWidgetScreenPositionChanged();
 
-  std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
+  std::unique_ptr<wm::ScopedAnimationDisabler> animations_disabler_;
   std::optional<OcclusionObserver> occlusion_observer_;
 
   // Temporarily stores the `host_window()`'s layer when it's recreated for

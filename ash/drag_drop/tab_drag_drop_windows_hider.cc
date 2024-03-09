@@ -12,13 +12,13 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 
 namespace ash {
 
@@ -42,7 +42,7 @@ TabDragDropWindowsHider::TabDragDropWindowsHider(aura::Window* source_window)
 
     window_visibility_map_.emplace(window, window->IsVisible());
     if (window->IsVisible()) {
-      ScopedAnimationDisabler disabler(window);
+      wm::ScopedAnimationDisabler disabler(window);
       window->Hide();
     }
     window->AddObserver(this);
@@ -71,7 +71,7 @@ TabDragDropWindowsHider::~TabDragDropWindowsHider() {
        iter != window_visibility_map_.end(); ++iter) {
     iter->first->RemoveObserver(this);
     if (iter->second) {
-      ScopedAnimationDisabler disabler(iter->first);
+      wm::ScopedAnimationDisabler disabler(iter->first);
       iter->first->Show();
     }
   }

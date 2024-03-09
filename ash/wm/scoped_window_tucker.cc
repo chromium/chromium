@@ -6,7 +6,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "base/metrics/user_metrics.h"
@@ -15,6 +14,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -169,7 +169,7 @@ void ScopedWindowTucker::AnimateTuck() {
 }
 
 void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
-  ScopedAnimationDisabler disable(window_);
+  wm::ScopedAnimationDisabler disable(window_);
   window_->Show();
 
   const gfx::RectF initial_bounds(window_->bounds());

@@ -10,7 +10,6 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
@@ -38,6 +37,7 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -531,7 +531,7 @@ void Desk::PrepareForActivationAnimation() {
           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this)) {
     // Ensure the floated window remain hidden during activation animation.
     // The floated window will be shown when desk is activated.
-    ScopedAnimationDisabler disabler(floated_window);
+    wm::ScopedAnimationDisabler disabler(floated_window);
     floated_window->Hide();
   }
 
