@@ -2255,6 +2255,7 @@
 <translation id="2669241540496514785">تعذّر فتح <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
 <translation id="2670102641511624474">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome.</translation>
+<translation id="2670350619068134931">الحد من الصور المتحركة</translation>
 <translation id="2670403088701171361">عدم السماح للمواقع الإلكترونية بالوصول إلى النصوص أو الصور في الحافظة</translation>
 <translation id="2671451824761031126">الإشارات المرجعية والإعدادات جاهزة</translation>
 <translation id="2672142220933875349">‏ملف CRX غير صالح. تعذر فك الحزمة.</translation>
@@ -4257,6 +4258,7 @@
 <translation id="4231141543165771749">إغلاق عناصر التحكم في اللعبة</translation>
 <translation id="4231231258999726714">‏جارٍ إعداد تطبيق "Steam لأجهزة Chromebook"</translation>
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
+<translation id="4232484478444192782">‏بيانات اعتماد شبكة Wi-Fi محفوظة على هاتف Android الخاص بك. يجري نقل بيانات الشبكة وكلمة مرورها إلى جهازك.</translation>
 <translation id="4233739489690259993">‏لم تعُد تحديثات الأمان والبرامج متوفّرة لجهازك. عليك ترقية جهاز Chromebook للحصول على تحديثات الأمان والميزات الجديدة. تنطبق شروط العرض.</translation>
 <translation id="4235965441080806197">إلغاء تسجيل الدخول</translation>
 <translation id="4235976607074422892">سرعة الانتقال للأعلى أو للأسفل</translation>
@@ -6131,6 +6133,7 @@
 <translation id="5713033452812927234">جارٍ فتح النوافذ من جهازك السابق</translation>
 <translation id="5713158217420111469">متّصل بجهاز <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">نمط إدخال المسافات</translation>
+<translation id="5714100381896040477">تقليل التأثيرات المتحركة على الشاشة</translation>
 <translation id="5715711091495208045">وسيط المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">يجب تغيير كلمات المرور هذه الآن</translation>
 <translation id="5719854774000914513">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة HID</translation>
@@ -7348,6 +7351,7 @@
 <translation id="6675665718701918026">الإشارة إلى الأجهزة المتصلة</translation>
 <translation id="6675985668044425385">إذا كان الموقع الإلكتروني لا يعمل على النحو المتوقَّع، يمكنك تفعيل ملفات تعريف الارتباط التابعة لجهات خارجية فيه عبر اختيار ميزة "الحماية من التتبّع" في شريط العناوين.</translation>
 <translation id="6676212663108450937">يُرجى مراعاة استخدام سماعات الرأس أثناء تدريب صوتك.</translation>
+<translation id="667752334740867460">‏جارٍ تلقّي معلومات شبكة Wi-Fi…</translation>
 <translation id="6678717876183468697">‏عنوان URL للاستعلام</translation>
 <translation id="6680442031740878064">المساحة المتاحة: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">تقييم</translation>

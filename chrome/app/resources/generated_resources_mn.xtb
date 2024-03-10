@@ -2137,6 +2137,7 @@
 <translation id="2569972178052279830">Жижиглэн борлуулагчийн нэр</translation>
 <translation id="257088987046510401">Themes</translation>
 <translation id="2571655996835834626">Таны веб сайтын күүки, JavaScript, залгаас, геолокаци, микрофон, камер зэрэг онцлогийн хандалтыг хянадаг тохиргоог өөрчилдөг.</translation>
+<translation id="257175846174451436">Табын бүлгийг санал болгосон</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> руу зөвхөн унших горимоор нэвтрэх зөвшөөрлийг олгосон байна.</translation>
 <translation id="2573276323521243649">Аватар сонгох хуудаснаас буцах</translation>
 <translation id="2573417407488272418">Сайжруулахаас өмнө аппууд болон файлуудыг Файлс &gt; Миний файлуудад хуулбарлана уу.</translation>
@@ -2670,6 +2671,7 @@
 <translation id="2981113813906970160">Том хулганын заагч сумыг харуулах</translation>
 <translation id="2983102365694924129">Таны сайт дээрх үйл ажиллагаанд тулгуурласан. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="2983373101216420412">Гэрийн батарейн түвшин <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984727013951557074">Файлыг Драйвт синк хийсэн хэвээр байна.</translation>
 <translation id="2985348301114641460">Таны администраторт "<ph name="EXTENSION_NAME" />"-г суулгах хүсэлтийг илгээх үү?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> нэг апп устгасан}other{<ph name="APP_NAME" /> # апп устгасан}}</translation>
 <translation id="2987620471460279764">Өөр төхөөрөмжөөс хуваалцсан текст</translation>
@@ -4062,6 +4064,7 @@
 <translation id="4051177682900543628">хайлт + баруун сум</translation>
 <translation id="4052120076834320548">Өчүүхэн</translation>
 <translation id="4052913941260326985">&amp;QR код үүсгэх</translation>
+<translation id="4053833479432165765">&amp;Хуудсыг апп байдлаар суулгах...</translation>
 <translation id="4054070260844648638">Бүх хүнд харагдана</translation>
 <translation id="4056908315660577142">Та <ph name="APP_NAME" /> Chrome апп дээр таны эцэг эхийн тохируулсан цагийн хязгаарт хүрсэн байна. Та түүнийг маргааш <ph name="TIME_LIMIT" />-н турш ашиглах боломжтой.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4473,6 +4476,7 @@
 <translation id="4388650384344483842">Дор хаяж 8 тэмдэгт ашиглана уу</translation>
 <translation id="4389091756366370506">Хэрэглэгчийн <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр <ph name="NUMBER_OF_OTHER_SWITCHES" /> сэлгүүр</translation>
+<translation id="4390569024397171409">Өөрийн <ph name="DEVICE_TYPE" />-д апп суулгах</translation>
 <translation id="439266289085815679">Bluetooth тохиргоог <ph name="USER_EMAIL" /> хянадаг.</translation>
 <translation id="4392896746540753732">Тохиргооны файл засах</translation>
 <translation id="4393102500004843976">хайлт + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -5475,6 +5479,7 @@
 <translation id="5185386675596372454"><ph name="EXTENSION_NAME" />-ийн хамгийн сүүлийн хувилбар нь олон зөвшөөрөл шаарддаг учир идэвхгүй болсон байна.</translation>
 <translation id="5185500136143151980">Интернэт алга</translation>
 <translation id="5186381005592669696">Дэмжсэн аппуудын дэлгэцийн хэлийг өөрчилнө үү</translation>
+<translation id="5187641678926990264">&amp;Хуудсыг апп байдлаар суулгах...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> ( <ph name="DEVICE" /> )</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" />-г ашиглаж байна</translation>
 <translation id="5190926251776387065">Портыг идэвхжүүлэх</translation>
@@ -6118,6 +6123,7 @@
 <translation id="5696679855467848181">Ашиглалтад байгаа одоогийн PPD файл: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Эможи сонгогч</translation>
 <translation id="5698878456427040674">Сонгосон бүртгэлийг дэмждэг эсэхийг шалгана уу.</translation>
+<translation id="5699227710146832453">Таны дараахаас</translation>
 <translation id="570043786759263127">Google Play-н аппууд болон үйлчилгээнүүд</translation>
 <translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="5700836101007545240">Таны админ холболт нэмэх тохиргоог цуцалсан байна</translation>
@@ -7968,6 +7974,7 @@
 <translation id="7168109975831002660">Үсгийн хамгийн бага хэмжээ</translation>
 <translation id="7169122689956315694">Төхөөрөмжүүд ойролцоо байх үед мэдэгдлийг асаах</translation>
 <translation id="7170236477717446850">Профайлын зураг</translation>
+<translation id="7170751905948784001">Хөгжүүлэгчийн мэдээлэл:</translation>
 <translation id="7171000599584840888">Профайл нэмэх...</translation>
 <translation id="7171259390164035663">Битгий бүртгүүл</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Табыг шинэ бүлэгт нэмэх}other{Табуудыг шинэ бүлэгт нэмэх}}</translation>
@@ -8777,6 +8784,7 @@
 <translation id="7776156998370251340">Таныг энэ сайтын бүх табыг хаах хүртэл <ph name="ORIGIN" /> нь <ph name="FOLDERNAME" /> доторх файлуудыг үзэх боломжтой байна</translation>
 <translation id="777637629667389858">Таныг нэвтэрсэн үед Google-н үйлчилгээнүүдэд хамгаална.</translation>
 <translation id="7776701556330691704">Дуу хоолой олдсонгүй</translation>
+<translation id="7776950606649732730">Файлыг синк хийж дууссаны дараа дахин оролдоно уу.</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" />-д зориулсан <ph name="SHORTCUT" /> товчлол</translation>
 <translation id="7779840061887151693">дэлгэц</translation>
 <translation id="7781335840981796660">Бүх хэрэглэгчийн бүртгэлүүд болон суурин өгөгдлүүд устах болно.</translation>
@@ -8967,6 +8975,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г үзэх боломжтой</translation>
 <translation id="7920482456679570420">Зөв бичгийн алдааг нь шалгахгүй байхыг хүсэж буй үгнүүдээ нэмнэ үү</translation>
+<translation id="7920715534283810633"><ph name="FILE_NAMES" />-г нээх боломжгүй</translation>
 <translation id="7921347341284348270">Та энэ тохиргоо хийгдсэн бүртгэл дээр утасныхаа мэдэгдлийг харах боломжгүй. Өөр бүртгэлээр дахин оролдоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">Энэ өргөтгөл <ph name="HOST" />-г унших болон өөрчлөх боломжтой</translation>
 <translation id="7922606348470480702">1 өргөтгөл</translation>
@@ -10278,6 +10287,7 @@
 <translation id="8916476537757519021">Нууцлалтай дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Тийм, би зөвшөөрч байна</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-н <ph name="DEVICE_TYPE" /></translation>
+<translation id="8918900204934259333">Аппыг суулгаж байна...</translation>
 <translation id="891931289445130855">Өгөгдөл болон зөвшөөрлийг устгах</translation>
 <translation id="8920133120839850939">Зангааны илүү олон табыг сонгоод, урагш болон хойш шилжихийн тулд Шудрахыг асаана уу</translation>
 <translation id="8922624386829239660">Хулгана дэлгэцийн ирмэгт хүрэх үед дэлгэцийг хөдөлгөх</translation>
@@ -10771,6 +10781,7 @@
 <translation id="992032470292211616">Өргөтгөл, хэрэглээний апп болон холбогдох загвар нь таны төхөөрөмжийг гэмтээх магадлалтай байна. Та үргэжлүүлэхийг хүсэж байна уу?</translation>
 <translation id="992256792861109788">Ягаан</translation>
 <translation id="992592832486024913">ChromeVox-ыг идэвхгүй болгох (дуут санал хүсэлт)</translation>
+<translation id="992653586748191655"><ph name="NUM" /> табын бүлгийг санал болгосон</translation>
 <translation id="992778845837390402">Linux-г одоогоор нөөцөлж байна</translation>
 <translation id="993540765962421562">Суулгаж байна</translation>
 <translation id="994289308992179865">&amp; Гогцоо</translation>
