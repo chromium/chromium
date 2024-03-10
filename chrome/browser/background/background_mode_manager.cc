@@ -554,7 +554,9 @@ void BackgroundModeManager::OnProfileWillBeRemoved(
     const base::FilePath& profile_path) {
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_path);
-  DCHECK(profile);
+  if (!profile) {
+    return;
+  }
   UnregisterProfile(profile);
 }
 
