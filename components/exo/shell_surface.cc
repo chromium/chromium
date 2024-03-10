@@ -155,12 +155,6 @@ void ShellSurface::OcclusionObserver::OnWindowOcclusionChanged(
 void ShellSurface::OcclusionObserver::MaybeConfigure(aura::Window* window) {
   auto new_state = window->GetOcclusionState();
   if (state_ != new_state && shell_surface_->IsReady()) {
-    // If the state changes to visible, take the compositor lock so we never
-    // show missing content.
-    if (new_state == aura::Window::OcclusionState::VISIBLE) {
-      shell_surface_->MaybeSetCompositorLockForNextConfigure(
-          kSlowCompositorLockTimeoutMs);
-    }
     state_ = new_state;
     shell_surface_->Configure();
   }
@@ -745,16 +739,7 @@ void ShellSurface::OnWindowPropertyChanged(aura::Window* window,
         return;
       }
 
-      // We need to wait until raster scale changes are acked by the client. For
-      // example, upon entering overview mode, updating the raster scale of
-      // clients is meant to reduce buffer sizes and improve the smoothness of
-      // the overview enter animation. But, if we don't wait for these updated
-      // buffers, we will end up animating with unnecessarily large buffers,
-      // which negates the entire point of updating the raster scale. So, lock
-      // the compositor until we get an ack for updating the raster scale.
-      MaybeSetCompositorLockForNextConfigure(kDefaultCompositorLockTimeoutMs);
       pending_raster_scale_ = raster_scale;
-
       Configure();
     }
   }
