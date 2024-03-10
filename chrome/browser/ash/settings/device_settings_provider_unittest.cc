@@ -1388,7 +1388,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListNonempty) {
   BuildAndInstallDevicePolicy();
 
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-extras-dlc"));
+                   base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListInvalidDlc) {
@@ -1405,7 +1405,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListInvalidDlc) {
 
   // Device setting must contain only the valid DLCs that can be pre downloaded.
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-extras-dlc"));
+                   base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
@@ -1422,7 +1422,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
 
   // Device setting must not contain any duplicate values.
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-extras-dlc"));
+                   base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueSet) {

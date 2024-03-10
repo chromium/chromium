@@ -50,7 +50,7 @@ class LorgnetteNotificationControllerTest : public ::testing::Test {
   dlcservice::DlcState CreateDlcState(dlcservice::DlcState_State state) {
     DlcState output;
     output.set_state(state);
-    output.set_id("sane-backends-extras");
+    output.set_id("sane-backends-pfu");
     return output;
   }
 

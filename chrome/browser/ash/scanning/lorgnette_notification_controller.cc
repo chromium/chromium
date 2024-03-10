@@ -25,7 +25,7 @@ namespace ash {
 namespace {
 const char kNotifierId[] = "scanning.dlc";
 const char kNotificationId[] = "scanning_dlc_notification";
-const char kDlcId[] = "sane-backends-extras";
+const char kDlcId[] = "sane-backends-pfu";
 
 std::unique_ptr<message_center::Notification> NewNotification(
     int title,

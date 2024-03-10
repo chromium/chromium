@@ -92,8 +92,7 @@ TEST(DecodeDeviceDlcPredownloadListPolicy, OnlyValidValues) {
       DecodeDeviceDlcPredownloadListPolicy(policy, warning);
 
   EXPECT_TRUE(warning.empty());
-  EXPECT_EQ(decoded_policies,
-            base::Value::List().Append("sane-backends-extras-dlc"));
+  EXPECT_EQ(decoded_policies, base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST(DecodeDeviceDlcPredownloadListPolicy, DuplicateValidValues) {
@@ -106,8 +105,7 @@ TEST(DecodeDeviceDlcPredownloadListPolicy, DuplicateValidValues) {
       DecodeDeviceDlcPredownloadListPolicy(policy, warning);
 
   EXPECT_TRUE(warning.empty());
-  EXPECT_EQ(decoded_policies,
-            base::Value::List().Append("sane-backends-extras-dlc"));
+  EXPECT_EQ(decoded_policies, base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST(DecodeDeviceDlcPredownloadListPolicy, InvalidAndValidValues) {
@@ -120,8 +118,7 @@ TEST(DecodeDeviceDlcPredownloadListPolicy, InvalidAndValidValues) {
       DecodeDeviceDlcPredownloadListPolicy(policy, warning);
 
   EXPECT_FALSE(warning.empty());
-  EXPECT_EQ(decoded_policies,
-            base::Value::List().Append("sane-backends-extras-dlc"));
+  EXPECT_EQ(decoded_policies, base::Value::List().Append("sane-backends-pfu"));
 }
 
 }  // namespace policy
