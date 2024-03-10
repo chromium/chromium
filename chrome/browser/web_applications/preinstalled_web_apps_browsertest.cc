@@ -100,11 +100,6 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
           "installwebapp?usp=chrome_default",
           "https://calendar.google.com/calendar/r?usp=installed_webapp",
       },
-      {
-          kMallAppId,
-          "https://discover.apps.chrome/install/",
-          "https://discover.apps.chrome/",
-      },
 #endif  // BUILDFLAG(IS_CHROMEOS)
       {
           kGoogleDocsAppId,
@@ -156,6 +151,9 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
       },
       {
           "https://calculator.apps.chrome/install",
+      },
+      {
+          "https://discover.apps.chrome/install/",
       },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
