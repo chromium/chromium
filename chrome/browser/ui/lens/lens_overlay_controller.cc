@@ -9,8 +9,11 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -77,6 +80,17 @@ void LensOverlayController::ShowUI() {
     return;
   }
 
+  // Create the results side panel coordinator when showing the UI if it does
+  // not already exist for this tab's web contents.
+  if (!results_side_panel_coordinator_) {
+    Browser* tab_browser = chrome::FindBrowserWithTab(tab_model_->contents());
+    CHECK(tab_browser);
+    results_side_panel_coordinator_ =
+        std::make_unique<lens::LensOverlaySidePanelCoordinator>(
+            tab_browser, SidePanelUI::GetSidePanelUIForBrowser(tab_browser),
+            tab_model_->contents());
+  }
+
   state_ = State::kScreenshot;
   view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
@@ -85,6 +99,7 @@ void LensOverlayController::ShowUI() {
 }
 
 void LensOverlayController::CloseUI() {
+  results_side_panel_coordinator_.reset();
   overlay_widget_.reset();
   overlay_web_contents_ = nullptr;
   receiver_.reset();

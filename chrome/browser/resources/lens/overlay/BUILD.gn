@@ -9,9 +9,15 @@ assert(toolkit_views)
 build_webui("build_overlay") {
   grd_prefix = "lens_untrusted"
 
-  static_files = [ "lens_overlay.html" ]
+  static_files = [
+    "lens_overlay.html",
+    "side_panel.html",
+  ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "side_panel_app.ts",
+  ]
 
   non_web_component_files = [ "browser_proxy.ts" ]
 

@@ -274,6 +274,7 @@ extern const char kChromeUIHistoryClustersSidePanelHost[];
 extern const char kChromeUIHistoryClustersSidePanelURL[];
 extern const char kChromeUILensHost[];
 extern const char kChromeUILensUntrustedURL[];
+extern const char kChromeUILensUntrustedSidePanelURL[];
 extern const char kChromeUIReadLaterHost[];
 extern const char kChromeUIReadLaterURL[];
 extern const char kChromeUIUntrustedCompanionSidePanelHost[];

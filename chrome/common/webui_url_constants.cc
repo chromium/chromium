@@ -295,6 +295,8 @@ const char kChromeUIHistoryClustersSidePanelURL[] =
     "chrome://history-clusters-side-panel.top-chrome/";
 const char kChromeUILensHost[] = "lens";
 const char kChromeUILensUntrustedURL[] = "chrome-untrusted://lens/";
+const char kChromeUILensUntrustedSidePanelURL[] =
+    "chrome-untrusted://lens/side_panel.html";
 const char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
 const char kChromeUIUntrustedReadAnythingSidePanelURL[] =

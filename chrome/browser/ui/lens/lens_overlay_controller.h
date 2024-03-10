@@ -20,6 +20,10 @@
 
 class TabStripModel;
 
+namespace lens {
+class LensOverlaySidePanelCoordinator;
+}  // namespace lens
+
 namespace tabs {
 class TabModel;
 }  // namespace tabs
@@ -144,6 +148,10 @@ class LensOverlayController : public TabStripModelObserver,
   // and has bound the connection.
   mojo::Receiver<lens::mojom::LensPageHandler> receiver_{this};
   mojo::Remote<lens::mojom::LensPage> page_;
+
+  // Side panel coordinator for showing results in the panel.
+  std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
+      results_side_panel_coordinator_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

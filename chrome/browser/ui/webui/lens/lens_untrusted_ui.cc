@@ -51,7 +51,6 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
                                           ->GetActiveTab()
                                           ->lens_overlay_controller()
                                           ->current_screenshot();
-  DCHECK(!screenshot_bitmap.empty());
 
   // Convert Bitmap into JPEG so it can easily be rendered in the WebUI
   // TODO(b/328294622): Increase quality if pixelated once rendered.

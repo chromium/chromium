@@ -1,0 +1,107 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
+
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/webui/lens/lens_untrusted_ui.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/views/vector_icons.h"
+
+using SidePanelWebUIViewT_LensUntrustedUI =
+    SidePanelWebUIViewT<lens::LensUntrustedUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensUntrustedUI,
+                        SidePanelWebUIViewT)
+END_METADATA
+
+namespace lens {
+
+LensOverlaySidePanelCoordinator::LensOverlaySidePanelCoordinator(
+    const raw_ptr<Browser> browser,
+    const raw_ptr<SidePanelUI> side_panel_ui,
+    content::WebContents* web_contents)
+    : tab_browser_(browser),
+      side_panel_ui_(side_panel_ui),
+      tab_web_contents_(web_contents->GetWeakPtr()) {}
+
+LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
+  DeregisterEntry();
+}
+
+void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
+  RegisterEntry();
+  side_panel_ui_->Show(SidePanelEntry::Id::kLensOverlayResults);
+}
+
+void LensOverlaySidePanelCoordinator::RegisterEntry() {
+  auto* registry = SidePanelRegistry::Get(GetTabWebContents());
+  CHECK(registry);
+
+  // If the entry is already registered, don't register it again.
+  if (!registry->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults))) {
+    // TODO(b/328295358): Change title and icon when available.
+    auto entry = std::make_unique<SidePanelEntry>(
+        SidePanelEntry::Id::kLensOverlayResults,
+        l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TITLE),
+        ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon,
+                                       ui::kColorIcon,
+                                       /*icon_size=*/16),
+        base::BindRepeating(
+            &LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl,
+            base::Unretained(this)));
+    registry->Register(std::move(entry));
+  }
+}
+
+void LensOverlaySidePanelCoordinator::DeregisterEntry() {
+  auto* registry = SidePanelRegistry::Get(GetTabWebContents());
+  CHECK(registry);
+  // This is a no-op if the entry does not exist.
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+}
+
+std::unique_ptr<views::View>
+LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
+  // TODO(b/328295358): Change task manager string ID in view creation when
+  // available.
+  auto view = std::make_unique<SidePanelWebUIViewT<lens::LensUntrustedUI>>(
+      base::RepeatingClosure(), base::RepeatingClosure(),
+      std::make_unique<WebUIContentsWrapperT<lens::LensUntrustedUI>>(
+          GURL(chrome::kChromeUILensUntrustedSidePanelURL),
+          tab_browser_->profile(), IDS_SIDE_PANEL_COMPANION_TITLE,
+          /*webui_resizes_host=*/false,
+          /*esc_closes_ui=*/false));
+  view->SetVisible(true);
+  SidePanelUtil::GetSidePanelContentProxy(view.get())->SetAvailable(true);
+  return view;
+}
+
+GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
+  return GURL();
+}
+
+content::WebContents* LensOverlaySidePanelCoordinator::GetTabWebContents() {
+  content::WebContents* tab_contents = tab_web_contents_.get();
+  CHECK(tab_contents);
+  return tab_contents;
+}
+
+}  // namespace lens

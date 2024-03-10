@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_clusters/core/features.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/performance_manager/public/features.h"
 #include "components/search_engines/template_url.h"
@@ -200,6 +201,18 @@ void BrowserActions::InitializeBrowserActions() {
               profile,
               /*include_runtime_checks=*/true));
     }
+  }
+
+  if (lens::features::IsLensOverlayEnabled()) {
+    // TODO(b/328295358): Change title and icon when available.
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kLensOverlayResults,
+                        IDS_SIDE_PANEL_COMPANION_TITLE,
+                        IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP,
+                        vector_icons::kSearchIcon,
+                        kActionSidePanelShowLensOverlayResults,
+                        &(browser_.get()), /*is_pinnable=*/true)
+            .Build());
   }
 
   // Create the lens action item. The icon and text are set appropriately in the
