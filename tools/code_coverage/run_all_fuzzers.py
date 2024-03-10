@@ -79,8 +79,12 @@ def _run_fuzzer_target(args):
       fullcorpus_profraw) and os.path.getsize(fullcorpus_profraw) > 0:
     llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse', fullcorpus_profraw,
       '-o', target_profdata]
-    subprocess.check_call(llvm_profdata_cmd)
-    valid_profiles = 1
+    try:
+      subprocess.check_call(llvm_profdata_cmd)
+      valid_profiles = 1
+    except Exception as e:
+      # TODO(crbug.com/328849489: investigate failures
+      print("profdata merge failed, treating this target as failed")
   else:
     # We failed to run the fuzzer with the whole corpus in one go. That probably
     # means one of the test cases caused a crash. Let's run each test
@@ -123,11 +127,20 @@ def _run_fuzzer_target(args):
         if os.path.exists(target_profdata):
           os.path.rename(target_profdata, temp_profdata)
           prof_files_to_merge.append(temp_profdata)
-        llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse'
-                            ] + prof_files_to_merge + ['-o', target_profdata]
-        os.unlink(specific_test_case_profraw)
-        if os.path.exists(temp_profdata):
-          os.unlink(temp_profdata)
+        try:
+          llvm_profdata_cmd = [
+              llvm_profdata, 'merge', '-sparse'
+          ] + prof_files_to_merge + ['-o', target_profdata]
+          subprocess.check_call(llvm_profdata_cmd)
+        except Exception as e:
+          # TODO(crbug.com/328849489: investigate failures
+          print("profdata merge failed, treating this target as failed")
+          valid_profiles = 0
+          break
+        finally:
+          os.unlink(specific_test_case_profraw)
+          if os.path.exists(temp_profdata):
+            os.unlink(temp_profdata)
       # The corpus may be huge - don't keep going forever.
       if count > INDIVIDUAL_TESTCASES_MAX_TO_TRY:
         print("Skipping remaining test cases - >%d tried" %
