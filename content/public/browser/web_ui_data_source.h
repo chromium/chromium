@@ -125,6 +125,9 @@ class WebUIDataSource {
       network::mojom::CSPDirectiveName directive,
       const std::string& value) = 0;
 
+  // Using OverrideCrossOriginOpenerPolicy will result in the creation of double
+  // WebUIControllers. See https://crbug.com/328741392. Until this bug is fixed,
+  // usage of this API is discouraged.
   // Adds cross origin opener, embedder, and resource policy headers.
   virtual void OverrideCrossOriginOpenerPolicy(const std::string& value) = 0;
   virtual void OverrideCrossOriginEmbedderPolicy(const std::string& value) = 0;
