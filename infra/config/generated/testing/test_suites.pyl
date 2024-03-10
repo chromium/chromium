@@ -3093,7 +3093,6 @@
           '--use-weston',
           '--weston-use-gl',
         ],
-        'ci_only': True,
       },
       'pixel_skia_gold_passthrough_graphite_test': {
         'telemetry_test_name': 'pixel',
@@ -3122,7 +3121,6 @@
           '--use-weston',
           '--weston-use-gl',
         ],
-        'ci_only': True,
       },
       'screenshot_sync_passthrough_graphite_tests': {
         'telemetry_test_name': 'screenshot_sync',

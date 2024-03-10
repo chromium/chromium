@@ -2810,7 +2810,6 @@ targets.legacy_basic_suite(
                 "--use-weston",
                 "--weston-use-gl",
             ],
-            ci_only = True,
         ),
         "pixel_skia_gold_passthrough_graphite_test": targets.legacy_test_config(
             args = [
@@ -2835,7 +2834,6 @@ targets.legacy_basic_suite(
                 "--use-weston",
                 "--weston-use-gl",
             ],
-            ci_only = True,
         ),
         "screenshot_sync_passthrough_graphite_tests": targets.legacy_test_config(
             args = [
