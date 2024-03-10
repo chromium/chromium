@@ -32,6 +32,8 @@ namespace recordreplay {
   Macro(V8RecordReplayAreEventsPassedThrough,                           \
         (const char* why), (why), bool, false)                          \
   Macro(V8RecordReplayHasDivergedFromRecording, (), (), bool, false)    \
+  Macro(V8RecordReplayNewDependencyGraphNode,                           \
+        (const char* json), (json), int, 0)                             \
   Macro(V8RecordReplayAllowSideEffects, (), (), bool, true)             \
   Macro(V8RecordReplayPointerId, (const void* ptr), (ptr), int, 0)      \
   Macro(V8RecordReplayIdPointer, (int id), (id), void*, nullptr)        \
@@ -117,6 +119,10 @@ namespace recordreplay {
         (const char* kind, const char* key), (kind, key))               \
   Macro(V8RecordReplayOnNavigationEvent,                                \
         (const char* kind, const char* url), (kind, url))               \
+  Macro(V8RecordReplayAddDependencyGraphEdge,                           \
+        (int source, int target, const char* json), (source, target, json)) \
+  Macro(V8RecordReplayBeginDependencyExecution, (int node), (node))     \
+  Macro(V8RecordReplayEndDependencyExecution, (), ())                   \
   Macro(V8RecordReplayAddOrderedSRWLock,                                \
         (const char* name, void* lock), (name, lock))                   \
   Macro(V8RecordReplayRemoveOrderedSRWLock, (void* lock), (lock))       \
@@ -488,6 +494,22 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
   } else {
     lock_.Acquire();
   }
+}
+
+int NewDependencyGraphNode(const char* json) {
+  return V8RecordReplayNewDependencyGraphNode(json);
+}
+
+void AddDependencyGraphEdge(int source, int target, const char* json) {
+  V8RecordReplayAddDependencyGraphEdge(source, target, json);
+}
+
+void BeginDependencyExecution(int node) {
+  V8RecordReplayBeginDependencyExecution(node);
+}
+
+void EndDependencyExecution() {
+  V8RecordReplayEndDependencyExecution();
 }
 
 bool IsMainThread() {

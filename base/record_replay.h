@@ -285,6 +285,20 @@ class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
   base::Lock& lock_;
 };
 
+int NewDependencyGraphNode(const char* json);
+void AddDependencyGraphEdge(int source, int target, const char* json);
+void BeginDependencyExecution(int node);
+void EndDependencyExecution();
+
+struct AutoDependencyExecution {
+  AutoDependencyExecution(int node) {
+    BeginDependencyExecution(node);
+  }
+  ~AutoDependencyExecution() {
+    EndDependencyExecution();
+  }
+};
+
 // RAII class to enable recording assertions on dynamic-length buffer 
 // allocations. Used to track down the allocation causing mismatched message 
 // sizes when replaying.
