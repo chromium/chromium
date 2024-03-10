@@ -560,7 +560,7 @@ crbug.com/328100306 [ sonoma amd ] conformance/glsl/bugs/sampler-array-using-loo
 
 ## SkiaGraphite on Metal AMD ##
 
-crbug.com/41485766 [ mac amd angle-metal graphite-enabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
+crbug.com/41485766 [ mac amd angle-metal graphite-enabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ Failure ]
 crbug.com/41485766 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
 
 crbug.com/41485766 [ amd-0x67ef angle-metal passthrough ventura graphite-enabled ] conformance2/textures/webgl_canvas/tex-2d-* [ RetryOnFailure ]
