@@ -357,11 +357,6 @@ export class DirectoryTreeContainer {
       this.addAttributesForTesting_(element, fileData, navigationRoot);
     }
 
-    // TODO(b/228139439): The current menu/command implementation requires a
-    // valid `.entry` existed on the tree item. We should remove this `.entry`
-    // when refactoring the command part.
-    (element as any).entry = fileData.entry;
-
     element.expanded = fileData.expanded;
     element.mayHaveChildren =
         fileData.children.length > 0 || fileData.canExpand;

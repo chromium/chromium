@@ -231,12 +231,16 @@ export function isDirectoryTreeItem(element: any): element is DirectoryItem|
     XfTreeItem {
   return element.typeName === 'directory_item' || isTreeItem(element);
 }
-export function getFocusedTreeItem(tree: any): DirectoryItem|XfTreeItem|null {
-  if (tree.typeName === 'directory_tree') {
-    return tree.selectedItem;
+export function getFocusedTreeItem(treeOrTreeItem: any): DirectoryItem|
+    XfTreeItem|null {
+  if (treeOrTreeItem.typeName === 'directory_tree') {
+    return treeOrTreeItem.selectedItem;
   }
-  if (isXfTree(tree)) {
-    return tree.focusedItem;
+  if (isXfTree(treeOrTreeItem)) {
+    return treeOrTreeItem.focusedItem;
+  }
+  if (isTreeItem(treeOrTreeItem) && treeOrTreeItem.tree) {
+    return treeOrTreeItem.tree.focusedItem;
   }
   return null;
 }

@@ -119,6 +119,11 @@ export function getCommandEntries(
     return [focusedItem.entry!];
   }
 
+  const entry = focusedItem && getTreeItemEntry(focusedItem);
+  if (entry) {
+    return [entry];
+  }
+
   const htmlElement = element as HTMLElement;
   // The event target could still be a descendant of a DirectoryItem element
   // (e.g. the eject button).

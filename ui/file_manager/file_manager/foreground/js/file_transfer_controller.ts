@@ -11,7 +11,7 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDirectory, getDisallowedTransfers, getFile, getParentEntry, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
+import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, getTreeItemEntry, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getIcon, isEncrypted} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
@@ -923,9 +923,10 @@ export class FileTransferController {
       return;
     }
 
-    if (item && 'entry' in item && item.entry && event.dataTransfer) {
-      this.setDropTarget_(
-          item, event.dataTransfer, item.entry as DirectoryEntry);
+    const entry = getTreeItemEntry(item);
+
+    if (item && entry && event.dataTransfer) {
+      this.setDropTarget_(item, event.dataTransfer, entry as DirectoryEntry);
     } else {
       this.clearDropTarget_();
     }
@@ -1159,11 +1160,10 @@ export class FileTransferController {
       return;
     }
 
-    if (!('entry' in focusedItem)) {
+    const entry = focusedItem && getTreeItemEntry(focusedItem);
+    if (!entry) {
       return;
     }
-
-    const entry = focusedItem.entry as DirectoryEntry;
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     if (!volumeInfo) {
