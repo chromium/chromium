@@ -8,10 +8,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_bubble.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,6 +25,7 @@
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -37,6 +41,7 @@ struct BubbleContents {
   const char16_t* title;
   const char16_t* body;
   bool show_footer = false;
+  bool show_icon = false;
   bool close_on_deactivate = false;
   void (AuthenticatorRequestDialogModel::*on_ok)();
   void (AuthenticatorRequestDialogModel::*on_cancel)() =
@@ -55,6 +60,7 @@ constexpr BubbleContents kGPMCreatePasskeyContents = {
     .title = u"Create passkey for example.com? (UNTRANSLATED)",
     .body = nullptr,
     .show_footer = true,
+    .show_icon = true,
     .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
 };
 
@@ -80,17 +86,18 @@ constexpr BubbleContents kGPMOnboardingContents = {
         u"We'll create a passkey for you to sign in to example.com "
         u"(UNTRANSLATED)",
     .show_footer = true,
+    .show_icon = true,
     .on_ok = &AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted,
 };
 
 class AuthenticatorRequestBubbleDelegate
-    : public views::BubbleDialogDelegate,
+    : public views::BubbleDialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer {
  public:
   AuthenticatorRequestBubbleDelegate(views::View* anchor_view,
                                      AuthenticatorRequestDialogModel* model)
-      : BubbleDialogDelegate(anchor_view,
-                             views::BubbleBorder::Arrow::TOP_RIGHT),
+      : BubbleDialogDelegateView(anchor_view,
+                                 views::BubbleBorder::Arrow::TOP_RIGHT),
         model_(model),
         step_(model_->current_step()),
         bubble_contents_(GetContents(step_)) {
@@ -105,18 +112,15 @@ class AuthenticatorRequestBubbleDelegate
     SetCancelCallbackWithClose(base::BindRepeating(
         &AuthenticatorRequestBubbleDelegate::OnCancel, base::Unretained(this)));
 
+    SetIcon(ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                           ui::kColorIcon));
+
     set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
     set_corner_radius(16);
 
-    std::unique_ptr<views::View> primary_view =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .Build();
-    primary_view_ = primary_view.get();
-    ConfigureView(model_->current_step());
-
-    SetContentsView(std::move(primary_view));
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    ConfigureView();
   }
 
   ~AuthenticatorRequestBubbleDelegate() override {
@@ -143,76 +147,15 @@ class AuthenticatorRequestBubbleDelegate
     }
   }
 
-  static std::unique_ptr<views::View> CreateViewForContents(
-      const BubbleContents& contents) {
-    std::unique_ptr<views::View> vbox =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .Build();
+  void ConfigureView() {
+    UpdateHeader();
+    UpdateFootnote();
+    UpdateBody();
 
-    if (contents.illustration_light_id >= 0) {
-      // TODO: also need dark-mode illustrations when those assets are
-      // available.
-      std::optional<std::vector<uint8_t>> lottie_bytes =
-          ui::ResourceBundle::GetSharedInstance().GetLottieData(
-              contents.illustration_light_id);
-      scoped_refptr<cc::SkottieWrapper> skottie =
-          cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));
-      auto animation = std::make_unique<views::AnimatedImageView>();
-      animation->SetPreferredSize(gfx::Size(320, 106));
-      animation->SetAnimatedImage(std::make_unique<lottie::Animation>(skottie));
-      animation->SizeToPreferredSize();
-      animation->Play();
-      vbox->AddChildView(animation.release());
-    }
-
-    vbox->AddChildView(views::Builder<views::StyledLabel>()
-                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                           .SetTextContext(views::style::STYLE_PRIMARY)
-                           .SetText(contents.title)
-                           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-                           .Build());
-
-    if (contents.body) {
-      vbox->AddChildView(
-          views::Builder<views::StyledLabel>()
-              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-              .SetTextContext(views::style::STYLE_PRIMARY)
-              .SetText(contents.body)
-              .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-              .Build());
-    }
-
-    return vbox;
-  }
-
-  void ConfigureView(AuthenticatorRequestDialogModel::Step step) {
     set_close_on_deactivate(bubble_contents_->close_on_deactivate);
     SetButtons(bubble_contents_->buttons);
-    if (bubble_contents_->show_footer) {
-      auto* label = SetFootnoteView(std::make_unique<views::Label>(
-          u"Your passkeys are saved to Google Password Manager for "
-          u"example@gmail.com and will also be available on your Android "
-          u"devices (UNTRANSLATED)",
-          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-          views::style::STYLE_SECONDARY));
-      label->SetMultiLine(true);
-      label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    } else {
-      SetFootnoteView(std::unique_ptr<views::View>());
-    }
-
-    std::unique_ptr<views::View> view =
-        CreateViewForContents(*bubble_contents_);
-    primary_view_->AddChildView(std::move(view));
-#if BUILDFLAG(IS_MAC)
-    if (step == AuthenticatorRequestDialogModel::Step::kGPMTouchID) {
-      if (__builtin_available(macos 12, *)) {
-        primary_view_->AddChildView(
-            std::make_unique<MacAuthenticationView>(base::DoNothing()));
-      }
-    }
-#endif  // BUILDFLAG(IS_MAC)
+    SetTitle(bubble_contents_->title);
+    SetShowIcon(bubble_contents_->show_icon);
   }
 
   bool OnOk() {
@@ -235,22 +178,106 @@ class AuthenticatorRequestBubbleDelegate
   }
 
   void OnStepTransition() override {
-    // The bubble is destroyed and recreated for each step because updating the
-    // footnote view doesn't appear to work.
-    if (model_->current_step() != step_) {
-      GetWidget()->Close();
-      // TODO: create a new bubble for the new step. Not done until it can
-      // be tested in practice.
+    if (model_->current_step() == step_) {
       return;
     }
+
+    step_ = model_->current_step();
+    bubble_contents_ = GetContents(step_);
+    ConfigureView();
+    SizeToContents();
   }
 
   void OnSheetModelChanged() override {}
 
  private:
+  void UpdateHeader() {
+    if (!GetWidget()) {
+      return;
+    }
+
+    // TODO(rgod): also need dark-mode illustrations when those assets are
+    // available.
+    if (bubble_contents_->illustration_light_id >= 0) {
+      std::optional<std::vector<uint8_t>> lottie_bytes =
+          ui::ResourceBundle::GetSharedInstance().GetLottieData(
+              bubble_contents_->illustration_light_id);
+      scoped_refptr<cc::SkottieWrapper> skottie =
+          cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));
+      auto animation = std::make_unique<views::AnimatedImageView>();
+      animation->SetPreferredSize(gfx::Size(320, 106));
+      animation->SetAnimatedImage(std::make_unique<lottie::Animation>(skottie));
+      animation->SizeToPreferredSize();
+      animation->Play();
+      GetBubbleFrameView()->SetHeaderView(std::move(animation));
+    } else {
+      GetBubbleFrameView()->SetHeaderView(nullptr);
+    }
+  }
+
+  void UpdateFootnote() {
+    if (!GetWidget()) {
+      return;
+    }
+
+    if (bubble_contents_->show_footer) {
+      auto label = std::make_unique<views::Label>(
+          u"Your passkeys are saved to Google Password Manager for "
+          u"example@gmail.com and will also be available on your Android "
+          u"devices (UNTRANSLATED)",
+          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+          views::style::STYLE_SECONDARY);
+      label->SetMultiLine(true);
+      label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      GetBubbleFrameView()->SetFootnoteView(std::move(label));
+    } else {
+      GetBubbleFrameView()->SetFootnoteView(nullptr);
+    }
+  }
+
+  void UpdateBody() {
+    // Remove the view if it exists and re-create it. This is necessary during
+    // the `step_` transition.
+    if (primary_view_) {
+      RemoveChildView(primary_view_.get());
+    }
+
+    std::unique_ptr<views::View> primary_view =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .Build();
+    primary_view_ = primary_view.get();
+
+    if (bubble_contents_->body) {
+      primary_view_->AddChildView(
+          views::Builder<views::StyledLabel>()
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetText(bubble_contents_->body)
+              .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+              .Build());
+    }
+
+#if BUILDFLAG(IS_MAC)
+    if (step_ == AuthenticatorRequestDialogModel::Step::kGPMTouchID) {
+      if (__builtin_available(macos 12, *)) {
+        primary_view_->AddChildView(
+            std::make_unique<MacAuthenticationView>(base::DoNothing()));
+      }
+    }
+#endif  // BUILDFLAG(IS_MAC)
+
+    AddChildView(std::move(primary_view));
+  }
+
+  // views::View:
+  void AddedToWidget() override {
+    UpdateHeader();
+    UpdateFootnote();
+  }
+
   raw_ptr<AuthenticatorRequestDialogModel> model_;
-  const AuthenticatorRequestDialogModel::Step step_;
-  const raw_ptr<const BubbleContents> bubble_contents_;
+  AuthenticatorRequestDialogModel::Step step_;
+  raw_ptr<const BubbleContents> bubble_contents_;
   raw_ptr<views::View> primary_view_;
 };
 
