@@ -27,10 +27,10 @@ constexpr base::TimeDelta kBigLocalChangeNudgeDelay = base::Milliseconds(2000);
 constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
-    base::Seconds(11);
+    base::Seconds(15);
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSegmentations =
-    base::Seconds(11);
+    base::Seconds(15);
 
 // Nudge delay for remote invalidations. Common to all data types.
 constexpr base::TimeDelta kRemoteInvalidationDelay = base::Milliseconds(250);

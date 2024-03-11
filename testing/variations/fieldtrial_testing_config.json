@@ -17605,30 +17605,6 @@
             ]
         }
     ],
-    "SyncSessionOnVisibilityChanged": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled5min",
-                    "params": {
-                        "SyncSessionOnVisibilityChangedTimeThreshold": "5m"
-                    },
-                    "enable_features": [
-                        "SyncSessionOnVisibilityChanged"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncShowIdentityErrorsForSignedInUsers": [
         {
             "platforms": [

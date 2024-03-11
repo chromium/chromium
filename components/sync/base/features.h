@@ -197,11 +197,12 @@ BASE_DECLARE_FEATURE(kRestoreSyncedPlaceholderTabs);
 // -OnVisibilityChanged method is called.
 BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);
 
-// The minimum time between two sync updates of last_active_time when
+// The minimum time between two sync updates of last_active_time when the tab
+// hasn't changed.
 inline constexpr base::FeatureParam<base::TimeDelta>
     kSyncSessionOnVisibilityChangedTimeThreshold{
         &kSyncSessionOnVisibilityChanged,
-        "SyncSessionOnVisibilityChangedTimeThreshold", base::Minutes(1)};
+        "SyncSessionOnVisibilityChangedTimeThreshold", base::Minutes(10)};
 
 // If enabled, the payment methods sync setting toggle is decoupled from
 // autofill. See crbug.com/1435431 for details.
