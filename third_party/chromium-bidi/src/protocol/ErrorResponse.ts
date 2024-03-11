@@ -41,6 +41,12 @@ export class InvalidArgumentException extends Exception {
   }
 }
 
+export class InvalidSelectorException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.InvalidSelector, message, stacktrace);
+  }
+}
+
 export class InvalidSessionIdException extends Exception {
   constructor(message: string, stacktrace?: string) {
     super(ErrorCode.InvalidSessionId, message, stacktrace);

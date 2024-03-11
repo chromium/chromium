@@ -25,6 +25,7 @@ describe('Exception', () => {
   } = {
     // keep-sorted start
     [ErrorCode.InvalidArgument]: undefined,
+    [ErrorCode.InvalidSelector]: undefined,
     [ErrorCode.InvalidSessionId]: undefined,
     [ErrorCode.MoveTargetOutOfBounds]: undefined,
     [ErrorCode.NoSuchAlert]: undefined,

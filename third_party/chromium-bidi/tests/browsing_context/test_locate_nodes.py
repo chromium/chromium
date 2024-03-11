@@ -12,6 +12,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import re
 
 import pytest
 from test_helpers import ANY_SHARED_ID, execute_command, goto_url
@@ -68,3 +69,26 @@ async def test_locate_nodes_css_locator(websocket, context_id, html):
             },
         ]
     }
+
+
+@pytest.mark.asyncio
+async def test_locate_nodes_css_locator_invalid(websocket, context_id, html):
+    invalid_css_selector = 'a*b'
+    with pytest.raises(Exception,
+                       match=re.escape(
+                           str({
+                               'error': 'invalid selector',
+                               'message': 'Not valid selector ' +
+                                          invalid_css_selector
+                           }))):
+        await execute_command(
+            websocket, {
+                'method': 'browsingContext.locateNodes',
+                'params': {
+                    'context': context_id,
+                    'locator': {
+                        'type': 'css',
+                        'value': invalid_css_selector
+                    }
+                }
+            })

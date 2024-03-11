@@ -79,6 +79,7 @@ export type JsInt = number;
 export type JsUint = number;
 export const enum ErrorCode {
   InvalidArgument = 'invalid argument',
+  InvalidSelector = 'invalid selector',
   InvalidSessionId = 'invalid session id',
   MoveTargetOutOfBounds = 'move target out of bounds',
   NoSuchAlert = 'no such alert',

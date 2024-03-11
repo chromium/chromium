@@ -111,6 +111,7 @@ export const JsUintSchema = z
 export const ErrorCodeSchema = z.lazy(() =>
   z.enum([
     'invalid argument',
+    'invalid selector',
     'invalid session id',
     'move target out of bounds',
     'no such alert',
