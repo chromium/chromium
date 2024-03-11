@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fuchsia builder group."""
 
-load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
@@ -145,10 +144,6 @@ ci.builder(
             "cast_receiver_size_optimized",
         ],
     ),
-    # TODO: crbug.com/1509109 - This bot has been red since added.
-    # Enable tree closure and sheriff rotation once it's green.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
