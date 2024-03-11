@@ -1998,34 +1998,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.InMemoryURLIndexingTime" units="ms"
-    expires_after="2023-12-17">
-  <owner>mpearson@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Time to rebuild in-memory url index from main history database. Recorded
-    once shortly after profile open.
-  </summary>
-</histogram>
-
-<histogram name="History.InMemoryURLIndexingTime.RoundTripTime" units="ms"
-    expires_after="2023-12-17">
-  <owner>tommycli@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Records the total time between when the in-memory url index is requested to
-    be built from the main thread, and when the request is successfully finished
-    and reported back to the main thread. Failed cases are not recorded.
-
-    From startup traces, we found that History initialization blocks the DB task
-    to create the in-memory url index, and also dominates the total time taken.
-    That's why this metric measures the round-trip time from request to finish
-    from the perspective of the main thread.
-  </summary>
-</histogram>
-
 <histogram name="History.KillHistoryDatabaseResult" enum="BooleanSuccess"
     expires_after="2024-05-19">
   <owner>sophiechang@chromium.org</owner>
