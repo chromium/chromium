@@ -185,6 +185,11 @@ AssertPageLoadMetricsObserver::ShouldObserveMimeTypeByDefault(
 }
 
 PageLoadMetricsObserver::ObservePolicy
+AssertPageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
+  return url.SchemeIsHTTPOrHTTPS() ? CONTINUE_OBSERVING : STOP_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
 AssertPageLoadMetricsObserver::OnEnterBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(committed_);

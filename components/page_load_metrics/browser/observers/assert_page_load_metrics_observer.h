@@ -67,6 +67,7 @@ class AssertPageLoadMetricsObserver final
   // Override to inspect
   ObservePolicy ShouldObserveMimeType(
       const std::string& mime_type) const override;
+  ObservePolicy ShouldObserveScheme(const GURL& url) const override;
 
   // Events for navigations that are not related to PageLoadMetricsObserver's
   // lifetime

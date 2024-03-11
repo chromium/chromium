@@ -3026,8 +3026,16 @@ chromium-metrics-reviews@google.com.
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time from navigation start to first &quot;contentful&quot; paint. This
-    metric does not include all page loads. If you need all page loads, add
-    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background.
+    metric does not include all page loads. Specifically, it excludes:
+
+    - Page loads which have not been in the foreground during the entire loading
+    time. Use
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background.HttpsOrDataOrFileScheme
+    histogram if you want to include those.
+
+    - Page loads for non http(s) schemes. Use
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.{DataScheme,FileScheme}
+    histograms for data for page loads for data:// and file:// schemes.
 
     Do not modify this metric in any way without contacting
     speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
@@ -3042,6 +3050,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background.HttpsOrDataOrFileScheme"
+    units="ms" expires_after="2025-02-21">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from navigation start to first &quot;contentful&quot; paint, where
+    the page was backgrounded at least once from navigation start to this event.
+
+    Includes page loads with http, https, data and file schemes.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI{WebUIName}"
     units="ms" expires_after="2024-07-14">
   <owner>anthonyvd@chromium.org</owner>
@@ -3051,6 +3077,32 @@ chromium-metrics-reviews@google.com.
     only recorded for non-tab webUI pages, such as side-panel content.
   </summary>
   <token key="WebUIName" variants="WebUIName"/>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.{Scheme}"
+    units="ms" expires_after="2025-02-21">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from navigation start to first &quot;contentful&quot; paint for
+    {Scheme}. This metric does not include all page loads. If you need all page
+    loads for http, https, data and file schemes, add
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background.HttpsOrDataOrFileScheme.
+
+    Some popular WebView apps such as Gmail use data or file schemes to load
+    their content, and having page load metrics for those apps would be useful
+    for performance investigations.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
+  </summary>
+  <token key="Scheme">
+    <variant name="DataScheme"/>
+    <variant name="FileScheme"/>
+  </token>
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint" units="ms"
@@ -3178,7 +3230,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"
     units="ms" expires_after="2024-09-01">
-  <owner>npm@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
@@ -3190,10 +3243,49 @@ chromium-metrics-reviews@google.com.
     we can reliably record: when the page is navigated away, the browser is
     closed, or on Android when the browser is backgrounded.
 
+    This metric does not include all page loads. Specifically, it excludes:
+
+    - Page loads which have not been in the foreground during the entire loading
+    time. Use
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Background.HttpsOrDataOrFileScheme
+    histogram if you want to include those.
+
+    - Page loads for non http(s) schemes. Use
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.{DataScheme,FileScheme}
+    histograms for data for page loads for data:// and file:// schemes.
+
     Do not modify this metric in any way without contacting
     speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
 
     Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Background.HttpsOrDataOrFileScheme"
+    units="ms" expires_after="2024-06-30">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from navigation start to first &quot;contentful&quot; paint, where
+    the page was backgrounded at least once from navigation start to this event.
+
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, across all frames, where
+    the page was backgrounded at least once from navigation start to this event.
+    Excludes any content painted after user input. Includes content that has
+    been removed from the page. See web.dev/lcp for more details.
+
+    The value is recorded at the end of each page load or the latest time when
+    we can reliably record: when the page is navigated away, the browser is
+    closed, or on Android when the browser is backgrounded.
+
+    Includes page loads with http, https, data and file schemes.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
   </summary>
 </histogram>
 
@@ -3213,7 +3305,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame"
     units="ms" expires_after="2024-09-01">
-  <owner>npm@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
@@ -3236,6 +3329,33 @@ chromium-metrics-reviews@google.com.
     information.
   </summary>
   <token key="WebUIName" variants="WebUIName"/>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.{Scheme}"
+    units="ms" expires_after="2024-06-30">
+  <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted for {Scheme}, across all
+    frames. Excludes any content painted after user input. Includes content that
+    has been removed from the page. See web.dev/lcp for more details.
+
+    The value is recorded at the end of each page load or the latest time when
+    we can reliably record: when the page is navigated away, the browser is
+    closed, or on Android when the browser is backgrounded.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
+
+    Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
+  </summary>
+  <token key="Scheme">
+    <variant name="DataScheme"/>
+    <variant name="FileScheme"/>
+  </token>
 </histogram>
 
 <histogram

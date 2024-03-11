@@ -70,6 +70,11 @@ UserInitiatedInfo CreateUserInitiatedInfo(
       !navigation_handle->NavigationInputStart().is_null());
 }
 
+bool IsUrlSchemeSupported(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kDataScheme) ||
+         url.SchemeIs(url::kFileScheme);
+}
+
 }  // namespace
 
 // static
@@ -1118,7 +1123,7 @@ bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     return true;
   }
 
-  if (!tracker->GetUrl().SchemeIsHTTPOrHTTPS() &&
+  if (!IsUrlSchemeSupported(tracker->GetUrl()) &&
       !embedder_interface_->IsNonTabWebUI()) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
     return true;
@@ -1172,8 +1177,9 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   CHECK(navigation_handle->IsInMainFrame());
   CHECK(!navigation_handle->HasCommitted() ||
         !navigation_handle->IsSameDocument());
-  // Ignore non-HTTP schemes (e.g. chrome://) for non-webUI surfaces.
-  if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
+  // For non-webUI surfaces, only track http/https/data/file schemes.
+  // For webUI surfaces, track all schemes.
+  if (!IsUrlSchemeSupported(navigation_handle->GetURL()) &&
       !embedder_interface_->IsNonTabWebUI()) {
     return false;
   }

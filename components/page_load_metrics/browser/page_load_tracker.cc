@@ -589,6 +589,14 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
               ->GetPage()
               .GetContentsMimeType()),
       /*permit_forwarding=*/false);
+  InvokeAndPruneObservers(
+      "PageLoadMetricsObserver::ShouldObserveScheme",
+      base::BindRepeating(
+          [](const GURL& url, PageLoadMetricsObserverInterface* observer) {
+            return observer->ShouldObserveScheme(url);
+          },
+          navigation_handle->GetURL()),
+      /*permit_forwarding=*/false);
   InvokeAndPruneObservers("PageLoadMetricsObserver::OnCommit",
                           base::BindRepeating(
                               [](content::NavigationHandle* navigation_handle,

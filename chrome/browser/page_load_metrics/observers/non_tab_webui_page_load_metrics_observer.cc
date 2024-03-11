@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/common/url_constants.h"
 
 namespace chrome {
 
@@ -67,6 +68,15 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 NonTabPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+NonTabPageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
+  if (url.SchemeIs(content::kChromeUIScheme) ||
+      url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return CONTINUE_OBSERVING;
+  }
   return STOP_OBSERVING;
 }
 

@@ -129,6 +129,9 @@ enum class PageLoadBackForwardCacheEvent {
 // Observer responsible for recording 'core' UMA page load metrics. Core metrics
 // are maintained by loading-dev team, typically the metrics under
 // PageLoad.(Document|Paint|Parse)Timing.*.
+// Only pages with web (http/https) schemes are observed.
+// UmaFileAndDataPageLoadMetricsObserver records page load metrics for the file
+// and data schemes.
 class UmaPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:

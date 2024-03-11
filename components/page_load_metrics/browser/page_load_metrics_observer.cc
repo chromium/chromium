@@ -113,6 +113,11 @@ PageLoadMetricsObserver::ShouldObserveMimeType(
                                               : STOP_OBSERVING;
 }
 
+PageLoadMetricsObserver::ObservePolicy
+PageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
+  return url.SchemeIsHTTPOrHTTPS() ? CONTINUE_OBSERVING : STOP_OBSERVING;
+}
+
 // static
 bool PageLoadMetricsObserver::IsStandardWebPageMimeType(
     const std::string& mime_type) {
