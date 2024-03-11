@@ -202,7 +202,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     CHECK(predictor);
     predictors::LcppDataInputs lcpp_data_inputs;
     lcpp_data_inputs.lcp_element_locator = "lcp_previous";
-    predictor->LearnLcpp(main_frame_url.host(), lcpp_data_inputs);
+    predictor->LearnLcpp(main_frame_url, lcpp_data_inputs);
 
     // Predict LCP with the learned result.
     NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);

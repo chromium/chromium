@@ -203,7 +203,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
 
   // Record LCP element locators after a page has finished loading and LCP has
   // been determined.
-  void LearnLcpp(const std::string& host, const LcppDataInputs& inputs);
+  void LearnLcpp(const GURL& url, const LcppDataInputs& inputs);
 
   // Deletes all URLs from the predictor database and caches.
   void DeleteAllUrls();

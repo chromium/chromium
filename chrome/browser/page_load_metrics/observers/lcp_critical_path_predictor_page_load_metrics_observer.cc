@@ -169,7 +169,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
     RemoveFetchedSubresourceUrlsAfterLCP(
         lcpp_data_inputs_->subresource_urls,
         largest_contentful_paint.Time().value());
-    predictor->LearnLcpp(commit_url_->host(), *lcpp_data_inputs_);
+    predictor->LearnLcpp(*commit_url_, *lcpp_data_inputs_);
   }
 
   // * Emit LCPP breakdown PageLoad UMAs.

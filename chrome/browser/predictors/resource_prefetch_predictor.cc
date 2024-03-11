@@ -643,8 +643,9 @@ void ResourcePrefetchPredictor::LearnOrigins(
     origin_data_->UpdateData(host, data);
 }
 
-void ResourcePrefetchPredictor::LearnLcpp(const std::string& host,
+void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
                                           const LcppDataInputs& inputs) {
+  const std::string& host = url.host();
   if (!TryEnsureRecordingPrecondition()) {
     return;
   }

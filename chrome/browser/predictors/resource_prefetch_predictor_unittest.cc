@@ -154,28 +154,27 @@ class ResourcePrefetchPredictorTest : public testing::Test {
     return sum;
   }
 
-  void LearnLcpp(const std::string& host,
+  void LearnLcpp(const GURL& url,
                  const std::string& lcp_element_locator,
                  const std::vector<GURL>& lcp_influencer_scripts) {
     predictors::LcppDataInputs inputs;
     inputs.lcp_element_locator = lcp_element_locator;
     inputs.lcp_influencer_scripts = lcp_influencer_scripts;
-    predictor_->LearnLcpp(host, inputs);
+    predictor_->LearnLcpp(url, inputs);
   }
 
-  void LearnFontUrls(const std::string& host,
-                     const std::vector<GURL>& font_urls) {
+  void LearnFontUrls(const GURL& url, const std::vector<GURL>& font_urls) {
     LcppDataInputs inputs;
     inputs.font_urls = font_urls;
-    predictor_->LearnLcpp(host, inputs);
+    predictor_->LearnLcpp(url, inputs);
   }
 
   void LearnSubresourceUrls(
-      const std::string& host,
+      const GURL& url,
       const std::map<GURL, base::TimeDelta>& subresource_urls) {
     LcppDataInputs inputs;
     inputs.subresource_urls = subresource_urls;
-    predictor_->LearnLcpp(host, inputs);
+    predictor_->LearnLcpp(url, inputs);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -1126,7 +1125,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   };
 
   for (int i = 0; i < 3; ++i) {
-    LearnLcpp("a.com", "/#a", {});
+    LearnLcpp(GURL("http://a.com"), "/#a", {});
   }
   {
     LcppData data = CreateLcppData("a.com", 10);
@@ -1136,7 +1135,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   }
 
   for (int i = 0; i < 2; ++i) {
-    LearnLcpp("a.com", "/#b", {});
+    LearnLcpp(GURL("http://a.com"), "/#b", {});
   }
   {
     LcppData data = CreateLcppData("a.com", 10);
@@ -1146,7 +1145,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
-  LearnLcpp("a.com", "/#c", {});
+  LearnLcpp(GURL("http://a.com"), "/#c", {});
   {
     LcppData data = CreateLcppData("a.com", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 2.4);
@@ -1156,7 +1155,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
-  LearnLcpp("a.com", "/#d", {});
+  LearnLcpp(GURL("http://a.com"), "/#d", {});
   {
     LcppData data = CreateLcppData("a.com", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 1.92);
@@ -1167,8 +1166,8 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   }
 
   for (int i = 0; i < 2; ++i) {
-    LearnLcpp("a.com", "/#c", {});
-    LearnLcpp("a.com", "/#d", {});
+    LearnLcpp(GURL("http://a.com"), "/#c", {});
+    LearnLcpp(GURL("http://a.com"), "/#d", {});
   }
   {
     LcppData data = CreateLcppData("a.com", 10);
@@ -1182,7 +1181,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   // Test that element locators and influencer scripts are independently learnt.
   for (int i = 0; i < 2; ++i) {
     LearnLcpp(
-        "a.com", "",
+        GURL("http://a.com"), "",
         {GURL("https://a.com/script1.js"), GURL("https://a.com/script2.js")});
   }
   {
@@ -1202,7 +1201,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
 
   for (int i = 0; i < 3; ++i) {
     LearnLcpp(
-        "a.com", "",
+        GURL("http://a.com"), "",
         {GURL("https://a.com/script3.js"), GURL("https://a.com/script4.js")});
   }
   {
@@ -1232,10 +1231,11 @@ TEST_F(ResourcePrefetchPredictorTest, LearnFontUrls) {
         data.lcpp_stat().fetched_font_url_stat());
   };
   for (int i = 0; i < 2; ++i) {
-    LearnFontUrls("example.com", {
-                                     GURL("https://example.com/test.woff"),
-                                     GURL("https://example.com/test.ttf"),
-                                 });
+    LearnFontUrls(GURL("http://example.com"),
+                  {
+                      GURL("https://example.com/test.woff"),
+                      GURL("https://example.com/test.ttf"),
+                  });
   }
   {
     LcppData data = CreateLcppData("example.com", 10);
@@ -1248,10 +1248,11 @@ TEST_F(ResourcePrefetchPredictorTest, LearnFontUrls) {
     EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(data));
   }
   for (int i = 0; i < 3; ++i) {
-    LearnFontUrls("example.com", {
-                                     GURL("https://example.org/test.otf"),
-                                     GURL("https://example.net/test.svg"),
-                                 });
+    LearnFontUrls(GURL("http://example.com"),
+                  {
+                      GURL("https://example.org/test.otf"),
+                      GURL("https://example.net/test.svg"),
+                  });
   }
   {
     LcppData data = CreateLcppData("example.com", 10);
@@ -1275,7 +1276,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnSubresourceUrls) {
         data.lcpp_stat().fetched_subresource_url_stat());
   };
   for (int i = 0; i < 2; ++i) {
-    LearnSubresourceUrls("example.com",
+    LearnSubresourceUrls(GURL("http://example.com"),
                          {
                              {GURL("https://a.com/a.jpeg"), base::Seconds(1)},
                              {GURL("https://b.com/b.jpeg"), base::Seconds(2)},
@@ -1290,7 +1291,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnSubresourceUrls) {
     EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(data));
   }
   for (int i = 0; i < 3; ++i) {
-    LearnSubresourceUrls("example.com",
+    LearnSubresourceUrls(GURL("http://example.com"),
                          {
                              {GURL("https://c.com/a.jpeg"), base::Seconds(1)},
                              {GURL("https://d.com/b.jpeg"), base::Seconds(2)},
@@ -1321,7 +1322,7 @@ TEST_F(ResourcePrefetchPredictorTest, WhenLcppDataIsCorrupted_ResetData) {
   }
 
   // Confirm that new learning process reset the corrupted data.
-  LearnLcpp("a.com", "/#a", {});
+  LearnLcpp(GURL("http://a.com"), "/#a", {});
   {
     LcppData data = CreateLcppData("a.com", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 1);
