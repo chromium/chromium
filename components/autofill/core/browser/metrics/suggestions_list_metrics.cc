@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
@@ -32,9 +33,34 @@ ManageSuggestionType ToManageSuggestionType(FillingProduct popup_type) {
 
 }  // anonymous namespace
 
-void LogAutofillSuggestionAcceptedIndex(int index,
-                                        FillingProduct filling_product,
-                                        bool off_the_record) {
+void LogSuggestionsCount(size_t num_suggestions,
+                         FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kAddress:
+      // TODO(b/324029575): Remove when the metric below gets to Stable.
+      base::UmaHistogramCounts100("Autofill.AddressSuggestionsCount",
+                                  num_suggestions);
+      base::UmaHistogramCounts100("Autofill.SuggestionsCount.Address",
+                                  num_suggestions);
+      break;
+    case FillingProduct::kCreditCard:
+      base::UmaHistogramCounts100("Autofill.SuggestionsCount.CreditCard",
+                                  num_suggestions);
+      break;
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kPassword:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+      NOTREACHED_NORETURN();
+  }
+}
+
+void LogSuggestionAcceptedIndex(int index,
+                                FillingProduct filling_product,
+                                bool off_the_record) {
   const int uma_index = std::min(index, kMaxBucketsCount);
   base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex", uma_index);
 
@@ -53,6 +79,9 @@ void LogAutofillSuggestionAcceptedIndex(int index,
                                uma_index);
       break;
     case FillingProduct::kAutocomplete:
+      base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Autocomplete",
+                               uma_index);
+      break;
     case FillingProduct::kIban:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:

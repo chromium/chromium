@@ -1645,67 +1645,6 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
                                       false, 1);
 }
 
-// Test that we log the number of Autofill suggestions when filling a form.
-TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
-  FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail),
-       CreateTestFormField("Phone", "phone", "",
-                           FormControlType::kInputTelephone)});
-  std::vector<FieldType> field_types = {NAME_FULL, EMAIL_ADDRESS,
-                                        PHONE_HOME_NUMBER};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulate activating the autofill popup for the phone field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
-    histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 2,
-                                        1);
-  }
-
-  FormFieldData email_field =
-      CreateTestFormField("Email", "email", "b", FormControlType::kInputEmail);
-  {
-    // Simulate activating the autofill popup for the email field after typing.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form, email_field);
-    histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 1,
-                                        1);
-  }
-
-  {
-    // Simulate activating the autofill popup for the email field after a fill.
-    form.fields[0].is_autofilled = true;
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form, email_field);
-    histogram_tester.ExpectTotalCount("Autofill.AddressSuggestionsCount", 1);
-  }
-}
-
-// Test that we log the correct number of Company Name Autofill suggestions when
-// filling a form.
-TEST_F(AutofillMetricsTest, CompanyNameSuggestions) {
-  FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail),
-       CreateTestFormField("Company", "company", "",
-                           FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {NAME_FULL, EMAIL_ADDRESS, COMPANY_NAME};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulate activating the autofill popup for the phone field.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
-    histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 2,
-                                        1);
-  }
-}
-
 // Test that the credit card checkout flow user actions are correctly logged.
 TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
@@ -7683,30 +7622,6 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
 }
 
 #endif  // !BUILDFLAG(IS_IOS)
-
-TEST_F(AutofillMetricsTest, LogAutocompleteSuggestionAcceptedIndex_WithIndex) {
-  base::HistogramTester histogram_tester;
-  const int test_index = 3;
-  AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(test_index);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SuggestionAcceptedIndex.Autocomplete", test_index,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
-      /*expected_count=*/1);
-}
-
-TEST_F(AutofillMetricsTest, LogAutocompleteSuggestionAcceptedIndex_IndexCap) {
-  base::HistogramTester histogram_tester;
-  const int test_index = 9000;
-  AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(test_index);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SuggestionAcceptedIndex.Autocomplete", kMaxBucketsCount,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTION_SELECTED,
-      /*expected_count=*/1);
-}
 
 TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown) {
   base::HistogramTester histogram_tester;

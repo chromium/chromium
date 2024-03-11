@@ -92,6 +92,7 @@
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -1118,13 +1119,26 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       if (context.filling_product == FillingProduct::kCreditCard) {
         AutofillMetrics::LogIsQueriedCreditCardFormSecure(
             context.is_context_secure);
+        // TODO(b/41484171): Move to PaymentsSuggestionGenerator.
+        autofill_metrics::LogSuggestionsCount(
+            base::ranges::count_if(suggestions,
+                                   [](const Suggestion& suggestion) {
+                                     return GetFillingProductFromPopupItemId(
+                                                suggestion.popup_item_id) ==
+                                            FillingProduct::kCreditCard;
+                                   }),
+            FillingProduct::kCreditCard);
       }
       if (context.filling_product == FillingProduct::kAddress) {
-        AutofillMetrics::LogAddressSuggestionsCount(base::ranges::count_if(
-            suggestions, [](const Suggestion& suggestion) {
-              return GetFillingProductFromPopupItemId(
-                         suggestion.popup_item_id) == FillingProduct::kAddress;
-            }));
+        // TODO(b/41484171): Move to AddressSuggestionGenerator.
+        autofill_metrics::LogSuggestionsCount(
+            base::ranges::count_if(suggestions,
+                                   [](const Suggestion& suggestion) {
+                                     return GetFillingProductFromPopupItemId(
+                                                suggestion.popup_item_id) ==
+                                            FillingProduct::kAddress;
+                                   }),
+            FillingProduct::kAddress);
       }
     }
   }

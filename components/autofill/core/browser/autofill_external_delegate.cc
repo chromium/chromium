@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/field_filling_address_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
@@ -585,7 +586,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                GetFieldTypesOfGroup(FieldTypeGroup::kEmail)});
       break;
     case PopupItemId::kAutocompleteEntry:
-      AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position.row);
+      AutofillMetrics::LogAutocompleteEvent(
+          AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_SELECTED);
+      autofill_metrics::LogSuggestionAcceptedIndex(
+          position.row, FillingProduct::kAutocomplete,
+          manager_->client().IsOffTheRecord());
       ABSL_FALLTHROUGH_INTENDED;
     case PopupItemId::kMerchantPromoCodeEntry:
       // User selected an Autocomplete or Merchant Promo Code field, so we fill
@@ -696,7 +701,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // If the selected element is a warning we don't want to do anything.
       break;
     case PopupItemId::kAddressEntry:
-      autofill_metrics::LogAutofillSuggestionAcceptedIndex(
+      autofill_metrics::LogSuggestionAcceptedIndex(
           position.row,
           GetFillingProductFromPopupItemId(PopupItemId::kAddressEntry),
           manager_->client().IsOffTheRecord());
@@ -724,7 +729,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kCreditCardEntry:
-      autofill_metrics::LogAutofillSuggestionAcceptedIndex(
+      autofill_metrics::LogSuggestionAcceptedIndex(
           position.row,
           GetFillingProductFromPopupItemId(PopupItemId::kCreditCardEntry),
           manager_->client().IsOffTheRecord());

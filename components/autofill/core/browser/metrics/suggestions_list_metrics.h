@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_SUGGESTIONS_LIST_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_SUGGESTIONS_LIST_METRICS_H_
 
+#include <cstddef>
+
 namespace autofill {
 enum class FillingProduct;
 
@@ -38,10 +40,15 @@ enum class ShowCardsFromGoogleAccountButtonEvent {
   kMaxValue = kButtonClicked,
 };
 
+// Log the number of Autofill suggestions for the given
+// `filling_product`presented to the user when displaying the autofill popup.
+void LogSuggestionsCount(size_t num_suggestions,
+                         FillingProduct filling_product);
+
 // Log the index of the selected Autofill suggestion in the popup.
-void LogAutofillSuggestionAcceptedIndex(int index,
-                                        FillingProduct filling_product,
-                                        bool off_the_record);
+void LogSuggestionAcceptedIndex(int index,
+                                FillingProduct filling_product,
+                                bool off_the_record);
 
 // Logs that the user selected 'Manage...' settings entry in the popup.
 void LogAutofillSelectedManageEntry(FillingProduct filling_product);

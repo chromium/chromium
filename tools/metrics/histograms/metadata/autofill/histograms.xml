@@ -679,11 +679,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.AddressSuggestionsCount" units="units"
-    expires_after="2024-12-12">
+    expires_after="2024-06-01">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The number of address suggestions shown in the Autofill popup.
+    The number of address suggestions shown in the Autofill popup. Recorded
+    whenever suggestions are shown. To be replaced by
+    Autofill.SuggestionCount.Address.
   </summary>
 </histogram>
 
@@ -5061,33 +5063,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.SuggestionAcceptedIndex.Autocomplete"
-    units="position" expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The index of the accepted Autocomplete suggestion in the popup. Due to
-    crbug.com/966411, the iOS data is incorrect.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.SuggestionAcceptedIndex{AutofillSuggestionAcceptedIndexSuggestionType}"
+<histogram name="Autofill.SuggestionAcceptedIndex{SuggestionType}"
     units="position" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The index of the accepted Autofill suggestion in the popup. Due to
-    crbug.com/966411, the iOS data is incorrect.
-    {AutofillSuggestionAcceptedIndexSuggestionType}
+    crbug.com/966411, the iOS data is incorrect. {SuggestionType}
   </summary>
-  <token key="AutofillSuggestionAcceptedIndexSuggestionType">
+  <token key="SuggestionType">
     <variant name=""/>
-    <variant name=".CreditCard" summary="Suggestions with credit card data"/>
+    <variant name=".Autocomplete"/>
+    <variant name=".CreditCard"/>
     <variant name=".Other" summary="Unspecified suggestions"/>
-    <variant name=".Profile"
-        summary="Suggestions with personal data from AutofillProfiles, e.g.
-                 name, address, email address, and or phone number"/>
+    <variant name=".Profile"/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.SuggestionsCount{SuggestionType}" units="units"
+    expires_after="2024-12-12">
+  <owner>jihadghanna@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of suggestions shown in the Autofill popup. Recorded whenever
+    suggestions are shown. {SuggestionType}
+  </summary>
+  <token key="SuggestionType">
+    <variant name=".Address"/>
+    <variant name=".CreditCard"/>
   </token>
 </histogram>
 

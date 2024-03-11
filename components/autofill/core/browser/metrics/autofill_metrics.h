@@ -1107,10 +1107,6 @@ class AutofillMetrics {
   // always offered, regardless of how recently they have been used.
   static void LogNumberOfAddressesSuppressedForDisuse(size_t num_profiles);
 
-  // Log the number of Autofill address suggestions presented to the user when
-  // filling a form.
-  static void LogAddressSuggestionsCount(size_t num_suggestions);
-
   // Log the reason for which the Autofill popup disappeared.
   static void LogAutofillPopupHidingReason(PopupHidingReason reason);
 
@@ -1119,9 +1115,6 @@ class AutofillMetrics {
 
   // Log the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
-
-  // Log the index of the selected Autocomplete suggestion in the popup.
-  static void LogAutocompleteSuggestionAcceptedIndex(int index);
 
   // Log the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
@@ -1339,8 +1332,7 @@ class AutofillMetrics {
   // accessory.
   static void LogDeleteAddressProfileFromKeyboardAccessory();
 
- private:
-  static void Log(AutocompleteEvent event);
+  static void LogAutocompleteEvent(AutocompleteEvent event);
 };
 
 #if defined(UNIT_TEST)

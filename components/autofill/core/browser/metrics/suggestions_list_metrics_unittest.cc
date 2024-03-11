@@ -5,104 +5,85 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
 namespace {
 
-size_t GetTotalCountForPrefix(base::HistogramTester& histogram_tester,
-                              const std::string& prefix) {
-  size_t count = 0u;
-  for (const auto& [histogram_name, histogram_count] :
-       histogram_tester.GetTotalCountsForPrefix(prefix)) {
-    count += histogram_count;
+class SuggestionsListMetricsTest
+    : public autofill_metrics::AutofillMetricsBaseTest,
+      public testing::Test {
+ public:
+  void SetUp() override {
+    SetUpHelper();
+    personal_data().ClearProfiles();
+    personal_data().test_payments_data_manager().ClearCreditCards();
   }
-  return count;
+  void TearDown() override { TearDownHelper(); }
+};
+
+// Test that we log the number of Autofill suggestions when showing the popup.
+TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+                  {.role = CREDIT_CARD_NUMBER,
+                   .autocomplete_attribute = "cc-number"}}});
+  autofill_manager().OnFormsSeen({form}, {});
+  personal_data().AddProfile(test::GetFullProfile());
+  personal_data().AddProfile(test::GetFullProfile2());
+  personal_data().AddCreditCard(test::GetCreditCard());
+  {
+    base::HistogramTester histogram_tester;
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
+    histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 2,
+                                        1);
+    histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.Address", 2,
+                                        1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
+    histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.CreditCard",
+                                        1, 1);
+  }
 }
 
-}  // anonymous namespace
-
-TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_CreditCard) {
-  const int selected_suggestion_index = 2;
-
-  base::HistogramTester histogram_tester;
-  LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     FillingProduct::kCreditCard,
-                                     /*off_the_record=*/false);
-  EXPECT_EQ(1u, GetTotalCountForPrefix(histogram_tester,
-                                       "Autofill.SuggestionAcceptedIndex."));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.SuggestionAcceptedIndex.CreditCard"),
-              BucketsAre(base::Bucket(selected_suggestion_index, 1)));
+// Test that we log the index of the accepted Autofill suggestions of the popup.
+TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+                  {.role = CREDIT_CARD_NUMBER,
+                   .autocomplete_attribute = "cc-number"}}});
+  autofill_manager().OnFormsSeen({form}, {});
+  {
+    Suggestion address_suggestion;
+    address_suggestion.popup_item_id = PopupItemId::kAddressEntry;
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(address_suggestion, {1, 0});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SuggestionAcceptedIndex.Profile", 1, 1);
+  }
+  {
+    Suggestion credit_card_suggestion;
+    credit_card_suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
+    base::HistogramTester histogram_tester;
+    external_delegate().DidAcceptSuggestion(credit_card_suggestion, {0, 0});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.SuggestionAcceptedIndex.CreditCard", 0, 1);
+  }
 }
 
-TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Profile) {
-  const int selected_suggestion_index = 1;
-
-  base::HistogramTester histogram_tester;
-  LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     FillingProduct::kAddress,
-                                     /*off_the_record=*/false);
-
-  EXPECT_EQ(1u, GetTotalCountForPrefix(histogram_tester,
-                                       "Autofill.SuggestionAcceptedIndex."));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.SuggestionAcceptedIndex.Profile"),
-              BucketsAre(base::Bucket(selected_suggestion_index, 1)));
-}
-
-TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
-  const int selected_suggestion_index = 0;
-  base::HistogramTester histogram_tester;
-  LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     FillingProduct::kNone,
-                                     /*off_the_record=*/false);
-  LogAutofillSuggestionAcceptedIndex(selected_suggestion_index,
-                                     FillingProduct::kPassword,
-                                     /*off_the_record=*/false);
-
-  EXPECT_EQ(2u, GetTotalCountForPrefix(histogram_tester,
-                                       "Autofill.SuggestionAcceptedIndex."));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SuggestionAcceptedIndex.Other"),
-      BucketsAre(base::Bucket(selected_suggestion_index, 2)));
-}
-
-TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Addresses) {
-  base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(FillingProduct::kAddress);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
-      BucketsAre(base::Bucket(ManageSuggestionType::kAddresses, 1)));
-}
-
-TEST(SuggestionsListMetricsTest,
-     LogAutofillSelectedManageEntry_PaymentMethodsCreditCards) {
-  base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(FillingProduct::kCreditCard);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
-      BucketsAre(
-          base::Bucket(ManageSuggestionType::kPaymentMethodsCreditCards, 1)));
-}
-
-TEST(SuggestionsListMetricsTest,
-     LogAutofillSelectedManageEntry_PaymentMethodsIbans) {
-  base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(FillingProduct::kIban);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
-      BucketsAre(base::Bucket(ManageSuggestionType::kPaymentMethodsIbans, 1)));
-}
-
-TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Other) {
-  base::HistogramTester histogram_tester;
-  LogAutofillSelectedManageEntry(FillingProduct::kNone);
-  LogAutofillSelectedManageEntry(FillingProduct::kPassword);
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
-      BucketsAre(base::Bucket(ManageSuggestionType::kOther, 2)));
-}
+}  // namespace
 
 }  // namespace autofill::autofill_metrics
