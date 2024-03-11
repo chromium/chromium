@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Canvas WebGPU Access: getTextureFormat-rgba8</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+
+<h1>Canvas WebGPU Access:
+<span id="test_name">getTextureFormat-rgba8<span>
+</h1>
+
+<p class="desc">getTextureFormat() returns RGBA8 or BGRA8 for a typical context</p>
+
+<!-- onscreen canvas -->
+<canvas id="c" class="output" width="50" height="50"></canvas>
+
+<script>
+
+function test(device, canvas, desc) {
+  var ctx = canvas.getContext('2d');
+  assert_regexp_match(ctx.getTextureFormat(), /^rgba8unorm|bgra8unorm$/, desc);
+};
+
+name = document.getElementById("test_name").innerText;
+
+promise_test(async t => {
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter:');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device:');
+
+  test(device, document.getElementById('c'), name + '-onscreen:');
+  test(device, new OffscreenCanvas(50, 50), name + '-offscreen:');
+});
+
+</script>
