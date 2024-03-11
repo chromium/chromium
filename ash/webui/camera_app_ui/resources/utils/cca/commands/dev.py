@@ -20,7 +20,7 @@ from cca import util
 
 def _get_root_relative_path(request_path: str) -> str:
     request_path = os.path.dirname(request_path)
-    return os.path.relpath('/', f'/{request_path}')
+    return os.path.relpath("/", f"/{request_path}")
 
 
 # Replaces all chrome:// reference to /chrome_stub/.
@@ -29,9 +29,9 @@ def _get_root_relative_path(request_path: str) -> str:
 # replacing all '//' is too broad.
 def _stub_chrome_url(request_path: str, s: str) -> str:
     chrome_stub_path = os.path.join(_get_root_relative_path(request_path),
-                                    'chrome_stub/')
-    return s.replace('chrome://', chrome_stub_path).replace(
-        '//resources/', os.path.join(chrome_stub_path, 'resources/'))
+                                    "chrome_stub/")
+    return s.replace("chrome://", chrome_stub_path).replace(
+        "//resources/", os.path.join(chrome_stub_path, "resources/"))
 
 
 class _Route(NamedTuple):
@@ -114,7 +114,7 @@ class RequestHandler:
         html = _stub_chrome_url(request_path, html)
 
         relative_path = _get_root_relative_path(request_path)
-        html = re.sub(r"(href|src)=\"/", f"\\1=\"{relative_path}/", html)
+        html = re.sub(r"(href|src)=\"/", f'\\1="{relative_path}/', html)
 
         return html
 
@@ -167,23 +167,30 @@ class RequestHandler:
         ]
         # Ignore empty value from split.
         exports = [export for export in exports if export]
-        # Some exports are in form export {A as B}, take the last `B` part in
-        # this case.
-        exports = [export.split()[-1] for export in exports if export]
+
+        def get_import_export_names(export):
+            # Each `export` is either a single name that is used both as import
+            # and export name, or are in form "A as B".
+            tokens = export.split()
+            return [tokens[0], tokens[-1]]
+
+        exports = [get_import_export_names(export) for export in exports]
 
         # Stub the real enum values for enum in mojom files, since those enum
         # values are used by CCA.
         mojo_files = [
-            'camera_app_helper.mojom',
-            'events_sender.mojom',
+            "camera_app_helper.mojom",
+            "events_sender.mojom",
         ]
+        # TODO(pihsun): This doesn't handle possible enum name collision
+        # between different mojom files.
         mojo_enums = {}
         for enum_dict in [self._load_mojo_enums(file) for file in mojo_files]:
             mojo_enums |= enum_dict
 
-        js = "\n".join(f"export const {export} = "
-                       f"{json.dumps(mojo_enums.get(export))};"
-                       for export in exports)
+        js = "\n".join(f"export const {export_name} = "
+                       f"{json.dumps(mojo_enums.get(import_name))};"
+                       for import_name, export_name in exports)
         return js
 
     def _handle_color_css_updater_js(self, request_path: str) -> bytes:
@@ -205,7 +212,7 @@ class RequestHandler:
             elif path is not None:
                 return path
             else:
-                return request_path.lstrip('/')
+                return request_path.lstrip("/")
 
         root = root or self._cca_root
         path = calculate_path()
@@ -253,7 +260,7 @@ class RequestHandler:
                     self._handle_static_file,
                     root=os.path.join(self._gen_dir,
                                       "ui/webui/resources/tsc/"),
-                    path=lambda path: '/'.join(path.split('/')[3:]),
+                    path=lambda path: "/".join(path.split("/")[3:]),
                     transform=_stub_chrome_url,
                 ),
             ),
