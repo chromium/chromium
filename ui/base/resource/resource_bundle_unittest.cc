@@ -14,12 +14,12 @@
 #include <vector>
 
 #include "base/base_paths.h"
-#include "base/big_endian.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -82,23 +82,30 @@ gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
 void AddCustomChunk(const base::StringPiece& custom_chunk,
                     std::vector<unsigned char>* bitmap_data) {
-  EXPECT_LT(std::size(kPngMagic) + kPngChunkMetadataSize, bitmap_data->size());
-  EXPECT_TRUE(std::equal(bitmap_data->begin(),
-                         bitmap_data->begin() + std::size(kPngMagic),
-                         kPngMagic));
-  auto ihdr_start = bitmap_data->begin() + std::size(kPngMagic);
-  uint8_t ihdr_length_data[sizeof(uint32_t)];
-  for (size_t i = 0; i < sizeof(uint32_t); ++i)
-    ihdr_length_data[i] = *(ihdr_start + i);
-  uint32_t ihdr_chunk_length = 0;
-  base::ReadBigEndian(ihdr_length_data, &ihdr_chunk_length);
-  EXPECT_TRUE(
-      std::equal(ihdr_start + sizeof(uint32_t),
-                 ihdr_start + sizeof(uint32_t) + sizeof(kPngIHDRChunkType),
-                 kPngIHDRChunkType));
+  size_t chunk_offset = 0u;
 
-  bitmap_data->insert(ihdr_start + kPngChunkMetadataSize + ihdr_chunk_length,
-                      custom_chunk.begin(), custom_chunk.end());
+  // Expect the magic signature first.
+  auto magic_span =
+      base::as_byte_span(*bitmap_data).first<std::size(kPngMagic)>();
+  EXPECT_TRUE(magic_span == kPngMagic);
+  chunk_offset += magic_span.size();
+
+  // Expect an IHDR chunk next. It starts with a length.
+  auto ihdr_chunk = base::as_byte_span(*bitmap_data).subspan(chunk_offset);
+  uint32_t ihdr_chunk_length =
+      base::numerics::U32FromBigEndian(ihdr_chunk.first<sizeof(uint32_t)>());
+  auto ihdr_type =
+      ihdr_chunk.subspan<sizeof(uint32_t), std::size(kPngIHDRChunkType)>();
+  EXPECT_TRUE(ihdr_type == kPngIHDRChunkType);
+  chunk_offset += ihdr_chunk_length;
+
+  // Expect a PNG Metadata chunk next.
+  chunk_offset += kPngChunkMetadataSize;
+
+  // Then insert custom chunk.
+  ASSERT_LE(chunk_offset, bitmap_data->size());
+  bitmap_data->insert(bitmap_data->begin() + chunk_offset, custom_chunk.begin(),
+                      custom_chunk.end());
 }
 
 // Creates datapack at |path| with a single bitmap at resource ID 3

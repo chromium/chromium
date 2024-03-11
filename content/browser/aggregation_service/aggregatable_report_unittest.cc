@@ -14,7 +14,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -155,8 +157,8 @@ void VerifyReport(
               data_map.at(cbor::Value("bucket")).GetBytestring();
           EXPECT_EQ(bucket_byte_string.size(), 16u);  // 16 bytes = 128 bits
 
-          // TODO(crbug.com/1298196): Replace with `base::ReadBigEndian()` when
-          // available.
+          // TODO(crbug.com/1298196): Replace with
+          // `base::numerics::U128FromBigEndian()` when available.
           absl::uint128 bucket;
           base::HexStringToUInt128(base::HexEncode(bucket_byte_string),
                                    &bucket);
@@ -168,12 +170,9 @@ void VerifyReport(
               data_map.at(cbor::Value("value")).GetBytestring();
           EXPECT_EQ(value_byte_string.size(), 4u);  // 4 bytes = 32 bits
 
-          // TODO(crbug.com/1298196): Replace with `base::ReadBigEndian()` when
-          // available.
-          uint32_t value;
-          base::HexStringToUInt(base::HexEncode(value_byte_string), &value);
-          EXPECT_EQ(static_cast<int64_t>(value),
-                    expected_contributions[j].value);
+          uint32_t value = base::numerics::U32FromBigEndian(
+              base::as_byte_span(value_byte_string).first<4u>());
+          EXPECT_EQ(int64_t{value}, expected_contributions[j].value);
         }
 
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
@@ -522,7 +523,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Returns true if the data in |buf| is a PNG that has the special marker
   // added by GRIT that indicates that the image is actually 1x data.
-  static bool PNGContainsFallbackMarker(const unsigned char* buf, size_t size);
+  static bool PNGContainsFallbackMarker(base::span<const uint8_t> buf);
 
   // A wrapper for PNGCodec::Decode that returns information about custom
   // chunks. For security reasons we can't alter PNGCodec to return this
