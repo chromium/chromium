@@ -14,6 +14,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/page_image_service/image_service.h"
+#include "components/page_image_service/image_service_impl.h"
 
 namespace page_image_service {
 
@@ -51,7 +52,7 @@ std::unique_ptr<KeyedService>
 ImageServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<ImageService>(
+  return std::make_unique<ImageServiceImpl>(
       TemplateURLServiceFactory::GetForProfile(profile),
       RemoteSuggestionsServiceFactory::GetForProfile(
           profile, /*create_if_necessary=*/true),

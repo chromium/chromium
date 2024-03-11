@@ -30,6 +30,7 @@
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/page_image_service/image_service.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
@@ -81,6 +82,11 @@ class BookmarkBridge : public ProfileObserver,
       const base::android::JavaParamRef<jobject>& j_url,
       bool is_account_bookmark,
       const base::android::JavaParamRef<jobject>& j_callback);
+
+  void GetImageUrlForBookmarkImpl(
+      const GURL& url,
+      bool is_account_bookmark,
+      page_image_service::ImageService::ResultCallback callback);
 
   base::android::ScopedJavaLocalRef<jobject>
   GetMostRecentlyAddedUserBookmarkIdForUrl(
@@ -403,7 +409,6 @@ class BookmarkBridge : public ProfileObserver,
   std::unique_ptr<ReadingListManager> account_reading_list_manager_;
 
   raw_ptr<ReadingListModel> account_reading_list_model_;  // weak
-
   raw_ptr<signin::IdentityManager> identity_manager_;  // weak
 
   // Observes the profile destruction and creation.

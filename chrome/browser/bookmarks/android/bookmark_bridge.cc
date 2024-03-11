@@ -53,12 +53,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/query_parser.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "components/undo/undo_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -201,7 +203,7 @@ BookmarkBridge::BookmarkBridge(
   CHECK(model);
   CHECK(managed_bookmark_service);
   CHECK(partner_bookmarks_shim);
-  // TODO(crbug.com/1503231): CHECK image_service once a mock is available.
+  CHECK(image_service_);
   CHECK(dual_reading_list_model);
   CHECK(identity_manager_);
 
@@ -258,17 +260,29 @@ void BookmarkBridge::GetImageUrlForBookmark(
     bool is_account_bookmark,
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
-  if (!image_service_) {
-    base::android::RunObjectCallbackAndroid(callback, nullptr);
+  GetImageUrlForBookmarkImpl(*url::GURLAndroid::ToNativeGURL(env, j_url),
+                             is_account_bookmark,
+                             base::BindOnce(&HandleImageUrlResponse, callback));
+}
+
+void BookmarkBridge::GetImageUrlForBookmarkImpl(
+    const GURL& url,
+    bool is_account_bookmark,
+    page_image_service::ImageService::ResultCallback callback) {
+  // Images should only be fetched for bookmarks stored in the account. For
+  // Sync-the-feature user, that means all bookmarks. ImageService checks
+  // internally that syncing of bookmarks is enabled.
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+      is_account_bookmark) {
+    page_image_service::mojom::Options options;
+    options.optimization_guide_images = true;
+    image_service_->FetchImageFor(
+        page_image_service::mojom::ClientId::Bookmarks, url, options,
+        std::move(callback));
     return;
   }
 
-  page_image_service::mojom::Options options;
-  options.optimization_guide_images = true;
-  image_service_->FetchImageFor(
-      page_image_service::mojom::ClientId::Bookmarks,
-      *url::GURLAndroid::ToNativeGURL(env, j_url), options,
-      base::BindOnce(&HandleImageUrlResponse, callback));
+  std::move(callback).Run(GURL());
 }
 
 base::android::ScopedJavaLocalRef<jobject>

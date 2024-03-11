@@ -6,12 +6,13 @@ source_set("page_image_service") {
   sources = [
     "features.cc",
     "features.h",
-    "image_service.cc",
     "image_service.h",
     "image_service_consent_helper.cc",
     "image_service_consent_helper.h",
     "image_service_handler.cc",
     "image_service_handler.h",
+    "image_service_impl.cc",
+    "image_service_impl.h",
     "metrics_util.cc",
     "metrics_util.h",
   ]
@@ -36,7 +37,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "image_service_consent_helper_unittest.cc",
-    "image_service_unittest.cc",
+    "image_service_impl_unittest.cc",
   ]
   deps = [
     ":page_image_service",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_image_service/image_service.h"
+#include "components/page_image_service/image_service_impl.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -47,7 +47,7 @@ void FulfillAllCallbacks(std::vector<ImageService::ResultCallback> callbacks,
 // to `search_query` and `entity_id`. This is a hacky temporary implementation,
 // ideally this should be replaced by persisted Suggest-provided entities.
 // TODO(tommycli): Move this to its own separate file with unit tests.
-class ImageService::SuggestEntityImageURLFetcher {
+class ImageServiceImpl::SuggestEntityImageURLFetcher {
  public:
   SuggestEntityImageURLFetcher(
       const AutocompleteSchemeClassifier& autocomplete_scheme_classifier,
@@ -167,7 +167,7 @@ class ImageService::SuggestEntityImageURLFetcher {
   base::WeakPtrFactory<SuggestEntityImageURLFetcher> weak_factory_{this};
 };
 
-ImageService::ImageService(
+ImageServiceImpl::ImageServiceImpl(
     TemplateURLService* template_url_service,
     RemoteSuggestionsService* remote_suggestions_service,
     optimization_guide::OptimizationGuideDecider* opt_guide,
@@ -190,18 +190,18 @@ ImageService::ImageService(
   }
 }
 
-ImageService::OptGuideRequest::OptGuideRequest() = default;
-ImageService::OptGuideRequest::~OptGuideRequest() = default;
-ImageService::OptGuideRequest::OptGuideRequest(OptGuideRequest&& other) =
+ImageServiceImpl::OptGuideRequest::OptGuideRequest() = default;
+ImageServiceImpl::OptGuideRequest::~OptGuideRequest() = default;
+ImageServiceImpl::OptGuideRequest::OptGuideRequest(OptGuideRequest&& other) =
     default;
 
-ImageService::~ImageService() = default;
+ImageServiceImpl::~ImageServiceImpl() = default;
 
-base::WeakPtr<ImageService> ImageService::GetWeakPtr() {
+base::WeakPtr<ImageService> ImageServiceImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void ImageService::FetchImageFor(mojom::ClientId client_id,
+void ImageServiceImpl::FetchImageFor(mojom::ClientId client_id,
                                  const GURL& page_url,
                                  const mojom::Options& options,
                                  ResultCallback callback) {
@@ -213,11 +213,11 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
 
   GetConsentToFetchImage(
       client_id,
-      base::BindOnce(&ImageService::OnConsentResult, weak_factory_.GetWeakPtr(),
+      base::BindOnce(&ImageServiceImpl::OnConsentResult, weak_factory_.GetWeakPtr(),
                      client_id, page_url, options, std::move(callback)));
 }
 
-void ImageService::GetConsentToFetchImage(
+void ImageServiceImpl::GetConsentToFetchImage(
     mojom::ClientId client_id,
     base::OnceCallback<void(PageImageServiceConsentStatus)> callback) {
   switch (client_id) {
@@ -237,7 +237,7 @@ void ImageService::GetConsentToFetchImage(
   }
 }
 
-void ImageService::OnConsentResult(mojom::ClientId client_id,
+void ImageServiceImpl::OnConsentResult(mojom::ClientId client_id,
                                    const GURL& page_url,
                                    const mojom::Options& options,
                                    ResultCallback callback,
@@ -289,7 +289,7 @@ void ImageService::OnConsentResult(mojom::ClientId client_id,
   std::move(callback).Run(GURL());
 }
 
-void ImageService::FetchSuggestImage(const TemplateURL* template_url,
+void ImageServiceImpl::FetchSuggestImage(const TemplateURL* template_url,
                                      const SearchTermsData& search_terms_data,
                                      mojom::ClientId client_id,
                                      const std::u16string& search_query,
@@ -303,12 +303,12 @@ void ImageService::FetchSuggestImage(const TemplateURL* template_url,
   auto* fetcher_raw_ptr = fetcher.get();
   fetcher_raw_ptr->Start(
       template_url, search_terms_data, remote_suggestions_service_,
-      base::BindOnce(&ImageService::OnSuggestImageFetched,
+      base::BindOnce(&ImageServiceImpl::OnSuggestImageFetched,
                      weak_factory_.GetWeakPtr(), std::move(fetcher),
                      std::move(callback)));
 }
 
-void ImageService::OnSuggestImageFetched(
+void ImageServiceImpl::OnSuggestImageFetched(
     std::unique_ptr<SuggestEntityImageURLFetcher> fetcher,
     ResultCallback callback,
     const GURL& image_url) {
@@ -317,7 +317,7 @@ void ImageService::OnSuggestImageFetched(
   // `fetcher` is owned by this method and will be deleted now.
 }
 
-void ImageService::FetchOptimizationGuideImage(mojom::ClientId client_id,
+void ImageServiceImpl::FetchOptimizationGuideImage(mojom::ClientId client_id,
                                                const GURL& page_url,
                                                ResultCallback callback) {
   DCHECK(opt_guide_) << "FetchOptimizationGuideImage is never called when "
@@ -341,13 +341,13 @@ void ImageService::FetchOptimizationGuideImage(mojom::ClientId client_id,
     auto timer = std::make_unique<base::OneShotTimer>();
     timer->Start(FROM_HERE, kOptimizationGuideBatchingTimeout,
                  base::BindOnce(
-                     &ImageService::ProcessAllBatchedOptimizationGuideRequests,
+                     &ImageServiceImpl::ProcessAllBatchedOptimizationGuideRequests,
                      weak_factory_.GetWeakPtr(), client_id));
     opt_guide_timers_[client_id] = std::move(timer);
   }
 }
 
-void ImageService::ProcessAllBatchedOptimizationGuideRequests(
+void ImageServiceImpl::ProcessAllBatchedOptimizationGuideRequests(
     mojom::ClientId client_id) {
   optimization_guide::proto::RequestContext request_context;
   switch (client_id) {
@@ -388,11 +388,11 @@ void ImageService::ProcessAllBatchedOptimizationGuideRequests(
   opt_guide_->CanApplyOptimizationOnDemand(
       urls, {optimization_guide::proto::OptimizationType::SALIENT_IMAGE},
       request_context,
-      base::BindRepeating(&ImageService::OnOptimizationGuideImageFetched,
+      base::BindRepeating(&ImageServiceImpl::OnOptimizationGuideImageFetched,
                           weak_factory_.GetWeakPtr(), client_id));
 }
 
-void ImageService::OnOptimizationGuideImageFetched(
+void ImageServiceImpl::OnOptimizationGuideImageFetched(
     mojom::ClientId client_id,
     const GURL& url,
     const base::flat_map<

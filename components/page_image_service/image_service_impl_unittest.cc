@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_image_service/image_service.h"
+#include "components/page_image_service/image_service_impl.h"
 
 #include <memory>
 
@@ -70,9 +70,9 @@ class ImageServiceTestOptGuide : public TestOptimizationGuideDecider {
 
 namespace page_image_service {
 
-class ImageServiceTest : public testing::Test {
+class ImageServiceImplTest : public testing::Test {
  public:
-  ImageServiceTest() = default;
+  ImageServiceImplTest() = default;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -88,7 +88,7 @@ class ImageServiceTest : public testing::Test {
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    image_service_ = std::make_unique<ImageService>(
+    image_service_ = std::make_unique<ImageServiceImpl>(
         template_url_service_.get(), remote_suggestions_service_.get(),
         test_opt_guide_.get(), test_sync_service_.get(),
         std::make_unique<TestSchemeClassifier>());
@@ -108,8 +108,8 @@ class ImageServiceTest : public testing::Test {
     return out_status;
   }
 
-  ImageServiceTest(const ImageServiceTest&) = delete;
-  ImageServiceTest& operator=(const ImageServiceTest&) = delete;
+  ImageServiceImplTest(const ImageServiceImplTest&) = delete;
+  ImageServiceImplTest& operator=(const ImageServiceImplTest&) = delete;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -124,7 +124,7 @@ class ImageServiceTest : public testing::Test {
   std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
   std::unique_ptr<optimization_guide::ImageServiceTestOptGuide> test_opt_guide_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
-  std::unique_ptr<ImageService> image_service_;
+  std::unique_ptr<ImageServiceImpl> image_service_;
 
   base::HistogramTester histogram_tester_;
 };
@@ -149,11 +149,11 @@ void AppendResponse(std::vector<GURL>* responses, const GURL& image_url) {
   responses->push_back(image_url);
 }
 
-TEST_F(ImageServiceTest, DoesNotRegisterForNavigationRelatedMetadata) {
+TEST_F(ImageServiceImplTest, DoesNotRegisterForNavigationRelatedMetadata) {
   ASSERT_EQ(test_opt_guide_->registered_optimization_types().size(), 0U);
 }
 
-TEST_F(ImageServiceTest, GetConsentToFetchImage) {
+TEST_F(ImageServiceImplTest, GetConsentToFetchImage) {
   test_sync_service_->SetDownloadStatusFor(
       {syncer::ModelType::BOOKMARKS,
        syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
@@ -193,7 +193,7 @@ TEST_F(ImageServiceTest, GetConsentToFetchImage) {
             PageImageServiceConsentStatus::kTimedOut);
 }
 
-TEST_F(ImageServiceTest, SyncInitialization) {
+TEST_F(ImageServiceImplTest, SyncInitialization) {
   // Put Sync into the initializing state.
   test_sync_service_->SetDownloadStatusFor(
       {syncer::ModelType::BOOKMARKS,
@@ -245,7 +245,7 @@ TEST_F(ImageServiceTest, SyncInitialization) {
   // OptimizationGuideSalientImagesEndToEnd.
 }
 
-TEST_F(ImageServiceTest, SuggestBackendEndToEnd) {
+TEST_F(ImageServiceImplTest, SuggestBackendEndToEnd) {
   mojom::Options options;
   options.suggest_images = true;
   options.optimization_guide_images = true;
@@ -328,7 +328,7 @@ TEST_F(ImageServiceTest, SuggestBackendEndToEnd) {
 
 // This also tests batching, because it's an integral part of how Optimization
 // Guide backend works.
-TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
+TEST_F(ImageServiceImplTest, OptimizationGuideSalientImagesEndToEnd) {
   mojom::Options options;
   options.suggest_images = false;
   options.optimization_guide_images = true;
@@ -435,7 +435,7 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
       PageImageServiceResult::kResponseMalformed, 1);
 }
 
-TEST_F(ImageServiceTest, OptimizationGuideBatchingRespectsMaxUrls) {
+TEST_F(ImageServiceImplTest, OptimizationGuideBatchingRespectsMaxUrls) {
   mojom::Options options;
   options.suggest_images = false;
   options.optimization_guide_images = true;
@@ -469,9 +469,9 @@ TEST_F(ImageServiceTest, OptimizationGuideBatchingRespectsMaxUrls) {
       << "Expect that making more request restarts the queue.";
 }
 
-class DisabledOptGuideImageServiceTest : public ImageServiceTest {
+class DisabledOptGuideImageServiceImplTest : public ImageServiceImplTest {
  public:
-  DisabledOptGuideImageServiceTest() = default;
+  DisabledOptGuideImageServiceImplTest() = default;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -485,14 +485,14 @@ class DisabledOptGuideImageServiceTest : public ImageServiceTest {
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    image_service_ = std::make_unique<ImageService>(
+    image_service_ = std::make_unique<ImageServiceImpl>(
         template_url_service_.get(), remote_suggestions_service_.get(),
         test_opt_guide_.get(), test_sync_service_.get(),
         std::make_unique<TestSchemeClassifier>());
   }
 };
 
-TEST_F(DisabledOptGuideImageServiceTest, DoesNotFetch) {
+TEST_F(DisabledOptGuideImageServiceImplTest, DoesNotFetch) {
   mojom::Options options;
   options.suggest_images = false;
   options.optimization_guide_images = true;

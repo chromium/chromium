@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -28,9 +29,11 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/page_image_service/image_service.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/storage_type.h"
@@ -55,11 +58,53 @@ using page_image_service::ImageService;
 using testing::IsNull;
 using testing::NotNull;
 
+class MockImageService : public page_image_service::ImageService {
+ public:
+  MOCK_METHOD(void,
+              FetchImageFor,
+              (page_image_service::mojom::ClientId,
+               const GURL&,
+               const page_image_service::mojom::Options&,
+               ResultCallback),
+              (override));
+
+  MOCK_METHOD(base::WeakPtr<ImageService>, GetWeakPtr, (), (override));
+};
+
 // Unit tests for `BookmarkBridge`.
 class BookmarkBridgeTest : public testing::Test {
  public:
   BookmarkBridgeTest() = default;
   ~BookmarkBridgeTest() override = default;
+
+  // testing::Test
+  void SetUp() override {
+    // Setup the profile, and service factories.
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile(
+        "BookmarkBridgeTest", /*testing_factories=*/{
+            {BookmarkModelFactory::GetInstance(),
+             BookmarkModelFactory::GetDefaultFactory()},
+            {ManagedBookmarkServiceFactory::GetInstance(),
+             ManagedBookmarkServiceFactory::GetDefaultFactory()}});
+
+    // Setup bookmark sources from their factories.
+    managed_bookmark_service_ =
+        ManagedBookmarkServiceFactory::GetForProfile(profile_);
+    partner_bookmarks_shim_ =
+        PartnerBookmarksShim::BuildForBrowserContext(profile_);
+
+    identity_test_environment_ =
+        std::make_unique<signin::IdentityTestEnvironment>();
+    CreateBookmarkBridge(/*enable_account_bookmarks=*/false);
+  }
+
+  void TearDown() override {
+    bookmark_bridge_.reset();
+    profile_manager_.reset();
+  }
 
   BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
 
@@ -73,6 +118,12 @@ class BookmarkBridgeTest : public testing::Test {
     return bookmark_bridge_
         ->GetAccountReadingListManagerIfAvailableForTesting();
   }
+
+  signin::IdentityTestEnvironment* identity_test_environment() {
+    return identity_test_environment_.get();
+  }
+
+  MockImageService& mock_image_service() { return mock_image_service_; }
 
   const BookmarkNode* AddURL(const BookmarkNode* parent,
                              size_t index,
@@ -159,10 +210,9 @@ class BookmarkBridgeTest : public testing::Test {
       }
     }
 
-    // TODO(crbug.com/1503231): Add image_service once a mock is available.
     bookmark_bridge_ = std::make_unique<BookmarkBridge>(
         profile_, bookmark_model_.get(), managed_bookmark_service_,
-        /*image_service=*/nullptr, dual_reading_list_model_.get(),
+        &mock_image_service_, dual_reading_list_model_.get(),
         partner_bookmarks_shim_,
         identity_test_environment_->identity_manager());
 
@@ -173,36 +223,6 @@ class BookmarkBridgeTest : public testing::Test {
   }
 
  protected:
-  // testing::Test
-  void SetUp() override {
-    // Setup the profile, and service factories.
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile(
-        "BookmarkBridgeTest", /*testing_factories=*/{
-            {BookmarkModelFactory::GetInstance(),
-             BookmarkModelFactory::GetDefaultFactory()},
-            {ManagedBookmarkServiceFactory::GetInstance(),
-             ManagedBookmarkServiceFactory::GetDefaultFactory()}});
-
-    // Setup bookmark sources from their factories.
-    managed_bookmark_service_ =
-        ManagedBookmarkServiceFactory::GetForProfile(profile_);
-    partner_bookmarks_shim_ =
-        PartnerBookmarksShim::BuildForBrowserContext(profile_);
-
-    identity_test_environment_ =
-        std::make_unique<signin::IdentityTestEnvironment>();
-    CreateBookmarkBridge(/*enable_account_bookmarks=*/false);
-  }
-
-  void TearDown() override {
-    // reading_list_model_.reset();
-    bookmark_bridge_.reset();
-    profile_manager_.reset();
-  }
-
   std::unique_ptr<ReadingListModelImpl> CreateReadingListModel(
       syncer::StorageType storage_type,
       base::WeakPtr<FakeReadingListModelStorage>& storage_ptr) {
@@ -219,19 +239,18 @@ class BookmarkBridgeTest : public testing::Test {
 
   base::test::ScopedFeatureList features_;
   base::SimpleTestClock clock_;
+  content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<Profile> profile_;
-  std::unique_ptr<BookmarkModel> bookmark_model_;
   raw_ptr<ManagedBookmarkService> managed_bookmark_service_;
   raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
 
+  std::unique_ptr<BookmarkModel> bookmark_model_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
-
   std::unique_ptr<BookmarkBridge> bookmark_bridge_;
-
-  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
+  MockImageService mock_image_service_;
 };
 
 TEST_F(BookmarkBridgeTest,
@@ -614,4 +633,43 @@ TEST_F(BookmarkBridgeTest, TestMoveReadingListToBookmark) {
   children = bookmark_bridge()->GetChildIdsImpl(
       local_or_syncable_reading_list_manager()->GetRoot());
   ASSERT_EQ(0u, children.size());
+}
+
+TEST_F(BookmarkBridgeTest, TestGetImageUrlForBookmark) {
+  identity_test_environment()->SetPrimaryAccount("test@gmail.com",
+                                                 signin::ConsentLevel::kSync);
+
+  GURL url = GURL("http://foo.com");
+  // This callback will only be invoked for edge cases. Nothing will happen
+  // when the mock_image_service() is called.
+  base::MockOnceCallback<void(const GURL&)> mock_callback;
+
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
+  EXPECT_CALL(mock_image_service(), FetchImageFor(testing::_, testing::Eq(url),
+                                                  testing::_, testing::_));
+  bookmark_bridge()->GetImageUrlForBookmarkImpl(url,
+                                                /*is_account_bookmark=*/false,
+                                                mock_callback.Get());
+
+  // Without sync consent, no call will be made for a local bookmark
+  // (is_account_bookmark is false).
+  identity_test_environment()->ClearPrimaryAccount();
+  identity_test_environment()->SetPrimaryAccount("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  EXPECT_CALL(mock_callback, Run(testing::Eq(GURL())));
+  EXPECT_CALL(mock_image_service(),
+              FetchImageFor(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  bookmark_bridge()->GetImageUrlForBookmarkImpl(url,
+                                                /*is_account_bookmark=*/false,
+                                                mock_callback.Get());
+
+  // When the bookmark being fetched is an account bookmark, the sync consent
+  // won't matter.
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
+  EXPECT_CALL(mock_image_service(), FetchImageFor(testing::_, testing::Eq(url),
+                                                  testing::_, testing::_));
+  bookmark_bridge()->GetImageUrlForBookmarkImpl(url,
+                                                /*is_account_bookmark=*/true,
+                                                mock_callback.Get());
 }
