@@ -6617,15 +6617,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaLauncherActivity.MediaType"
-    enum="MediaLauncherActivityMediaType" expires_after="2021-03-28">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The type of media that a user is opening via the MediaLauncherActivity.
-  </summary>
-</histogram>
-
 <histogram name="MediaPreviews.UI.PageInfo.Camera.NumInUseDevices"
     units="devices" expires_after="2025-04-01">
   <owner>atadres@chromium.org</owner>
