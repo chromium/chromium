@@ -2052,8 +2052,14 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
   std::vector<size_t> scored_positions;
   for (size_t i = 0; i < internal_result_.size(); ++i) {
     const auto& match = internal_result_.matches_[i];
-    if (!match.IsUrlScoringEligible())
+    // Do not attempt to score matches that are generally ineligible for ML
+    // scoring nor any stale suggestions sourced from the DocumentProvider
+    // cache.
+    if (!match.IsUrlScoringEligible() ||
+        (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION &&
+         match.relevance == 0)) {
       continue;
+    }
     batch_scoring_signals.push_back(&match.scoring_signals.value());
     scored_positions.push_back(i);
   }
