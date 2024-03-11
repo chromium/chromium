@@ -552,34 +552,7 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 03/2023.
-const char kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime[] =
-    "browser.last_google_search_domain_mixing_metrics_time";
-
-// Deprecated 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kGlanceablesSignoutScreenshotDuration[] =
-    "ash.signout_screenshot.duration";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kEasyUnlockLocalStateUserPrefs[] = "easy_unlock.user_prefs";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kDarkLightModeNudgeLeftToShowCount[] =
-    "ash.dark_light_mode.educational_nudge";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 03/2023.
-#if BUILDFLAG(IS_WIN)
-const char kWebAuthnLastOperationWasNativeAPI[] =
-    "webauthn.last_op_used_native_api";
-#endif
-
-// Deprecated 03/2023.
+// Deprecated 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kEasyUnlockHardlockState[] = "easy_unlock.hardlock_state";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1033,17 +1006,6 @@ constexpr char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-// Deprecated 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterTimeDeltaPref(kGlanceablesSignoutScreenshotDuration,
-                                  base::TimeDelta());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterDictionaryPref(kEasyUnlockLocalStateUserPrefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kEasyUnlockHardlockState);
@@ -1158,21 +1120,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  // Deprecated 03/2023.
-  registry->RegisterTimePref(
-      kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime, base::Time());
-
-  // Deprecated 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kDarkLightModeNudgeLeftToShowCount,
-                                ash::kDarkLightModeNudgeMaxShownCount);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Deprecated 03/2023.
-#if BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(kWebAuthnLastOperationWasNativeAPI, false);
-#endif
 
 // Deprecated 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2224,16 +2171,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-// Added 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  local_state->ClearPref(kGlanceablesSignoutScreenshotDuration);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Added 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  local_state->ClearPref(kEasyUnlockLocalStateUserPrefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Added 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kEasyUnlockHardlockState);
@@ -2388,25 +2325,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
                                account_id);
     }
   }
-
-// Added 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ambient::prefs::MigrateDeprecatedPrefs(*profile_prefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 03/2023.
-  profile_prefs->ClearPref(
-      kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime);
-
-// Added 03/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kDarkLightModeNudgeLeftToShowCount);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 03/2023.
-#if BUILDFLAG(IS_WIN)
-  profile_prefs->ClearPref(kWebAuthnLastOperationWasNativeAPI);
-#endif
 
 // Added 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
