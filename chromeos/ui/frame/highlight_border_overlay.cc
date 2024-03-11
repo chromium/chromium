@@ -4,12 +4,14 @@
 
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 
+#include <algorithm>
 #include <map>
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -64,7 +66,8 @@ HighlightBorderOverlay::HighlightBorderOverlay(views::Widget* widget)
     : layer_(ui::LAYER_NINE_PATCH),
       widget_(widget),
       window_(widget->GetNativeWindow()) {
-  rounded_corner_radius_ = chromeos::GetFrameCornerRadius(window_);
+  rounded_corner_radius_ =
+      std::max(0, window_->GetProperty(aura::client::kWindowCornerRadiusKey));
   layer_.SetFillsBoundsOpaquely(false);
 
   UpdateNinePatchLayer();
@@ -111,8 +114,9 @@ void HighlightBorderOverlay::OnWindowPropertyChanged(aura::Window* window,
 
   // We need to update the highlight border radius to match the radius of the
   // frame.
-  if (chromeos::CanPropertyEffectFrameRadius(key)) {
-    const int corner_radius = chromeos::GetFrameCornerRadius(window);
+  if (key == aura::client::kWindowCornerRadiusKey) {
+    const int corner_radius =
+        std::max(0, window_->GetProperty(aura::client::kWindowCornerRadiusKey));
     if (rounded_corner_radius_ != corner_radius) {
       rounded_corner_radius_ = corner_radius;
       UpdateNinePatchLayer();

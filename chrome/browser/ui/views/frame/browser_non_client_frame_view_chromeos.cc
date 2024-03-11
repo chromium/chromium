@@ -532,10 +532,12 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
     min_height = 2 * border_size.height();
   }
 
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
+  const int window_corner_radius = frame()->GetNativeWindow()->GetProperty(
+      aura::client::kWindowCornerRadiusKey);
+  if (chromeos::features::IsRoundedWindowsEnabled() &&
+      window_corner_radius > 0) {
     // Include bottom rounded corners region.
-    min_height =
-        min_height + chromeos::GetFrameCornerRadius(frame()->GetNativeWindow());
+    min_height = min_height + window_corner_radius;
   }
 
   return gfx::Size(min_width, min_height);
