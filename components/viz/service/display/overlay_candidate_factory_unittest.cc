@@ -66,7 +66,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
   }
 
   ResourceId CreateResource(bool is_overlay_candidate) {
-    scoped_refptr<ContextProvider> child_context_provider =
+    scoped_refptr<RasterContextProvider> child_context_provider =
         TestContextProvider::Create();
 
     child_context_provider->BindToCurrentSequence();

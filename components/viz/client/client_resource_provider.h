@@ -31,7 +31,6 @@ class RasterInterface;
 }  // namespace gpu
 
 namespace viz {
-class ContextProvider;
 class RasterContextProvider;
 
 // This class is used to give an integer name (ResourceId) to a gpu or software
@@ -69,13 +68,6 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
       const std::vector<ResourceId>& resource_ids,
       std::vector<TransferableResource>* transferable_resources,
       RasterContextProvider* context_provider);
-
-  // TODO(sergeyu): Remove after updating all callers to use the above version
-  // of this method.
-  void PrepareSendToParent(
-      const std::vector<ResourceId>& resource_ids,
-      std::vector<TransferableResource>* transferable_resources,
-      ContextProvider* context_provider);
 
   // Receives resources from the parent, moving them from mailboxes. ResourceIds
   // passed are in the child namespace.

@@ -56,7 +56,6 @@ class TestImageTransportFactory : public ui::ContextFactory,
   viz::RendererSettings renderer_settings_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;
-  scoped_refptr<viz::ContextProvider> shared_main_context_provider_;
   viz::HostFrameSinkManager host_frame_sink_manager_;
   viz::TestFrameSinkManagerImpl test_frame_sink_manager_impl_;
 };

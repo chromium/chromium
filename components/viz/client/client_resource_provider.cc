@@ -15,7 +15,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -219,20 +218,6 @@ gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
   DCHECK(sync_token.HasData() ||
          ri->GetGraphicsResetStatusKHR() != GL_NO_ERROR);
   return sync_token;
-}
-
-void ClientResourceProvider::PrepareSendToParent(
-    const std::vector<ResourceId>& export_ids,
-    std::vector<TransferableResource>* list,
-    ContextProvider* context_provider) {
-  auto cb = base::BindOnce(
-      [](scoped_refptr<ContextProvider> context_provider,
-         std::vector<GLbyte*>* tokens) {
-        context_provider->ContextGL()->VerifySyncTokensCHROMIUM(tokens->data(),
-                                                                tokens->size());
-      },
-      base::WrapRefCounted(context_provider));
-  PrepareSendToParentInternal(export_ids, list, std::move(cb));
 }
 
 void ClientResourceProvider::PrepareSendToParent(

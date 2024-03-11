@@ -20,7 +20,6 @@
 #include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/host/compositing_mode_reporter_impl.h"
