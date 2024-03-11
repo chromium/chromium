@@ -159,17 +159,18 @@ void MaybeAppendTestCallback(Callback& callback,
 // TODO(minch): Check whether the screenshot should be taken in kiosk mode or
 // locked mode.
 // Returns true if the pine screenshot should be taken on shutdown.
-bool ShouldTakePineScreeshot(aura::Window* active_desk) {
+bool ShouldTakePineScreeshot() {
   auto* shell = Shell::Get();
-  // Do not take the pine screenshot if it is in overview mode, lock screen,
-  // home launcher or there is no windows inside the active desk.
+  // Do not take the pine screenshot if it is in overview mode, lock screen or
+  // home launcher.
   if (shell->overview_controller()->InOverviewSession() ||
       shell->session_controller()->IsScreenLocked() ||
-      shell->app_list_controller()->IsHomeScreenVisible() ||
-      active_desk->children().empty()) {
+      shell->app_list_controller()->IsHomeScreenVisible()) {
     return false;
   }
 
+  // Take the screenshot if there are non-minimized windows inside the active
+  // desk. Both the float window and the always on top window will be counted.
   for (aura::Window* window :
        shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     if (!WindowState::Get(window)->IsMinimized()) {
@@ -177,8 +178,6 @@ bool ShouldTakePineScreeshot(aura::Window* active_desk) {
     }
   }
 
-  // Do not take the pine screenshot if all the windows inside the active desk
-  // are minimized.
   return false;
 }
 
@@ -747,11 +746,9 @@ void LockStateController::ShutdownOnPine(bool with_pre_animation) {
 void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
   // TODO: Finalize the expected behavior on multi-display.
   auto* root = Shell::GetRootWindowForNewWindows();
-  aura::Window* active_desk = desks_util::GetActiveDeskContainerForRoot(root);
-  CHECK(active_desk);
   const base::FilePath file_path = GetShutdownPineImagePath();
 
-  if (!ShouldTakePineScreeshot(active_desk)) {
+  if (!ShouldTakePineScreeshot()) {
     // Delete any existing pine image if we should not take the screenshot on
     // this shutdown, then no stale screenshot will be shown on next startup.
     auto delete_image_cb =
@@ -767,8 +764,9 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
   }
 
   // Create a new layer that mirrors the painted wallpaper view layer. Adds it
-  // to be the bottom-most child of the active desk container layer, which is
-  // the container we are going to take the pine screenshot. With this,
+  // to be the bottom-most child of the shutdown screenshot container layer,
+  // which is the parent of the active desk container also the container that we
+  // are going to take the pine screenshot. With this,
   // 1) wallpaper will be included in the screenshot besides the content of the
   //    active desk.
   // 2) screenshot will be taken on the whole desktop instead of the specific
@@ -780,14 +778,20 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
                               ->layer();
   CHECK(wallpaper_layer && wallpaper_layer->children().empty());
   mirror_wallpaper_layer_ = wallpaper_layer->Mirror();
-  auto* active_desk_layer = active_desk->layer();
-  active_desk_layer->Add(mirror_wallpaper_layer_.get());
-  active_desk_layer->StackAtBottom(mirror_wallpaper_layer_.get());
+
+  auto* pine_screenshot_container =
+      root->GetChildById(kShellWindowId_ShutdownScreenshotContainer);
+  auto* shutdown_screenshot_layer = pine_screenshot_container->layer();
+  shutdown_screenshot_layer->Add(mirror_wallpaper_layer_.get());
+  shutdown_screenshot_layer->StackAtBottom(mirror_wallpaper_layer_.get());
 
   // TODO(b/321117233): Cancel the operation to take the screenshot and proceed
   // with the shutdown immediately if it takes too long.
+  // Take the screenshot on the shutdown screenshot container, thus the float
+  // and the always on top windows will be included in the screenshot as well.
   ui::GrabWindowSnapshot(
-      active_desk, /*source_rect=*/gfx::Rect(active_desk->bounds().size()),
+      pine_screenshot_container,
+      /*source_rect=*/gfx::Rect(pine_screenshot_container->bounds().size()),
       base::BindOnce(&LockStateController::OnPineImageTaken,
                      weak_ptr_factory_.GetWeakPtr(), with_pre_animation,
                      file_path, base::TimeTicks::Now()));

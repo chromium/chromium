@@ -1262,9 +1262,17 @@ void RootWindowController::CreateContainers() {
   CreateContainer(kShellWindowId_UnparentedContainer, "UnparentedContainer",
                   non_lock_screen_containers);
 
+  aura::Window* shutdown_screenshot_container = non_lock_screen_containers;
+  if (features::IsForestFeatureEnabled()) {
+    shutdown_screenshot_container = CreateContainer(
+        kShellWindowId_ShutdownScreenshotContainer,
+        "ShutdownScreenshotContainer", non_lock_screen_containers);
+  }
+
   for (const auto& id : desks_util::GetDesksContainersIds()) {
-    aura::Window* container = CreateContainer(
-        id, desks_util::GetDeskContainerName(id), non_lock_screen_containers);
+    aura::Window* container =
+        CreateContainer(id, desks_util::GetDeskContainerName(id),
+                        shutdown_screenshot_container);
     ::wm::SetChildWindowVisibilityChangesAnimated(container);
     container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
     container->SetProperty(kForceVisibleInMiniViewKey, true);
@@ -1278,13 +1286,13 @@ void RootWindowController::CreateContainers() {
 
   aura::Window* always_on_top_container =
       CreateContainer(kShellWindowId_AlwaysOnTopContainer,
-                      "AlwaysOnTopContainer", non_lock_screen_containers);
+                      "AlwaysOnTopContainer", shutdown_screenshot_container);
   ::wm::SetChildWindowVisibilityChangesAnimated(always_on_top_container);
   always_on_top_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
 
   aura::Window* float_container =
       CreateContainer(kShellWindowId_FloatContainer, "FloatContainer",
-                      non_lock_screen_containers);
+                      shutdown_screenshot_container);
   wm::SetChildWindowVisibilityChangesAnimated(float_container);
   float_container->SetProperty(wm::kUsesScreenCoordinatesKey, true);
   window_util::SetChildrenUseExtendedHitRegionForWindow(float_container);

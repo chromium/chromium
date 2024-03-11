@@ -5315,20 +5315,31 @@ class FloatOverviewSessionTest : public OverviewTestBase {
   FloatOverviewSessionTest& operator=(const FloatOverviewSessionTest&) = delete;
   ~FloatOverviewSessionTest() override = default;
 
-  // Checks if the float container is in its regular position above the
-  // always on top container and below the app list container. Returns false if
-  // this is not true on any of the root windows.
+  // Checks if the float container is in its regular position. Returns false if
+  // it is not true on any of the root windows.
   bool IsFloatContainerNormalStacked() const {
     for (aura::Window* root : Shell::GetAllRootWindows()) {
-      if (!window_util::IsStackedBelow(
-              root->GetChildById(kShellWindowId_AlwaysOnTopContainer),
-              root->GetChildById(kShellWindowId_FloatContainer))) {
-        return false;
-      }
-      if (!window_util::IsStackedBelow(
-              root->GetChildById(kShellWindowId_FloatContainer),
-              root->GetChildById(kShellWindowId_AppListContainer))) {
-        return false;
+      if (features::IsForestFeatureEnabled()) {
+        // The float container should be the top-most child of the
+        // `ShutdownScreenshotContainer` when the feature `ForestFeature` is
+        // enabled.
+        auto* shutdown_screenshot_container =
+            root->GetChildById(kShellWindowId_ShutdownScreenshotContainer);
+        EXPECT_EQ(root->GetChildById(kShellWindowId_FloatContainer),
+                  shutdown_screenshot_container->children().back());
+      } else {
+        // The float container should above the always on top container and
+        // below the app list container when the `ForestFeature` is not enabled.
+        if (!window_util::IsStackedBelow(
+                root->GetChildById(kShellWindowId_AlwaysOnTopContainer),
+                root->GetChildById(kShellWindowId_FloatContainer))) {
+          return false;
+        }
+        if (!window_util::IsStackedBelow(
+                root->GetChildById(kShellWindowId_FloatContainer),
+                root->GetChildById(kShellWindowId_AppListContainer))) {
+          return false;
+        }
       }
     }
 

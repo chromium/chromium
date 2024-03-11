@@ -16,12 +16,12 @@ namespace {
 
 void StackFloatContainerAbove() {
   for (aura::Window* root : Shell::GetAllRootWindows()) {
-    aura::Window* app_list_container =
-        root->GetChildById(kShellWindowId_AppListContainer);
+    aura::Window* always_on_top_container =
+        root->GetChildById(kShellWindowId_AlwaysOnTopContainer);
     aura::Window* float_container =
         root->GetChildById(kShellWindowId_FloatContainer);
-    float_container->parent()->StackChildBelow(float_container,
-                                               app_list_container);
+    float_container->parent()->StackChildAbove(float_container,
+                                               always_on_top_container);
   }
 }
 

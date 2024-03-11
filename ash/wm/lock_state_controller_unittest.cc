@@ -42,6 +42,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/tablet_state.h"
@@ -1069,6 +1070,15 @@ class LockStateControllerPineTest : public LockStateControllerTest {
     run_loop.Run();
   }
 
+  // Checks that the pine image was taken and saved at `file_path` on disk
+  // successfully.
+  void VerifyPineImageOnDisk() {
+    EXPECT_TRUE(base::PathExists(file_path()));
+    int64_t file_size = 0;
+    ASSERT_TRUE(base::GetFileSize(file_path(), &file_size));
+    EXPECT_GT(file_size, 0);
+  }
+
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
@@ -1084,10 +1094,7 @@ TEST_F(LockStateControllerPineTest, ShutdownWithWindows) {
 
   RequestShutdown();
   // The pine image was taken and not empty.
-  EXPECT_TRUE(base::PathExists(file_path()));
-  int64_t file_size = 0;
-  ASSERT_TRUE(base::GetFileSize(file_path(), &file_size));
-  EXPECT_GT(file_size, 0);
+  VerifyPineImageOnDisk();
 
   auto* local_state = Shell::Get()->local_state();
   // Pine screenshot related durations were recorded.
@@ -1171,6 +1178,29 @@ TEST_F(LockStateControllerPineTest, AllWindowsMinimized) {
   // The pine image should not be taken if all the windows inside the active
   // desk are minimized. The existing image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+// Tests that the pine image should be taken with only the floated window.
+TEST_F(LockStateControllerPineTest, ShutdownWithFloatWindow) {
+  std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  RequestShutdown();
+  // The pine image was taken and not empty with the float window only.
+  VerifyPineImageOnDisk();
+}
+
+// Tests that the pine image should be taken with only the always on top window.
+TEST_F(LockStateControllerPineTest, ShutdownWithAlwaysOnTopWindow) {
+  aura::Window* top_container = Shell::GetContainer(
+      Shell::GetPrimaryRootWindow(), kShellWindowId_AlwaysOnTopContainer);
+  std::unique_ptr<aura::Window> window_always_on_top(
+      aura::test::CreateTestWindowWithId(1, top_container));
+
+  RequestShutdown();
+  // The pine image was taken and not empty with the always on top window only.
+  VerifyPineImageOnDisk();
 }
 
 }  // namespace ash

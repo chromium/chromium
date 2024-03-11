@@ -12,8 +12,6 @@ namespace ash {
 
 namespace {
 
-// TODO(minch): Consolidate the below lists when we launch Bento.
-
 // List of IDs of the containers whose windows are actiavated *before* windows
 // in the desks containers.
 constexpr std::array<int, 12> kPreDesksActivatableContainersIds = {
