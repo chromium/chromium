@@ -848,12 +848,12 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
   // captivie portal signin. It's only enabled for non captive portal Incognito
   // where a menu is available for closing all Incognito windows.
   avatar_toolbar_button_->SetEnabled(
-      profile_->IsOffTheRecord() &&
+      profile_->IsOffTheRecord() && !profile_->IsGuestSession() &&
       !profile_->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros we need to disable the button for captivie portal signin.
   avatar_toolbar_button_->SetEnabled(
-      !profile_->IsOffTheRecord() ||
+      !profile_->IsOffTheRecord() || profile_->IsGuestSession() ||
       !profile_->GetOTRProfileID().IsCaptivePortal());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }

@@ -60,6 +60,13 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/user_names.h"
+#endif
+
 namespace {
 ui::mojom::BrowserColorVariant kColorVariant =
     ui::mojom::BrowserColorVariant::kTonalSpot;
@@ -144,8 +151,9 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 
   // Returns the window count in avatar button text, if it exists.
-  std::optional<int> GetWindowCountInAvatarButtonText(Browser* browser) {
-    std::u16string button_text = GetAvatarToolbarButton(browser)->GetText();
+  std::optional<int> GetWindowCountInAvatarButtonText(
+      AvatarToolbarButton* avatar_button) {
+    std::u16string button_text = avatar_button->GetText();
 
     size_t before_number = button_text.find('(');
     if (before_number == std::string::npos) {
@@ -368,30 +376,76 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
   Profile* profile = browser()->profile();
   Browser* browser1 = CreateIncognitoBrowser(profile);
-  EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
+  AvatarToolbarButton* avatar_button1 = GetAvatarToolbarButton(browser1);
+  EXPECT_TRUE(avatar_button1->GetEnabled());
+  EXPECT_TRUE(avatar_button1->GetVisible());
+  EXPECT_FALSE(GetWindowCountInAvatarButtonText(avatar_button1).has_value());
 
   Browser* browser2 = CreateIncognitoBrowser(profile);
-  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(browser1));
-  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(browser2));
+  AvatarToolbarButton* avatar_button2 = GetAvatarToolbarButton(browser2);
+  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(avatar_button1));
+  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(avatar_button2));
 
   CloseBrowserSynchronously(browser2);
-  EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
+  EXPECT_FALSE(GetWindowCountInAvatarButtonText(avatar_button1).has_value());
 }
 
-// TODO(https://crbug.com/1179717): Enable the test for ChromeOS.
-// Note that |CreateGuestBrowser| does not create a Guest browser for ChromeOS
-// and Chrome OS Guest does not have window counter.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, GuestWindowCount) {
   Browser* browser1 = CreateGuestBrowser();
-  EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
+  AvatarToolbarButton* avatar_button1 = GetAvatarToolbarButton(browser1);
+  EXPECT_TRUE(avatar_button1->GetEnabled());
+  EXPECT_TRUE(avatar_button1->GetVisible());
+  EXPECT_FALSE(GetWindowCountInAvatarButtonText(avatar_button1).has_value());
 
   Browser* browser2 = CreateGuestBrowser();
-  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(browser1));
-  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(browser2));
+  AvatarToolbarButton* avatar_button2 = GetAvatarToolbarButton(browser2);
+  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(avatar_button1));
+  EXPECT_EQ(2, *GetWindowCountInAvatarButtonText(avatar_button2));
 
   CloseBrowserSynchronously(browser2);
-  EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());
+  EXPECT_FALSE(GetWindowCountInAvatarButtonText(avatar_button1).has_value());
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class AvatarToolbarButtonAshBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Adding these command lines simulates Ash in Guest mode.
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    TestingProfile::kTestUserProfileDir);
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonAshBrowserTest, GuestSession) {
+  Profile* guest_profile = browser()->profile();
+  ASSERT_TRUE(guest_profile->IsGuestSession());
+
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  EXPECT_TRUE(avatar_button->GetVisible());
+  EXPECT_FALSE(avatar_button->GetEnabled());
+
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST, 1));
+
+  Browser* browser_2 = CreateBrowser(guest_profile);
+  AvatarToolbarButton* avatar_button_2 = GetAvatarToolbarButton(browser_2);
+  EXPECT_TRUE(avatar_button_2->GetVisible());
+  EXPECT_FALSE(avatar_button_2->GetEnabled());
+
+  // Browser count is not taken into consideration on purpose for Ash Guest
+  // windows since the button is not enabled, both buttons still show the same
+  // text as if it was a single window, which is different from other platforms.
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST, 1));
+  EXPECT_EQ(avatar_button_2->GetText(),
+            l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST, 1));
 }
 #endif
 
