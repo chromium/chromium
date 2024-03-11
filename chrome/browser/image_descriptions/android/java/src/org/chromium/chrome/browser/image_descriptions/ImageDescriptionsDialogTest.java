@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.image_descriptions;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -141,7 +142,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     }
 
     private void clickNegativeButton() {
-        onView(withId(R.id.negative_button)).perform(click());
+        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(click());
     }
 
     // Helper methods for assertions
@@ -177,6 +178,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     public void testHeaderAndButtonContent() {
         showDialog();
         onView(allOf(isDescendantOfA(withId(R.id.title_container)), withId(R.id.title)))
+                .inRoot(isDialog())
                 .check(matches(withText("Get image descriptions?")));
         onView(withId(R.id.image_descriptions_dialog_content))
                 .check(
@@ -195,6 +197,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
         // "Just once" should be visible, enabled, and checked
         onView(withId(R.id.image_descriptions_dialog_radio_button_just_once))
+                .inRoot(isDialog())
                 .check(
                         (view, e) -> {
                             Assert.assertEquals(
@@ -220,6 +223,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
         // "Always" should be visible, enabled, and unchecked
         onView(withId(R.id.image_descriptions_dialog_radio_button_always))
+                .inRoot(isDialog())
                 .check(
                         (view, e) -> {
                             Assert.assertEquals(
@@ -250,7 +254,9 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         showDialog();
 
         // Click the "Always" option, then "Only on Wi-Fi" option should appear and be checked
-        onView(withId(R.id.image_descriptions_dialog_radio_button_always)).perform(click());
+        onView(withId(R.id.image_descriptions_dialog_radio_button_always))
+                .inRoot(isDialog())
+                .perform(click());
         onView(withId(R.id.image_descriptions_dialog_check_box))
                 .check(
                         (view, e) -> {
@@ -279,6 +285,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
         // "Just once" should be visible, enabled, and checked
         onView(withId(R.id.image_descriptions_dialog_radio_button_just_once))
+                .inRoot(isDialog())
                 .check(
                         (view, e) -> {
                             Assert.assertEquals(
@@ -308,6 +315,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
         // The "Dont ask again" option should be visible, enabled, and unchecked
         onView(withId(R.id.image_descriptions_dialog_check_box))
+                .inRoot(isDialog())
                 .check(
                         (view, e) -> {
                             Assert.assertEquals(
@@ -359,6 +367,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
         // "Just once" should be visible, enabled, and checked
         onView(withId(R.id.image_descriptions_dialog_radio_button_just_once))
+                .inRoot(isDialog())
                 .check(
                         (view, e) -> {
                             Assert.assertEquals(
@@ -387,6 +396,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
         // The "Dont ask again" option should be visible, enabled, and unchecked
         onView(withId(R.id.image_descriptions_dialog_check_box))
+                .inRoot(isDialog())
                 .check(
                         (view, e) -> {
                             Assert.assertEquals(
@@ -420,7 +430,9 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         showDialog();
 
         // User clicks on the "Always" option, then turns off the "Only on Wi-Fi" option
-        onView(withId(R.id.image_descriptions_dialog_radio_button_always)).perform(click());
+        onView(withId(R.id.image_descriptions_dialog_radio_button_always))
+                .inRoot(isDialog())
+                .perform(click());
         onView(withId(R.id.image_descriptions_dialog_check_box)).perform(click());
 
         // Confirm state
@@ -457,7 +469,9 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         showDialog();
 
         // User clicks on the "Always" option, keeps the "Only on Wi-Fi" option checked
-        onView(withId(R.id.image_descriptions_dialog_radio_button_always)).perform(click());
+        onView(withId(R.id.image_descriptions_dialog_radio_button_always))
+                .inRoot(isDialog())
+                .perform(click());
 
         // Setup wifi condition.
         TestThreadUtils.runOnUiThreadBlocking(
@@ -486,7 +500,9 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         showDialog();
 
         // User clicks on the "Always" option, keeps the "Only on Wi-Fi" option checked
-        onView(withId(R.id.image_descriptions_dialog_radio_button_always)).perform(click());
+        onView(withId(R.id.image_descriptions_dialog_radio_button_always))
+                .inRoot(isDialog())
+                .perform(click());
 
         // Setup no wifi condition.
         TestThreadUtils.runOnUiThreadBlocking(

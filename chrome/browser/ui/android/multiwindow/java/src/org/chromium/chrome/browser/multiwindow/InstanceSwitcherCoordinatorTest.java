@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
@@ -107,7 +108,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                             false,
                             Arrays.asList(instances));
                 });
-        onData(anything()).atPosition(1).perform(click());
+        onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 
@@ -136,7 +137,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                             Arrays.asList(instances));
                 });
         // 0 ~ 2: instances. 3: 'new window' command.
-        onData(anything()).atPosition(3).perform(click());
+        onData(anything()).inRoot(isDialog()).atPosition(3).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 
@@ -167,7 +168,9 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                 });
 
         // Verify that we have only [cancel] button.
-        onView(withId(R.id.positive_button)).check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.positive_button))
+                .inRoot(isDialog())
+                .check(matches(withEffectiveVisibility(GONE)));
         onView(withText(R.string.cancel)).check(matches(withEffectiveVisibility(VISIBLE)));
 
         onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
@@ -213,6 +216,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         // Verify that we show a info message that users can have up to 5 windows when there are
         // already maximum number of windows.
         onData(anything())
+                .inRoot(isDialog())
                 .atPosition(5)
                 .onChildView(withText(R.string.max_number_of_windows))
                 .check(matches(isDisplayed()));
@@ -245,7 +249,11 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                 });
 
         // Closing a hidden, tab-less instance skips the confirmation.
-        onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
+        onData(anything())
+                .inRoot(isDialog())
+                .atPosition(2)
+                .onChildView(withId(R.id.more))
+                .perform(click());
         onView(withText(R.string.instance_switcher_close_window))
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());
@@ -285,7 +293,11 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                             Arrays.asList(instances));
                 });
 
-        onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
+        onData(anything())
+                .inRoot(isDialog())
+                .atPosition(2)
+                .onChildView(withId(R.id.more))
+                .perform(click());
         onView(withText(R.string.instance_switcher_close_window))
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());

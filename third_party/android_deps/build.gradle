@@ -176,7 +176,7 @@ dependencies {
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
     buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
 
-    androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.1.0'
+    androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
     // accessibility-test-framework:3.1.2 depends on jsoup 1.12, which has a security
     // vulnerability, so grab a later version.
     androidTestCompile 'org.jsoup:jsoup:1.14.3'

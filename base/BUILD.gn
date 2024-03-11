@@ -4728,7 +4728,7 @@ if (is_android) {
       ":base_java",
       "//build/android:build_java",
       "//testing/android/instrumentation:instrumentation_test_runner_java",
-      "//third_party/accessibility_test_framework:accessibility_test_framework_java",
+      "//third_party/accessibility_test_framework:accessibility_core_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_deps:guava_android_java",

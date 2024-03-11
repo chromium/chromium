@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
@@ -857,7 +858,7 @@ public class PageInfoViewTest {
         expectHasPermissions(url, true);
         // Go to permissions subpage.
         openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
-        onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onView(withId(R.id.page_info_permissions_row)).inRoot(isDialog()).perform(click());
         // Clear permissions in page info.
         onViewWaiting(allOf(withText("Reset permissions"), isDisplayed())).perform(click());
         onView(withText("Reset")).perform(click());
@@ -954,6 +955,7 @@ public class PageInfoViewTest {
                 mTestServerRule.getServer().getURL(sSimpleHtml),
                 PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         onView(withId(R.id.page_info_permissions_row))
+                .inRoot(isDialog())
                 .check(matches(not(hasBackgroundColor(R.color.iph_highlight_blue))));
     }
 
@@ -1084,7 +1086,9 @@ public class PageInfoViewTest {
     public void testShowAdPersonalizationInfoSubPageV4() throws IOException {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
-        onView(withId(PageInfoAdPersonalizationController.ROW_ID)).perform(click());
+        onView(withId(PageInfoAdPersonalizationController.ROW_ID))
+                .inRoot(isDialog())
+                .perform(click());
         onViewWaiting(
                 allOf(
                         withText(R.string.page_info_ad_privacy_subpage_manage_button),

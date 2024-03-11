@@ -128,7 +128,7 @@ public class UMADialogTest {
     public void testTurningOffAllowCrashUploadWhenCrashUploadAllowedByDefault() {
         showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
 
-        onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
+        onView(withId(R.id.fre_uma_dialog_switch)).inRoot(isDialog()).perform(click());
 
         onView(withText(R.string.done)).perform(click());
         onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
@@ -139,7 +139,7 @@ public class UMADialogTest {
     @MediumTest
     public void testLeavingAllowCrashUploadOn() {
         showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
-        onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isChecked()));
+        onView(withId(R.id.fre_uma_dialog_switch)).inRoot(isDialog()).check(matches(isChecked()));
 
         onView(withText(R.string.done)).perform(click());
 
