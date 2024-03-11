@@ -71,6 +71,7 @@ constexpr int kHoverCardTitleMaxLines = 2;
 
 constexpr int kHorizontalMargin = 18;
 constexpr int kVerticalMargin = 10;
+constexpr int kTitleDomainSpacing = 4;
 constexpr int kFootnoteVerticalMargin = 8;
 constexpr auto kTitleMargins =
     gfx::Insets::VH(kVerticalMargin, kHorizontalMargin);
@@ -431,8 +432,9 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
       features::IsChromeRefresh2023() ? kTextAreaRefreshMargins : kTitleMargins;
   domain_label_->SetVisible(show_domain);
   if (show_domain) {
-    const gfx::Insets domain_margins = gfx::Insets::TLBR(
-        0, title_margins.left(), title_margins.bottom(), title_margins.right());
+    gfx::Insets domain_margins = title_margins;
+    domain_margins.set_top(features::IsChromeRefresh2023() ? kTitleDomainSpacing
+                                                           : 0);
     domain_label_->SetProperty(views::kMarginsKey, domain_margins);
     title_margins.set_bottom(0);
   }
