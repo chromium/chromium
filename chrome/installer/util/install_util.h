@@ -88,6 +88,10 @@ class InstallUtil {
   // CLSID registered.
   static bool IsStartMenuShortcutWithActivatorGuidInstalled();
 
+  // Returns true if the current process has the interactive user token. False
+  // otherwise.
+  static bool IsRunningAsInteractiveUser();
+
   // Returns the toast activator registry path.
   static std::wstring GetToastActivatorRegistryPath();
 

@@ -335,6 +335,27 @@ bool InstallUtil::IsStartMenuShortcutWithActivatorGuidInstalled() {
 }
 
 // static
+bool InstallUtil::IsRunningAsInteractiveUser() {
+  // Get the SID for interactive user.
+  DWORD sid_size = SECURITY_MAX_SID_SIZE;
+  uint8_t sid_bytes[SECURITY_MAX_SID_SIZE] = {0};
+  SID* interactive_sid = reinterpret_cast<SID*>(sid_bytes);
+  if (!::CreateWellKnownSid(WinInteractiveSid, nullptr, interactive_sid,
+                            &sid_size)) {
+    PLOG(ERROR) << "Failed to create well known SID";
+    return false;
+  }
+
+  BOOL is_member = FALSE;
+  if (!::CheckTokenMembership(nullptr, interactive_sid, &is_member)) {
+    PLOG(ERROR) << "Failed to check token membership for WinInteractiveSid";
+    return false;
+  }
+
+  return is_member;
+}
+
+// static
 std::wstring InstallUtil::GetToastActivatorRegistryPath() {
   return L"Software\\Classes\\CLSID\\" +
          base::win::WStringFromGUID(install_static::GetToastActivatorClsid());
