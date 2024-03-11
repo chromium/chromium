@@ -429,6 +429,13 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kIpPrivacyExpirationFuzz;
 
+// If true, only proxy traffic when the top-level site uses the http:// or
+// https:// schemes. This prevents attempts to proxy from top-level sites with
+// chrome://, chrome-extension://, or other non-standard schemes, in addition to
+// top-level sites using less common schemes like blob:// and data://.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kIpPrivacyRestrictTopLevelSiteSchemes;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

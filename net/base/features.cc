@@ -416,6 +416,11 @@ const base::FeatureParam<base::TimeDelta> kIpPrivacyExpirationFuzz{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyExpirationFuzz",
     /*default_value=*/base::Minutes(15)};
 
+const base::FeatureParam<bool> kIpPrivacyRestrictTopLevelSiteSchemes{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyRestrictTopLevelSiteSchemes",
+    /*default_value=*/true};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

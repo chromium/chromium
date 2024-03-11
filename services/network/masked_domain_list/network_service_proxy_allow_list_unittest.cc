@@ -228,6 +228,38 @@ TEST_F(NetworkServiceProxyAllowListTest,
       allow_list_first_party_bypass_.Matches(kHttpsRequestUrl, kNakWithNonce));
 }
 
+TEST_F(NetworkServiceProxyAllowListTest, CustomSchemeTopLevelSite) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
+  const auto kExtensionUrlNak =
+      net::NetworkAnonymizationKey::CreateCrossSite(net::SchemefulSite(
+          GURL("chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/")));
+  ASSERT_FALSE(kExtensionUrlNak.IsTransient());
+
+  EXPECT_TRUE(
+      allow_list_no_bypass_.Matches(kHttpsRequestUrl, kExtensionUrlNak));
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        net::features::kEnableIpProtectionProxy,
+        {{net::features::kIpPrivacyRestrictTopLevelSiteSchemes.name, "true"}});
+    EXPECT_FALSE(allow_list_first_party_bypass_.Matches(kHttpsRequestUrl,
+                                                        kExtensionUrlNak));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        net::features::kEnableIpProtectionProxy,
+        {{net::features::kIpPrivacyRestrictTopLevelSiteSchemes.name, "false"}});
+    EXPECT_TRUE(allow_list_first_party_bypass_.Matches(kHttpsRequestUrl,
+                                                       kExtensionUrlNak));
+  }
+}
+
 // Test whether third-party requests from pages with a data: URL top-level site
 // (where the corresponding NAK is transient) should be proxied.
 TEST_F(NetworkServiceProxyAllowListTest, DataUrlTopLevelSite) {
@@ -237,8 +269,24 @@ TEST_F(NetworkServiceProxyAllowListTest, DataUrlTopLevelSite) {
   ASSERT_TRUE(kDataUrlNak.IsTransient());
 
   EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsRequestUrl, kDataUrlNak));
-  EXPECT_TRUE(
-      allow_list_first_party_bypass_.Matches(kHttpsRequestUrl, kDataUrlNak));
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        net::features::kEnableIpProtectionProxy,
+        {{net::features::kIpPrivacyRestrictTopLevelSiteSchemes.name, "true"}});
+    EXPECT_FALSE(
+        allow_list_first_party_bypass_.Matches(kHttpsRequestUrl, kDataUrlNak));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        net::features::kEnableIpProtectionProxy,
+        {{net::features::kIpPrivacyRestrictTopLevelSiteSchemes.name, "false"}});
+    EXPECT_TRUE(
+        allow_list_first_party_bypass_.Matches(kHttpsRequestUrl, kDataUrlNak));
+  }
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, AllowListWithoutBypassUsesLessMemory) {

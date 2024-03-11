@@ -14,6 +14,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
+#include "url/url_constants.h"
 
 namespace network {
 
@@ -73,13 +74,29 @@ bool NetworkServiceProxyAllowList::Matches(
     }
     case network::mojom::IpProtectionProxyBypassPolicy::
         kFirstPartyToTopLevelFrame: {
-      if (!network_anonymization_key.GetTopFrameSite().has_value()) {
+      if (!top_frame_site.has_value()) {
         DVLOG(3) << "NSPAL::Matches(" << request_url
                  << ", empty top_frame_site) - false";
         return false;
       }
       DVLOG(3) << "NSPAL::Matches(" << request_url << ", "
                << top_frame_site.value() << ")";
+
+      // Only proxy traffic where the top-level site is an HTTP/HTTPS page or
+      // where the NAK corresponds to a fenced frame.
+      if (net::features::kIpPrivacyRestrictTopLevelSiteSchemes.Get() &&
+          !network_anonymization_key.GetNonce().has_value() &&
+          !top_frame_site.value().GetURL().SchemeIsHTTPOrHTTPS()) {
+        // Note: It's possible that the top-level site could be a file: URL in
+        // the case where an HTML file was downloaded and then opened. We don't
+        // proxy in this case in favor of better compatibility. It's also
+        // possible that the top-level site could be a blob URL, data URL, or
+        // filesystem URL (the latter two with restrictions on how they could
+        // have been navigated to), but we'll assume these aren't used
+        // pervasively as the top-level site for pages that make the types of
+        // requests that IP Protection will apply to.
+        return false;
+      }
 
       // If the NAK is transient (has a nonce and/or top_frame_origin is
       // opaque), we should skip the first party check and match only on the
