@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 
 #include <algorithm>
+#include <iterator>
 #include <numeric>
 #include <utility>
 
@@ -295,14 +296,14 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
       AXMediaAppPageMetadata data;
       // The page IDs will never change, so this should be the only place that
       // updates them.
-      data.id = page_metadata[i]->id;
+      data.id = page_metadata.at(i)->id;
       if (page_metadata_.contains(data.id)) {
         mojo::ReportBadMessage(
             "`PageMetadataUpdated()` called with pages with duplicate page "
             "IDs");
         return;
       }
-      page_metadata_[data.id] = data;
+      page_metadata_.insert(std::pair(data.id, data));
       PushDirtyPage(data.id);
     }
     // Only one page goes through OCR at a time, so start the process here.
@@ -312,21 +313,21 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   // Update all page numbers and rects.
   std::set<const std::string> page_id_updated;
   for (size_t i = 0; i < page_metadata.size(); ++i) {
-    const std::string& page_id = page_metadata[i]->id;
+    const std::string& page_id = page_metadata.at(i)->id;
     if (ReportIfNonExistentPageId("PageMetadataUpdated()", page_id,
                                   page_metadata_)) {
       return;
     }
-    page_metadata_[page_id].page_num = i + 1;  // 1-indexed.
-    page_metadata_[page_id].rect = page_metadata[i]->rect;
+    page_metadata_.at(page_id).page_num = i + 1;  // 1-indexed.
+    page_metadata_.at(page_id).rect = page_metadata.at(i)->rect;
     // Page location can only be set after the corresponding `pages_`
     // `AXTreeManager` entry has been created, so don't update it for first
     // load.
     if (!is_first_load) {
       page_id_updated.insert(page_id);
-      UpdatePageLocation(page_id, page_metadata[i]->rect);
-      SendAXTreeToAccessibilityService(*pages_[page_id],
-                                       *page_serializers_[page_id]);
+      UpdatePageLocation(page_id, page_metadata.at(i)->rect);
+      SendAXTreeToAccessibilityService(*pages_.at(page_id),
+                                       *page_serializers_.at(page_id));
     }
   }
 
@@ -523,7 +524,15 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
   document_update.root_id = document_root_data.id;
   std::vector<ui::AXNodeData> document_pages;
   document_pages.push_back(document_root_data);
-  for (size_t page_index = 0; const auto& [page_id, _] : pages_) {
+
+  std::map<const uint32_t, const AXMediaAppPageMetadata> pages_in_order;
+  std::transform(
+      std::begin(page_metadata_), std::end(page_metadata_),
+      std::inserter(pages_in_order, std::begin(pages_in_order)),
+      [](const std::pair<const std::string, const AXMediaAppPageMetadata>
+             page) { return std::pair(page.second.page_num, page.second); });
+  for (size_t page_index = 0;
+       const auto& [page_num, page_metadata] : pages_in_order) {
     ui::AXNodeData page_data;
     page_data.role = ax::mojom::Role::kRegion;
     base::CheckedNumeric<ui::AXNodeID> ax_page_id =
@@ -535,15 +544,15 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
     page_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                                true);
     page_data.SetRestriction(ax::mojom::Restriction::kReadOnly);
-    // Page numbers are 1-indexed, so add one here.
     // TODO(b/319543924): Add a localized version of an accessible name.
-    page_data.SetNameChecked(base::StringPrintf("Page %zu", page_index + 1u));
+    page_data.SetNameChecked(base::StringPrintf("Page %u", page_num));
+    const std::string page_id = page_metadata.id;
     // If the page doesn't exist, that means it hasn't been through OCR yet.
-    if (pages_.contains(page_id) && pages_[page_id]->ax_tree() &&
-        pages_[page_id]->GetRoot()) {
-      page_data.AddChildTreeId(pages_[page_id]->GetTreeID());
+    if (pages_.contains(page_id) && pages_.at(page_id)->ax_tree() &&
+        pages_.at(page_id)->GetRoot()) {
+      page_data.AddChildTreeId(pages_.at(page_id)->GetTreeID());
       page_data.relative_bounds.bounds =
-          pages_[page_id]->GetRoot()->data().relative_bounds.bounds;
+          pages_.at(page_id)->GetRoot()->data().relative_bounds.bounds;
     }
     document_pages.push_back(page_data);
     ++page_index;

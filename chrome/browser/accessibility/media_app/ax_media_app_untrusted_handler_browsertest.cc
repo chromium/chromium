@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -273,8 +274,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[3]);
 }
 
-IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageRotation) {
-  const size_t kTestNumPages = 4;
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       PageMetadataUpdated_PageRotated) {
+  constexpr size_t kTestNumPages = 4u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
@@ -320,6 +322,76 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageRotation) {
       "(8, 3) restriction=readonly  is_page_breaking_object=true\n"
       "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, 25)-"
       "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       PageMetadataUpdated_PagesReordered) {
+  constexpr size_t kTestNumPages = 3u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages must have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+
+  const std::map<const std::string, AXMediaAppPageMetadata>& page_metadata =
+      handler_->GetPageMetadataForTesting();
+  EXPECT_EQ(3u, page_metadata.size());
+  EXPECT_EQ(1u, page_metadata.at("PageA").page_num);
+  EXPECT_EQ(2u, page_metadata.at("PageB").page_num);
+  EXPECT_EQ(3u, page_metadata.at("PageC").page_num);
+
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
+      handler_->GetPagesForTesting();
+  EXPECT_EQ(3u, pages.size());
+  const ui::AXTreeID& child_tree_id_page_a =
+      pages.at("PageA")->GetParentTreeID();
+  const ui::AXTreeID& child_tree_id_page_c =
+      pages.at("PageC")->GetParentTreeID();
+
+  // 'Reorder' the pages by swapping the first with the third page.
+  std::swap(fake_metadata.at(0u), fake_metadata.at(2u));
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+
+  // No OCRing should have taken place, since the pages have only been
+  // reordered, but not changed or rotated.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+
+  EXPECT_EQ(3u, page_metadata.size());
+  EXPECT_EQ(3u, page_metadata.at("PageA").page_num);
+  EXPECT_EQ(2u, page_metadata.at("PageB").page_num);
+  EXPECT_EQ(1u, page_metadata.at("PageC").page_num);
+
+  EXPECT_EQ(3u, pages.size());
+  const ui::AXTreeID& new_child_tree_id_page_a =
+      pages.at("PageA")->GetParentTreeID();
+  const ui::AXTreeID& new_child_tree_id_page_c =
+      pages.at("PageC")->GetParentTreeID();
+  EXPECT_EQ(child_tree_id_page_a, new_child_tree_id_page_c);
+  EXPECT_EQ(child_tree_id_page_c, new_child_tree_id_page_a);
+
+  // We'll also use the locations of pages one and three as a proxy to determine
+  // if their were in fact skipped.
+  EXPECT_EQ(
+      "AXTree\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
+      "20)-(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly  is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 

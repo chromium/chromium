@@ -32,7 +32,7 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
     return document_.GetTreeID();
   }
 
-  std::map<const std::string, AXMediaAppPageMetadata>
+  std::map<const std::string, AXMediaAppPageMetadata>&
   GetPageMetadataForTesting() {
     return page_metadata_;
   }
