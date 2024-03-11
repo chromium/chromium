@@ -139,11 +139,8 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString(
-      "systemGeolocationDialogLearnMoreUrl",
-      base::ASCIIToUTF16(base::StringPrintf(
-          chrome::kTimeZoneSettingsLearnMoreURL,
-          g_browser_process->GetApplicationLocale().c_str())));
+  html_source->AddString("systemGeolocationDialogLearnMoreUrl",
+                         chrome::kPrivacyHubGeolocationLearnMoreURL);
 
   html_source->AddString(
       "timeZoneSettingsLearnMoreURL",

@@ -12,6 +12,6 @@ const char kAmbientSubpageRelativeUrl[] = "ambient";
 const char kUserSubpageRelativeUrl[] = "user";
 const char kWallpaperSubpageRelativeUrl[] = "wallpaper";
 const char kPrivacyHubGeolocationLearnMoreUrl[] =
-    "https://support.google.com/chromebook?p=cpn_location_sharing";
+    "https://support.google.com/chromebook/?p=manage_your_location";
 
 }  // namespace ash::personalization_app

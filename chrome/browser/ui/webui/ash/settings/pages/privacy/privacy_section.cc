@@ -652,7 +652,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          chrome::kSpeakOnMuteDetectionLearnMoreURL);
 
   html_source->AddString("geolocationAreaLearnMoreURL",
-                         chrome::kGeolocationAreaLearnMoreURL);
+                         chrome::kPrivacyHubGeolocationLearnMoreURL);
 
   html_source->AddString("osSettingsAppId", web_app::kOsSettingsAppId);
 
