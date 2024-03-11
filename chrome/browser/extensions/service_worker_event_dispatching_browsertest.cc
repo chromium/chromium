@@ -601,6 +601,9 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/1467015): Create test for event dispatching that uses the
 // `EventRouter::DispatchEventToSender()` event flow.
 
+// TODO(crbug.com/40072982): Test that kBadRequestId no longer kills the service
+// worker renderer with a test that mimics receiving a stale ack to the browser.
+
 }  // namespace
 
 }  // namespace extensions

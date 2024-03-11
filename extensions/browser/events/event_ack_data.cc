@@ -163,17 +163,25 @@ void EventAckData::DecrementInflightEvent(
     // or not running at this point.
     case content::ServiceWorkerExternalRequestResult::kWorkerNotFound:
     case content::ServiceWorkerExternalRequestResult::kWorkerNotRunning:
-    // TODO(crbug.com/1521084): Perform more graceful shutdown when
-    // ServiceWorkerContextCore is torn down.
     // Null context can happen in the rare case if ServiceWorkerContextCore is
     // torn down when EventRouter + BrowserContext are still alive and an
     // event happens to be acked here.
     case content::ServiceWorkerExternalRequestResult::kNullContext:
-      break;
+      // TODO(crbug.com/1521084): Perform more graceful shutdown when
+      // ServiceWorkerContextCore is torn down.
+
+    // kBadRequestId can expectedly happen if a new instance of a worker starts
+    // while an ack for the previous worker is in-flight to the browser. We then
+    // receive the ack and ServiceWorkerContext can't find the
+    // external/in-flight request because the previous worker's
+    // `ServiceWorkerVersion` has been replaced by the new worker's
+    // `ServiceWorkerVersion`. The new version then does not have a record of
+    // the external/in-flight request and returns kBadRequestId.
     case content::ServiceWorkerExternalRequestResult::kBadRequestId:
-      LOG(ERROR) << "FinishExternalRequest failed: "
-                 << static_cast<int>(result);
-      std::move(failure_callback).Run();
+      // TODO(crbug.com/40072982): Reliably detect when the above occurs and
+      // continue to not kill the renderer. But if the event is not for an old
+      // instance of the worker then consider CHECK()-ing since this could
+      // indicate a bug in the tracking of external requests in the browser.
       break;
   }
 }
