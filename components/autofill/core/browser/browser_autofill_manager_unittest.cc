@@ -1589,10 +1589,14 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
+      {Suggestion(
+           "Charles",
+           std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(u"")}},
+           Suggestion::Icon::kNoIcon, PopupItemId::kAddressEntry),
+       Suggestion(
+           "Elvis",
+           std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(u"")}},
+           Suggestion::Icon::kNoIcon, PopupItemId::kAddressEntry),
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManageAddressesEntry()});
 

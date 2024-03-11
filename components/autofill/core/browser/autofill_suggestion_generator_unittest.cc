@@ -1804,7 +1804,8 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"other@gmail.com",
                                        Suggestion::Text::IsPrimary(true))),
-                EqualLabels(std::vector<std::vector<Suggestion::Text>>{{}}),
+                EqualLabels(std::vector<std::vector<Suggestion::Text>>{
+                    {Suggestion::Text(u"")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false))));
 }
@@ -1966,105 +1967,6 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(PopupItemId::kEditAddressProfile),
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
-}
-
-// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
-// the test if it is not needed.
-TEST_F(AutofillSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_DiscardDuplicateSuggestions) {
-  std::vector<AutofillProfile> profiles(
-      3, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
-  for (AutofillProfile& profile : profiles) {
-    profile.SetRawInfo(NAME_FULL, u"Jon Snow");
-    profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 Beyond-the-Wall Rd");
-  }
-  profiles[1].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
-  std::vector<Suggestion> suggestions =
-      test_api(suggestion_generator())
-          .CreateSuggestionsFromProfiles(
-              {&profiles[0], &profiles[1], &profiles[2]},
-              {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-              /*last_targeted_fields=*/std::nullopt, NAME_FULL,
-              /*trigger_field_max_length=*/0);
-
-  // Suggestions are sorted from highest to lowest rank, so check that
-  // duplicates with a lower rank are removed.
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"Jon Snow",
-                                       Suggestion::Text::IsPrimary(true))),
-                EqualLabels({{u"2 Beyond-the-Wall Rd"}})),
-          AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"Jon Snow",
-                                       Suggestion::Text::IsPrimary(true))),
-                EqualLabels({{u"1 Winterfell Ln"}}))));
-}
-
-// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
-// the test if it is not needed.
-TEST_F(AutofillSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_KeepNonDuplicateSuggestions) {
-  AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile_1.SetRawInfo(NAME_FIRST, u"Sansa");
-  profile_1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
-
-  AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile_2.SetRawInfo(NAME_FIRST, u"Sansa");
-
-  AutofillProfile profile_3(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile_3.SetRawInfo(NAME_FIRST, u"Brienne");
-  profile_3.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
-
-  std::vector<Suggestion> suggestions =
-      test_api(suggestion_generator())
-          .CreateSuggestionsFromProfiles(
-              {&profile_1, &profile_2, &profile_3},
-              {NAME_FIRST, ADDRESS_HOME_STREET_ADDRESS},
-              /*last_targeted_fields=*/std::nullopt, NAME_FIRST,
-              /*trigger_field_max_length=*/0);
-
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"Sansa",
-                                       Suggestion::Text::IsPrimary(true))),
-                EqualLabels({{u"1 Winterfell Ln"}})),
-          AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"Sansa",
-                                       Suggestion::Text::IsPrimary(true))),
-                EqualLabels(std::vector<std::vector<Suggestion::Text>>{})),
-          AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"Brienne",
-                                       Suggestion::Text::IsPrimary(true))),
-                EqualLabels({{u"1 Winterfell Ln"}}))));
-}
-
-// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
-// the test if it is not needed.
-TEST_F(AutofillSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_SameStringInValueAndLabel) {
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"Mañana Road");
-  profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"manana road");
-
-  std::vector<Suggestion> suggestions =
-      test_api(suggestion_generator())
-          .CreateSuggestionsFromProfiles(
-              {&profile},
-              {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_STREET_ADDRESS},
-              /*last_targeted_fields=*/std::nullopt,
-              ADDRESS_HOME_STREET_ADDRESS,
-              /*trigger_field_max_length=*/0);
-
-  EXPECT_THAT(suggestions,
-              ElementsAre(AllOf(
-                  Field(&Suggestion::main_text,
-                        Suggestion::Text(u"Mañana Road",
-                                         Suggestion::Text::IsPrimary(true))),
-                  EqualLabels(std::vector<std::vector<Suggestion::Text>>{}))));
 }
 
 // Tests that regular suggestions are filtered by the triggering field's value,

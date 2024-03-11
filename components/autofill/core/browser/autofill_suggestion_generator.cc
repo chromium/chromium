@@ -820,7 +820,6 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
 // is not unique.
 std::vector<std::vector<Suggestion::Text>>
 CreateSuggestionLabelsWithGranularFillingDetails(
-    base::span<const Suggestion> suggestions,
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
     const FieldTypeSet& field_types,
@@ -850,8 +849,8 @@ CreateSuggestionLabelsWithGranularFillingDetails(
   // For each suggestion/profile, generate its label based on granular filling
   // and differentiating labels.
   std::vector<std::vector<Suggestion::Text>> suggestions_labels;
-  suggestions_labels.reserve(suggestions.size());
-  for (size_t i = 0; i < suggestions.size(); ++i) {
+  suggestions_labels.reserve(profiles.size());
+  for (size_t i = 0; i < profiles.size(); ++i) {
     std::vector<std::u16string> labels;
 
     if (!suggestions_granular_filling_label.empty()) {
@@ -896,89 +895,10 @@ CreateSuggestionLabelsWithGranularFillingDetails(
     // | 8129                    |
     // | Winterfel, jon@snow.com |
     // |_________________________|
-    if (!labels.empty()) {
-      suggestions_labels.push_back(
-          {Suggestion::Text(base::JoinString(labels, u" - "))});
-    } else {
-      suggestions_labels.emplace_back();
-    }
+    suggestions_labels.push_back(
+        {Suggestion::Text(base::JoinString(labels, u" - "))});
   }
   return suggestions_labels;
-}
-
-// Assigns for each suggestion labels to be used as secondary text in the
-// suggestion bubble, and deduplicates suggestions having the same main text
-// and label. For each vector in `labels`, the last value is used to
-// differentiate profiles, while the others are granular filling specific
-// labels, see `GetGranularFillingLabels()`. In the case where `labels` is
-// empty, we have no differentiating label for the profile.
-void AssignLabelsAndDeduplicate(
-    std::vector<Suggestion>& suggestions,
-    const std::vector<std::vector<Suggestion::Text>>& labels,
-    const std::string& app_locale) {
-  DCHECK_EQ(suggestions.size(), labels.size());
-  std::set<std::u16string> suggestion_text;
-  size_t index_to_add_suggestion = 0;
-  const AutofillProfileComparator comparator(app_locale);
-
-  // Dedupes Suggestions to show in the dropdown once values and labels have
-  // been created. This is useful when LabelFormatters make Suggestions' labels.
-  //
-  // Suppose profile A has the data John, 400 Oak Rd, and (617) 544-7411 and
-  // profile B has the data John, 400 Oak Rd, (508) 957-5009. If a formatter
-  // puts only 400 Oak Rd in the label, then there will be two Suggestions with
-  // the normalized text "john400oakrd", and the Suggestion with the lower
-  // ranking should be discarded.
-  for (size_t i = 0; i < labels.size(); ++i) {
-    // If there are no labels, consider the `differentiating_label` as an empty
-    // string.
-    const std::u16string& differentiating_label =
-        !labels[i].empty() ? labels[i].back().value : std::u16string();
-
-    // For example, a Suggestion with the value "John" and the label "400 Oak
-    // Rd" has the normalized text "john400oakrd".
-    bool text_inserted =
-        suggestion_text
-            .insert(AutofillProfileComparator::NormalizeForComparison(
-                suggestions[i].main_text.value + differentiating_label,
-                AutofillProfileComparator::DISCARD_WHITESPACE))
-            .second;
-
-    if (text_inserted) {
-      if (index_to_add_suggestion != i) {
-        suggestions[index_to_add_suggestion] = suggestions[i];
-      }
-      // The given |suggestions| are already sorted from highest to lowest
-      // ranking. Suggestions with lower indices have a higher ranking and
-      // should be kept.
-      //
-      // We check whether the value and label are the same because in certain
-      // cases, e.g. when a credit card form contains a zip code field and the
-      // user clicks on the zip code, a suggestion's value and the label
-      // produced for it may both be a zip code.
-      if (!comparator.Compare(
-              suggestions[index_to_add_suggestion].main_text.value,
-              differentiating_label)) {
-        if (!base::FeatureList::IsEnabled(
-                features::kAutofillGranularFillingAvailable)) {
-          if (!differentiating_label.empty()) {
-            suggestions[index_to_add_suggestion].labels = {
-                {Suggestion::Text(differentiating_label)}};
-          }
-        } else {
-          // Note that `labels[i]` can be empty, this is possible for example in
-          // the field by field filling case.
-          suggestions[index_to_add_suggestion].labels.emplace_back(
-              std::move(labels[i]));
-        }
-      }
-      ++index_to_add_suggestion;
-    }
-  }
-
-  if (index_to_add_suggestion < suggestions.size()) {
-    suggestions.resize(index_to_add_suggestion);
-  }
 }
 
 // Returns whether the `suggestion_canon` is a valid match given
@@ -1200,6 +1120,11 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   std::vector<Suggestion> suggestions;
   std::string app_locale = personal_data().app_locale();
 
+  std::vector<std::vector<Suggestion::Text>> labels =
+      CreateSuggestionLabelsWithGranularFillingDetails(
+          profiles, field_types, last_targeted_fields, trigger_field_type,
+          app_locale);
+
   // This will be used to check if suggestions should be supported with icons.
   const bool contains_profile_related_fields =
       base::ranges::count_if(field_types, [](FieldType field_type) {
@@ -1212,7 +1137,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
-  for (const AutofillProfile* profile : profiles) {
+  for (size_t i = 0; i < profiles.size(); ++i) {
+    const AutofillProfile* const profile = profiles[i];
     // Name fields should have `NAME_FULL` as main text, unless in field by
     // field filling mode.
     const PopupItemId popup_item_id = GetProfileSuggestionPopupItemId(
@@ -1234,6 +1160,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     }
 
     suggestions.emplace_back(main_text);
+    suggestions.back().labels.emplace_back(std::move(labels[i]));
     suggestions.back().payload = Suggestion::Guid(profile->guid());
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
@@ -1277,13 +1204,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
                                                 suggestions.back());
     }
   }
-
-  AssignLabelsAndDeduplicate(
-      suggestions,
-      CreateSuggestionLabelsWithGranularFillingDetails(
-          suggestions, profiles, field_types, last_targeted_fields,
-          trigger_field_type, app_locale),
-      app_locale);
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
