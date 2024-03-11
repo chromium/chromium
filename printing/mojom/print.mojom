@@ -110,6 +110,8 @@ enum MetafileDataType {
   kPDF,
   [EnableIf=is_win]
   kEMF,
+  [EnableIf=is_win]
+  kPostScriptEmf,
 };
 
 // What kind of margins to use.

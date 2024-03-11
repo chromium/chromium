@@ -53,6 +53,10 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
   void AddPrinter(const std::string& printer_name);
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
+#if BUILDFLAG(IS_WIN)
+  void SetPrinterLanguageTypeForSubsequentContexts(
+      mojom::PrinterLanguageType printer_language_type);
+#endif
   void SetNewDocumentJobId(int job_id);
 
   void PrintAndWaitUntilPreviewIsReady();
