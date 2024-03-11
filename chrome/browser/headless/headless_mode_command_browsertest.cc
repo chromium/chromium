@@ -376,8 +376,14 @@ class HeadlessModeScreenshotCommandBrowserTest
   base::FilePath screenshot_filename_;
 };
 
+// Disabled on Mac due to flakes; see https://crbug.com/328954152.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HeadlessScreenshot DISABLED_HeadlessScreenshot
+#else
+#define MAYBE_HeadlessScreenshot HeadlessScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
-                       HeadlessScreenshot) {
+                       MAYBE_HeadlessScreenshot) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -408,8 +414,15 @@ class HeadlessModeScreenshotCommandWithWindowSizeBrowserTest
   }
 };
 
+// Disabled on Mac due to flakes; see https://crbug.com/328954152.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HeadlessScreenshotWithWindowSize \
+  DISABLED_HeadlessScreenshotWithWindowSize
+#else
+#define MAYBE_HeadlessScreenshotWithWindowSize HeadlessScreenshotWithWindowSize
+#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithWindowSizeBrowserTest,
-                       HeadlessScreenshotWithWindowSize) {
+                       MAYBE_HeadlessScreenshotWithWindowSize) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
