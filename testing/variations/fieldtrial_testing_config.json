@@ -3443,6 +3443,21 @@
             ]
         }
     ],
+    "ChromeOSAmbientModeThrottleAnimation": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeOSAmbientModeThrottleAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSBoostUrgentVariables": [
         {
             "platforms": [
