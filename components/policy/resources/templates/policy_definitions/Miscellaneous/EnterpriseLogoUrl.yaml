@@ -1,0 +1,23 @@
+caption: Enterprise Logo URL
+default: null
+desc: |-
+  A URL to an image that will be used as an enterprise badge for the profile. The URL must point to an image.
+
+  This badge will be shown in the profile menu under the profile image and the image will be resized to fit in the 16x16 space reserved for the badge.
+
+  If this policy is not set, a default building icon will be shown.
+
+  If an error happens while trying to get and show the image, a default building icon will be shown.
+example_value: https://example.com/image.png
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+owners:
+- file://components/policy/OWNERS
+- ydago@chromium.org
+schema:
+  type: string
+tags: []
+type: string

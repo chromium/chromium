@@ -850,4 +850,31 @@ bool CloudOnlyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
              : false;
 }
 
+URLPolicyHandler::URLPolicyHandler(const char* policy_name,
+                                   const char* pref_path)
+    : SimplePolicyHandler(policy_name, pref_path, base::Value::Type::STRING) {}
+
+URLPolicyHandler::~URLPolicyHandler() = default;
+
+bool URLPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
+                                           PolicyErrorMap* errors) {
+  if (!SimplePolicyHandler::CheckPolicySettings(policies, errors)) {
+    return false;
+  }
+
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::STRING);
+  if (!value) {
+    return true;
+  }
+
+  const std::string& value_as_string = value->GetString();
+  if (GURL(value_as_string).is_valid()) {
+    return true;
+  }
+
+  errors->AddError(policy_name(), IDS_POLICY_INVALID_URL_ERROR);
+  return false;
+}
+
 }  // namespace policy

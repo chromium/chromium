@@ -586,6 +586,16 @@ class POLICY_EXPORT CloudOnlyPolicyHandler
                            PolicyErrorMap* errors) override;
 };
 
+// A schema policy handler string policies expecting a URL.
+class POLICY_EXPORT URLPolicyHandler : public SimplePolicyHandler {
+ public:
+  URLPolicyHandler(const char* policy_name, const char* pref_path);
+  ~URLPolicyHandler() override;
+
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+};
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_BROWSER_CONFIGURATION_POLICY_HANDLER_H_

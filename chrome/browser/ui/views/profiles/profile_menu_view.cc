@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/branding_buildflags.h"
@@ -16,6 +17,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -70,11 +73,13 @@
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -540,15 +545,21 @@ void ProfileMenuView::BuildIdentity() {
                          identity_manager->GetPrimaryAccountId(
                              signin::ConsentLevel::kSignin)));
 
-    const gfx::VectorIcon* badge = nullptr;
+    ui::ImageModel badge_image_model;
     if (management_environment !=
         chrome::enterprise_util::ManagementEnvironment::kNone) {
-      badge = &vector_icons::kBusinessIcon;
+      policy::BrowserManagementService* management_service =
+          static_cast<policy::BrowserManagementService*>(
+              policy::ManagementServiceFactory::GetForProfile(
+                  browser()->profile()));
+      if (management_service->GetMetadata().GetManagementLogo().IsEmpty()) {
+        badge_image_model = ui::ImageModel::FromVectorIcon(
+            vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
+      } else {
+        badge_image_model = ui::ImageModel::FromImage(
+            management_service->GetMetadata().GetManagementLogo());
+      }
     }
-
-    auto badge_image_model =
-        badge ? ui::ImageModel::FromVectorIcon(*badge, ui::kColorMenuIcon, 16)
-              : ui::ImageModel();
 
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
