@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -746,6 +747,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Determines whether the user is logged in and sets |is_user_logged_in_|.
   void ProcessIsUserLoggedIn(const base::Value::List& profile_list);
 
+  // Requests an update for an existing DeviceState. This is a no-op if
+  // there's no device state for the given `device_path`.
+  void RequestUpdateForDevice(const std::string& device_path);
+
   // Shill property handler instance, owned by this class.
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
 
@@ -828,6 +833,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // user's saved networks are done updating.
   bool is_profile_networks_loaded_ = false;
   bool is_user_logged_in_ = false;
+
+  // A set of device path that need to request another GetProperties to get
+  // latest properties. Shill may send a device property update after Chrome
+  // sends a GetProperties request to Shill and before completing Shill's
+  // response. If this occurs, the initial response may not include the changed
+  // property value and we will need to store the device paths to issue another
+  // round of GetProperties.
+  std::set<std::string> device_paths_with_stale_properties_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

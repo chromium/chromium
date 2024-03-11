@@ -1271,6 +1271,20 @@ void NetworkStateHandler::RequestUpdateForNetwork(
                                              service_path);
 }
 
+void NetworkStateHandler::RequestUpdateForDevice(
+    const std::string& device_path) {
+  DeviceState* device = GetModifiableDeviceState(device_path);
+  if (!device) {
+    return;
+  }
+
+  device->set_update_requested(true);
+  NET_LOG(EVENT) << "Request update for device path: " << device_path;
+  shill_property_handler_->RequestProperties(ManagedState::MANAGED_TYPE_DEVICE,
+                                             device_path);
+  device_paths_with_stale_properties_.erase(device_path);
+}
+
 void NetworkStateHandler::SendUpdateNotificationForNetwork(
     const std::string& service_path) {
   const NetworkState* network = GetNetworkState(service_path);
@@ -1531,19 +1545,26 @@ void NetworkStateHandler::UpdateManagedStateProperties(
   }
   managed->set_update_received();
 
-  NET_LOG(DEBUG) << GetManagedStateLogType(managed)
+  NET_LOG(EVENT) << GetManagedStateLogType(managed)
                  << " Properties Received: " << GetLogName(managed);
 
   if (type == ManagedState::MANAGED_TYPE_NETWORK) {
     UpdateNetworkStateProperties(managed->AsNetworkState(), properties);
-  } else {
-    // Device
-    for (const auto iter : properties) {
-      managed->PropertyChanged(iter.first, iter.second);
-    }
-    managed->InitialPropertiesReceived(properties);
+    managed->set_update_requested(false);
+    return;
   }
+
+  // Device
+  for (const auto iter : properties) {
+    managed->PropertyChanged(iter.first, iter.second);
+  }
+  managed->InitialPropertiesReceived(properties);
   managed->set_update_requested(false);
+
+  if (device_paths_with_stale_properties_.find(path) !=
+      device_paths_with_stale_properties_.end()) {
+    RequestUpdateForDevice(path);
+  }
 }
 
 void NetworkStateHandler::UpdateNetworkStateProperties(
@@ -1710,12 +1731,15 @@ void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
                                                const base::Value& value) {
   SCOPED_NET_LOG_IF_SLOW();
   DeviceState* device = GetModifiableDeviceState(device_path);
-  if (!device || !device->update_received()) {
-    // Shill may send a device property update before processing Chrome's
-    // initial GetProperties request. If this occurs, the initial request will
-    // include the changed property value so we can ignore this update.
+  if (!device) {
     return;
   }
+
+  if (!device->update_received()) {
+    device_paths_with_stale_properties_.insert(device_path);
+    return;
+  }
+
   const bool was_scanning = device->scanning();
   if (!device->PropertyChanged(key, value)) {
     return;
