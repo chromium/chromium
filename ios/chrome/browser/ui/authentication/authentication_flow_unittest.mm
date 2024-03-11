@@ -169,6 +169,12 @@ class AuthenticationFlowTest : public PlatformTest {
 // Tests a Sign In of a normal account on the same profile with Sync
 // consent granted.
 TEST_F(AuthenticationFlowTest, TestSignInSimple) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Enable user policy to make sure that the authentication flow doesn't try
+  // a registration when the account isn't managed.
+  scoped_feature_list.InitAndEnableFeature(
+      policy::kUserPolicyForSigninOrSyncConsentLevel);
+
   CreateAuthenticationFlow(
       PostSignInAction::kCommitSync, identity1_,
       signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);

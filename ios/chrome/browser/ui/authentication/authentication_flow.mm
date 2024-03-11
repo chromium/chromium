@@ -594,7 +594,8 @@ bool HasMachineLevelPolicies() {
   _shouldShowManagedConfirmation =
       [self shouldShowManagedConfirmationForHostedDomain:hostedDomain];
   _identityToSignInHostedDomain = hostedDomain;
-  _shouldFetchUserPolicy = [self shouldFetchUserPolicy];
+  _shouldFetchUserPolicy =
+      [self shouldFetchUserPolicy] && hostedDomain.length > 0;
   [self continueSignin];
 }
 
