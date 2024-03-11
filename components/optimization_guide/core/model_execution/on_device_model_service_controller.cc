@@ -202,7 +202,9 @@ OnDeviceModelServiceController::CreateSession(
     }
   }
 
-  if (!config_interpreter_->HasConfigForFeature(feature)) {
+  scoped_refptr<const OnDeviceModelFeatureAdapter> adapter =
+      config_interpreter_->GetAdapter(feature);
+  if (!adapter) {
     logger.set_reason(
         OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
     return nullptr;
@@ -226,7 +228,7 @@ OnDeviceModelServiceController::CreateSession(
   return std::make_unique<SessionImpl>(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr(), model_paths),
-      feature, model_versions_, config_interpreter_.get(),
+      feature, model_versions_, std::move(adapter),
       weak_ptr_factory_.GetWeakPtr(), safety_config,
       std::move(execute_remote_fn), optimization_guide_logger,
       model_quality_uploader_service, config_params);

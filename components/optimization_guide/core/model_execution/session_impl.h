@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -22,7 +23,7 @@
 class OptimizationGuideLogger;
 
 namespace optimization_guide {
-class OnDeviceModelExecutionConfigInterpreter;
+class OnDeviceModelFeatureAdapter;
 class OnDeviceModelServiceController;
 
 using ExecuteRemoteFn = base::RepeatingCallback<void(
@@ -97,7 +98,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       StartSessionFn start_session_fn,
       proto::ModelExecutionFeature feature,
       std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
-      const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
+      scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
       base::WeakPtr<OnDeviceModelServiceController> controller,
       const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
       ExecuteRemoteFn execute_remote_fn,
@@ -172,7 +173,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     void ResetRequestState();
 
     mojo::Remote<on_device_model::mojom::Session> session;
-    raw_ptr<const OnDeviceModelExecutionConfigInterpreter> config_interpreter;
+    scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
     StartSessionFn start_session_fn;
     std::unique_ptr<ContextProcessor> context_processor;
     mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver;

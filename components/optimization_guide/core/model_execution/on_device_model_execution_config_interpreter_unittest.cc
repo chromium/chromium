@@ -63,8 +63,8 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest, EmptyFilePath) {
   interpreter()->UpdateConfigWithFileDir(base::FilePath());
   RunUntilIdle();
 
-  EXPECT_FALSE(interpreter()->HasConfigForFeature(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_EQ(interpreter()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
+            nullptr);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
@@ -72,8 +72,8 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   interpreter()->UpdateConfigWithFileDir(temp_dir());
   RunUntilIdle();
 
-  EXPECT_FALSE(interpreter()->HasConfigForFeature(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_EQ(interpreter()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
+            nullptr);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest, ValidConfig) {
@@ -88,10 +88,11 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest, ValidConfig) {
     interpreter()->UpdateConfigWithFileDir(temp_dir());
     RunUntilIdle();
 
-    EXPECT_TRUE(interpreter()->HasConfigForFeature(
-        proto::MODEL_EXECUTION_FEATURE_COMPOSE));
-    EXPECT_FALSE(interpreter()->HasConfigForFeature(
-        proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+    EXPECT_NE(interpreter()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
+              nullptr);
+    EXPECT_EQ(interpreter()->GetAdapter(
+                  proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+              nullptr);
   }
 
   {
@@ -108,10 +109,11 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest, ValidConfig) {
     interpreter()->UpdateConfigWithFileDir(new_temp_dir.GetPath());
     RunUntilIdle();
 
-    EXPECT_FALSE(interpreter()->HasConfigForFeature(
-        proto::MODEL_EXECUTION_FEATURE_COMPOSE));
-    EXPECT_TRUE(interpreter()->HasConfigForFeature(
-        proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+    EXPECT_EQ(interpreter()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
+              nullptr);
+    EXPECT_NE(interpreter()->GetAdapter(
+                  proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+              nullptr);
   }
 
   {
@@ -119,42 +121,16 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest, ValidConfig) {
     interpreter()->UpdateConfigWithFileDir(base::FilePath());
     RunUntilIdle();
 
-    EXPECT_FALSE(interpreter()->HasConfigForFeature(
-        proto::MODEL_EXECUTION_FEATURE_COMPOSE));
-    EXPECT_FALSE(interpreter()->HasConfigForFeature(
-        proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+    EXPECT_EQ(interpreter()->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE),
+              nullptr);
+    EXPECT_EQ(interpreter()->GetAdapter(
+                  proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+              nullptr);
   }
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructInputStringNoOnDeviceConfig) {
-  base::test::TestMessage test;
-  test.set_test("some test");
-  auto result = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
-      /*want_input_context=*/false);
-
-  EXPECT_FALSE(result);
-}
-
-TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructInputStringNoOnDeviceConfigForFeature) {
-  proto::OnDeviceModelExecutionConfig config;
-  config.add_feature_configs()->set_feature(
-      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION);
-  UpdateInterpreterWithConfig(config);
-
-  base::test::TestMessage test;
-  test.set_test("some test");
-  auto result = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
-      /*want_input_context=*/false);
-
-  EXPECT_FALSE(result);
-}
-
-TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructInputStringFeatureConfigExistsButNoInputConfig) {
+       ConstructInputString_NoInputConfig) {
   proto::OnDeviceModelExecutionConfig config;
   config.add_feature_configs()->set_feature(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
@@ -162,15 +138,15 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto result = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
-      /*want_input_context=*/false);
+  auto result = interpreter()
+                    ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                    ->ConstructInputString(test, /*want_input_context=*/false);
 
   EXPECT_FALSE(result);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructInputStringFeatureConfigExistsMismatchRequest) {
+       ConstructInputString_MismatchRequest) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
   fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
@@ -180,15 +156,15 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto result = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
-      /*want_input_context=*/false);
+  auto result = interpreter()
+                    ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                    ->ConstructInputString(test, /*want_input_context=*/false);
 
   EXPECT_FALSE(result);
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructInputStringForInputContext) {
+       ConstructInputString_ForInputContext) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
   fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
@@ -204,16 +180,16 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto result = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
-      /*want_input_context=*/true);
+  auto result = interpreter()
+                    ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                    ->ConstructInputString(test, /*want_input_context=*/true);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->input_string, "hello this is input context");
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructInputStringForExecution) {
+       ConstructInputString_ForExecution) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
   fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
@@ -229,51 +205,31 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
 
   base::test::TestMessage test;
   test.set_test("some test");
-  auto result = interpreter()->ConstructInputString(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, test,
-      /*want_input_context=*/false);
+  auto result = interpreter()
+                    ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                    ->ConstructInputString(test, /*want_input_context=*/false);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->input_string, "hello this is execution");
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructOutputMetadataNoConfiguration) {
-  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
-
-  EXPECT_FALSE(maybe_metadata.has_value());
-}
-
-TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructOutputMetadataNoOnDeviceConfigForFeature) {
-  proto::OnDeviceModelExecutionConfig config;
-  config.add_feature_configs()->set_feature(
-      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION);
-  UpdateInterpreterWithConfig(config);
-
-  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
-
-  EXPECT_FALSE(maybe_metadata.has_value());
-}
-
-TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructOutputMetadataOnDeviceConfigHasNoOutputConfig) {
+       ConstructOutputMetadata_NoOutputConfig) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
   fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
 
   UpdateInterpreterWithConfig(config);
 
-  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+  auto maybe_metadata = interpreter()
+                            ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                            ->ConstructOutputMetadata("output");
 
   EXPECT_FALSE(maybe_metadata.has_value());
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructOutputMetadataBadProto) {
+       ConstructOutputMetadata_BadProto) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
   fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
@@ -282,14 +238,15 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
   UpdateInterpreterWithConfig(config);
 
-  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+  auto maybe_metadata = interpreter()
+                            ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                            ->ConstructOutputMetadata("output");
 
   EXPECT_FALSE(maybe_metadata.has_value());
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructOutputMetadataDescriptorSpecifiedNotStringValue) {
+       ConstructOutputMetadata_DescriptorSpecifiedNotStringValue) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
   fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
@@ -298,14 +255,15 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(7);
   UpdateInterpreterWithConfig(config);
 
-  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+  auto maybe_metadata = interpreter()
+                            ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                            ->ConstructOutputMetadata("output");
 
   EXPECT_FALSE(maybe_metadata.has_value());
 }
 
 TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
-       ConstructOutputMetadataDescriptorValid) {
+       ConstructOutputMetadata_DescriptorValid) {
   proto::OnDeviceModelExecutionConfig config;
   auto* fc = config.add_feature_configs();
   fc->set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
@@ -314,8 +272,9 @@ TEST_F(OnDeviceModelExecutionConfigInterpeterTest,
   oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
   UpdateInterpreterWithConfig(config);
 
-  auto maybe_metadata = interpreter()->ConstructOutputMetadata(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE, "output");
+  auto maybe_metadata = interpreter()
+                            ->GetAdapter(proto::MODEL_EXECUTION_FEATURE_COMPOSE)
+                            ->ConstructOutputMetadata("output");
 
   ASSERT_TRUE(maybe_metadata.has_value());
   EXPECT_EQ(

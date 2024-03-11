@@ -20,8 +20,6 @@
 
 namespace optimization_guide {
 
-class Redactor;
-
 class OnDeviceModelExecutionConfigInterpreter {
  public:
   OnDeviceModelExecutionConfigInterpreter();
@@ -35,34 +33,12 @@ class OnDeviceModelExecutionConfigInterpreter {
   // config.
   void ClearState();
 
-  // Whether there is an on-device model execution config for `feature`.
-  bool HasConfigForFeature(proto::ModelExecutionFeature feature) const;
-
-  // Constructs the input string for `feature` and `request`.
-  std::optional<SubstitutionResult> ConstructInputString(
-      proto::ModelExecutionFeature feature,
-      const google::protobuf::MessageLite& request,
-      bool want_input_context) const;
-
-  // Constructs the output metadata for `feature` and `output`. Will return
-  // std::nullopt if there is not a valid config for the feature or could not be
-  // fulfilled for any reason.
-  std::optional<proto::Any> ConstructOutputMetadata(
-      proto::ModelExecutionFeature feature,
-      const std::string& output) const;
-
-  // Redacts the content of current response, given the last executed message.
-  RedactResult Redact(proto::ModelExecutionFeature feature,
-                      const google::protobuf::MessageLite& last_message,
-                      std::string& current_response) const;
-
- private:
-  // Get the adapter for a particular feature.
-  // Return value is owned by this and may be null.
-  const OnDeviceModelFeatureAdapter* GetAdapter(
+  // Returns a "copy" of the current adapter for a particular feature.
+  scoped_refptr<const OnDeviceModelFeatureAdapter> GetAdapter(
       proto::ModelExecutionFeature feature) const;
 
-  // Populates `feature_to_data_` based on `config`.
+ private:
+  // Populates `adapters_` based on `config`.
   void PopulateFeatureConfigs(
       std::unique_ptr<proto::OnDeviceModelExecutionConfig> config);
 
@@ -71,7 +47,7 @@ class OnDeviceModelExecutionConfigInterpreter {
 
   // Map from feature to associated state.
   base::flat_map<proto::ModelExecutionFeature,
-                 std::unique_ptr<OnDeviceModelFeatureAdapter>>
+                 scoped_refptr<OnDeviceModelFeatureAdapter>>
       adapters_;
 
   SEQUENCE_CHECKER(sequence_checker_);

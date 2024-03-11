@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -24,11 +25,12 @@ class Redactor;
 
 // Adapts the on-device model to be used for a particular feature, based on
 // a configuration proto.
-class OnDeviceModelFeatureAdapter final {
+class OnDeviceModelFeatureAdapter final
+    : public base::RefCounted<OnDeviceModelFeatureAdapter> {
  public:
+  // Constructs an adapter from a configuration proto.
   explicit OnDeviceModelFeatureAdapter(
       proto::OnDeviceModelExecutionFeatureConfig&& config);
-  ~OnDeviceModelFeatureAdapter();
 
   // Constructs the model input from `request`.
   std::optional<SubstitutionResult> ConstructInputString(
@@ -45,6 +47,9 @@ class OnDeviceModelFeatureAdapter final {
                       std::string& current_response) const;
 
  private:
+  friend class base::RefCounted<OnDeviceModelFeatureAdapter>;
+  ~OnDeviceModelFeatureAdapter();
+
   // Returns the string that is used for checking redaction against.
   std::string GetStringToCheckForRedacting(
       const google::protobuf::MessageLite& message) const;

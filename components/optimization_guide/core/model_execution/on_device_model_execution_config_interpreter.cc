@@ -9,14 +9,10 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
-#include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
@@ -74,19 +70,12 @@ void OnDeviceModelExecutionConfigInterpreter::UpdateConfigWithFileDir(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool OnDeviceModelExecutionConfigInterpreter::HasConfigForFeature(
-    proto::ModelExecutionFeature feature) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return base::Contains(adapters_, feature);
-}
-
-const OnDeviceModelFeatureAdapter*
+scoped_refptr<const OnDeviceModelFeatureAdapter>
 OnDeviceModelExecutionConfigInterpreter::GetAdapter(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto iter = adapters_.find(feature);
-  return iter != adapters_.end() ? iter->second.get() : nullptr;
+  return iter != adapters_.end() ? iter->second : nullptr;
 }
 
 void OnDeviceModelExecutionConfigInterpreter::PopulateFeatureConfigs(
@@ -99,7 +88,7 @@ void OnDeviceModelExecutionConfigInterpreter::PopulateFeatureConfigs(
 
   for (auto& feature_config : *config->mutable_feature_configs()) {
     auto feature = feature_config.feature();
-    adapters_[feature] = std::make_unique<OnDeviceModelFeatureAdapter>(
+    adapters_[feature] = base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
         std::move(feature_config));
   }
 }
@@ -107,37 +96,6 @@ void OnDeviceModelExecutionConfigInterpreter::PopulateFeatureConfigs(
 void OnDeviceModelExecutionConfigInterpreter::ClearState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   adapters_.clear();
-}
-
-std::optional<SubstitutionResult>
-OnDeviceModelExecutionConfigInterpreter::ConstructInputString(
-    proto::ModelExecutionFeature feature,
-    const google::protobuf::MessageLite& request,
-    bool want_input_context) const {
-  if (const auto* adapter = GetAdapter(feature)) {
-    return adapter->ConstructInputString(request, want_input_context);
-  }
-  return std::nullopt;
-}
-
-std::optional<proto::Any>
-OnDeviceModelExecutionConfigInterpreter::ConstructOutputMetadata(
-    proto::ModelExecutionFeature feature,
-    const std::string& output) const {
-  if (const auto* adapter = GetAdapter(feature)) {
-    return adapter->ConstructOutputMetadata(output);
-  }
-  return std::nullopt;
-}
-
-RedactResult OnDeviceModelExecutionConfigInterpreter::Redact(
-    proto::ModelExecutionFeature feature,
-    const google::protobuf::MessageLite& last_message,
-    std::string& current_response) const {
-  if (const auto* adapter = GetAdapter(feature)) {
-    return adapter->Redact(last_message, current_response);
-  }
-  return RedactResult::kContinue;
 }
 
 }  // namespace optimization_guide

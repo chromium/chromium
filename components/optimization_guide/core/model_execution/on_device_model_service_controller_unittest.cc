@@ -726,6 +726,30 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {
   EXPECT_TRUE(session);
 }
 
+// Validates behavior of a session when execution config is updated after a
+// session is created.
+TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
+  Initialize();
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), &logger_, nullptr,
+      /*config_params=*/std::nullopt);
+
+  // Simulate a model update.
+  WriteExecutionConfig({});
+  on_device_component_state_manager_.SetReady(temp_dir());
+  task_environment_.RunUntilIdle();
+
+  // Verify the existing session still works.
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(response_received_);
+  const std::string expected_response = "Input: execute:foo\n";
+  EXPECT_EQ(*response_received_, expected_response);
+  EXPECT_TRUE(*provided_by_on_device_);
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   Initialize();
 

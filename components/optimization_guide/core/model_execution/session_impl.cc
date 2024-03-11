@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -11,7 +13,7 @@
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
@@ -125,7 +127,7 @@ SessionImpl::SessionImpl(
     StartSessionFn start_session_fn,
     proto::ModelExecutionFeature feature,
     std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
-    const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
+    scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
     base::WeakPtr<OnDeviceModelServiceController> controller,
     const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
     ExecuteRemoteFn execute_remote_fn,
@@ -150,7 +152,7 @@ SessionImpl::SessionImpl(
               })) {
   if (controller_ && controller_->ShouldStartNewSession()) {
     on_device_state_.emplace(std::move(start_session_fn), this);
-    on_device_state_->config_interpreter = config_interpreter;
+    on_device_state_->adapter = std::move(adapter);
     // Prewarm the initial session to make sure the service is started.
     GetOrCreateSession();
   }
@@ -198,8 +200,8 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
   }
 
   on_device_state_->add_context_before_execute = false;
-  auto input = on_device_state_->config_interpreter->ConstructInputString(
-      feature_, *context_, /*want_input_context=*/true);
+  auto input = on_device_state_->adapter->ConstructInputString(
+      *context_, /*want_input_context=*/true);
   if (!input) {
     // Use server if can't construct input.
     DestroyOnDeviceState();
@@ -275,8 +277,8 @@ void SessionImpl::ExecuteModel(
     CHECK(!on_device_state_->add_context_before_execute);
   }
 
-  auto input = on_device_state_->config_interpreter->ConstructInputString(
-      feature_, *last_message_, /*want_input_context=*/false);
+  auto input = on_device_state_->adapter->ConstructInputString(
+      *last_message_, /*want_input_context=*/false);
   if (!input) {
     // Use server if can't construct input.
     on_device_state_->histogram_logger = std::move(logger);
@@ -502,8 +504,8 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   std::string current_response = on_device_state_->current_response;
   logged_response->set_output_string(current_response);
 
-  auto redact_result = on_device_state_->config_interpreter->Redact(
-      feature_, *last_message_, current_response);
+  auto redact_result =
+      on_device_state_->adapter->Redact(*last_message_, current_response);
   if (redact_result == RedactResult::kReject) {
     if (on_device_state_->histogram_logger) {
       on_device_state_->histogram_logger->set_result(
@@ -542,8 +544,8 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     }
   }
 
-  auto output = on_device_state_->config_interpreter->ConstructOutputMetadata(
-      feature_, current_response);
+  auto output =
+      on_device_state_->adapter->ConstructOutputMetadata(current_response);
   if (!output) {
     if (on_device_state_->histogram_logger) {
       on_device_state_->histogram_logger->set_result(
