@@ -194,6 +194,9 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // with the pre-shutdown animation, otherwise, starts the real shutdown.
   void StartShutdownProcess(bool with_pre_animation);
 
+  // Triggers the shutdown process on `take_screenshot_fail_timer_` timeouts.
+  void OnTakeScreenshotFailTimeout(bool with_pre_animation);
+
   // Callback invoked inside `TakePineImageAndShutdown` once the image is
   // taken. Note: `gfx::Image` is cheap to pass by value.
   void OnPineImageTaken(bool with_pre_animation,
@@ -240,7 +243,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Controller used to trigger the actual shutdown.
   raw_ptr<ShutdownController, DanglingUntriaged> shutdown_controller_;
 
-  // Started when we request that the screen be locked.  When it fires, we
+  // Started when we request that the screen be locked. When it fires, we
   // assume that our request got dropped.
   base::OneShotTimer lock_fail_timer_;
 
@@ -248,11 +251,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // that our request got dropped.
   base::OneShotTimer post_lock_fail_timer_;
 
-  // Started when we begin displaying the pre-shutdown animation.  When it
+  // Started when we begin displaying the pre-shutdown animation. When it
   // fires, we start the shutdown animation and get ready to request shutdown.
   base::OneShotTimer pre_shutdown_timer_;
 
-  // Started when we display the shutdown animation.  When it fires, we actually
+  // Started when we display the shutdown animation. When it fires, we actually
   // request shutdown.  Gives the animation time to complete before Chrome, X,
   // etc. are shut down.
   base::OneShotTimer real_shutdown_timer_;
@@ -264,6 +267,13 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // A new layer that mirrors the wallpaper layer, which will be added to the
   // layer hierarchy and help include the wallpaper into the pine screenshot.
   std::unique_ptr<ui::Layer> mirror_wallpaper_layer_;
+
+  // A timer tracks the time duration it takes to take the pine image. If this
+  // timer timeouts before taking the screenshot completes, the shutdown
+  // process will be triggered immediately without the pine image. This is done
+  // to avoid the shutdown process being blocked too long to be noticed by the
+  // users.
+  base::OneShotTimer take_screenshot_fail_timer_;
 
   ScopedSessionObserver scoped_session_observer_;
 
