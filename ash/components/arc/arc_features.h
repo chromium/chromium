@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kArcOnDemandFeature);
 BASE_DECLARE_FEATURE(kBootCompletedBroadcastFeature);
 BASE_DECLARE_FEATURE(kContainerAppKiller);
 BASE_DECLARE_FEATURE(kCustomTabsExperimentFeature);
+BASE_DECLARE_FEATURE(kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
 BASE_DECLARE_FEATURE(kDocumentsProviderUnknownSizeFeature);
 BASE_DECLARE_FEATURE(kEnableArcIdleManager);
 extern const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT;

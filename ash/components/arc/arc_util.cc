@@ -682,4 +682,11 @@ bool ShouldAlwaysMountAndroidVolumesInFilesForTesting() {
       ash::switches::kArcForceMountAndroidVolumesInFiles);
 }
 
+bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion() {
+  // TODO(b/326065955): look at the history whether ARC is activated
+  // while user session start up tasks are running in recent sessions.
+  return base::FeatureList::IsEnabled(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+}
+
 }  // namespace arc

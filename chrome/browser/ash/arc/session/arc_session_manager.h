@@ -31,6 +31,8 @@
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
@@ -67,7 +69,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
                           public ArcSupportHost::ErrorDelegate,
                           public ash::SessionManagerClient::Observer,
                           public ash::ConciergeClient::VmObserver,
-                          public ArcRequirementChecker::Observer {
+                          public ArcRequirementChecker::Observer,
+                          public session_manager::SessionManagerObserver {
  public:
   // Represents each State of ARC session.
   // NOT_INITIALIZED: represents the state that the Profile is not yet ready
@@ -209,8 +212,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     // Activated when ARCVM is ready to be launched.
     kImmediateActivation,
 
-    // TODO(b/326065955): Add an entry for user session start task completion
-    // when the feature is implemented.
+    // User session start up tasks are completed, so deferred ARC activation
+    // is done.
+    kUserSessionStartUpTaskCompleted,
 
     // AlwaysStart option is set, so forced to launch ARC.
     kAlwaysStartIsEnabled,
@@ -372,6 +376,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
       const vm_tools::concierge::VmStartedSignal& vm_signal) override;
   void OnVmStopped(
       const vm_tools::concierge::VmStoppedSignal& vm_signal) override;
+
+  // session_manager::SessionManagerObserver overrides.
+  void OnUserSessionStartUpTaskCompleted() override;
 
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
@@ -550,6 +557,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   std::optional<guest_os::GuestOsMountProviderRegistry::Id>
       arcvm_mount_provider_id_;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};

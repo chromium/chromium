@@ -205,6 +205,9 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
   void EnableArc() {
+    session_manager::SessionManager::Get()
+        ->HandleUserSessionStartUpTaskCompleted();
+
     PrefService* const prefs = profile()->GetPrefs();
     prefs->SetBoolean(prefs::kArcEnabled, true);
     base::RunLoop().RunUntilIdle();

@@ -368,6 +368,7 @@ class ArcSessionManagerTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  session_manager::SessionManager session_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
@@ -443,6 +444,9 @@ TEST_F(ArcSessionManagerTest, BaseWorkflow) {
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
+  session_manager::SessionManager::Get()
+      ->HandleUserSessionStartUpTaskCompleted();
+
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
   prefs->SetBoolean(prefs::kArcSignedIn, true);
@@ -488,6 +492,56 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
   // ARC starts after calling AllowActivation().
   arc_session_manager()->AllowActivation(
       ArcSessionManager::AllowActivationReason::kImmediateActivation);
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+}
+
+TEST_F(ArcSessionManagerTest, SignedInWorkflowWithDeferringArcActivation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  // By default ARC is not enabled.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+  ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
+
+  // Enabling ARC, does not yet activate ARC.
+  arc_session_manager()->RequestEnable();
+  ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+
+  // Emulate session start up task completion.
+  arc_session_manager()->OnUserSessionStartUpTaskCompleted();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+}
+
+TEST_F(ArcSessionManagerTest,
+       SignedInWorkflowWithDeferringArcActivationAlreadyActivated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  arc_session_manager()->AllowActivation(
+      ArcSessionManager::AllowActivationReason::kUserLaunchAction);
+
+  // By default ARC is not enabled.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+  ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
+
+  // Enabling ARC immediately activates it.
+  arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
@@ -1035,6 +1089,9 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition) {
 }
 
 TEST_F(ArcSessionManagerTest, SetArcSignedIn) {
+  session_manager::SessionManager::Get()
+      ->HandleUserSessionStartUpTaskCompleted();
+
   PrefService* const prefs = profile()->GetPrefs();
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
@@ -1260,6 +1317,9 @@ TEST_F(ArcSessionManagerTest,
 // In case of the next start ArcSessionManager should go through remove data
 // folder phase before negotiating terms of service.
 TEST_F(ArcSessionManagerTest, DataCleanUpOnFirstStart) {
+  session_manager::SessionManager::Get()
+      ->HandleUserSessionStartUpTaskCompleted();
+
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kArcDataCleanupOnStart);
@@ -1291,6 +1351,9 @@ TEST_F(ArcSessionManagerTest, DataCleanUpOnFirstStart) {
 // In case of the next start ArcSessionManager should go through remove data
 // folder phase before activating.
 TEST_F(ArcSessionManagerTest, DataCleanUpOnNextStart) {
+  session_manager::SessionManager::Get()
+      ->HandleUserSessionStartUpTaskCompleted();
+
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kArcDataCleanupOnStart);

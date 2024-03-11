@@ -909,6 +909,7 @@ void ArcSessionManager::ResetArcState() {
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
   requirement_checker_.reset();
+  session_manager_observation_.Reset();
 }
 
 void ArcSessionManager::AddObserver(ArcSessionManagerObserver* observer) {
@@ -989,8 +990,16 @@ void ArcSessionManager::RequestEnable() {
   RequestEnableImpl();
 }
 
+void ArcSessionManager::OnUserSessionStartUpTaskCompleted() {
+  AllowActivation(AllowActivationReason::kUserSessionStartUpTaskCompleted);
+}
+
 void ArcSessionManager::AllowActivation(AllowActivationReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Activation is happening, so we no longer need to wait for user session
+  // start up task completion.
+  session_manager_observation_.Reset();
 
   // First time that ARCVM is allowed in this user session.
   if (!activation_is_allowed_) {
@@ -1169,7 +1178,29 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
 
   activation_necessity_checker_.reset();
   if (result) {
-    AllowActivation(AllowActivationReason::kImmediateActivation);
+    auto* session_manager = session_manager::SessionManager::Get();
+    if (ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion() &&
+        !activation_is_allowed_ &&
+        !session_manager->IsUserSessionStartUpTaskCompleted()) {
+      // Wait for the user session start up task completion to prioritize
+      // resources for them.
+      VLOG(1) << "ARC activation is deferred until user sesssion start up "
+              << "tasks are completed";
+      if (session_manager_observation_.IsObserving()) {
+        // This is unexpected case, but not very critical practically.
+        // Take the crash dump for transition period for investigation just in
+        // case, without actual crash for user experimence.
+        // TODO(b/326065955): switch to LOG(FATAL) or remove this possibility.
+        DUMP_WILL_BE_CHECK(false);
+      } else {
+        session_manager_observation_.Observe(session_manager);
+      }
+    } else {
+      // In AllowActivation, actual ARC instance is going to be launched,
+      // so call it here even if `activation_is_allowed_` checked above is
+      // true, intentionally.
+      AllowActivation(AllowActivationReason::kImmediateActivation);
+    }
   } else {
     activation_is_delayed = true;
     VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
@@ -1199,6 +1230,7 @@ void ArcSessionManager::RequestDisable(bool remove_arc_data) {
   pai_starter_.reset();
   fast_app_reinstall_starter_.reset();
   arc_ui_availability_reporter_.reset();
+  session_manager_observation_.Reset();
 
   // Reset any pending request to re-enable ARC.
   reenable_arc_ = false;

@@ -321,6 +321,10 @@ void EnsureStaleArcVmAndArcVmUpstartJobsStopped(
 // mounted in the Files app regardless of whether Play Store is enabled or not.
 bool ShouldAlwaysMountAndroidVolumesInFilesForTesting();
 
+// Returns true if ARC's activation should be deferred until the user session
+// start up tasks are completed.
+bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion();
+
 }  // namespace arc
 
 #endif  // ASH_COMPONENTS_ARC_ARC_UTIL_H_

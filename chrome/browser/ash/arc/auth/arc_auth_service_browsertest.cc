@@ -1246,6 +1246,9 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, ChildAccountFetch) {
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, ChildTransition) {
   SetAccountAndProfile(user_manager::UserType::kChild);
 
+  session_manager::SessionManager::Get()
+      ->HandleUserSessionStartUpTaskCompleted();
+
   ArcSessionManager* session = ArcSessionManager::Get();
   ASSERT_TRUE(session);
 
