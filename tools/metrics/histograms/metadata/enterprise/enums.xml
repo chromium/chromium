@@ -434,6 +434,7 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="FAILURE_HOST_INVALID_DOMAIN_ERROR"/>
   <int value="28" label="HOST_SESSION_DISCONNECTED"/>
   <int value="29" label="FAILURE_UNKNOWN_ERROR"/>
+  <int value="30" label="FAILURE_REAUTHZ_POLICY_CHECK_FAILED"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">

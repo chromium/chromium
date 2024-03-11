@@ -76,9 +76,9 @@ ErrorCode AuthRejectionReasonToErrorCode(
     case Authenticator::RejectionReason::REJECTED_BY_USER:
       return ErrorCode::SESSION_REJECTED;
     case Authenticator::RejectionReason::AUTHZ_POLICY_CHECK_FAILED:
-    // TODO: b/323068262 - Add error code for REAUTHZ_POLICY_CHECK_FAILED.
-    case Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED:
       return ErrorCode::AUTHZ_POLICY_CHECK_FAILED;
+    case Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED:
+      return ErrorCode::REAUTHZ_POLICY_CHECK_FAILED;
     case Authenticator::RejectionReason::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
       return ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
     case Authenticator::RejectionReason::UNAUTHORIZED_ACCOUNT:

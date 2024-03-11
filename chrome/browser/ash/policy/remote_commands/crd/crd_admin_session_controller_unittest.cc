@@ -884,7 +884,9 @@ TEST_F(CrdAdminSessionControllerTest,
         ExtendedStartCrdSessionResultCode::
             kFailureLocationAuthzPolicyCheckFailed},
        {ErrorCode::UNAUTHORIZED_ACCOUNT,
-        ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount}};
+        ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount},
+       {ErrorCode::REAUTHZ_POLICY_CHECK_FAILED,
+        ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed}};
 
   for (auto& [error_code, expected_result_code] : test_cases) {
     SCOPED_TRACE(testing::Message()

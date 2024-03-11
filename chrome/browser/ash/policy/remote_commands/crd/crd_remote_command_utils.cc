@@ -159,6 +159,9 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     // commercial CRD.
     case ErrorCode::ELEVATION_ERROR:
       return ExtendedStartCrdSessionResultCode::kFailureUnknownError;
+    case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
+      return ExtendedStartCrdSessionResultCode::
+          kFailureReauthzPolicyCheckFailed;
   }
   NOTREACHED_NORETURN();
 }
@@ -204,6 +207,7 @@ StartCrdSessionResultCode ToStartCrdSessionResultCode(
     case ExtendedStartCrdSessionResultCode::kFailureHostPolicyError:
     case ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError:
     case ExtendedStartCrdSessionResultCode::kHostSessionDisconnected:
+    case ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed:
       // The server side is not interested in a lot of the different CRD host
       // failures, which is why most of them are simply mapped to
       // 'FAILURE_CRD_HOST_ERROR`.

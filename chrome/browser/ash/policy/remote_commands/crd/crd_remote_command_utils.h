@@ -28,6 +28,9 @@ using ::enterprise_management::StartCrdSessionResultCode;
 // Extended version of `StartCrdSessionResultCode`, which contains extra values
 // that we want to log to UMA.
 // This enum can't be renumbered because it's logged to UMA.
+// NOTE: Whenever this enum is updated, please also update
+// EnterpriseCrdSessionResultCode in
+// tools/metrics/histograms/metadata/enterprise/enums.xml to keep them in sync.
 enum class ExtendedStartCrdSessionResultCode {
   // Successfully obtained access code.
   kSuccess = 0,
@@ -134,7 +137,11 @@ enum class ExtendedStartCrdSessionResultCode {
 
   kFailureUnknownError = 29,
 
-  kMaxValue = kFailureUnknownError
+  // Failure because a policy defined by the third party auth service no longer
+  // permits the connection.
+  kFailureReauthzPolicyCheckFailed = 30,
+
+  kMaxValue = kFailureReauthzPolicyCheckFailed
 };
 
 // Translates the error code.
