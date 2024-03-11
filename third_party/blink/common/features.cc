@@ -2037,7 +2037,7 @@ BASE_FEATURE(kSharedStorageAPIM118,
 
 BASE_FEATURE(kSharedStorageAPIM123,
              "SharedStorageAPIM123",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
              "SharedStorageAPIEnableWALForDatabase",
