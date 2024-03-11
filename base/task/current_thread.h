@@ -264,7 +264,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // Forwards to MessagePumpForUI::Abort().
+  // Forwards to MessagePumpAndroid::Abort().
   // TODO(https://crbug.com/825327): Plumb the actual MessagePumpForUI* to
   // callers and remove ability to access this method from
   // CurrentUIThread.

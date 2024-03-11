@@ -337,9 +337,9 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
 
 TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
   // The handling of the "yield_to_native" boolean in the NextWorkInfo is only
-  // implemented on the MessagePumpForUI on android. However since we inject a
-  // fake one for testing this is hard to test. This test ensures that setting
-  // this boolean doesn't cause any MessagePump to explode.
+  // implemented on the MessagePumpAndroid. However since we inject a fake one
+  // for testing this is hard to test. This test ensures that setting this
+  // boolean doesn't cause any MessagePump to explode.
   testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
 
   testing::InSequence sequence;

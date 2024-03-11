@@ -41,8 +41,8 @@ struct RunState {
 RunState* g_state = nullptr;
 
 // A singleton WaitableEvent wrapper so we avoid a busy loop in
-// MessagePumpForUIStub. Other platforms use the native event loop which blocks
-// when there are no pending messages.
+// MessagePumpAndroidStub. Other platforms use the native event loop which
+// blocks when there are no pending messages.
 class Waitable {
  public:
   static Waitable* GetInstance() {
@@ -74,11 +74,11 @@ class Waitable {
   base::WaitableEvent waitable_event_;
 };
 
-// The MessagePumpForUI implementation for test purpose.
-class MessagePumpForUIStub : public base::MessagePumpForUI {
+// The MessagePumpAndroid implementation for test purpose.
+class MessagePumpAndroidStub : public base::MessagePumpAndroid {
  public:
-  MessagePumpForUIStub() : base::MessagePumpForUI() { Waitable::GetInstance(); }
-  ~MessagePumpForUIStub() override {}
+  MessagePumpAndroidStub() { Waitable::GetInstance(); }
+  ~MessagePumpAndroidStub() override = default;
 
   // In tests, there isn't a native thread, as such RunLoop::Run() should be
   // used to run the loop instead of attaching and delegating to the native
@@ -120,7 +120,7 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
 
   void OnNonDelayedLooperCallback() override {
     g_non_delayed_enter_count++;
-    base::MessagePumpForUI::OnNonDelayedLooperCallback();
+    base::MessagePumpAndroid::OnNonDelayedLooperCallback();
   }
 
   void RunNested(base::MessagePump::Delegate* delegate) {
@@ -154,7 +154,7 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     if (g_state->run_depth > 1) {
       Waitable::GetInstance()->Quit();
     } else {
-      MessagePumpForUI::Quit();
+      MessagePumpAndroid::Quit();
     }
   }
 
@@ -162,7 +162,7 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     if (g_state && g_state->run_depth > 1) {
       Waitable::GetInstance()->Signal();
     } else {
-      MessagePumpForUI::ScheduleWork();
+      MessagePumpAndroid::ScheduleWork();
     }
   }
 
@@ -171,13 +171,13 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     if (g_state && g_state->run_depth > 1) {
       Waitable::GetInstance()->Signal();
     } else {
-      MessagePumpForUI::ScheduleDelayedWork(next_work_info);
+      MessagePumpAndroid::ScheduleDelayedWork(next_work_info);
     }
   }
 };
 
-std::unique_ptr<base::MessagePump> CreateMessagePumpForUIStub() {
-  auto message_pump_stub = std::make_unique<MessagePumpForUIStub>();
+std::unique_ptr<base::MessagePump> CreateMessagePumpAndroidStub() {
+  auto message_pump_stub = std::make_unique<MessagePumpAndroidStub>();
   message_pump_stub->set_is_type_ui(true);
   return message_pump_stub;
 }
@@ -232,7 +232,7 @@ void InitAndroidTestMessageLoop() {
   // NOTE something else such as a JNI call may have already overridden the UI
   // factory.
   if (!MessagePump::IsMessagePumpForUIFactoryOveridden())
-    MessagePump::OverrideMessagePumpForUIFactory(&CreateMessagePumpForUIStub);
+    MessagePump::OverrideMessagePumpForUIFactory(&CreateMessagePumpAndroidStub);
 }
 
 uint32_t GetAndroidNonDelayedWorkEnterCount() {

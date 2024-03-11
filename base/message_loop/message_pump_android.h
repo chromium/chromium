@@ -23,14 +23,21 @@ class RunLoop;
 
 // This class implements a MessagePump needed for MessagePumpType::UI and
 // MessagePumpType::JAVA MessageLoops on OS_ANDROID platform.
-class BASE_EXPORT MessagePumpForUI : public MessagePump {
+//
+// It works by registering two file descriptors for the Looper to additionally
+// poll: one for delayed work and one for non-delayed work. For queueing
+// immediate work within the Looper it writes to the eventfd(2). For delayed
+// work it performs timerfd_settime(2).
+//
+// See: https://developer.android.com/ndk/reference/group/looper.
+class BASE_EXPORT MessagePumpAndroid : public MessagePump {
  public:
-  MessagePumpForUI();
+  MessagePumpAndroid();
 
-  MessagePumpForUI(const MessagePumpForUI&) = delete;
-  MessagePumpForUI& operator=(const MessagePumpForUI&) = delete;
+  MessagePumpAndroid(const MessagePumpAndroid&) = delete;
+  MessagePumpAndroid& operator=(const MessagePumpAndroid&) = delete;
 
-  ~MessagePumpForUI() override;
+  ~MessagePumpAndroid() override;
 
   void Run(Delegate* delegate) override;
   void Quit() override;

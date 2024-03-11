@@ -14,10 +14,10 @@ NestedMessagePumpAndroid::NestedMessagePumpAndroid() = default;
 NestedMessagePumpAndroid::~NestedMessagePumpAndroid() = default;
 
 // We need to override Run() instead of using the implementation from
-// base::MessagePumpForUI because one of the side-effects of
+// base::MessagePumpAndroid because one of the side-effects of
 // dispatchOneMessage() is calling Looper::pollOnce(). If that happens while we
-// are inside Alooper_pollOnce(), we get a crash because Android Looper
-// isn't re-entrant safe. Instead, we keep the entire run loop in Java (in
+// are inside Alooper_pollOnce(), we get a crash because Android Looper isn't
+// re-entrant safe. Instead, we keep the entire run loop in Java (in
 // MessageQueue.next()).
 void NestedMessagePumpAndroid::Run(base::MessagePump::Delegate* delegate) {
   // Preserve delegate and quit state of the current run loop so it can be
@@ -40,10 +40,10 @@ void NestedMessagePumpAndroid::Run(base::MessagePump::Delegate* delegate) {
         // Do nothing.
         break;
       case kDelayed:
-        base::MessagePumpForUI::DoDelayedLooperWork();
+        base::MessagePumpAndroid::DoDelayedLooperWork();
         break;
       case kNonDelayed:
-        base::MessagePumpForUI::DoNonDelayedLooperWork(do_idle_work);
+        base::MessagePumpAndroid::DoNonDelayedLooperWork(do_idle_work);
         break;
     }
   }
@@ -83,7 +83,7 @@ void NestedMessagePumpAndroid::DoDelayedLooperWork() {
     return;
   }
 
-  base::MessagePumpForUI::DoDelayedLooperWork();
+  base::MessagePumpAndroid::DoDelayedLooperWork();
 }
 
 void NestedMessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
@@ -100,7 +100,7 @@ void NestedMessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
     return;
   }
 
-  base::MessagePumpForUI::DoNonDelayedLooperWork(do_idle_work);
+  base::MessagePumpAndroid::DoNonDelayedLooperWork(do_idle_work);
 }
 
 void NestedMessagePumpAndroid::RunJavaSystemMessageHandler() {

@@ -18,7 +18,7 @@
 
 namespace base {
 
-class MessagePumpForUI;
+class MessagePumpAndroid;
 
 namespace android {
 
@@ -81,7 +81,7 @@ class BASE_EXPORT JavaHandlerThread {
 
     std::unique_ptr<sequence_manager::SequenceManager> sequence_manager;
     sequence_manager::TaskQueue::Handle default_task_queue;
-    raw_ptr<MessagePumpForUI> pump = nullptr;
+    raw_ptr<MessagePumpAndroid> pump = nullptr;
   };
 
   State* state() const { return state_.get(); }
