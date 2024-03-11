@@ -188,6 +188,11 @@ BASE_FEATURE(kAudioHFPMicSRToggle,
              "AudioHFPMicSRToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables audio I/O selection improvement algorithm. http://launch/4301655.
+BASE_FEATURE(kAudioSelectionImprovement,
+             "AudioSelectionImprovement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the AudioSourceFetcher resamples the audio for speech
 // recongnition.
 BASE_FEATURE(kAudioSourceFetcherResampling,
@@ -3085,6 +3090,10 @@ bool AreSideAlignedToastsEnabled() {
 
 bool IsAudioHFPMicSRToggleEnabled() {
   return base::FeatureList::IsEnabled(kAudioHFPMicSRToggle);
+}
+
+bool IsAudioSelectionImprovementEnabled() {
+  return base::FeatureList::IsEnabled(kAudioSelectionImprovement);
 }
 
 bool IsAutoEnrollmentKioskInOobeEnabled() {

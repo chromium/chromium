@@ -3346,6 +3346,9 @@ extern const char kAudioOffloadCrasDSPToSOFDescription[];
 extern const char kAudioStyleTransferName[];
 extern const char kAudioStyleTransferDescription[];
 
+extern const char kAudioSelectionImprovementName[];
+extern const char kAudioSelectionImprovementDescription[];
+
 extern const char kAudioSuppressSetRTCAudioActiveName[];
 extern const char kAudioSuppressSetRTCAudioActiveDescription[];
 

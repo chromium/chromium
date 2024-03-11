@@ -5790,6 +5790,11 @@ const char kAudioOffloadCrasDSPToSOFDescription[] =
 const char kAudioStyleTransferName[] = "Audio style transfer";
 const char kAudioStyleTransferDescription[] = "Enable audio style transfer";
 
+const char kAudioSelectionImprovementName[] =
+    "Enable audio selection improvemet algorithm";
+const char kAudioSelectionImprovementDescription[] =
+    "Enable set-based audio selection improvement algorithm.";
+
 const char kAudioSuppressSetRTCAudioActiveName[] =
     "Suppress calling the SetRTCAudioActive D-Bus method";
 const char kAudioSuppressSetRTCAudioActiveDescription[] =
