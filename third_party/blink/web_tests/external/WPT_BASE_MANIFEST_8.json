@@ -303869,7 +303869,7 @@
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "053f81339f9cc862d47195df93cd7c0e1f2c02af",
+       "cc04a6368336ebaf9782d439345f9ac244fd303a",
        []
       ],
       "color-valid-hsl-expected.txt": [
@@ -303877,7 +303877,7 @@
        []
       ],
       "color-valid-relative-color-expected.txt": [
-       "6ab9fe22389291473256ae71f72600c0b0046095",
+       "b55eed3b173624f2712140a65ee383d8338d53d4",
        []
       ],
       "opacity-valid-expected.txt": [
@@ -441252,7 +441252,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "b6e628e78a50e4e111bfc8cc34882a718ae43cb2",
+       "95c8eee226b6c28bb2e970cb9c1d3c372613df2e",
        [
         null,
         {}
@@ -441399,7 +441399,7 @@
        ]
       ],
       "color-valid-relative-color.html": [
-       "652c0c8fc458d965f0f7460290ab9538331030b1",
+       "5f83f0f0746c376be9b9c5ef57b22379854fe374",
        [
         null,
         {}
@@ -502295,7 +502295,7 @@
        ]
       ],
       "request-upload.h2.any.js": [
-       "68122278ccd2b1009de7697f3a092308d5695ce1",
+       "eedc2bf6a769d0ba84171eeecac659ba5ea2b501",
        [
         "fetch/api/basic/request-upload.h2.any.html",
         {
