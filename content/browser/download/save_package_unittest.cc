@@ -310,8 +310,9 @@ class SavePackageFencedFrameTest : public SavePackageTest {
 class FakeLocalFrameWithSavableResourceLinks : public FakeLocalFrame {
  public:
   explicit FakeLocalFrameWithSavableResourceLinks(RenderFrameHost* rfh) {
-    Init(static_cast<TestRenderFrameHost*>(rfh)
-             ->GetRemoteAssociatedInterfaces());
+    auto* test_host = static_cast<TestRenderFrameHost*>(rfh);
+    test_host->ResetLocalFrame();
+    Init(test_host->GetRemoteAssociatedInterfaces());
   }
 
   bool is_called() const { return is_called_; }

@@ -39,6 +39,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
  public:
   explicit LocalFrameInterceptor(RenderFrameHost* rfh)
       : rfh_(static_cast<TestRenderFrameHost*>(rfh)) {
+    rfh_->ResetLocalFrame();
     Init(rfh_->GetRemoteAssociatedInterfaces());
   }
 

@@ -4596,8 +4596,9 @@ TEST_F(NavigationControllerTest, NavigateToNavigationApiKey_KeyForWrongFrame) {
 class FakeLocalFrameWithDisposedEntries : public content::FakeLocalFrame {
  public:
   explicit FakeLocalFrameWithDisposedEntries(RenderFrameHost* host) {
-    Init(static_cast<TestRenderFrameHost*>(host)
-             ->GetRemoteAssociatedInterfaces());
+    auto* test_host = static_cast<TestRenderFrameHost*>(host);
+    test_host->ResetLocalFrame();
+    Init(test_host->GetRemoteAssociatedInterfaces());
   }
 
   const std::vector<std::string>& disposed_keys() const {
