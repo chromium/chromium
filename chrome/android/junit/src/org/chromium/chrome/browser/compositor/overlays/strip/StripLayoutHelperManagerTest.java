@@ -640,6 +640,8 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testTabStripTransition_Hide() {
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
@@ -718,11 +720,14 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testTabStripTransition_Show_ScrimUsesToolbarBgColor() {
         doTestTabStripTransition_Show(mToolbarPrimaryColor);
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
     public void testTabStripTransition_Show_ScrimUsesStripBgColor() {
         ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(false);
         doTestTabStripTransition_Show(mStripLayoutHelperManager.getBackgroundColor());

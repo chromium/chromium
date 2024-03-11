@@ -1712,7 +1712,7 @@ public class ToolbarManager
                 mActivityTabProvider,
                 mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
-        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
             // Only update the tab strip value when DTC is enabled.
             mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
         }
@@ -1740,13 +1740,13 @@ public class ToolbarManager
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
 
-            if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+            if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
                 mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
                 stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
             }
         }
 
-        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
             mTabStripHeightObserver =
                     new TabStripHeightObserver() {
                         @Override

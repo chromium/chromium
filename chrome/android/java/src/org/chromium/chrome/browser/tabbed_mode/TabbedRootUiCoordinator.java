@@ -1036,7 +1036,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
 
         int topControlsNewHeight;
-        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
             // This method can be called when the toolbar didn't go through a layout pass (e.g. when
             // theme switches in settings, activity recreates), so getToolbar().getHeight() returns
             // 0.
@@ -1163,7 +1163,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initTabStripTransitionCoordinator() {
         // Tab strip transition is only supported for tablets.
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                || !ChromeFeatureList.sDynamicTopChrome.isEnabled()) return;
+                || !ToolbarFeatures.isDynamicTopChromeEnabled()) return;
 
         mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);

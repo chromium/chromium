@@ -9,7 +9,6 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -74,7 +73,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                         .build();
 
         mTabStripHeightSupplier = tabStripHeightSupplier;
-        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+        if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
             mTabStripHeightChangeCallback =
                     newHeight -> mScrimModel.set(ScrimProperties.TOP_MARGIN, newHeight);
             mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);

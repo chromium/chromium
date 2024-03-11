@@ -169,7 +169,8 @@ public class OmniboxFeatures {
     /** Returns whether to show the incognito status for tablet. */
     public static boolean showIncognitoStatusForTablet() {
         return ChromeFeatureList.sTabletToolbarIncognitoStatus.isEnabled()
-                || ChromeFeatureList.sDynamicTopChrome.isEnabled();
+                || (ChromeFeatureList.sDynamicTopChrome.isEnabled()
+                        && !ChromeFeatureList.sTabStripLayoutOptimization.isEnabled());
     }
 
     /** Returns whether answer suggestions should be annotated with attached action chips. */

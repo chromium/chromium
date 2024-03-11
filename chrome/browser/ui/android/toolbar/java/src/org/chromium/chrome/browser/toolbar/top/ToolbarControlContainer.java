@@ -539,7 +539,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             mLocationBarRect.offset(mTempPosition[0], mTempPosition[1]);
 
             int shadowHeight;
-            if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+            if (ToolbarFeatures.isDynamicTopChromeEnabled()) {
                 // When DynamicTopChrome is enabled, the tab strip height can be unpredictable
                 // during capture.
                 shadowHeight = mToolbarHairline.getHeight();
