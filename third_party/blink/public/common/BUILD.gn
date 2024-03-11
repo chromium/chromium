@@ -187,6 +187,7 @@ source_set("headers") {
     "interest_group/auction_config.h",
     "interest_group/auction_config_mojom_traits.h",
     "interest_group/auction_server_request_flags.h",
+    "interest_group/devtools_serialization.h",
     "interest_group/interest_group.h",
     "interest_group/interest_group_mojom_traits.h",
     "interest_group/seller_capabilities.h",

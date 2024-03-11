@@ -85,6 +85,7 @@
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/common/interest_group/devtools_serialization.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -2300,7 +2301,7 @@ InterestGroupAuction::InterestGroupAuction(
         parent_ ? base::optional_ref<const std::string>(
                       parent->devtools_auction_id_)
                 : base::optional_ref<const std::string>(),
-        config_->SerializeForDevtools());
+        SerializeAuctionConfigForDevtools(*config_));
   }
 
   uint32_t child_pos = 0;
@@ -2932,7 +2933,7 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
         parent_ ? base::optional_ref<const std::string>(
                       parent_->devtools_auction_id_)
                 : base::optional_ref<const std::string>(),
-        config_->SerializeForDevtools());
+        SerializeAuctionConfigForDevtools(*config_));
   }
 
   // If we haven't started the bidding and scoring phase, we will just handle

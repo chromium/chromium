@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/common/interest_group/devtools_serialization.h"
 
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 
 namespace blink {
 namespace {
 
-TEST(AuctionConfigTest, SerializeComponents) {
+TEST(SerializeAuctionConfigTest, SerializeComponents) {
   // Component auction serialization just includes the origins.
   AuctionConfig config = CreateBasicAuctionConfig();
   config.non_shared_params.component_auctions.push_back(
@@ -73,10 +74,10 @@ TEST(AuctionConfigTest, SerializeComponents) {
 }
 )";
 
-  EXPECT_THAT(config.SerializeForDevtools(), base::test::IsJson(kExpected));
+  EXPECT_THAT(SerializeAuctionConfigForDevtools(config), base::test::IsJson(kExpected));
 }
 
-TEST(AuctionConfigTest, FullConfig) {
+TEST(SerializeAuctionConfigTest, FullConfig) {
   AuctionConfig config = CreateFullAuctionConfig();
   // Fix the nonce for easier testing.
   config.non_shared_params.auction_nonce =
@@ -188,14 +189,14 @@ TEST(AuctionConfigTest, FullConfig) {
 }
 )";
 
-  EXPECT_THAT(config.SerializeForDevtools(), base::test::IsJson(kExpected));
+  EXPECT_THAT(SerializeAuctionConfigForDevtools(config), base::test::IsJson(kExpected));
 }
 
-TEST(AuctionConfigTest, PendingPromise) {
+TEST(SerializeAuctionConfigTest, PendingPromise) {
   AuctionConfig config = CreateBasicAuctionConfig();
   config.non_shared_params.seller_signals =
       AuctionConfig::MaybePromiseJson::FromPromise();
-  base::Value::Dict serialized = config.SerializeForDevtools();
+  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
   const base::Value::Dict* signal_dict = serialized.FindDict("sellerSignals");
   ASSERT_TRUE(signal_dict);
 
@@ -207,12 +208,12 @@ TEST(AuctionConfigTest, PendingPromise) {
   EXPECT_THAT(*signal_dict, base::test::IsJson(kExpected));
 }
 
-TEST(AuctionConfigTest, ServerResponse) {
+TEST(SerializeAuctionConfigTest, ServerResponse) {
   AuctionConfig config = CreateBasicAuctionConfig();
   config.server_response.emplace();
   config.server_response->request_id =
       base::Uuid::ParseLowercase("626e6419-1872-48ac-877d-c4c096f28284");
-  base::Value::Dict serialized = config.SerializeForDevtools();
+  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
   const base::Value::Dict* server_dict = serialized.FindDict("serverResponse");
   ASSERT_TRUE(server_dict);
 

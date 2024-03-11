@@ -398,9 +398,6 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
       const std::optional<blink::DirectFromSellerSignals>&
           direct_from_seller_signals) const;
 
-  // Serializes the configuration in a manner suitable for sending to devtools.
-  base::Value::Dict SerializeForDevtools() const;
-
   // Seller running the auction.
   url::Origin seller;
 
@@ -447,7 +444,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Origin for the Coordinator to be used for Private Aggregation.
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 450, R"(
+  static_assert(__LINE__ == 447, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom
@@ -457,11 +454,11 @@ If modifying AuctionConfig fields, please make sure to also modify:
 * Fuzzer test in:
     content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_auction.textproto
 * NumPromises() if it's a Promise.
-* SerializeForDevtools()
+* SerializeAuctionConfigForDevtools() (in devtools_serialization.cc)
 * Add some non-trivial values for the type into CreateFullAuctionConfig() in
     third_party/blink/common/interest_group/auction_config_test_util.cc
 * Update devtools serialization expectations in
-    third_party/blink/common/interest_group/auction_config_unittest.cc
+    third_party/blink/common/interest_group/devtools_serialization_unittest.cc
 * If the value has special validation logic, add a test to
     third_party/blink/common/interest_group/auction_config_mojom_traits_test.cc
   (If it's just passing along some values, adding to CreateFullAuctionConfig()
