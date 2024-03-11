@@ -1072,21 +1072,15 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         AggregatableResult::kNoMatchingSourceFilterData);
   }
 
-  const bool deactivate_after_filtering = base::FeatureList::IsEnabled(
-      kAttributionReportingDeactivateAfterFilterMatch);
-
-  if (deactivate_after_filtering) {
-    // Delete all unattributed sources.
-    if (!DeleteSources(source_ids_to_delete)) {
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
-    }
-
-    // Deactivate all attributed sources not used.
-    if (!DeactivateSources(source_ids_to_deactivate)) {
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
-    }
+  // Delete all unattributed sources.
+  if (!DeleteSources(source_ids_to_delete)) {
+    return assemble_report_result(EventLevelResult::kInternalError,
+                                  AggregatableResult::kInternalError);
+  }
+  // Deactivate all attributed sources not used.
+  if (!DeactivateSources(source_ids_to_deactivate)) {
+    return assemble_report_result(EventLevelResult::kInternalError,
+                                  AggregatableResult::kInternalError);
   }
 
   std::optional<uint64_t> dedup_key;
@@ -1214,20 +1208,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
     return assemble_report_result(store_event_level_status,
                                   store_aggregatable_status);
-  }
-
-  if (!deactivate_after_filtering) {
-    // Delete all unattributed sources.
-    if (!DeleteSources(source_ids_to_delete)) {
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
-    }
-
-    // Deactivate all attributed sources not used.
-    if (!DeactivateSources(source_ids_to_deactivate)) {
-      return assemble_report_result(EventLevelResult::kInternalError,
-                                    AggregatableResult::kInternalError);
-    }
   }
 
   // Based on the deletion logic here and the fact that we delete sources

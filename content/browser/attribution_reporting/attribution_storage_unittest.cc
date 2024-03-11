@@ -1282,9 +1282,6 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        AttributeFalseImpression_OtherSourceDeactivated) {
-  base::test::ScopedFeatureList feature_list(
-      kAttributionReportingDeactivateAfterFilterMatch);
-
   storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -1301,25 +1298,6 @@ TEST_F(AttributionStorageTest,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
-}
-
-TEST_F(AttributionStorageTest,
-       AttributeFalseImpression_OtherSourceStillActive) {
-  storage()->StoreSource(SourceBuilder().Build());
-
-  task_environment_.FastForwardBy(base::Milliseconds(1));
-  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
-      {.trigger_data = 7, .window_index = 0}});
-  StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
-  delegate()->set_randomized_response(std::nullopt);
-
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2u));
-
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kFalselyAttributedSource,
-            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2u));
 }
 
 TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsChanged) {
@@ -1381,6 +1359,7 @@ TEST_F(AttributionStorageTest,
           .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
           .SetPriority(0)
           .SetAggregatableBudgetConsumed(1)
+          .SetActiveState(StoredSource::ActiveState::kInactive)
           .BuildStored(),
       DefaultAggregatableHistogramContributions(), trigger);
 
