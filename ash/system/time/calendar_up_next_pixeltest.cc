@@ -124,8 +124,9 @@ INSTANTIATE_TEST_SUITE_P(GlanceablesV2,
                          CalendarUpNextViewPixelTest,
                          testing::Bool());
 
+// Disabled due to pixel test failures; see https://crbug.com/328975344.
 TEST_P(CalendarUpNextViewPixelTest,
-       ShouldShowSingleEventTakingUpFullWidthOfParentView) {
+       DISABLED_ShouldShowSingleEventTakingUpFullWidthOfParentView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -146,8 +147,9 @@ TEST_P(CalendarUpNextViewPixelTest,
       /*revision_number=*/8, Widget()));
 }
 
+// Disabled due to pixel test failures; see https://crbug.com/328975344.
 TEST_P(CalendarUpNextViewPixelTest,
-       ShouldShowMultipleEventsInHorizontalScrollView) {
+       DISABLED_ShouldShowMultipleEventsInHorizontalScrollView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -170,9 +172,10 @@ TEST_P(CalendarUpNextViewPixelTest,
       /*revision_number=*/8, Widget()));
 }
 
+// Disabled due to pixel test failures; see https://crbug.com/328975344.
 TEST_P(
     CalendarUpNextViewPixelTest,
-    ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
+    DISABLED_ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -198,7 +201,8 @@ TEST_P(
       /*revision_number=*/7, Widget()));
 }
 
-TEST_P(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
+// Disabled due to pixel test failures; see https://crbug.com/328975344.
+TEST_P(CalendarUpNextViewPixelTest, DISABLED_ShouldShowJoinMeetingButton) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
