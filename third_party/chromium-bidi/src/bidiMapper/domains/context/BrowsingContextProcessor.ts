@@ -24,7 +24,6 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   type Browser,
-  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -322,10 +321,11 @@ export class BrowsingContextProcessor {
     return {};
   }
 
-  locateNodes(_params: BrowsingContext.LocateNodesParameters): Promise<never> {
-    throw new UnsupportedOperationException(
-      'Command `browsingContext.locateNodes` not yet implemented.'
-    );
+  async locateNodes(
+    params: BrowsingContext.LocateNodesParameters
+  ): Promise<BrowsingContext.LocateNodesResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    return await context.locateNodes(params);
   }
 
   /**
