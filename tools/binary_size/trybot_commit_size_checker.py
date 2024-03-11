@@ -277,26 +277,24 @@ def _CreateTestingSymbolsDeltas(before_mapping_paths, after_mapping_paths):
 def _GenerateBinarySizePluginDetails(metrics):
   binary_size_listings = []
   for delta, log_name in metrics:
-    # Only show the base module delta if it is significant.
-    if (log_name == _BASE_RESOURCE_SIZES_LOG and delta.IsAllowable()
-        and not delta.IsLargeImprovement()):
-      continue
+    # Give more friendly names to Normalized APK Size metrics.
+    name = delta.name
+    if log_name == _RESOURCE_SIZES_LOG:
+      # The Gerrit plugin looks for this name to put it in the summary.
+      name = 'Android Binary Size'
+    elif log_name == _RESOURCE_SIZES_64_LOG:
+      name = 'Android Binary Size (arm64 high end) (TrichromeLibrary64.apk)'
     listing = {
-        'name': delta.name,
+        'name': name,
         'delta': '{} {}'.format(_FormatNumber(delta.actual), delta.units),
         'limit': '{} {}'.format(_FormatNumber(delta.expected), delta.units),
         'log_name': log_name,
         'allowed': delta.IsAllowable(),
         'large_improvement': delta.IsLargeImprovement(),
     }
-    if log_name == _RESOURCE_SIZES_LOG:
-      listing['name'] = 'Android Binary Size (arm32)'
-    elif log_name == _RESOURCE_SIZES_64_LOG:
-      listing['name'] = 'Android Binary Size (high-end arm64)'
-    elif delta.actual == 0:
-      # The above two deltas are always shown, even if unchanged.
-      continue
-    binary_size_listings.append(listing)
+    # Always show the Normalized APK Size.
+    if log_name == _RESOURCE_SIZES_LOG or delta.actual != 0:
+      binary_size_listings.append(listing)
   binary_size_listings.sort(key=lambda x: x['name'])
 
   binary_size_extras = [
