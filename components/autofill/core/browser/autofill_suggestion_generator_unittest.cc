@@ -2003,6 +2003,38 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   EXPECT_THAT(manual_fallback_suggestions, ContainsAddressFooterSuggestions());
 }
 
+// Tests that regular suggestions are filtered by the last usage timestamp, but
+// manual fallback suggestions are not.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetProfilesToSuggest_TimestampFiltering) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullProfile2();
+  profile2.set_use_date(AutofillClock::Now() - kDisusedDataModelTimeDelta -
+                        base::Days(1));
+  personal_data().AddProfile(profile1);
+  personal_data().AddProfile(profile2);
+
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      profiles_to_suggest =
+          test_api(suggestion_generator())
+              .GetProfilesToSuggest(
+                  NAME_FIRST, /*field_contents=*/u"",
+                  /*field_is_autofilled=*/false, {NAME_FIRST},
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  // Expect that left click (or regular triggering) filters profiles.
+  EXPECT_EQ(profiles_to_suggest.size(), 1u);
+
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      profiles_to_suggest_from_manual_fallback =
+          test_api(suggestion_generator())
+              .GetProfilesToSuggest(
+                  NAME_FIRST, /*field_contents=*/u"",
+                  /*field_is_autofilled=*/false, {NAME_FIRST},
+                  AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  // But manual fallback triggering does not.
+  EXPECT_EQ(profiles_to_suggest_from_manual_fallback.size(), 2u);
+}
+
 // TODO(crbug.com/1441410): Clean up when the feature is launched.
 TEST_F(AutofillSuggestionGeneratorTest, ClearAddressFormSuggestion) {
   base::test::ScopedFeatureList features;

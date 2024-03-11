@@ -113,6 +113,11 @@ inline constexpr size_t kStateTypeValueFormFillingLimit = 1000;
 // will be dropped.
 inline constexpr size_t kMaxDeduplicatedProfilesForSuggestion = 10;
 
+// Limits the number of profiles used to generate suggestions when triggering
+// Autofill via manual fallback. When using manual fallback, filters such as
+// prefix matching and the last time a profile was used used are not applied.
+inline constexpr size_t kMaxDisplayedAddressSuggestions = 10;
+
 // Limits the number of profiles from the list of stored profiles that Autofill
 // will keep after prefix matching with a field's contents to show as
 // suggestions. Remaining profiles will be dropped.

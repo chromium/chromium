@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
@@ -19,12 +20,16 @@ class AutofillSuggestionGeneratorTestApi {
       : suggestion_generator_(suggestion_generator) {}
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  GetProfilesToSuggest(FieldType trigger_field_type,
-                       const std::u16string& field_contents,
-                       bool field_is_autofilled,
-                       const FieldTypeSet& field_types) {
+  GetProfilesToSuggest(
+      FieldType trigger_field_type,
+      const std::u16string& field_contents,
+      bool field_is_autofilled,
+      const FieldTypeSet& field_types,
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
     return suggestion_generator_->GetProfilesToSuggest(
-        trigger_field_type, field_contents, field_is_autofilled, field_types);
+        trigger_field_type, field_contents, field_is_autofilled, field_types,
+        trigger_source);
   }
 
   std::vector<CreditCard> GetOrderedCardsToSuggest(

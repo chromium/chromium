@@ -128,11 +128,17 @@ class AutofillSuggestionGenerator {
   // user, sorted by their relevance. This involves many steps from fetching the
   // profiles to matching with `field_contents`, and deduplicating based on
   // `field_types`, which are the relevant types for the current suggestion.
+  // When `trigger_source` is manual fallback, profiles are not deduplicated nor
+  // filtered out, exception being when there is no profile information to fill
+  // `trigger_field_type`. Furthermore, if `trigger_field_type` is not of type
+  // address, every single profile is displayed (up to a max of
+  // `kMaxDisplayedAddressSuggestions`).
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
   GetProfilesToSuggest(FieldType trigger_field_type,
                        const std::u16string& field_contents,
                        bool field_is_autofilled,
-                       const FieldTypeSet& field_types);
+                       const FieldTypeSet& field_types,
+                       AutofillSuggestionTriggerSource trigger_source);
 
   // Returns the local and server cards ordered by the Autofill ranking.
   // If `suppress_disused_cards`, local expired disused cards are removed.

@@ -1024,9 +1024,9 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
           : u"";
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      profiles_to_suggest =
-          GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
-                               trigger_field.is_autofilled, field_types);
+      profiles_to_suggest = GetProfilesToSuggest(
+          trigger_field_type, field_value_for_filtering,
+          trigger_field.is_autofilled, field_types, trigger_source);
 
   // Find the profiles that were hidden prior to the effects of the feature
   // kAutofillUseAddressRewriterInProfileSubsetComparison.
@@ -1047,10 +1047,10 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
       previously_suggested_profiles =
           street_address_field_types.contains(trigger_field_type)
               ? profiles_to_suggest
-              : GetProfilesToSuggest(trigger_field_type,
-                                     field_value_for_filtering,
-                                     trigger_field.is_autofilled,
-                                     field_types_without_address_types);
+              : GetProfilesToSuggest(
+                    trigger_field_type, field_value_for_filtering,
+                    trigger_field.is_autofilled,
+                    field_types_without_address_types, trigger_source);
   for (const AutofillProfile* profile : previously_suggested_profiles) {
     previously_hidden_profiles_guid.erase(profile->guid());
   }
@@ -1077,17 +1077,33 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
     FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const FieldTypeSet& field_types) {
-  std::u16string field_contents_canon =
-      NormalizeForComparisonForType(field_contents, trigger_field_type);
-
+    const FieldTypeSet& field_types,
+    AutofillSuggestionTriggerSource trigger_source) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<AutofillProfile*> sorted_profiles =
       personal_data().GetProfilesToSuggest();
+  std::u16string field_contents_canon =
+      NormalizeForComparisonForType(field_contents, trigger_field_type);
+  if (!IsAddressType(trigger_field_type)) {
+    // If Autofill was triggered form a non address field, we do not want to
+    // filter out any profile. Instead we want the user to access everything
+    // they have stored (up to a max of kMaxDisplayedAddressSuggestions). Note
+    // that in this case the fact that the field is not an address field does
+    // not impact the suggestion generation, this is because both the main text
+    // and the label are built independently from the `trigger_field_type`.
+    return std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>(
+        sorted_profiles.begin(),
+        sorted_profiles.begin() +
+            std::min(kMaxDisplayedAddressSuggestions, sorted_profiles.size()));
+  }
 
   // When suggesting with no prefix to match, suppress disused address
-  // suggestions as well as those based on invalid profile data.
-  if (field_contents_canon.empty()) {
+  // suggestions as well as those based on invalid profile data if the
+  // `trigger_source` is not
+  // `AutofillSuggestionTriggerSource::kManualFallbackAddress`. In the manual
+  // fallback case, we want users to have access to all their stored profiles.
+  if (field_contents_canon.empty() &&
+      !IsAddressAutofillManuallyTriggered(trigger_source)) {
     const base::Time min_last_used =
         AutofillClock::Now() - kDisusedDataModelTimeDelta;
     RemoveProfilesNotUsedSinceTimestamp(min_last_used, sorted_profiles);
@@ -1097,7 +1113,16 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
       GetPrefixMatchedProfiles(sorted_profiles, trigger_field_type,
                                field_contents, field_contents_canon,
                                field_is_autofilled);
-
+  // Manual fallback should not deduplicate profiles. Users should have access
+  // to all their stored profiles when using manual fallback. The one exception
+  // is when `trigger_field_type` is an address field and an `AutofillProfile`
+  // does not have information stored for it.
+  if (IsAddressAutofillManuallyTriggered(trigger_source)) {
+    return std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>(
+        matched_profiles.begin(),
+        matched_profiles.begin() +
+            std::min(kMaxDisplayedAddressSuggestions, matched_profiles.size()));
+  }
   const AutofillProfileComparator comparator(personal_data().app_locale());
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.

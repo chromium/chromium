@@ -1488,25 +1488,38 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   for (const auto& field : form.fields) {
-    // Expect 2 address suggestions + footer because the fixture created three
-    // profiles during set up, one of which is empty and cannot be suggested
-    // (see `CreateTestAutofillProfiles()`).
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackAddress);
-    external_delegate()->CheckSuggestionCount(field.global_id(), 4);
-    base::ranges::all_of(
+    // Expect 2 address suggestions + separator + footer because the fixture
+    // created three profiles during set up (see
+    // `CreateTestAutofillProfiles()`). Note that one profile has all its values
+    // empty, except for the country. This is the only case when a suggestion is
+    // generated for it.
+    external_delegate()->CheckSuggestionCount(
+        field.global_id(), field.label == u"Country" ? 5 : 4);
+    EXPECT_TRUE(base::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
-          return suggestion.popup_item_id == PopupItemId::kAddressEntry;
-        });
-    // Expect 3 credit card suggestions + footer because the fixture created 3
-    // credit cards during setup (see `CreateTestCreditCards()`).
+          // The field is classified, therefore the suggestion can be accepted.
+          return suggestion.popup_item_id == PopupItemId::kAddressEntry
+                     ? suggestion.is_acceptable
+                     : (suggestion.popup_item_id == PopupItemId::kSeparator ||
+                        suggestion.popup_item_id ==
+                            PopupItemId::kAutofillOptions);
+        }));
+    // Expect 3 credit card suggestions + separator + footer because the fixture
+    // created 3 credit cards during setup (see `CreateTestCreditCards()`).
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackPayments);
     external_delegate()->CheckSuggestionCount(field.global_id(), 5);
     EXPECT_TRUE(base::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
-          return suggestion.popup_item_id != PopupItemId::kAddressEntry ||
-                 !suggestion.is_acceptable;
+          // The field is not of type address, therefore the suggestion cannot
+          // be acceptable.
+          return suggestion.popup_item_id == PopupItemId::kCreditCardEntry
+                     ? !suggestion.is_acceptable
+                     : (suggestion.popup_item_id == PopupItemId::kSeparator ||
+                        suggestion.popup_item_id ==
+                            PopupItemId::kAutofillOptions);
         }));
   }
 }
