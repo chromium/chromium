@@ -2090,13 +2090,7 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
   EXPECT_EQ("777", wallpaper_info.location);
-  EXPECT_EQ(online_wallpaper_dir_.GetPath()
-                .Append("sea_pen")
-                .Append(kAccountId1.GetAccountIdKey())
-                .Append("777")
-                .AddExtension(".jpg")
-                .value(),
-            wallpaper_info.user_file_path);
+  EXPECT_TRUE(wallpaper_info.user_file_path.empty());
 
   // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
   // channels +- 1.
@@ -2118,13 +2112,7 @@ TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
   EXPECT_EQ("888", wallpaper_info.location);
-  EXPECT_EQ(online_wallpaper_dir_.GetPath()
-                .Append("sea_pen")
-                .Append(kAccountId1.GetAccountIdKey())
-                .Append("888")
-                .AddExtension(".jpg")
-                .value(),
-            wallpaper_info.user_file_path);
+  EXPECT_TRUE(wallpaper_info.user_file_path.empty());
 
   // Simulates device reboot.
   controller_->ReloadWallpaperForTesting(/*clear_cache=*/true);
@@ -2146,6 +2134,49 @@ TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
   // channels +- 1.
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
+      /*max_deviation=*/1));
+}
+
+TEST_P(WallpaperControllerTest, LoadsSeaPenWallpaperWithInvalidUserFilePath) {
+  // info.user_file_path should be ignored, but older versions may have invalid
+  // strings in it. Write an older WallpaperInfo to prefs.
+  ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(
+      kAccountId1, WallpaperInfo("1", WALLPAPER_LAYOUT_CENTER_CROPPED,
+                                 WallpaperType::kSeaPen, base::Time::Now(),
+                                 "invalid_user_file_path.jpg")));
+
+  gfx::ImageSkia created_image;
+  {
+    // Write a corresponding jpg to disk in the correct place.
+    std::string jpg_bytes = CreateEncodedImageForTesting(
+        {1, 1}, SK_ColorBLUE, data_decoder::mojom::ImageCodec::kDefault,
+        &created_image);
+    ASSERT_FALSE(jpg_bytes.empty());
+
+    SeaPenImage sea_pen_image = {std::move(jpg_bytes), 1u};
+
+    base::test::TestFuture<const gfx::ImageSkia&>
+        decode_and_save_sea_pen_image_future;
+    SeaPenWallpaperManager::GetInstance()->DecodeAndSaveSeaPenImage(
+        kAccountId1, sea_pen_image,
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("search_query"),
+        decode_and_save_sea_pen_image_future.GetCallback());
+
+    ASSERT_TRUE(gfx::test::AreBitmapsClose(
+        *created_image.bitmap(),
+        *decode_and_save_sea_pen_image_future.Get().bitmap(),
+        /*max_deviation=*/1));
+  }
+
+  {
+    // Log in.
+    SimulateUserLogin(kAccountId1);
+    controller_->ShowUserWallpaper(kAccountId1);
+    RunAllTasksUntilIdle();
+  }
+
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      *created_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
       /*max_deviation=*/1));
 }
 

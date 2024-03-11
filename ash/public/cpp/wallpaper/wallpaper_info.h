@@ -57,6 +57,7 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   // Google Photos id.
   // For SeaPen wallpaper, location is a uint32 id as a string.
   std::string location;
+
   // user_file_path is the full path of the wallpaper file and is used as
   // the new CurrentWallpaper key. This field is required as the old key which
   // was set to the filename part made the UI mistakenly highlight multiple

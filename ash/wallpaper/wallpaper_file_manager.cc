@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
@@ -66,6 +67,16 @@ base::FilePath GetExistingWallpaperPath(const WallpaperType type,
   }
 
   wallpaper_path = wallpaper_dir.Append(location);
+
+  if (type == WallpaperType::kSeaPen) {
+    // SeaPen wallpaper stores WallpaperInfo::location with just the numeric id
+    // with no extension. In that case, `ReplaceExtension` will simply append
+    // ".jpg". However, other code paths may call this with location="xxx.jpg".
+    // `ReplaceExtension` behavior is therefore safer than calling
+    // `AddExtension` which may result in ".jpg.jpg".
+    wallpaper_path = wallpaper_path.ReplaceExtension(".jpg");
+  }
+
   if (!base::PathExists(wallpaper_path)) {
     return base::FilePath();
   }

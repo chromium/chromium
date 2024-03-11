@@ -2406,12 +2406,9 @@ void WallpaperControllerImpl::OnSeaPenWallpaperDecoded(
   }
   std::move(callback).Run(true);
 
-  WallpaperInfo wallpaper_info(
-      base::NumberToString(sea_pen_image_id), WALLPAPER_LAYOUT_CENTER_CROPPED,
-      WallpaperType::kSeaPen, base::Time::Now(),
-      sea_pen_wallpaper_manager_
-          .GetFilePathForImageId(account_id, sea_pen_image_id)
-          .value());
+  WallpaperInfo wallpaper_info(base::NumberToString(sea_pen_image_id),
+                               WALLPAPER_LAYOUT_CENTER_CROPPED,
+                               WallpaperType::kSeaPen, base::Time::Now());
 
   SetWallpaperImpl(account_id, wallpaper_info, image_skia,
                    /*show_wallpaper=*/IsActiveUser(account_id));
