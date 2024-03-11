@@ -254,10 +254,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // See https://crbug.com/324485311.
   virtual bool IsIgnored() const;
 
-  // Deprecated. Use ViewAccessibility::SetHasPopup instead.
-  // See https://crbug.com/324485311.
-  void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
-
   // Override information provided to users by screen readers when describing
   // elements in a menu, listbox, or another set-like item. For example, "New
   // tab, menu item 1 of 5". If not specified, a view's index in its parent and

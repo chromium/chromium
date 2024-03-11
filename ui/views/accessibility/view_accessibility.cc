@@ -681,10 +681,6 @@ bool ViewAccessibility::IsIgnored() const {
   return is_ignored_;
 }
 
-void ViewAccessibility::OverrideHasPopup(const ax::mojom::HasPopup has_popup) {
-  override_data_.SetHasPopup(has_popup);
-}
-
 void ViewAccessibility::OverridePosInSet(int pos_in_set, int set_size) {
   override_data_.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
                                  pos_in_set);
