@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 
 namespace growth {
 namespace {
+inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
 
 bool MatchPref(const base::Value::List* criterias,
                std::string_view pref_path,
@@ -53,17 +55,45 @@ int GetMilestone() {
 // Matched if any of the given `scheduling_targetings` is matched.
 bool MatchSchedulings(const std::vector<std::unique_ptr<SchedulingTargeting>>&
                           scheduling_targetings) {
+  if (scheduling_targetings.empty()) {
+    // Match campaign if there is no scheduling targeting criteria.
+    return true;
+  }
+
   const auto now = base::Time::Now();
   for (const auto& scheduling_targeting : scheduling_targetings) {
-    if (scheduling_targeting->GetStartTime().ToDeltaSinceWindowsEpoch() <=
-            now.ToDeltaSinceWindowsEpoch() &&
-        scheduling_targeting->GetEndTime().ToDeltaSinceWindowsEpoch() >=
-            now.ToDeltaSinceWindowsEpoch()) {
+    if (scheduling_targeting->GetStartTime() <= now &&
+        scheduling_targeting->GetEndTime() >= now) {
       return true;
     }
   }
 
   return false;
+}
+
+bool MatchExperimentTags(const base::Value::List* experiment_tags) {
+  if (!ash::features::IsGrowthCampaignsExperimentTagTargetingEnabled()) {
+    // Campaign not match if experiment tag targeting is not enabled.
+    return false;
+  }
+
+  if (!experiment_tags || experiment_tags->empty()) {
+    // Campaign matched if there is no experiment tag targeting.
+    return true;
+  }
+
+  const auto exp_tag = base::GetFieldTrialParamValueByFeature(
+      ash::features::kGrowthCampaignsExperimentTagTargeting,
+      kCampaignsExperimentTag);
+
+  if (exp_tag.empty()) {
+    // Campaign not match if no experiment tag exists.
+    return false;
+  }
+
+  // Campaign is matched if the tag from field trail param matches any of the
+  // tag in the targeting criteria.
+  return base::Contains(*experiment_tags, exp_tag);
 }
 
 bool MatchSessionTargeting(const SessionTargeting& targeting) {
@@ -72,7 +102,8 @@ bool MatchSessionTargeting(const SessionTargeting& targeting) {
     return true;
   }
 
-  return MatchSchedulings(targeting.GetSchedulings());
+  return MatchSchedulings(targeting.GetSchedulings()) &&
+         MatchExperimentTags(targeting.GetExperimentTags());
 }
 
 }  // namespace

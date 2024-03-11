@@ -46,6 +46,9 @@ inline constexpr char kSchedulingTargetings[] = "schedulings";
 inline constexpr char kSchedulingStart[] = "start";
 inline constexpr char kSchedulingEnd[] = "end";
 
+// Experiment Tag Targeting paths.
+inline constexpr char kExperimentTargetings[] = "experimentTags";
+
 // Payloads
 inline constexpr char kPayloadPathTemplate[] = "payload.%s";
 inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
@@ -205,9 +208,10 @@ SessionTargeting::~SessionTargeting() = default;
 const std::vector<std::unique_ptr<SchedulingTargeting>>
 SessionTargeting::GetSchedulings() const {
   std::vector<std::unique_ptr<SchedulingTargeting>> schedulings;
-
   auto* scheduling_dicts = GetListCriteria(kSchedulingTargetings);
   if (!scheduling_dicts) {
+    // TODO(b/308440474): Empty scheduling targeting is a valid use case. Remove
+    // the error recording for that case.
     LOG(ERROR) << "Invalid scheduling targetings";
     RecordCampaignsManagerError(
         CampaignsManagerError::kInvalidSchedulingTargeting);
@@ -216,6 +220,7 @@ SessionTargeting::GetSchedulings() const {
 
   for (auto& scheduling_dict : *scheduling_dicts) {
     if (!scheduling_dict.is_dict()) {
+      // Ignore invalid scheduling.
       RecordCampaignsManagerError(CampaignsManagerError::kInvalidScheduling);
       continue;
     }
@@ -223,6 +228,10 @@ SessionTargeting::GetSchedulings() const {
         std::make_unique<SchedulingTargeting>(&scheduling_dict.GetDict()));
   }
   return schedulings;
+}
+
+const base::Value::List* SessionTargeting::GetExperimentTags() const {
+  return GetListCriteria(kExperimentTargetings);
 }
 
 }  // namespace growth

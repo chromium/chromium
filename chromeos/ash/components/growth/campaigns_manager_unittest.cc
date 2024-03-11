@@ -8,12 +8,14 @@
 #include <optional>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -31,7 +33,7 @@ using ::testing::_;
 namespace growth {
 namespace {
 
-constexpr char kValidCampaignsFileTemplate[] = R"(
+inline constexpr char kValidCampaignsFileTemplate[] = R"(
     {
       "0": [
         // Invalid targeting.
@@ -64,7 +66,7 @@ constexpr char kValidCampaignsFileTemplate[] = R"(
     }
 )";
 
-constexpr char kValidDemoModeTargeting[] = R"(
+inline constexpr char kValidDemoModeTargeting[] = R"(
     "demoMode": {
       "retailers": ["bby", "bestbuy", "bbt"],
       "storeIds": ["2", "4", "6"],
@@ -76,7 +78,9 @@ constexpr char kValidDemoModeTargeting[] = R"(
     }
 )";
 
-constexpr char kCampaignsFileName[] = "campaigns.json";
+inline constexpr char kCampaignsFileName[] = "campaigns.json";
+
+inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
 
 inline constexpr char kCampaignsManagerErrorHistogramName[] =
     "Ash.Growth.CampaignsManager.Error";
@@ -195,6 +199,16 @@ class CampaignsManagerTest : public testing::Test {
         .WillRepeatedly(testing::ReturnRef(app_version));
   }
 
+  void InitilizeCampaignsExperimentTag(const std::string& exp_tag) {
+    base::FieldTrialParams params;
+    params[kCampaignsExperimentTag] = exp_tag;
+    base::test::FeatureRefAndParams campaigns_experiment_tag(
+        ash::features::kGrowthCampaignsExperimentTagTargeting, params);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {campaigns_experiment_tag}, {});
+  }
+
   void VerifyDemoModePayload(const Campaign* campaign) {
     const auto* payload = campaign->FindDictByDottedPath("payload.demoModeApp");
     ASSERT_EQ("/asset/peripherals_lang1.mp4",
@@ -217,6 +231,17 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, device_targeting.c_str()));
   }
 
+  void LoadComponentWithExperimentTagTargeting(const std::string& exp_tags) {
+    auto session_targeting = base::StringPrintf(R"(
+            "session": {
+              "experimentTags": %s
+            }
+          )",
+                                                exp_tags.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, session_targeting.c_str()));
+  }
+
   void LoadComponentWithScheduling(const std::string& schedulings) {
     auto session_targeting = base::StringPrintf(R"(
             "session": {
@@ -234,6 +259,8 @@ class CampaignsManagerTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestingPrefServiceSimple> pref_;
   std::unique_ptr<CampaignsManager> campaigns_manager_;
+  // A sub-class might override this from `InitializeScopedFeatureList`.
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   void InitializePrefService() {
@@ -837,6 +864,32 @@ TEST_F(CampaignsManagerTest, GetCampaignApplicationLocaleMismatch) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
+TEST_F(CampaignsManagerTest, GetCampaignExperimentTag) {
+  InitilizeCampaignsExperimentTag(/*exp_tag=*/"1");
+
+  LoadComponentWithExperimentTagTargeting(R"(["1", "2", "3"])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignExperimentTagOrRelationship) {
+  InitilizeCampaignsExperimentTag(/*exp_tag=*/"2");
+
+  LoadComponentWithExperimentTagTargeting(R"(["1", "2", "3"])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignExperimentTagMismatch) {
+  InitilizeCampaignsExperimentTag(/*exp_tag=*/"4");
+
+  LoadComponentWithExperimentTagTargeting(R"(["1", "2", "3"])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
 TEST_F(CampaignsManagerTest, GetSchedulingCampaign) {
   const auto now = base::Time::Now();
   auto start = now;
@@ -930,7 +983,8 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidTargeting) {
 
   LoadComponentWithScheduling("1");
 
-  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
   histogram_tester.ExpectBucketCount(
       kCampaignsManagerErrorHistogramName,
@@ -951,11 +1005,11 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidScheduling) {
 
   LoadComponentWithScheduling(R"([
     "test1",
-    "test2",
-    {"end": 1}
+    "test2"
   ])");
 
-  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
   // Verify that two of the scheduling is invalids.
   histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,

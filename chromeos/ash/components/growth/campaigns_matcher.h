@@ -36,6 +36,7 @@ class CampaignsMatcher {
   bool MaybeMatchDemoModeTargeting(const DemoModeTargeting& targeting) const;
   bool MatchMilestone(const DeviceTargeting& targeting) const;
   bool MatchDeviceTargeting(const DeviceTargeting& targeting) const;
+  bool MatchExperimentTagTargeting(const base::Value::List* targeting) const;
   bool Matched(const Targetings* targetings) const;
 
   // Owned by CampaignsManager.

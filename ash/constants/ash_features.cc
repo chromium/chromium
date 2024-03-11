@@ -1361,15 +1361,21 @@ BASE_FEATURE(kGrowthFramework,
              "GrowthFramework",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables consumer session customizations with growth campaigns.
+BASE_FEATURE(kGrowthCampaignsInConsumerSession,
+             "GrowthCampaignsInConsumerSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Demo Mode customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInDemoMode,
              "GrowthCampaignsInDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables consumer session customizations with growth campaigns.
-BASE_FEATURE(kGrowthCampaignsInConsumerSession,
-             "GrowthCampaignsInConsumerSession",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls whether growth campaigns experiment tag targeting is enabled. The
+// flag also used by finch to tag the session with finch params.
+BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
+             "GrowthCampaignsExperimentTagTargeting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables new on-device recognition for legacy handwriting input.
 // This flag should be OVERRIDDEN for devices which do not have on-device
@@ -3533,14 +3539,18 @@ bool IsGrowthFrameworkEnabled() {
   return base::FeatureList::IsEnabled(kGrowthFramework);
 }
 
-bool IsGrowthCampaignsInDemoModeEnabled() {
-  return IsGrowthFrameworkEnabled() &&
-         base::FeatureList::IsEnabled(kGrowthCampaignsInDemoMode);
+bool IsGrowthCampaignsExperimentTagTargetingEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsExperimentTagTargeting);
 }
 
 bool IsGrowthCampaignsInConsumerSessionEnabled() {
   return IsGrowthFrameworkEnabled() &&
          base::FeatureList::IsEnabled(kGrowthCampaignsInConsumerSession);
+}
+
+bool IsGrowthCampaignsInDemoModeEnabled() {
+  return IsGrowthFrameworkEnabled() &&
+         base::FeatureList::IsEnabled(kGrowthCampaignsInDemoMode);
 }
 
 bool AreGlanceablesV2Enabled() {

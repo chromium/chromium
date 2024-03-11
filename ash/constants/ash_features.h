@@ -440,6 +440,8 @@ BASE_DECLARE_FEATURE(kGrowthCampaignsInDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsInConsumerSession);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsExperimentTagTargeting);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHandwritingLegacyRecognition);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonWithText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1036,10 +1038,12 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGalleryAppPdfEditNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGameDashboardEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGifRecordingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthFrameworkEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsExperimentTagTargetingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsInConsumerSessionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthFrameworkEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2EnabledForTrustedTesters();
 COMPONENT_EXPORT(ASH_CONSTANTS)

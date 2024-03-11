@@ -210,6 +210,7 @@ class SessionTargeting : public TargetingBase {
 
   const std::vector<std::unique_ptr<SchedulingTargeting>> GetSchedulings()
       const;
+  const base::Value::List* GetExperimentTags() const;
 };
 
 }  // namespace growth
