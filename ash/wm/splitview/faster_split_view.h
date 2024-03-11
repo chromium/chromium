@@ -14,25 +14,7 @@
 
 namespace ash {
 
-// A toast in faster splitscreen setup. Contains a dialog and skip button.
-class FasterSplitViewToast : public SystemToastStyle,
-                             public OverviewFocusableView {
-  METADATA_HEADER(FasterSplitViewToast, SystemToastStyle)
-
- public:
-  explicit FasterSplitViewToast(base::RepeatingClosure skip_callback);
-  FasterSplitViewToast(const FasterSplitViewToast&) = delete;
-  FasterSplitViewToast& operator=(const FasterSplitViewToast&) = delete;
-  ~FasterSplitViewToast() override = default;
-
-  // OverviewFocusableView:
-  views::View* GetView() override;
-  void MaybeActivateFocusedView() override;
-  void MaybeCloseFocusedView(bool primary_action) override;
-  void MaybeSwapFocusedView(bool right) override;
-  void OnFocusableViewFocused() override;
-  void OnFocusableViewBlurred() override;
-};
+class FasterSplitViewToast;
 
 // A settings button in faster splitscreen setup.
 class FasterSplitViewSettingsButton : public IconButton,
@@ -41,11 +23,11 @@ class FasterSplitViewSettingsButton : public IconButton,
 
  public:
   explicit FasterSplitViewSettingsButton(
-      views::Button::PressedCallback settings_callback);
+      base::RepeatingClosure settings_callback);
   FasterSplitViewSettingsButton(const FasterSplitViewSettingsButton&) = delete;
   FasterSplitViewSettingsButton& operator=(
       const FasterSplitViewSettingsButton&) = delete;
-  ~FasterSplitViewSettingsButton() override = default;
+  ~FasterSplitViewSettingsButton() override;
 
   // OverviewFocusableView:
   views::View* GetView() override;
@@ -58,19 +40,18 @@ class FasterSplitViewSettingsButton : public IconButton,
 
 // A container for the contents view of the faster splitscreen setup widget.
 // TODO(b/324347613): Find a better name for this class.
-class FasterSplitView : public views::BoxLayoutView {
+class ASH_EXPORT FasterSplitView : public views::BoxLayoutView {
   METADATA_HEADER(FasterSplitView, views::BoxLayoutView)
 
  public:
   FasterSplitView(base::RepeatingClosure skip_callback,
-                  views::Button::PressedCallback settings_callback);
+                  base::RepeatingClosure settings_callback);
   FasterSplitView(const FasterSplitView&) = delete;
   FasterSplitView& operator=(const FasterSplitView&) = delete;
   ~FasterSplitView() override = default;
 
-  // TODO(sophiewen): Store these as OverviewFocusableViews and private these
-  // from the header.
-  FasterSplitViewToast* toast() { return toast_; }
+  OverviewFocusableView* GetToast();
+  views::LabelButton* GetDismissButton();
   FasterSplitViewSettingsButton* settings_button() { return settings_button_; }
 
  private:

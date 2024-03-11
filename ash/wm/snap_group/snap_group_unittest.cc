@@ -777,12 +777,9 @@ TEST_F(FasterSplitScreenTest, SkipPairingToast) {
 
   auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* faster_splitview_widget = overview_grid->faster_splitview_widget();
-  ASSERT_TRUE(faster_splitview_widget);
-  auto* toast_view = views::AsViewClass<SystemToastStyle>(
-      faster_splitview_widget->GetContentsView()->children()[0]);
-  ASSERT_TRUE(toast_view);
-  LeftClickOn(toast_view->dismiss_button());
+  auto* faster_split_view = overview_grid->GetFasterSplitView();
+  ASSERT_TRUE(faster_split_view);
+  LeftClickOn(faster_split_view->GetDismissButton());
 
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
@@ -1448,7 +1445,7 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   // Tab to the toast dismiss button.
   PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
+  EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
             focus_cycler->focused_view()->GetView());
 
   // Tab to the settings button.
@@ -1464,7 +1461,7 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   auto* event_generator = GetEventGenerator();
   event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
+  EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
             focus_cycler->focused_view()->GetView());
 
   // Shift + Tab reverse tabs to the overview item.
@@ -1482,42 +1479,57 @@ TEST_F(FasterSplitScreenTest, TabbingChromevox) {
 
   const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
                                      WindowSnapActionSource::kTest);
-  WindowState::Get(window1.get())->OnWMEvent(&snap_event);
-  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
-
-  // Note we use `PressKeyAndModifierKeys()` to send modifier and key separately
-  // to simulate real user input.
-
-  // Search + Right moves to the first overview item.
   auto* event_generator = GetEventGenerator();
-  event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
-  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
-      GetOverviewItemsForRoot(0);
-  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
 
-  // Search + Right moves to the dismiss button.
-  event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
-  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-  OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
-  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
-            focus_cycler->focused_view()->GetView());
+  enum class TestCase { kDismissButton, kSettingsButton };
+  const auto kTestCases = {TestCase::kDismissButton, TestCase::kSettingsButton};
 
-  // Search + Right moves to the settings button.
-  event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
-            focus_cycler->focused_view());
+  for (auto test_case : kTestCases) {
+    WindowState::Get(window1.get())->OnWMEvent(&snap_event);
+    ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
-  // Search + Left moves back to the dismiss button.
-  event_generator->PressKeyAndModifierKeys(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
-            focus_cycler->focused_view()->GetView());
+    // Note we use `PressKeyAndModifierKeys()` to send modifier and key
+    // separately to simulate real user input.
 
-  // Search + Space activates the dismiss button.
-  event_generator->PressKeyAndModifierKeys(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
-  EXPECT_FALSE(IsInOverviewSession());
+    // Search + Right moves to the first overview item.
+    event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
+                                             ui::EF_COMMAND_DOWN);
+    const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
+        GetOverviewItemsForRoot(0);
+    EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
 
-  // TODO(sophiewen): `TestShellDelegate::OpenMultitaskingSettings()` can't open
-  // the settings page so we wouldn't end overview. See how we can test this.
+    // Search + Right moves to the dismiss button.
+    event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
+                                             ui::EF_COMMAND_DOWN);
+    OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+    OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
+    EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+              focus_cycler->focused_view()->GetView());
+
+    // Search + Right moves to the settings button.
+    event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
+                                             ui::EF_COMMAND_DOWN);
+    EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
+              focus_cycler->focused_view());
+
+    if (test_case == TestCase::kSettingsButton) {
+      // Search + Space activates the settings button.
+      event_generator->PressKeyAndModifierKeys(ui::VKEY_SPACE,
+                                               ui::EF_COMMAND_DOWN);
+      EXPECT_FALSE(IsInOverviewSession());
+    } else {
+      // Search + Left moves back to the dismiss button.
+      event_generator->PressKeyAndModifierKeys(ui::VKEY_LEFT,
+                                               ui::EF_COMMAND_DOWN);
+      EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+                focus_cycler->focused_view()->GetView());
+
+      // Search + Space activates the dismiss button.
+      event_generator->PressKeyAndModifierKeys(ui::VKEY_SPACE,
+                                               ui::EF_COMMAND_DOWN);
+      EXPECT_FALSE(IsInOverviewSession());
+    }
+  }
 }
 
 TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {

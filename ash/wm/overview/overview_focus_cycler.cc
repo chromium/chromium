@@ -281,7 +281,7 @@ std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
     // UI elements in faster split screen partial overview will be traversed
     // right after the overview items.
     if (auto* faster_split_view = grid->GetFasterSplitView()) {
-      traversable_views.push_back(faster_split_view->toast());
+      traversable_views.push_back(faster_split_view->GetToast());
       traversable_views.push_back(faster_split_view->settings_button());
     }
 

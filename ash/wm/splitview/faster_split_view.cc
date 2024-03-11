@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view_utils.h"
@@ -31,43 +32,47 @@ constexpr int kSettingsButtonSpacingDp = 8;
 
 }  // namespace
 
-FasterSplitViewToast::FasterSplitViewToast(base::RepeatingClosure skip_callback)
-    : SystemToastStyle(
-          std::move(skip_callback),
-          l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP)) {
-  dismiss_button()->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS));
-}
+// A toast in faster splitscreen setup. Contains a dialog and skip button.
+class FasterSplitViewToast : public SystemToastStyle,
+                             public OverviewFocusableView {
+  METADATA_HEADER(FasterSplitViewToast, SystemToastStyle)
 
-views::View* FasterSplitViewToast::GetView() {
-  return dismiss_button();
-}
+ public:
+  explicit FasterSplitViewToast(base::RepeatingClosure skip_callback)
+      : SystemToastStyle(std::move(skip_callback),
+                         l10n_util::GetStringUTF16(
+                             IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST),
+                         l10n_util::GetStringUTF16(
+                             IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP)) {
+    dismiss_button()->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS));
+  }
+  FasterSplitViewToast(const FasterSplitViewToast&) = delete;
+  FasterSplitViewToast& operator=(const FasterSplitViewToast&) = delete;
+  ~FasterSplitViewToast() override = default;
 
-void FasterSplitViewToast::MaybeActivateFocusedView() {
-  // TODO(sophiewen): Copy `skip_callback` and run it.
-  // Destroys `this`.
-  OverviewController::Get()->EndOverview(OverviewEndAction::kKeyEscapeOrBack);
-}
+  // OverviewFocusableView:
+  views::View* GetView() override { return dismiss_button(); }
 
-void FasterSplitViewToast::MaybeCloseFocusedView(bool primary_action) {}
+  void MaybeActivateFocusedView() override {
+    // Destroys `this`.
+    dismiss_button()->button_controller()->NotifyClick();
+  }
 
-void FasterSplitViewToast::MaybeSwapFocusedView(bool right) {}
+  void MaybeCloseFocusedView(bool primary_action) override {}
 
-void FasterSplitViewToast::OnFocusableViewFocused() {
-  ToggleA11yFocus();
-}
+  void MaybeSwapFocusedView(bool right) override {}
 
-void FasterSplitViewToast::OnFocusableViewBlurred() {
-  ToggleA11yFocus();
-}
+  void OnFocusableViewFocused() override { ToggleA11yFocus(); }
+
+  void OnFocusableViewBlurred() override { ToggleA11yFocus(); }
+};
 
 BEGIN_METADATA(FasterSplitViewToast)
 END_METADATA
 
 FasterSplitViewSettingsButton::FasterSplitViewSettingsButton(
-    views::Button::PressedCallback settings_callback)
+    base::RepeatingClosure settings_callback)
     : IconButton(std::move(settings_callback),
                  IconButton::Type::kLarge,
                  &kOverviewSettingsIcon,
@@ -86,14 +91,17 @@ FasterSplitViewSettingsButton::FasterSplitViewSettingsButton(
       }));
 }
 
+FasterSplitViewSettingsButton::~FasterSplitViewSettingsButton() = default;
+
 views::View* FasterSplitViewSettingsButton::GetView() {
   return this;
 }
+
 void FasterSplitViewSettingsButton::MaybeActivateFocusedView() {
-  // TODO(sophiewen): Copy `settings_callback` and run it.
   // Destroys `this`.
-  Shell::Get()->shell_delegate()->OpenMultitaskingSettings();
+  button_controller()->NotifyClick();
 }
+
 void FasterSplitViewSettingsButton::MaybeCloseFocusedView(bool primary_action) {
 }
 
@@ -110,9 +118,8 @@ void FasterSplitViewSettingsButton::OnFocusableViewBlurred() {
 BEGIN_METADATA(FasterSplitViewSettingsButton)
 END_METADATA
 
-FasterSplitView::FasterSplitView(
-    base::RepeatingClosure skip_callback,
-    views::Button::PressedCallback settings_callback) {
+FasterSplitView::FasterSplitView(base::RepeatingClosure skip_callback,
+                                 base::RepeatingClosure settings_callback) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(kSettingsButtonSpacingDp);
 
@@ -128,6 +135,14 @@ FasterSplitView::FasterSplitView(
   settings_button_->SetBorder(std::make_unique<views::HighlightBorder>(
       toast_corner_radius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
+}
+
+OverviewFocusableView* FasterSplitView::GetToast() {
+  return static_cast<OverviewFocusableView*>(toast_);
+}
+
+views::LabelButton* FasterSplitView::GetDismissButton() {
+  return toast_->dismiss_button();
 }
 
 BEGIN_METADATA(FasterSplitView)

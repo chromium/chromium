@@ -22,6 +22,8 @@
 #include "ash/system/test_system_sounds_delegate.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_metrics.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -129,6 +131,12 @@ DeskProfilesDelegate* TestShellDelegate::GetDeskProfilesDelegate() {
     test_desk_profiles_delegate_ = std::make_unique<TestDeskProfilesDelegate>();
   }
   return test_desk_profiles_delegate_.get();
+}
+
+void TestShellDelegate::OpenMultitaskingSettings() {
+  // Opening the settings page will cause a window activation and end overview.
+  // Call `EndOverview()` to simulate opening the settings page.
+  OverviewController::Get()->EndOverview(OverviewEndAction::kTests);
 }
 
 void TestShellDelegate::BindMultiDeviceSetup(
