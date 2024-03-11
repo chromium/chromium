@@ -95,11 +95,15 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
   TRACE_EVENT0("gpu", "gl::init::CreateGLContext");
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
-      return scoped_refptr<GLContext>(new GLContextStub(share_group));
     case kGLImplementationStubGL: {
       scoped_refptr<GLContextStub> stub_context =
-          new GLContextStub(share_group);
-      stub_context->SetUseStubApi(true);
+          MakeRefCounted<GLContextStub>(share_group);
+      if (GetGLImplementation() == kGLImplementationStubGL) {
+        stub_context->SetUseStubApi(true);
+      }
+      // The stub ctx needs to be initialized so that the gl::GLContext can
+      // store the |compatible_surface|.
+      stub_context->Initialize(compatible_surface, attribs);
       return stub_context;
     }
     case kGLImplementationDisabled:

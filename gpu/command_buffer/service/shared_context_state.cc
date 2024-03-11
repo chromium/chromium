@@ -274,7 +274,6 @@ SharedContextState::SharedContextState(
       share_group_(std::move(share_group)),
       context_(context),
       real_context_(std::move(context)),
-      surface_(std::move(surface)),
       sk_surface_cache_(MaxNumSkSurface()) {
   if (gr_context_type_ == GrContextType::kVulkan) {
     if (vk_context_provider_) {
@@ -284,6 +283,11 @@ SharedContextState::SharedContextState(
       use_virtualized_gl_contexts_ = false;
     }
   }
+
+  DCHECK(context_ && surface && context_->default_surface());
+  // |this| no longer stores the |surface| as that one must be stored by the
+  // context. Do a sanity check that it is true.
+  DCHECK(context_->default_surface() == surface);
 
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -328,15 +332,7 @@ SharedContextState::~SharedContextState() {
   // current, or the GrContext was already abandoned if the GLContext was lost.
   owned_gr_context_.reset();
 
-  // |surface_| needs to be destroyed while there is a current GL context if
-  // using GL, as some implementations make calls to the GL bindings. Any such
-  // implementations will themselves ensure that the context is current in their
-  // destructor (we cannot blindly make the context current here, as there are
-  // other implementations that crash if the context is made current at this
-  // point :\). However, we drop our reference to |surface_| before releasing
-  // the context below so that the release has the intended effect.
   last_current_surface_ = nullptr;
-  surface_.reset();
 
   if (context_->IsCurrent(nullptr))
     context_->ReleaseCurrent(nullptr);
@@ -659,7 +655,7 @@ bool SharedContextState::InitializeGL(
     auto virtual_context = base::MakeRefCounted<GLContextVirtual>(
         share_group_.get(), real_context_.get(),
         weak_ptr_factory_.GetWeakPtr());
-    if (!virtual_context->Initialize(surface_.get(), gl::GLContextAttribs())) {
+    if (!virtual_context->Initialize(surface(), gl::GLContextAttribs())) {
       LOG(ERROR) << "SharedContextState::InitializeGL failure Initialize "
                     "virtual context failed";
       feature_info_ = nullptr;
@@ -738,8 +734,9 @@ bool SharedContextState::MakeCurrent(gl::GLSurface* surface, bool needs_gl) {
 
   const bool using_gl = IsUsingGL() || needs_gl;
   if (using_gl) {
-    gl::GLSurface* dont_care_surface =
-        last_current_surface_ ? last_current_surface_.get() : surface_.get();
+    gl::GLSurface* dont_care_surface = last_current_surface_
+                                           ? last_current_surface_.get()
+                                           : context_->default_surface();
     surface = surface ? surface : dont_care_surface;
 
     if (!context_->MakeCurrent(surface)) {
@@ -924,8 +921,14 @@ void SharedContextState::UseShaderCache(
   }
 }
 
+gl::GLSurface* SharedContextState::surface() const {
+  return context_->default_surface();
+}
+
 gl::GLDisplay* SharedContextState::display() {
-  return surface_.get()->GetGLDisplay();
+  auto* gl_surface = surface();
+  DCHECK(gl_surface);
+  return gl_surface->GetGLDisplay();
 }
 
 bool SharedContextState::initialized() const {

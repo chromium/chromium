@@ -151,7 +151,7 @@ class GPU_GLES2_EXPORT SharedContextState
   gl::GLShareGroup* share_group() const { return share_group_.get(); }
   gl::GLContext* context() const { return context_.get(); }
   gl::GLContext* real_context() const { return real_context_.get(); }
-  gl::GLSurface* surface() const { return surface_.get(); }
+  gl::GLSurface* surface() const;
   gl::GLDisplay* display();  // non const since it calls GLSurface::GetGLDisplay
   viz::VulkanContextProvider* vk_context_provider() const {
     return vk_context_provider_;
@@ -383,7 +383,6 @@ class GPU_GLES2_EXPORT SharedContextState
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLContext> real_context_;
-  scoped_refptr<gl::GLSurface> surface_;
 
   // Most recent surface that this ShareContextState was made current with.
   // Avoids a call to MakeCurrent with a different surface, if we don't

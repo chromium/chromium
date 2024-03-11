@@ -58,6 +58,9 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
     context->SetGLVersionString(gl_version);
     const char gl_extensions[] = "GL_KHR_robustness";
     context->SetExtensionsString(gl_extensions);
+    // The stub ctx needs to be initialized so that the gl::GLContext can
+    // store the offscreen stub |surface|.
+    context->Initialize(surface.get(), {});
 
     context->MakeCurrent(surface.get());
 
