@@ -47,6 +47,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/chrome/browser/browser/chrome_browser_interface_binders.o",
         "./obj/chrome/browser/browser/chrome_content_browser_client.o",
         "./obj/chrome/browser/ui/ash/holding_space/browser_tests/holding_space_ui_browsertest.o",
+        "./obj/chrome/test/browser_tests/app_list_client_impl_browsertest.o",
         "./obj/chrome/test/browser_tests/browser_non_client_frame_view_chromeos_browsertest.o",
         "./obj/chrome/test/browser_tests/chrome_shelf_controller_browsertest.o",
         "./obj/chrome/test/browser_tests/device_local_account_browsertest.o",
