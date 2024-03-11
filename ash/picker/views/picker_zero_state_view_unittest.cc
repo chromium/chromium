@@ -34,6 +34,7 @@ namespace {
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Key;
 using ::testing::Not;
 using ::testing::Property;
@@ -52,6 +53,7 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
               ElementsAre(Key(PickerCategoryType::kExpressions),
                           Key(PickerCategoryType::kLinks),
                           Key(PickerCategoryType::kFiles)));
+  EXPECT_THAT(view.SuggestedSectionForTesting(), IsNull());
 }
 
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
@@ -93,12 +95,6 @@ TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
   EXPECT_EQ(view->CapsNudgeViewForTesting(), nullptr);
 }
 
-TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenEmpty) {
-  PickerZeroStateView view(kPickerWidth, base::DoNothing(), base::DoNothing());
-
-  EXPECT_FALSE(view.SuggestedSectionForTesting()->GetVisible());
-}
-
 TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
 
@@ -118,7 +114,7 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
       kPickerWidth, base::DoNothing(), future.GetRepeatingCallback()));
   widget->Show();
 
-  EXPECT_TRUE(view->SuggestedSectionForTesting()->GetVisible());
+  EXPECT_THAT(view->SuggestedSectionForTesting(), Not(IsNull()));
   PickerItemView* item_view =
       view->SuggestedSectionForTesting()->item_views_for_testing()[0];
 

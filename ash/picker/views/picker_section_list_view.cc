@@ -106,6 +106,11 @@ PickerSectionView* PickerSectionListView::AddSection() {
   return AddChildView(std::make_unique<PickerSectionView>(section_width_));
 }
 
+PickerSectionView* PickerSectionListView::AddSectionAt(size_t index) {
+  return AddChildViewAt(std::make_unique<PickerSectionView>(section_width_),
+                        index);
+}
+
 void PickerSectionListView::ClearSectionList() {
   RemoveAllChildViews();
 }

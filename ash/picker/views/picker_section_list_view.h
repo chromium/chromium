@@ -51,6 +51,9 @@ class ASH_EXPORT PickerSectionListView : public views::View {
   // Adds a section to the end of the section list.
   PickerSectionView* AddSection();
 
+  // Adds a section to the specified position in the list.
+  PickerSectionView* AddSectionAt(size_t index);
+
   // Clears the section list. This deletes all contained sections and items.
   void ClearSectionList();
 

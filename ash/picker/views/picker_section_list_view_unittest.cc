@@ -61,6 +61,19 @@ TEST_F(PickerSectionListViewTest, GetsTopItem) {
   EXPECT_EQ(section_list.GetTopItem(), top_item);
 }
 
+TEST_F(PickerSectionListViewTest, AddsSectionAtTheTop) {
+  PickerSectionListView section_list(kDefaultSectionWidth);
+
+  PickerSectionView* section1 = section_list.AddSection();
+  section1->AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  PickerSectionView* section2 = section_list.AddSectionAt(0);
+  PickerItemView* top_item = section2->AddEmojiItem(
+      std::make_unique<PickerEmojiItemView>(base::DoNothing(), u"😊"));
+
+  EXPECT_EQ(section_list.GetTopItem(), top_item);
+}
+
 TEST_F(PickerSectionListViewTest, EmptySectionListHasNoTopItem) {
   PickerSectionListView section_list(kDefaultSectionWidth);
 

@@ -57,20 +57,14 @@ PickerZeroStateView::PickerZeroStateView(
       AddChildView(std::make_unique<PickerCapsNudgeView>(base::BindRepeating(
           &PickerZeroStateView::ClearCapsNudge, base::Unretained(this))));
 
-  suggested_section_view_ =
-      AddChildView(std::make_unique<PickerSectionView>(picker_view_width));
-  suggested_section_view_->AddTitleLabel(
-      l10n_util::GetStringUTF16(IDS_PICKER_SUGGESTED_SECTION_TITLE));
-  suggested_section_view_->SetVisible(false);
+  section_list_view_ =
+      AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
 
   clipboard_provider_ = std::make_unique<PickerClipboardProvider>(
       std::move(select_result_callback));
   clipboard_provider_->FetchResult(
       base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResult,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  section_list_view_ =
-      AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
 
   for (auto category : PickerModel().GetAvailableCategories()) {
     auto item_view = std::make_unique<PickerListItemView>(
@@ -283,8 +277,13 @@ void PickerZeroStateView::ScrollPseudoFocusedViewToVisible() {
 
 void PickerZeroStateView::OnFetchSuggestedResult(
     std::unique_ptr<PickerListItemView> item_view) {
+  if (!suggested_section_view_) {
+    suggested_section_view_ = section_list_view_->AddSectionAt(0);
+    suggested_section_view_->AddTitleLabel(
+        l10n_util::GetStringUTF16(IDS_PICKER_SUGGESTED_SECTION_TITLE));
+  }
   suggested_section_view_->AddListItem(std::move(item_view));
-  suggested_section_view_->SetVisible(true);
+  SetPseudoFocusedView(section_list_view_->GetTopItem());
 }
 
 BEGIN_METADATA(PickerZeroStateView)

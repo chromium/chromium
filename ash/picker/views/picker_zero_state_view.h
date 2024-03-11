@@ -98,7 +98,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // trigger `DoPseudoFocusedAction`.
   raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 
-  raw_ptr<PickerSectionView> suggested_section_view_;
+  raw_ptr<PickerSectionView> suggested_section_view_ = nullptr;
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
   base::WeakPtrFactory<PickerZeroStateView> weak_ptr_factory_{this};
