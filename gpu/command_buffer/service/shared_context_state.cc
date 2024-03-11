@@ -170,6 +170,9 @@ void SharedContextState::compileError(const char* shader,
                << shader << "\nErrors:\n"
                << errors;
 
+    static crash_reporter::CrashKeyString<8192> shader_key("skia-error-shader");
+    shader_key.Set(shader);
+
     static crash_reporter::CrashKeyString<2048> error_key("skia-compile-error");
     error_key.Set(errors);
 
