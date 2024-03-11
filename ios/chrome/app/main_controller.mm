@@ -1414,14 +1414,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)cleanupSnapshots {
   // TODO(crbug.com/1116496): Browsers for disconnected scenes are not in the
   // BrowserList, so this may not reach all folders.
-  // TODO(crbug.com/325611897): Handle multiple browser states.
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(self.appState.mainBrowserState);
-  for (Browser* browser : browser_list->AllRegularBrowsers()) {
-    SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
-  }
-  for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
-    SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(browserState);
+    for (Browser* browser : browserList->AllRegularBrowsers()) {
+      SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
+    }
+    for (Browser* browser : browserList->AllIncognitoBrowsers()) {
+      SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
+    }
   }
 }
 
