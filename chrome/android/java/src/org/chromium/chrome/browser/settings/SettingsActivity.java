@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
+import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
@@ -622,6 +623,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof AutofillCreditCardEditor) {
             ((AutofillCreditCardEditor) fragment)
+                    .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
+        }
+        if (fragment instanceof TopicsManageFragment) {
+            ((TopicsManageFragment) fragment)
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
     }

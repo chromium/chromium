@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.containsString;
@@ -85,6 +87,24 @@ public final class TopicsManageFragmentTest {
         assertThat(
                 mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Topics.Manage.TopicBlocked"));
+        onView(withText(TOPIC_NAME_1)).perform(click());
+        assertThat(
+                mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Topics.Manage.TopicEnabled"));
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleTopicDialog() {
+        mFakePrivacySandboxBridge.setFirstLevelTopics(TOPIC_NAME_1);
+        mFakePrivacySandboxBridge.setChildTopics(TOPIC_NAME_1);
+        startTopicsManageSettings();
+        onView(withText(TOPIC_NAME_1)).perform(click());
+        onViewWaiting(withText("Cancel")).check(matches(isDisplayed()));
+        onView(withText("Block")).perform(click());
+        assertThat(
+                mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed"));
         onView(withText(TOPIC_NAME_1)).perform(click());
         assertThat(
                 mUserActionTester.getActions(),
