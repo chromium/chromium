@@ -1687,8 +1687,10 @@ id<GREYMatcher> mostlyNotVisible() {
                                      IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
   NSString* labelText =
       visible ? labelTextForVisibleFeed : labelTextForHiddenFeed;
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::DiscoverHeaderLabel(),
+                                   grey_sufficientlyVisible(), nil)];
   UILabel* discoverHeaderLabel = [NewTabPageAppInterface discoverHeaderLabel];
   GREYAssertTrue([discoverHeaderLabel.text isEqualToString:labelText],
                  @"Discover header label is incorrect");
