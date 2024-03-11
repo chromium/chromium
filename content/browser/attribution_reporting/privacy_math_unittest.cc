@@ -10,6 +10,7 @@
 #include <limits>
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/time/time.h"
@@ -391,7 +392,9 @@ void RunRandomFakeReportsTest(const attribution_reporting::TriggerSpecs& specs,
         internal::DoRandomizedResponseWithCache(specs, max_reports,
                                                 /*epsilon=*/0, map);
     ASSERT_TRUE(response.response().has_value());
-    output_counts[*response.response()]++;
+    auto [it, _] =
+        output_counts.try_emplace(*std::move(response).ResponseForTesting(), 0);
+    ++it->second;
   }
 
   // This is the coupon collector problem (see
@@ -425,9 +428,9 @@ void RunRandomFakeReportsTest(const attribution_reporting::TriggerSpecs& specs,
   // Thus, the probability that the number of occurrences of one of the results
   // deviates from its expectation by alpha*t/n is at most
   // n * (p_high + p_low).
-  int expected_counts = num_samples / static_cast<double>(num_states);
+  const int expected_counts = num_samples / static_cast<double>(num_states);
+  const double abs_error = expected_counts * tolerance;
   for (const auto& output_count : output_counts) {
-    const double abs_error = expected_counts * tolerance;
     EXPECT_NEAR(output_count.second, expected_counts, abs_error);
   }
 }
@@ -530,17 +533,18 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
     int index = 0;
     for (int windows : test_case.windows_per_type) {
       std::vector<base::TimeDelta> deltas;
+      deltas.reserve(windows);
       for (int i = 0; i < windows; i++) {
         deltas.emplace_back(base::Days(1) + base::Days(i));
       }
       raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
-          base::Days(0), deltas));
+          base::Days(0), std::move(deltas)));
       indices[index] = index;
       index++;
     }
 
-    auto specs =
-        *attribution_reporting::TriggerSpecs::Create(indices, raw_specs);
+    const auto specs = *attribution_reporting::TriggerSpecs::Create(
+        std::move(indices), std::move(raw_specs));
     ASSERT_EQ(test_case.expected_num_states,
               GetNumStates(specs, test_case.max_reports));
 
@@ -551,10 +555,8 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
     std::set<std::vector<FakeEventLevelReport>> seen_outputs;
     internal::StateMap map;
     for (int i = 0; i < test_case.expected_num_states; i++) {
-      std::vector<FakeEventLevelReport> reports =
-          internal::GetFakeReportsForSequenceIndex(specs, test_case.max_reports,
-                                                   i, map);
-      seen_outputs.insert(reports);
+      seen_outputs.insert(internal::GetFakeReportsForSequenceIndex(
+          specs, test_case.max_reports, i, map));
     }
     EXPECT_EQ(static_cast<size_t>(test_case.expected_num_states),
               seen_outputs.size());

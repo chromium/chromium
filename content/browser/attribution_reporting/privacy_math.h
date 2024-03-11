@@ -10,6 +10,7 @@
 #include <compare>
 #include <map>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "content/common/content_export.h"
@@ -58,6 +59,8 @@ class CONTENT_EXPORT RandomizedResponseData {
   double channel_capacity() const { return channel_capacity_; }
 
   const RandomizedResponse& response() const { return response_; }
+
+  RandomizedResponse&& ResponseForTesting() && { return std::move(response_); }
 
   friend bool operator==(const RandomizedResponseData&,
                          const RandomizedResponseData&) = default;
