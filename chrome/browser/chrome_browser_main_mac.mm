@@ -24,6 +24,7 @@
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
+#include "chrome/browser/mac/metrics.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/browser/ui/cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
@@ -114,6 +115,8 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   [app_controller mainMenuCreated];
 
   ui::WarmScreenCapture();
+
+  mac_metrics::RecordAppFileSystemType();
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);

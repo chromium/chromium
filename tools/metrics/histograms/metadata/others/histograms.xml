@@ -7065,6 +7065,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
+    expires_after="2025-03-06">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The file system type where the running instance of Chrome is installed. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
 <histogram name="Mac.FileMenuNativeShare" enum="BooleanSuccess"
     expires_after="2023-07-16">
   <owner>nasims@google.com</owner>

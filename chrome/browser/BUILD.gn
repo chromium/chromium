@@ -6205,6 +6205,8 @@ static_library("browser") {
       "mac/install_from_dmg.mm",
       "mac/key_window_notifier.cc",
       "mac/key_window_notifier.h",
+      "mac/metrics.h",
+      "mac/metrics.mm",
       "mac/nsprocessinfo_additions.h",
       "mac/nsprocessinfo_additions.mm",
       "mac/relauncher.h",
