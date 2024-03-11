@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -90,6 +91,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/329131962")
     public void testWithExistingAccount_signIn_requiredHistoryOptIn() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
@@ -123,6 +125,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/329131962")
     public void testWithExistingAccount_signIn_optOutHistorySync() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
@@ -156,6 +159,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/329131962")
     public void testWithExistingAccount_signIn_optionalHistoryOptIn() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
