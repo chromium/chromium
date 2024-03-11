@@ -32,6 +32,12 @@ void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
 
+bool PaymentsAutofillClient::IsSaveCardPromptVisible() const {
+  return false;
+}
+
+void PaymentsAutofillClient::HideSaveCardPromptPrompt() {}
+
 void PaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {}

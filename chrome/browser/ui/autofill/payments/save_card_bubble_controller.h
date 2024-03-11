@@ -109,6 +109,8 @@ class SaveCardBubbleController {
   // Returns true if the user is signed in and sync transport is active for
   // Wallet data, without having turned on sync-the-feature.
   virtual bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const = 0;
+  // Hides the save card offer or confirmation bubble if it is showing.
+  virtual void HideSaveCardBubble() = 0;
 };
 
 }  // namespace autofill

@@ -104,6 +104,9 @@ class VirtualCardEnrollBubbleControllerImpl
   // Returns whether the web content associated with this controller is active.
   virtual bool IsWebContentsActive();
 
+  // Resets bubble to its initial state.
+  void ResetBubble();
+
   // Represents the current status of virtual card enrollment.
   EnrollmentStatus enrollment_status_ = EnrollmentStatus::kNone;
 

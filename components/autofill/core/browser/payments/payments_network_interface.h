@@ -416,6 +416,10 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // UploadCardRequest.
   struct UploadCardResponseDetails {
     UploadCardResponseDetails();
+    UploadCardResponseDetails(const UploadCardResponseDetails&);
+    UploadCardResponseDetails(UploadCardResponseDetails&&);
+    UploadCardResponseDetails& operator=(const UploadCardResponseDetails&);
+    UploadCardResponseDetails& operator=(UploadCardResponseDetails&&);
     ~UploadCardResponseDetails();
     // |instrument_id| is used by the server as an identifier for the card that
     // was uploaded. Currently, we have it in the UploadCardResponseDetails so

@@ -1305,4 +1305,21 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
       "Autofill.SaveCreditCardPromptResult.Upload.Reshows", 1);
 }
 
+// Test that `HideSaveCardBubble()` hides save card offer and confirmation
+// bubble.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       HideSaveCardBubble) {
+  ShowUploadBubble();
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  controller()->HideSaveCardBubble();
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+
+  controller()->ShowConfirmationBubbleView(/*card_saved=*/true);
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  controller()->HideSaveCardBubble();
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+}
+
 }  // namespace autofill

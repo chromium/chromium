@@ -115,6 +115,7 @@ class SaveCardBubbleControllerImpl
   bool IsUploadSave() const override;
   BubbleType GetBubbleType() const override;
   bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override;
+  void HideSaveCardBubble() override;
 
   // SavePaymentIconController:
   std::u16string GetSavePaymentIconTooltipText() const override;

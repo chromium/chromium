@@ -52,6 +52,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void CreditCardUploadCompleted(bool card_saved) override;
+  bool IsSaveCardPromptVisible() const override;
+  void HideSaveCardPromptPrompt() override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;

@@ -446,29 +446,6 @@ void CreditCardSaveManager::OnDidUploadCard(
     // |personal_data_manager_|. PDM uses this information to update the avatar
     // button UI.
     personal_data_manager_->OnCreditCardSaved(/*is_local_card=*/false);
-    if (VirtualCardFeatureEnabled()) {
-      // After a card is successfully saved to the server, offer virtual card
-      // enrollment if the card is eligible. |upload_card_response_details| has
-      // fields in the response that will be required for server requests in the
-      // virtual card enrollment flow, so we set them here and start the flow.
-      if (upload_card_response_details.virtual_card_enrollment_state ==
-          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
-        DCHECK(upload_card_response_details.instrument_id.has_value());
-        CreditCard* uploaded_card = &upload_request_.card;
-        if (!upload_card_response_details.card_art_url.is_empty()) {
-          uploaded_card->set_card_art_url(
-              upload_card_response_details.card_art_url);
-        }
-        uploaded_card->set_virtual_card_enrollment_state(
-            upload_card_response_details.virtual_card_enrollment_state);
-        uploaded_card->set_instrument_id(
-            upload_card_response_details.instrument_id.value());
-        client_->GetVirtualCardEnrollmentManager()->InitVirtualCardEnroll(
-            *uploaded_card, VirtualCardEnrollmentSource::kUpstream,
-            std::move(upload_card_response_details
-                          .get_details_for_enrollment_response_details));
-      }
-    }
   } else {
     // If the upload failed, fallback to a local card save.
     // Do not save if card does not have the expiration month or the year
@@ -501,9 +478,66 @@ void CreditCardSaveManager::OnDidUploadCard(
   client_->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
       result == AutofillClient::PaymentsRpcResult::kSuccess);
 
+  // Offer virtual card enrollment if the card was successfully saved to the
+  // server.
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess &&
+      VirtualCardFeatureEnabled()) {
+    PrepareAndTriggerDelayedVirtualCardEnroll(
+        std::move(upload_card_response_details));
+  }
+
   if (observer_for_testing_) {
     observer_for_testing_->OnShowCardSavedFeedback();
   }
+}
+
+void CreditCardSaveManager::PrepareAndTriggerDelayedVirtualCardEnroll(
+    payments::PaymentsNetworkInterface::UploadCardResponseDetails
+        upload_card_response_details) {
+  // `upload_card_response_details` has fields in the response that will be
+  // required for server requests in the virtual card enrollment flow, so we set
+  // them here and start the flow.
+  if (upload_card_response_details.virtual_card_enrollment_state ==
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
+    DCHECK(upload_card_response_details.instrument_id.has_value());
+    CreditCard& uploaded_card = upload_request_.card;
+    if (!upload_card_response_details.card_art_url.is_empty()) {
+      uploaded_card.set_card_art_url(
+          std::move(upload_card_response_details.card_art_url));
+    }
+    uploaded_card.set_virtual_card_enrollment_state(
+        std::move(upload_card_response_details.virtual_card_enrollment_state));
+    uploaded_card.set_instrument_id(
+        upload_card_response_details.instrument_id.value());
+    // Wait for 3 sec before showing virtual card enrollment dialog if save card
+    // confirmation prompt is still visible, giving users enough time to read
+    // the confirmation prompt.
+    const base::TimeDelta kDelayBeforeVirtualCardEnroll =
+        client_->GetPaymentsAutofillClient()->IsSaveCardPromptVisible()
+            ? kVirtualCardEnrollDelaySec
+            : base::Seconds(0);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CreditCardSaveManager::InitVirtualCardEnroll,
+            weak_ptr_factory_.GetWeakPtr(), uploaded_card,
+            std::move(upload_card_response_details
+                          .get_details_for_enrollment_response_details)),
+        kDelayBeforeVirtualCardEnroll);
+  }
+}
+
+void CreditCardSaveManager::InitVirtualCardEnroll(
+    const CreditCard& credit_card,
+    std::optional<payments::PaymentsNetworkInterface::
+                      GetDetailsForEnrollmentResponseDetails>
+        get_details_for_enrollment_response_details) {
+  // Hide save card confirmation dialog if still showing.
+  client_->GetPaymentsAutofillClient()->HideSaveCardPromptPrompt();
+
+  client_->GetVirtualCardEnrollmentManager()->InitVirtualCardEnroll(
+      credit_card, VirtualCardEnrollmentSource::kUpstream,
+      std::move(get_details_for_enrollment_response_details));
 }
 
 CreditCardSaveStrikeDatabase*

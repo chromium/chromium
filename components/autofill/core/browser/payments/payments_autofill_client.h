@@ -81,6 +81,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // this function for desktop.
   virtual void CreditCardUploadCompleted(bool card_saved);
 
+  // Returns true if save card offer or confirmation prompt is visible.
+  virtual bool IsSaveCardPromptVisible() const;
+
+  // Hides save card offer or confirmation prompt.
+  virtual void HideSaveCardPromptPrompt();
+
   // Show/dismiss the progress dialog which contains a throbber and a text
   // message indicating that something is in progress.
   virtual void ShowAutofillProgressDialog(

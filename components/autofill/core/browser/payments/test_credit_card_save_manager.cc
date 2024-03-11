@@ -80,6 +80,15 @@ TestCreditCardSaveManager::upload_request() {
   return &upload_request_;
 }
 
+void TestCreditCardSaveManager::InitVirtualCardEnroll(
+    const CreditCard& credit_card,
+    std::optional<payments::PaymentsNetworkInterface::
+                      GetDetailsForEnrollmentResponseDetails>
+        get_details_for_enrollment_response_details) {
+  CreditCardSaveManager::InitVirtualCardEnroll(
+      credit_card, get_details_for_enrollment_response_details);
+}
+
 void TestCreditCardSaveManager::OnDidUploadCard(
     AutofillClient::PaymentsRpcResult result,
     const payments::PaymentsNetworkInterface::UploadCardResponseDetails&

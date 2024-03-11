@@ -101,6 +101,26 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
 #endif
 }
 
+bool ChromePaymentsAutofillClient::IsSaveCardPromptVisible() const {
+#if !BUILDFLAG(IS_ANDROID)
+  SaveCardBubbleControllerImpl* controller =
+      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
+  return controller && controller->IsIconVisible();
+#else
+  return false;
+#endif
+}
+
+void ChromePaymentsAutofillClient::HideSaveCardPromptPrompt() {
+#if !BUILDFLAG(IS_ANDROID)
+  SaveCardBubbleControllerImpl* controller =
+      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
+  if (controller) {
+    controller->HideSaveCardBubble();
+  }
+#endif
+}
+
 void ChromePaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {

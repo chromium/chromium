@@ -556,6 +556,11 @@ class TestAutofillClientTemplate : public T {
     test_personal_data_manager_ = std::move(pdm);
   }
 
+  void set_payments_autofill_client(
+      std::unique_ptr<payments::TestPaymentsAutofillClient> payments_client) {
+    payments_autofill_client_ = std::move(payments_client);
+  }
+
   void set_cvc_authenticator(
       std::unique_ptr<CreditCardCvcAuthenticator> authenticator) {
     cvc_authenticator_ = std::move(authenticator);

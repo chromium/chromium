@@ -225,6 +225,16 @@ PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails::
 
 PaymentsNetworkInterface::UploadCardResponseDetails::UploadCardResponseDetails() =
     default;
+PaymentsNetworkInterface::UploadCardResponseDetails::UploadCardResponseDetails(
+    const UploadCardResponseDetails&) = default;
+PaymentsNetworkInterface::UploadCardResponseDetails::UploadCardResponseDetails(
+    UploadCardResponseDetails&&) = default;
+PaymentsNetworkInterface::UploadCardResponseDetails&
+PaymentsNetworkInterface::UploadCardResponseDetails::operator=(
+    const UploadCardResponseDetails&) = default;
+PaymentsNetworkInterface::UploadCardResponseDetails&
+PaymentsNetworkInterface::UploadCardResponseDetails::operator=(
+    UploadCardResponseDetails&&) = default;
 PaymentsNetworkInterface::UploadCardResponseDetails::~UploadCardResponseDetails() =
     default;
 

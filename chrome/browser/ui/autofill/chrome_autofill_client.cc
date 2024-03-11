@@ -873,6 +873,9 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
           std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
               std::move(ui_info), std::move(save_card_delegate))));
 #else
+  // Hide virtual card confirmation bubble showing for a different card.
+  HideVirtualCardEnrollBubbleAndIconIfVisible();
+
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
   SaveCardBubbleControllerImpl::FromWebContents(web_contents())

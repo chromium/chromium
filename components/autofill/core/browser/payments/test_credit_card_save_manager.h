@@ -57,43 +57,23 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
   payments::PaymentsNetworkInterface::UploadCardRequestDetails*
   upload_request();
 
- private:
+  void InitVirtualCardEnroll(
+      const CreditCard& credit_card,
+      std::optional<payments::PaymentsNetworkInterface::
+                        GetDetailsForEnrollmentResponseDetails>
+          get_details_for_enrollment_response_details);
+
   void OnDidUploadCard(
       AutofillClient::PaymentsRpcResult result,
       const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details) override;
 
+ private:
   bool credit_card_upload_enabled_ = false;
   bool credit_card_was_uploaded_ = false;
   bool cvc_local_save_started_ = false;
   bool cvc_upload_save_started_ = false;
   bool card_local_save_started_ = false;
-
-  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
-                           OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      OnDidUploadCard_DoNotAddServerCvcIfInstrumentIdIsEmpty);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
-                           OnDidUploadCard_VirtualCardEnrollment);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
-                           UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerWithLocalSaveFallbackTest,
-      Metrics_OnDidUploadCard_FallbackToLocalSave_CardAdded);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerWithLocalSaveFallbackTest,
-      Metrics_OnDidUploadCard_FallbackToLocalSave_CardExists);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerWithLocalSaveFallbackTest,
-      OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerWithLocalSaveFallbackTest,
-      OnDidUploadCard_SkipLocalSaveIfMissingExpirationDate);
-  FRIEND_TEST_ALL_PREFIXES(SaveCvcTest, OnDidUploadCard_SaveServerCvc);
 };
 
 }  // namespace autofill

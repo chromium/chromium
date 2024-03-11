@@ -102,8 +102,7 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardBubbleView() const {
 #if !BUILDFLAG(IS_ANDROID)
 void VirtualCardEnrollBubbleControllerImpl::HideIconAndBubble() {
   HideBubble();
-  bubble_state_ = BubbleState::kHidden;
-  enrollment_status_ = EnrollmentStatus::kNone;
+  ResetBubble();
   UpdatePageActionIcon();
 }
 
@@ -267,6 +266,16 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
           is_user_gesture_, ui_model_.enrollment_fields.previously_declined);
     }
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If the bubble is closed with the enrollment_status_ as
+  // kCompleted, hide the bubble and icon and reset bubble to its initial
+  // state.
+  if (enrollment_status_ == EnrollmentStatus::kCompleted) {
+    ResetBubble();
+    UpdatePageActionIcon();
+  }
+#endif
 }
 
 base::OnceCallback<void(PaymentsBubbleClosedReason)>
@@ -410,6 +419,12 @@ bool VirtualCardEnrollBubbleControllerImpl::IsWebContentsActive() {
 
   return active_browser->tab_strip_model()->GetActiveWebContents() ==
          web_contents();
+}
+
+void VirtualCardEnrollBubbleControllerImpl::ResetBubble() {
+  bubble_state_ = BubbleState::kHidden;
+  enrollment_status_ = EnrollmentStatus::kNone;
+  confirmation_ui_params_.reset();
 }
 #endif
 
