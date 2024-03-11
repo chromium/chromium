@@ -29,6 +29,9 @@
   for (const ruleMatch of matchedStyles.result.matchedCSSRules) {
     cssHelper.dumpRuleMatch(ruleMatch);
     if (ruleMatch.rule.nestingSelectors) {
+      // NOTE: The output selectors are separated by comma, but this is _not_
+      // a list of complex selectors; the comma separates the nested and parent
+      // selectors in the devtools protocol.
       testRunner.log('nesting selectors: ' + ruleMatch.rule.nestingSelectors);
     }
   }

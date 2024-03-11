@@ -565,7 +565,7 @@ class CORE_EXPORT CSSSelector {
   bool FollowsSlotted() const;
 
   // True if the selector was added implicitly. This can happen for e.g.
-  // nested rules that would otherwise lack the nesting selector (&).
+  // nested rules that would otherwise lack the scoping selector (:scope).
   bool IsImplicit() const { return bits_.get<IsImplicitlyAddedField>(); }
 
   // Returns true for simple selectors whose evaluation depends on DOM tree

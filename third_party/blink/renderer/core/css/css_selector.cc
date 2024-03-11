@@ -1034,7 +1034,6 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoWhere:
         break;
       case kPseudoParent:
-        DCHECK(!IsImplicit());
         builder.Append('&');
         break;
       case kPseudoRelativeAnchor:
@@ -1200,11 +1199,10 @@ String CSSSelector::SelectorText() const {
       next_compound = next_compound->NextSimpleSelector();
     }
 
-    // If we are combining with an implicit & or :scope, it is as if we
+    // If we are combining with an implicit :scope, it is as if we
     // used a relative combinator.
     if (!next_compound || (next_compound->Match() == kPseudoClass &&
-                           (next_compound->GetPseudoType() == kPseudoParent ||
-                            next_compound->GetPseudoType() == kPseudoScope) &&
+                           next_compound->GetPseudoType() == kPseudoScope &&
                            next_compound->IsImplicit())) {
       relation = ConvertRelationToRelative(relation);
     }
