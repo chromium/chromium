@@ -28950,20 +28950,6 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="I/O"/>
 </enum>
 
-<enum name="PluginType">
-  <int value="0" label="Windows Media Player"/>
-  <int value="1" label="Silverlight"/>
-  <int value="2" label="RealPlayer"/>
-  <int value="3" label="Java"/>
-  <int value="4" label="QuickTime"/>
-  <int value="5" label="Other"/>
-  <int value="6" label="Unsupported Mimetype"/>
-  <int value="7" label="Unsupported Extension"/>
-  <int value="10" label="Browser Plugin"/>
-  <int value="11" label="Shockwave Flash"/>
-  <int value="12" label="Widevine CDM"/>
-</enum>
-
 <enum name="PluginVmDlcUseResult">
   <int value="0" label="PluginVM DLC installed successfully."/>
   <int value="1" label="PluginVM DLC not supported."/>
