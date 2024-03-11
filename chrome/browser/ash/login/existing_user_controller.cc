@@ -100,6 +100,7 @@
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -923,6 +924,10 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
   for (auto& auth_status_consumer : auth_status_consumers_) {
     auth_status_consumer.OnAuthSuccess(user_context);
   }
+
+  // Initialize `AuthHub` in `kInSession` mode, see documentation in
+  // `AuthHub` for more details.
+  AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
 }
 
 base::WeakPtr<UserSessionManagerDelegate> ExistingUserController::AsWeakPtr() {

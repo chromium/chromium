@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/osauth/public/auth_attempt_consumer.h"
 #include "ui/views/widget/widget.h"
@@ -18,6 +19,12 @@ class AuthHubConnector;
 class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
                                           public AuthAttemptConsumer {
  public:
+  enum class State {
+    kNotShown,
+    kShowing,
+    kShown,
+  };
+
   InSessionAuthDialogControllerImpl();
   InSessionAuthDialogControllerImpl(const InSessionAuthDialogControllerImpl&) =
       delete;
@@ -50,6 +57,8 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
       Reason reason,
       const AccountId& account_id);
 
+  void OnAuthPanelPreferredSizeChanged();
+
   // Non owning pointer, initialized and owned by
   // `ChromeBrowserMainExtraPartsAsh`.
   // `auth_token_provider_` will outlive this controller since the controller
@@ -61,7 +70,11 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
   // we know that the auth attempt has been confirmed.
   auth_panel::AuthCompletionCallback on_auth_complete_;
 
+  State state_ = State::kNotShown;
+
   std::unique_ptr<views::Widget> dialog_;
+
+  base::WeakPtrFactory<InSessionAuthDialogControllerImpl> weak_factory_{this};
 };
 
 }  // namespace ash
