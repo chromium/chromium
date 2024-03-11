@@ -454,6 +454,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "InstallVerifier",
     "InstanceIDProfileService",
     "InvalidationService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "KcerFactory",
+#endif // BUILDFLAG(IS_CHROMEOS)
     "LanguageSettingsPrivateDelegate",
     "LazyBackgroundTaskQueue",
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -473,6 +476,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "NavigationPredictorKeyedService",
     "NetworkingPrivateEventRouter",
     "NotificationDisplayService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "NssServiceFactory",
+#endif // BUILDFLAG(IS_CHROMEOS)
     "OmniboxAPI",
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     "OnDeviceTailModelService",

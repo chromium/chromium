@@ -219,12 +219,11 @@ base::WeakPtr<Kcer> KcerFactory::GetKcerImpl(Profile* profile) {
 
 bool KcerFactory::ServiceIsCreatedWithBrowserContext() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(miersh): This should be set to true because Kcer for the primary
-  // context needs to be created as soon as possible. It is used by the
-  // components through kcer::ExtraInstance::GetDefaultKcer() and on consumer
-  // devices to determine whether the current user is the owner. It's disabled
-  // for now because Kcer is not used anywhere yet.
-  return false;
+  // This should be true because Kcer for the primary context needs to be
+  // created as soon as possible. It is used by the components through
+  // kcer::ExtraInstance::GetDefaultKcer() and on consumer devices to determine
+  // whether the current user is the owner.
+  return true;
 }
 
 std::unique_ptr<KeyedService>

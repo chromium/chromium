@@ -135,6 +135,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   void ImportPersonalFileRead(const int* read_errno, const std::string* data);
   void HandleImportPersonalPasswordSelected(const base::Value::List& args);
   void ImportPersonalSlotUnlocked();
+  void ImportPersonalResultReceived(int net_result);
 
   // Import Server certificates from file.  Sequence goes like:
   //  1. user clicks on import button -> HandleImportServer -> launches file

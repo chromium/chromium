@@ -108,6 +108,21 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTestBase,
   EXPECT_TRUE(WeakPtrEq(lockscreen_kcer, expected_kcer));
 }
 
+// Test that ExtraInstances::GetDefaultKcer() returns the instance for the
+// primary profile.
+IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTestBase,
+                       DefaultKcerIsPrimaryProfileKcer) {
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+
+  base::WeakPtr<Kcer> kcer = KcerFactory::GetKcer(primary_profile);
+
+  base::WeakPtr<Kcer> default_kcer = ExtraInstances::GetDefaultKcer();
+
+  ASSERT_TRUE(kcer);
+  ASSERT_TRUE(default_kcer);
+  EXPECT_EQ(kcer.get(), default_kcer.get());
+}
+
 class KcerFactoryNoNssTest : public KcerFactoryNoNssTestBase {
  protected:
   void SetUpOnMainThread() override {
@@ -128,27 +143,6 @@ class KcerFactoryNoNssTest : public KcerFactoryNoNssTestBase {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   raw_ptr<ash::FakeChromeUserManager> user_manager_ = nullptr;
 };
-
-// Test that ExtraInstances::GetDefaultKcer() returns the instance for the
-// primary profile.
-IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTest, DefaultKcerIsPrimaryProfileKcer) {
-  // Associating a Profile with a primary User makes it a primary Profile.
-  std::unique_ptr<TestingProfile> primary_profile =
-      TestingProfile::Builder().Build();
-  const user_manager::User* user =
-      user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-          AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/true,
-          user_manager::UserType::kRegular, primary_profile.get());
-  user_manager_->LoginUser(user->GetAccountId());
-
-  base::WeakPtr<Kcer> kcer = KcerFactory::GetKcer(primary_profile.get());
-
-  base::WeakPtr<Kcer> default_kcer = ExtraInstances::GetDefaultKcer();
-
-  ASSERT_TRUE(kcer);
-  ASSERT_TRUE(default_kcer);
-  EXPECT_EQ(kcer.get(), default_kcer.get());
-}
 
 // Test that KcerFactory can create an instance with both tokens.
 IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTest, KcerWithBothTokensCreated) {

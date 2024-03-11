@@ -10165,6 +10165,7 @@ test("unit_tests") {
         "../browser/net/nss_temp_certs_cache_chromeos_unittest.cc",
         "../browser/ui/views/global_media_controls/media_item_ui_cast_footer_view_unittest.cc",
       ]
+      deps += [ "//chromeos/components/kcer" ]
     }
   }
   if (!is_android && use_nss_certs) {

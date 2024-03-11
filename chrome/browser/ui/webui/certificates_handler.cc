@@ -731,11 +731,16 @@ void CertificatesHandler::ImportPersonalSlotUnlocked() {
   // to true if importing into a hardware module. Currently, this only happens
   // for Chrome OS when the "Import and Bind" option is chosen.
   bool is_extractable = !use_hardware_backed_;
-  int result = certificate_manager_model_->ImportFromPKCS12(
-      slot_.get(), file_data_, password_, is_extractable);
+  certificate_manager_model_->ImportFromPKCS12(
+      slot_.get(), file_data_, password_, is_extractable,
+      base::BindOnce(&CertificatesHandler::ImportPersonalResultReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
   ImportExportCleanup();
+}
+
+void CertificatesHandler::ImportPersonalResultReceived(int net_result) {
   int string_id;
-  switch (result) {
+  switch (net_result) {
     case net::OK:
       ResolveCallback(base::Value());
       return;
