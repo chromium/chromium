@@ -216,6 +216,8 @@ class OzonePlatformFlatland : public OzonePlatform,
                                                                          usage);
   }
 
+  bool IsWindowCompositingSupported() const override { return true; }
+
  private:
   // Binds main process surface factory to main process FlatlandGpuHost
   void BindInMainProcessIfNecessary() {

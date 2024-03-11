@@ -147,10 +147,6 @@ bool OzonePlatform::IsNativePixmapConfigSupported(
   return false;
 }
 
-bool OzonePlatform::IsWindowCompositingSupported() const {
-  return false;
-}
-
 bool OzonePlatform::ShouldUseCustomFrame() {
   return GetPlatformProperties().custom_frame_pref_default;
 }
