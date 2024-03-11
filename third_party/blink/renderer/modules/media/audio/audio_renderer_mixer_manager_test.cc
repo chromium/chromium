@@ -118,7 +118,6 @@ class AudioRendererMixerManagerTest : public testing::Test {
 
   // Number of instantiated mixers.
   size_t mixer_count() { return manager_->mixers_.size(); }
-  size_t dead_mixer_count() { return manager_->dead_mixers_.size(); }
 
  protected:
   scoped_refptr<media::MockAudioRendererSink> GetSink(
@@ -200,55 +199,6 @@ TEST_F(AudioRendererMixerManagerTest, GetReturnMixer) {
   // Return both outstanding mixers.
   ReturnMixer(mixer1);
   EXPECT_EQ(1u, mixer_count());
-  ReturnMixer(mixer2);
-  EXPECT_EQ(0u, mixer_count());
-}
-
-TEST_F(AudioRendererMixerManagerTest, ReturnMixerWithError) {
-  mock_sink_ = CreateNormalSink();
-  auto* local_sink = mock_sink_.get();
-
-  // There should be no mixers outstanding to start with.
-  EXPECT_EQ(0u, mixer_count());
-
-  media::AudioParameters params1(
-      media::AudioParameters::AUDIO_PCM_LINEAR,
-      media::ChannelLayoutConfig::FromLayout<kChannelLayout>(), kSampleRate,
-      kBufferSize);
-
-  media::AudioRendererMixer* mixer1 =
-      GetMixer(kFrameToken, params1, AudioLatency::Type::kPlayback,
-               kDefaultDeviceId, SinkUseState::kNewSink);
-  ASSERT_TRUE(mixer1);
-  EXPECT_EQ(1u, mixer_count());
-
-  // The same parameters should return the same mixer1.
-  EXPECT_EQ(mixer1,
-            GetMixer(kFrameToken, params1, AudioLatency::Type::kPlayback,
-                     kDefaultDeviceId, SinkUseState::kExistingSink));
-  EXPECT_EQ(1u, mixer_count());
-
-  // Trigger an error in mixer1.
-  local_sink->callback()->OnRenderError();
-
-  // Return the extra mixer we just acquired, it should not be deleted, but put
-  // into the dead mixer map.
-  ReturnMixer(mixer1);
-  EXPECT_EQ(0u, mixer_count());
-  EXPECT_EQ(1u, dead_mixer_count());
-
-  // Using the same params should create a new mixer due to the error.
-  media::AudioRendererMixer* mixer2 =
-      GetMixer(kFrameToken, params1, AudioLatency::Type::kPlayback,
-               kDefaultDeviceId, SinkUseState::kNewSink);
-  ASSERT_TRUE(mixer2);
-  EXPECT_EQ(1u, mixer_count());
-  EXPECT_EQ(1u, dead_mixer_count());
-  EXPECT_NE(mixer1, mixer2);
-
-  // Return both outstanding mixers.
-  ReturnMixer(mixer1);
-  EXPECT_EQ(0u, dead_mixer_count());
   ReturnMixer(mixer2);
   EXPECT_EQ(0u, mixer_count());
 }

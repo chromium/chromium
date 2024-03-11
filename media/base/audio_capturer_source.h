@@ -31,7 +31,6 @@ class AudioCapturerSource
     kUnknown = 0,
     kSystemPermissions = 1,
     kDeviceInUse = 2,
-    kSocketError = 3,
   };
 
   class CaptureCallback {

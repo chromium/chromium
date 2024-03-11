@@ -180,11 +180,6 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
 
   // Active mixers.
   AudioRendererMixerMap mixers_;
-
-  // Mixers which encountered errors, but can't yet be destroyed since they are
-  // still owned by an input.
-  AudioRendererMixerMap dead_mixers_;
-
   base::Lock mixers_lock_;
 };
 
