@@ -651,6 +651,45 @@
       <message name="IDS_ACCESSIBILITY_TAB_GROUPS" desc="Content description for the button to show tab groups UI.">
         Tab groups
       </message>
+      <message name="IDS_TAB_GROUPS_CREATED_AGO_NOW" desc="A subtitle on a row for a tab group. Explains the group was created less than a minute ago.">
+        Created just now
+      </message>
+      <message name="IDS_TAB_GROUPS_CREATED_AGO_MINUTES" desc="A subtitle on a row for a tab group. Explains how many minutes ago the group was created.">
+        {NUM_MINS, plural,
+          =1 {Created <ph name="NUM_MINS_ONE">%d<ex>1</ex></ph> minute ago}
+          other {Created <ph name="NUM_MINS_MANY">%d<ex>2</ex></ph> minutes ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_CREATED_AGO_HOURS" desc="A subtitle on a row for a tab group. Explains how many hours ago the group was created.">
+        {NUM_HOURS, plural,
+          =1 {Created <ph name="NUM_HOURS_ONE">%d<ex>1</ex></ph> hour ago}
+          other {Created <ph name="NUM_HOURS_MANY">%d<ex>2</ex></ph> hours ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_CREATED_AGO_DAYS" desc="A subtitle on a row for a tab group. Explains how many days ago the group was created.">
+        {NUM_DAYS, plural,
+          =1 {Created <ph name="NUM_DAYS_ONE">%d<ex>1</ex></ph> day ago}
+          other {Created <ph name="NUM_DAYS_MANY">%d<ex>2</ex></ph> days ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_CREATED_AGO_WEEKS" desc="A subtitle on a row for a tab group. Explains how many weeks ago the group was created.">
+        {NUM_WEEKS, plural,
+          =1 {Created <ph name="NUM_WEEKS_ONE">%d<ex>1</ex></ph> week ago}
+          other {Created <ph name="NUM_WEEKS_MANY">%d<ex>2</ex></ph> weeks ago}
+        }
+      </message>
+      <message name="IDS_TAB_GROUPS_CREATED_AGO_MONTHS" desc="A subtitle on a row for a tab group. Explains how many months ago the group was created.">
+              {NUM_MONTHS, plural,
+                =1 {Created <ph name="NUM_MONTHS_ONE">%d<ex>1</ex></ph> month ago}
+                other {Created <ph name="NUM_MONTHS_MANY">%d<ex>2</ex></ph> months ago}
+              }
+            </message>
+      <message name="IDS_TAB_GROUPS_CREATED_AGO_YEARS" desc="A subtitle on a row for a tab group. Explains how many years ago the group was created.">
+        {NUM_MONTHS, plural,
+          =1 {Created <ph name="NUM_YEARS_ONE">%d<ex>1</ex></ph> year ago}
+          other {Created <ph name="NUM_YEARS_MANY">%d<ex>2</ex></ph> years ago}
+        }
+      </message>
     </messages>
   </release>
 </grit>
