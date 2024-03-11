@@ -288,10 +288,8 @@ void ConfigureSearchHintLabel(UILabel* search_hint_label,
 }
 
 void ConfigureVoiceSearchButton(UIButton* voice_search_button,
-                                UIView* search_tab_target,
                                 BOOL use_color_icon) {
   [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [search_tab_target addSubview:voice_search_button];
 
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration plainButtonConfiguration];

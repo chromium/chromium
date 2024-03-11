@@ -55,10 +55,8 @@ CGFloat HeaderBottomPadding();
 // way `search_hint_label` is later tranformed.
 void ConfigureSearchHintLabel(UILabel* search_hint_label,
                               UIView* search_tab_target);
-// Configure the `voice_search_button`, adding it to the `search_tab_target` and
-// constraining it.
+// Configure the `voice_search_button` appearance.
 void ConfigureVoiceSearchButton(UIButton* voice_search_button,
-                                UIView* search_tab_target,
                                 BOOL use_color_icon);
 // Configure the `lens_button` appearance.
 void ConfigureLensButtonAppearance(UIButton* lens_button,

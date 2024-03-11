@@ -354,13 +354,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  const BOOL useColorIcon = base::FeatureList::IsEnabled(kOmniboxColorIcons);
-
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
-                                                  searchField, useColorIcon);
+  [searchField addSubview:self.voiceSearchButton];
   UIButton* endButton = self.voiceSearchButton;
 
   // Lens.
@@ -371,10 +368,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     [searchField addSubview:self.lensButton];
-    content_suggestions::ConfigureLensButtonAppearance(
-        self.lensButton, _useNewBadgeForLensButton, useColorIcon);
     endButton = self.lensButton;
   }
+
+  [self updateButtonsForUserInterfaceStyle:self.traitCollection
+                                               .userInterfaceStyle];
 
   // Constraints.
   AddSameConstraints(self.fakeToolbar, searchField);
@@ -432,6 +430,19 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.endButtonTrailingMarginConstraint,
     self.endButtonTrailingConstraint,
   ]];
+}
+
+- (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style {
+  const BOOL darkModeEnabled = (style == UIUserInterfaceStyleDark);
+  const BOOL useColorIcon =
+      !darkModeEnabled && base::FeatureList::IsEnabled(kOmniboxColorIcons);
+
+  content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
+                                                  useColorIcon);
+  if (self.lensButton) {
+    content_suggestions::ConfigureLensButtonAppearance(
+        self.lensButton, _useNewBadgeForLensButton, useColorIcon);
+  }
 }
 
 - (void)addSeparatorToSearchField:(UIView*)searchField {

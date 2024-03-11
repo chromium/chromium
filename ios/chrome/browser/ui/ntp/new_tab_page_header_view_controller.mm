@@ -116,6 +116,14 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
           self.traitCollection.preferredContentSizeCategory) {
     [self updateFakeboxDisplay];
   }
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    if (base::FeatureList::IsEnabled(kOmniboxColorIcons)) {
+      [self.headerView
+          updateButtonsForUserInterfaceStyle:self.traitCollection
+                                                 .userInterfaceStyle];
+    }
+  }
 }
 
 - (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection

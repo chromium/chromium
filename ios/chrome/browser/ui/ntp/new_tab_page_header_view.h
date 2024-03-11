@@ -71,6 +71,9 @@
                    screenWidth:(CGFloat)screenWidth
                 safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
+// Update buttons for the user interface style.
+- (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style;
+
 // Adds views necessary to customize the NTP search box.
 - (void)addViewsToSearchField:(UIView*)searchField;
 
