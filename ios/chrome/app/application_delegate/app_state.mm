@@ -460,16 +460,19 @@ void FlushCookieStoreOnIOThread(
   // time the app becomes active.
   [self.startupInformation setIsColdStart:NO];
 
-  // Record session metrics (self.mainBrowserState may be null during tests).
-  // TODO(crbug.com/325596568): Update for each browser state,
-  if (self.mainBrowserState) {
-    SessionMetrics::FromBrowserState(self.mainBrowserState)
+  // Record session metrics.
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    SessionMetrics::FromBrowserState(browserState)
         ->RecordAndClearSessionMetrics(
             MetricsToRecordFlags::kActivatedTabCount);
 
-    if (self.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
+    if (browserState->HasOffTheRecordChromeBrowserState()) {
       ChromeBrowserState* otrChromeBrowserState =
-          self.mainBrowserState->GetOffTheRecordChromeBrowserState();
+          browserState->GetOffTheRecordChromeBrowserState();
 
       SessionMetrics::FromBrowserState(otrChromeBrowserState)
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);

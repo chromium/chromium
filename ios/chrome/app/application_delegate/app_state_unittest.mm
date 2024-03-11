@@ -357,6 +357,12 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
       [[FakeStartupInformation alloc] init];
   [startupInformation setIsColdStart:YES];
 
+  TestChromeBrowserState::Builder test_cbs_builder;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager =
+      std::make_unique<TestChromeBrowserStateManager>(test_cbs_builder.Build());
+  TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+      browser_state_manager.get());
+
   AppState* appState =
       [[AppState alloc] initWithStartupInformation:startupInformation];
 
