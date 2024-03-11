@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/http/http_cookie_indices.h"
 #include "net/http/http_response_headers.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/url_request/clear_site_data.h"
@@ -117,6 +118,10 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
     }
   }
 #endif
+
+  if (base::FeatureList::IsEnabled(network::features::kCookieIndicesHeader)) {
+    parsed_headers->cookie_indices = net::ParseCookieIndices(*headers);
+  }
 
   if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
       base::FeatureList::IsEnabled(

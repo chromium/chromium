@@ -97,6 +97,18 @@ struct ParsedHeaders {
   // URLs are represented here as strings, and have not been validated.
   map<string,string>? reporting_endpoints;
 
+  // The parsed Cookie-Indices response header.
+  //
+  // Lists cookie names which might affect whether this content is cacheable.
+  // Responses should not be cached if one of the named cookies has a changed
+  // value.
+  //
+  // This field is populated even if `Vary: Cookie` is not specified (and it
+  // would therefore be ineffective).
+  //
+  // https://mnot.github.io/I-D/draft-nottingham-http-availability-hints.html#name-cookie
+  array<string>? cookie_indices;
+
   // The parsed Variants response header.
   //
   // Indicates that representations are available for a given resource at the

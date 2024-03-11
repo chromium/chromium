@@ -576,6 +576,8 @@ component("net") {
     "http/http_connection_info.h",
     "http/http_content_disposition.cc",
     "http/http_content_disposition.h",
+    "http/http_cookie_indices.cc",
+    "http/http_cookie_indices.h",
     "http/http_log_util.cc",
     "http/http_log_util.h",
     "http/http_network_layer.cc",
@@ -2460,9 +2462,15 @@ if (is_ios) {
 
 if (!is_cronet_build) {
   test("net_fuzztests") {
-    sources = [ "cert/x509_certificate_fuzztest.cc" ]
+    sources = [
+      "cert/x509_certificate_fuzztest.cc",
+      "http/http_cookie_indices_fuzztest.cc",
+    ]
 
-    fuzztests = [ "X509CertificateFuzzTest.FuzzCreateFromDERCertChain" ]
+    fuzztests = [
+      "CookieIndicesFuzzTest.FuzzParseFromHeader",
+      "X509CertificateFuzzTest.FuzzCreateFromDERCertChain",
+    ]
 
     deps = [
       ":net",
@@ -2610,6 +2618,7 @@ test("net_unittests") {
     "http/http_cache_writers_unittest.cc",
     "http/http_chunked_decoder_unittest.cc",
     "http/http_content_disposition_unittest.cc",
+    "http/http_cookie_indices_unittest.cc",
     "http/http_log_util_unittest.cc",
     "http/http_network_layer_unittest.cc",
     "http/http_network_transaction_unittest.cc",

@@ -444,6 +444,7 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                      rhs->supports_loading_mode));
   CHECK(mojo::Equals(adjusted_lhs->reporting_endpoints,
                      rhs->reporting_endpoints));
+  CHECK(mojo::Equals(adjusted_lhs->cookie_indices, rhs->cookie_indices));
   CHECK(mojo::Equals(adjusted_lhs->variants_headers, rhs->variants_headers));
   CHECK(mojo::Equals(adjusted_lhs->content_language, rhs->content_language));
   CHECK(mojo::Equals(adjusted_lhs->no_vary_search_with_parse_error,

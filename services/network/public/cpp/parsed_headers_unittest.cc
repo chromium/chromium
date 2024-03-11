@@ -405,5 +405,19 @@ TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithClearSiteDataAllTest) {
   EXPECT_FALSE(parsed_headers->accept_ch);
   EXPECT_FALSE(parsed_headers->critical_ch);
 }
+
+TEST(ParsedHeadersTest, CookieIndices) {
+  base::test::ScopedFeatureList enable{features::kCookieIndicesHeader};
+  const std::string_view headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Cookie-Indices: logged_in, user_lang\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  ASSERT_TRUE(parsed_headers);
+  EXPECT_THAT(
+      parsed_headers->cookie_indices,
+      ::testing::Optional(::testing::ElementsAre("logged_in", "user_lang")));
+}
+
 }  // namespace
 }  // namespace network
