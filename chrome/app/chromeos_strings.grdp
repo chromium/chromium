@@ -1615,11 +1615,14 @@
   <message name="IDS_APP_START_WAIT_FOR_APP_WINDOW_MESSAGE" desc="Message displayed while waiting for the application to create its window in kiosk mode.">
     Waiting for application window...
   </message>
-  <message name="IDS_PASSWORD_SELECTION_TITLE" desc="Message displayed on the password selection screen.">
-    Use a password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  <message name="IDS_PASSWORD_SELECTION_TITLE" desc="Title displayed on the password selection screen.">
+    Set a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password to make it easier to sign in
+  </message>
+  <message name="IDS_PASSWORD_SELECTION_SUBTITLE" desc="Message displayed on the password selection screen.">
+    Instead of entering your Google Account password to sign in, you can create <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password for this device
   </message>
   <message name="IDS_PASSWORD_SELECTION_LOCAL_PASSWORD_LABEL" desc="Label for the local password option on the password selection screen.">
-    Create <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
+    Create password for this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_PASSWORD_SELECTION_GAIA_PASSWORD_LABEL" desc="Label for the online password option on the password selection screen.">
     Use Google Account password
