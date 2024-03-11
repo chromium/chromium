@@ -17,4 +17,5 @@ html {
   --ntp-focus-shadow: 0 0 0 2px var(--color-new-tab-page-focus-ring);
   --ntp-module-item-border-radius: 4px;
   --ntp-module-text-size: 13px;
+  --ntp-module-secondary-text-size: 11px;
 }

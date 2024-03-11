@@ -21,7 +21,8 @@ import type {MenuItem, ModuleHeaderElementV2} from '../module_header';
 import {getTemplate} from './module.html.js';
 import {TabResumptionProxyImpl} from './tab_resumption_proxy.js';
 
-export const MAX_TABS = 5;
+export const MAX_TABS =
+    !loadTimeData.getBoolean('modulesRedesignedEnabled') ? 3 : 5;
 
 export interface TabResumptionModuleElement {
   $: {
@@ -172,6 +173,10 @@ tabs:
 
   private computeIsSingleTab_(): boolean {
     return this.tabs && this.tabs.length === 1;
+  }
+
+  private computeFaviconSize_(): number {
+    return loadTimeData.getBoolean('modulesRedesignedEnabled') ? 16 : 19;
   }
 }
 
