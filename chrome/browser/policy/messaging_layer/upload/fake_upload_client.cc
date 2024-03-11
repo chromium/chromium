@@ -49,50 +49,23 @@ Status FakeUploadClient::EnqueueUpload(
 void FakeUploadClient::OnUploadComplete(
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
-    StatusOr<base::Value::Dict> response) {
+    StatusOr<UploadResponseParser> response) {
   if (!response.has_value()) {
     return;
   }
-  const base::Value::Dict* last_success =
-      response.value().FindDict(json_keys::kLastSucceedUploadedRecord);
-  if (last_success != nullptr) {
-    const auto force_confirm_flag =
-        last_success->FindBool(json_keys::kForceConfirm);
-    bool force_confirm =
-        force_confirm_flag.has_value() && force_confirm_flag.value();
-    auto seq_info_result =
-        UploadResponseParser::SequenceInformationValueToProto(
-            /*is_generation_guid_required=*/false, *last_success);
-    if (seq_info_result.has_value()) {
-      std::move(report_upload_success_cb)
-          .Run(seq_info_result.value(), force_confirm);
-    }
+
+  auto last_success =
+      response.value().last_successfully_uploaded_record_sequence_info();
+  if (last_success.has_value()) {
+    const auto force_confirm_flag = response.value().force_confirm_flag();
+    std::move(report_upload_success_cb)
+        .Run(std::move(last_success.value()), force_confirm_flag);
   }
 
-  const base::Value::Dict* signed_encryption_key_record =
-      response.value().FindDict(json_keys::kEncryptionSettings);
-  if (signed_encryption_key_record != nullptr) {
-    const std::string* public_key_str =
-        signed_encryption_key_record->FindString(json_keys::kPublicKey);
-    const auto public_key_id_result =
-        signed_encryption_key_record->FindInt(json_keys::kPublicKeyId);
-    const std::string* public_key_signature_str =
-        signed_encryption_key_record->FindString(
-            json_keys::kPublicKeySignature);
-    std::string public_key;
-    std::string public_key_signature;
-    if (public_key_str != nullptr &&
-        base::Base64Decode(*public_key_str, &public_key) &&
-        public_key_signature_str != nullptr &&
-        base::Base64Decode(*public_key_signature_str, &public_key_signature) &&
-        public_key_id_result.has_value()) {
-      SignedEncryptionInfo signed_encryption_key;
-      signed_encryption_key.set_public_asymmetric_key(public_key);
-      signed_encryption_key.set_public_key_id(public_key_id_result.value());
-      signed_encryption_key.set_signature(public_key_signature);
-      std::move(encryption_key_attached_cb).Run(signed_encryption_key);
-    }
+  auto encryption_settings = response.value().encryption_settings();
+  if (encryption_settings.has_value()) {
+    std::move(encryption_key_attached_cb)
+        .Run(std::move(encryption_settings.value()));
   }
 }
-
 }  // namespace reporting

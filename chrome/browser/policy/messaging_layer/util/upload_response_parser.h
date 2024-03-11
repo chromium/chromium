@@ -50,9 +50,6 @@ class UploadResponseParser {
   bool enable_upload_size_adjustment() const;
 
  private:
-  // Uses `SequenceInformationValueToProto` for testing.
-  friend class FakeUploadClient;
-
   // Helper function for converting a base::Value representation of
   // SequenceInformation into a proto. Will return an INVALID_ARGUMENT error
   // if the base::Value is not convertible.

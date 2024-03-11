@@ -29,6 +29,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -207,7 +208,7 @@ void ReportingServerConnector::UploadEncryptedReport(
       need_encryption_key, config_file_version, std::move(records),
       std::move(scoped_reservation), std::move(context),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
-          [](ResponseCallback callback, StatusOr<base::Value::Dict> result) {
+          [](ResponseCallback callback, StatusOr<UploadResponseParser> result) {
             DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
             if (!result.has_value()) {
               std::move(callback).Run(std::move(result));

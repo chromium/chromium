@@ -11,10 +11,10 @@
 
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -93,7 +93,7 @@ class ReportingServerConnectorTest : public ::testing::Test {
 TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnUIThread) {
   // Call `ReportingServerConnector::UploadEncryptedReport` from the UI.
-  test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+  test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -118,7 +118,7 @@ TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnArbitraryThread) {
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
   // thread pool.
-  test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+  test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   base::ThreadPool::PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -162,7 +162,7 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
 
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
   // thread pool.
-  test::TestEvent<StatusOr<base::Value::Dict>> response_event;
+  test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   base::ThreadPool::PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -30,6 +30,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -489,7 +490,10 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     }
   }
 
-  std::move(callback).Run(std::move(response.value()));
+  UploadResponseParser response_parser(
+      EncryptedReportingClient::GenerationGuidIsRequired(),
+      std::move(response.value()));
+  std::move(callback).Run(std::move(response_parser));
 }
 
 // static

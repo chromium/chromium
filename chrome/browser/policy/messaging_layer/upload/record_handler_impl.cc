@@ -22,7 +22,6 @@
 #include "base/types/expected_macros.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
-#include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
@@ -135,7 +134,7 @@ class RecordHandlerImpl::ReportUploader
   void LogNumRecordsInUpload(size_t num_records);
   void ResumeUpload(size_t next_record);
   void UploadRequest(size_t next_record);
-  void OnUploadComplete(StatusOr<base::Value::Dict> response);
+  void OnUploadComplete(StatusOr<UploadResponseParser> response_result);
   void Complete(CompletionResponse result);
 
   // Returns a gap record if it is necessary. Expects the contents of the
@@ -300,21 +299,18 @@ void RecordHandlerImpl::ReportUploader::UploadRequest(size_t next_record) {
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
-    StatusOr<base::Value::Dict> response) {
+    StatusOr<UploadResponseParser> response_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(records_.empty()) << "All records have to had been processed";
   // Release reservation right away, since we no londer need to keep
   // `base::Value::Dict request` it was referring to.
   scoped_reservation_.Reduce(0uL);
 
-  if (!response.has_value()) {
-    Complete(base::unexpected(response.error()));
+  if (!response_result.has_value()) {
+    Complete(base::unexpected(response_result.error()));
     return;
   }
-
-  UploadResponseParser response_parser(
-      EncryptedReportingClient::GenerationGuidIsRequired(),
-      std::move(response.value()));
+  const auto& response_parser = response_result.value();
 
   // Handle forceConfirm flag, if present.
   const auto force_confirm_flag = response_parser.force_confirm_flag();

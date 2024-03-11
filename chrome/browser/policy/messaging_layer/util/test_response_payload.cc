@@ -157,7 +157,15 @@ void MakeUploadEncryptedReportAction::operator()(
     std::optional<base::Value::Dict> context,
     ReportingServerConnector::ResponseCallback callback) {
   response_builder_.SetRequest(std::move(request));
-  std::move(callback).Run(response_builder_.Build());
+  auto response_result = response_builder_.Build();
+  if (!response_result.has_value()) {
+    std::move(callback).Run(base::unexpected(response_result.error()));
+    return;
+  }
+  UploadResponseParser response_parser(
+      EncryptedReportingClient::GenerationGuidIsRequired(),
+      std::move(response_result.value()));
+  std::move(callback).Run(std::move(response_parser));
 }
 
 }  // namespace reporting

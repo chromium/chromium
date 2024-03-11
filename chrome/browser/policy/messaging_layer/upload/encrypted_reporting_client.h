@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
@@ -91,7 +92,7 @@ class EncryptedReportingClient {
   };
 
   using ResponseCallback =
-      base::OnceCallback<void(StatusOr<base::Value::Dict>)>;
+      base::OnceCallback<void(StatusOr<UploadResponseParser>)>;
 
   static std::unique_ptr<EncryptedReportingClient> Create(
       std::unique_ptr<Delegate> delegate = std::make_unique<Delegate>());
