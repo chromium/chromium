@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module ash.orca.mojom;
 
@@ -22,6 +22,7 @@ enum PresetTextQueryType {
   kRephrase = 3,
   kFormalize = 4,
   kEmojify = 5,
+  [MinVersion=10] kProofread = 6,
 };
 
 [Stable]

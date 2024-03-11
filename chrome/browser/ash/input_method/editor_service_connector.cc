@@ -25,6 +25,9 @@ orca::mojom::EditorConfigPtr GenerateConfig() {
   if (base::FeatureList::IsEnabled(features::kOrcaFormalize)) {
     allowed.push_back(orca::mojom::PresetTextQueryType::kFormalize);
   }
+  if (base::FeatureList::IsEnabled(features::kOrcaProofread)) {
+    allowed.push_back(orca::mojom::PresetTextQueryType::kProofread);
+  }
   if (base::FeatureList::IsEnabled(features::kOrcaRephrase)) {
     allowed.push_back(orca::mojom::PresetTextQueryType::kRephrase);
   }

@@ -16,7 +16,9 @@ namespace chromeos::editor_menu {
 const gfx::VectorIcon& GetIconForPresetQueryCategory(
     PresetQueryCategory category) {
   switch (category) {
+    // TODO(b/327073641): Use the correct icon for kProofread
     case PresetQueryCategory::kUnknown:
+    case PresetQueryCategory::kProofread:
       return vector_icons::kKeyboardIcon;
     case PresetQueryCategory::kShorten:
       return kEditorMenuShortenIcon;

@@ -33,6 +33,8 @@ PresetQueryCategory FromMojoPresetQueryCategory(
       return PresetQueryCategory::kFormalize;
     case crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify:
       return PresetQueryCategory::kEmojify;
+    case crosapi::mojom::EditorPanelPresetQueryCategory::kProofread:
+      return PresetQueryCategory::kProofread;
   }
 }
 

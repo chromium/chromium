@@ -34,6 +34,8 @@ crosapi::mojom::EditorPanelPresetQueryCategory ToEditorPanelQueryCategory(
       return crosapi::mojom::EditorPanelPresetQueryCategory::kFormalize;
     case orca::mojom::PresetTextQueryType::kEmojify:
       return crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify;
+    case orca::mojom::PresetTextQueryType::kProofread:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kProofread;
   }
 }
 

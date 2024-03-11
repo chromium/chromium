@@ -17,6 +17,7 @@ enum class PresetQueryCategory {
   kRephrase,
   kFormalize,
   kEmojify,
+  kProofread,
 };
 
 struct PresetTextQuery {
