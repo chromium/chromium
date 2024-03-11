@@ -29,6 +29,28 @@ class Error(Exception):
   pass
 
 
+class Type:
+  "Aliases for FieldDescriptorProto::Type(s)"
+  DOUBLE         = 1
+  FLOAT          = 2
+  INT64          = 3
+  UINT64         = 4
+  INT32          = 5
+  FIXED64        = 6
+  FIXED32        = 7
+  BOOL           = 8
+  STRING         = 9
+  GROUP          = 10
+  MESSAGE        = 11
+  BYTES          = 12
+  UINT32         = 13
+  ENUM           = 14
+  SFIXED32       = 15
+  SFIXED64       = 16
+  SINT32         = 17
+  SINT64         = 18
+
+
 @dataclasses.dataclass(frozen=True)
 class Message:
   desc: descriptor_pb2.DescriptorProto
@@ -107,19 +129,19 @@ def GenerateProtoDescriptors(out, includes, messages: list[Message]):
         continue
       out.write(f'case {field.tag_number}: {{\n')
       name = f'casted_msg.{field.name}()'
-      if field.type == 11:
+      if field.type == Type.MESSAGE:
         out.write(f'return GetProtoValue({name}, proto_field, index+1);\n')
       else:
         out.write('proto::Value value;\n');
-        if field.type in {1, 2}:
+        if field.type in {Type.DOUBLE, Type.FLOAT}:
           out.write(f'value.set_float_value(static_cast<double>({name}));\n')
-        elif field.type in {3, 4}:
+        elif field.type in {Type.INT64, Type.UINT64}:
           out.write(f'value.set_int64_value(static_cast<int64_t>({name}));\n')
-        elif field.type in {5, 13, 14}:
+        elif field.type in {Type.INT32, Type.UINT32, Type.ENUM}:
           out.write(f'value.set_int32_value(static_cast<int32_t>({name}));\n')
-        elif field.type in {8}:
+        elif field.type in {Type.BOOL}:
           out.write(f'value.set_boolean_value({name});\n')
-        elif field.type in {9}:
+        elif field.type in {Type.STRING}:
           out.write(f'value.set_string_value({name});\n')
         else:
           raise Error()
@@ -143,7 +165,7 @@ def GenerateProtoDescriptors(out, includes, messages: list[Message]):
     out.write(f'if (proto_name == "{msg.type_name}") {{\n')
     out.write('switch(proto_field.proto_descriptors(index).tag_number()) {\n')
     for field in msg.fields:
-      if field.type == 9:
+      if field.type == Type.STRING:
         out.write(f'case {field.tag_number}: {{\n')
         out.write('proto::Any any;\n')
         out.write(f'any.set_type_url("type.googleapis.com/{msg.type_name}");\n')
