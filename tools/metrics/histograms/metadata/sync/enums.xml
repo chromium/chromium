@@ -411,7 +411,7 @@ chromium-metrics-reviews@google.com.
   <int value="100162" label="(obsolete, no longer synced) PageColors"/>
   <int value="100163" label="PerformanceTracingEnabled"/>
   <int value="100164" label="PluginsAlwaysOpenPdfExternally"/>
-  <int value="100165" label="PrivacySandboxApisEnabled"/>
+  <int value="100165" label="(obsolete) PrivacySandboxApisEnabled"/>
   <int value="100166" label="PrivacySandboxRelatedWebsiteSetsEnabled"/>
   <int value="100167" label="(obsolete) PrivacySandboxManuallyControlled"/>
   <int value="100168" label="PromptForDownload"/>

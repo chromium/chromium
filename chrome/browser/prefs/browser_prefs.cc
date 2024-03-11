@@ -1027,6 +1027,9 @@ constexpr char kOfferReaderMode[] = "dom_distiller.offer_reader_mode";
 // Deprecated 03/2024.
 constexpr char kPlusAddressLastFetchedTime[] = "plus_address.last_fetched_time";
 
+// Deprecated 03/2024.
+constexpr char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1458,6 +1461,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2024.
   registry->RegisterTimePref(kPlusAddressLastFetchedTime, base::Time());
+
+  // Deprecated 03/2024.
+  registry->RegisterBooleanPref(kPrivacySandboxApisEnabled, true);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2613,12 +2619,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
                                                                   profile_path);
 #endif
 
-  // Deprecated 11/2023.
+  // Added 11/2023.
   profile_prefs->ClearPref(kPasswordChangeSuccessTrackerFlows);
   profile_prefs->ClearPref(kPasswordChangeSuccessTrackerVersion);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Deprecated 11/2023.
+  // Added 11/2023.
   profile_prefs->ClearPref(kImageSearchPrivacyNotice);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -2642,10 +2648,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kDesktopSiteDisplaySettingEnabled);
 #endif
 
-  // Deprecated 12/2023.
+  // Added 12/2023.
   profile_prefs->ClearPref(kDownloadDuplicateFilePromptEnabled);
 
-  // Deprecated 12/2023.
+  // Added 12/2023.
   profile_prefs->ClearPref(kModelQualityLoggingClientId);
 
   // Added 12/2023.
@@ -2678,14 +2684,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 01/2024.
   profile_prefs->ClearPref(kDownloadBubbleIphSuppression);
 
-  // Deprecated 01/2024.
+  // Added 01/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kPersistedSystemExtensions);
   profile_prefs->ClearPref(kBorealisVmTokenHash);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Deprecated 1/2024.
+  // Added 1/2024.
   performance_manager::user_tuning::prefs::MigrateTabDiscardingExceptionsPref(
       profile_prefs);
 #endif
@@ -2694,37 +2700,37 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNtpShownPage);
   profile_prefs->ClearPref(kNtpAppPageNames);
 
-  // Deprecated 01/2024.
+  // Added 01/2024.
 #if BUILDFLAG(IS_WIN)
   profile_prefs->ClearPref(kSearchResultsPagePrimaryFontsPref);
   profile_prefs->ClearPref(kSearchResultsPageFallbackFontsPref);
 #endif
 
-  // Deprecated 01/2024.
+  // Added 01/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kUpdateNotificationLastShownMilestone);
 #endif
 
-  // Deprecated 01/2024.
+  // Added 01/2024.
 #if BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kSavePasswordsSuspendedByError);
 #endif
 
-  // Deprecated 02/2024
+  // Added 02/2024
   profile_prefs->ClearPref(kSafeBrowsingDeepScanPromptSeen);
   profile_prefs->ClearPref(kSafeBrowsingEsbEnabledTimestamp);
 
-  // Deprecated 02/2024.
+  // Added 02/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
     profile_prefs->ClearPref(pref);
   }
 
-  // Deprecated 02/2024.
+  // Added 02/2024.
   profile_prefs->ClearPref(kDiscoverTabSuggestionChipTimesLeftToShow);
 #endif
 
-  // Deprecated 02/2024.
+  // Added 02/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kHatsSmartLockSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsSmartLockDeviceIsSelected);
@@ -2732,17 +2738,21 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsUnlockDeviceIsSelected);
 #endif
 
-  // Deprecated 02/2024
+  // Added 02/2024
   profile_prefs->ClearPref(kResetCheckDefaultBrowser);
 
-  // Deprecated 02/2024
+  // Added 02/2024
   profile_prefs->ClearPref(kOfferReaderMode);
+
+  // Added 03/2024.
+  profile_prefs->ClearPref(kPlusAddressLastFetchedTime);
+
+  // Added 03/2024.
+  profile_prefs->ClearPref(kPrivacySandboxApisEnabled);
 
   // Added 02/2024, but DO NOT REMOVE after the usual year!
   // TODO(crbug.com/40282890): Remove ~one year after full launch.
   browser_sync::MaybeMigrateSyncingUserToSignedIn(profile_path, profile_prefs);
-
-  profile_prefs->ClearPref(kPlusAddressLastFetchedTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

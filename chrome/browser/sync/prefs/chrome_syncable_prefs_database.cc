@@ -220,7 +220,7 @@ enum {
   // kPageColors = 100162, (no longer synced)
   kPerformanceTracingEnabled = 100163,
   kPluginsAlwaysOpenPdfExternally = 100164,
-  kPrivacySandboxApisEnabled = 100165,
+  // kPrivacySandboxApisEnabled = 100165, (deprecated)
   kPrivacySandboxRelatedWebsiteSetsEnabled = 100166,
   // kPrivacySandboxManuallyControlled = 100167, (deprecated)
   kPromptForDownload = 100168,
@@ -1185,10 +1185,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPluginsAlwaysOpenPdfExternally,
      {syncable_prefs_ids::kPluginsAlwaysOpenPdfExternally, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kPrivacySandboxApisEnabled,
-     {syncable_prefs_ids::kPrivacySandboxApisEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,

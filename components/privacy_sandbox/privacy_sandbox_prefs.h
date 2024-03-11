@@ -48,14 +48,6 @@ inline constexpr char kPrivacySandboxM1AdMeasurementEnabled[] =
 inline constexpr char kPrivacySandboxM1Restricted[] =
     "privacy_sandbox.m1.restricted";
 
-// Synced boolean pref. Privacy Sandbox APIs may only be enabled when this is
-// enabled, but each API will respect its own enabling logic if this pref is
-// true. When this pref is false ALL Privacy Sandbox APIs are disabled.
-// TODO(crbug.com/1292898): Deprecate this preference once all users have been
-// migrated to the V2 pref.
-inline constexpr char kPrivacySandboxApisEnabled[] =
-    "privacy_sandbox.apis_enabled";
-
 // The point in time from which history is eligible to be used when calculating
 // a user's Topics API topics.
 inline constexpr char kPrivacySandboxTopicsDataAccessibleSince[] =
