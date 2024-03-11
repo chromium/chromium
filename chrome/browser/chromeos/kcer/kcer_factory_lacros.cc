@@ -14,6 +14,23 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace kcer {
+namespace {
+
+// Returns the currently valid ChapsService. Might return a nullptr during early
+// initialization and after shutdown.
+crosapi::mojom::ChapsService* GetChapsService() {
+  crosapi::mojom::ChapsService* chaps_service = nullptr;
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (service && service->IsAvailable<crosapi::mojom::ChapsService>()) {
+    chaps_service = service->GetRemote<crosapi::mojom::ChapsService>().get();
+  }
+  if (!chaps_service) {
+    LOG(ERROR) << "ChapsService mojo interface is not available";
+  }
+  return chaps_service;
+}
+
+}  // namespace
 
 // static
 void KcerFactoryLacros::EnsureFactoryBuilt() {
@@ -76,29 +93,13 @@ void KcerFactoryLacros::OnCertDbInfoReceived(
                                                 device_token_id);
 }
 
-// This method can in theory fail, but this shouldn't happen. In Lacros, by the
-// time this is used in production, the minimal supported version of Ash should
-// also always have the interface.
 bool KcerFactoryLacros::EnsureHighLevelChapsClientInitialized() {
-  if (did_shutdown_) {
-    return false;
-  }
   if (session_chaps_client_ && high_level_chaps_client_) {
     return true;
   }
 
-  crosapi::mojom::ChapsService* chaps_service = nullptr;
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (service && service->IsAvailable<crosapi::mojom::ChapsService>()) {
-    chaps_service = service->GetRemote<crosapi::mojom::ChapsService>().get();
-  }
-  if (!chaps_service) {
-    LOG(ERROR) << "ChapsService mojo interface is not available";
-    return false;
-  }
-
-  session_chaps_client_ =
-      std::make_unique<SessionChapsClientImpl>(chaps_service);
+  session_chaps_client_ = std::make_unique<SessionChapsClientImpl>(
+      base::BindRepeating(&GetChapsService));
   high_level_chaps_client_ =
       std::make_unique<HighLevelChapsClientImpl>(session_chaps_client_.get());
 

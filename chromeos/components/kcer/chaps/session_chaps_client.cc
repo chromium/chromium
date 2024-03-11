@@ -41,11 +41,8 @@ inline constexpr uint64_t kSessionFlags =
 SessionChapsClient::SessionChapsClient() = default;
 SessionChapsClient::~SessionChapsClient() = default;
 
-SessionChapsClientImpl::SessionChapsClientImpl(
-    crosapi::mojom::ChapsService* chaps_service)
-    : chaps_service_(chaps_service) {
-  CHECK(chaps_service_);
-}
+SessionChapsClientImpl::SessionChapsClientImpl(ChapsServiceGetter getter)
+    : chaps_service_getter_(std::move(getter)) {}
 SessionChapsClientImpl::~SessionChapsClientImpl() = default;
 
 // static
@@ -65,22 +62,17 @@ bool SessionChapsClient::IsSessionError(uint32_t result_code) {
 
 //==============================================================================
 
-void SessionChapsClientImpl::Shutdown() {
-  chaps_service_ = nullptr;
-}
-
-//==============================================================================
-
 void SessionChapsClientImpl::GetMechanismList(
     SlotId slot_id,
     GetMechanismListCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
 
-  return chaps_service_->GetMechanismList(slot_id.value(), std::move(callback));
+  return chaps_service->GetMechanismList(slot_id.value(), std::move(callback));
 }
 
 //==============================================================================
@@ -92,7 +84,8 @@ void SessionChapsClientImpl::CreateObject(
     CreateObjectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run(ObjectHandle(0),
                                    chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -108,14 +101,14 @@ void SessionChapsClientImpl::CreateObject(
     auto chaps_callback = base::BindOnce(
         &SessionChapsClientImpl::CreateObject, weak_factory_.GetWeakPtr(),
         slot_id, attributes, attempts_left, std::move(callback));
-    return chaps_service_->OpenSession(
+    return chaps_service->OpenSession(
         slot_id.value(), kSessionFlags,
         base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
                        weak_factory_.GetWeakPtr(), slot_id,
                        std::move(chaps_callback)));
   }
 
-  return chaps_service_->CreateObject(
+  return chaps_service->CreateObject(
       session_id.value(), attributes,
       base::BindOnce(&SessionChapsClientImpl::DidCreateObject,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
@@ -141,7 +134,8 @@ void SessionChapsClientImpl::DestroyObject(SlotId slot_id,
                                            DestroyObjectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run(chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
 
@@ -155,14 +149,14 @@ void SessionChapsClientImpl::DestroyObject(SlotId slot_id,
     auto chaps_callback = base::BindOnce(
         &SessionChapsClientImpl::DestroyObject, weak_factory_.GetWeakPtr(),
         slot_id, object_handle, attempts_left, std::move(callback));
-    return chaps_service_->OpenSession(
+    return chaps_service->OpenSession(
         slot_id.value(), kSessionFlags,
         base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
                        weak_factory_.GetWeakPtr(), slot_id,
                        std::move(chaps_callback)));
   }
 
-  return chaps_service_->DestroyObject(
+  return chaps_service->DestroyObject(
       session_id.value(), object_handle.value(),
       base::BindOnce(&SessionChapsClientImpl::DidDestroyObject,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
@@ -189,7 +183,8 @@ void SessionChapsClientImpl::GetAttributeValue(
     GetAttributeValueCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
 
@@ -204,14 +199,14 @@ void SessionChapsClientImpl::GetAttributeValue(
         &SessionChapsClientImpl::GetAttributeValue, weak_factory_.GetWeakPtr(),
         slot_id, object_handle, std::move(attributes_query), attempts_left,
         std::move(callback));
-    return chaps_service_->OpenSession(
+    return chaps_service->OpenSession(
         slot_id.value(), kSessionFlags,
         base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
                        weak_factory_.GetWeakPtr(), slot_id,
                        std::move(chaps_callback)));
   }
 
-  return chaps_service_->GetAttributeValue(
+  return chaps_service->GetAttributeValue(
       session_id.value(), object_handle.value(), attributes_query,
       base::BindOnce(&SessionChapsClientImpl::DidGetAttributeValue,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
@@ -240,7 +235,8 @@ void SessionChapsClientImpl::SetAttributeValue(
     SetAttributeValueCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run(chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
 
@@ -255,14 +251,14 @@ void SessionChapsClientImpl::SetAttributeValue(
         &SessionChapsClientImpl::SetAttributeValue, weak_factory_.GetWeakPtr(),
         slot_id, object_handle, std::move(attributes), attempts_left,
         std::move(callback));
-    return chaps_service_->OpenSession(
+    return chaps_service->OpenSession(
         slot_id.value(), kSessionFlags,
         base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
                        weak_factory_.GetWeakPtr(), slot_id,
                        std::move(chaps_callback)));
   }
 
-  return chaps_service_->SetAttributeValue(
+  return chaps_service->SetAttributeValue(
       session_id.value(), object_handle.value(), attributes,
       base::BindOnce(&SessionChapsClientImpl::DidSetAttributeValue,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
@@ -288,7 +284,8 @@ void SessionChapsClientImpl::FindObjects(SlotId slot_id,
                                          FindObjectsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
 
@@ -303,14 +300,14 @@ void SessionChapsClientImpl::FindObjects(SlotId slot_id,
     auto chaps_callback = base::BindOnce(
         &SessionChapsClientImpl::FindObjects, weak_factory_.GetWeakPtr(),
         slot_id, std::move(attributes), attempts_left, std::move(callback));
-    return chaps_service_->OpenSession(
+    return chaps_service->OpenSession(
         slot_id.value(), kSessionFlags,
         base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
                        weak_factory_.GetWeakPtr(), slot_id,
                        std::move(chaps_callback)));
   }
 
-  return chaps_service_->FindObjectsInit(
+  return chaps_service->FindObjectsInit(
       session_id.value(), attributes,
       base::BindOnce(&SessionChapsClientImpl::DidFindObjectsInit,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
@@ -332,10 +329,11 @@ void SessionChapsClientImpl::DidFindObjectsInit(SlotId slot_id,
   SessionId session_id = GetSessionForSlot(slot_id);
   CHECK_NE(session_id.value(), chromeos::PKCS11_INVALID_SESSION_ID);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
-  return chaps_service_->FindObjects(
+  return chaps_service->FindObjects(
       session_id.value(), kFindObjectsMaxCount,
       base::BindOnce(&SessionChapsClientImpl::DidFindObjects,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
@@ -361,10 +359,11 @@ void SessionChapsClientImpl::DidFindObjects(
 
   std::vector<ObjectHandle> typed_list(object_list.begin(), object_list.end());
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
-  return chaps_service_->FindObjectsFinal(
+  return chaps_service->FindObjectsFinal(
       session_id.value(),
       base::BindOnce(&SessionChapsClientImpl::DidFindObjectsFinal,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback),
@@ -403,7 +402,8 @@ void SessionChapsClientImpl::Sign(SlotId slot_id,
                                   SignCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
 
@@ -418,14 +418,14 @@ void SessionChapsClientImpl::Sign(SlotId slot_id,
         &SessionChapsClientImpl::Sign, weak_factory_.GetWeakPtr(), slot_id,
         mechanism_type, std::move(mechanism_parameter), key_handle,
         std::move(data), attempts_left, std::move(callback));
-    return chaps_service_->OpenSession(
+    return chaps_service->OpenSession(
         slot_id.value(), kSessionFlags,
         base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
                        weak_factory_.GetWeakPtr(), slot_id,
                        std::move(chaps_callback)));
   }
 
-  return chaps_service_->SignInit(
+  return chaps_service->SignInit(
       session_id.value(), mechanism_type, mechanism_parameter,
       key_handle.value(),
       base::BindOnce(&SessionChapsClientImpl::DidSignInit,
@@ -455,8 +455,12 @@ void SessionChapsClientImpl::DidSignInit(SlotId slot_id,
   // bytes.
   constexpr uint64_t kMaxOutLength = 512;
 
-  CHECK(chaps_service_);
-  return chaps_service_->Sign(
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
+    return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
+  }
+
+  return chaps_service->Sign(
       session_id.value(), data, kMaxOutLength,
       base::BindOnce(&SessionChapsClientImpl::DidSign,
                      weak_factory_.GetWeakPtr(), slot_id, std::move(callback)));
@@ -487,7 +491,8 @@ void SessionChapsClientImpl::GenerateKeyPair(
     GenerateKeyPairCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chaps_service_) {
+  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  if (!chaps_service) {
     return std::move(callback).Run(ObjectHandle(0), ObjectHandle(0),
                                    chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -505,14 +510,14 @@ void SessionChapsClientImpl::GenerateKeyPair(
         slot_id, mechanism_type, std::move(mechanism_parameter),
         std::move(public_attributes), std::move(private_attributes),
         attempts_left, std::move(callback));
-    return chaps_service_->OpenSession(
+    return chaps_service->OpenSession(
         slot_id.value(), kSessionFlags,
         base::BindOnce(&SessionChapsClientImpl::SaveSessionId,
                        weak_factory_.GetWeakPtr(), slot_id,
                        std::move(chaps_callback)));
   }
 
-  return chaps_service_->GenerateKeyPair(
+  return chaps_service->GenerateKeyPair(
       session_id.value(), mechanism_type, mechanism_parameter,
       public_attributes, private_attributes,
       base::BindOnce(&SessionChapsClientImpl::DidGenerateKeyPair,

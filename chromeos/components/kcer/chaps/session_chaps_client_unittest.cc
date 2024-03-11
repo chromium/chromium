@@ -184,10 +184,14 @@ class SessionChapsClientTest : public testing::Test {
   }
 
  protected:
+  crosapi::mojom::ChapsService* GetChapsService() { return &chaps_mojo_; }
+
   const uint64_t kSessionId = 11;
 
   MockChapsService chaps_mojo_;
-  SessionChapsClientImpl client_{&chaps_mojo_};
+  SessionChapsClientImpl client_{
+      base::BindRepeating(&SessionChapsClientTest::GetChapsService,
+                          base::Unretained(this))};
 };
 
 // Test that DestroyObject correctly forwards the arguments to the mojo layer

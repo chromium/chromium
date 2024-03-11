@@ -168,18 +168,7 @@ KcerFactory::~KcerFactory() = default;
 
 // static
 void KcerFactory::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!g_kcer_factory) {
-    return;
-  }
-
-  if (g_kcer_factory->session_chaps_client_) {
-    // `session_chaps_client_` is initialized in
-    // EnsureHighLevelChapsClientInitialized and should be shut down in Ash and
-    // Lacros before its dependencies.
-    g_kcer_factory->session_chaps_client_->Shutdown();
-  }
-  g_kcer_factory->did_shutdown_ = true;
+  // TODO(miersh): Delete this method.
 }
 
 // static

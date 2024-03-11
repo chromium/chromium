@@ -28,6 +28,25 @@
 #include "crypto/nss_util_internal.h"
 
 namespace kcer {
+namespace {
+
+// Returns the currently valid ChapsService. Might return a nullptr during early
+// initialization and after shutdown.
+crosapi::mojom::ChapsService* GetChapsService() {
+  crosapi::mojom::ChapsService* chaps_service = nullptr;
+  if (crosapi::CrosapiManager::IsInitialized() &&
+      crosapi::CrosapiManager::Get() &&
+      crosapi::CrosapiManager::Get()->crosapi_ash()) {
+    chaps_service =
+        crosapi::CrosapiManager::Get()->crosapi_ash()->chaps_service_ash();
+  }
+  if (!chaps_service) {
+    LOG(ERROR) << "ChapsService mojo interface is not available";
+  }
+  return chaps_service;
+}
+
+}  // namespace
 
 const user_manager::User* GetUserByContext(content::BrowserContext* context) {
   if (!context) {
@@ -268,31 +287,14 @@ void KcerFactoryAsh::InitializeDeviceKcerWithoutNss(
       content::GetIOThreadTaskRunner({}), std::move(device_token));
 }
 
-// This method can in theory fail, but this shouldn't happen. In Ash the mojo
-// interface is implemented by Ash itself, so it should always be present.
 bool KcerFactoryAsh::EnsureHighLevelChapsClientInitialized() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (did_shutdown_) {
-    return false;
-  }
   if (IsHighLevelChapsClientInitialized()) {
     return true;
   }
 
-  crosapi::mojom::ChapsService* chaps_service = nullptr;
-  if (crosapi::CrosapiManager::IsInitialized() &&
-      crosapi::CrosapiManager::Get() &&
-      crosapi::CrosapiManager::Get()->crosapi_ash()) {
-    chaps_service =
-        crosapi::CrosapiManager::Get()->crosapi_ash()->chaps_service_ash();
-  }
-  if (!chaps_service) {
-    LOG(ERROR) << "ChapsService mojo interface is not available";
-    return false;
-  }
-
-  session_chaps_client_ =
-      std::make_unique<SessionChapsClientImpl>(chaps_service);
+  session_chaps_client_ = std::make_unique<SessionChapsClientImpl>(
+      base::BindRepeating(&GetChapsService));
   high_level_chaps_client_ =
       std::make_unique<HighLevelChapsClientImpl>(session_chaps_client_.get());
 

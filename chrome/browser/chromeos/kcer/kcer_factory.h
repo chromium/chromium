@@ -124,10 +124,6 @@ class KcerFactory : public ProfileKeyedServiceFactory {
   // Returns whether the Kcer-without-NSS experiment is enabled.
   bool UseKcerWithoutNss() const;
 
-  // Indicates whether the shutdown already happened. Mostly useful in short
-  // tests where Shutdown() can be called before the initialization finishes, in
-  // which case the initialization should be stopped.
-  bool did_shutdown_ = false;
   // Used by `high_level_chaps_client_` and must outlive it.
   std::unique_ptr<SessionChapsClient> session_chaps_client_;
   // Used by tokens in `chaps_tokens_ui_` (to communicate with Chaps) and must
