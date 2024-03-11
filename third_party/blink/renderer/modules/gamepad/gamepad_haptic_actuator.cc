@@ -6,11 +6,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_effect_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_haptics_result.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -72,20 +74,18 @@ GamepadHapticActuator::GamepadHapticActuator(
 GamepadHapticActuator::~GamepadHapticActuator() = default;
 
 void GamepadHapticActuator::SetType(device::GamepadHapticActuatorType type) {
-  supported_effect_types_.clear();
+  supported_effects_.clear();
   switch (type) {
     case device::GamepadHapticActuatorType::kVibration:
       type_ = kGamepadHapticActuatorTypeVibration;
       break;
     // Currently devices that have trigger rumble support, also have dual-rumble
-    // support. Moreover, gamepads that support trigger-rumble should also be
-    // listed as having GamepadHapticActuatorType::kDualRumble, since we want
-    // to encourage the the use of 'canPlay' method instead.
+    // support.
     case device::GamepadHapticActuatorType::kTriggerRumble:
-      supported_effect_types_.insert(kGamepadHapticEffectTypeTriggerRumble);
+      supported_effects_.push_back(kGamepadHapticEffectTypeTriggerRumble);
       [[fallthrough]];
     case device::GamepadHapticActuatorType::kDualRumble:
-      supported_effect_types_.insert(kGamepadHapticEffectTypeDualRumble);
+      supported_effects_.push_back(kGamepadHapticEffectTypeDualRumble);
       type_ = kGamepadHapticActuatorTypeDualRumble;
       break;
     default:
@@ -196,10 +196,6 @@ void GamepadHapticActuator::OnResetCompleted(
     return;
   }
   resolver->Resolve(ResultToV8(result));
-}
-
-bool GamepadHapticActuator::canPlay(const String& type) {
-  return supported_effect_types_.Contains(type);
 }
 
 void GamepadHapticActuator::Trace(Visitor* visitor) const {

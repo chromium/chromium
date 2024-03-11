@@ -20,13 +20,13 @@ enum GamepadHapticsResult {
     "not-supported"
 };
 
-// Gamepad vibration is proposed as an extension to the Gamepad API.
-// https://github.com/w3c/gamepad/pull/68
+// https://www.w3.org/TR/gamepad/#gamepadhapticactuator-interface
 [
     Exposed=Window
 ] interface GamepadHapticActuator {
+    [RuntimeEnabled=WGIGamepadTriggerRumble, SameObject]
+    readonly attribute FrozenArray<GamepadHapticEffectType> effects;
     readonly attribute GamepadHapticActuatorType type;
-    [RuntimeEnabled=WGIGamepadTriggerRumble] boolean canPlay(GamepadHapticEffectType type);
     [CallWith=ScriptState] Promise<GamepadHapticsResult> playEffect(
         GamepadHapticEffectType type,
         GamepadEffectParameters params);

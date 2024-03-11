@@ -3277,8 +3277,8 @@ interface GamepadEvent : Event
     method constructor
 interface GamepadHapticActuator
     attribute @@toStringTag
+    getter effects
     getter type
-    method canPlay
     method constructor
     method playEffect
     method reset
