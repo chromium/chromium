@@ -142,7 +142,7 @@ inline LayoutUnit ResolveMainInlineLength(
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
                                      min_max_sizes_func, length,
-                                     override_available_size, LayoutUnit());
+                                     override_available_size, kIndefiniteSize);
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).

@@ -1003,11 +1003,9 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
   } else {
     inline_min_max_sizes = {
         ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                               style.LogicalMinWidth(),
-                               /* override_available_size */ kIndefiniteSize),
+                               style.LogicalMinWidth()),
         ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                               style.LogicalMaxWidth(),
-                               /* override_available_size */ kIndefiniteSize)};
+                               style.LogicalMaxWidth())};
 
     if (space.IsFixedInlineSize()) {
       replaced_inline = space.AvailableSize().inline_size;
@@ -1021,14 +1019,12 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
         inline_length_to_resolve = Length::FillAvailable();
       }
 
-      if (!InlineLengthUnresolvable(space, inline_length_to_resolve)) {
-        replaced_inline = ResolveMainInlineLength(
-            space, style, border_padding, MinMaxSizesFunc,
-            inline_length_to_resolve,
-            /* override_available_size */ kIndefiniteSize);
-        DCHECK_GE(*replaced_inline, LayoutUnit());
-        replaced_inline =
-            inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+      const LayoutUnit result =
+          ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,
+                                  inline_length_to_resolve);
+      if (result != kIndefiniteSize) {
+        DCHECK_GE(result, LayoutUnit());
+        replaced_inline = inline_min_max_sizes.ClampSizeToMinAndMax(result);
       }
     }
   }
