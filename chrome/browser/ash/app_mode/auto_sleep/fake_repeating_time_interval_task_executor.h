@@ -19,6 +19,24 @@ namespace ash {
 class FakeRepeatingTimeIntervalTaskExecutor
     : public RepeatingTimeIntervalTaskExecutor {
  public:
+  class Factory : public RepeatingTimeIntervalTaskExecutor::Factory {
+   public:
+    explicit Factory(const base::Clock* clock);
+    Factory() = delete;
+    Factory(const Factory&) = delete;
+    const Factory& operator=(const Factory&) = delete;
+    ~Factory() override;
+
+    std::unique_ptr<RepeatingTimeIntervalTaskExecutor> Create(
+        const policy::WeeklyTimeInterval& time_interval,
+        base::RepeatingClosure on_interval_start_callback,
+        base::RepeatingClosure on_interval_end_callback,
+        const std::string& tag) override;
+
+   private:
+    raw_ptr<const base::Clock> clock_ = nullptr;
+  };
+
   FakeRepeatingTimeIntervalTaskExecutor() = delete;
 
   FakeRepeatingTimeIntervalTaskExecutor(

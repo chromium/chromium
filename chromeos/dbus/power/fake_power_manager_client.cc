@@ -192,7 +192,9 @@ void FakePowerManagerClient::RequestAllPeripheralBatteryUpdate() {}
 
 void FakePowerManagerClient::RequestThermalState() {}
 
-void FakePowerManagerClient::RequestSuspend() {}
+void FakePowerManagerClient::RequestSuspend() {
+  ++num_request_suspend_calls_;
+}
 
 void FakePowerManagerClient::RequestRestart(
     power_manager::RequestRestartReason reason,
@@ -409,8 +411,19 @@ void FakePowerManagerClient::StartArcTimer(
     task_delay = absolute_expiration_time - current_ticks;
   auto& timer = it->second.first;
   int expiration_fd = it->second.second.get();
-  timer->Start(FROM_HERE, task_delay,
-               base::BindOnce(&ArcTimerExpirationCallback, expiration_fd));
+
+  auto timer_expiration_callback =
+      base::BindOnce(&ArcTimerExpirationCallback, expiration_fd);
+  // When an arc timer expires it is expected to send a `SuspendDone` dbus
+  // signal which wakes the device up from suspend state. Simulate that by
+  // calling a method that increases the count of wake notifications when the
+  // timer expires.
+  auto notify_wake_callback =
+      base::BindOnce(&FakePowerManagerClient::NotifyWakeNotification,
+                     weak_ptr_factory_.GetWeakPtr());
+  auto combined_callback = std::move(timer_expiration_callback)
+                               .Then(std::move(notify_wake_callback));
+  timer->Start(FROM_HERE, task_delay, std::move(combined_callback));
 }
 
 void FakePowerManagerClient::DeleteArcTimers(const std::string& tag,

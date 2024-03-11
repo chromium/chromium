@@ -75,6 +75,7 @@ bool AllWeeklyTimeIntervalsAreValid(const base::Value::List& policy_config) {
 
 std::vector<std::unique_ptr<RepeatingTimeIntervalTaskExecutor>>
 BuildIntervalExecutorsFromConfig(
+    RepeatingTimeIntervalTaskExecutor::Factory* task_executor_factory,
     const base::Value::List& policy_config,
     const base::RepeatingClosure& on_start_callback,
     const base::RepeatingClosure& on_end_callback) {
@@ -96,7 +97,7 @@ BuildIntervalExecutorsFromConfig(
                  [&](const std::unique_ptr<WeeklyTimeInterval>& interval,
                      const std::string& executor_name) {
                    CHECK(interval != nullptr);
-                   return std::make_unique<RepeatingTimeIntervalTaskExecutor>(
+                   return task_executor_factory->Create(
                        std::move(*interval), on_start_callback, on_end_callback,
                        executor_name);
                  });
@@ -107,7 +108,9 @@ BuildIntervalExecutorsFromConfig(
 }  // namespace
 
 DeviceWeeklyScheduledSuspendController::DeviceWeeklyScheduledSuspendController(
-    PrefService* pref_service) {
+    PrefService* pref_service)
+    : task_executor_factory_(
+          std::make_unique<RepeatingTimeIntervalTaskExecutor::Factory>()) {
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
       prefs::kDeviceWeeklyScheduledSuspend,
@@ -124,6 +127,11 @@ DeviceWeeklyScheduledSuspendController::GetIntervalExecutorsForTesting() const {
   return interval_executors_;
 }
 
+void DeviceWeeklyScheduledSuspendController::SetTaskExecutorFactoryForTesting(
+    std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory> factory) {
+  task_executor_factory_ = std::move(factory);
+}
+
 void DeviceWeeklyScheduledSuspendController::
     OnDeviceWeeklyScheduledSuspendUpdate() {
   const base::Value::List& policy_config =
@@ -137,17 +145,21 @@ void DeviceWeeklyScheduledSuspendController::
   }
 
   interval_executors_ = BuildIntervalExecutorsFromConfig(
-      policy_config,
+      task_executor_factory_.get(), policy_config,
       base::BindRepeating(
           &DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart,
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalEnd,
           weak_factory_.GetWeakPtr()));
+
+  for (const auto& executor : interval_executors_) {
+    executor->Start();
+  }
 }
 
 void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalStart() {
-  // TODO(b/319210835): Request suspend from PowerManagerClient.
+  chromeos::PowerManagerClient::Get()->RequestSuspend();
 }
 
 void DeviceWeeklyScheduledSuspendController::OnTaskExecutorIntervalEnd() {

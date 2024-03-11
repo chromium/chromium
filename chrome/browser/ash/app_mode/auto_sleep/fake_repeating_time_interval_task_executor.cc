@@ -14,6 +14,25 @@
 
 namespace ash {
 
+FakeRepeatingTimeIntervalTaskExecutor::Factory::Factory(
+    const base::Clock* clock)
+    : clock_(clock) {
+  CHECK(clock);
+}
+
+FakeRepeatingTimeIntervalTaskExecutor::Factory::~Factory() = default;
+
+std::unique_ptr<RepeatingTimeIntervalTaskExecutor>
+FakeRepeatingTimeIntervalTaskExecutor::Factory::Create(
+    const policy::WeeklyTimeInterval& time_interval,
+    base::RepeatingClosure on_interval_start_callback,
+    base::RepeatingClosure on_interval_end_callback,
+    const std::string& tag) {
+  return std::make_unique<FakeRepeatingTimeIntervalTaskExecutor>(
+      time_interval, on_interval_start_callback, on_interval_end_callback, tag,
+      clock_);
+}
+
 FakeRepeatingTimeIntervalTaskExecutor::FakeRepeatingTimeIntervalTaskExecutor(
     const policy::WeeklyTimeInterval& time_interval,
     base::RepeatingClosure on_interval_start_callback,

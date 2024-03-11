@@ -40,6 +40,20 @@ bool TimeFallsInInterval(const base::Time& time,
 
 }  // namespace
 
+RepeatingTimeIntervalTaskExecutor::Factory::Factory() = default;
+
+RepeatingTimeIntervalTaskExecutor::Factory::~Factory() = default;
+
+std::unique_ptr<RepeatingTimeIntervalTaskExecutor>
+RepeatingTimeIntervalTaskExecutor::Factory::Create(
+    const policy::WeeklyTimeInterval& time_interval,
+    base::RepeatingClosure on_interval_start_callback,
+    base::RepeatingClosure on_interval_end_callback,
+    const std::string& tag) {
+  return std::make_unique<RepeatingTimeIntervalTaskExecutor>(
+      time_interval, on_interval_start_callback, on_interval_end_callback, tag);
+}
+
 RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
     const policy::WeeklyTimeInterval& time_interval,
     base::RepeatingClosure on_interval_start_callback,

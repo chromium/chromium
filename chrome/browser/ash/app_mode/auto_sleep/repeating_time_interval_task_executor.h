@@ -27,9 +27,23 @@ class RepeatingTimeIntervalTaskExecutor {
  public:
   using TimerResultCallback =
       base::OnceCallback<void(policy::ScopedWakeLock, bool)>;
+  class Factory {
+   public:
+    Factory();
+    Factory(const Factory&) = delete;
+    const Factory& operator=(const Factory&) = delete;
+    virtual ~Factory();
+
+    virtual std::unique_ptr<RepeatingTimeIntervalTaskExecutor> Create(
+        const policy::WeeklyTimeInterval& time_interval,
+        base::RepeatingClosure on_interval_start_callback,
+        base::RepeatingClosure on_interval_end_callback,
+        const std::string& tag);
+  };
 
   RepeatingTimeIntervalTaskExecutor() = delete;
 
+  // TODO(b/328421429): Make constructor private.
   RepeatingTimeIntervalTaskExecutor(
       const policy::WeeklyTimeInterval& time_interval,
       base::RepeatingClosure on_interval_start_callback,

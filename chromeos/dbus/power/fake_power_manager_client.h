@@ -53,6 +53,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_request_restart_calls() const { return num_request_restart_calls_; }
   int num_request_shutdown_calls() const { return num_request_shutdown_calls_; }
   int num_set_policy_calls() const { return num_set_policy_calls_; }
+  int num_request_suspend_calls() const { return num_request_suspend_calls_; }
   int num_set_is_projecting_calls() const {
     return num_set_is_projecting_calls_;
   }
@@ -259,6 +260,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Number of times that various methods have been called.
   int num_request_restart_calls_ = 0;
   int num_request_shutdown_calls_ = 0;
+  int num_request_suspend_calls_ = 0;
   int num_set_policy_calls_ = 0;
   int num_set_is_projecting_calls_ = 0;
   int num_set_backlights_forced_off_calls_ = 0;

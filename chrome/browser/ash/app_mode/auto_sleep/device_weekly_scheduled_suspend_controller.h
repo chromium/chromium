@@ -34,6 +34,9 @@ class DeviceWeeklyScheduledSuspendController {
   const RepeatingTimeIntervalTaskExecutors& GetIntervalExecutorsForTesting()
       const;
 
+  void SetTaskExecutorFactoryForTesting(
+      std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory> factory);
+
  private:
   // Called on `kDeviceWeeklyScheduledSuspend` preference update.
   void OnDeviceWeeklyScheduledSuspendUpdate();
@@ -50,6 +53,8 @@ class DeviceWeeklyScheduledSuspendController {
   // Interval executors used to schedule device suspension and wake-up.
   RepeatingTimeIntervalTaskExecutors interval_executors_;
 
+  std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory>
+      task_executor_factory_;
   base::WeakPtrFactory<DeviceWeeklyScheduledSuspendController> weak_factory_{
       this};
 };

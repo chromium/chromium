@@ -238,6 +238,10 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsEveryWeek) {
           interval, future.interval_start.GetRepeatingCallback(),
           future.interval_end.GetRepeatingCallback(), kTestTaskExecutorTag);
 
+  // Move time to before interval start so that test expectations are met and we
+  // do not get multiple values in a test future that expects only one.
+  FastForwardTimeTo(interval.start(), -base::Minutes(5));
+
   task_executor->Start();
 
   for (size_t i = 0; i < 3; i++) {
