@@ -71,14 +71,14 @@ void MediaDevicesSelectionHandler::OnJavascriptDisallowed() {
 
 void MediaDevicesSelectionHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getDefaultCaptureDevices",
+      "initializeCaptureDevices",
       base::BindRepeating(
-          &MediaDevicesSelectionHandler::GetDefaultCaptureDevices,
+          &MediaDevicesSelectionHandler::InitializeCaptureDevices,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "setDefaultCaptureDevice",
+      "setPreferredCaptureDevice",
       base::BindRepeating(
-          &MediaDevicesSelectionHandler::SetDefaultCaptureDevice,
+          &MediaDevicesSelectionHandler::SetPreferredCaptureDevice,
           base::Unretained(this)));
 }
 
@@ -104,7 +104,7 @@ void MediaDevicesSelectionHandler::SetWebUiForTest(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
 
-void MediaDevicesSelectionHandler::GetDefaultCaptureDevices(
+void MediaDevicesSelectionHandler::InitializeCaptureDevices(
     const base::Value::List& args) {
   DCHECK_EQ(1U, args.size());
   if (!args[0].is_string()) {
@@ -123,7 +123,7 @@ void MediaDevicesSelectionHandler::GetDefaultCaptureDevices(
   }
 }
 
-void MediaDevicesSelectionHandler::SetDefaultCaptureDevice(
+void MediaDevicesSelectionHandler::SetPreferredCaptureDevice(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   if (!args[0].is_string() || !args[1].is_string()) {
@@ -165,11 +165,11 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
     device_list.Append(std::move(entry));
   }
 
-  base::Value default_value(devices.empty() ? "" : devices.front().unique_id);
+  base::Value selected_value(devices.empty() ? "" : devices.front().unique_id);
   base::Value type_value(kAudio);
 
   FireWebUIListener("updateDevicesMenu", type_value, device_list,
-                    default_value);
+                    selected_value);
 }
 
 void MediaDevicesSelectionHandler::UpdateDevicesMenu(
@@ -185,12 +185,12 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
     device_list.Append(std::move(entry));
   }
 
-  base::Value default_value(
+  base::Value selected_value(
       devices.empty() ? "" : devices.front().descriptor.device_id);
   base::Value type_value(kVideo);
 
   FireWebUIListener("updateDevicesMenu", type_value, device_list,
-                    default_value);
+                    selected_value);
 }
 
 std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(

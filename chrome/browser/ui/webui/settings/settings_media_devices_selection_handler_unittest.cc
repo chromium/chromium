@@ -106,19 +106,19 @@ class MediaDevicesSelectionHandlerTest
     return result;
   }
 
-  void SendSetDefaultCaptureDeviceMessage(const std::string& type,
-                                          const std::string id) {
+  void SendSetPreferredCaptureDeviceMessage(const std::string& type,
+                                            const std::string id) {
     base::Value::List setDefaultArgs;
     setDefaultArgs.Append(type);
     setDefaultArgs.Append(id);
-    test_web_ui_.ProcessWebUIMessage(GURL(), "setDefaultCaptureDevice",
+    test_web_ui_.ProcessWebUIMessage(GURL(), "setPreferredCaptureDevice",
                                      std::move(setDefaultArgs));
   }
 
-  void SendGetDefaultCaptureDevicesMessage(const std::string& type) {
+  void SendInitializeCaptureDevicesMessage(const std::string& type) {
     base::Value::List getDefaultArgs;
     getDefaultArgs.Append(kMic);
-    test_web_ui_.ProcessWebUIMessage(GURL(), "getDefaultCaptureDevices",
+    test_web_ui_.ProcessWebUIMessage(GURL(), "initializeCaptureDevices",
                                      std::move(getDefaultArgs));
   }
 
@@ -174,8 +174,8 @@ TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices) {
   // Verify that the list order is unmodified if pref is unset.
   VerifyUpdateDevicesMenu(devices, kIntegratedDevice);
 
-  SendSetDefaultCaptureDeviceMessage(kMic, kUsbDevice.unique_id);
-  SendGetDefaultCaptureDevicesMessage(kMic);
+  SendSetPreferredCaptureDeviceMessage(kMic, kUsbDevice.unique_id);
+  SendInitializeCaptureDevicesMessage(kMic);
 
   ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kMic));
   // Verify that the previously set preferred device is at the beginning of the
@@ -183,7 +183,7 @@ TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices) {
   VerifyUpdateDevicesMenu({kUsbDevice, kIntegratedDevice}, kUsbDevice);
 }
 
-TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices_Camera) {
+TEST_F(MediaDevicesSelectionHandlerTest, InitializeCaptureDevices_Camera) {
   const media::VideoCaptureDeviceDescriptor kIntegratedDevice{
       /*display_name=*/"Integrated Device",
       /*device_id=*/"integrated_device",
@@ -205,15 +205,13 @@ TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices_Camera) {
   // Verify that the list order is unmodified if pref is unset.
   VerifyUpdateDevicesMenu(devices, kIntegratedDevice);
 
-  SendSetDefaultCaptureDeviceMessage(kCamera, kUsbDevice.device_id);
-  SendGetDefaultCaptureDevicesMessage(kCamera);
+  SendSetPreferredCaptureDeviceMessage(kCamera, kUsbDevice.device_id);
+  SendInitializeCaptureDevicesMessage(kCamera);
 
   ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kCamera));
   // Verify that the previously set preferred device is at the beginning of the
   // list.
   VerifyUpdateDevicesMenu({kUsbDevice, kIntegratedDevice}, kUsbDevice);
 }
-
-// TODO: Add tests for setting the default device.
 
 }  // namespace settings

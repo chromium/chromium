@@ -368,18 +368,18 @@ export interface SiteSettingsPrefsBrowserProxy {
       Promise<IsValid>;
 
   /**
-   * Gets the list of default capture devices for a given type of media. List
-   * is returned through a JS call to updateDevicesMenu.
+   * Requests initialization of the capture device list. The list is returned
+   * through a JS call to updateDevicesMenu.
    * @param type The type to look up.
    */
-  getDefaultCaptureDevices(type: string): void;
+  initializeCaptureDevices(type: string): void;
 
   /**
-   * Sets a default devices for a given type of media.
+   * Sets a preferred device for the given type of media.
    * @param type The type of media to configure.
    * @param defaultValue The id of the media device to set.
    */
-  setDefaultCaptureDevice(type: string, defaultValue: string): void;
+  setPreferredCaptureDevice(type: string, defaultValue: string): void;
 
   /**
    * observes _all_ of the the protocol handler state, which includes a list
@@ -600,12 +600,12 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     return sendWithPromise('isPatternValidForType', pattern, category);
   }
 
-  getDefaultCaptureDevices(type: string) {
-    chrome.send('getDefaultCaptureDevices', [type]);
+  initializeCaptureDevices(type: string) {
+    chrome.send('initializeCaptureDevices', [type]);
   }
 
-  setDefaultCaptureDevice(type: string, defaultValue: string) {
-    chrome.send('setDefaultCaptureDevice', [type, defaultValue]);
+  setPreferredCaptureDevice(type: string, defaultValue: string) {
+    chrome.send('setPreferredCaptureDevice', [type, defaultValue]);
   }
 
   observeProtocolHandlers() {

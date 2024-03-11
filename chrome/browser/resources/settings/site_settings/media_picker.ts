@@ -63,9 +63,9 @@ class MediaPickerElement extends MediaPickerElementBase {
 
     this.addWebUiListener(
         'updateDevicesMenu',
-        (type: string, devices: MediaPickerEntry[], defaultDevice: string) =>
-            this.updateDevicesMenu_(type, devices, defaultDevice));
-    this.browserProxy.getDefaultCaptureDevices(this.type);
+        (type: string, devices: MediaPickerEntry[], selectedDevice: string) =>
+            this.updateDevicesMenu_(type, devices, selectedDevice));
+    this.browserProxy.initializeCaptureDevices(this.type);
   }
 
   /**
@@ -75,7 +75,7 @@ class MediaPickerElement extends MediaPickerElementBase {
    * @param defaultDevice The unique id of the current default device.
    */
   private updateDevicesMenu_(
-      type: string, devices: MediaPickerEntry[], defaultDevice: string) {
+      type: string, devices: MediaPickerEntry[], selectedDevice: string) {
     if (type !== this.type) {
       return;
     }
@@ -86,7 +86,7 @@ class MediaPickerElement extends MediaPickerElementBase {
 
       // Wait for <select> to be populated.
       microTask.run(() => {
-        this.$.mediaPicker.value = defaultDevice;
+        this.$.mediaPicker.value = selectedDevice;
       });
     }
   }
@@ -95,7 +95,7 @@ class MediaPickerElement extends MediaPickerElementBase {
    * A handler for when an item is selected in the media picker.
    */
   private onChange_() {
-    this.browserProxy.setDefaultCaptureDevice(
+    this.browserProxy.setPreferredCaptureDevice(
         this.type, this.$.mediaPicker.value);
   }
 }

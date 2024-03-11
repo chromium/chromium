@@ -601,10 +601,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   /** @override */
-  getDefaultCaptureDevices() {}
+  initializeCaptureDevices() {}
 
   /** @override */
-  setDefaultCaptureDevice() {}
+  setPreferredCaptureDevice() {}
 
   /** @override */
   setProtocolHandlerDefault(value: boolean) {

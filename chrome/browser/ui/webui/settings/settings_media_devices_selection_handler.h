@@ -41,13 +41,13 @@ class MediaDevicesSelectionHandler
   void SetWebUiForTest(content::WebUI* web_ui);
 
  private:
-  // Fetches the list of default capture devices.
-  void GetDefaultCaptureDevices(const base::Value::List& args);
+  // Requests initialization of the devices menu.
+  void InitializeCaptureDevices(const base::Value::List& args);
 
-  // Sets the default audio/video capture device for media. |args| includes the
-  // media type (kAuudio/kVideo) and the unique id of the new default device
+  // Sets the preferred audio/video capture device for media. |args| includes
+  // the media type (kAuudio/kVideo) and the unique id of the new default device
   // that the user has chosen.
-  void SetDefaultCaptureDevice(const base::Value::List& args);
+  void SetPreferredCaptureDevice(const base::Value::List& args);
 
   // Helpers methods to update the device menus.
   void UpdateDevicesMenu(
