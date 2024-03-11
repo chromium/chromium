@@ -9,10 +9,8 @@ import android.view.View.OnClickListener;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -123,9 +121,6 @@ class AccountPickerBottomSheetProperties {
     // PropertyKey indicates the view state of the account picker bottom sheet
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey("view_state");
 
-    // PropertyKey indicating the entry point that triggered the bottom sheet.
-    static final ReadableIntPropertyKey ENTRY_POINT = new ReadableIntPropertyKey("entry_point");
-
     // PropertyKey indicating the title, subtitle, and cancel text for the bottom sheet.
     static final ReadableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
             new ReadableObjectPropertyKey("bottom_sheet_strings");
@@ -138,7 +133,6 @@ class AccountPickerBottomSheetProperties {
                 ON_CONTINUE_AS_CLICKED,
                 ON_DISMISS_CLICKED,
                 VIEW_STATE,
-                ENTRY_POINT,
                 BOTTOM_SHEET_STRINGS,
             };
 
@@ -152,7 +146,6 @@ class AccountPickerBottomSheetProperties {
             Runnable onSelectedAccountClicked,
             Runnable onContinueAsClicked,
             OnClickListener onDismissClicked,
-            @EntryPoint int entryPoint,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
@@ -160,7 +153,6 @@ class AccountPickerBottomSheetProperties {
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
                 .with(ON_DISMISS_CLICKED, onDismissClicked)
                 .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
-                .with(ENTRY_POINT, entryPoint)
                 .with(BOTTOM_SHEET_STRINGS, accountPickerBottomSheetStrings)
                 .build();
     }

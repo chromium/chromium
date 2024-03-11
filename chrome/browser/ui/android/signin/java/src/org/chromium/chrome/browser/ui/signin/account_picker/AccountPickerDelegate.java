@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
@@ -21,10 +20,6 @@ public interface AccountPickerDelegate {
      * the behavior of the bottom sheet in response to failures, etc.
      */
     void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator);
-
-    /** Returns the entry point of this delegate. */
-    @EntryPoint
-    int getEntryPoint();
 
     /** Calls the callback with the result of SigninManager#isAccountManaged(). */
     void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback);

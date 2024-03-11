@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
@@ -150,7 +149,9 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                         this,
                         new AccountPickerBottomSheetStrings() {},
                         mDeviceLockActivityLauncher,
-                        mAccountPickerLaunchMode);
+                        mAccountPickerLaunchMode,
+                        mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN,
+                        mSigninAccessPoint);
     }
 
     /** Called when the account picker is destroyed after dismissal. */
@@ -205,13 +206,6 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     @Override
     public String extractDomainName(String accountEmail) {
         return mSigninManager.extractDomainName(accountEmail);
-    }
-
-    /** Returns the bottom sheet entry point. */
-    @Override
-    public @EntryPoint int getEntryPoint() {
-        // TODO(https://crbug.com/1520783): Add and use entry points for the new sign-in flow.
-        return EntryPoint.WEB_SIGNIN;
     }
 
     /**

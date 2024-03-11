@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
@@ -101,11 +100,6 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     @Override
     public String extractDomainName(String accountEmail) {
         return mSigninManager.extractDomainName(accountEmail);
-    }
-
-    @Override
-    public @EntryPoint int getEntryPoint() {
-        return EntryPoint.WEB_SIGNIN;
     }
 
     private WebSigninBridge.Listener createWebSigninBridgeListener(

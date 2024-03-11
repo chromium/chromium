@@ -37,13 +37,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -65,16 +65,11 @@ public class AccountPickerBottomSheetRenderTest {
     private static final String TEST_EMAIL2 = "test.account2@gmail.com";
 
     private static final class CustomAccountPickerDelegate implements AccountPickerDelegate {
-        private @EntryPoint int mEntryPoint = EntryPoint.WEB_SIGNIN;
         private boolean mSwitchToTryAgainView;
         private boolean mSwitchToAuthErrorView;
         private boolean mIsAccountManaged;
 
         CustomAccountPickerDelegate() {}
-
-        void setSendTabToSelfEntryPoint() {
-            mEntryPoint = EntryPoint.SEND_TAB_TO_SELF;
-        }
 
         void setSwitchToTryAgainView(boolean tryAgain) {
             mSwitchToTryAgainView = tryAgain;
@@ -112,11 +107,6 @@ public class AccountPickerBottomSheetRenderTest {
         public String extractDomainName(String accountEmail) {
             return accountEmail;
         }
-
-        @Override
-        public @EntryPoint int getEntryPoint() {
-            return mEntryPoint;
-        }
     }
 
     @Rule
@@ -139,6 +129,7 @@ public class AccountPickerBottomSheetRenderTest {
     private final CustomAccountPickerDelegate mAccountPickerDelegate =
             new CustomAccountPickerDelegate();
 
+    private @SigninAccessPoint int mSigninAccessPoint;
     private AccountPickerBottomSheetCoordinator mCoordinator;
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
@@ -157,6 +148,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     @Before
     public void setUp() {
+        mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
@@ -185,7 +177,7 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testCollapsedSheetWithAccountViewForSendTabToSelfEntryPoint(
             boolean nightModeEnabled) throws IOException {
-        mAccountPickerDelegate.setSendTabToSelfEntryPoint();
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         buildAndShowCollapsedBottomSheet();
         ViewUtils.waitForVisibleView(allOf(withText(TEST_EMAIL1), isDisplayed()));
@@ -214,7 +206,7 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetViewForSendTabToSelfEntryPoint(boolean nightModeEnabled)
             throws IOException {
-        mAccountPickerDelegate.setSendTabToSelfEntryPoint();
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         mAccountManagerTestRule.addAccount(TEST_EMAIL2);
         buildAndShowCollapsedBottomSheet();
@@ -349,7 +341,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     private void buildAndShowCollapsedBottomSheet() {
         AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
-                mAccountPickerDelegate.getEntryPoint() == EntryPoint.SEND_TAB_TO_SELF
+                mSigninAccessPoint == SigninAccessPoint.SEND_TAB_TO_SELF_PROMO
                         ? new SendTabToSelfCoordinator.BottomSheetStrings()
                         : new AccountPickerBottomSheetStrings() {};
         TestThreadUtils.runOnUiThreadBlocking(
@@ -361,7 +353,10 @@ public class AccountPickerBottomSheetRenderTest {
                                     mAccountPickerDelegate,
                                     accountPickerBottomSheetStrings,
                                     null,
-                                    AccountPickerLaunchMode.DEFAULT);
+                                    AccountPickerLaunchMode.DEFAULT,
+                                    /* isWebSignin= */ mSigninAccessPoint
+                                            == SigninAccessPoint.WEB_SIGNIN,
+                                    mSigninAccessPoint);
                 });
         ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
     }

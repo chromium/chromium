@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
@@ -110,11 +109,6 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         return mSigninManager.extractDomainName(accountEmail);
     }
 
-    @Override
-    public @EntryPoint int getEntryPoint() {
-        return EntryPoint.FEED_ACTION;
-    }
-
     public void show() {
         mAccountPickerBottomSheetCoordinator =
                 new AccountPickerBottomSheetCoordinator(
@@ -123,7 +117,9 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                         this,
                         mBottomSheetStrings,
                         mDeviceLockActivityLauncher,
-                        AccountPickerLaunchMode.DEFAULT);
+                        AccountPickerLaunchMode.DEFAULT,
+                        /* isWebSignin= */ false,
+                        SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
     }
 
     private void makeSigninNotAllowedToast() {

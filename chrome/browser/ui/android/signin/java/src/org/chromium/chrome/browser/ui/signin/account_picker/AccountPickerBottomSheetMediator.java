@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -51,6 +50,10 @@ public class AccountPickerBottomSheetMediator
     private final AccountManagerFacade mAccountManagerFacade;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final @ViewState int mInitialViewState;
+    // TODO(crbug.com/328747528): The web sign-in specific logic should be moved out of the bottom
+    // sheet MVC.
+    private final boolean mIsWebSignin;
+    private final @SigninAccessPoint int mSigninAccessPoint;
 
     // TODO(crbug.com/1515277): Use CoreAccountInfo here instead.
     private @Nullable String mSelectedAccountEmail;
@@ -68,12 +71,16 @@ public class AccountPickerBottomSheetMediator
             Runnable onDismissButtonClicked,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            @AccountPickerLaunchMode int launchMode) {
+            @AccountPickerLaunchMode int launchMode,
+            boolean isWebSignin,
+            @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
+        mIsWebSignin = isWebSignin;
+        mSigninAccessPoint = signinAccessPoint;
 
         switch (launchMode) {
             case AccountPickerLaunchMode.CHOOSE_ACCOUNT:
@@ -91,7 +98,6 @@ public class AccountPickerBottomSheetMediator
                         this::onSelectedAccountClicked,
                         this::onContinueAsClicked,
                         view -> onDismissButtonClicked.run(),
-                        accountPickerDelegate.getEntryPoint(),
                         accountPickerBottomSheetStrings);
         mModelPropertyChangedObserver =
                 (source, propertyKey) -> {
@@ -129,14 +135,16 @@ public class AccountPickerBottomSheetMediator
     /** Notifies when the user clicked the "add account" button. */
     @Override
     public void addAccount() {
-        logAccountConsistencyPromoAction(AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
+        SigninMetricsUtils.logAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED, mSigninAccessPoint);
         final WindowAndroid.IntentCallback onAddAccountCompleted =
                 (int resultCode, Intent data) -> {
                     if (resultCode != Activity.RESULT_OK) {
                         return;
                     }
-                    logAccountConsistencyPromoAction(
-                            AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
+                    SigninMetricsUtils.logAccountConsistencyPromoAction(
+                            AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
+                            mSigninAccessPoint);
                     mAddedAccountEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     onAccountSelected(mAddedAccountEmail);
                 };
@@ -188,10 +196,6 @@ public class AccountPickerBottomSheetMediator
 
     PropertyModel getModel() {
         return mModel;
-    }
-
-    boolean isEntryPointWebSignin() {
-        return mModel.get(AccountPickerBottomSheetProperties.ENTRY_POINT) == EntryPoint.WEB_SIGNIN;
     }
 
     void destroy() {
@@ -331,8 +335,8 @@ public class AccountPickerBottomSheetMediator
             updateCredentials();
         } else if (viewState == ViewState.CONFIRM_MANAGEMENT) {
             mAcceptedAccountManagement = true;
-            logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED);
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED, mSigninAccessPoint);
             signInAfterCheckingManagement();
         }
     }
@@ -351,8 +355,9 @@ public class AccountPickerBottomSheetMediator
                 accountInfo,
                 (Boolean isAccountManaged) -> {
                     if (isAccountManaged) {
-                        logAccountConsistencyPromoAction(
-                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN);
+                        SigninMetricsUtils.logAccountConsistencyPromoAction(
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
+                                mSigninAccessPoint);
                         mModel.set(
                                 AccountPickerBottomSheetProperties.VIEW_STATE,
                                 ViewState.CONFIRM_MANAGEMENT);
@@ -368,17 +373,19 @@ public class AccountPickerBottomSheetMediator
         }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
         if (TextUtils.equals(mSelectedAccountEmail, mAddedAccountEmail)) {
-            logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT, mSigninAccessPoint);
         } else if (TextUtils.equals(mSelectedAccountEmail, mDefaultAccountEmail)) {
-            logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+                    mSigninAccessPoint);
         } else {
-            logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
+                    mSigninAccessPoint);
         }
 
-        if (isEntryPointWebSignin()) {
+        if (mIsWebSignin) {
             SigninPreferencesManager.getInstance()
                     .clearWebSigninAccountPickerActiveDismissalCount();
         }
@@ -406,25 +413,5 @@ public class AccountPickerBottomSheetMediator
                 AccountUtils.createAccountFromName(mSelectedAccountEmail),
                 mActivity,
                 onUpdateCredentialsCompleted);
-    }
-
-    private void logAccountConsistencyPromoAction(@AccountConsistencyPromoAction int promoAction) {
-        switch (mAccountPickerDelegate.getEntryPoint()) {
-            case EntryPoint.WEB_SIGNIN:
-                SigninMetricsUtils.logAccountConsistencyPromoAction(
-                        promoAction, SigninAccessPoint.WEB_SIGNIN);
-                break;
-            case EntryPoint.SEND_TAB_TO_SELF:
-                SigninMetricsUtils.logAccountConsistencyPromoAction(
-                        promoAction, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO);
-                break;
-            case EntryPoint.FEED_ACTION:
-                SigninMetricsUtils.logAccountConsistencyPromoAction(
-                        promoAction, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
-                break;
-            default:
-                assert false;
-                break;
-        }
     }
 }

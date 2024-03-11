@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
@@ -22,32 +21,16 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-/** Coordinator of the account picker bottom sheet used in web signin flow. */
+/** Coordinator of the account picker bottom sheet. */
 public class AccountPickerBottomSheetCoordinator {
-    /** The scenarios which can trigger the account picker bottom sheet. */
-    @IntDef({
-        EntryPoint.WEB_SIGNIN,
-        EntryPoint.SEND_TAB_TO_SELF,
-        EntryPoint.FEED_ACTION,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface EntryPoint {
-        // The user navigated to a website requiring a signed-in Google Account.
-        int WEB_SIGNIN = 0;
-        // The user attempted to use the send-tab-to-self feature while being signed out.
-        int SEND_TAB_TO_SELF = 1;
-        // The user attempted to use the p13n actions on back of a feed card while signed out.
-        int FEED_ACTION = 2;
-    }
-
     private final AccountPickerBottomSheetView mView;
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
     private final AccountPickerCoordinator mAccountPickerCoordinator;
     private final BottomSheetController mBottomSheetController;
-    private final @SigninAccessPoint int mAccessPoint;
+    // TODO(crbug.com/328747528): The web sign-in specific logic should be moved out of the bottom
+    // sheet MVC.
+    private final boolean mIsWebSignin;
+    private final @SigninAccessPoint int mSigninAccessPoint;
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
@@ -83,24 +66,13 @@ public class AccountPickerBottomSheetCoordinator {
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
-            @AccountPickerLaunchMode int launchMode) {
-        switch (accountPickerDelegate.getEntryPoint()) {
-            case EntryPoint.WEB_SIGNIN:
-                mAccessPoint = SigninAccessPoint.WEB_SIGNIN;
-                break;
-            case EntryPoint.SEND_TAB_TO_SELF:
-                mAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
-                break;
-            case EntryPoint.FEED_ACTION:
-                mAccessPoint = SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO;
-                break;
-            default:
-                assert false;
-                mAccessPoint = SigninAccessPoint.MAX;
-                break;
-        }
+            @AccountPickerLaunchMode int launchMode,
+            boolean isWebSignin,
+            @SigninAccessPoint int signinAccessPoint) {
+        mIsWebSignin = isWebSignin;
+        mSigninAccessPoint = signinAccessPoint;
         SigninMetricsUtils.logAccountConsistencyPromoAction(
-                AccountConsistencyPromoAction.SHOWN, mAccessPoint);
+                AccountConsistencyPromoAction.SHOWN, mSigninAccessPoint);
 
         mAccountPickerBottomSheetMediator =
                 new AccountPickerBottomSheetMediator(
@@ -109,7 +81,9 @@ public class AccountPickerBottomSheetCoordinator {
                         this::dismiss,
                         accountPickerBottomSheetStrings,
                         deviceLockActivityLauncher,
-                        launchMode);
+                        launchMode,
+                        isWebSignin,
+                        signinAccessPoint);
         mView =
                 new AccountPickerBottomSheetView(
                         windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);
@@ -145,8 +119,8 @@ public class AccountPickerBottomSheetCoordinator {
     @MainThread
     private void logMetricAndIncrementActiveDismissalCountIfWebSignin(
             @AccountConsistencyPromoAction int promoAction) {
-        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction, mAccessPoint);
-        if (mAccountPickerBottomSheetMediator.isEntryPointWebSignin()) {
+        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction, mSigninAccessPoint);
+        if (mIsWebSignin) {
             SigninPreferencesManager.getInstance()
                     .incrementWebSigninAccountPickerActiveDismissalCount();
         }

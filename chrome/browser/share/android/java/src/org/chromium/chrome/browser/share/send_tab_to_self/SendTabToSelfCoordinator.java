@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
@@ -145,11 +144,6 @@ public class SendTabToSelfCoordinator {
         public String extractDomainName(String accountEmail) {
             return mSigninManager.extractDomainName(accountEmail);
         }
-
-        @Override
-        public @EntryPoint int getEntryPoint() {
-            return EntryPoint.SEND_TAB_TO_SELF;
-        }
     }
 
     private final Context mContext;
@@ -208,7 +202,9 @@ public class SendTabToSelfCoordinator {
                                     IdentityServicesProvider.get().getSigninManager(mProfile)),
                             new BottomSheetStrings(),
                             mDeviceLockActivityLauncher,
-                            AccountPickerLaunchMode.DEFAULT);
+                            AccountPickerLaunchMode.DEFAULT,
+                            /* isWebSignin= */ false,
+                            SigninAccessPoint.SEND_TAB_TO_SELF_PROMO);
                     return;
                 }
         }

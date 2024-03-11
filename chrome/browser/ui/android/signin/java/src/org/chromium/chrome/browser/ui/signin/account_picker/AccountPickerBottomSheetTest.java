@@ -70,7 +70,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -82,6 +81,7 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -143,10 +143,11 @@ public class AccountPickerBottomSheetTest {
     private CoreAccountInfo mCoreAccountInfo1;
     private CoreAccountInfo mCoreAccountInfo2;
     private boolean mIsAccountManaged;
+    private @SigninAccessPoint int mSigninAccessPoint;
 
     @Before
     public void setUp() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.WEB_SIGNIN);
+        mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
         mCoreAccountInfo1 =
                 mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         mCoreAccountInfo2 = mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
@@ -224,7 +225,10 @@ public class AccountPickerBottomSheetTest {
                                     mAccountPickerDelegateMock,
                                     new AccountPickerBottomSheetStrings() {},
                                     new CustomDeviceLockActivityLauncher(),
-                                    AccountPickerLaunchMode.DEFAULT);
+                                    AccountPickerLaunchMode.DEFAULT,
+                                    /* isWebSignin= */ mSigninAccessPoint
+                                            == SigninAccessPoint.WEB_SIGNIN,
+                                    mSigninAccessPoint);
                 });
 
         checkZeroAccountBottomSheet();
@@ -245,7 +249,10 @@ public class AccountPickerBottomSheetTest {
                                     mAccountPickerDelegateMock,
                                     new AccountPickerBottomSheetStrings() {},
                                     new CustomDeviceLockActivityLauncher(),
-                                    AccountPickerLaunchMode.CHOOSE_ACCOUNT);
+                                    AccountPickerLaunchMode.CHOOSE_ACCOUNT,
+                                    /* isWebSignin= */ mSigninAccessPoint
+                                            == SigninAccessPoint.WEB_SIGNIN,
+                                    mSigninAccessPoint);
                 });
 
         checkZeroAccountBottomSheet();
@@ -284,7 +291,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testDismissCollapsedSheetForSendTabToSelf() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -345,7 +352,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testDismissCollapsedSheetWithDismissButtonForSendTabToSelf() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -470,7 +477,10 @@ public class AccountPickerBottomSheetTest {
                                     mAccountPickerDelegateMock,
                                     new AccountPickerBottomSheetStrings() {},
                                     null,
-                                    AccountPickerLaunchMode.DEFAULT);
+                                    AccountPickerLaunchMode.DEFAULT,
+                                    /* isWebSignin= */ mSigninAccessPoint
+                                            == SigninAccessPoint.WEB_SIGNIN,
+                                    mSigninAccessPoint);
                 });
         checkZeroAccountBottomSheet();
 
@@ -615,7 +625,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInDefaultAccountOnCollapsedSheetForSendTabToSelf() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -668,7 +678,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInAnotherAccountForSendTabToSelf() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -698,7 +708,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testCollapsedSheetShowsHeaderAndDismissButtonForSendTabToSelf() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
 
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
 
@@ -718,7 +728,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testExpandedSheetShowsHeaderButNotDismissButtonForSendTabToSelf() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
 
         buildAndShowCollapsedThenExpandedBottomSheet();
 
@@ -738,7 +748,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSigninInProgressSheetHidesHeaderAndDismissButtonForSendTabToSelf() {
-        when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
+        mSigninAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
 
         clickContinueButtonAndCheckSignInInProgressSheet();
@@ -1240,7 +1250,7 @@ public class AccountPickerBottomSheetTest {
 
     private void buildAndShowBottomSheet(@AccountPickerLaunchMode int launchMode) {
         AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
-                mAccountPickerDelegateMock.getEntryPoint() == EntryPoint.SEND_TAB_TO_SELF
+                mSigninAccessPoint == SigninAccessPoint.SEND_TAB_TO_SELF_PROMO
                         ? new SendTabToSelfCoordinator.BottomSheetStrings()
                         : new AccountPickerBottomSheetStrings() {};
         mDeviceLockActivityLauncher = new CustomDeviceLockActivityLauncher();
@@ -1253,7 +1263,10 @@ public class AccountPickerBottomSheetTest {
                                     mAccountPickerDelegateMock,
                                     accountPickerBottomSheetStrings,
                                     mDeviceLockActivityLauncher,
-                                    launchMode);
+                                    launchMode,
+                                    /* isWebSignin= */ mSigninAccessPoint
+                                            == SigninAccessPoint.WEB_SIGNIN,
+                                    mSigninAccessPoint);
                 });
 
         @IdRes int expectedLayoutId;
