@@ -267,7 +267,7 @@ inline constexpr char16_t kNameOnCardRe[] =
     u"|持卡人姓名";                     // zh-TW
 inline constexpr char16_t kNameOnCardContextualRe[] = u"name";
 inline constexpr char16_t kCardNumberRe[] =
-    u"(?:card|cc|acct).?(?:number|#|no|num|field|pan)"
+    u"(?:card|cc|acct).?(?:number|#|no|num|field(?!s)|pan)"
     u"|(?<!telefon|haus|person|fødsels|kunden)nummer"  // de-DE, sv-SE, no
     u"|カード番号"                                     // ja-JP
     u"|Номер.*карты"                                   // ru
@@ -337,13 +337,14 @@ inline constexpr char16_t kExpirationYearRe[] =
 //  - (optional) Prepended with some text similar to "Expiration Date".
 // Tested in components/autofill/core/browser/autofill_regexes_unittest.cc
 inline constexpr char16_t kExpirationDate2DigitYearRe[] =
-    u"(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yy(?:[^y]|$)";
+    u"(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)(?:yy(?!y)|aa(?!a)|jj(?!j))";
 // Used to match a expiration date field with a four digit year.
 // Same requirements as |kExpirationDate2DigitYearRe| except:
 //  - Exactly four adjacent y's.
 // Tested in components/autofill/core/browser/autofill_regexes_unittest.cc
 inline constexpr char16_t kExpirationDate4DigitYearRe[] =
-    u"(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yyyy(?:[^y]|$)";
+    u"(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)"
+    u"(?:yyyy(?!y)|aaaa(?!a)|jjjj(?!j))";
 // Used to match expiration date fields that do not specify a year length.
 inline constexpr char16_t kExpirationDateRe[] =
     u"expir|exp.*date|^expfield$"

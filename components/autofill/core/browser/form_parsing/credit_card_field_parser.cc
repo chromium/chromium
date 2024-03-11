@@ -81,6 +81,9 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
   int nb_unknown_fields = 0;
   bool cardholder_name_match_has_low_confidence = false;
 
+  base::span<const MatchPatternRef> card_number_patterns =
+      GetMatchPatterns(CREDIT_CARD_NUMBER, context);
+
   base::span<const MatchPatternRef> name_on_card_patterns =
       GetMatchPatterns("NAME_ON_CARD", context);
 
@@ -195,10 +198,9 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     // TODO(crbug.com/591816): Make sure parsing cc-numbers of type password
     // doesn't have bad side effects.
     raw_ptr<AutofillField> current_number_field;
-    base::span<const MatchPatternRef> patterns =
-        GetMatchPatterns(CREDIT_CARD_NUMBER, context);
     if (ParseFieldSpecifics(context, scanner, kCardNumberRe, kMatchNumTelAndPwd,
-                            patterns, &current_number_field, "kCardNumberRe")) {
+                            card_number_patterns, &current_number_field,
+                            "kCardNumberRe")) {
       credit_card_field->numbers_.push_back(current_number_field.get());
       nb_unknown_fields = 0;
       continue;
@@ -590,7 +592,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   std::u16string year_regex =
       base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)
-          ? u"^(yy|yyyy|aa|aaaa)$"
+          ? u"^(yy|yyyy|aa|aaaa|jj|jjjj)$"
           : u"^(yy|yyyy)$";
   base::span<const MatchPatternRef> year_pattern =
       base::FeatureList::IsEnabled(
@@ -617,6 +619,8 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
     return false;
 
   // Try to look for a 2-digit year expiration date.
+  // If you add new languages, also update other places labeled with
+  // [EXP_DATE_FORMAT].
   base::span<const MatchPatternRef> cc_exp_2digit_year_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, context);
   if (ParseFieldSpecifics(context, scanner, kExpirationDate2DigitYearRe,
@@ -628,6 +632,8 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   }
 
   // Try to look for a generic expiration date field. (2 or 4 digit year)
+  // If you add new languages, also update other places labeled with
+  // [EXP_DATE_FORMAT].
   base::span<const MatchPatternRef> cc_exp_date_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_DATE", context);
   if (ParseFieldSpecifics(context, scanner, kExpirationDateRe, kMatchCCType,
@@ -645,6 +651,8 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   }
 
   // Try to look for a 4-digit year expiration date.
+  // If you add new languages, also update other places labeled with
+  // [EXP_DATE_FORMAT].
   base::span<const MatchPatternRef> cc_exp_date_4_digit_year_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, context);
   if (FieldCanFitDataForFieldType(current_field_max_length,
@@ -677,6 +685,8 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
     if (field.max_length == 2) {
       return CREDIT_CARD_EXP_2_DIGIT_YEAR;
     }
+    // If you add new languages, also update other places labeled with
+    // [EXP_DATE_FORMAT].
     static constexpr char16_t kYYYYRegex[] = u"yyyy|aaaa|jjjj";
     if (MatchesRegex<kYYYYRegex>(field.placeholder, nullptr) ||
         MatchesRegex<kYYYYRegex>(field.label, nullptr)) {
@@ -757,8 +767,8 @@ FieldType CreditCardFieldParser::GetExpirationYearType() const {
     // it's practically always chosen from the select options. The default for
     // text elements was chosen base on statistics from server side
     // classifications (go/iqwtu).
-    // Keep this in sync with
-    // FormStructureRationalizer::RationalizeAutocompleteAttributes.
+    // If you add new languages, also update other places labeled with
+    // [EXP_DATE_FORMAT].
     return DetermineExpirationYearType(
         *expiration_year_,
         /*fallback_type=*/CREDIT_CARD_EXP_4_DIGIT_YEAR,
@@ -791,8 +801,10 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)) {
     // TODO(crbug/1326244): We should use a language specific regex.
+    // If you add new languages, also update other places labeled with
+    // [EXP_DATE_FORMAT].
     static constexpr char16_t kFormatRegex[] =
-        u"mm(\\s?[/-]?\\s?)?(y{2,4}|a{2,4})";
+        u"mm(\\s?[/-]?\\s?)?(y{2,4}|a{2,4}|j{2,4})";
     //       ^^^^ opt white space
     //           ^^^^^ opt separator
     //                ^^^ opt white space

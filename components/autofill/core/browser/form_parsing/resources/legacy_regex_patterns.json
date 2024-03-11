@@ -1617,7 +1617,7 @@
   "CREDIT_CARD_NUMBER": {
     "en": [
       {
-        "positive_pattern": "(?:card|cc|acct).?(?:number|#|no|num|field|pan)|0000 ?0000 ?0000 ?0000|1234 ?1234 ?1234 ?1234",
+        "positive_pattern": "(?:card|cc|acct).?(?:number|#|no|num|field(?!s)|pan)|0000 ?0000 ?0000 ?0000|1234 ?1234 ?1234 ?1234",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1922,7 +1922,7 @@
   "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR": {
     "en": [
       {
-        "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yy(?:[^y]|$)",
+        "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)(?:yy(?!y)|aa(?!a)|jj(?!j))",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1933,7 +1933,7 @@
   "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR": {
     "en": [
       {
-        "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yyyy(?:[^y]|$)",
+        "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)(?:yyyy(?!y)|aaaa(?!a)|jjjj(?!j))",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -2040,7 +2040,7 @@
   "CREDIT_CARD_EXP_YEAR_AFTER_MONTH_EXPERIMENTAL": {
     "en": [
       {
-        "positive_pattern": "^(yy|yyyy|aa|aaaa)$",
+        "positive_pattern": "^(yy|yyyy|aa|aaaa|jj|jjjj)$",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
