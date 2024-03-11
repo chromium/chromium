@@ -39,6 +39,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -784,10 +785,10 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
               CONTENT_SETTING_ALLOW);
     };
     if (GetParam()) {
-      auto dev_server = web_app::CreateAndStartDevServer(
+      iwa_test_server_ = web_app::CreateAndStartDevServer(
           FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
       auto url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-          browser()->profile(), dev_server->GetOrigin());
+          browser()->profile(), iwa_test_server_->GetOrigin());
       allow_automatic_fullscreen(url_info.origin().GetURL());
       auto* frame =
           web_app::OpenIsolatedWebApp(browser()->profile(), url_info.app_id());
@@ -803,8 +804,64 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 
   void TearDownOnMainThread() override { web_contents_ = nullptr; }
 
+  bool RequestFullscreen(bool gesture = false) {
+    static constexpr char kScript[] = R"JS(
+        (async () => {
+          if (navigator.userActivation.isActive != $1)
+            return false;
+          try { await document.body.requestFullscreen(); } catch {}
+          return !!document.fullscreenElement;
+        })();
+    )JS";
+
+    auto options = gesture ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                           : content::EXECUTE_SCRIPT_NO_USER_GESTURE;
+    auto script = content::JsReplace(kScript, gesture);
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = true});
+    auto result = EvalJs(web_contents_, script, options);
+    if (result.error.empty() && result.ExtractBool()) {
+      waiter.Wait();
+    }
+    return browser->window()->IsFullscreen();
+  }
+
+  bool ExitFullscreen() {
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = false});
+    auto result = EvalJs(web_contents_, "document.exitFullscreen()");
+    waiter.Wait();
+    return result.error.empty() && !browser->window()->IsFullscreen();
+  }
+
+  bool OpenPopupAndRequestFullscreenOnLoad() {
+    const std::string script = R"(
+      (async () => {
+        let w = open(location.href, '', 'popup');
+        return new Promise(resolve => {
+          w.onload = () => {
+            setTimeout(async () => {
+                try { await w.document.body.requestFullscreen(); } catch {}
+                resolve(!!w.document.fullscreenElement);
+            }, 300);  // Wait for document settings to propagate :-/
+          };
+        });
+      })();
+    )";
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    auto result = EvalJs(web_contents_, script);
+    Browser* popup = BrowserList::GetInstance()->GetLastActive();
+    EXPECT_NE(popup, browser);
+    ui_test_utils::FullscreenWaiter waiter(popup, {.tab_fullscreen = true});
+    if (result.error.empty() && result.ExtractBool()) {
+      waiter.Wait();
+    }
+    return popup->window()->IsFullscreen();
+  }
+
  protected:
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+  std::unique_ptr<net::EmbeddedTestServer> iwa_test_server_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -814,26 +871,12 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 #endif  // BUILDFLAG(IS_WIN)
 };
 
-IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest,
-                       FullscreenWithoutTransientActivation) {
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, RequestFullscreenNoGesture) {
   base::HistogramTester histograms;
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = true});
-  const std::string script = R"JS(
-      (async () => {
-        if (navigator.userActivation.isActive)
-          return false;
-        await document.body.requestFullscreen();
-        return !!document.fullscreenElement;
-      })();
-  )JS";
-  EXPECT_TRUE(
-      EvalJs(web_contents_, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractBool());
-  waiter.Wait();
-  EXPECT_TRUE(browser->window()->IsFullscreen());
+  EXPECT_TRUE(RequestFullscreen());
 
   // Navigate away in order to flush use counters.
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url::kAboutBlankURL)));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   if (!GetParam()) {  // TODO(crbug.com/1524113): Test use counter in IWA too.
@@ -841,6 +884,49 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest,
         "Blink.UseCounter.Features",
         blink::mojom::WebFeature::kFullscreenAllowedByContentSetting, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterExit) {
+  EXPECT_TRUE(RequestFullscreen());
+  EXPECT_TRUE(ExitFullscreen());
+  EXPECT_FALSE(RequestFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, WithGestureAfterExit) {
+  EXPECT_TRUE(RequestFullscreen());
+  EXPECT_TRUE(ExitFullscreen());
+  EXPECT_TRUE(RequestFullscreen(/*gesture=*/true));
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterExit) {
+  EXPECT_TRUE(RequestFullscreen());
+  EXPECT_TRUE(ExitFullscreen());
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(5300));
+  run_loop.Run();
+  EXPECT_TRUE(RequestFullscreen());
+  EXPECT_TRUE(ExitFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, Popup) {
+  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupImmediatelyAfterExit) {
+  EXPECT_TRUE(RequestFullscreen());
+  EXPECT_TRUE(ExitFullscreen());
+  EXPECT_FALSE(OpenPopupAndRequestFullscreenOnLoad());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
+  EXPECT_TRUE(RequestFullscreen());
+  EXPECT_TRUE(ExitFullscreen());
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(5300));
+  run_loop.Run();
+  EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
 }
 
 INSTANTIATE_TEST_SUITE_P(, AutomaticFullscreenTest, ::testing::Bool());
