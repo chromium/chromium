@@ -9,4 +9,5 @@ blink_modules_sources("badging") {
     "navigator_badge.cc",
     "navigator_badge.h",
   ]
+  deps = [ "//third_party/blink/renderer/modules/notifications" ]
 }

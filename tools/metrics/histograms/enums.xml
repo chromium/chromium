@@ -11323,6 +11323,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4890" label="DOMCharacterDataModifiedEventFired"/>
   <int value="4891" label="AnyMutationEventFired"/>
   <int value="4892" label="AnyMutationEventListenerAdded"/>
+  <int value="4893"
+      label="BadgeSetWithoutNotificationPermissionInBrowserWindow"/>
+  <int value="4894" label="BadgeSetWithoutNotificationPermissionInAppWindow"/>
+  <int value="4895" label="BadgeSetWithoutNotificationPermissionInWorker"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

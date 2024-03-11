@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/workers/worker_navigator.h"
+#include "third_party/blink/renderer/modules/notifications/notification_manager.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -108,6 +110,32 @@ ScriptPromise NavigatorBadge::SetAppBadgeHelper(
   // not be provided in other embedders. Ensure that case is handled properly.
   From(script_state).badge_service()->SetBadge(std::move(badge_value));
 #endif
+
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (context) {
+    mojom::blink::WebFeature feature =
+        context->IsWindow()
+            ? mojom::blink::WebFeature::
+                  kBadgeSetWithoutNotificationPermissionInBrowserWindow
+            : mojom::blink::WebFeature::
+                  kBadgeSetWithoutNotificationPermissionInWorker;
+    if (context->IsWindow()) {
+      LocalFrame* frame = DynamicTo<LocalDOMWindow>(context)->GetFrame();
+      if (frame && frame->GetSettings() &&
+          !frame->GetSettings()->GetWebAppScope().empty()) {
+        feature = mojom::blink::WebFeature::
+            kBadgeSetWithoutNotificationPermissionInAppWindow;
+      }
+    }
+    NotificationManager::From(context)->GetPermissionStatusAsync(WTF::BindOnce(
+        [](mojom::blink::WebFeature feature, UseCounter* counter,
+           mojom::blink::PermissionStatus status) {
+          if (status != mojom::blink::PermissionStatus::GRANTED) {
+            UseCounter::Count(counter, feature);
+          }
+        },
+        feature, WrapWeakPersistent(context)));
+  }
   return ScriptPromise::CastUndefined(script_state);
 }
 

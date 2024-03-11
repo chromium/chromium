@@ -84,6 +84,28 @@ mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
   return permission_status;
 }
 
+void NotificationManager::GetPermissionStatusAsync(
+    base::OnceCallback<void(mojom::blink::PermissionStatus)> callback) {
+  if (GetSupplementable()->IsContextDestroyed()) {
+    std::move(callback).Run(mojom::blink::PermissionStatus::DENIED);
+    return;
+  }
+
+  // Tentatively have an early return to avoid calling GetNotificationService()
+  // during prerendering. The return value is the same as
+  // `Notification::permission`'s.
+  // TODO(1280155): defer the construction of notification to ensure this method
+  // is not called during prerendering instead.
+  if (auto* window = DynamicTo<LocalDOMWindow>(GetSupplementable())) {
+    if (Document* document = window->document(); document->IsPrerendering()) {
+      std::move(callback).Run(mojom::blink::PermissionStatus::ASK);
+      return;
+    }
+  }
+
+  GetNotificationService()->GetPermissionStatus(std::move(callback));
+}
+
 ScriptPromiseTyped<V8NotificationPermission>
 NotificationManager::RequestPermission(
     ScriptState* script_state,

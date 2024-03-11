@@ -4255,6 +4255,9 @@ enum WebFeature {
   kDOMCharacterDataModifiedEventFired = 4890,
   kAnyMutationEventFired = 4891,
   kAnyMutationEventListenerAdded = 4892,
+  kBadgeSetWithoutNotificationPermissionInBrowserWindow = 4893,
+  kBadgeSetWithoutNotificationPermissionInAppWindow = 4894,
+  kBadgeSetWithoutNotificationPermissionInWorker = 4895,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

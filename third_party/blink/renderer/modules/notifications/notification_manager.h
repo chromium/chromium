@@ -44,6 +44,11 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   // method is synchronous to support the Notification.permission getter.
   mojom::blink::PermissionStatus GetPermissionStatus();
 
+  // Async version of the above method, used to gather some metrics where we
+  // don't need to pay the cost of a sync IPC.
+  void GetPermissionStatusAsync(
+      base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
+
   ScriptPromiseTyped<V8NotificationPermission> RequestPermission(
       ScriptState* script_state,
       V8NotificationPermissionCallback* deprecated_callback);
