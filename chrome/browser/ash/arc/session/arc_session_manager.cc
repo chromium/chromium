@@ -1177,6 +1177,8 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   base::UmaHistogramBoolean("Arc.ArcOnDemand.ActivationIsDelayed", !result);
 
   activation_necessity_checker_.reset();
+
+  is_activation_delayed_ = !result;
   if (result) {
     auto* session_manager = session_manager::SessionManager::Get();
     if (ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion() &&
@@ -1202,7 +1204,6 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
       AllowActivation(AllowActivationReason::kImmediateActivation);
     }
   } else {
-    activation_is_delayed = true;
     VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
     for (auto& observer : observer_list_) {
       observer.OnArcStartDelayed();

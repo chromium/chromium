@@ -387,7 +387,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void StopMiniArcIfNecessary();
 
   // Returns whether ARC activation is delayed by ARC on Demand
-  bool IsActivationDelayed() const { return activation_is_delayed; }
+  bool IsActivationDelayed() const {
+    return is_activation_delayed_.value_or(false);
+  }
 
  private:
   // Reports statuses of OptIn flow to UMA.
@@ -515,7 +517,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   bool provisioning_reported_ = false;
   bool skipped_terms_of_service_negotiation_ = false;
   bool activation_is_allowed_ = false;
-  bool activation_is_delayed = false;
+  // Tri-state of if Activation is delayed. 1) std::nullopt means it is yet
+  // unknown, 2) true means Activation is delayed, and 3) false means
+  // Activation is not delayed.
+  std::optional<bool> is_activation_delayed_ = false;
   base::OneShotTimer arc_sign_in_timer_;
 
   std::unique_ptr<ArcSupportHost> support_host_;
