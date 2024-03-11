@@ -1853,6 +1853,58 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
   }
 }
 
+// Tests that a client-controlled window works with dragging the window to the
+// edge of the screen to replace an snapped window with the dragged window.
+TEST_P(ClientControlledStateTestClamshellAndTablet,
+       DragOverviewWindowToReplaceSnappedWindow) {
+  auto* const overview_controller = OverviewController::Get();
+  auto* const split_view_controller = SplitViewController::Get(window());
+
+  widget_delegate()->EnableSnap();
+
+  // Create a normal (non-client-controlled) window in addition to `window()`.
+  auto non_client_controlled_window = CreateAppWindow();
+
+  // Enter overview.
+  ToggleOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+
+  // Drag `non_client_controlled_window`'s overview item to snap to left.
+  DragOverviewItemToSnap(non_client_controlled_window.get(), /*to_left=*/true);
+  EXPECT_EQ(
+      WindowStateType::kPrimarySnapped,
+      WindowState::Get(non_client_controlled_window.get())->GetStateType());
+
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Drag `window()`'s overview item to snap to left.
+  DragOverviewItemToSnap(window(), /*to_left=*/true);
+
+  // Ensures the window is in a transitional snapped state.
+  EXPECT_TRUE(split_view_controller->IsWindowInTransitionalState(window()));
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  EXPECT_FALSE(window_state()->IsSnapped());
+
+  // Activating window just before accepting the request shouldn't trigger
+  // another auto snapping.
+  widget()->Activate();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Accept the snap request.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_TRUE(window_state()->IsSnapped());
+
+  // `window()` should be snapped to left. And `non_client_controlled_window`
+  // should be kicked out of snapped state and be in overview.
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(GetOverviewItemForWindow(non_client_controlled_window.get()));
+}
+
 TEST_P(ClientControlledStateTestClamshellAndTablet,
        SnapBeforePreviousEventIsApplied) {
   auto* const overview_controller = OverviewController::Get();
