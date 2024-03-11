@@ -28,7 +28,7 @@ test(() => {
   const kMemSizeInBytes =  kNumPages * kWasmPage;
   const kMemSizeInWords = kMemSizeInBytes / 4;
 
-  // Maximum allowed size of an ArrayBuffer as defined by partition alloc.
+  // Maximum allowed size of an ArrayBuffer as defined by PartitionAlloc.
   const kArrayBufferSizeLimitInBytes = 2145386496;
   let mem;
   try {
