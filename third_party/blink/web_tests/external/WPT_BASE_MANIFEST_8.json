@@ -394568,8 +394568,12 @@
      "7b97ceb59a756e43a1ea1d5dc60997fdffcb5310",
      []
     ],
-    "RTCRtpReceiver-jitterBufferTarget-stats-expected.txt": [
-     "115f126d682fc0be01f018816277c38f2f7538c4",
+    "RTCRtpReceiver-jitterBufferTarget-stats-helper.js": [
+     "31d80926d33b559fd31c5da4b0dea8d18e3ab34c",
+     []
+    ],
+    "RTCRtpReceiver-video-jitterBufferTarget-stats-expected.txt": [
+     "10cd5db9b31c0e150371aefce434a1791af8aaee",
      []
     ],
     "RTCRtpSynchronizationSource-helper.js": [
@@ -566925,6 +566929,13 @@
         ]
        ],
        "offsets-into-the-media-resource": {
+        "currentTime-move-within-document.html": [
+         "22b579d720963f79cf13ef17e25c69141182cf31",
+         [
+          null,
+          {}
+         ]
+        ],
         "currentTime.html": [
          "e9b65899412a1db28eeafc3721aabee9e0aa3af9",
          [
@@ -671353,8 +671364,8 @@
       }
      ]
     ],
-    "RTCRtpReceiver-jitterBufferTarget-stats.html": [
-     "33f71800bd8ed53eb7b0446e6535997bccb7b01a",
+    "RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html": [
+     "d728ec5a9c9758e0b754ef754e881b6aa5e0f7c3",
      [
       null,
       {
@@ -671367,6 +671378,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "RTCRtpReceiver-video-jitterBufferTarget-stats.html": [
+     "022dbe70c50b97757ca82cfc38a062d63393c73d",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "RTCRtpSynchronizationSource-captureTimestamp.html": [
