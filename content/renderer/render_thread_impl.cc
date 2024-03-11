@@ -1698,7 +1698,6 @@ void RenderThreadImpl::OnRendererBackgrounded() {
   main_thread_scheduler_->SetRendererBackgrounded(true);
   discardable_memory_allocator_->OnBackgrounded();
   base::allocator::PartitionAllocSupport::Get()->OnBackgrounded();
-  blink::OnProcessBackgrounded();
 }
 
 void RenderThreadImpl::OnRendererForegrounded() {
@@ -1707,7 +1706,6 @@ void RenderThreadImpl::OnRendererForegrounded() {
   discardable_memory_allocator_->OnForegrounded();
   base::allocator::PartitionAllocSupport::Get()->OnForegrounded(
       MainFrameCounter::has_main_frame());
-  blink::OnProcessForegrounded();
   process_foregrounded_count_++;
 }
 
