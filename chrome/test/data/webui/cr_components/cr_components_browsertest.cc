@@ -81,6 +81,16 @@ IN_PROC_BROWSER_TEST_F(CrComponentsOmniboxTest, RealboxMatchTest) {
   RunTest("cr_components/omnibox/realbox_match_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsOmniboxTest, RealboxTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/omnibox/realbox_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsOmniboxTest, RealboxLensTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/omnibox/realbox_lens_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefs) {
   // Preload a settings URL, so that the test can access settingsPrivate.
   set_test_loader_host(chrome::kChromeUISettingsHost);
