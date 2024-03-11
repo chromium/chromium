@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -141,7 +142,7 @@ PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
     : resource_query_(CPUQueryBuilder()
                           .AddResourceType(ResourceType::kMemorySummary)
                           .CreateScopedQuery()) {
-  resource_query_.AddObserver(this);
+  query_observation_.Observe(&resource_query_);
   resource_query_.Start(kCollectionDelay);
   cpu_result_converter_ = std::make_unique<CPUResultConverter>(
       enable_system_cpu_probe ? CpuProbe::Create() : nullptr);

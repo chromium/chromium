@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -128,6 +129,11 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   // Repeating query that triggers OnResourceUsageUpdated on a timer.
   resource_attribution::ScopedResourceUsageQuery resource_query_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Manages notificatoin subscriptions to `resource_query_`.
+  base::ScopedObservation<resource_attribution::ScopedResourceUsageQuery,
+                          resource_attribution::QueryResultObserver>
+      query_observation_{this};
 
   // Timer which handles logging high CPU after a potential delay.
   base::OneShotTimer log_cpu_on_delay_timer_
