@@ -17,6 +17,7 @@
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_connection_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_datagram_stats.h"
@@ -81,9 +82,9 @@ class MODULES_EXPORT WebTransport final
   DatagramDuplexStream* datagrams();
   WritableStream* datagramWritable();
   ReadableStream* datagramReadable();
-  void close(const WebTransportCloseInfo*);
+  void close(WebTransportCloseInfo*);
   ScriptPromise ready() { return ready_; }
-  ScriptPromise closed() { return closed_; }
+  ScriptPromiseTyped<WebTransportCloseInfo> closed(ScriptState*);
   void setDatagramWritableQueueExpirationDuration(double ms);
   ScriptPromiseTyped<WebTransportConnectionStats> getStats(ScriptState*);
 
@@ -144,7 +145,7 @@ class MODULES_EXPORT WebTransport final
             ExceptionState&);
 
   void Dispose();
-  void Cleanup(v8::Local<v8::Value> reason,
+  void Cleanup(WebTransportCloseInfo*,
                v8::Local<v8::Value> error,
                bool abruptly);
   void OnConnectionError();
@@ -216,8 +217,7 @@ class MODULES_EXPORT WebTransport final
       client_receiver_;
   Member<ScriptPromiseResolver> ready_resolver_;
   ScriptPromise ready_;
-  Member<ScriptPromiseResolver> closed_resolver_;
-  ScriptPromise closed_;
+  Member<ScriptPromiseProperty<WebTransportCloseInfo, IDLAny>> closed_;
   // True if [[State]] is "connecting".
   bool connection_pending_ = true;
 

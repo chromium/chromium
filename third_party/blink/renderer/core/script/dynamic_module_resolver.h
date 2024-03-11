@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_DYNAMIC_MODULE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_DYNAMIC_MODULE_RESOLVER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -15,7 +16,6 @@ namespace blink {
 
 class Modulator;
 class ReferrerScriptInfo;
-class ScriptPromiseResolver;
 struct ModuleRequest;
 
 // DynamicModuleResolver implements "Runtime Semantics:
@@ -33,7 +33,7 @@ class CORE_EXPORT DynamicModuleResolver final
   // Should be called w/ a valid V8 context.
   void ResolveDynamically(const ModuleRequest& module_request,
                           const ReferrerScriptInfo& referrer_info,
-                          ScriptPromiseResolver*);
+                          ScriptPromiseResolverTyped<IDLAny>*);
 
  private:
   Member<Modulator> modulator_;

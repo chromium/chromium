@@ -785,6 +785,11 @@ _CONFIG = [
     },
     {
         'paths':
+        ['third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h'],
+        'allowed': ['base::FastHash'],
+    },
+    {
+        'paths':
         ['third_party/blink/renderer/bindings/core/v8/script_streamer.cc'],
         'allowed': [
             # For the script streaming to be able to block when reading from a

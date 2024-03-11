@@ -70,7 +70,7 @@ void DOMScheduler::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
 }
 
-ScriptPromise DOMScheduler::postTask(
+ScriptPromiseTyped<IDLAny> DOMScheduler::postTask(
     ScriptState* script_state,
     V8SchedulerPostTaskCallback* callback_function,
     SchedulerPostTaskOptions* options,
@@ -80,7 +80,7 @@ ScriptPromise DOMScheduler::postTask(
     // promise-returning functions to promise rejections.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current window is detached");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLAny>();
   }
 
   SchedulingState state = GetSchedulingStateFromOptions(
@@ -91,12 +91,12 @@ ScriptPromise DOMScheduler::postTask(
   if (state.abort_source && state.abort_source->aborted()) {
     exception_state.RethrowV8Exception(
         state.abort_source->reason(script_state).V8ValueFor(script_state));
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLAny>();
   }
 
   auto* task_queue =
       GetTaskQueue(state.priority_source, WebSchedulingQueueType::kTaskQueue);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(
       script_state, exception_state.GetContext());
   MakeGarbageCollected<DOMTask>(resolver, callback_function, state.abort_source,
                                 state.priority_source, task_queue,

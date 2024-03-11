@@ -33,6 +33,8 @@
 
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/crypto_result.h"
@@ -53,9 +55,25 @@ MODULES_EXPORT ExceptionCode WebCryptoErrorToExceptionCode(WebCryptoErrorType);
 //    another thread.
 //  * One of the CompleteWith***() functions must be called, or the
 //    |resolver_| will be leaked until the ExecutionContext is destroyed.
-class MODULES_EXPORT CryptoResultImpl final : public CryptoResult {
+class MODULES_EXPORT CryptoResultImpl final
+    : public CryptoResult,
+      public ExecutionContextLifecycleObserver {
  public:
-  explicit CryptoResultImpl(ScriptState*);
+  enum class ResolverType { kAny, kTyped };
+
+  template <typename IDLType>
+  CryptoResultImpl(ScriptState* script_state,
+                   ScriptPromiseResolverTyped<IDLType>* resolver)
+      : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+        resolver_(resolver),
+        type_(std::is_same_v<IDLAny, IDLType> ? ResolverType::kAny
+                                              : ResolverType::kTyped),
+        cancel_(base::MakeRefCounted<CryptoResultCancel>()) {
+    // Sync cancellation state.
+    if (ExecutionContext::From(script_state)->IsContextDestroyed()) {
+      Cancel();
+    }
+  }
   ~CryptoResultImpl() override;
 
   void CompleteWithError(WebCryptoErrorType, const WebString&) override;
@@ -71,21 +89,19 @@ class MODULES_EXPORT CryptoResultImpl final : public CryptoResult {
 
   void CompleteWithError(ExceptionState&);
 
-  // If called after completion (including cancellation) will return an empty
-  // ScriptPromise.
-  ScriptPromise Promise();
-
   WebCryptoResult Result() { return WebCryptoResult(this, cancel_.get()); }
+
+  // ExecutionContextLifecycleObserver override:
+  void ContextDestroyed() override { Cancel(); }
 
   void Trace(Visitor*) const override;
 
  private:
-  class Resolver;
-
   void Cancel();
   void ClearResolver();
 
-  Member<Resolver> resolver_;
+  Member<ScriptPromiseResolver> resolver_;
+  const ResolverType type_;
 
   // Separately communicate cancellation to WebCryptoResults so as to
   // allow this result object, which will be on the Oilpan heap, to be

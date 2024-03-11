@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESOLVER_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/hash/hash.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -187,17 +188,13 @@ class CORE_EXPORT ScriptPromiseResolver
 
 #if DCHECK_IS_ON()
   template <typename T>
-  struct FastTypeTag {
-    constexpr static char type = 0;
-  };
-  template <typename T>
-  constexpr inline const void* GetTypeId() {
-    return &FastTypeTag<T>::type;
+  inline size_t GetTypeId() {
+    return base::FastHash(__PRETTY_FUNCTION__);
   }
 
   // True if promise() is called.
   bool is_promise_called_ = false;
-  const void* runtime_type_id_ = 0;
+  size_t runtime_type_id_ = 0;
 #endif
 
   class ExceptionStateScope;
@@ -278,13 +275,6 @@ class CORE_EXPORT ScriptPromiseResolver
   static v8::Local<v8::Value> ToV8(bool value,
                                    v8::Local<v8::Object> creation_context,
                                    v8::Isolate* isolate) = delete;
-
-  // Identity operator
-  static v8::Local<v8::Value> ToV8(v8::Local<v8::Value> value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate*) {
-    return value;
-  }
 
   // Undefined
   static v8::Local<v8::Value> ToV8(const ToV8UndefinedGenerator& value,

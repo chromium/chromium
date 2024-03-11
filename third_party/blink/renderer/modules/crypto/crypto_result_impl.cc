@@ -63,31 +63,6 @@ static void RejectWithTypeError(const String& error_details,
   resolver->Reject(V8ThrowException::CreateTypeError(isolate, error_details));
 }
 
-class CryptoResultImpl::Resolver final : public ScriptPromiseResolver {
- public:
-  static Resolver* Create(ScriptState* script_state, CryptoResultImpl* result) {
-    Resolver* resolver = MakeGarbageCollected<Resolver>(script_state, result);
-    return resolver;
-  }
-
-  Resolver(ScriptState* script_state, CryptoResultImpl* result)
-      : ScriptPromiseResolver(script_state), result_(result) {}
-
-  void ContextDestroyed() override {
-    result_->Cancel();
-    result_ = nullptr;
-    ScriptPromiseResolver::ContextDestroyed();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(result_);
-    ScriptPromiseResolver::Trace(visitor);
-  }
-
- private:
-  Member<CryptoResultImpl> result_;
-};
-
 ExceptionCode WebCryptoErrorToExceptionCode(WebCryptoErrorType error_type) {
   switch (error_type) {
     case kWebCryptoErrorTypeNotSupported:
@@ -105,20 +80,13 @@ ExceptionCode WebCryptoErrorToExceptionCode(WebCryptoErrorType error_type) {
   }
 }
 
-CryptoResultImpl::CryptoResultImpl(ScriptState* script_state)
-    : resolver_(Resolver::Create(script_state, this)),
-      cancel_(base::MakeRefCounted<CryptoResultCancel>()) {
-  // Sync cancellation state.
-  if (ExecutionContext::From(script_state)->IsContextDestroyed())
-    Cancel();
-}
-
 CryptoResultImpl::~CryptoResultImpl() {
   DCHECK(!resolver_);
 }
 
 void CryptoResultImpl::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   CryptoResult::Trace(visitor);
 }
 
@@ -172,7 +140,14 @@ void CryptoResultImpl::CompleteWithBuffer(const void* bytes,
   if (!resolver_)
     return;
 
-  resolver_->Resolve(DOMArrayBuffer::Create(bytes, bytes_size));
+  auto* buffer = DOMArrayBuffer::Create(bytes, bytes_size);
+  if (type_ == ResolverType::kTyped) {
+    resolver_->DowncastTo<DOMArrayBuffer>()->Resolve(buffer);
+  } else {
+    ScriptState* script_state = resolver_->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    resolver_->DowncastTo<IDLAny>()->Resolve(buffer->ToV8(script_state));
+  }
   ClearResolver();
 }
 
@@ -197,9 +172,10 @@ void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
 
   v8::TryCatch exception_catcher(isolate);
   v8::Local<v8::Value> json_dictionary;
+  CHECK_EQ(type_, ResolverType::kAny);
   if (v8::JSON::Parse(script_state->GetContext(), json_string)
           .ToLocal(&json_dictionary))
-    resolver_->Resolve(json_dictionary);
+    resolver_->DowncastTo<IDLAny>()->Resolve(json_dictionary);
   else
     resolver_->Reject(exception_catcher.Exception());
   ClearResolver();
@@ -209,7 +185,8 @@ void CryptoResultImpl::CompleteWithBoolean(bool b) {
   if (!resolver_)
     return;
 
-  resolver_->Resolve(
+  CHECK_EQ(type_, ResolverType::kAny);
+  resolver_->DowncastTo<IDLAny>()->Resolve(
       v8::Boolean::New(resolver_->GetScriptState()->GetIsolate(), b));
   ClearResolver();
 }
@@ -218,7 +195,14 @@ void CryptoResultImpl::CompleteWithKey(const WebCryptoKey& key) {
   if (!resolver_)
     return;
 
-  resolver_->Resolve(MakeGarbageCollected<CryptoKey>(key));
+  auto* result = MakeGarbageCollected<CryptoKey>(key);
+  if (type_ == ResolverType::kTyped) {
+    resolver_->DowncastTo<CryptoKey>()->Resolve(result);
+  } else {
+    ScriptState* script_state = resolver_->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    resolver_->DowncastTo<IDLAny>()->Resolve(result->ToV8(script_state));
+  }
   ClearResolver();
 }
 
@@ -235,7 +219,8 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
   key_pair.Add("publicKey", MakeGarbageCollected<CryptoKey>(public_key));
   key_pair.Add("privateKey", MakeGarbageCollected<CryptoKey>(private_key));
 
-  resolver_->Resolve(key_pair.V8Value());
+  CHECK_EQ(type_, ResolverType::kAny);
+  resolver_->DowncastTo<IDLAny>()->Resolve(key_pair.V8Value());
   ClearResolver();
 }
 
@@ -250,10 +235,6 @@ void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
 void CryptoResultImpl::Cancel() {
   cancel_->Cancel();
   ClearResolver();
-}
-
-ScriptPromise CryptoResultImpl::Promise() {
-  return resolver_ ? resolver_->Promise() : ScriptPromise();
 }
 
 }  // namespace blink
