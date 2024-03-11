@@ -8,7 +8,6 @@
 
 
 import difflib
-import distutils.dir_util
 import filecmp
 import os
 import re
@@ -41,7 +40,11 @@ def main():
   source = os.path.join(THIS_DIR, "..", "..",
       "third_party", "win_build_output",
       re.sub(r'^(?:[^/]+/)?gen/', 'mc/', header_dir))
-  distutils.dir_util.copy_tree(source, header_dir, preserve_times=False)
+  # Set copy_function to shutil.copy to update the timestamp on the destination.
+  shutil.copytree(source,
+                  header_dir,
+                  copy_function=shutil.copy,
+                  dirs_exist_ok=True)
 
   # On non-Windows, that's all we can do.
   if sys.platform != 'win32':
