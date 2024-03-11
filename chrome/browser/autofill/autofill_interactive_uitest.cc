@@ -4220,12 +4220,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionClearFormTest,
 class MAYBE_AutofillInteractiveFormlessFormSubmissionTest
     : public MAYBE_AutofillInteractiveFormSubmissionTest {
  public:
-  MAYBE_AutofillInteractiveFormlessFormSubmissionTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::
-            kAutofillDontCheckForDisappearingFormlessElementsForSubmission);
-  }
-
   void SetUpOnMainThread() override {
     AutofillInteractiveTestBase::SetUpOnMainThread();
 

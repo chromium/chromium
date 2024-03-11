@@ -1642,10 +1642,6 @@ void AutofillAgent::UpdateStateForTextChange(
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
-  auto is_unfocusable = [](FieldRendererId field) {
-    return !form_util::IsWebElementFocusableForAutofill(
-        form_util::GetFormControlByRendererId(field));
-  };
   auto has_been_user_edited = [this](const FormFieldData& field) {
     return formless_elements_user_edited_.contains(field.renderer_id);
   };
@@ -1653,13 +1649,9 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   // The three cases handled by this function:
   bool user_autofilled_owned_form = !!last_interacted_.form_id.GetId();
   bool user_autofilled_unowned_form = formless_elements_were_autofilled_;
-  bool user_edited_unowned_form =
-      !user_autofilled_owned_form && !user_autofilled_unowned_form &&
-      !formless_elements_user_edited_.empty() &&
-      (base::ranges::all_of(formless_elements_user_edited_, is_unfocusable) ||
-       base::FeatureList::IsEnabled(
-           features::
-               kAutofillDontCheckForDisappearingFormlessElementsForSubmission));
+  bool user_edited_unowned_form = !user_autofilled_owned_form &&
+                                  !user_autofilled_unowned_form &&
+                                  !formless_elements_user_edited_.empty();
   if ((!user_autofilled_owned_form && !user_autofilled_unowned_form &&
        !user_edited_unowned_form) ||
       !unsafe_render_frame()) {
