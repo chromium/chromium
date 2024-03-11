@@ -654,8 +654,11 @@ const CGFloat kIPHVerticalOffset = -5;
 
 // Opens other passwords.
 - (void)showAllPasswords {
-  CHECK(!self.allPasswordCoordinator, base::NotFatalUntil::M124);
   [self reset];
+  // The old coordinator could still be alive at this point. Stop it and release
+  // it before starting a new one. See crbug.com/40063966.
+  [self stopManualFillAllPasswordCoordinator];
+
   self.allPasswordCoordinator = [[ManualFillAllPasswordCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
