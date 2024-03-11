@@ -121,6 +121,18 @@ TEST_F(AccountCapabilitiesTest, CanUseEduFeatures) {
   EXPECT_EQ(capabilities.can_use_edu_features(), signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanUseMantaService) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_manta_service(), signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_manta_service(true);
+  EXPECT_EQ(capabilities.can_use_manta_service(), signin::Tribool::kTrue);
+
+  mutator.set_can_use_manta_service(false);
+  EXPECT_EQ(capabilities.can_use_manta_service(), signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanUseModelExecutionFeatures) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_model_execution_features(),

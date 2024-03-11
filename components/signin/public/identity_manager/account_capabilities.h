@@ -72,6 +72,9 @@ class AccountCapabilities {
   // The user account is able to use edu features.
   signin::Tribool can_use_edu_features() const;
 
+  // The user account is able to use manta service.
+  signin::Tribool can_use_manta_service() const;
+
   // The user account is able to use model execution features.
   signin::Tribool can_use_model_execution_features() const;
 

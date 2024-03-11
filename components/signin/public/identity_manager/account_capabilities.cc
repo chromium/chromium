@@ -102,6 +102,10 @@ signin::Tribool AccountCapabilities::can_use_edu_features() const {
   return GetCapabilityByName(kCanUseEduFeaturesCapabilityName);
 }
 
+signin::Tribool AccountCapabilities::can_use_manta_service() const {
+  return GetCapabilityByName(kCanUseMantaServiceName);
+}
+
 signin::Tribool AccountCapabilities::can_use_model_execution_features() const {
   return GetCapabilityByName(kCanUseModelExecutionFeaturesName);
 }
