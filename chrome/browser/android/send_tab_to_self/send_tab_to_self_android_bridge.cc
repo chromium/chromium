@@ -47,29 +47,24 @@ SendTabToSelfModel* GetModel(const JavaParamRef<jobject>& j_profile) {
 
 }  // namespace
 
-static ScopedJavaLocalRef<jobjectArray>
+static std::vector<ScopedJavaLocalRef<jobject>>
 JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
-  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env,
-      "org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo");
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return base::android::ToTypedJavaArrayOfObjects(
-        env, std::vector<ScopedJavaLocalRef<jobject>>(), type);
-  }
-
   std::vector<ScopedJavaLocalRef<jobject>> infos;
-  for (const TargetDeviceInfo& info : model->GetTargetDeviceInfoSortedList()) {
-    infos.push_back(Java_TargetDeviceInfo_build(
-        env, ConvertUTF8ToJavaString(env, info.device_name),
-        ConvertUTF8ToJavaString(env, info.cache_guid),
-        static_cast<int>(info.form_factor),
-        info.last_updated_timestamp.InMillisecondsSinceUnixEpoch()));
+  SendTabToSelfModel* model = GetModel(j_profile);
+  if (model->IsReady()) {
+    for (const TargetDeviceInfo& info :
+         model->GetTargetDeviceInfoSortedList()) {
+      infos.push_back(Java_TargetDeviceInfo_build(
+          env, ConvertUTF8ToJavaString(env, info.device_name),
+          ConvertUTF8ToJavaString(env, info.cache_guid),
+          static_cast<int>(info.form_factor),
+          info.last_updated_timestamp.InMillisecondsSinceUnixEpoch()));
+    }
   }
 
-  return base::android::ToTypedJavaArrayOfObjects(env, infos, type);
+  return infos;
 }
 
 // Adds a new entry with the specified parameters. Returns whether the

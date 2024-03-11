@@ -27,10 +27,9 @@ class AwWebMessageHostFactory : public js_injection::WebMessageHostFactory {
 
   // Returns an array of WebMessageListenerInfos based on the registered
   // factories.
-  static base::android::ScopedJavaLocalRef<jobjectArray>
+  static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
   GetWebMessageListenerInfo(js_injection::JsCommunicationHost* host,
-                            JNIEnv* env,
-                            const base::android::JavaParamRef<jclass>& clazz);
+                            JNIEnv* env);
 
   // js_injection::WebMessageConnection:
   std::unique_ptr<js_injection::WebMessageHost> CreateHost(

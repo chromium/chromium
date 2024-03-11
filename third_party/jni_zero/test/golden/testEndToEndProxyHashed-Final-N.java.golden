@@ -21,6 +21,10 @@ public class N {
     public static native Class MHC2XaYW();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnClasses
     public static native Class[] MPl4TY3m();
+      // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects
+    public static native Object[] MbcaLfAT(Class __arrayClazz);
+      // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts
+    public static native int[] MrxydxEH();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString
     public static native String MaQxW6t6();
       // Original name: org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings

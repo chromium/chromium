@@ -620,30 +620,28 @@ jdouble JNI_HostZoomMapImpl_GetDefaultZoomLevel(
   return host_zoom_map->GetDefaultZoomLevel();
 }
 
-ScopedJavaLocalRef<jobjectArray> JNI_HostZoomMapImpl_GetAllHostZoomLevels(
+std::vector<ScopedJavaLocalRef<jobject>>
+JNI_HostZoomMapImpl_GetAllHostZoomLevels(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::vector<ScopedJavaLocalRef<jobject>> ret;
 
   // Get instance of HostZoomMap.
   BrowserContext* context = BrowserContextFromJavaHandle(j_context);
   if (!context) {
-    return nullptr;
+    return ret;
   }
 
   HostZoomMap* host_zoom_map =
       HostZoomMap::GetDefaultForBrowserContext(context);
 
   // Convert C++ vector of structs to vector of objects.
-  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/content_public/browser/SiteZoomInfo");
-  std::vector<ScopedJavaLocalRef<jobject>> jobject_vector;
   for (const auto& entry : host_zoom_map->GetAllZoomLevels()) {
     switch (entry.mode) {
       case HostZoomMap::ZOOM_CHANGED_FOR_HOST: {
-        jobject_vector.push_back(Java_HostZoomMapImpl_buildSiteZoomInfo(
-            env, base::android::ConvertUTF8ToJavaString(env, entry.host),
-            static_cast<double>(entry.zoom_level)));
+        ret.push_back(Java_HostZoomMapImpl_buildSiteZoomInfo(env, entry.host,
+                                                             entry.zoom_level));
         break;
       }
       case HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
@@ -654,7 +652,7 @@ ScopedJavaLocalRef<jobjectArray> JNI_HostZoomMapImpl_GetAllHostZoomLevels(
     }
   }
 
-  return base::android::ToTypedJavaArrayOfObjects(env, jobject_vector, type);
+  return ret;
 }
 #endif
 

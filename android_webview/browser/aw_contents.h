@@ -188,13 +188,11 @@ class AwContents : public FindHelper::Listener,
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& js_object_name);
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetWebMessageListenerInfos(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jclass>& clazz);
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetWebMessageListenerInfos(
+      JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetDocumentStartupJavascripts(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jclass>& clazz);
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
+  GetDocumentStartupJavascripts(JNIEnv* env);
 
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }
 

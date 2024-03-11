@@ -5,6 +5,15 @@
 import java_types
 
 
+def _implicit_array_class_param(native, type_resolver):
+  return_type = native.return_type
+  class_name = return_type.to_array_element_type().to_java(type_resolver)
+  ret = class_name + '.class'
+  if native.params:
+    ret = ', ' + ret
+  return ret
+
+
 def Generate(jni_obj, *, gen_jni_class, script_name):
   proxy_class = java_types.JavaClass(
       f'{jni_obj.java_class.full_name_with_slashes}Jni')
@@ -51,6 +60,8 @@ import {gen_jni_class.full_name_with_dots};
 
   for native in jni_obj.proxy_natives:
     call_params = native.params.to_call_str()
+    if native.needs_implicit_array_element_class_param:
+      call_params += _implicit_array_class_param(native, type_resolver)
     sig_params = native.params.to_java_declaration(type_resolver)
     return_type_str = native.return_type.to_java(type_resolver)
     return_prefix = ''

@@ -52,3 +52,14 @@ def create_method_names(java_class, method_name, is_test_only):
       f'{java_class.full_name_with_slashes}/{method_name}')
   hashed_proxy_name = create_hashed_method_name(proxy_name, is_test_only)
   return proxy_name, hashed_proxy_name
+
+
+def needs_implicit_array_element_class_param(return_type):
+  return (return_type.is_object_array() and return_type.converted_type()
+          and not return_type.java_class.is_system_class())
+
+
+def add_implicit_array_element_class_param(signature):
+  param = java_types.JavaParam(java_types.CLASS, '__arrayClazz')
+  param_list = java_types.JavaParamList(signature.param_list + (param, ))
+  return java_types.JavaSignature.from_params(signature.return_type, param_list)

@@ -52,6 +52,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeUnchecked;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
@@ -1670,13 +1671,9 @@ public class AwContents implements SmartClipProvider {
 
             // Save injected WebMessageListeners.
             webMessageListenerInfo =
-                    AwContentsJni.get()
-                            .getWebMessageListenerInfos(
-                                    awContents.mNativeAwContents, WebMessageListenerInfo.class);
+                    AwContentsJni.get().getWebMessageListenerInfos(awContents.mNativeAwContents);
             startupJavascriptInfo =
-                    AwContentsJni.get()
-                            .getDocumentStartupJavascripts(
-                                    awContents.mNativeAwContents, StartupJavascriptInfo.class);
+                    AwContentsJni.get().getDocumentStartupJavascripts(awContents.mNativeAwContents);
         }
     }
 
@@ -5023,9 +5020,11 @@ public class AwContents implements SmartClipProvider {
 
         void removeWebMessageListener(long nativeAwContents, String jsObjectName);
 
-        WebMessageListenerInfo[] getWebMessageListenerInfos(long nativeAwContents, Class clazz);
+        @JniType("std::vector")
+        WebMessageListenerInfo[] getWebMessageListenerInfos(long nativeAwContents);
 
-        StartupJavascriptInfo[] getDocumentStartupJavascripts(long nativeAwContents, Class clazz);
+        @JniType("std::vector")
+        StartupJavascriptInfo[] getDocumentStartupJavascripts(long nativeAwContents);
 
         void onConfigurationChanged(long nativeAwContents);
     }

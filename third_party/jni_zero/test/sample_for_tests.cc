@@ -286,6 +286,16 @@ JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(JNIEnv* env) {
   return {};
 }
 
+static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
+JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(JNIEnv* env) {
+  return {};
+}
+
+static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(
+    JNIEnv* env) {
+  return {};
+}
+
 static ScopedJavaLocalRef<jobject>
 JNI_SampleForAnnotationProcessor_ReturnStruct(JNIEnv* env) {
   return ScopedJavaLocalRef<jobject>();

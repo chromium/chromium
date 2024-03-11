@@ -17,6 +17,8 @@ public class GEN_JNI {
   public static native boolean org_jni_1zero_SampleForAnnotationProcessor_hasPhalange();
   public static native Class org_jni_1zero_SampleForAnnotationProcessor_returnClass();
   public static native Class[] org_jni_1zero_SampleForAnnotationProcessor_returnClasses();
+  public static native Object[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz);
+  public static native int[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts();
   public static native String org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString();
   public static native String[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings();
   public static native Object org_jni_1zero_SampleForAnnotationProcessor_returnObject();
@@ -51,6 +53,8 @@ public interface SampleForAnnotationProcessor {
     public boolean hasPhalange();
     public Class returnClass();
     public Class[] returnClasses();
+    public org.jni_zero.SampleForAnnotationProcessor[] returnConvertedAppObjects();
+    public int[] returnConvertedInts();
     public String returnConvertedString();
     public String[] returnConvertedStrings();
     public Object returnObject();

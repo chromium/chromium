@@ -101,6 +101,9 @@ class JavaClass:
   def class_without_prefix(self):
     return self._class_without_prefix if self._class_without_prefix else self
 
+  def is_system_class(self):
+    return self._fqn.startswith(('android/', 'java/'))
+
   def to_java(self, type_resolver=None):
     # Empty resolver used to shorted java.lang classes.
     type_resolver = type_resolver or _EMPTY_TYPE_RESOLVER
@@ -158,16 +161,26 @@ class JavaType:
     return lhs < rhs
 
   def is_primitive(self):
-    return self.primitive_name is not None and not self.is_array_type()
+    return self.primitive_name is not None and self.array_dimensions == 0
+
+  def is_array(self):
+    return self.array_dimensions > 0
 
   def is_primitive_array(self):
-    return self.primitive_name is not None and self.is_array_type()
+    return self.primitive_name is not None and self.array_dimensions > 0
+
+  def is_object_array(self):
+    return self.array_dimensions > 1 or (self.primitive_name is None
+                                         and self.array_dimensions > 0)
 
   def is_void(self):
     return self.primitive_name == 'void'
 
-  def is_array_type(self):
-    return self.array_dimensions > 0
+  def to_array_element_type(self):
+    assert self.is_array()
+    return JavaType(array_dimensions=self.array_dimensions - 1,
+                    primitive_name=self.primitive_name,
+                    java_class=self.java_class)
 
   def to_descriptor(self):
     """Converts a Java type into a JNI signature type."""
@@ -216,8 +229,20 @@ class JavaType:
 
   def converted_type(self):
     """Returns a C datatype listed in the JniType annotation for this type."""
-    return self.annotations.get('JniType', None)
-
+    ret = self.annotations.get('JniType', None)
+    # Allow "std::vector" as shorthand for:
+    #     std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
+    if ret == 'std::vector':
+      if self.is_object_array():
+        ret += '<jni_zero::ScopedJavaLocalRef<jobject>>'
+      elif self.is_array():
+        cpp_type = _CPP_TYPE_BY_JAVA_TYPE[self.non_array_full_name_with_slashes]
+        ret += f'<{cpp_type}>'
+      else:
+        # TODO(agrieve): This should be checked at parse time.
+        raise Exception(
+            'Found non-templatized @JniType("std::vector") on non-array type')
+    return ret
 
 
 @dataclasses.dataclass(frozen=True)
@@ -372,9 +397,11 @@ class TypeResolver:
     return JavaClass(f'{self.java_class.package_with_slashes}/{name}')
 
 
+CLASS_CLASS = JavaClass('java/lang/Class')
 OBJECT_CLASS = JavaClass('java/lang/Object')
 STRING_CLASS = JavaClass('java/lang/String')
 _EMPTY_TYPE_RESOLVER = TypeResolver(OBJECT_CLASS)
+CLASS = JavaType(java_class=CLASS_CLASS)
 LONG = JavaType(primitive_name='long')
 VOID = JavaType(primitive_name='void')
 EMPTY_PARAM_LIST = JavaParamList()

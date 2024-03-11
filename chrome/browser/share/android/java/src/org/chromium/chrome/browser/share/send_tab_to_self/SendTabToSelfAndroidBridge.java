@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,8 +69,13 @@ public class SendTabToSelfAndroidBridge {
      */
     public static List<TargetDeviceInfo> getAllTargetDeviceInfos(Profile profile) {
         // TODO(https://crbug.com/942549): Add this assertion back in once the
-        // code to load is in place. assert mIsNativeSendTabToSelfModelLoaded;
-        return Arrays.asList(SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(profile));
+        // code to load is in place.
+        // assert mIsNativeSendTabToSelfModelLoaded;
+        return (List<TargetDeviceInfo>)
+                (List<?>)
+                        Arrays.asList(
+                                SendTabToSelfAndroidBridgeJni.get()
+                                        .getAllTargetDeviceInfos(profile));
     }
 
     /**
@@ -97,7 +103,8 @@ public class SendTabToSelfAndroidBridge {
 
         void dismissEntry(Profile profile, String guid);
 
-        TargetDeviceInfo[] getAllTargetDeviceInfos(Profile profile);
+        @JniType("std::vector")
+        Object[] getAllTargetDeviceInfos(Profile profile);
 
         void updateActiveWebContents(WebContents webContents);
 

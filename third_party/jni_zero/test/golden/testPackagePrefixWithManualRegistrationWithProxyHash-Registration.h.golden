@@ -40,6 +40,13 @@ JNI_BOUNDARY_EXPORT jclass Java_this_is_a_package_prefix_J_N_M5NcWmhA(
 JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_M_00024EEymCX(
     JNIEnv* env,
     jclass jcaller);
+JNI_BOUNDARY_EXPORT jobjectArray Java_this_is_a_package_prefix_J_N_Muqa_000243wC(
+    JNIEnv* env,
+    jclass jcaller,
+    jclass __arrayClazz);
+JNI_BOUNDARY_EXPORT jintArray Java_this_is_a_package_prefix_J_N_Mfi3Z8u7(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_BOUNDARY_EXPORT jstring Java_this_is_a_package_prefix_J_N_MtTvCTtu(
     JNIEnv* env,
     jclass jcaller);
@@ -133,6 +140,9 @@ static const JNINativeMethod kMethods_this_is_a_package_prefix_J_N[] = {
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_M5NcWmhA) },
     { "M$EEymCX", "()[Ljava/lang/Class;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_M_00024EEymCX) },
+    { "Muqa$3wC", "(Ljava/lang/Class;)[Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_Muqa_000243wC) },
+    { "Mfi3Z8u7", "()[I", reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_Mfi3Z8u7) },
     { "MtTvCTtu", "()Ljava/lang/String;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N_MtTvCTtu) },
     { "MJOq1186", "()[Ljava/lang/String;",

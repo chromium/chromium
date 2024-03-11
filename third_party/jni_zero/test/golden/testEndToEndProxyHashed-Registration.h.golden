@@ -40,6 +40,13 @@ JNI_BOUNDARY_EXPORT jclass Java_J_N_MHC2XaYW(
 JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MPl4TY3m(
     JNIEnv* env,
     jclass jcaller);
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MbcaLfAT(
+    JNIEnv* env,
+    jclass jcaller,
+    jclass __arrayClazz);
+JNI_BOUNDARY_EXPORT jintArray Java_J_N_MrxydxEH(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_BOUNDARY_EXPORT jstring Java_J_N_MaQxW6t6(
     JNIEnv* env,
     jclass jcaller);

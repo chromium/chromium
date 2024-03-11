@@ -18,13 +18,23 @@
 
 
 // Step 1: Class Accessors.
+#ifndef org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
+#define org_jni_1zero_SampleForAnnotationProcessor_clazz_defined
+inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
+  static const char kClassName[] = "org/jni_zero/SampleForAnnotationProcessor";
+  static std::atomic<jclass> cached_class;
+  return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
+}
+#endif
+
 
 
 namespace jni_zero {
 
 // Forward declare used conversion functions to avoid a compiler warning that
 // triggers if a conversion specialization exists within the including .cc file.
-template<> ScopedJavaLocalRef<jstring> ToJniType<std::string>(JNIEnv*, const std::string&);
+template<> jni_zero::ScopedJavaLocalRef<jstring> ToJniType<std::string>(JNIEnv*, const
+    std::string&);
 template<> jni_zero::tests::CPPClass FromJniType<jni_zero::tests::CPPClass>(JNIEnv*, const
     JavaRef<jobject>&);
 template<> std::optional<std::string> FromJniType<std::optional<std::string>>(JNIEnv*, const
@@ -85,6 +95,29 @@ JNI_BOUNDARY_EXPORT jobjectArray
     JNIEnv* env,
     jclass jcaller) {
   return JNI_SampleForAnnotationProcessor_ReturnClasses(env).Release();
+}
+
+static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
+    JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(JNIEnv* env);
+
+JNI_BOUNDARY_EXPORT jobjectArray
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects(
+    JNIEnv* env,
+    jclass jcaller,
+    jclass __arrayClazz) {
+  auto ret = JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(env);
+  return jni_zero::ConvertArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>::ToJniType(env,
+      ret, __arrayClazz).Release();
+}
+
+static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env);
+
+JNI_BOUNDARY_EXPORT jintArray
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts(
+    JNIEnv* env,
+    jclass jcaller) {
+  auto ret = JNI_SampleForAnnotationProcessor_ReturnConvertedInts(env);
+  return jni_zero::ConvertArray<std::vector<jint>>::ToJniType(env, ret).Release();
 }
 
 static std::string JNI_SampleForAnnotationProcessor_ReturnConvertedString(JNIEnv* env);

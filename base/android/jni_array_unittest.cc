@@ -546,7 +546,7 @@ TEST(JniArray, ToJavaArrayOfObjectsOfClass) {
   };
 
   ScopedJavaLocalRef<jobjectArray> j_array =
-      ToJavaArrayOfObjects(env, GetClass(env, "java/lang/String"), objects);
+      ToJavaArrayOfObjects(env, jni_zero::g_string_class, objects);
   ASSERT_TRUE(j_array);
 
   EXPECT_EQ("one",

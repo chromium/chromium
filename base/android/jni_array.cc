@@ -137,10 +137,10 @@ BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     JNIEnv* env,
-    ScopedJavaLocalRef<jclass> clazz,
+    jclass clazz,
     base::span<const ScopedJavaLocalRef<jobject>> v) {
   jobjectArray joa =
-      env->NewObjectArray(checked_cast<jsize>(v.size()), clazz.obj(), nullptr);
+      env->NewObjectArray(checked_cast<jsize>(v.size()), clazz, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
@@ -152,7 +152,7 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     JNIEnv* env,
     base::span<const ScopedJavaLocalRef<jobject>> v) {
-  return ToJavaArrayOfObjects(env, GetClass(env, "java/lang/Object"), v);
+  return ToJavaArrayOfObjects(env, jni_zero::g_object_class, v);
 }
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
@@ -171,9 +171,9 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
     JNIEnv* env,
     base::span<const ScopedJavaLocalRef<jobject>> v,
-    const JavaRef<jclass>& type) {
+    jclass type) {
   jobjectArray joa =
-      env->NewObjectArray(checked_cast<jsize>(v.size()), type.obj(), nullptr);
+      env->NewObjectArray(checked_cast<jsize>(v.size()), type, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
@@ -185,9 +185,9 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
     JNIEnv* env,
     base::span<const ScopedJavaGlobalRef<jobject>> v,
-    const JavaRef<jclass>& type) {
+    jclass type) {
   jobjectArray joa =
-      env->NewObjectArray(checked_cast<jsize>(v.size()), type.obj(), nullptr);
+      env->NewObjectArray(checked_cast<jsize>(v.size()), type, nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {

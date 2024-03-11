@@ -33,6 +33,14 @@ public class GEN_JNI {
         return J.N.MPl4TY3m();
     }
 
+    public static Object[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz) {
+        return J.N.MbcaLfAT(__arrayClazz);
+    }
+
+    public static int[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
+        return J.N.MrxydxEH();
+    }
+
     public static String org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
         return J.N.MaQxW6t6();
     }

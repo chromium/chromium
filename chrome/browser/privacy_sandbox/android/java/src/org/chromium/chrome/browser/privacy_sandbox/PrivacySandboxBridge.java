@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
@@ -26,23 +26,22 @@ public class PrivacySandboxBridge {
     }
 
     public static List<Topic> getCurrentTopTopics() {
-        return sortTopics(Arrays.asList(PrivacySandboxBridgeJni.get().getCurrentTopTopics()));
+        return sortTopics(PrivacySandboxBridgeJni.get().getCurrentTopTopics());
     }
 
     public static List<Topic> getBlockedTopics() {
-        return sortTopics(Arrays.asList(PrivacySandboxBridgeJni.get().getBlockedTopics()));
+        return sortTopics(PrivacySandboxBridgeJni.get().getBlockedTopics());
     }
 
     public static List<Topic> getFirstLevelTopics() {
-        return sortTopics(Arrays.asList(PrivacySandboxBridgeJni.get().getFirstLevelTopics()));
+        return sortTopics(PrivacySandboxBridgeJni.get().getFirstLevelTopics());
     }
 
     public static List<Topic> getChildTopicsCurrentlyAssigned(Topic topic) {
         return sortTopics(
-                Arrays.asList(
-                        PrivacySandboxBridgeJni.get()
-                                .getChildTopicsCurrentlyAssigned(
-                                        topic.getTopicId(), topic.getTaxonomyVersion())));
+                PrivacySandboxBridgeJni.get()
+                        .getChildTopicsCurrentlyAssigned(
+                                topic.getTopicId(), topic.getTaxonomyVersion()));
     }
 
     public static void setTopicAllowed(Topic topic, boolean allowed) {
@@ -56,13 +55,13 @@ public class PrivacySandboxBridge {
         return new Topic(topicId, taxonomyVersion, name, description);
     }
 
-    private static List<Topic> sortTopics(List<Topic> topics) {
-        Collections.sort(
+    private static List<Topic> sortTopics(Object[] topics) {
+        Arrays.sort(
                 topics,
                 (o1, o2) -> {
-                    return o1.getName().compareTo(o2.getName());
+                    return ((Topic) o1).getName().compareTo(((Topic) o2).getName());
                 });
-        return topics;
+        return (List<Topic>) (List<?>) Arrays.asList(topics);
     }
 
     public static void getFledgeJoiningEtldPlusOneForDisplay(Callback<List<String>> callback) {
@@ -137,13 +136,17 @@ public class PrivacySandboxBridge {
 
         String getFirstPartySetOwner(String memberOrigin);
 
-        Topic[] getCurrentTopTopics();
+        @JniType("std::vector")
+        Object[] getCurrentTopTopics();
 
-        Topic[] getBlockedTopics();
+        @JniType("std::vector")
+        Object[] getBlockedTopics();
 
-        Topic[] getFirstLevelTopics();
+        @JniType("std::vector")
+        Object[] getFirstLevelTopics();
 
-        Topic[] getChildTopicsCurrentlyAssigned(int topicId, int taxonomyVersion);
+        @JniType("std::vector")
+        Object[] getChildTopicsCurrentlyAssigned(int topicId, int taxonomyVersion);
 
         void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed);
 

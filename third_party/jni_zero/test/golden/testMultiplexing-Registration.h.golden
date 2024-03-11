@@ -40,6 +40,13 @@ JNI_BOUNDARY_EXPORT jclass Java_J_N_MHC2XaYW(
 JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MPl4TY3m(
     JNIEnv* env,
     jclass jcaller);
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_MbcaLfAT(
+    JNIEnv* env,
+    jclass jcaller,
+    jclass __arrayClazz);
+JNI_BOUNDARY_EXPORT jintArray Java_J_N_MrxydxEH(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_BOUNDARY_EXPORT jstring Java_J_N_MaQxW6t6(
     JNIEnv* env,
     jclass jcaller);
@@ -265,6 +272,21 @@ JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array(
             return {};
         }
 }
+JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1L(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num, jclass class_param1) {
+        switch (switch_num) {
+          
+          case 0:
+            return Java_J_N_MbcaLfAT(env, jcaller, class_param1);
+          
+          default:
+            JNI_ZERO_ELOG("J_N_resolve_1for_1object_1array_1L was called with an invalid switch number: %d", switch_num);
+            JNI_ZERO_DCHECK(false);
+            return {};
+        }
+}
 JNI_BOUNDARY_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1OA(
     JNIEnv* env,
     jclass jcaller,
@@ -356,6 +378,21 @@ JNI_BOUNDARY_EXPORT void Java_J_N_resolve_1for_1void(
             JNI_ZERO_ELOG("J_N_resolve_1for_1void was called with an invalid switch number: %d", switch_num);
             JNI_ZERO_DCHECK(false);
             return;
+        }
+}
+JNI_BOUNDARY_EXPORT jintArray Java_J_N_resolve_1for_1int_1array(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num) {
+        switch (switch_num) {
+          
+          case 0:
+            return Java_J_N_MrxydxEH(env, jcaller);
+          
+          default:
+            JNI_ZERO_ELOG("J_N_resolve_1for_1int_1array was called with an invalid switch number: %d", switch_num);
+            JNI_ZERO_DCHECK(false);
+            return {};
         }
 }
 JNI_BOUNDARY_EXPORT jobject Java_J_N_resolve_1for_1object_1O(

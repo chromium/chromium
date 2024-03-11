@@ -25,10 +25,6 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::GetClass;
 using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfObjects;
-
-constexpr char kFormFieldDataAndroidClassname[] =
-    "org/chromium/components/autofill/FormFieldData";
 
 }  // namespace
 
@@ -53,11 +49,9 @@ FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
   }
 
   ScopedJavaLocalRef<jobject> obj = Java_FormData_createFormData(
-      env, session_id.value(), ConvertUTF16ToJavaString(env, form.name),
+      env, session_id.value(), form.name,
       /*origin=*/
-      ConvertUTF8ToJavaString(env, form.url.DeprecatedGetOriginAsURL().spec()),
-      ToJavaArrayOfObjects(env, GetClass(env, kFormFieldDataAndroidClassname),
-                           android_objects));
+      form.url.DeprecatedGetOriginAsURL().spec(), android_objects);
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;
 }

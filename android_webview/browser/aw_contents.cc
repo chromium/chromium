@@ -1342,23 +1342,19 @@ void AwContents::RemoveWebMessageListener(
       ConvertJavaStringToUTF16(env, js_object_name));
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
-AwContents::GetWebMessageListenerInfos(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jclass>& clazz) {
+std::vector<ScopedJavaLocalRef<jobject>> AwContents::GetWebMessageListenerInfos(
+    JNIEnv* env) {
   if (js_communication_host_.get()) {
     return AwWebMessageHostFactory::GetWebMessageListenerInfo(
-        GetJsCommunicationHost(), env, clazz);
+        GetJsCommunicationHost(), env);
   }
-  return nullptr;
+  return {};
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
-AwContents::GetDocumentStartupJavascripts(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jclass>& clazz) {
+std::vector<ScopedJavaLocalRef<jobject>>
+AwContents::GetDocumentStartupJavascripts(JNIEnv* env) {
   if (!js_communication_host_.get()) {
-    return nullptr;
+    return {};
   }
 
   const std::vector<js_injection::DocumentStartJavaScript>& scripts =
@@ -1373,9 +1369,7 @@ AwContents::GetDocumentStartupJavascripts(
         base::android::ToJavaArrayOfStrings(env, rules)));
   }
 
-  ScopedJavaLocalRef<jclass> clazz_ref(clazz);
-  return base::android::ToTypedJavaArrayOfObjects(env, script_objects,
-                                                  clazz_ref);
+  return script_objects;
 }
 
 void AwContents::ClearView(JNIEnv* env) {

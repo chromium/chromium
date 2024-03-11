@@ -34,7 +34,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     int action_type,
     const std::string& action_uri);
 
-base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
+std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaOmniboxActionsList(
     JNIEnv* env,
     const std::vector<scoped_refptr<OmniboxAction>>& actions);
 

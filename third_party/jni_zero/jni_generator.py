@@ -64,10 +64,16 @@ class NativeMethod:
     self.is_test_only = NameIsTestOnly(self.name)
 
     if self.is_proxy:
+      self.needs_implicit_array_element_class_param = (
+          proxy.needs_implicit_array_element_class_param(self.return_type))
       self.proxy_signature = self.signature.to_proxy()
+      if self.needs_implicit_array_element_class_param:
+        self.proxy_signature = proxy.add_implicit_array_element_class_param(
+            self.proxy_signature)
       self.proxy_name, self.hashed_proxy_name = proxy.create_method_names(
           java_class, self.name, self.is_test_only)
     else:
+      self.needs_implicit_array_element_class_param = False
       self.proxy_signature = self.signature
 
     first_param = self.params and self.params[0]
@@ -194,7 +200,7 @@ def GetParamsInStub(native):
   Returns:
     A string containing the params.
   """
-  params = [p.java_type.to_cpp() + ' ' + p.name for p in native.params]
+  params = [p.java_type.to_cpp() + ' ' + p.name for p in native.proxy_params]
   params = _GetJNIFirstParam(native, False) + params
   return ',\n    '.join(params)
 
@@ -551,7 +557,7 @@ $METHOD_STUBS
     for java_type in java_to_cpp_types:
       # Array conversions do not need to be declared and primitive conversions
       # are just static_cast.
-      if java_type.is_array_type() or java_type.is_primitive():
+      if java_type.is_array() or java_type.is_primitive():
         continue
       cpptype = java_type.converted_type()
       javatype = f'const JavaRef<{java_type.to_cpp()}>&'
@@ -560,10 +566,10 @@ $METHOD_STUBS
     for java_type in cpp_to_java_types:
       # Array conversions dont need to be declared and primitive conversions
       # are just static_cast.
-      if java_type.is_array_type() or java_type.is_primitive():
+      if java_type.is_array() or java_type.is_primitive():
         continue
       cpptype = java_type.converted_type()
-      javatype = f'ScopedJavaLocalRef<{java_type.to_cpp()}>'
+      javatype = f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
       declarations.add(
           f'template<> {javatype} ToJniType<{cpptype}>(JNIEnv*, const {cpptype}&);'
       )
@@ -580,7 +586,7 @@ $METHOD_STUBS
         "${VARIABLE_TYPE} ${CONVERTED_NAME} = ${CONVERSION_CALL};")
     variable_type = java_type.to_cpp()
     if not java_type.is_primitive():
-      variable_type = f'ScopedJavaLocalRef<{variable_type}>'
+      variable_type = f'jni_zero::ScopedJavaLocalRef<{variable_type}>'
     return template.substitute({
         'VARIABLE_TYPE':
         variable_type,
@@ -590,7 +596,10 @@ $METHOD_STUBS
         conversion_call_str,
     })
 
-  def GetToJavaTypeConversionCallString(self, var_name, java_type):
+  def GetToJavaTypeConversionCallString(self,
+                                        var_name,
+                                        java_type,
+                                        clazz_param=None):
     """Returns a conversion call expression from specified @JniType to default jni type."""
     if java_type.is_primitive():
       name_str = var_name
@@ -600,12 +609,15 @@ $METHOD_STUBS
     template = Template(
         'jni_zero::ToJniType<${CONVERTED_TYPE}>(env, ${ORIGINAL_NAME})')
     maybe_java_clazz = ''
-    if java_type.is_array_type():
+    if java_type.is_array():
       template = Template(
-          'jni_zero::ConvertArray<${CONVERTED_TYPE}>::ToJniType(env, ${ORIGINAL_NAME}${MAYBE_JAVA_CLAZZ})'
-      )
+          'jni_zero::ConvertArray<${CONVERTED_TYPE}>::ToJniType('
+          'env, ${ORIGINAL_NAME}${MAYBE_JAVA_CLAZZ})')
       if not java_type.is_primitive_array():
-        accessor = header_common.class_accessor_call(java_type.java_class)
+        if clazz_param:
+          accessor = clazz_param.name
+        else:
+          accessor = header_common.class_accessor_call(java_type.java_class)
         maybe_java_clazz = f', {accessor}'
     ret = template.substitute({
         'CONVERTED_TYPE': java_type.converted_type(),
@@ -636,7 +648,7 @@ $METHOD_STUBS
     template = Template(
         'jni_zero::FromJniType<${CONVERTED_TYPE}>(env, ${ORIGINAL_NAME})')
     maybe_template_specialization = ''
-    if java_type.is_array_type():
+    if java_type.is_array():
       template = Template(
           'jni_zero::ConvertArray<${CONVERTED_TYPE}>::FromJniType${MAYBE_TEMPLATE_SPECIALIZATION}(env, ${ORIGINAL_NAME})'
       )
@@ -660,9 +672,11 @@ $METHOD_STUBS
 
   def GetNativeStub(self, native):
     if native.first_param_cpp_type:
-      params = native.params[1:]
+      params = native.proxy_params[1:]
     else:
-      params = native.params
+      params = native.proxy_params
+    if native.needs_implicit_array_element_class_param:
+      params = params[:-1]
 
     params_in_call = ['env']
     if not native.static:
@@ -691,8 +705,11 @@ $METHOD_STUBS
     return_phrase = 'return'
     if native.return_type.converted_type():
       return_phrase = 'auto ret ='
+      clazz_param = None
+      if native.needs_implicit_array_element_class_param:
+        clazz_param = native.proxy_params[-1]
       convert_call = self.GetToJavaTypeConversionCallString(
-          'ret', native.return_type)
+          'ret', native.return_type, clazz_param=clazz_param)
       if not native.return_type.is_primitive():
         convert_call = f'{convert_call}.Release()'
       post_return_statement = f'return {convert_call};'

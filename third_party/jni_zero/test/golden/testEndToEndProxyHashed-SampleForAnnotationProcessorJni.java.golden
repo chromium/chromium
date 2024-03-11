@@ -55,6 +55,16 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
   }
 
   @Override
+  public SampleForAnnotationProcessor[] returnConvertedAppObjects() {
+    return (SampleForAnnotationProcessor[]) GEN_JNI.org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(SampleForAnnotationProcessor.class);
+  }
+
+  @Override
+  public int[] returnConvertedInts() {
+    return (int[]) GEN_JNI.org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts();
+  }
+
+  @Override
   public String returnConvertedString() {
     return (String) GEN_JNI.org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString();
   }

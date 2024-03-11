@@ -38,8 +38,7 @@ base::android::ScopedJavaLocalRef<jobjectArray> CreateJavaMessagePort(
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ToTypedJavaArrayOfObjects(
       env, base::make_span(j_descriptors),
-      base::android::GetClass(
-          env, "org/chromium/content/browser/AppWebMessagePort"));
+      org_chromium_content_browser_AppWebMessagePort_clazz(env));
 }
 
 // static

@@ -86,6 +86,12 @@ class SampleForAnnotationProcessor {
         @JniType("std::vector<std::string>")
         String[] returnConvertedStrings();
 
+        @JniType("std::vector")
+        SampleForAnnotationProcessor[] returnConvertedAppObjects();
+
+        @JniType("std::vector")
+        int[] returnConvertedInts();
+
         TestStruct returnStruct();
         TestStruct[] returnStructs();
         Object returnObject();

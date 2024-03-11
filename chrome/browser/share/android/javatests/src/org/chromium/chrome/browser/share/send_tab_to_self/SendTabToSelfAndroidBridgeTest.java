@@ -60,8 +60,8 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     @SuppressWarnings("unchecked")
     public void testGetAllTargetDeviceInfos() {
-        TargetDeviceInfo[] expected =
-                new TargetDeviceInfo[] {
+        Object[] expected =
+                new Object[] {
                     new TargetDeviceInfo("name1", "guid1", FormFactor.DESKTOP, 123L),
                     new TargetDeviceInfo("name2", "guid2", FormFactor.DESKTOP, 456L),
                     new TargetDeviceInfo("name3", "guid3", FormFactor.PHONE, 789L)

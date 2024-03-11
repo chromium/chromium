@@ -697,14 +697,12 @@ struct ConvertArray<std::vector<O>> {
   template <typename JArrayElementType = jobject>
   static std::vector<O> FromJniType(JNIEnv* env,
                                     const JavaRef<jobjectArray>& j_array) {
-    if (!j_array) {
-      return {};
-    }
-    jsize jlength = env->GetArrayLength(j_array.obj());
-    size_t length = static_cast<size_t>(jlength);
+    jsize array_jsize = env->GetArrayLength(j_array.obj());
+    size_t array_size = static_cast<size_t>(array_jsize);
+
     std::vector<O> ret;
-    ret.reserve(length);
-    for (jsize i = 0; i < jlength; ++i) {
+    ret.reserve(array_size);
+    for (jsize i = 0; i < array_jsize; ++i) {
       O element = jni_zero::FromJniType<O>(
           env, jni_zero::ScopedJavaLocalRef<JArrayElementType>::Adopt(
                    env, static_cast<JArrayElementType>(
@@ -715,43 +713,75 @@ struct ConvertArray<std::vector<O>> {
   }
 
   static ScopedJavaLocalRef<jobjectArray> ToJniType(JNIEnv* env,
-                                                    const std::vector<O>& array,
+                                                    const std::vector<O>& vec,
                                                     jclass clazz) {
-    jobjectArray joa = env->NewObjectArray(array.size(), clazz, nullptr);
+    size_t array_size = vec.size();
+    jsize array_jsize = static_cast<jsize>(array_size);
+    jobjectArray joa = env->NewObjectArray(array_jsize, clazz, nullptr);
     CheckException(env);
 
-    size_t length = array.size();
-    for (size_t i = 0; i < length; ++i) {
-      ScopedJavaLocalRef<jobject> element =
-          jni_zero::ToJniType<O>(env, array[i]);
+    for (size_t i = 0; i < array_size; ++i) {
+      ScopedJavaLocalRef<jobject> element = jni_zero::ToJniType<O>(env, vec[i]);
       env->SetObjectArrayElement(joa, static_cast<jsize>(i), element.obj());
     }
     return ScopedJavaLocalRef<jobjectArray>(env, joa);
   }
+};
 
-  // std::vector<int> specialization conversion functions from java primitive
-  // int array.
+// Specialization for int array.
+template <>
+struct ConvertArray<std::vector<int32_t>> {
   static std::vector<int32_t> FromJniType(JNIEnv* env,
                                           const JavaRef<jintArray>& j_array) {
-    if (!j_array) {
-      return {};
-    }
-    jsize jlength = env->GetArrayLength(j_array.obj());
-    size_t length = static_cast<size_t>(jlength);
+    jsize array_jsize = env->GetArrayLength(j_array.obj());
+    size_t array_size = static_cast<size_t>(array_jsize);
     std::vector<int32_t> ret;
-    ret.resize(length);
-    env->GetIntArrayRegion(j_array.obj(), 0, jlength, &ret[0]);
+    ret.resize(array_size);
+    env->GetIntArrayRegion(j_array.obj(), 0, array_jsize, &ret[0]);
     return ret;
   }
 
   static ScopedJavaLocalRef<jintArray> ToJniType(
       JNIEnv* env,
-      const std::vector<int32_t>& array) {
-    jsize length = static_cast<jsize>(array.size());
-    jintArray jia = env->NewIntArray(length);
+      const std::vector<int32_t>& vec) {
+    jsize array_jsize = static_cast<jsize>(vec.size());
+    jintArray jia = env->NewIntArray(array_jsize);
     CheckException(env);
-    env->SetIntArrayRegion(jia, 0, length, &array[0]);
+    env->SetIntArrayRegion(jia, 0, array_jsize, &vec[0]);
     return ScopedJavaLocalRef<jintArray>(env, jia);
+  }
+};
+
+// Do not call ToJniType for jobject->jobject.
+template <>
+struct ConvertArray<std::vector<ScopedJavaLocalRef<jobject>>> {
+  static std::vector<ScopedJavaLocalRef<jobject>> FromJniType(
+      JNIEnv* env,
+      const JavaRef<jobjectArray>& j_array) {
+    jsize array_jsize = env->GetArrayLength(j_array.obj());
+    size_t array_size = static_cast<size_t>(array_jsize);
+
+    std::vector<ScopedJavaLocalRef<jobject>> ret;
+    ret.reserve(array_size);
+    for (jsize i = 0; i < array_jsize; ++i) {
+      ret.emplace_back(env, env->GetObjectArrayElement(j_array.obj(), i));
+    }
+    return ret;
+  }
+
+  static ScopedJavaLocalRef<jobjectArray> ToJniType(
+      JNIEnv* env,
+      const std::vector<ScopedJavaLocalRef<jobject>>& vec,
+      jclass clazz) {
+    size_t array_size = vec.size();
+    jsize array_jsize = static_cast<jsize>(array_size);
+    jobjectArray joa = env->NewObjectArray(array_jsize, clazz, nullptr);
+    CheckException(env);
+
+    for (size_t i = 0; i < array_size; ++i) {
+      env->SetObjectArrayElement(joa, static_cast<jsize>(i), vec[i].obj());
+    }
+    return ScopedJavaLocalRef<jobjectArray>(env, joa);
   }
 };
 

@@ -95,7 +95,7 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int> temp_subtypes(subtypes.begin(), subtypes.end());
 
-  base::android::ScopedJavaLocalRef<jobjectArray> actions_list;
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> actions_list;
   if (actions.empty() && takeover_action) {
     actions_list = ToJavaOmniboxActionsList(env, {takeover_action});
   } else {

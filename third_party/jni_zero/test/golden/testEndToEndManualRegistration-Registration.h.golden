@@ -45,6 +45,15 @@ JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses(
     JNIEnv* env,
     jclass jcaller);
+JNI_BOUNDARY_EXPORT jobjectArray
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects(
+    JNIEnv* env,
+    jclass jcaller,
+    jclass __arrayClazz);
+JNI_BOUNDARY_EXPORT jintArray
+    Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_BOUNDARY_EXPORT jstring
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString(
     JNIEnv* env,
@@ -159,6 +168,13 @@ static const JNINativeMethod kMethods_org_jni_1zero_GEN_1JNI[] = {
         },
     { "org_jni_1zero_SampleForAnnotationProcessor_returnClasses", "()[Ljava/lang/Class;",
         reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses)
+        },
+    { "org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects",
+        "(Ljava/lang/Class;)[Ljava/lang/Object;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects)
+        },
+    { "org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts", "()[I",
+        reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts)
         },
     { "org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString", "()Ljava/lang/String;",
         reinterpret_cast<void*>(Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString)

@@ -11,6 +11,7 @@ import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.MathUtils;
@@ -60,10 +61,8 @@ public class HostZoomMapImpl {
         SiteZoomInfo[] siteZoomInfoList =
                 HostZoomMapImplJni.get().getAllHostZoomLevels(browserContextHandle);
         HashMap<String, Double> hostToZoomLevel = new HashMap<>();
-        if (siteZoomInfoList != null) {
-            for (int i = 0; i < siteZoomInfoList.length; i++) {
-                hostToZoomLevel.put(siteZoomInfoList[i].host, siteZoomInfoList[i].zoomLevel);
-            }
+        for (int i = 0; i < siteZoomInfoList.length; i++) {
+            hostToZoomLevel.put(siteZoomInfoList[i].host, siteZoomInfoList[i].zoomLevel);
         }
         return hostToZoomLevel;
     }
@@ -109,7 +108,8 @@ public class HostZoomMapImpl {
     }
 
     @CalledByNative
-    public static SiteZoomInfo buildSiteZoomInfo(String host, double zoomLevel) {
+    public static SiteZoomInfo buildSiteZoomInfo(
+            @JniType("std::string") String host, double zoomLevel) {
         return new SiteZoomInfo(host, zoomLevel);
     }
 
@@ -168,6 +168,7 @@ public class HostZoomMapImpl {
 
         double getDefaultZoomLevel(BrowserContextHandle context);
 
+        @JniType("std::vector")
         SiteZoomInfo[] getAllHostZoomLevels(BrowserContextHandle context);
 
         void setZoomLevelForHost(BrowserContextHandle context, String host, double level);

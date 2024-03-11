@@ -13,6 +13,7 @@ import androidx.collection.ArraySet;
 import androidx.core.util.ObjectsCompat;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -187,7 +188,7 @@ public class AutocompleteMatch {
             String[] suggestTileTitles,
             GURL[] suggestTileUrls,
             int[] suggestTileTypes,
-            @Nullable OmniboxAction[] actions) {
+            @JniType("std::vector") Object[] actions) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -234,7 +235,7 @@ public class AutocompleteMatch {
                         clipboardImageData,
                         hasTabMatch,
                         suggestTiles,
-                        actions == null ? null : Arrays.asList(actions));
+                        (List<OmniboxAction>) (List<?>) Arrays.asList(actions));
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);

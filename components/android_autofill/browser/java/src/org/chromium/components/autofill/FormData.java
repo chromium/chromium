@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +37,12 @@ public class FormData {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
     static FormData createFormData(
-            int sessionId, String name, String origin, FormFieldData[] fields) {
-        return new FormData(sessionId, name, origin, Arrays.asList(fields));
+            int sessionId,
+            @JniType("std::u16string") String name,
+            @JniType("std::string") String origin,
+            @JniType("std::vector") Object[] fields) {
+        return new FormData(
+                sessionId, name, origin, (List<FormFieldData>) (List<?>) Arrays.asList(fields));
     }
 
     public FormData(int sessionId, String name, String host, List<FormFieldData> fields) {
