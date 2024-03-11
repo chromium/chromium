@@ -41,6 +41,15 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Error step retry button clicked"/>
 </enum>
 
+<enum name="DeleteFlexOobeConfigDBusResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kErrorUnknown"/>
+  <int value="2" label="kErrorAccessDenied"/>
+  <int value="3" label="kErrorNotSupported"/>
+  <int value="4" label="kErrorConfigNotFound"/>
+  <int value="5" label="kErrorIOError"/>
+</enum>
+
 <enum name="FingerprintSetupScreenUserAction">
   <summary>Actions which happen on the screen.</summary>
   <int value="0" label="Setup done button clicked"/>

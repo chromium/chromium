@@ -22,6 +22,8 @@ component("oobe_config") {
     "fake_oobe_configuration_client.h",
     "oobe_configuration_client.cc",
     "oobe_configuration_client.h",
+    "oobe_configuration_metrics.cc",
+    "oobe_configuration_metrics.h",
   ]
 }
 

@@ -11,11 +11,15 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 
 namespace {
+
+const char kFlexToken[] = "flexToken";
 
 std::string LoadConfigurationFile(base::FilePath path) {
   std::string configuration_data;
@@ -63,6 +67,33 @@ void FakeOobeConfigurationClient::CheckForOobeConfiguration(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadConfigurationFile, path),
       base::BindOnce(&OnConfigurationLoaded, std::move(callback)));
+}
+
+void FakeOobeConfigurationClient::DeleteFlexOobeConfig() {
+  if (!configuration_.has_value()) {
+    return;
+  }
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(*configuration_);
+  if (!dict.has_value()) {
+    return;
+  }
+  dict->Remove(kFlexToken);
+
+  std::optional<std::string> new_configuration = base::WriteJson(*dict);
+  if (!new_configuration.has_value()) {
+    return;
+  }
+  configuration_ = *new_configuration;
+
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kFakeOobeConfiguration)) {
+    return;
+  }
+  const base::FilePath path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          chromeos::switches::kFakeOobeConfiguration);
+  base::WriteFile(path, *configuration_);
 }
 
 void FakeOobeConfigurationClient::SetConfiguration(

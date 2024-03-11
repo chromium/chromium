@@ -757,6 +757,16 @@ chromium-metrics-reviews@google.com.
   <token key="OnboardingType" variants="OnboardingType"/>
 </histogram>
 
+<histogram name="OOBE.OobeConfig.DeleteFlexOobeConfig.DBusResult"
+    enum="DeleteFlexOobeConfigDBusResult" expires_after="2025-02-07">
+  <owner>jacksontadie@google.com</owner>
+  <owner>cros-onboarding-team@google.com</owner>
+  <summary>
+    Records the different possible results when attempting to invoke the
+    DeleteFlexOobeConfig DBus method.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2024-07-21">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
