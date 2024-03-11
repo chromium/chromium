@@ -60,6 +60,10 @@ BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);
 BASE_DECLARE_FEATURE(kMigrateAccountManagementSettingsToCapabilities);
 #endif
 
+// Sets kForceYouTubeRestrict to be applied according to parental controls set
+// on Family Link
+BASE_DECLARE_FEATURE(kRemoveForceAppliedYoutubeRestrictPolicy);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

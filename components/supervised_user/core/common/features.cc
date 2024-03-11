@@ -107,6 +107,10 @@ BASE_FEATURE(kMigrateAccountManagementSettingsToCapabilities,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kRemoveForceAppliedYoutubeRestrictPolicy,
+             "RemoveForceAppliedYoutubeRestrictPolicy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
 }

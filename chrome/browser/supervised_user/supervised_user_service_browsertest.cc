@@ -19,6 +19,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/safe_search_util.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,19 +27,44 @@
 
 namespace {
 
+enum class RemoveForceAppliedYoutubeRestrictPolicyState : int {
+  kEnabled = 0,
+  kDisabled = 1,
+};
+
 class SupervisedUserServiceBrowserTest
     : public MixinBasedInProcessBrowserTest,
       public ::testing::WithParamInterface<
-          supervised_user::SupervisionMixin::SignInMode> {
+          std::tuple<supervised_user::SupervisionMixin::SignInMode,
+                     RemoveForceAppliedYoutubeRestrictPolicyState>> {
+ public:
+  SupervisedUserServiceBrowserTest() {
+    if (RemoveForceAppliedYoutubeRestrictPolicyEnabled()) {
+      scoped_feature_list.InitAndEnableFeature(
+          supervised_user::kRemoveForceAppliedYoutubeRestrictPolicy);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          supervised_user::kRemoveForceAppliedYoutubeRestrictPolicy);
+    }
+  }
+
+  bool RemoveForceAppliedYoutubeRestrictPolicyEnabled() {
+    return std::get<1>(GetParam()) ==
+           RemoveForceAppliedYoutubeRestrictPolicyState::kEnabled;
+  }
+
  protected:
   supervised_user::SupervisionMixin::SignInMode GetSignInMode() const {
-    return GetParam();
+    return std::get<0>(GetParam());
   }
 
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
       {.sign_in_mode = GetSignInMode()}};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
@@ -52,10 +78,18 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
     EXPECT_TRUE(prefs->IsUserModifiablePreference(
         policy::policy_prefs::kForceGoogleSafeSearch));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
-              safe_search_api::YOUTUBE_RESTRICT_MODERATE);
-    EXPECT_FALSE(prefs->IsUserModifiablePreference(
-        policy::policy_prefs::kForceYouTubeRestrict));
+    if (RemoveForceAppliedYoutubeRestrictPolicyEnabled()) {
+      EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
+                safe_search_api::YOUTUBE_RESTRICT_OFF);
+      EXPECT_TRUE(prefs->IsUserModifiablePreference(
+          policy::policy_prefs::kForceYouTubeRestrict));
+    } else {
+      EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
+                safe_search_api::YOUTUBE_RESTRICT_MODERATE);
+      EXPECT_FALSE(prefs->IsUserModifiablePreference(
+          policy::policy_prefs::kForceYouTubeRestrict));
+    }
+
 #else
     EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
               safe_search_api::YOUTUBE_RESTRICT_OFF);
@@ -88,16 +122,45 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, ProfileName) {
   EXPECT_EQ(original_name, base::UTF16ToUTF8(entry->GetName()));
 }
 
+std::string getTestSuffix(
+    const ::testing::TestParamInfo<
+        std::tuple<supervised_user::SupervisionMixin::SignInMode,
+                   RemoveForceAppliedYoutubeRestrictPolicyState>>& info) {
+  std::string signin_mode;
+  switch (std::get<0>(info.param)) {
+    case supervised_user::SupervisionMixin::SignInMode::kSignedOut:
+      signin_mode = "SignedOut";
+      break;
+    case supervised_user::SupervisionMixin::SignInMode::kRegular:
+      signin_mode = "Regular";
+      break;
+    case supervised_user::SupervisionMixin::SignInMode::kSupervised:
+      signin_mode = "Supervised";
+      break;
+  }
+
+  return signin_mode +
+         std::string(
+             std::get<1>(info.param) ==
+                     RemoveForceAppliedYoutubeRestrictPolicyState::kEnabled
+                 ? "Enabled"
+                 : "Disabled");
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserServiceBrowserTest,
-    testing::Values(
+    testing::Combine(
+        testing::Values(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-        // Only for platforms that support signed-out browser.
-        supervised_user::SupervisionMixin::SignInMode::kSignedOut,
+            // Only for platforms that support signed-out browser.
+            supervised_user::SupervisionMixin::SignInMode::kSignedOut,
 #endif
-        supervised_user::SupervisionMixin::SignInMode::kRegular,
-        supervised_user::SupervisionMixin::SignInMode::kSupervised),
-    ::testing::PrintToStringParamName());
+            supervised_user::SupervisionMixin::SignInMode::kRegular,
+            supervised_user::SupervisionMixin::SignInMode::kSupervised),
+        testing::Values(
+            RemoveForceAppliedYoutubeRestrictPolicyState::kEnabled,
+            RemoveForceAppliedYoutubeRestrictPolicyState::kDisabled)),
+    getTestSuffix);
 
 }  // namespace
