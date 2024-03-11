@@ -245,9 +245,7 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
   request.set_owner_id(
       ash::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
   request.set_enable_gpu(true);
-  request.set_software_tpm(false);
   request.set_enable_audio_capture(false);
-  request.set_enable_vulkan(true);
   if (base::FeatureList::IsEnabled(ash::features::kBorealisBigGl)) {
     request.set_enable_big_gl(true);
   }
