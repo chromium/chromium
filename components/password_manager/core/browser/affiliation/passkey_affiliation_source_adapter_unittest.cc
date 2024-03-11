@@ -22,6 +22,7 @@ using ::affiliations::FacetURI;
 using ::affiliations::MockAffiliationSourceObserver;
 using ::testing::AssertionFailure;
 using ::testing::AssertionSuccess;
+using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 constexpr char kTestRpIdFacetURIAlpha1[] = "one.alpha.example.com";
@@ -69,6 +70,8 @@ class PasskeyAffiliationSourceAdapterTest : public testing::Test {
     return mock_source_observer_.get();
   }
 
+  PasskeyAffiliationSourceAdapter* adapter() { return adapter_.get(); }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
@@ -106,6 +109,42 @@ TEST_F(PasskeyAffiliationSourceAdapterTest, TestInvalidFacetsIgnored) {
 
   EXPECT_TRUE(ExpectAdapterToReturnFacets(
       {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)}));
+}
+
+// Verifies that the observer is signaled that new domains have been added after
+// the adapter started observing the passkey model. It also tests that changes
+// are no-op before StartObserving.
+TEST_F(PasskeyAffiliationSourceAdapterTest, TestNewPasskeyDownloaded) {
+  EXPECT_CALL(*mock_source_observer(), OnFacetsAdded).Times(0);
+  test_passkey_model()->AddNewPasskeyForTesting(
+      GetTestPasskey(kTestRpIdFacetURIAlpha1));
+  RunUntilIdle();
+
+  adapter()->StartObserving();
+
+  EXPECT_CALL(*mock_source_observer(),
+              OnFacetsAdded(ElementsAre(
+                  FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2))));
+  test_passkey_model()->AddNewPasskeyForTesting(
+      GetTestPasskey(kTestRpIdFacetURIAlpha2));
+  RunUntilIdle();
+}
+
+// Verifies that the observer is signaled that domains have been removed
+// after the adapter started observing the passkey model.
+TEST_F(PasskeyAffiliationSourceAdapterTest, TestPasskeyDeleted) {
+  sync_pb::WebauthnCredentialSpecifics passkey =
+      GetTestPasskey(kTestRpIdFacetURIAlpha1);
+  test_passkey_model()->AddNewPasskeyForTesting(passkey);
+  RunUntilIdle();
+
+  adapter()->StartObserving();
+
+  EXPECT_CALL(*mock_source_observer(),
+              OnFacetsRemoved(ElementsAre(
+                  FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1))));
+  test_passkey_model()->DeletePasskey(passkey.credential_id());
+  RunUntilIdle();
 }
 
 }  // namespace password_manager

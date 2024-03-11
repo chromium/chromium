@@ -10,7 +10,6 @@
 
 #include "base/strings/strcat.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/webauthn/core/browser/passkey_model.h"
 
 namespace password_manager {
 namespace {
@@ -55,7 +54,35 @@ void PasskeyAffiliationSourceAdapter::GetFacets(
 }
 
 void PasskeyAffiliationSourceAdapter::StartObserving() {
-  // TODO(b/328037758): Observe passkey changes.
+  passkey_model_observation_.Observe(passkey_model_);
+}
+
+void PasskeyAffiliationSourceAdapter::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
+  std::vector<FacetURI> facets_added;
+  std::vector<FacetURI> facets_removed;
+
+  for (const webauthn::PasskeyModelChange& change : changes) {
+    if (std::optional<FacetURI> facet = FacetURIFromPasskey(change.passkey())) {
+      if (change.type() == webauthn::PasskeyModelChange::ChangeType::ADD) {
+        facets_added.push_back(std::move(*facet));
+      } else if (change.type() ==
+                 webauthn::PasskeyModelChange::ChangeType::REMOVE) {
+        facets_removed.push_back(std::move(*facet));
+      }
+    }
+  }
+
+  if (!facets_added.empty()) {
+    observer_->OnFacetsAdded(std::move(facets_added));
+  }
+  if (!facets_removed.empty()) {
+    observer_->OnFacetsRemoved(std::move(facets_removed));
+  }
+}
+
+void PasskeyAffiliationSourceAdapter::OnPasskeyModelShuttingDown() {
+  passkey_model_observation_.Reset();
 }
 
 }  // namespace password_manager

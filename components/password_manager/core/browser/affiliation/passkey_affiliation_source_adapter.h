@@ -7,18 +7,18 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/affiliations/core/browser/affiliation_source.h"
-
-namespace webauthn {
-class PasskeyModel;
-}
+#include "components/webauthn/core/browser/passkey_model.h"
 
 namespace password_manager {
 
 // This class represents a source for passkey-related data requiring
 // affiliation updates. It utilizes PasskeyModel's information and monitors
 // changes to notify observers.
-class PasskeyAffiliationSourceAdapter : public affiliations::AffiliationSource {
+class PasskeyAffiliationSourceAdapter
+    : public affiliations::AffiliationSource,
+      public webauthn::PasskeyModel::Observer {
  public:
   PasskeyAffiliationSourceAdapter(webauthn::PasskeyModel* passkey_model,
                                   AffiliationSource::Observer* observer);
@@ -29,8 +29,18 @@ class PasskeyAffiliationSourceAdapter : public affiliations::AffiliationSource {
   void StartObserving() override;
 
  private:
+  // webauthn::PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
+
   const raw_ptr<webauthn::PasskeyModel> passkey_model_;
   const raw_ref<AffiliationSource::Observer> observer_;
+
+  // Observer to `passkey_model_`.
+  base::ScopedObservation<webauthn::PasskeyModel,
+                          webauthn::PasskeyModel::Observer>
+      passkey_model_observation_{this};
 };
 
 }  // namespace password_manager
