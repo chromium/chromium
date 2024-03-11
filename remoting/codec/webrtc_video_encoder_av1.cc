@@ -64,7 +64,19 @@ void WebrtcVideoEncoderAV1::SetEncoderSpeed(int encoder_speed) {
   // realtime encoding with AV1.  This allows for client-driven experimentation,
   // however in practice, a value of 10 or 11 should be chosen as they will give
   // the best performance.
-  av1_encoder_speed_ = std::clamp<int>(encoder_speed, 7, 11);
+  int clamped_speed = std::clamp<int>(encoder_speed, 7, 11);
+  if (av1_encoder_speed_ != clamped_speed) {
+    VLOG(0) << "Setting AV1 encoder speed to " << clamped_speed;
+    av1_encoder_speed_ = clamped_speed;
+    codec_.reset();
+  }
+}
+
+void WebrtcVideoEncoderAV1::SetUseActiveMap(bool use_active_map) {
+  if (use_active_map != use_active_map_) {
+    use_active_map_ = use_active_map;
+    codec_.reset();
+  }
 }
 
 bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {

@@ -111,36 +111,49 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
       encoder_ = WebrtcVideoEncoderVpx::CreateForVP8();
       break;
     case webrtc::kVideoCodecVP9: {
-      std::optional<webrtc::VP9Profile> profile =
+      std::optional<webrtc::VP9Profile> sdp_profile =
           webrtc::ParseSdpForVP9Profile(format.parameters);
-      bool lossless_color = profile.has_value() &&
-                            profile.value() == webrtc::VP9Profile::kProfile1;
-      VLOG(0) << "Creating VP9 encoder, lossless_color="
-              << (lossless_color ? "true" : "false");
+      auto profile = sdp_profile.value_or(webrtc::VP9Profile::kProfile0);
+      std::optional<int> speed = session_options.GetInt("Vp9-Encoder-Speed");
+
+      VLOG(0) << "Creating VP9 encoder - Profile: "
+              << webrtc::VP9ProfileToString(profile) << ", Speed: "
+              << (speed.has_value() ? base::NumberToString(*speed) : "default");
+
       encoder_ = WebrtcVideoEncoderVpx::CreateForVP9();
-      encoder_->SetLosslessColor(lossless_color);
-      std::optional<int> encoder_speed =
-          session_options.GetInt("Vp9-Encoder-Speed");
-      if (encoder_speed) {
-        VLOG(0) << "Setting VP9 encoder speed to " << encoder_speed.value();
-        encoder_->SetEncoderSpeed(encoder_speed.value());
+      // We use the Profile value in the SDP to indicate whether I444 color
+      // (aka lossless) should be used as profile 0 only supports I420.
+      encoder_->SetLosslessColor(profile == webrtc::VP9Profile::kProfile1);
+      if (speed.has_value()) {
+        encoder_->SetEncoderSpeed(*speed);
       }
       break;
     }
     case webrtc::kVideoCodecAV1: {
-      std::optional<webrtc::AV1Profile> profile =
+      std::optional<webrtc::AV1Profile> sdp_profile =
           webrtc::ParseSdpForAV1Profile(format.parameters);
-      bool lossless_color = profile.has_value() &&
-                            profile.value() == webrtc::AV1Profile::kProfile1;
-      VLOG(0) << "Creating AV1 encoder, lossless_color="
-              << (lossless_color ? "true" : "false");
+      auto profile = sdp_profile.value_or(webrtc::AV1Profile::kProfile0);
+      std::optional<bool> active_map =
+          session_options.GetBool("Av1-Active-Map");
+      std::optional<int> speed = session_options.GetInt("Av1-Encoder-Speed");
+
+      VLOG(0) << "Creating AV1 encoder - Profile: "
+              << webrtc::AV1ProfileToString(profile) << ", Speed: "
+              << (speed.has_value() ? base::NumberToString(*speed) : "default")
+              << ", ActiveMap: "
+              << (active_map.has_value() ? base::NumberToString(*active_map)
+                                         : "default");
+
       encoder_ = std::make_unique<WebrtcVideoEncoderAV1>();
-      encoder_->SetLosslessColor(lossless_color);
-      std::optional<int> encoder_speed =
-          session_options.GetInt("Av1-Encoder-Speed");
-      if (encoder_speed) {
-        VLOG(0) << "Setting AV1 encoder speed to " << encoder_speed.value();
-        encoder_->SetEncoderSpeed(encoder_speed.value());
+
+      // We use the Profile value in the SDP to indicate whether I444 color
+      // (aka lossless) should be used as profile 0 only supports I420.
+      encoder_->SetLosslessColor(profile == webrtc::AV1Profile::kProfile1);
+      if (speed.has_value()) {
+        encoder_->SetEncoderSpeed(*speed);
+      }
+      if (active_map.has_value()) {
+        encoder_->SetUseActiveMap(*active_map);
       }
       break;
     }

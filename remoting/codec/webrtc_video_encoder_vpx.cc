@@ -205,8 +205,13 @@ void WebrtcVideoEncoderVpx::SetEncoderSpeed(int encoder_speed) {
     return;
   }
 
-  vp9_encoder_speed_ = std::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
-                                       kVp9MaxEncoderSpeed);
+  int clamped_speed = std::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
+                                      kVp9MaxEncoderSpeed);
+  if (vp9_encoder_speed_ != clamped_speed) {
+    VLOG(0) << "Setting VP9 encoder speed to " << clamped_speed;
+    vp9_encoder_speed_ = clamped_speed;
+    codec_.reset();
+  }
 }
 
 void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
