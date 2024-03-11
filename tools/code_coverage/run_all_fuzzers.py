@@ -125,7 +125,7 @@ def _run_fuzzer_target(args):
         temp_profdata = os.path.join(
           profraw_dir, target + "_accumlated.profraw")
         if os.path.exists(target_profdata):
-          os.path.rename(target_profdata, temp_profdata)
+          os.rename(target_profdata, temp_profdata)
           prof_files_to_merge.append(temp_profdata)
         try:
           llvm_profdata_cmd = [
