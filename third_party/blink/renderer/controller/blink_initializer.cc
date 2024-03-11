@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
@@ -332,16 +331,6 @@ void BlinkInitializer::OnClearWindowObjectInMainWorld(
     devtools_frontend->DidClearWindowObject();
   }
   ModulesInitializer::OnClearWindowObjectInMainWorld(document, settings);
-}
-
-// Function defined in third_party/blink/public/web/blink.h.
-void OnProcessForegrounded() {
-  WTF::Partitions::AdjustPartitionsForForeground();
-}
-
-// Function defined in third_party/blink/public/web/blink.h.
-void OnProcessBackgrounded() {
-  WTF::Partitions::AdjustPartitionsForBackground();
 }
 
 }  // namespace blink

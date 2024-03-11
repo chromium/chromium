@@ -179,7 +179,6 @@ buildflag_header("partition_alloc_buildflags") {
     "HAS_MEMORY_TAGGING=$has_memory_tagging",
 
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
-    "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
     "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
 
