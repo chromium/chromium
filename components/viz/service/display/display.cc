@@ -76,6 +76,12 @@ namespace viz {
 
 namespace {
 
+// Try turning off aggregate only damaged everywhere to verify it doesn't cause
+// performance problems.
+BASE_FEATURE(kUseAggregateOnlyDamaged,
+             "UseAggregateOnlyDamaged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const DrawQuad::Material kNonSplittableMaterials[] = {
     // Exclude debug quads from quad splitting
     DrawQuad::Material::kDebugBorder,
@@ -584,6 +590,7 @@ void Display::InitializeRenderer(bool enable_shared_images) {
   // Outputting a partial list of quads might not work in cases where contents
   // outside the damage rect might be needed by the renderer.
   bool output_partial_list =
+      base::FeatureList::IsEnabled(kUseAggregateOnlyDamaged) &&
       renderer_->use_partial_swap() &&
       output_surface_->capabilities().only_invalidates_damage_rect &&
       !overlay_processor_->IsOverlaySupported();
