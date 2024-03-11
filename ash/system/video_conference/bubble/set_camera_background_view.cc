@@ -34,49 +34,35 @@ using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
 
 // Decides the margin for the `SetCameraBackgroundView`.
 constexpr gfx::Insets kSetCameraBackgroundViewInsideBorderInsets =
-    gfx::Insets::TLBR(16, 4, 0, 4);
+    gfx::Insets::TLBR(10, 0, 0, 0);
 
 // This extra border is added to `CreateImageButton` to make it consistent with
 // other buttons in the video conference bubble.
 constexpr gfx::Insets kCreateImageButtonBorderInsets = gfx::Insets::VH(8, 0);
 
-constexpr int kCreateImageButtonBetweenChildSpacing = 16;
-constexpr int kSetCameraBackgroundViewBetweenChildSpacing = 8;
+constexpr int kCreateImageButtonBetweenChildSpacing = 12;
+constexpr int kSetCameraBackgroundViewBetweenChildSpacing = 10;
 constexpr int kSetCameraBackgroundViewRadius = 16;
 constexpr int kButtonHeight = 20;
 
-constexpr int kMaxRecentBackgroundToDislay = 5;
-constexpr int kRecentlyUsedImagesFullLength = 328;
+constexpr int kMaxRecentBackgroundToDislay = 4;
+constexpr int kRecentlyUsedImagesFullLength = 336;
 constexpr int kRecentlyUsedImagesHeight = 64;
-constexpr int kRecentlyUsedImagesSpacing = 8;
+constexpr int kRecentlyUsedImagesSpacing = 10;
 
 // Helper for getting the width of each recently used images.
-int GetRecentlyUsedImageWidth(const int index, const int image_count) {
+int GetRecentlyUsedImageWidth(const int index, int image_count) {
   CHECK_LT(index, image_count);
 
-  // The first image should be handled separately.
-  if (index == 0) {
-    // The first image takes full length if it is the only image. Otherwise, it
-    // takes exactly half of the length.
-    return image_count == 1
-               ? kRecentlyUsedImagesFullLength
-               : (kRecentlyUsedImagesFullLength - kRecentlyUsedImagesSpacing) /
-                     2;
+  // If there is only 1 image, we only want that image to take half of the whole
+  // area, not the full area.
+  if (image_count == 1) {
+    return (kRecentlyUsedImagesFullLength - kRecentlyUsedImagesSpacing) / 2;
   }
 
-  // The rest of the image should share the rest of the space evenly.
-  // The length left for the rest of the images besides the first one.
-  const int length_after_the_first =
-      (kRecentlyUsedImagesFullLength - kRecentlyUsedImagesSpacing) / 2;
-  // The rest `image_count` - 1 images should have `image_count` -2 gaps between
-  // them.
-  const int spacing_for_the_rest_images =
-      (image_count - 2) * kRecentlyUsedImagesSpacing;
-  const int length_per_image =
-      (length_after_the_first - spacing_for_the_rest_images) /
-      (image_count - 1);
+  const int spacing = (image_count - 1) * kRecentlyUsedImagesSpacing;
 
-  return length_per_image;
+  return (kRecentlyUsedImagesFullLength - spacing) / image_count;
 }
 
 CameraEffectsController* GetCameraEffectsController() {
