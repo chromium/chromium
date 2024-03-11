@@ -123,9 +123,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
             static_cast<int>(
                 optimization_guide::prefs::FeatureOptInState::kEnabled));
       }),
-      // 6. Ensure the wallpaper search button is visible.
-      WaitForElementVisible(kNewTabPageElementId,
-                            kWallpaperSearchButtonContainer));
+      // 6. Ensure the wallpaper search button is still hidden.
+      WaitForStateChange(kNewTabPageElementId, wallpaper_search_button_hidden));
 }
 
 class WallpaperSearchOptimizationGuideInteractiveTest
