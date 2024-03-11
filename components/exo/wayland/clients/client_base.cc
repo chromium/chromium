@@ -168,7 +168,7 @@ std::unique_ptr<ScopedVkInstance> CreateVkInstance() {
       .applicationVersion = 0,
       .pEngineName = nullptr,
       .engineVersion = 0,
-      .apiVersion = VK_MAKE_VERSION(1, 0, 0),
+      .apiVersion = VK_MAKE_VERSION(1, 1, 0),
   };
   VkInstanceCreateInfo create_info{
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -211,11 +211,20 @@ std::unique_ptr<ScopedVkDevice> CreateVkDevice(VkInstance vk_instance,
       .queueCount = 1,
       .pQueuePriorities = &priority,
   };
+  const char* required_extensions[] = {
+      "VK_KHR_external_memory_fd",
+  };
+  const char* validation_layers[] = {"VK_LAYER_KHRONOS_validation"};
   VkDeviceCreateInfo device_create_info{
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
       .queueCreateInfoCount = 1,
       .pQueueCreateInfos = &device_queue_create_info,
+      .enabledLayerCount = 1,
+      .ppEnabledLayerNames = validation_layers,
+      .enabledExtensionCount = 1,
+      .ppEnabledExtensionNames = required_extensions,
   };
+
   std::unique_ptr<ScopedVkDevice> vk_device(new ScopedVkDevice());
   result = vkCreateDevice(physical_device, &device_create_info, nullptr,
                           ScopedVkDevice::Receiver(*vk_device).get());
@@ -946,6 +955,106 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
   return buffer;
 }
 
+VkResult BindImageBo(VkDevice dev,
+                     VkImage image,
+                     struct gbm_bo* bo,
+                     VkDeviceMemory* mems) {
+  VkResult result = VK_ERROR_UNKNOWN;
+  PFN_vkGetMemoryFdPropertiesKHR bs_vkGetMemoryFdPropertiesKHR =
+      reinterpret_cast<PFN_vkGetMemoryFdPropertiesKHR>(
+          vkGetDeviceProcAddr(dev, "vkGetMemoryFdPropertiesKHR"));
+  if (bs_vkGetMemoryFdPropertiesKHR == NULL) {
+    LOG(ERROR) << "vkGetDeviceProcAddr(\"vkGetMemoryFdPropertiesKHR\") failed";
+    return result;
+  }
+
+  int prime_fd = gbm_bo_get_fd(bo);
+  if (prime_fd < 0) {
+    LOG(ERROR) << "failed to get prime fd for gbm_bo";
+    return result;
+  }
+
+  VkMemoryFdPropertiesKHR fd_props = {
+      .sType = VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR,
+  };
+  bs_vkGetMemoryFdPropertiesKHR(
+      dev, VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT, prime_fd, &fd_props);
+
+  VkMemoryRequirements mem_reqs = {};
+  vkGetImageMemoryRequirements(dev, image, &mem_reqs);
+
+  const uint32_t memory_type_bits =
+      fd_props.memoryTypeBits & mem_reqs.memoryTypeBits;
+  if (!memory_type_bits) {
+    LOG(ERROR) << "no valid memory type";
+    close(prime_fd);
+    return result;
+  }
+
+  const VkMemoryDedicatedAllocateInfo memory_dedicated_info = {
+      .sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO,
+      .image = image,
+  };
+  const VkImportMemoryFdInfoKHR memory_fd_info = {
+      .sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
+      .pNext = &memory_dedicated_info,
+      .handleType = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+      .fd = prime_fd,
+  };
+  VkMemoryAllocateInfo memInfo{
+      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+      .pNext = &memory_fd_info,
+      .allocationSize = mem_reqs.size,
+
+      // Simply choose the first available memory type.  We
+      // need neither performance nor mmap, so all memory
+      // types are equally good.
+      .memoryTypeIndex = static_cast<uint32_t>(ffs(memory_type_bits)) - 1,
+  };
+
+  result = vkAllocateMemory(dev, &memInfo,
+                            /*pAllocator*/ NULL, mems);
+  if (result != VK_SUCCESS) {
+    LOG(ERROR) << "memory not allocated properly";
+    return result;
+  }
+
+  result = vkBindImageMemory(dev, image, mems[0], 0);
+  if (result != VK_SUCCESS) {
+    LOG(ERROR) << "failed to bind memory";
+    return result;
+  }
+
+  return result;
+}
+
+VkResult CreateVkImage(VkDevice dev,
+                       struct gbm_bo* bo,
+                       VkFormat format,
+                       VkImage* image) {
+  // TODO(crbug.com/1002071): Pass the stride of the imported buffer to
+  // vkCreateImage once the extension is supported on Intel.
+  VkExternalMemoryImageCreateInfo memImInfo{
+      .sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO,
+      .handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
+  };
+  VkImageCreateInfo memInfo{
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .pNext = &memImInfo,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .format = format,
+      .extent = (VkExtent3D){gbm_bo_get_width(bo), gbm_bo_get_height(bo), 1},
+      .mipLevels = 1,
+      .arrayLayers = 1,
+      .samples = static_cast<VkSampleCountFlagBits>(1),
+      .tiling = VK_IMAGE_TILING_LINEAR,
+      .usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+  };
+  return vkCreateImage(dev, &memInfo,
+                       /*pAllocator*/ NULL, image);
+}
+
 std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     const gfx::Size& size,
     int32_t drm_format,
@@ -1042,59 +1151,33 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     DCHECK(buffer->sk_surface);
 
 #if defined(USE_VULKAN)
-    if (!vk_implementation_)
+    if (!vk_implementation_) {
       return buffer;
-    // TODO(dcastagna): remove this hack as soon as the extension
-    // "VK_EXT_external_memory_dma_buf" is available.
-#define VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL 1024
-    typedef struct VkDmaBufImageCreateInfo_ {
-      VkStructureType
-          sType;  // Must be VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL
-      raw_ptr<const void> pNext;  // Pointer to next structure.
-      int fd;
-      VkFormat format;
-      VkExtent3D extent;  // Depth must be 1
-      uint32_t strideInBytes;
-    } VkDmaBufImageCreateInfo;
-    typedef VkResult(VKAPI_PTR * PFN_vkCreateDmaBufImageINTEL)(
-        VkDevice device, const VkDmaBufImageCreateInfo* pCreateInfo,
-        const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMem,
-        VkImage* pImage);
-
-    PFN_vkCreateDmaBufImageINTEL create_dma_buf_image_intel =
-        reinterpret_cast<PFN_vkCreateDmaBufImageINTEL>(
-            vkGetDeviceProcAddr(vk_device_->get(), "vkCreateDmaBufImageINTEL"));
-    if (!create_dma_buf_image_intel) {
-      LOG(ERROR) << "Vulkan wayland clients work only where "
-                    "vkCreateDmaBufImageINTEL is available.";
-      return nullptr;
     }
+
     base::ScopedFD vk_image_fd(gbm_bo_get_plane_fd(buffer->bo.get(), 0));
     CHECK(vk_image_fd.is_valid());
-
-    VkDmaBufImageCreateInfo dma_buf_image_create_info{
-        .sType = static_cast<VkStructureType>(
-            VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL),
-        .fd = vk_image_fd.release(),
-        .format = VK_FORMAT_A8B8G8R8_UNORM_PACK32,
-        .extent = (VkExtent3D){static_cast<uint32_t>(size.width()),
-                               static_cast<uint32_t>(size.height()), 1},
-        .strideInBytes = gbm_bo_get_stride(buffer->bo.get()),
-    };
 
     buffer->vk_memory.reset(
         new ScopedVkDeviceMemory(VK_NULL_HANDLE, {vk_device_->get()}));
     buffer->vk_image.reset(
         new ScopedVkImage(VK_NULL_HANDLE, {vk_device_->get()}));
-    VkResult result = create_dma_buf_image_intel(
-        vk_device_->get(), &dma_buf_image_create_info, nullptr,
-        ScopedVkDeviceMemory::Receiver(*buffer->vk_memory).get(),
+    VkResult result = CreateVkImage(
+        vk_device_->get(), buffer->bo.get(), VK_FORMAT_A8B8G8R8_UNORM_PACK32,
         ScopedVkImage::Receiver(*buffer->vk_image).get());
-
     if (result != VK_SUCCESS) {
-      LOG(ERROR) << "Failed to create a Vulkan image from a dmabuf.";
+      LOG(ERROR) << "Failed to create a Vulkan image.";
       return buffer;
     }
+
+    result = BindImageBo(
+        vk_device_->get(), buffer->vk_image->get(), buffer->bo.get(),
+        ScopedVkDeviceMemory::Receiver(*buffer->vk_memory).get());
+    if (result != VK_SUCCESS) {
+      LOG(ERROR) << "Failed to bind a dmabuf to the Vulkan image.";
+      return buffer;
+    }
+
     VkImageViewCreateInfo vk_image_view_create_info{
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
         .image = buffer->vk_image->get(),
