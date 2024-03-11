@@ -56,7 +56,7 @@ class MockSearchEngineChoiceDialogService
       std::vector<std::unique_ptr<TemplateURL>> choices;
       auto choice = TemplateURLData();
 
-      for (int i = 0; i < 12; i++) {
+      for (int i = 0; i < 8; i++) {
         const std::u16string kShortName = u"Test" + base::NumberToString16(i);
         // Start from 1 because a `prepopulate_id` of 0 is for custom search
         // engines.
