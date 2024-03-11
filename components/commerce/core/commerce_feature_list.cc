@@ -266,6 +266,12 @@ BASE_FEATURE(kTrackByDefaultOnMobile,
              "TrackByDefaultOnMobile",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kPriceInsightsIos,
+             "PriceInsightsIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kShoppingPageTypes,
              "ShoppingPageTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);

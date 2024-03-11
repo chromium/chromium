@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -99,6 +100,10 @@ BASE_DECLARE_FEATURE(kShoppingPageTypesRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 BASE_DECLARE_FEATURE(kTrackByDefaultOnMobile);
+
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kPriceInsightsIos);
+#endif
 
 // Feature flag for Discounts on navigation.
 enum class DiscountDialogAutoPopupBehavior {

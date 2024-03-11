@@ -46,6 +46,13 @@ const char kParcelTrackingTestDataDescription[] =
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
 
+#if BUILDFLAG(IS_IOS)
+extern const char kPriceInsightsIosName[] = "Price Insights";
+extern const char kPriceInsightsIosDescription[] =
+    "When enabled, the user will be able to get price insights on product "
+    "pages.";
+#endif
+
 const char kShoppingPageTypesName[] = "Shopping Page Types";
 const char kShoppingPageTypesDescription[] =
     "Enable shopping page types experiment.";
