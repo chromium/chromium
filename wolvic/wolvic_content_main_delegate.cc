@@ -24,7 +24,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
-#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/network_hints/browser/simple_network_hints_handler_impl.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -58,6 +57,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "wolvic/browser/metrics/wolvic_enabled_state_provider.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
 #include "wolvic/wolvic_content_client.h"
@@ -343,8 +343,7 @@ std::unique_ptr<PrefService> WolvicContentMainDelegate::CreateLocalState() {
 }
 
 void WolvicContentMainDelegate::SetUpFieldTrials() {
-  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
-                                                           /*enabled=*/false);
+  wolvic::WolvicEnabledStateProvider enabled_state_provider;
   base::FilePath path;
   base::PathService::Get(SHELL_DIR_USER_DATA, &path);
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =

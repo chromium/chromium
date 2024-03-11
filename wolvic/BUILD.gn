@@ -15,7 +15,6 @@ group("empty_group") {
 }
 
 shared_library("libcontent_native") {
-  testonly = true
   sources = [
     "../content/shell/browser/shell.cc",
     "../content/shell/browser/shell.h",
@@ -33,6 +32,8 @@ shared_library("libcontent_native") {
     "browser/downloads/wolvic_download_manager_delegate.h",
     "browser/media/wolvic_media_drm_bridge_client.cc",
     "browser/media/wolvic_media_drm_bridge_client.h",
+    "browser/metrics/wolvic_enabled_state_provider.cc",
+    "browser/metrics/wolvic_enabled_state_provider.h",
     "browser/dialogs/color_chooser_manager.cc",
     "browser/dialogs/color_chooser_manager.h",
     "browser/dialogs/file_select_manager.cc",
@@ -108,7 +109,6 @@ shared_library("libcontent_native") {
 }
 
 static_library("content_native_lib") {
-  testonly = true
   configs += [ "//build/config:precompiled_headers" ]
 
   # This is to support our dependency on //content/browser.
@@ -138,13 +138,11 @@ static_library("content_native_lib") {
     "//components/cdm/browser",
     "//components/cdm/renderer",
     "//components/custom_handlers",
-    "//components/custom_handlers:test_support",
     "//components/embedder_support:browser_util",
     "//components/embedder_support/android:web_contents_delegate",
     "//components/keyed_service/content",
     "//components/metrics",
     "//components/metrics:net",
-    "//components/metrics:test_support",
     "//components/network_hints/browser:browser",
     "//components/network_hints/renderer",
     "//components/network_session_configurator/common",
@@ -153,7 +151,6 @@ static_library("content_native_lib") {
     "//components/performance_manager",
     "//components/permissions",
     "//components/prefs",
-    "//components/services/storage/test_api",
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",
@@ -165,14 +162,12 @@ static_library("content_native_lib") {
     "//content/common:main_frame_counter",
     "//content/public/common",
     "//content/test:content_test_mojo_bindings",
-    "//content/test:test_support",
     "//device/bluetooth",
     "//media",
     "//media/mojo:buildflags",
     "//net",
     "//net:net_resources",
     "//ppapi/buildflags",
-    "//services/device/public/cpp:test_support",
     "//services/network/public/cpp",
     "//services/test/echo:lib",
     "//services/test/echo/public/mojom",
@@ -204,7 +199,6 @@ static_library("content_native_lib") {
     deps += [
       "//components/embedder_support/android:view",
       "//content/shell/android:content_shell_jni_headers",
-      "//mojo/public/java/system:test_support",
       "//ui/android",
     ]
   }
@@ -269,7 +263,6 @@ android_library("wolvic_java") {
 }
 
 dist_aar("content_aar") {
-  testonly = true
   deps = [
     ":content_manifest",
     ":libcontent_native",
@@ -277,15 +270,11 @@ dist_aar("content_aar") {
     "//base",
     "//base:base_java",
     "//base:jni_java",
-    "//base/test:test_trace_processor",
     "//components/browser_ui/media/android:java",
     "//components/embedder_support/android:view_java",
     "//components/metrics:metrics_java",
     "//components/viz/service:service_java",
     "//content/public/android:content_full_java",
-    "//content/shell/android:content_shell_apk_java",
-    "//content/shell/android:content_shell_assets",
-    "//content/shell/android:content_shell_java",
     "//device/vr:vr",
     "//device/vr/android:vr_android",
     "//media/base/android:media_java",
@@ -295,7 +284,6 @@ dist_aar("content_aar") {
   ]
   native_libraries = [
     "$root_build_dir/libcontent_native.so",
-    "$root_build_dir/libtest_trace_processor.so",
 
     # TODO: Replace with shared library
     # "$root_build_dir/obj/device/vr/libdevice_vr.a",
@@ -362,27 +350,4 @@ dist_aar("ui_aar") {
 
   android_manifest = "UiAndroidManifest.xml"
   output = "$root_build_dir/ChromiumUi.aar"
-}
-
-dist_aar("content_shell_aar") {
-  testonly = true
-  deps = [
-    "//content/shell/android:content_shell_apk_java",
-    "//content/shell/android:content_shell_assets",
-    "//content/shell/android:content_shell_java",
-    "//content/shell/android:content_shell_java_resources",
-  ]
-  native_libraries = []
-  jar_included_patterns = [ "org/chromium/content_shell/*.class" ]
-  resource_included_patterns = [ "*content/shell/android*" ]
-  jar_excluded_patterns = [
-    "android/*.class",
-    "androidx/*.class",
-    "kotlin/*.class",
-    "org/intellij/*.class",
-    "org/jetbrains/*.class",
-  ]
-
-  android_manifest = "ContentShellAndroidManifest.xml"
-  output = "$root_build_dir/ContentShell.aar"
 }
