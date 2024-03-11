@@ -240,7 +240,7 @@ RandomizedResponseData& RandomizedResponseData::operator=(
 bool GenerateWithRate(double r) {
   DCHECK_GE(r, 0);
   DCHECK_LE(r, 1);
-  return base::RandDouble() < r;
+  return r > 0 && (r == 1 || base::RandDouble() < r);
 }
 
 double GetRandomizedResponseRate(absl::uint128 num_states, double epsilon) {
