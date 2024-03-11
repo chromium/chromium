@@ -144,7 +144,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
           gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
           gfx::GpuMemoryBuffer* gpu_memory_buffer,
           gfx::ColorSpace color_space,
-          unsigned texture_target,
           unsigned query_type,
           base::TimeDelta wait_for_release_time,
           bool is_overlay_candidate,
@@ -200,7 +199,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
   const raw_ptr<gfx::GpuMemoryBuffer, DanglingUntriaged> gpu_memory_buffer_;
   const gfx::Size size_;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-  const unsigned texture_target_;
   const unsigned query_type_;
   unsigned query_id_ = 0;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
@@ -219,7 +217,6 @@ Buffer::Texture::Texture(
     : gpu_memory_buffer_(nullptr),
       size_(size),
       context_provider_(std::move(context_provider)),
-      texture_target_(GL_TEXTURE_2D),
       query_type_(GL_COMMANDS_COMPLETED_CHROMIUM) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
@@ -250,7 +247,6 @@ Buffer::Texture::Texture(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gfx::ColorSpace color_space,
-    unsigned texture_target,
     unsigned query_type,
     base::TimeDelta wait_for_release_delay,
     bool is_overlay_candidate,
@@ -258,7 +254,6 @@ Buffer::Texture::Texture(
     : gpu_memory_buffer_(gpu_memory_buffer),
       size_(gpu_memory_buffer->GetSize()),
       context_provider_(std::move(context_provider)),
-      texture_target_(texture_target),
       query_type_(query_type),
       wait_for_release_delay_(wait_for_release_delay) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
@@ -398,10 +393,14 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
     DCHECK_NE(query_id_, 0u);
     ri->BeginQueryEXT(query_type_, query_id_);
+
+    // This function is used only to copy a Texture backed by a GMB to a Texture
+    // that is not backed by a GMB and has RGBA_8888 format. The texture target
+    // to use for RGBA_8888 on ChromeOS is always GL_TEXTURE_2D.
     ri->CopySharedImage(shared_image_->mailbox(),
-                        destination->shared_image_->mailbox(),
-                        destination->texture_target_, 0, 0, 0, 0, size_.width(),
-                        size_.height(), /*unpack_flip_y=*/false,
+                        destination->shared_image_->mailbox(), GL_TEXTURE_2D, 0,
+                        0, 0, 0, size_.width(), size_.height(),
+                        /*unpack_flip_y=*/false,
                         /*unpack_premultiply_alpha=*/false);
     ri->EndQueryEXT(query_type_);
     // Run callback when query result is available.
@@ -640,7 +639,7 @@ bool Buffer::ProduceTransferableResource(
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
         context_provider, context_factory->GetGpuMemoryBufferManager(),
-        gpu_memory_buffer_.get(), color_space, texture_target_, query_type_,
+        gpu_memory_buffer_.get(), color_space, query_type_,
         wait_for_release_delay_, is_overlay_candidate_,
         resource->mailbox_holder.sync_token);
   }
