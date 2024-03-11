@@ -75,8 +75,7 @@ RepeatingTimeIntervalTaskExecutor::~RepeatingTimeIntervalTaskExecutor() =
 void RepeatingTimeIntervalTaskExecutor::Start() {
   base::Time current_time = clock_->Now();
 
-  if (TimeFallsInInterval(current_time, time_interval_) &&
-      GetDuration(current_time, time_interval_.end()) > kMinScheduleDuration) {
+  if (TimeFallsInInterval(current_time, time_interval_)) {
     IntervalStartsNow();
   } else {
     IntervalStartsLater();

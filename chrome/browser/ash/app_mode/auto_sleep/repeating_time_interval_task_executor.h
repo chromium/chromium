@@ -68,14 +68,6 @@ class RepeatingTimeIntervalTaskExecutor {
   // of the interval and `on_interval_end_callback_` at the end.
   void Start();
 
-  // The amount of time that has to be remaining for the executor to schedule
-  // the `timer_` to the end of the interval. If the
-  // duration to the end of the interval is smaller than this time, a timer will
-  // be scheduled to the start of the next interval.
-  // TODO(b/328073367): Update policy and validator to account for this
-  // duration.
-  static constexpr base::TimeDelta kMinScheduleDuration = base::Minutes(5);
-
  protected:
   // Clock to get the current system time.
   raw_ptr<const base::Clock> clock_;

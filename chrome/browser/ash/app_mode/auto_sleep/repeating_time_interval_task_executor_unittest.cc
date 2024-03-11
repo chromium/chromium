@@ -255,42 +255,6 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsEveryWeek) {
 }
 
 TEST_F(RepeatingTimeIntervalTaskExecutorTest,
-       TaskExecutorDoesNotRunWhenMinDurationRemaining) {
-  IntervalTestFutures future;
-
-  policy::WeeklyTimeInterval interval =
-      CreateWeeklyTimeInterval(DayOfWeek::FRIDAY,
-                               base::Hours(21),  // 9:00 PM
-                               DayOfWeek::SATURDAY,
-                               base::Hours(6)  // 6:00 AM
-      );
-  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
-      CreateTestTaskExecutor(
-          interval, future.interval_start.GetRepeatingCallback(),
-          future.interval_end.GetRepeatingCallback(), kTestTaskExecutorTag);
-
-  // Confirm that when you're near the end of an interval with less than
-  // `kMinScheduleDuration` time remaining, the executor would not run.
-  EXPECT_FALSE(future.interval_start.IsReady());
-  FastForwardTimeTo(interval.end(),
-                    -RepeatingTimeIntervalTaskExecutor::kMinScheduleDuration);
-  task_executor->Start();
-  // Run until idle to make sure that any native timer tasks are scheduled.
-  task_environment()->RunUntilIdle();
-
-  EXPECT_FALSE(future.interval_start.IsReady());
-
-  // Confirm that forwarding to the start of next week's interval will run the
-  // callbacks.
-  FastForwardTimeTo(interval.start());
-  EXPECT_TRUE(future.interval_start.WaitAndClear());
-
-  EXPECT_FALSE(future.interval_end.IsReady());
-  FastForwardTimeTo(interval.end());
-  EXPECT_TRUE(future.interval_end.WaitAndClear());
-}
-
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
        TwoTaskExecutorsWorkConcurrently) {
   IntervalTestFutures future;
   policy::WeeklyTimeInterval interval_1 =
