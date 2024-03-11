@@ -348,9 +348,16 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesMetrics) {
   WaitForTestSystemAppInstall();
 
+  const GURL expected_url("chrome://help-app/updates");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
   base::UserActionTester user_action_tester;
   chrome::LaunchReleaseNotes(profile(), apps::LaunchSource::kFromOtherApp);
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
+  // If no navigation happens, then this test will time out due to the wait.
+  navigation_observer.Wait();
+
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
 #else
