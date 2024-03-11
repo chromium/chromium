@@ -371,6 +371,14 @@
           'shards': 16,
         },
       },
+      'Mac13 Tests Siso FYI': {
+        'swarming': {
+          'dimensions': {
+            'gpu': None,
+          },
+          'shards': 12,
+        },
+      },
       'ToTFuchsia x64': {
         'args': [
           '--platform=fuchsia',
@@ -718,6 +726,14 @@
         ],
         'swarming': {
           'shards': 24,
+        },
+      },
+      'Mac13 Tests Siso FYI': {
+        'swarming': {
+          'dimensions': {
+            'gpu': None,
+          },
+          'shards': 18,
         },
       },
       'ToTFuchsia x64': {
@@ -1132,6 +1148,12 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
+      },
+      'Mac13 Tests Siso FYI': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 20,  # crbug.com/1361887
+        },
       },
       'ToTLinuxMSan': {
         'swarming': {
@@ -1909,6 +1931,15 @@
       'Mac13 Tests (dbg)': { # https://crbug.com/1279504
         'swarming': {
           'shards': 18,
+        },
+      },
+      'Mac13 Tests Siso FYI': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
+        'swarming': {
+          'shards': 12,
         },
       },
       'WebRTC Chromium FYI Android Tests (dbg)': {
@@ -3221,6 +3252,11 @@
           'shards':6,
         }
       },
+      'Mac13 Tests Siso FYI': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/1257927
         'swarming': {
@@ -4241,10 +4277,16 @@
           'shards': 4,
         },
       },
-      'Mac13 Tests (dbg)':{
+      'Mac13 Tests (dbg)': {
         'swarming': {
           'shards': 3,
         }
+      },
+      'Mac13 Tests Siso FYI': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 4,
+        },
       },
       'ToTLinuxTSan': {
         'swarming': {
@@ -4586,6 +4628,11 @@
         },
       },
       'Mac13 Tests (dbg)': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'Mac13 Tests Siso FYI': {
         'swarming': {
           'shards': 2,
         },
