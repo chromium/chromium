@@ -156,7 +156,6 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
       return;
     case CSSPropertyID::kColor:
       builder.SetColor(style_color);
-      builder.SetColorIsCurrentColor(style_color.IsCurrentColor());
       return;
     case CSSPropertyID::kFloodColor:
       builder.SetFloodColor(style_color);
@@ -217,8 +216,6 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       return;
     case CSSPropertyID::kColor:
       builder.SetInternalVisitedColor(style_color);
-      builder.SetInternalVisitedColorIsCurrentColor(
-          style_color.IsCurrentColor());
       return;
     case CSSPropertyID::kFloodColor:
       builder.SetFloodColor(style_color);

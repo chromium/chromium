@@ -256,9 +256,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValueList* ValueForBorderRadiusShorthand(const ComputedStyle&);
   static CSSValue* StrokeDashArrayToCSSValueList(const SVGDashArray&,
                                                  const ComputedStyle&);
-  static CSSValue* ValueForSVGPaint(const SVGPaint&,
-                                    const ComputedStyle&,
-                                    CSSValuePhase);
+  static CSSValue* ValueForSVGPaint(const SVGPaint&, const ComputedStyle&);
   static CSSValue* ValueForSVGResource(const StyleSVGResource*);
   static CSSValue* ValueForShadowData(const ShadowData&,
                                       const ComputedStyle&,
@@ -269,8 +267,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                       bool use_spread,
                                       CSSValuePhase);
   static CSSValue* ValueForFilter(const ComputedStyle&,
-                                  const FilterOperations&,
-                                  CSSValuePhase);
+                                  const FilterOperations&);
   static CSSValue* ValueForScrollSnapType(const cc::ScrollSnapType&,
                                           const ComputedStyle&);
   static CSSValue* ValueForScrollSnapAlign(const cc::ScrollSnapAlign&,

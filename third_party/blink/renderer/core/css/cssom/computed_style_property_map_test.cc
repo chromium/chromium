@@ -66,17 +66,4 @@ TEST_F(ComputedStylePropertyMapTest, TopWithAnchorComputed) {
   EXPECT_EQ("px", unit_value->unit());
 }
 
-TEST_F(ComputedStylePropertyMapTest, BackgroundImageGradientCurrentColor) {
-  ComputedStylePropertyMap* map = SetBodyStyle(
-      "background-image: linear-gradient(-45deg, rgb(255, 0, 0), "
-      "currentcolor)");
-  CSSStyleValue* style_value =
-      map->get(GetDocument().GetExecutionContext(), "background-image",
-               ASSERT_NO_EXCEPTION);
-  ASSERT_TRUE(style_value);
-  String computed_string = style_value->toString();
-  EXPECT_EQ("linear-gradient(-45deg, rgb(255, 0, 0), currentcolor)",
-            computed_string);
-}
-
 }  // namespace blink

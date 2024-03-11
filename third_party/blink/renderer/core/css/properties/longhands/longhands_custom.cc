@@ -633,8 +633,7 @@ const CSSValue* BackdropFilter::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForFilter(style, style.BackdropFilter(),
-                                            value_phase);
+  return ComputedStyleUtils::ValueForFilter(style, style.BackdropFilter());
 }
 
 void BackdropFilter::ApplyValue(StyleResolverState& state,
@@ -1885,15 +1884,9 @@ const CSSValue* Color::CSSValueFromComputedStyleInternal(
     return GetCSSPropertyInternalForcedColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
-  bool is_current_color = false;
-  blink::Color color =
-      allow_visited_style
-          ? style.VisitedDependentColor(*this, &is_current_color)
-          : style.GetCurrentColor(&is_current_color);
-  if (value_phase == CSSValuePhase::kComputedValue && is_current_color) {
-    return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
-  }
-  return cssvalue::CSSColor::Create(color);
+  return cssvalue::CSSColor::Create(allow_visited_style
+                                        ? style.VisitedDependentColor(*this)
+                                        : style.GetCurrentColor());
 }
 
 void Color::ApplyInitial(StyleResolverState& state) const {
@@ -3358,8 +3351,7 @@ const CSSValue* Fill::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForSVGPaint(style.FillPaint(), style,
-                                              value_phase);
+  return ComputedStyleUtils::ValueForSVGPaint(style.FillPaint(), style);
 }
 
 const blink::Color Fill::ColorIncludingFallback(bool visited_link,
@@ -3410,7 +3402,7 @@ const CSSValue* Filter::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForFilter(style, style.Filter(), value_phase);
+  return ComputedStyleUtils::ValueForFilter(style, style.Filter());
 }
 
 void Filter::ApplyValue(StyleResolverState& state,
@@ -8291,8 +8283,7 @@ const CSSValue* Stroke::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForSVGPaint(style.StrokePaint(), style,
-                                              value_phase);
+  return ComputedStyleUtils::ValueForSVGPaint(style.StrokePaint(), style);
 }
 
 const blink::Color Stroke::ColorIncludingFallback(
