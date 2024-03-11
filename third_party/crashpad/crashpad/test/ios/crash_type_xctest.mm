@@ -14,6 +14,7 @@
 
 #import <XCTest/XCTest.h>
 #include <objc/runtime.h>
+#include <sys/sysctl.h>
 
 #include <vector>
 
@@ -23,6 +24,34 @@
 #import "test/ios/host/cptest_shared_object.h"
 #include "util/mach/exception_types.h"
 #include "util/mach/mach_extensions.h"
+
+namespace {
+
+#if TARGET_OS_SIMULATOR
+// macOS 14.0 is 23A344, macOS 13.6.5 is 22G621, so if the first two characters
+// in the kern.osversion are > 22, this build will reproduce the simulator bug
+// in crbug.com/328282286
+bool IsMacOSVersion143OrGreaterAndiOS16OrLess() {
+  if (__builtin_available(iOS 17, *)) {
+    return false;
+  }
+
+  size_t buf_len;
+  static constexpr char name[] = "kern.osversion";
+  if (sysctlbyname(name, nullptr, &buf_len, nullptr, 0) != 0) {
+    return false;
+  }
+
+  std::string build(buf_len - 1, '\0');
+  if (sysctlbyname(name, &build[0], &buf_len, nullptr, 0) != 0) {
+    return false;
+  }
+
+  return std::stoi(build.substr(0, 2)) > 22;
+}
+#endif
+
+}  // namespace
 
 @interface CPTestTestCase : XCTestCase {
   XCUIApplication* app_;
@@ -317,6 +346,14 @@
 #endif
 
 - (void)testCrashWithAnnotations {
+#if TARGET_OS_SIMULATOR
+  // This test will fail on older (<iOS17 simulators) when running on macOS 14.3
+  // or newer due to a bug in Simulator. crbug.com/328282286
+  if (IsMacOSVersion143OrGreaterAndiOS16OrLess()) {
+    return;
+  }
+#endif
+
   [rootObject_ crashWithAnnotations];
   [self verifyCrashReportException:EXC_SOFT_SIGNAL];
   NSNumber* report_exception;
