@@ -4744,6 +4744,22 @@
             ]
         }
     ],
+    "CrOSLateBootEEVDF": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootEEVDF"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootHighResOffVariables": [
         {
             "platforms": [
