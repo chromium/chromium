@@ -35,6 +35,7 @@ class TickClock;
 
 namespace WTF {
 class String;
+class StringBuilder;
 }  // namespace WTF
 
 namespace blink {
@@ -351,7 +352,7 @@ class PLATFORM_EXPORT RuntimeCallStats {
   CounterMap counter_map_;
 
   Vector<RuntimeCallCounter*> CounterMapToSortedArray() const;
-  void AddCounterMapStatsToBuilder(StringBuilder&) const;
+  void AddCounterMapStatsToBuilder(WTF::StringBuilder&) const;
 #endif
 };
 
