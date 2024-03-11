@@ -264,6 +264,33 @@ __attribute__((visibility("default"))) bool InitializeConnectionFactory(
 // Returns whether there's a direct Mojo connection to an input method.
 __attribute__((visibility("default"))) bool IsInputMethodConnected();
 
+// ****************************************************************************
+// ***************************** USER DATA ************************************
+// ****************************************************************************
+
+// Contains serialised proto data with the size of the buffer.
+struct C_SerializedProto {
+  const uint8_t* const buffer;
+  const size_t size;
+};
+
+// If the proto is created in the shared library side, this function will clear
+// up the memory from the shared library side to prevent unintended issues due
+// to mismatch in memory management implementation.
+__attribute__((visibility("default"))) void DeleteSerializedProto(
+    C_SerializedProto proto);
+
+// Initialises the IME shared lib's UserData service functionality.
+// This needs to be called before any "UserData*" functions are called.
+__attribute__((visibility("default"))) void InitUserDataService(
+    ash::ime::ImeCrosPlatform* platform);
+
+// args: serialized UserDataRequest proto.
+// returns serialized UserDataResponse proto.
+// (see ./proto/user_data_service.proto)
+__attribute__((visibility("default"))) C_SerializedProto ProcessUserDataRequest(
+    C_SerializedProto args);
+
 }  // extern "C"
 
 #endif  // CHROMEOS_ASH_SERVICES_IME_PUBLIC_CPP_SHARED_LIB_INTERFACES_H_

@@ -1,0 +1,75 @@
+syntax = "proto2";
+
+package chromeos_input;
+
+message FetchJapaneseLegacyConfigRequest {}
+
+// Based on https://github.com/google/mozc/blob/master/src/protocol/config.proto
+enum InputMode {
+  INPUT_UNSPECIFIED = 0;
+  INPUT_ROMANJI = 1;
+  INPUT_KANA = 2;
+}
+
+enum PunctuationStyle {
+  PUNCTUATION_UNSPECIFIED = 0;
+  PUNCTUATION_KUTEN_TOUTEN = 1;
+  PUNCTUATION_COMMA_PERIOD = 2;
+  PUNCTUATION_KUTEN_PERIOD = 3;
+  PUNCTUATION_COMMA_TOUTEN = 4;
+}
+
+enum SymbolStyle {
+  SYMBOL_UNSPECIFIED = 0;
+  SYMBOL_CORNER_BRACKET_MIDDLE_DOT = 1;
+  SYMBOL_SQUARE_BRACKET_SLASH = 2;
+  SYMBOL_CORNER_BRACKET_SLASH = 3;
+  SYMBOL_SQUARE_BRACKET_MIDDLE_DOT = 4;
+}
+
+enum SpaceInputStyle {
+  SPACE_UNSPECIFIED = 0;
+  SPACE_INPUT_MODE = 1;
+  SPACE_FULL_WIDTH = 2;
+  SPACE_HALF_WIDTH = 3;
+}
+
+enum SelectionShortcut {
+  SELECTION_UNSPECIFIED = 0;
+  SELECTION_123456789 = 1;
+  SELECTION_ASDFGHJKL = 2;
+}
+
+enum KeymapStyle {
+  KEYMAP_UNSPECIFIED = 0;
+  KEYMAP_CUSTOM = 1;
+  KEYMAP_ATOK = 2;
+  KEYMAP_MSIME = 3;
+  KEYMAP_KOTOERI = 4;
+  KEYMAP_MOBILE = 5;
+  KEYMAP_CHROMEOS = 6;
+  KEYMAP_NONE = 7;
+}
+
+enum ShiftKeyModeStyle {
+  SHIFTKEY_UNSPECIFIED = 0;
+  SHIFTKEY_OFF = 1;
+  SHIFTKEY_ASCII_INPUT_MODE = 2;
+  SHIFTKEY_KATAKANA = 3;
+}
+
+message FetchJapaneseLegacyConfigResult {
+  optional InputMode input_mode = 1;
+  optional PunctuationStyle punctuation_style = 2;
+  optional SymbolStyle symbol_style = 3;
+  optional SpaceInputStyle space_input_style = 4;
+  optional SelectionShortcut selection_shortcut = 5;
+  optional KeymapStyle keymap_style = 6;
+  optional bool automatically_switch_type = 7;
+  optional ShiftKeyModeStyle shift_key_mode_style = 8;
+  optional bool use_input_history = 9;
+  optional bool use_system_dictionary = 10;
+  optional int32 number_of_suggestions = 11;
+  optional bool disable_personalized_suggestions = 12;
+  optional bool send_usage_statistics = 13;
+}

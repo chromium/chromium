@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package chromeos_input;
+
+import "fetch_japanese_legacy_extension_config.proto";
+
+message Status {
+  optional bool success = 1;
+  optional string reason = 2;
+}
+
+message UserDataRequest {
+  oneof request {
+    // Directly reads the Japanese settings from the extension.
+    FetchJapaneseLegacyConfigRequest fetch_japanese_legacy_config = 1;
+  }
+}
+
+message UserDataResponse {
+  optional Status status = 1;
+  oneof response {
+    FetchJapaneseLegacyConfigResponse fetch_japanese_legacy_config = 2;
+  }
+}
