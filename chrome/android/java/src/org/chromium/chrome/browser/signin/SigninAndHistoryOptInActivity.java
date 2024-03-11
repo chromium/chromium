@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -42,6 +43,8 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistoryOptInActivity.AccessPoint";
     private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
             "SigninAndHistoryOptInActivity.NoAccountSigninMode";
+    private static final String ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE =
+            "SigninAndHistoryOptInActivity.WithAccountSigninMode";
     private static final String ARGUMENT_HISTORY_OPT_IN_MODE =
             "SigninAndHistoryOptInActivity.HistoryOptInMode";
 
@@ -65,6 +68,11 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         int noAccountSigninMode =
                 intent.getIntExtra(
                         ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, NoAccountSigninMode.ADD_ACCOUNT);
+        @WithAccountSigninMode
+        int withAccountSigninMode =
+                intent.getIntExtra(
+                        ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE,
+                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
         @HistoryOptInMode
         int historyOptInMode =
                 intent.getIntExtra(ARGUMENT_HISTORY_OPT_IN_MODE, HistoryOptInMode.OPTIONAL);
@@ -78,6 +86,7 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
                         mProfileSupplier,
                         getModalDialogManagerSupplier(),
                         noAccountSigninMode,
+                        withAccountSigninMode,
                         historyOptInMode,
                         signinAccessPoint);
 
@@ -140,10 +149,12 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
     public static @NonNull Intent createIntent(
             Context context,
             @NoAccountSigninMode int noAccountSigninMode,
+            @WithAccountSigninMode int withAccountSigninMode,
             @HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
         intent.putExtra(ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, noAccountSigninMode);
+        intent.putExtra(ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE, withAccountSigninMode);
         intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
         intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
         return intent;
