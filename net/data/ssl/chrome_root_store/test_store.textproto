@@ -15,4 +15,10 @@ trust_anchors {
 # OISTE WISeKey Global Root GB CA
 trust_anchors {
   sha256_hex: "6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6"
+  constraints: {
+    sct_not_after_sec: 0x5AF
+  }
+  constraints: {
+    sct_all_after_sec: 0x2579
+  }
 }

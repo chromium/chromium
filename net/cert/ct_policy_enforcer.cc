@@ -15,4 +15,9 @@ ct::CTPolicyCompliance DefaultCTPolicyEnforcer::CheckCompliance(
   return ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY;
 }
 
+std::optional<base::Time> DefaultCTPolicyEnforcer::GetLogDisqualificationTime(
+    std::string_view log_id) const {
+  return std::nullopt;
+}
+
 }  // namespace net

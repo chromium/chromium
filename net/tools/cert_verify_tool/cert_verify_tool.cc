@@ -205,6 +205,11 @@ class DummySystemTrustStore : public net::SystemTrustStore {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   int64_t chrome_root_store_version() const override { return 0; }
+
+  base::span<const net::ChromeRootCertConstraints> GetChromeRootConstraints(
+      const bssl::ParsedCertificate* cert) const override {
+    return {};
+  }
 #endif
 
  private:

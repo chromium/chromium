@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -142,11 +143,18 @@ std::optional<RootStore> ReadTextRootStore(
   return std::move(root_store);
 }
 
+std::string SecondsFromEpochToBaseTime(int64_t t) {
+  return base::StrCat({"base::Time::UnixEpoch() + base::Seconds(",
+                       base::NumberToString(t), ")"});
+}
+
 // Returns true if file was correctly written, false otherwise.
 bool WriteRootCppFile(const RootStore& root_store,
                       const base::FilePath cpp_path) {
   // Root store should have at least one trust anchors.
   CHECK_GT(root_store.trust_anchors_size(), 0);
+
+  const std::string kNulloptString = "std::nullopt";
 
   std::string string_to_write =
       "// This file is auto-generated, DO NOT EDIT.\n\n";
@@ -168,12 +176,47 @@ bool WriteRootCppFile(const RootStore& root_store,
 
     // End struct
     string_to_write += "};\n";
+
+    if (anchor.constraints_size() > 0) {
+      base::StringAppendF(
+          &string_to_write,
+          "constexpr ChromeRootCertConstraints kChromeRootConstraints%d[] = {",
+          i);
+
+      std::vector<std::string> constraint_strings;
+      for (const auto& constraint : anchor.constraints()) {
+        std::vector<std::string> constraint_params;
+
+        constraint_params.push_back(
+            constraint.has_sct_not_after_sec()
+                ? SecondsFromEpochToBaseTime(constraint.sct_not_after_sec())
+                : kNulloptString);
+
+        constraint_params.push_back(
+            constraint.has_sct_all_after_sec()
+                ? SecondsFromEpochToBaseTime(constraint.sct_all_after_sec())
+                : kNulloptString);
+
+        constraint_strings.push_back(
+            base::StrCat({"{", base::JoinString(constraint_params, ","), "}"}));
+      }
+
+      string_to_write += base::JoinString(constraint_strings, ",");
+      string_to_write += "};\n";
+    }
   }
 
   string_to_write += "constexpr ChromeRootCertInfo kChromeRootCertList[] = {\n";
 
   for (int i = 0; i < root_store.trust_anchors_size(); i++) {
-    base::StringAppendF(&string_to_write, "    {kChromeRootCert%d},\n", i);
+    const auto& anchor = root_store.trust_anchors(i);
+    base::StringAppendF(&string_to_write, "    {kChromeRootCert%d, ", i);
+    if (anchor.constraints_size() > 0) {
+      base::StringAppendF(&string_to_write, "kChromeRootConstraints%d", i);
+    } else {
+      string_to_write += "{}";
+    }
+    string_to_write += "},\n";
   }
   string_to_write += "};";
 

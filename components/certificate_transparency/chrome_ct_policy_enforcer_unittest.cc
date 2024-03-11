@@ -479,9 +479,14 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
   EXPECT_TRUE(
       policy_enforcer->IsLogDisqualified(kTestLogID, &disqualification_time));
   EXPECT_EQ(disqualification_time, past_disqualification);
+  EXPECT_EQ(policy_enforcer->GetLogDisqualificationTime(kTestLogID),
+            past_disqualification);
+
   EXPECT_FALSE(policy_enforcer->IsLogDisqualified(kModifiedTestLogID,
                                                   &disqualification_time));
   EXPECT_EQ(disqualification_time, future_disqualification);
+  EXPECT_EQ(policy_enforcer->GetLogDisqualificationTime(kModifiedTestLogID),
+            future_disqualification);
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
@@ -502,6 +507,8 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
   // IsLogDisqualified should return false for a log that is not in the
   // disqualified list.
   EXPECT_FALSE(policy_enforcer->IsLogDisqualified(kTestLogID, &unused));
+  EXPECT_EQ(policy_enforcer->GetLogDisqualificationTime(kTestLogID),
+            std::nullopt);
 }
 
 TEST_F(ChromeCTPolicyEnforcerTest,

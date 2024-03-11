@@ -99,22 +99,29 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
   return compliance;
 }
 
-bool ChromeCTPolicyEnforcer::IsLogDisqualified(
-    std::string_view log_id,
-    base::Time* disqualification_date) const {
+std::optional<base::Time> ChromeCTPolicyEnforcer::GetLogDisqualificationTime(
+    std::string_view log_id) const {
   CHECK_EQ(log_id.size(), crypto::kSHA256Length);
 
   auto p = std::lower_bound(
       std::begin(disqualified_logs_), std::end(disqualified_logs_), log_id,
       [](const auto& a, std::string_view b) { return a.first < b; });
   if (p == std::end(disqualified_logs_) || p->first != log_id) {
+    return std::nullopt;
+  }
+  return p->second;
+}
+
+bool ChromeCTPolicyEnforcer::IsLogDisqualified(
+    std::string_view log_id,
+    base::Time* out_disqualification_date) const {
+  std::optional<base::Time> disqualification_date =
+      GetLogDisqualificationTime(log_id);
+  if (!disqualification_date.has_value()) {
     return false;
   }
-  *disqualification_date = p->second;
-  if (base::Time::Now() < *disqualification_date) {
-    return false;
-  }
-  return true;
+  *out_disqualification_date = disqualification_date.value();
+  return base::Time::Now() >= disqualification_date.value();
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDataTimely() const {

@@ -317,13 +317,14 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
   mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();
   if (proc_params_.root_store_data) {
     info_ptr->version = proc_params_.root_store_data->version();
-    for (auto cert : proc_params_.root_store_data->anchors()) {
+    for (const auto& anchor : proc_params_.root_store_data->anchors()) {
+      const bssl::ParsedCertificate* cert = anchor.certificate.get();
       info_ptr->root_cert_info.push_back(
           mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
     }
   } else {
     info_ptr->version = net::CompiledChromeRootStoreVersion();
-    for (auto cert : net::CompiledChromeRootStoreAnchors()) {
+    for (const auto& cert : net::CompiledChromeRootStoreAnchors()) {
       info_ptr->root_cert_info.push_back(
           mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
     }

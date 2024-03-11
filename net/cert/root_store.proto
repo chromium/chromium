@@ -10,8 +10,18 @@ syntax = "proto3";
 
 package chrome_root_store;
 
-// These structures are currently very simple, but more fields may be added in
-// future to support extra metadata about each trust anchor.
+// Specifies a set of constraints, all of which that have values must be
+// satisfied for the ConstraintSet to be satisfied.
+message ConstraintSet {
+  // The leaf certificate must have at least one valid SCT timestamp that is
+  // not after the specified value, specified in seconds since the unix epoch.
+  optional int64 sct_not_after_sec = 1;
+
+  // The leaf certificate must have at least one valid SCT timestamp and all
+  // valid SCT timestamps must be after the specified value, specified in
+  // seconds since the unix epoch.
+  optional int64 sct_all_after_sec = 2;
+}
 
 message TrustAnchor {
   // The human-editable textproto version of the root store references roots in
@@ -24,6 +34,10 @@ message TrustAnchor {
 
   // OID should be expressed as dotted-decimal text (e.g. "1.3.159.1.17.1")
   repeated string ev_policy_oids = 3;
+
+  // If not empty, the anchor is only trusted if at least one of the
+  // ConstraintSets is satisfied.
+  repeated ConstraintSet constraints = 4;
 }
 
 // Message storing a complete Chrome Root Store.

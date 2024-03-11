@@ -6,8 +6,11 @@
 #define NET_CERT_INTERNAL_TRUST_STORE_CHROME_H_
 
 #include <optional>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
@@ -15,14 +18,33 @@
 
 namespace net {
 
+struct ChromeRootCertConstraints {
+  std::optional<base::Time> sct_not_after;
+  std::optional<base::Time> sct_all_after;
+};
+
 struct ChromeRootCertInfo {
   base::span<const uint8_t> root_cert_der;
+  base::span<const ChromeRootCertConstraints> constraints;
 };
 
 // ChromeRootStoreData is a container class that stores all of the Chrome Root
 // Store data in a single class.
 class NET_EXPORT ChromeRootStoreData {
  public:
+  struct Anchor {
+    Anchor(std::shared_ptr<const bssl::ParsedCertificate> certificate,
+           std::vector<ChromeRootCertConstraints> constraints);
+    ~Anchor();
+
+    Anchor(const Anchor& other);
+    Anchor(Anchor&& other);
+    Anchor& operator=(const Anchor& other);
+    Anchor& operator=(Anchor&& other);
+
+    std::shared_ptr<const bssl::ParsedCertificate> certificate;
+    std::vector<ChromeRootCertConstraints> constraints;
+  };
   // CreateChromeRootStoreData converts |proto| into a usable
   // ChromeRootStoreData object. Returns std::nullopt if the passed in
   // proto has errors in it (e.g. an unparsable DER-encoded certificate).
@@ -35,13 +57,13 @@ class NET_EXPORT ChromeRootStoreData {
   ChromeRootStoreData& operator=(const ChromeRootStoreData& other);
   ChromeRootStoreData& operator=(ChromeRootStoreData&& other);
 
-  const bssl::ParsedCertificateList anchors() const { return anchors_; }
+  const std::vector<Anchor>& anchors() const { return anchors_; }
   int64_t version() const { return version_; }
 
  private:
   ChromeRootStoreData();
 
-  bssl::ParsedCertificateList anchors_;
+  std::vector<Anchor> anchors_;
   int64_t version_;
 };
 
@@ -75,6 +97,11 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   // (matches by DER).
   bool Contains(const bssl::ParsedCertificate* cert) const;
 
+  // Returns the root store constraints for `cert`, or an empty span if the
+  // certificate is not constrained.
+  base::span<const ChromeRootCertConstraints> GetConstraintsForCert(
+      const bssl::ParsedCertificate* cert) const;
+
   int64_t version() const { return version_; }
 
  private:
@@ -82,6 +109,12 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
                    bool certs_are_static,
                    int64_t version);
   bssl::TrustStoreInMemory trust_store_;
+  // Map from certificate DER bytes to additional constraints (if any) for that
+  // certificate. The DER bytes of the key are owned by the ParsedCertificate
+  // stored in `trust_store_`, so this must be below `trust_store_` in the
+  // member list.
+  base::flat_map<std::string_view, std::vector<ChromeRootCertConstraints>>
+      constraints_;
   int64_t version_;
 };
 
