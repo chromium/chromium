@@ -131,10 +131,10 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
           permissions::PermissionRequestManager::AutoResponseType::NONE);
   std::string permission_ids[] = {"microphone", "camera"};
   for (const auto& id : permission_ids) {
-    ClickElementWithId(web_contents(), id);
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         "EmbeddedPermissionPromptContentScrimWidget");
+    ClickElementWithId(web_contents(), id);
     auto* scrim_view = static_cast<EmbeddedPermissionPromptContentScrimView*>(
         waiter.WaitIfNeededAndGet()->GetContentsView());
     scrim_view->OnMousePressed(
