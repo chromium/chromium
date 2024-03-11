@@ -1373,6 +1373,12 @@ void IndexedDBBucketContext::OnDatabaseError(leveldb::Status status,
 bool IndexedDBBucketContext::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!backing_store_) {
+    // Nothing to report when no databases have been loaded.
+    return true;
+  }
+
   base::CheckedNumeric<uint64_t> total_memory_in_flight = 0;
   for (const auto& [name, database] : databases_) {
     for (IndexedDBConnection* connection : database->connections()) {
