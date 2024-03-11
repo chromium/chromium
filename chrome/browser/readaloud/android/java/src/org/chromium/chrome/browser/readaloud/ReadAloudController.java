@@ -271,6 +271,7 @@ public class ReadAloudController
                 public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
+                    ReadAloudMetrics.recordServerReadabilityResult(isReadable);
                     ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
 
                     // Register _KnownReadable trial before checking more playback conditions
@@ -337,13 +338,21 @@ public class ReadAloudController
     public ObservableSupplier<String> getReadabilitySupplier() {
         return mReadabilitySupplier;
     }
-    private void onProfileAvailable(Profile profile) {
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void onProfileAvailable(Profile profile) {
         mProfile = profile;
         mReadabilityHooks =
                 sReadabilityHooksForTesting != null
                         ? sReadabilityHooksForTesting
                         : new ReadAloudReadabilityHooksImpl(mActivity, profile);
         if (mReadabilityHooks.isEnabled()) {
+            boolean isAllowed = ReadAloudFeatures.isAllowed(mProfileSupplier.get());
+            ReadAloudMetrics.recordIsUserEligible(isAllowed);
+            if (!isAllowed) {
+                ReadAloudMetrics.recordIneligibilityReason(
+                        ReadAloudFeatures.getIneligibilityReason());
+            }
             mHighlightingEnabled.addObserver(
                     ReadAloudController.this::onHighlightingEnabledChanged);
             mHighlightingEnabled.set(ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
@@ -356,12 +365,6 @@ public class ReadAloudController
                             maybeCheckReadability(url);
                             maybeHandleTabReload(tab, url);
                             maybeStopPlayback(tab);
-                            boolean isAllowed = ReadAloudFeatures.isAllowed(mProfileSupplier.get());
-                            ReadAloudMetrics.recordIsUserEligible(isAllowed);
-                            if (!isAllowed) {
-                                ReadAloudMetrics.recordIneligibilityReason(
-                                        ReadAloudFeatures.getIneligibilityReason());
-                            }
                         }
 
                         @Override
@@ -453,22 +456,6 @@ public class ReadAloudController
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void maybeCheckReadability(GURL url) {
-        if (!isURLReadAloudSupported(url)) {
-            ReadAloudMetrics.recordIsPageReadable(false);
-            return;
-        }
-
-        if (mProfile == null || !mProfile.isNativeInitialized()) {
-            return;
-        }
-
-        String urlSpec = stripUserData(url).getSpec();
-        // TODO: 2 different URLs can have the same sanitized URL
-        mSanitizedToFullUrlMap.put(url.getSpec(), urlSpec);
-        if (mReadabilityMap.containsKey(urlSpec) || mPendingRequests.contains(urlSpec)) {
-            return;
-        }
-
         if (!isAvailable()) {
             return;
         }
@@ -476,6 +463,28 @@ public class ReadAloudController
         if (mReadabilityHooks == null) {
             return;
         }
+
+        if (mProfile == null || !mProfile.isNativeInitialized()) {
+            return;
+        }
+
+        if (!isURLReadAloudSupported(url)) {
+            ReadAloudMetrics.recordIsPageReadable(false);
+            return;
+        }
+
+        String urlSpec = stripUserData(url).getSpec();
+        // TODO: 2 different URLs can have the same sanitized URL
+        mSanitizedToFullUrlMap.put(url.getSpec(), urlSpec);
+        if (mReadabilityMap.containsKey(urlSpec)) {
+            ReadAloudMetrics.recordIsPageReadable(mReadabilityMap.get(urlSpec));
+            return;
+        }
+
+        if (mPendingRequests.contains(urlSpec)) {
+            return;
+        }
+
 
         mPendingRequests.add(urlSpec);
         mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
