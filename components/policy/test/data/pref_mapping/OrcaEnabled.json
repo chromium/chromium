@@ -1,0 +1,41 @@
+[
+    {
+      "os": [
+        "chromeos_ash"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "note": "The default is changed by default_for_enterprise_users",
+          "policies": {},
+          "prefs": {
+            "assistive_input.managed.orca_enabled": {
+              "value": false,
+              "location": "user_profile"
+            }
+          }
+        },
+        {
+          "policies": {
+            "OrcaEnabled": true
+          },
+          "prefs": {
+            "assistive_input.managed.orca_enabled": {
+              "value": true,
+              "location": "user_profile"
+            }
+          }
+        },
+        {
+          "policies": {
+            "OrcaEnabled": false
+          },
+          "prefs": {
+            "assistive_input.managed.orca_enabled": {
+              "value": false,
+              "location": "user_profile"
+            }
+          }
+        }
+      ]
+    }
+  ]

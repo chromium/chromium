@@ -2089,6 +2089,11 @@ BASE_FEATURE(kOrcaElaborate, "OrcaElaborate", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables emojify for Orca.
 BASE_FEATURE(kOrcaEmojify, "OrcaEmojify", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the enablement of Orca feature is also driven by the policy.
+BASE_FEATURE(kOrcaControlledByPolicy,
+             "OrcaControlledByPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables sending feedback for Orca.
 BASE_FEATURE(kOrcaFeedback, "OrcaFeedback", base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -37,6 +37,11 @@ inline constexpr char kEmojiSuggestionEnterpriseAllowed[] =
 // A boolean pref of whether orca is enabled.
 inline constexpr char kOrcaEnabled[] = "assistive_input.orca_enabled";
 
+// A boolean pref used by an admin policy to enable/disable Orca. See the policy
+// at OrcaEnabled.yaml.
+inline constexpr char kManagedOrcaEnabled[] =
+    "assistive_input.managed.orca_enabled";
+
 // A boolean pref used by an admin policy to enable/disable particular
 // features on the physical keyboard. See the policy at
 // PhysicalKeyboardAutocorrect.yml.

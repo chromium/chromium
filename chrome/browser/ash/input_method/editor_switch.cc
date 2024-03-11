@@ -74,9 +74,9 @@ constexpr char kExperimentName[] = "OrcaEnabled";
 
 constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 
-bool IsDeviceManaged(Profile* profile_) {
+bool IsProfileManaged(Profile* profile) {
   policy::ProfilePolicyConnector* profile_policy_connector =
-      profile_->GetProfilePolicyConnector();
+      profile->GetProfilePolicyConnector();
 
   return (profile_policy_connector != nullptr &&
           profile_policy_connector->IsManaged());
@@ -203,11 +203,29 @@ bool EditorSwitch::IsAllowedForUse() const {
     return false;
   }
 
-  return (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
-          base::FeatureList::IsEnabled(
-              chromeos::features::kFeatureManagementOrca) &&
-          IsCountryAllowed(country_code_)) &&
-         !IsDeviceManaged(profile_);
+  if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
+      !base::FeatureList::IsEnabled(
+          chromeos::features::kFeatureManagementOrca) ||
+      !IsCountryAllowed(country_code_)) {
+    return false;
+  }
+
+  // Always allow the feature on unmanaged users.
+  if (!IsProfileManaged(profile_)) {
+    return true;
+  }
+
+  // For managed users, if the feature flag `OrcaControlledByPolicy `is set, let
+  // the feature enablement be driven by the policy.
+  if (base::FeatureList::IsEnabled(features::kOrcaControlledByPolicy)) {
+    return profile_->GetPrefs()->IsManagedPreference(prefs::kManagedOrcaEnabled)
+               ? profile_->GetPrefs()->GetBoolean(prefs::kManagedOrcaEnabled)
+               : false;
+  }
+
+  // If the Orca policy is not ready to launch on managed users, disallow the
+  // feature.
+  return false;
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
@@ -227,7 +245,7 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
           EditorBlockedReason::kBlockedByUnsupportedRegion);
     }
 
-    if (IsDeviceManaged(profile_)) {
+    if (IsProfileManaged(profile_)) {
       blocked_reasons.push_back(EditorBlockedReason::kBlockedByManagedStatus);
     }
   }

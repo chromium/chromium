@@ -2067,6 +2067,7 @@ chromium-metrics-reviews@google.com.
   <int value="1233" label="ProductSpecificationsEnabled"/>
   <int value="1234" label="PrefixedVideoFullscreenApiAvailability"/>
   <int value="1235" label="PrivacySandboxIpProtectionEnabled"/>
+  <int value="1236" label="OrcaEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
