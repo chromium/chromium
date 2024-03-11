@@ -53,6 +53,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -145,6 +146,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         OneshotSupplierImpl<ProfileProvider> profileSupplier =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {

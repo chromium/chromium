@@ -66,6 +66,8 @@ class SigninFirstRunViewBinder {
                 view.getContinueButtonView().setText(R.string.continue_button);
                 updateVisibility(view, model);
             }
+        } else if (propertyKey == SigninFirstRunProperties.TITLE_STRING_ID) {
+            view.getTitle().setText(model.get(SigninFirstRunProperties.TITLE_STRING_ID));
         } else if (propertyKey == SigninFirstRunProperties.FOOTER_STRING) {
             view.getFooterView().setText(model.get(SigninFirstRunProperties.FOOTER_STRING));
             view.getFooterView().setMovementMethod(LinkMovementMethod.getInstance());

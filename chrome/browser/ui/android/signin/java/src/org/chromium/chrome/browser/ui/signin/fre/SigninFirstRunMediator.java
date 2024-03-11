@@ -17,6 +17,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -115,6 +116,7 @@ public class SigninFirstRunMediator
                         this::onDismissClicked,
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                                 && !disableSignInForAutomotiveDevice(),
+                        R.string.fre_welcome,
                         getFooterString(false));
 
         mDelegate
@@ -212,8 +214,6 @@ public class SigninFirstRunMediator
      *                    also means that native has been initialized.
      */
     void onInitialLoadCompleted(boolean hasPolicies) {
-        mModel.set(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
-
         boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
         Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
@@ -235,13 +235,20 @@ public class SigninFirstRunMediator
             mModel.set(SigninFirstRunProperties.FRE_POLICY, frePolicy);
         }
 
-        mModel.set(
-                SigninFirstRunProperties.IS_SIGNIN_SUPPORTED,
+        boolean isSigninSupported =
                 ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                         && !isSigninDisabledByPolicy
-                        && !disableSignInForAutomotiveDevice());
-        mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
+                        && !disableSignInForAutomotiveDevice();
+        mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            mModel.set(
+                    SigninFirstRunProperties.TITLE_STRING_ID,
+                    isSigninSupported ? R.string.signin_fre_title : R.string.fre_welcome);
+        }
+        mModel.set(SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
+        mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
         mModel.set(
                 SigninFirstRunProperties.FOOTER_STRING,
                 getFooterString(isMetricsReportingDisabledByPolicy));

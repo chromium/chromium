@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.signin.fre;
 import android.text.SpannableString;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,6 +60,9 @@ class SigninFirstRunProperties {
     static final WritableBooleanPropertyKey IS_SIGNIN_SUPPORTED =
             new WritableBooleanPropertyKey("is_signin_supported");
 
+    static final PropertyModel.WritableIntPropertyKey TITLE_STRING_ID =
+            new PropertyModel.WritableIntPropertyKey("title_string");
+
     static final WritableObjectPropertyKey<CharSequence> FOOTER_STRING =
             new WritableObjectPropertyKey<>("footer_string");
 
@@ -73,6 +78,7 @@ class SigninFirstRunProperties {
                 SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
                 FRE_POLICY,
                 IS_SIGNIN_SUPPORTED,
+                TITLE_STRING_ID,
                 FOOTER_STRING,
             };
 
@@ -82,6 +88,7 @@ class SigninFirstRunProperties {
             Runnable onContinueAsClicked,
             Runnable onDismissClicked,
             boolean isSigninSupported,
+            @StringRes int titleStringId,
             SpannableString footerString) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
@@ -92,6 +99,7 @@ class SigninFirstRunProperties {
                 .with(SHOW_INITIAL_LOAD_PROGRESS_SPINNER, true)
                 .with(FRE_POLICY, null)
                 .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
+                .with(TITLE_STRING_ID, titleStringId)
                 .with(FOOTER_STRING, footerString)
                 .build();
     }
