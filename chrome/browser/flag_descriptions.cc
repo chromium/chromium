@@ -4720,7 +4720,7 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
 const char kButterOnDesktopFollowupName[] =
     "Followup work for saving passwords in the account.";
 const char kButterOnDesktopFollowupDescription[] =
-    "Enables multiple small features resposible for aligning "
+    "Enables multiple small features responsible for aligning "
     "using/accesing passwords saved in the account on Desktop with "
     "what is possible on mobile.";
 
