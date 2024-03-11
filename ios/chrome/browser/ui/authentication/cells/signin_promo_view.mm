@@ -460,6 +460,16 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   return actions;
 }
 
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  // The name for Voice Control includes only
+  // `self.primaryButton.titleLabel.text`.
+  NSString* primaryButtonLabelText = self.primaryButton.titleLabel.text;
+  if (!primaryButtonLabelText) {
+    return @[];
+  }
+  return @[ primaryButtonLabelText ];
+}
+
 #pragma mark - Setters
 
 // Sets promo style and updates layout accordingly.
