@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -111,7 +112,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and accept.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-        onView(withId(R.id.button_primary)).perform(click());
+        onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
 
         // Verify history sync state.
         SyncTestUtil.waitForHistorySyncEnabled();
@@ -177,7 +178,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and accept.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-        onView(withId(R.id.button_primary)).perform(click());
+        onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
 
         // Verify history sync state.
         SyncTestUtil.waitForHistorySyncEnabled();
