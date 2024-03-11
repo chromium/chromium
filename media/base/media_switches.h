@@ -522,6 +522,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSLegacyMediaFormats);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D12VideoDecoder);
 #endif
 
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaSharedBitmapToSharedImage);
+
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy
 // if none is specified via the command line and options passed for testing.

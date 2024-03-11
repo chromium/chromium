@@ -65,10 +65,6 @@
 namespace media {
 namespace {
 
-BASE_FEATURE(kMediaSharedBitmapToSharedImage,
-             "MediaSharedBitmapToSharedImage_DoNotEnable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool MediaSharedBitmapConversionEnabled() {
   return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage) &&
          base::FeatureList::IsEnabled(kMediaSharedBitmapToSharedImage);

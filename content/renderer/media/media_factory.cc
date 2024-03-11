@@ -204,7 +204,11 @@ void PostContextProviderToCallback(
             bool is_gpu_composition_disabled = rti->IsGpuCompositingDisabled();
             scoped_refptr<gpu::ClientSharedImageInterface>
                 shared_image_interface;
-            if (is_gpu_composition_disabled) {
+            bool use_shared_image = base::FeatureList::IsEnabled(
+                                        features::kSharedBitmapToSharedImage) &&
+                                    base::FeatureList::IsEnabled(
+                                        media::kMediaSharedBitmapToSharedImage);
+            if (is_gpu_composition_disabled && use_shared_image) {
               shared_image_interface =
                   rti->GetVideoFrameCompositorSharedImageInterface();
               if (!shared_image_interface) {

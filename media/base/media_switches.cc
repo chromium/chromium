@@ -1796,6 +1796,11 @@ BASE_FEATURE(kD3D12VideoDecoder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Convert SharedBitmap to SharedImage for media resources.
+BASE_FEATURE(kMediaSharedBitmapToSharedImage,
+             "MediaSharedBitmapToSharedImage_DoNotEnable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);
