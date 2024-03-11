@@ -49,6 +49,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/drive/file_system_core_util.h"
@@ -91,6 +92,7 @@ constexpr char kFolderNamePvmDefault[] = "PvmDefault";
 constexpr char kFolderNameCamera[] = "Camera";
 constexpr char kFolderNameShareCache[] = "ShareCache";
 constexpr char kDisplayNameGoogleDrive[] = "Google Drive";
+constexpr char kDisplayNameMicrosoftOneDrive[] = "Microsoft OneDrive";
 constexpr char kDriveFsDirComputers[] = "Computers";
 constexpr char kDriveFsDirSharedWithMe[] = ".files-by-id";
 constexpr char kDriveFsDirShortcutsSharedWithMe[] = ".shortcut-targets-by-id";
@@ -952,6 +954,8 @@ std::string GetPathDisplayTextForSettings(Profile* const profile,
     service = nullptr;
   }
 
+  bool is_odfs_mounted = ash::cloud_upload::IsODFSMounted(profile);
+
   if (ReplacePrefix(&result, "/home/chronos/user/MyFiles", "My files")) {
   } else if (ReplacePrefix(
                  &result, profile->GetPath().Append(kFolderNameMyFiles).value(),
@@ -1008,6 +1012,14 @@ std::string GetPathDisplayTextForSettings(Profile* const profile,
               .Append(l10n_util::GetStringUTF8(
                   IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
               .value())) {
+  } else if (ReplacePrefix(
+                 &result, download_dir_util::kOneDriveNamePolicyVariableName,
+                 base::FilePath(kDisplayNameMicrosoftOneDrive).value())) {
+  } else if (is_odfs_mounted &&
+             ReplacePrefix(
+                 &result,
+                 ash::cloud_upload::GetODFSFuseboxMount(profile).value(),
+                 base::FilePath(kDisplayNameMicrosoftOneDrive).value())) {
   } else if (ReplacePrefix(&result, GetAndroidFilesPath().value(),
                            l10n_util::GetStringUTF8(
                                IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL))) {
