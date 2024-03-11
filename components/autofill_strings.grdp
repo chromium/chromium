@@ -576,6 +576,15 @@
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
       Update address?
     </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE" desc="The 'Add new address' bubble title.">
+      Fill your address with less typing
+    </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_CHROME_PROMPT_BODY_TEXT" desc="The 'Add new address' bubble body text if the address will be saved in Chrome (locally or syncable among Chromes on different devices).">
+      You don't have any addresses saved. Add an address to use it in Chrome.
+    </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_ACCOUNT_PROMPT_BODY_TEXT" desc="The 'Add new address' bubble body text if the address will be save in the user's Google account.">
+      You don't have any addresses saved. Add an address to use it across Google products.
+    </message>
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
       No thanks
     </message>
@@ -590,6 +599,9 @@
     </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE" desc="Label of the OK button in the dialog that edits the address before using it to update an existing address.">
       Update
+    </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_DIALOG_OK_BUTTON_LABEL" desc="Label of the OK button in the dialog that promts the user to add a new address.">
+      Add address
     </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
       Cancel
