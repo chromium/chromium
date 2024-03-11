@@ -78,6 +78,10 @@ class AppsCollectionSectionViewTest : public AshTestBase {
                : nullptr;
   }
 
+  void RemoveApp(const std::string& id) {
+    AppListModelProvider::Get()->model()->DeleteItem(id);
+  }
+
  protected:
   AppListItemView::DragState GetDragState(AppListItemView* view) {
     return view->drag_state_;
@@ -210,6 +214,63 @@ TEST_F(AppsCollectionSectionViewTest, AttemptMouseDragApp) {
   // Verify the apps did not enter dragged state.
   EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
   EXPECT_TRUE(view->title()->GetVisible());
+}
+
+TEST_F(AppsCollectionSectionViewTest, RemoveAppFromModel) {
+  AddAppListItemWithCollection("id1", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id2", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id3", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id4", AppCollection::kEntertainment);
+
+  ShowAppList();
+
+  AppsCollectionSectionView* collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(collection);
+  EXPECT_EQ(collection->GetItemViewCount(), 4u);
+
+  RemoveApp("id2");
+
+  ASSERT_TRUE(collection);
+  EXPECT_EQ(collection->GetItemViewCount(), 3u);
+}
+
+TEST_F(AppsCollectionSectionViewTest, AddAppToModel) {
+  AddAppListItemWithCollection("id1", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id2", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id3", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id4", AppCollection::kEntertainment);
+
+  ShowAppList();
+
+  AppsCollectionSectionView* collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(collection);
+  EXPECT_EQ(collection->GetItemViewCount(), 4u);
+
+  AddAppListItemWithCollection("id5", AppCollection::kEntertainment);
+
+  ASSERT_TRUE(collection);
+  EXPECT_EQ(collection->GetItemViewCount(), 5u);
+}
+
+TEST_F(AppsCollectionSectionViewTest, AddAppToModelOnDifferentCollection) {
+  AddAppListItemWithCollection("id1", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id2", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id3", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id4", AppCollection::kEntertainment);
+
+  ShowAppList();
+
+  AppsCollectionSectionView* collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(collection);
+  EXPECT_EQ(collection->GetItemViewCount(), 4u);
+
+  AddAppListItemWithCollection("id5", AppCollection::kProductivity);
+
+  ASSERT_TRUE(collection);
+  EXPECT_EQ(collection->GetItemViewCount(), 4u);
 }
 
 }  // namespace ash

@@ -134,7 +134,11 @@ AppsCollectionSectionView::AppsCollectionSectionView(
       cros_tokens::kCrosSysSystemOnBase, kCornerRadius));
 }
 
-AppsCollectionSectionView::~AppsCollectionSectionView() = default;
+AppsCollectionSectionView::~AppsCollectionSectionView() {
+  if (model_) {
+    model_->RemoveObserver(this);
+  }
+}
 
 void AppsCollectionSectionView::UpdateAppListConfig(
     const AppListConfig* app_list_config) {
@@ -182,6 +186,10 @@ void AppsCollectionSectionView::SetModel(AppListModel* model) {
 
   model_ = model;
 
+  if (model_) {
+    model_->AddObserver(this);
+  }
+
   UpdateAppsForCollection();
 }
 
@@ -203,6 +211,39 @@ int AppsCollectionSectionView::CalculateTilePadding() const {
   int width_to_distribute = content_width - kAppsPerColumn * tile_width;
 
   return width_to_distribute / ((kAppsPerColumn - 1) * 2);
+}
+
+std::optional<size_t> AppsCollectionSectionView::GetViewIndexForItem(
+    const std::string& item_id) {
+  for (size_t i = 0; i < item_views_.view_size(); ++i) {
+    if (item_views_.view_at(i)->item()->id() == item_id) {
+      return i;
+    }
+  }
+  return std::nullopt;
+}
+
+void AppsCollectionSectionView::OnAppListModelStatusChanged() {
+  UpdateAppsForCollection();
+}
+
+void AppsCollectionSectionView::OnAppListItemAdded(AppListItem* item) {
+  if (item->collection_id() == collection_) {
+    UpdateAppsForCollection();
+  }
+}
+
+void AppsCollectionSectionView::OnAppListItemWillBeDeleted(AppListItem* item) {
+  if (item->collection_id() != collection_) {
+    return;
+  }
+
+  std::optional<size_t> index_to_be_deleted = GetViewIndexForItem(item->id());
+
+  if (index_to_be_deleted) {
+    item_views_.Remove(index_to_be_deleted.value());
+    PreferredSizeChanged();
+  }
 }
 
 BEGIN_METADATA(AppsCollectionSectionView)

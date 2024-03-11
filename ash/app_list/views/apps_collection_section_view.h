@@ -6,9 +6,11 @@
 #define ASH_APP_LIST_VIEWS_APPS_COLLECTION_SECTION_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/app_list/app_collections_constants.h"
+#include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +26,8 @@ class AppListViewDelegate;
 // An app collection section. These sections are shown on the
 // AppListBubbleAppsCollectionPage. Each section contains a label with the
 // name of the collection and a grid of apps that belong to that collection.
-class ASH_EXPORT AppsCollectionSectionView : public views::View {
+class ASH_EXPORT AppsCollectionSectionView : public AppListModelObserver,
+                                             public views::View {
   METADATA_HEADER(AppsCollectionSectionView, views::View)
 
  public:
@@ -49,6 +52,11 @@ class ASH_EXPORT AppsCollectionSectionView : public views::View {
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
+  // AppListModelObserver:
+  void OnAppListModelStatusChanged() override;
+  void OnAppListItemAdded(AppListItem* item) override;
+  void OnAppListItemWillBeDeleted(AppListItem* item) override;
+
   AppCollection collection() { return collection_; }
 
  private:
@@ -56,6 +64,11 @@ class ASH_EXPORT AppsCollectionSectionView : public views::View {
 
   // Calculates how much padding is assigned to the AppListItemView.
   int CalculateTilePadding() const;
+
+  // Returns the index of the AppListItemView within `item_views_` that
+  // corresponds to the `item_id`. If the `item_id` does not appear on
+  // `item_views_`, the return value will be null.
+  std::optional<size_t> GetViewIndexForItem(const std::string& item_id);
 
   const AppCollection collection_ = AppCollection::kUnknown;
   const raw_ptr<AppListViewDelegate> view_delegate_;
