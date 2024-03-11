@@ -88,8 +88,12 @@ class TabModel final : public SupportsHandles<const TabModel> {
 
  private:
   std::unique_ptr<content::WebContents> contents_;
-  // A back reference to the TabStripModel that contains this TabModel.
-  raw_ptr<TabStripModel> owning_model_ = nullptr;
+
+  // A back reference to the TabStripModel that contains this TabModel. The
+  // owning model can be nullptr if the tab has been detached from it's previous
+  // owning tabstrip model, and has yet to be transferred to a new tabstrip
+  // model or is in the process of being closed.
+  raw_ptr<TabStripModel> owning_model_;
   raw_ptr<content::WebContents> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
