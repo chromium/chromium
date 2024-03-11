@@ -490,6 +490,13 @@ void LocalTranslator::TranslateNetworkConfiguration() {
     shill_dictionary_->Set(shill::kProxyConfigProperty, proxy_config_str);
   }
 
+  const std::string* checkCaptivePortal =
+      onc_object_->FindString(::onc::network_config::kCheckCaptivePortal);
+  if (checkCaptivePortal) {
+    TranslateWithTableAndSet(*checkCaptivePortal,
+                             kCheckCaptivePortalTranslationTable,
+                             shill::kCheckPortalProperty);
+  }
   CopyFieldsAccordingToSignature();
 }
 

@@ -465,6 +465,13 @@ const StringTranslationEntry kApnIpTypeTranslationTable[] = {
     {::onc::cellular_apn::kIpTypeIpv4Ipv6, shill::kApnIpTypeV4V6},
     {nullptr}};
 
+// TODO(b/328437440) Change temp properties to shill dbus constants.
+const StringTranslationEntry kCheckCaptivePortalTranslationTable[] = {
+    {::onc::check_captive_portal::kFalse, "false"},
+    {::onc::check_captive_portal::kHTTPOnly, "http-only"},
+    {::onc::check_captive_portal::kTrue, "true"},
+    {nullptr}};
+
 // This must contain only Shill Device properties and no Service properties.
 // For Service properties see cellular_fields.
 const FieldTranslationEntry kCellularDeviceTable[] = {
