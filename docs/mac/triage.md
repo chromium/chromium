@@ -16,18 +16,18 @@ standing meeting on Mondays by the Mac team as a group.
 
 ## Quick Reference
 *** promo All necessary hotlists and saved searches are bundled into the [Mac
-triage bookmark group](https://issues.chromium.org/u/1/bookmark-groups/861056).
+triage bookmark group](https://issues.chromium.org/bookmark-groups/861056).
 ***
 
 1. During the week, the primary works from the ["Mac triage candidates" saved
-search](https://issues.chromium.org/u/1/savedsearches/6676543). The primary has
+search](https://issues.chromium.org/savedsearches/6676543). The primary has
 two main goals:
 
     - To ensure that each bug is looked at.
 
     - To add bugs that should be seen by the whole team to the [Mac-TriageQueue
       hotlist](https://issues.chromium.org/hotlists/5648764)
- > As of March 2024, the candidates saved search  is greatly inflated by bugs
+ > As of March 2024, the candidates saved search is greatly inflated by bugs
  > that became unassigned as a part of the Buganizer transition. Due to this,
  > it's not expected that the primary gets through the whole search. Instead,
  > the primary should focus on bugs filed or updated within the past one or two
@@ -41,7 +41,7 @@ in one of the following states:
     - Assigned
     - Closed
     - Passed to another team
-    - [Bypassed](https://issues.chromium.org/u/1/hotlists/5432664)
+    - [Bypassed](https://issues.chromium.org/hotlists/5432664)
 
 
 ## First-phase triage
