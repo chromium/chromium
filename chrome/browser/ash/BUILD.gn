@@ -2140,8 +2140,6 @@ source_set("ash") {
     "login/ui/user_adding_screen_input_methods_controller.cc",
     "login/ui/user_adding_screen_input_methods_controller.h",
     "login/ui/views/user_board_view.h",
-    "login/ui/web_contents_forced_title.cc",
-    "login/ui/web_contents_forced_title.h",
     "login/ui/webui_login_view.cc",
     "login/ui/webui_login_view.h",
     "login/user_board_view_mojo.cc",

@@ -954,8 +954,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   login_window_ = new views::Widget;
   login_window_->Init(std::move(params));
 
-  login_view_ = new WebUILoginView(WebUILoginView::WebViewSettings(),
-                                   weak_factory_.GetWeakPtr());
+  login_view_ = new WebUILoginView(weak_factory_.GetWeakPtr());
   login_view_->Init();
 
   login_window_->SetVisibilityAnimationDuration(

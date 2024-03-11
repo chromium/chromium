@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
-#include "chrome/browser/ash/login/ui/web_contents_forced_title.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -86,13 +85,40 @@ class ScopedArrowKeyTraversal {
   const bool previous_arrow_key_traversal_enabled_;
 };
 
+void InitializeWebView(views::WebView* web_view) {
+  WebContents* web_contents = web_view->GetWebContents();
+
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      web_contents, SK_ColorTRANSPARENT);
+
+  // Ensure that the login UI has a tab ID, which will allow the GAIA auth
+  // extension's background script to tell it apart from a captive portal window
+  // that may be opened on top of this UI.
+  CreateSessionServiceTabHelper(web_contents);
+
+  // Create the password manager that is needed for the proxy.
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
+  ChromePasswordManagerClient::CreateForWebContents(web_contents);
+
+  // Create the password reuse detection manager.
+  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+
+  // LoginHandlerViews uses a constrained window for the password manager view.
+  WebContentsModalDialogManager::CreateForWebContents(web_contents);
+
+  extensions::SetViewType(web_contents,
+                          extensions::mojom::ViewType::kComponent);
+  blink::RendererPreferences* prefs = web_contents->GetMutableRendererPrefs();
+  renderer_preferences_util::UpdateFromSystemSettings(
+      prefs, ProfileHelper::GetSigninProfile());
+}
+
 }  // namespace
 
 // WebUILoginView public: ------------------------------------------------------
 
-WebUILoginView::WebUILoginView(const WebViewSettings& settings,
-                               base::WeakPtr<LoginDisplayHostWebUI> controller)
-    : settings_(settings), controller_(controller) {
+WebUILoginView::WebUILoginView(base::WeakPtr<LoginDisplayHostWebUI> controller)
+    : controller_(controller) {
   on_app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &WebUILoginView::OnAppTerminating, base::Unretained(this)));
@@ -138,39 +164,6 @@ WebUILoginView::~WebUILoginView() {
   web_contents->SetDelegate(nullptr);
 }
 
-// static
-void WebUILoginView::InitializeWebView(views::WebView* web_view,
-                                       const std::u16string& title) {
-  WebContents* web_contents = web_view->GetWebContents();
-
-  if (!title.empty())
-    WebContentsForcedTitle::CreateForWebContentsWithTitle(web_contents, title);
-
-  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      web_contents, SK_ColorTRANSPARENT);
-
-  // Ensure that the login UI has a tab ID, which will allow the GAIA auth
-  // extension's background script to tell it apart from a captive portal window
-  // that may be opened on top of this UI.
-  CreateSessionServiceTabHelper(web_contents);
-
-  // Create the password manager that is needed for the proxy.
-  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
-  ChromePasswordManagerClient::CreateForWebContents(web_contents);
-
-  // Create the password reuse detection manager.
-  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
-
-  // LoginHandlerViews uses a constrained window for the password manager view.
-  WebContentsModalDialogManager::CreateForWebContents(web_contents);
-
-  extensions::SetViewType(web_contents,
-                          extensions::mojom::ViewType::kComponent);
-  blink::RendererPreferences* prefs = web_contents->GetMutableRendererPrefs();
-  renderer_preferences_util::UpdateFromSystemSettings(
-      prefs, ProfileHelper::GetSigninProfile());
-}
-
 void WebUILoginView::Init() {
   // Init() should only be called once.
   DCHECK(!web_view_);
@@ -178,7 +171,7 @@ void WebUILoginView::Init() {
       std::make_unique<views::WebView>(ProfileHelper::GetSigninProfile());
   WebContents* web_contents = web_view->GetWebContents();
 
-  InitializeWebView(web_view.get(), settings_.web_view_title);
+  InitializeWebView(web_view.get());
   web_view->set_allow_accelerators(true);
 
   web_view_ = AddChildView(std::move(web_view));
