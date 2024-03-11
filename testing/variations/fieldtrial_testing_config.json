@@ -743,6 +743,22 @@
             ]
         }
     ],
+    "AppMallStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppInstallServiceUri",
+                        "CrosMall"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppStreamingAccessibilityIntegration": [
         {
             "platforms": [
