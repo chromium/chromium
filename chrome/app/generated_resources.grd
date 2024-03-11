@@ -3525,7 +3525,7 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
-      <!-- "Install web app" confirmation bubble -->
+      <!-- "Install web app" confirmation bubble for simple install dialog, detailed install dialog as well as DIY apps. -->
       <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE" desc="Title of the bubble for installing a web app to the operating system.">
         Install app?
       </message>
@@ -3534,6 +3534,18 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_INSTALL_PWA_DIALOG_TITLE" desc="Title for dialog that shows up when a web app needs to be installed to the operating system.">
         Install app
+      </message>
+      <message name="IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE" desc="Title above app description to explain the content below is from this app">
+        From the app
+      </message>
+      <message name="IDS_DIY_APP_INSTALL_DIALOG_TITLE" desc="Title of the DIY app install dialog">
+        Install this page as an app
+      </message>
+      <message name="IDS_DIY_APP_INSTALL_DIALOG_SUBTITLE" desc="Subtitle of the DIY app install dialog containing information about how the app opens">
+        Apps open in a window
+      </message>
+      <message name="IDS_DIY_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a DIY app, read by spoken feedback.">
+        App name
       </message>
 
       <message name="IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a bookmark app, read by spoken feedback.">
@@ -6697,12 +6709,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_EXTENSION_CONTROLLED_KEEP_CHANGES" desc="The button in the extension controlled bubbles that cancels the bubble without action. (sentence case)">
           Keep changes
-        </message>
-      </if>
-
-      <if expr="not is_android">
-        <message name="IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE" desc="Title above app description to explain the content below is from this app">
-          From the app
         </message>
       </if>
 

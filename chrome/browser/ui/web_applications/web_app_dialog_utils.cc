@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/features.h"
@@ -159,6 +160,14 @@ void OnWebAppInstallShowInstallDialog(
             std::move(install_tracker), std::move(web_app_acceptance_callback),
             std::move(screenshots), iph_state);
         return;
+      } else if (base::FeatureList::IsEnabled(
+                     features::kWebAppUniversalInstall) &&
+                 web_app_info->is_diy_app) {
+        ShowDiyAppInstallDialog(initiator_web_contents, std::move(web_app_info),
+                                std::move(install_tracker),
+                                std::move(web_app_acceptance_callback),
+                                iph_state);
+        return;
       } else {
         ShowSimpleInstallDialogForWebApps(
             initiator_web_contents, std::move(web_app_info),
@@ -270,6 +279,13 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   WebAppInstalledCallback callback = base::DoNothing();
 
+  // Appropriately set the fallback behavior to distinguish installation of DIY
+  // apps with the create shortcut flow.
+  FallbackBehavior fallback_behavior =
+      flow == WebAppInstallFlow::kCreateShortcut
+          ? FallbackBehavior::kAllowFallbackDataAlways
+          : FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
+
   // TODO(b/307145346): Eventually, this should also be primary install for
   // Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -284,7 +300,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
                                         : std::vector<webapps::Screenshot>()),
         base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
                        std::move(callback)),
-        FallbackBehavior::kAllowFallbackDataAlways);
+        fallback_behavior);
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -297,7 +313,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
                      data.has_value() ? std::move(data->screenshots)
                                       : std::vector<webapps::Screenshot>()),
       base::BindOnce(OnWebAppInstalled, std::move(callback)),
-      FallbackBehavior::kAllowFallbackDataAlways);
+      fallback_behavior);
 }
 
 bool CreateWebAppFromManifest(content::WebContents* web_contents,

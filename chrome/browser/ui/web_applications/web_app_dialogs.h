@@ -157,6 +157,15 @@ void ShowSimpleInstallDialogForWebApps(
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
+// Shows the PWA install dialog for apps that are not installable, AKA, DIY
+// apps.
+void ShowDiyAppInstallDialog(
+    content::WebContents* web_contents,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    AppInstallationAcceptanceCallback callback,
+    PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
+
 // Shows the Web App detailed install dialog.
 // The dialog shows app's detailed information including screenshots. Users then
 // confirm or cancel install in this dialog.

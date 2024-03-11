@@ -40517,7 +40517,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WebAppDetailedInstallAccepted">
-  <owner>dmurph@gchromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <description>
     The user accepted an installation of a web app in the detailed installation
@@ -40526,7 +40526,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WebAppDetailedInstallCancelled">
-  <owner>dmurph@gchromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <description>
     The user cancelled an installation of a web app in the detailed installation
@@ -40535,11 +40535,38 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WebAppDetailedInstallShown">
-  <owner>dmurph@gchromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <description>
     The user was shown the detailed installation dialog for a web app (with
     screenshots, etc).
+  </description>
+</action>
+
+<action name="WebAppDiyInstallAccepted">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user accepted an installation of a web app in the DIY installation
+    dialog.
+  </description>
+</action>
+
+<action name="WebAppDiyInstallCancelled">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user cancelled an installation of a web app in the DIY installation
+    dialog.
+  </description>
+</action>
+
+<action name="WebAppDiyInstallShown">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The user was shown the DIY install dialog for a web app that is not
+    installable.
   </description>
 </action>
 

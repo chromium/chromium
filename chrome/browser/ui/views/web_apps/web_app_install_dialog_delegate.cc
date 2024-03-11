@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -24,6 +25,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
@@ -47,6 +50,17 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 
 }  // namespace
 
+std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
+  std::u16string normalized = title;
+  if (base::StartsWith(normalized, u"https://")) {
+    normalized = normalized.substr(8);
+  }
+  if (base::StartsWith(normalized, u"http://")) {
+    normalized = normalized.substr(7);
+  }
+  return normalized;
+}
+
 WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     content::WebContents* web_contents,
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
@@ -55,7 +69,8 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
-    InstallDialogType dialog_type)
+    InstallDialogType dialog_type,
+    DiyAppTitleFieldTextTracker title_field_data)
     : content::WebContentsObserver(web_contents),
       web_contents_(web_contents),
       install_info_(std::move(web_app_info)),
@@ -64,7 +79,8 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
       iph_state_(std::move(iph_state)),
       prefs_(prefs),
       tracker_(tracker),
-      dialog_type_(dialog_type) {
+      dialog_type_(dialog_type),
+      title_field_data_(title_field_data) {
   CHECK(install_info_);
   CHECK(install_info_->manifest_id.is_valid());
   CHECK(install_tracker_);
@@ -92,10 +108,7 @@ WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
 }
 
 void WebAppInstallDialogDelegate::OnAccept() {
-  const char* metric_to_measure = (dialog_type_ == InstallDialogType::kDetailed)
-                                      ? "WebAppDetailedInstallAccepted"
-                                      : "WebAppInstallAccepted";
-  base::RecordAction(base::UserMetricsAction(metric_to_measure));
+  MeasureAcceptUserActionsForInstallDialog();
   if (iph_state_ == PwaInProductHelpState::kShown) {
     webapps::AppId app_id =
         GenerateAppIdFromManifestId(install_info_->manifest_id);
@@ -114,6 +127,14 @@ void WebAppInstallDialogDelegate::OnAccept() {
             .SetAppId(app_id));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // DIY apps get their name from the DIY install dialog and are always set to
+  // open in a new window.
+  if (dialog_type_ == InstallDialogType::kDiy) {
+    install_info_->title = title_field_data_->data;
+    install_info_->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+  }
 
   CHECK(callback_);
   CHECK(install_tracker_);
@@ -171,12 +192,7 @@ void WebAppInstallDialogDelegate::MeasureIphOnDialogClose() {
   if (callback_.is_null()) {
     return;
   }
-
-  const char* metric_to_measure = (dialog_type_ == InstallDialogType::kDetailed)
-                                      ? "WebAppDetailedInstallCancelled"
-                                      : "WebAppInstallCancelled";
-  base::RecordAction(base::UserMetricsAction(metric_to_measure));
-
+  MeasureCancelUserActionsForInstallDialog();
   if (iph_state_ == PwaInProductHelpState::kShown && install_info_) {
     webapps::AppId app_id =
         GenerateAppIdFromManifestId(install_info_->manifest_id);
@@ -200,6 +216,38 @@ void WebAppInstallDialogDelegate::MeasureIphOnDialogClose() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
     std::move(callback_).Run(false, std::move(install_info_));
   }
+}
+
+void WebAppInstallDialogDelegate::MeasureAcceptUserActionsForInstallDialog() {
+  const char* accept_dialog_metric_name = nullptr;
+  switch (dialog_type_) {
+    case InstallDialogType::kDetailed:
+      accept_dialog_metric_name = "WebAppDetailedInstallAccepted";
+      break;
+    case InstallDialogType::kSimple:
+      accept_dialog_metric_name = "WebAppInstallAccepted";
+      break;
+    case InstallDialogType::kDiy:
+      accept_dialog_metric_name = "WebAppDiyInstallAccepted";
+      break;
+  }
+  base::RecordAction(base::UserMetricsAction(accept_dialog_metric_name));
+}
+
+void WebAppInstallDialogDelegate::MeasureCancelUserActionsForInstallDialog() {
+  const char* cancel_dialog_metric_name = nullptr;
+  switch (dialog_type_) {
+    case InstallDialogType::kDetailed:
+      cancel_dialog_metric_name = "WebAppDetailedInstallCancelled";
+      break;
+    case InstallDialogType::kSimple:
+      cancel_dialog_metric_name = "WebAppInstallCancelled";
+      break;
+    case InstallDialogType::kDiy:
+      cancel_dialog_metric_name = "WebAppDiyInstallCancelled";
+      break;
+  }
+  base::RecordAction(base::UserMetricsAction(cancel_dialog_metric_name));
 }
 
 }  // namespace web_app
