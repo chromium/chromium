@@ -4,6 +4,7 @@
 
 import '../controls/settings_dropdown_menu.js';
 
+import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
@@ -15,19 +16,6 @@ import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './facegaze_facial_expression_subpage.html.js';
-
-// MacroName is from
-// ../../../chromeos/accessibility/common/action_fulfillment/macros/macro_names.ts,
-// and represents the action that can be taken from a FaceGaze gesture.
-// TODO(b:322510392): If possible, share source a11y extensions instead of
-// copying here.
-enum MacroName {
-  UNSPECIFIED = 0,
-  TOGGLE_DICTATION = 16,
-  MOUSE_CLICK_LEFT = 35,
-  MOUSE_CLICK_RIGHT = 36,
-  RESET_CURSOR = 37,
-}
 
 const SettingsFaceGazeFacialExpressionSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(

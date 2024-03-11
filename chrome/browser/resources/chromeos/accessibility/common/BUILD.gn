@@ -17,6 +17,9 @@ accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
 tsc_out_dir = "$target_gen_dir/tsc"
 
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
 group("build") {
   deps = [
     ":copied_files",
@@ -67,7 +70,6 @@ ts_modules = [
   "action_fulfillment/macros/toggle_dictation_macro.ts",
   "action_fulfillment/macros/input_text_view_macro.ts",
   "action_fulfillment/macros/macro.ts",
-  "action_fulfillment/macros/macro_names.ts",
   "action_fulfillment/macros/nav_sent_macro.ts",
   "action_fulfillment/macros/repeat_macro.ts",
   "action_fulfillment/macros/repeatable_key_press_macro.ts",
@@ -76,6 +78,9 @@ ts_modules = [
   "action_fulfillment/macros/smart_replace_phrase_macro.ts",
   "action_fulfillment/macros/smart_select_between_macro.ts",
 ]
+
+# The relative path in the staging directory of TS modules that need to be copied from another directory.
+copied_ts_modules = [ "action_fulfillment/macros/macro_names.ts" ]
 
 ts_definitions = [
   "../definitions/accessibility_private_mv2.d.ts",
@@ -93,11 +98,32 @@ ts_definitions = [
   "//tools/typescript/definitions/windows.d.ts",
 ]
 
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_sources") {
+  sources = js_sources + ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
+}
+
+copy("copy_ash_common_macros") {
+  sources = [ "//ash/webui/common/resources/accessibility/macro_names.ts" ]
+  outputs = [ "$ts_build_staging_dir/action_fulfillment/macros/macro_names.ts" ]
+}
+
 ts_library("ts_build") {
+  root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
   definitions = ts_definitions
   composite = true
-  in_files = ts_modules + js_sources
+  in_files = ts_modules + js_sources + copied_ts_modules
+
+  # Targets that need to run before running the TS build.
+  extra_deps = [
+    # copied files in staging directory.
+    ":copy_ash_common_macros",
+    ":stage_ts_sources",
+  ]
 
   tsconfig_base = "../tsconfig.base.json"
 }

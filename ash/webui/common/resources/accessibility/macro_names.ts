@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestImportManager} from '../../testing/test_import_manager.js';
-
 /**
  * Supported macros. Similar to UserIntent.MacroName in
  * google3/intelligence/dbw/proto/macros/user_intent.proto.
@@ -142,5 +140,3 @@ export enum MacroName {
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }
-
-TestImportManager.exportForTesting(['MacroName', MacroName]);
