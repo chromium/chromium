@@ -88,7 +88,7 @@ using the `StrictNumeric` template:
 ```cpp
 // Throw a compiler error if the size argument cannot be represented by a
 // size_t (e.g. passing an int will fail to compile).
-bool AllocateBuffer(void** buffer, StrictCast<size_t> size);
+bool AllocateBuffer(void** buffer, StrictNumeric<size_t> size);
 ```
 
 ### Comparing values between arbitrary arithmetic types
