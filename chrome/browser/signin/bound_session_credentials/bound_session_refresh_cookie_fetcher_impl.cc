@@ -182,6 +182,11 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
       net_error,
       headers ? std::optional<int>(headers->response_code()) : std::nullopt);
 
+  if (result_ == Result::kConnectionError) {
+    base::UmaHistogramSparse(
+        "Signin.BoundSessionCredentials.CookieRotationNetError", -net_error);
+  }
+
   if (result_ == Result::kSuccess && !reported_cookies_notified_) {
     // Normally, a cookie update notification should be sent before the request
     // is complete. Add some leeway in the case mojo messages are delivered out

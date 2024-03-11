@@ -53,6 +53,7 @@ using unexportable_keys::UnexportableKeyService;
 
 constexpr char kSessionId[] = "session_id";
 constexpr char kChallenge[] = "aGVsbG8_d29ybGQ";
+constexpr net::Error kConnectionNetError = net::ERR_UNEXPECTED;
 
 UnexportableKeyId GenerateNewKey(
     UnexportableKeyService& unexportable_key_service) {
@@ -186,6 +187,15 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
         "Signin.BoundSessionCredentials."
         "CookieRotationGenerateAssertionDuration",
         expect_assertion_was_generated_count);
+
+    std::vector<base::Bucket> expected_net_error_buckets;
+    if (expected_result == Result::kConnectionError) {
+      expected_net_error_buckets.emplace_back(-kConnectionNetError,
+                                              /*count=*/1);
+    }
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    "Signin.BoundSessionCredentials.CookieRotationNetError"),
+                testing::ElementsAreArray(expected_net_error_buckets));
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -358,7 +368,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureNetError) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
 
-  network::URLLoaderCompletionStatus status(net::ERR_UNEXPECTED);
+  network::URLLoaderCompletionStatus status(kConnectionNetError);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url, status,
       network::mojom::URLResponseHead::New(), std::string());
