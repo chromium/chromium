@@ -64,6 +64,9 @@ class PushNotificationClient {
   // Loads a url in a new tab once an active browser is ready.
   void loadUrlInNewTab(const GURL& url);
 
+  // Loads the feedback view controller once an active browser is ready.
+  void loadFeedback();
+
   // Allows tests to set the last used ChromeBrowserState returned in
   // GetLastUsedBrowserState().
   void SetLastUsedChromeBrowserStateForTesting(
@@ -87,7 +90,9 @@ class PushNotificationClient {
  private:
   friend class ::CommercePushNotificationClientTest;
   std::vector<GURL> urls_delayed_for_loading_;
-
+  // Stores whether or not the feedback view controller should be shown when a
+  // Browser is ready.
+  bool feedback_presentation_delayed_ = false;
   // Allows tests to override the last used ChromeBrowserState returned in
   // GetLastUsedBrowserState().
   raw_ptr<ChromeBrowserState> last_used_browser_state_for_testing_ = nullptr;
