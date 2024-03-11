@@ -611,10 +611,6 @@ TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
 }
 
 TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
-  // TODO (crbug/1520660): Fix or remove test.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
@@ -629,12 +625,19 @@ TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
   const views::View* alert = GetAlertIndicator(tab);
   const int original_spacing = close->x() - alert->bounds().right();
 
-  tab->SetBounds(0, 0, 70, 50);
+  tab->SetBounds(0, 0, 90, 50);
   EXPECT_FALSE(GetTabIcon(tab)->GetVisible());
+
+  tab->SetBounds(0, 0, 76, 50);
   EXPECT_TRUE(close->GetVisible());
   EXPECT_TRUE(alert->GetVisible());
+
   // The alert indicator moves closer because the extra padding is gone.
   EXPECT_LT(close->x() - alert->bounds().right(), original_spacing);
+
+  tab->SetBounds(0, 0, 75, 50);
+  EXPECT_TRUE(close->GetVisible());
+  EXPECT_FALSE(alert->GetVisible());
 }
 
 TEST_F(TabTest, TitleTextHasSufficientContrast) {
