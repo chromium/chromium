@@ -206,6 +206,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.QuotaCheckTime.{QuotaCheckResult}" units="ms"
+    expires_after="2024-09-07">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the result of quota checks made by the IndexedDB component on commit of
+    readwrite txns.
+  </summary>
+  <token key="QuotaCheckResult">
+    <variant name="DroppedRequest"/>
+    <variant name="QuotaError"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
 <histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
     expires_after="2024-08-01">
   <owner>ayui@chromium.org</owner>

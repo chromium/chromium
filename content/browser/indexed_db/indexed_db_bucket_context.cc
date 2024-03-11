@@ -173,6 +173,67 @@ base::Time GenerateNextGlobalCompactionTime(base::Time now) {
   return now + base::Milliseconds(rand_millis);
 }
 
+// This struct facilitates requesting bucket space usage from the quota manager.
+// There have been reports of the callback being passed to the quota manager
+// never being invoked. This struct will make sure to invoke the wrapped
+// callback when it goes out of scope. The struct itself is in turn intended to
+// be wrapped in a callback passed to the quota manager.
+//
+// There are three main tasks for this struct.
+// * It makes sure the passed callback is run by doing so on destruction.
+// * It logs UMA.
+// * It times out the request if the quota manager is taking too long.
+struct GetBucketSpaceRequestWrapper {
+  static constexpr base::TimeDelta kTimeoutDuration = base::Seconds(45);
+
+  explicit GetBucketSpaceRequestWrapper(
+      base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> callback)
+      : wrapped_callback(std::move(callback)) {
+    StartTimer();
+  }
+
+  GetBucketSpaceRequestWrapper(GetBucketSpaceRequestWrapper&& other) {
+    wrapped_callback = std::move(other.wrapped_callback);
+    start_time = other.start_time;
+    StartTimer();
+  }
+
+  ~GetBucketSpaceRequestWrapper() { InvokeCallback(); }
+
+  void StartTimer() {
+    timeout.Start(FROM_HERE,
+                  kTimeoutDuration - (base::TimeTicks::Now() - start_time),
+                  base::BindOnce(&GetBucketSpaceRequestWrapper::InvokeCallback,
+                                 base::Unretained(this)));
+  }
+
+  void InvokeCallback() {
+    if (!wrapped_callback) {
+      return;
+    }
+
+    static const char kDroppedRequest[] =
+        "IndexedDB.QuotaCheckTime.DroppedRequest";
+    static const char kSuccess[] = "IndexedDB.QuotaCheckTime.Success";
+    static const char kQuotaError[] = "IndexedDB.QuotaCheckTime.QuotaError";
+    const char* histogram =
+        result_value ? result_value->has_value() ? kSuccess : kQuotaError
+                     : kDroppedRequest;
+    base::UmaHistogramCustomTimes(
+        histogram, base::TimeTicks::Now() - start_time, base::Milliseconds(1),
+        kTimeoutDuration, /*buckets=*/50U);
+
+    std::move(wrapped_callback)
+        .Run(result_value.value_or(
+            base::unexpected(storage::QuotaError::kUnknownError)));
+  }
+
+  base::OneShotTimer timeout;
+  base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> wrapped_callback;
+  std::optional<storage::QuotaErrorOr<int64_t>> result_value;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+};
+
 IndexedDBDatabaseError CreateDefaultError() {
   return IndexedDBDatabaseError(
       blink::mojom::IDBException::kUnknownError,
@@ -597,10 +658,18 @@ void IndexedDBBucketContext::CheckCanUseDiskSpace(
   bucket_space_check_callbacks_.emplace(space_requested,
                                         std::move(bucket_space_check_callback));
   if (!check_pending) {
+    auto callback_with_logging = base::BindOnce(
+        [](GetBucketSpaceRequestWrapper request_wrapper,
+           storage::QuotaErrorOr<int64_t> result) {
+          request_wrapper.result_value = result;
+        },
+        GetBucketSpaceRequestWrapper(
+            base::BindOnce(&IndexedDBBucketContext::OnGotBucketSpaceRemaining,
+                           weak_factory_.GetWeakPtr())));
+
     quota_manager()->GetBucketSpaceRemaining(
         bucket_locator(), base::SequencedTaskRunner::GetCurrentDefault(),
-        base::BindOnce(&IndexedDBBucketContext::OnGotBucketSpaceRemaining,
-                       weak_factory_.GetWeakPtr()));
+        std::move(callback_with_logging));
   }
 }
 
