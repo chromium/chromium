@@ -1558,7 +1558,6 @@ void AccessibilityManager::SetProfile(Profile* profile) {
       prefs::kDockedMagnifierEnabled};
 
   if (profile) {
-    // TODO(yoshiki): Move following code to PrefHandler.
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile->GetPrefs());
     pref_change_registrar_->Add(

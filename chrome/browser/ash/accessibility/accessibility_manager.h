@@ -120,7 +120,6 @@ enum class PlaySoundOption {
 
 // AccessibilityManager changes the statuses of accessibility features
 // watching profile notifications and pref-changes.
-// TODO(yoshiki): merge MagnificationManager with AccessibilityManager.
 class AccessibilityManager
     : public session_manager::SessionManagerObserver,
       public extensions::api::braille_display_private::BrailleObserver,

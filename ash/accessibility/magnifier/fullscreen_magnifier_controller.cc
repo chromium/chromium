@@ -307,7 +307,6 @@ void FullscreenMagnifierController::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  // TODO(yoshiki): implement here. crbug.com/230979
 }
 
 void FullscreenMagnifierController::OnMouseEvent(ui::MouseEvent* event) {
