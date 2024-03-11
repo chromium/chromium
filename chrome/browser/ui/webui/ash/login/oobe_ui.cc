@@ -346,6 +346,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isDisplaySizeEnabled",
                      features::IsOobeDisplaySizeEnabled());
 
+  source->AddBoolean("isPersonalizedOnboarding",
+                     features::IsOobePersonalizedOnboardingEnabled());
+
   source->AddBoolean("isOobeSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
 

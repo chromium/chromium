@@ -72,6 +72,7 @@ build_webui("build") {
     "screens/common/app_launch_splash.ts",
     "screens/common/assistant_optin.ts",
     "screens/common/autolaunch.ts",
+    "screens/common/categories_selection.ts",
     "screens/common/choobe.ts",
     "screens/common/consolidated_consent.ts",
     "screens/common/device_disabled.ts",
