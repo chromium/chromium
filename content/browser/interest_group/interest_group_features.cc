@@ -20,7 +20,7 @@ BASE_FEATURE(kEnableIFrameAdAuctionHeaders,
 // interests groups.
 BASE_FEATURE(kEnableUpdatingExecutionModeToFrozenContext,
              "EnableUpdatingExecutionModeToFrozenContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable updating userBiddingSignals when updating a user's interests groups.
 BASE_FEATURE(kEnableUpdatingUserBiddingSignals,

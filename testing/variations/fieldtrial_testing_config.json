@@ -14289,26 +14289,6 @@
             ]
         }
     ],
-    "ProtectedAudiencesEnableUpdatingExecutionModeToFrozenContext": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableUpdatingExecutionModeToFrozenContext"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudiencesHeaderDirectFromSellerSignalsStudy": [
         {
             "platforms": [
