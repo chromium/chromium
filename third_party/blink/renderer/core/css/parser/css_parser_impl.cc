@@ -237,6 +237,18 @@ static inline void FilterProperties(
 static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     HeapVector<CSSPropertyValue, 64>& parsed_properties,
     CSSParserMode mode) {
+  if (parsed_properties.size() < 2 ||
+      (parsed_properties.size() == 2 &&
+       parsed_properties[0].Id() != parsed_properties[1].Id())) {
+    // Fast path for the situations where we can trivially detect that there can
+    // be no collision between properties, and don't need to reorder, make
+    // bitsets, or similar.
+    ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
+        parsed_properties.data(), parsed_properties.size(), mode);
+    parsed_properties.clear();
+    return result;
+  }
+
   std::bitset<kNumCSSProperties> seen_properties;
   wtf_size_t unused_entries = parsed_properties.size();
   HeapVector<CSSPropertyValue, 64> results(unused_entries);
