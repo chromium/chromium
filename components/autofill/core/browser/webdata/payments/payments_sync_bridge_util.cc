@@ -104,6 +104,118 @@ CategoryBenefitTypeFromBenefitCategory(
   }
 }
 
+CreditCardCategoryBenefit::BenefitCategory
+BenefitCategoryFromCategoryBenefitType(
+    const sync_pb::CardBenefit::CategoryBenefitType category_benefit_type) {
+  switch (category_benefit_type) {
+    case sync_pb::CardBenefit::SUBSCRIPTION:
+      return CreditCardCategoryBenefit::BenefitCategory::kSubscription;
+    case sync_pb::CardBenefit::FLIGHTS:
+      return CreditCardCategoryBenefit::BenefitCategory::kFlights;
+    case sync_pb::CardBenefit::DINING:
+      return CreditCardCategoryBenefit::BenefitCategory::kDining;
+    case sync_pb::CardBenefit::ENTERTAINMENT:
+      return CreditCardCategoryBenefit::BenefitCategory::kEntertainment;
+    case sync_pb::CardBenefit::STREAMING:
+      return CreditCardCategoryBenefit::BenefitCategory::kStreaming;
+    case sync_pb::CardBenefit::GROCERY_STORES:
+      return CreditCardCategoryBenefit::BenefitCategory::kGroceryStores;
+    case sync_pb::CardBenefit::CATEGORY_BENEFIT_TYPE_UNKNOWN:
+      return CreditCardCategoryBenefit::BenefitCategory::
+          kUnknownBenefitCategory;
+  }
+}
+
+// Creates a CreditCardBenefit from the specified `benefit_specifics` and
+// `instrument_id`.
+std::optional<CreditCardBenefit> CreditCardBenefitFromSpecifics(
+    const sync_pb::CardBenefit& benefit_specifics,
+    const int64_t instrument_id) {
+  if (!benefit_specifics.has_benefit_id() ||
+      !benefit_specifics.has_benefit_description()) {
+    return std::nullopt;
+  }
+
+  CreditCardBenefitBase::BenefitId benefit_id =
+      CreditCardBenefitBase::BenefitId(benefit_specifics.benefit_id());
+  CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id =
+      CreditCardBenefitBase::LinkedCardInstrumentId(instrument_id);
+  std::u16string benefit_description =
+      base::UTF8ToUTF16(benefit_specifics.benefit_description());
+  // Set `start_time` to min if no value is given by specifics.
+  base::Time start_time =
+      benefit_specifics.has_start_time_unix_epoch_milliseconds()
+          ? base::Time::FromMillisecondsSinceUnixEpoch(
+                benefit_specifics.start_time_unix_epoch_milliseconds())
+          : base::Time::Min();
+  // Set `expiry_time` to max if no value is given by specifics.
+  base::Time expiry_time =
+      benefit_specifics.has_end_time_unix_epoch_milliseconds()
+          ? base::Time::FromMillisecondsSinceUnixEpoch(
+                benefit_specifics.end_time_unix_epoch_milliseconds())
+          : base::Time::Max();
+
+  if (benefit_specifics.has_flat_rate_benefit()) {
+    return CreditCardFlatRateBenefit(benefit_id, linked_card_instrument_id,
+                                     benefit_description, start_time,
+                                     expiry_time);
+  }
+
+  if (benefit_specifics.has_category_benefit() &&
+      BenefitCategoryFromCategoryBenefitType(
+          benefit_specifics.category_benefit().category_benefit_type()) !=
+          CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
+    return CreditCardCategoryBenefit(
+        benefit_id, linked_card_instrument_id,
+        BenefitCategoryFromCategoryBenefitType(
+            benefit_specifics.category_benefit().category_benefit_type()),
+        benefit_description, start_time, expiry_time);
+  }
+
+  if (benefit_specifics.has_merchant_benefit() &&
+      benefit_specifics.merchant_benefit().merchant_domain_size() > 0) {
+    base::flat_set<url::Origin> merchant_domains;
+    for (const std::string& url :
+         benefit_specifics.merchant_benefit().merchant_domain()) {
+      merchant_domains.insert(url::Origin::Create(GURL(url)));
+    }
+    return CreditCardMerchantBenefit(benefit_id, linked_card_instrument_id,
+                                     benefit_description, merchant_domains,
+                                     start_time, expiry_time);
+  }
+
+  return std::nullopt;
+}
+
+// Creates a vector of CreditCardBenefit from the specifies 'card_specifics`.
+std::vector<CreditCardBenefit> CreditCardBenefitsFromCardSpecifics(
+    const sync_pb::WalletMaskedCreditCard& card_specifics) {
+  std::vector<CreditCardBenefit> benefits_from_specifics;
+
+  // Only return card benefits if the related feature is enabled and
+  // `product_terms_url` is not empty.
+  // Benefit should not be returned without a `product_terms_url` as we
+  // should not show users data from the issuers without giving them
+  // access to the terms and conditions.
+  if (!card_specifics.has_product_terms_url() ||
+      !base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCardBenefitsSync)) {
+    return benefits_from_specifics;
+  }
+
+  // Get `CreditCardBenefit` from card_specifics.
+  for (const sync_pb::CardBenefit& benefit_specifics :
+       card_specifics.card_benefit()) {
+    if (std::optional<CreditCardBenefit> benefit =
+            CreditCardBenefitFromSpecifics(benefit_specifics,
+                                           card_specifics.instrument_id())) {
+      benefits_from_specifics.push_back(benefit.value());
+    }
+  }
+
+  return benefits_from_specifics;
+}
+
 // Creates a CreditCard from the specified `card` specifics.
 CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   CreditCard result(CreditCard::RecordType::kMaskedServerCard, card.id());
@@ -181,6 +293,12 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   }
 
   result.set_product_description(base::UTF8ToUTF16(card.product_description()));
+
+  if (card.has_product_terms_url() &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCardBenefitsSync)) {
+    result.set_product_terms_url(GURL(card.product_terms_url()));
+  }
 
   return result;
 }
@@ -744,7 +862,8 @@ void PopulateWalletTypesFromSyncData(
     std::vector<Iban>& wallet_ibans,
     std::vector<PaymentsCustomerData>& customer_data,
     std::vector<CreditCardCloudTokenData>& cloud_token_data,
-    std::vector<BankAccount>& bank_accounts) {
+    std::vector<BankAccount>& bank_accounts,
+    std::vector<CreditCardBenefit>& benefits) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_wallet());
 
@@ -752,10 +871,17 @@ void PopulateWalletTypesFromSyncData(
         change->data().specifics.autofill_wallet();
 
     switch (autofill_specifics.type()) {
-      case sync_pb::AutofillWalletSpecifics::MASKED_CREDIT_CARD:
+      case sync_pb::AutofillWalletSpecifics::MASKED_CREDIT_CARD: {
         wallet_cards.push_back(
             CardFromSpecifics(autofill_specifics.masked_card()));
+
+        std::vector<CreditCardBenefit> benefits_from_specifics =
+            CreditCardBenefitsFromCardSpecifics(
+                autofill_specifics.masked_card());
+        benefits.insert(benefits.end(), benefits_from_specifics.begin(),
+                        benefits_from_specifics.end());
         break;
+      }
       case sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS:
         // POSTAL_ADDRESS is deprecated.
         break;
@@ -769,8 +895,8 @@ void PopulateWalletTypesFromSyncData(
         break;
       case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT:
         // Only payment instruments of type bank account are supported. This
-        // support is also only available on Android. For other platforms, we'd
-        // ignore this type.
+        // support is also only available on Android. For other platforms,
+        // we'd ignore this type.
         if (AreMaskedBankAccountSupported() &&
             autofill_specifics.payment_instrument().instrument_details_case() ==
                 sync_pb::PaymentInstrument::InstrumentDetailsCase::

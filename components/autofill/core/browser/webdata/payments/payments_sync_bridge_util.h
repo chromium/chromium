@@ -129,7 +129,8 @@ void PopulateWalletTypesFromSyncData(
     std::vector<Iban>& wallet_ibans,
     std::vector<PaymentsCustomerData>& customer_data,
     std::vector<CreditCardCloudTokenData>& cloud_token_data,
-    std::vector<BankAccount>& bank_accounts);
+    std::vector<BankAccount>& bank_accounts,
+    std::vector<CreditCardBenefit>& benefits);
 
 // A helper function to compare two sets of data. Returns true if there is
 // any difference. It uses the Compare() of the Item class instead of comparison
