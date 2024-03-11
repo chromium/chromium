@@ -842,10 +842,10 @@ public final class ProductionSupportedFlagList {
                         + " `viz::LocalSurfaceId` from the impl thread."),
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE,
-                "Enables Partition Allocator's FreeFlags::kSchedulerLoopQuarantine"),
+                "Enables PartitionAlloc's FreeFlags::kSchedulerLoopQuarantine"),
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_ZAPPING_BY_FREE_FLAGS,
-                "Enables Partition Allocator's FreeFlags::kZap"),
+                "Enables PartitionAlloc's FreeFlags::kZap"),
         Flag.baseFeature(
                 BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
                 "Starts capturing bfcache blocking details"),
