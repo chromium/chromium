@@ -138,7 +138,7 @@ void CrashReporterURLObserver::RemoveWebStateList(
 #pragma mark - Record URLs
 
 void CrashReporterURLObserver::RecordURL(const GURL& url,
-                                         web::WebState* web_state,
+                                         const web::WebState* web_state,
                                          bool pending) {
   DCHECK(!web_state->GetBrowserState()->IsOffTheRecord());
   std::string group = web_state_to_group_[web_state];
@@ -175,9 +175,13 @@ void CrashReporterURLObserver::RecordURL(const GURL& url,
   }
 }
 
-void CrashReporterURLObserver::RecordURLForWebState(web::WebState* web_state) {
-  web::NavigationItem* pending_item =
-      web_state->GetNavigationManager()->GetPendingItem();
+void CrashReporterURLObserver::RecordURLForWebState(
+    const web::WebState* web_state) {
+  // web_state is const, so GetNavigationManager won't force its realization
+  // (which is intended).
+  const web::NavigationManager* manager = web_state->GetNavigationManager();
+  const web::NavigationItem* pending_item =
+      manager ? manager->GetPendingItem() : nullptr;
   const GURL& url =
       pending_item ? pending_item->GetURL() : web_state->GetLastCommittedURL();
   RecordURL(url, web_state, pending_item != nullptr);
