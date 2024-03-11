@@ -320,13 +320,10 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("url", ["https://example.com/", "data:text/html,"])
 async def test_browsingContext_navigationStartedEvent_viaScript(
-        websocket, context_id, url):
-    if url == "data:text/html,":
-        pytest.xfail(
-            reason="TODO: Page.frameStartedLoading not emitted for data url")
-    serialized_url = {"type": "string", "value": url}
+        websocket, context_id, base_url):
+
+    serialized_url = {"type": "string", "value": base_url}
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
     await send_JSON_command(

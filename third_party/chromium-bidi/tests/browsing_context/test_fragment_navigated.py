@@ -18,12 +18,11 @@ from test_helpers import (ANY_TIMESTAMP, goto_url, read_JSON_message,
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_fragmentNavigated_event(websocket, context_id):
-    url = "https://example.com/"
-
+async def test_browsingContext_fragmentNavigated_event(websocket, context_id,
+                                                       base_url):
     await subscribe(websocket, ["browsingContext.fragmentNavigated"])
 
-    await goto_url(websocket, context_id, url)
+    await goto_url(websocket, context_id, base_url)
 
     await send_JSON_command(
         websocket, {
@@ -45,6 +44,6 @@ async def test_browsingContext_fragmentNavigated_event(websocket, context_id):
             "context": context_id,
             "navigation": None,
             "timestamp": ANY_TIMESTAMP,
-            "url": url + "#test",
+            "url": base_url + "#test",
         }
     }

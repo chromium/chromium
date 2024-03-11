@@ -28,14 +28,14 @@ def compute_response_headers_size(headers) -> int:
 
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_emitted(
-        websocket, context_id):
+        websocket, context_id, base_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "http://example.com",
+                "url": base_url,
                 "wait": "complete",
                 "context": context_id
             }
@@ -53,7 +53,7 @@ async def test_network_before_request_sent_event_emitted(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": "http://example.com/",
+                "url": base_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -71,7 +71,7 @@ async def test_network_before_request_sent_event_emitted(
 
 @pytest.mark.asyncio
 async def test_network_global_subscription_enabled_in_new_context(
-        websocket, create_context):
+        websocket, create_context, base_url):
     await subscribe(websocket, ["network.beforeRequestSent"])
 
     new_context_id = await create_context()
@@ -79,7 +79,7 @@ async def test_network_global_subscription_enabled_in_new_context(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "http://example.com",
+                "url": base_url,
                 "wait": "complete",
                 "context": new_context_id
             }
@@ -98,8 +98,8 @@ async def test_network_global_subscription_enabled_in_new_context(
 
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_with_cookies_emitted(
-        websocket, context_id):
-    await goto_url(websocket, context_id, "http://example.com")
+        websocket, context_id, base_url, example_url):
+    await goto_url(websocket, context_id, base_url)
 
     await execute_command(
         websocket, {
@@ -120,7 +120,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "http://example.com/qwe",
+                "url": example_url,
                 "wait": "complete",
                 "context": context_id
             }
@@ -137,12 +137,12 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": "http://example.com/qwe",
+                "url": example_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": AnyOr([
                     AnyExtending({
-                        "domain": "example.com",
+                        "domain": "localhost",
                         "httpOnly": False,
                         "name": "foo",
                         "path": "/",
@@ -168,14 +168,15 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
 
 
 @pytest.mark.asyncio
-async def test_network_response_completed_event_emitted(websocket, context_id):
+async def test_network_response_completed_event_emitted(
+        websocket, context_id, base_url):
     await subscribe(websocket, ["network.responseCompleted"], [context_id])
 
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "http://example.com",
+                "url": base_url,
                 "wait": "complete",
                 "context": context_id
             }
@@ -195,7 +196,7 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
             "redirectCount": AnyOr(0, 1),
             "request": {
                 "request": ANY_STR,
-                "url": AnyOr("http://example.com/", "https://example.com/"),
+                "url": base_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -205,8 +206,8 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
             },
             "timestamp": ANY_TIMESTAMP,
             "response": {
-                "url": AnyOr("http://example.com/", "https://example.com/"),
-                "protocol": AnyOr("http/1.1", "h2"),
+                "url": base_url,
+                "protocol": AnyOr("http/1.0", "h2"),
                 "status": AnyOr(200, 307),
                 "statusText": AnyOr("OK", "", "Temporary Redirect"),
                 "fromCache": False,
@@ -224,14 +225,15 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_network_response_started_event_emitted(websocket, context_id):
+async def test_network_response_started_event_emitted(websocket, context_id,
+                                                      base_url):
     await subscribe(websocket, ["network.responseStarted"], [context_id])
 
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "http://example.com",
+                "url": base_url,
                 "wait": "complete",
                 "context": context_id
             }
@@ -251,7 +253,7 @@ async def test_network_response_started_event_emitted(websocket, context_id):
             "redirectCount": AnyOr(0, 1),
             "request": {
                 "request": ANY_STR,
-                "url": AnyOr("http://example.com/", "https://example.com/"),
+                "url": base_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -261,8 +263,8 @@ async def test_network_response_started_event_emitted(websocket, context_id):
             },
             "timestamp": ANY_TIMESTAMP,
             "response": {
-                "url": AnyOr("http://example.com/", "https://example.com/"),
-                "protocol": AnyOr("http/1.1", "h2"),
+                "url": base_url,
+                "protocol": AnyOr("http/1.0", "h2"),
                 "status": AnyOr(200, 307),
                 "statusText": AnyOr("OK", "", "Temporary Redirect"),
                 "fromCache": False,
@@ -362,7 +364,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: #1080")
 async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
-        websocket, context_id, create_context):
+        websocket, context_id, create_context, base_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     new_context_id = await create_context()
@@ -373,7 +375,7 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "http://example.com",
+                "url": base_url,
                 "wait": "complete",
                 "context": new_context_id
             }
@@ -391,7 +393,8 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
 
 
 @pytest.mark.asyncio
-async def test_network_sends_only_included_cookies(websocket, context_id):
+async def test_network_sends_only_included_cookies(websocket, context_id,
+                                                   base_url):
 
     await goto_url(websocket, context_id, "https://example.com")
 
@@ -414,13 +417,13 @@ async def test_network_sends_only_included_cookies(websocket, context_id):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "http://example.com/",
+                "url": base_url,
                 "wait": "complete",
                 "context": context_id
             }
         })
 
-    response = await read_JSON_message(websocket)
+    response = await wait_for_event(websocket, "network.beforeRequestSent")
     assert response == {
         'type': 'event',
         "method": "network.beforeRequestSent",
@@ -431,7 +434,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id):
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": "http://example.com/",
+                "url": base_url,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -450,11 +453,11 @@ async def test_network_sends_only_included_cookies(websocket, context_id):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: #1350")
 async def test_network_should_not_block_queue_shared_workers_with_data_url(
-        websocket, context_id):
+        websocket, context_id, base_url):
 
     await subscribe(websocket, ["network.beforeRequestSent"])
 
-    await goto_url(websocket, context_id, "https://example.com")
+    await goto_url(websocket, context_id, base_url)
 
     await send_JSON_command(
         websocket, {
