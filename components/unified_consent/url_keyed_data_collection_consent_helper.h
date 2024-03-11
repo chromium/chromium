@@ -58,6 +58,8 @@ class UrlKeyedDataCollectionConsentHelper {
   // whether *bookmarks* data collection is enabled. This should be used when
   // the client needs to check whether the user has granted consent for
   // bookmarks data collection keyed by their Google account.
+  // TODO(crbug.com/40067025): Remove the `require_sync_feature_enabled` param
+  // once kReplaceSyncPromosWithSignInPromos is launched.
   static std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
   NewPersonalizedBookmarksDataCollectionConsentHelper(
       syncer::SyncService* sync_service,
