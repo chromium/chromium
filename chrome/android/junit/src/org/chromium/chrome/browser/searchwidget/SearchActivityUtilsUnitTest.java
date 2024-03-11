@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.text.TextUtils;
 
 import org.junit.Test;
@@ -15,13 +18,19 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchActivityUtilsUnitTest {
-    private Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+    // Dummy Activity class that guarantees the PackageName is valid for IntentUtils.
+    private static class TestActivity extends Activity {}
+
+    private static final GURL GOOD_URL = new GURL("https://abc.xyz");
+    private static final GURL EMPTY_URL = GURL.emptyGURL();
+    private Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
     @Test
     public void buildTrustedIntent_appliesExpectedAction() {
@@ -47,29 +56,26 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void requestOmniboxForResult_noActionWhenActivityIsNull() {
-        var url = GURL.emptyGURL();
-        SearchActivityUtils.requestOmniboxForResult(null, url);
+        SearchActivityUtils.requestOmniboxForResult(null, EMPTY_URL);
     }
 
     @Test
     public void requestOmniboxForResult_propagatesCurrentUrl() {
-        var url = new GURL("https://abc.xyz");
-        SearchActivityUtils.requestOmniboxForResult(mActivity, url);
+        SearchActivityUtils.requestOmniboxForResult(mActivity, GOOD_URL);
 
         var intentForResult = Shadows.shadowOf(mActivity).getNextStartedActivityForResult();
 
         assertEquals(
                 IntentUtils.safeGetStringExtra(
                         intentForResult.intent, SearchActivityUtils.EXTRA_CURRENT_URL),
-                url.getSpec());
+                GOOD_URL.getSpec());
         assertEquals(SearchActivityUtils.OMNIBOX_REQUEST_CODE, intentForResult.requestCode);
     }
 
     @Test
     public void requestOmniboxForResult_acceptsEmptyUrl() {
         // This is technically an invalid case. The test verifies we still do the right thing.
-        var url = GURL.emptyGURL();
-        SearchActivityUtils.requestOmniboxForResult(mActivity, url);
+        SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
 
         var intentForResult = Shadows.shadowOf(mActivity).getNextStartedActivityForResult();
 
@@ -81,5 +87,189 @@ public class SearchActivityUtilsUnitTest {
                         IntentUtils.safeGetStringExtra(
                                 intentForResult.intent, SearchActivityUtils.EXTRA_CURRENT_URL)));
         assertEquals(SearchActivityUtils.OMNIBOX_REQUEST_CODE, intentForResult.requestCode);
+    }
+
+    @Test
+    public void isOmniboxRequestForResult_validIntent() {
+        SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
+
+        var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+        assertTrue(SearchActivityUtils.isOmniboxRequestForResult(intent));
+    }
+
+    @Test
+    public void isOmniboxRequestForResult_untrustedIntent() {
+        SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
+
+        var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+        intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+        assertFalse(SearchActivityUtils.isOmniboxRequestForResult(intent));
+    }
+
+    @Test
+    public void isOmniboxRequestForResult_missingData() {
+        SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
+
+        var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+        intent.removeExtra(SearchActivityUtils.EXTRA_CURRENT_URL);
+        assertFalse(SearchActivityUtils.isOmniboxRequestForResult(intent));
+    }
+
+    @Test
+    public void resolveOmniboxRequestForResult_successfulResolutionForValidGURL() {
+        // Simulate environment where we received an intent from self.
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        assertTrue(intent.hasExtra(SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
+        assertEquals(
+                GOOD_URL.getSpec(),
+                IntentUtils.safeGetStringExtra(intent, SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
+        assertEquals(Activity.RESULT_OK, Shadows.shadowOf(mActivity).getResultCode());
+    }
+
+    @Test
+    public void resolveOmniboxRequestForResult_noTrustedExtrasWithUnexpectedCallingPackage() {
+        // An unlikely scenario where the caller somehow managed to pass a valid trusted token.
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingPackage("com.abc.xyz");
+
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        assertFalse(intent.hasExtra(SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
+        assertFalse(IntentUtils.safeHasExtra(intent, SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
+
+        // Respectfully tell the caller we have nothing else to share.
+        assertEquals(Activity.RESULT_OK, Shadows.shadowOf(mActivity).getResultCode());
+    }
+
+    @Test
+    public void resolveOmniboxRequestForResult_canceledResolutionForNullOrInvalidGURLs() {
+        var activity = Shadows.shadowOf(mActivity);
+
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, null);
+        assertEquals(Activity.RESULT_CANCELED, activity.getResultCode());
+
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GURL.emptyGURL());
+        assertEquals(Activity.RESULT_CANCELED, activity.getResultCode());
+
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, new GURL("a b"));
+        assertEquals(Activity.RESULT_CANCELED, activity.getResultCode());
+    }
+
+    @Test
+    public void isOmniboxResult_validResponse() {
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+
+        // Our own responses should always be valid.
+        assertTrue(
+                SearchActivityUtils.isOmniboxResult(
+                        SearchActivityUtils.OMNIBOX_REQUEST_CODE, intent));
+    }
+
+    @Test
+    public void isOmniboxResult_invalidRequestCode() {
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+
+        assertFalse(
+                SearchActivityUtils.isOmniboxResult(
+                        SearchActivityUtils.OMNIBOX_REQUEST_CODE - 1, intent));
+        assertFalse(SearchActivityUtils.isOmniboxResult(0, intent));
+        assertFalse(SearchActivityUtils.isOmniboxResult(~0, intent));
+    }
+
+    @Test
+    public void isOmniboxResult_untrustedReply() {
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+
+        intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+        assertFalse(
+                SearchActivityUtils.isOmniboxResult(
+                        SearchActivityUtils.OMNIBOX_REQUEST_CODE, intent));
+    }
+
+    @Test
+    public void isOmniboxResult_missingDestinationUrl() {
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+
+        intent.removeExtra(SearchActivityUtils.EXTRA_URL_TO_NAVIGATE);
+        assertFalse(
+                SearchActivityUtils.isOmniboxResult(
+                        SearchActivityUtils.OMNIBOX_REQUEST_CODE, intent));
+    }
+
+    @Test
+    public void getOmniboxResult_successfulResolution() {
+        // Resolve intent with GOOD_URL.
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+
+        // We should see the same URL on the receiving side.
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        assertEquals(
+                GOOD_URL.getSpec(),
+                SearchActivityUtils.getOmniboxResult(
+                                SearchActivityUtils.OMNIBOX_REQUEST_CODE,
+                                Activity.RESULT_OK,
+                                intent)
+                        .getSpec());
+    }
+
+    @Test
+    public void getOmniboxResult_returnsNullForNonOmniboxResult() {
+        // Resolve intent with GOOD_URL. Note, we don't want to get caught in early returns - make
+        // sure our intent is valid.
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+
+        // We should see no GURL object on the receiving side: this is not our intent.
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        assertNull(
+                SearchActivityUtils.getOmniboxResult(
+                        /* requestCode= */ ~0, Activity.RESULT_OK, intent));
+    }
+
+    @Test
+    public void getOmniboxResult_returnsEmptyGURLForCanceledNavigation() {
+        // Resolve intent with GOOD_URL. Note, we don't want to get caught in early returns - make
+        // sure our intent is valid.
+        var activity = Shadows.shadowOf(mActivity);
+        activity.setCallingActivity(
+                new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+
+        // We should see an empty GURL on the receiving side.
+        var intent = Shadows.shadowOf(mActivity).getResultIntent();
+        assertTrue(
+                SearchActivityUtils.getOmniboxResult(
+                                SearchActivityUtils.OMNIBOX_REQUEST_CODE,
+                                Activity.RESULT_CANCELED,
+                                intent)
+                        .isEmpty());
     }
 }
