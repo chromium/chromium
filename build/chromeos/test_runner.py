@@ -115,9 +115,13 @@ class RemoteTest:
           '--copy-on-write',
       ]
     else:
-      self._test_cmd += [
-          '--device', args.device if args.device else LAB_DUT_HOSTNAME
-      ]
+      if args.fetch_cros_hostname:
+        self._test_cmd += ['--device', get_cros_hostname()]
+      else:
+        self._test_cmd += [
+            '--device', args.device if args.device else LAB_DUT_HOSTNAME
+        ]
+
     if args.logs_dir:
       for log in SYSTEM_LOG_LOCATIONS:
         self._test_cmd += ['--results-src', log]
@@ -744,9 +748,12 @@ def host_cmd(args, cmd_args):
         '--copy-on-write',
     ]
   else:
-    cros_run_test_cmd += [
-        '--device', args.device if args.device else LAB_DUT_HOSTNAME
-    ]
+    if args.fetch_cros_hostname:
+      cros_run_test_cmd += ['--device', get_cros_hostname()]
+    else:
+      cros_run_test_cmd += [
+          '--device', args.device if args.device else LAB_DUT_HOSTNAME
+      ]
   if args.verbose:
     cros_run_test_cmd.append('--debug')
   if args.flash:
@@ -796,6 +803,29 @@ def host_cmd(args, cmd_args):
 
   return subprocess.call(
       cros_run_test_cmd, stdout=sys.stdout, stderr=sys.stderr, env=test_env)
+
+
+def get_cros_hostname_from_bot_id(bot_id):
+  """Parse hostname from a chromeos-swarming bot id."""
+  for prefix in ['cros-', 'crossk-']:
+    if bot_id.startswith(prefix):
+      return bot_id[len(prefix):]
+  return bot_id
+
+
+def get_cros_hostname():
+  """Fetch bot_id from env var and parse hostname."""
+
+  # In chromeos-swarming, we can extract hostname from bot ID, since
+  # bot ID is formatted as "{prefix}{hostname}".
+  bot_id = os.environ.get('SWARMING_BOT_ID')
+  if bot_id:
+    return get_cros_hostname_from_bot_id(bot_id)
+
+  logging.warning(
+      'Attempted to read from SWARMING_BOT_ID env var and it was'
+      ' not defined. Will set %s as device instead.', LAB_DUT_HOSTNAME)
+  return LAB_DUT_HOSTNAME
 
 
 def setup_env():
@@ -897,7 +927,11 @@ def add_common_args(*parsers):
         type=str,
         help='Hostname (or IP) of device to run the test on. This arg is not '
         'required if --use-vm is set.')
-
+    vm_or_device_group.add_argument(
+        '--fetch-cros-hostname',
+        action='store_true',
+        help='Will extract device hostname from the SWARMING_BOT_ID env var if '
+        'running on ChromeOS Swarming.')
 
 def main():
   parser = argparse.ArgumentParser()
@@ -1035,7 +1069,7 @@ def main():
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
-  if not args.use_vm and not args.device:
+  if not args.use_vm and not args.device and not args.fetch_cros_hostname:
     logging.warning(
         'The test runner is now assuming running in the lab environment, if '
         'this is unintentional, please re-invoke the test runner with the '
