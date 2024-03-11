@@ -311,7 +311,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   // Evaluates the given anchor query. Returns nullopt if the query invalid
   // (e.g., no target or wrong axis).
-  std::optional<LayoutUnit> Evaluate(const CalculationExpressionNode&) override;
+  std::optional<LayoutUnit> Evaluate(const class AnchorQuery&) override;
 
   // Finds the rect of the element referenced by the `position-fallback-bounds`
   // property, or nullopt if there's no such element.

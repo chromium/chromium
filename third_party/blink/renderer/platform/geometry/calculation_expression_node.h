@@ -62,7 +62,6 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool IsSizingKeyword() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
-  virtual bool IsAnchorQuery() const { return false; }
 
   virtual scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const = 0;

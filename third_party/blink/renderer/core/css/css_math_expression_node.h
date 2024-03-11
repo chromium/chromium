@@ -679,11 +679,9 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   double ComputeDouble(const CSSLengthResolver&) const final;
 
  private:
-  std::optional<LayoutUnit> EvaluateQuery(
-      const CalculationExpressionNode& query,
-      const CSSLengthResolver&) const;
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpressionQuery(
-      const CSSLengthResolver&) const;
+  std::optional<LayoutUnit> EvaluateQuery(const AnchorQuery& query,
+                                          const CSSLengthResolver&) const;
+  AnchorQuery ToQuery(const CSSLengthResolver& length_resolver) const;
 
   CSSAnchorQueryType type_;
   Member<const CSSValue> anchor_specifier_;

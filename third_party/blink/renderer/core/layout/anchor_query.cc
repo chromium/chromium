@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_query.h"
 
-#include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
@@ -362,9 +361,7 @@ const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
 }
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
-    const CalculationExpressionNode& node) {
-  DCHECK(node.IsAnchorQuery());
-  const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
+    const class AnchorQuery& anchor_query) {
   switch (anchor_query.Type()) {
     case CSSAnchorQueryType::kAnchor:
       return EvaluateAnchor(anchor_query.AnchorSpecifier(),

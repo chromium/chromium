@@ -5,9 +5,6 @@
 #include "third_party/blink/renderer/core/css/result_caching_anchor_evaluator.h"
 
 #include "third_party/blink/renderer/core/css/anchor_results.h"
-#include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
-#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 
 namespace blink {
 
@@ -19,15 +16,15 @@ ResultCachingAnchorEvaluator::ResultCachingAnchorEvaluator(
 }
 
 std::optional<LayoutUnit> ResultCachingAnchorEvaluator::Evaluate(
-    const CalculationExpressionNode& node) {
+    const AnchorQuery& query) {
   if (GetMode() == AnchorScope::Mode::kNone) {
     return std::nullopt;
   }
   // Forward mode to inner evaluator.
   AnchorScope anchor_scope(GetMode(), evaluator_);
   std::optional<LayoutUnit> result =
-      evaluator_ ? evaluator_->Evaluate(node) : std::optional<LayoutUnit>();
-  results_.Set(GetMode(), node, result);
+      evaluator_ ? evaluator_->Evaluate(query) : std::optional<LayoutUnit>();
+  results_.Set(GetMode(), query, result);
   return result;
 }
 

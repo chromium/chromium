@@ -109,10 +109,10 @@ struct UsedInsetsTestCase {
 
 namespace {
 
-const CalculationExpressionNode* ToExpressionNode(ExpectedInset inset) {
+std::optional<AnchorQuery> ToAnchorQuery(ExpectedInset inset) {
   switch (inset) {
     case ExpectedInset::kZero:
-      return nullptr;  // 0px
+      return std::nullopt;  // 0px
     case ExpectedInset::kTop:
       return InsetArea::AnchorTop();
     case ExpectedInset::kBottom:
@@ -179,13 +179,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(InsetAreaUsedInsetsTest, All) {
   const UsedInsetsTestCase& test_case = GetParam();
   EXPECT_EQ(test_case.physical.UsedTop(),
-            ToExpressionNode(test_case.expected_top));
+            ToAnchorQuery(test_case.expected_top));
   EXPECT_EQ(test_case.physical.UsedBottom(),
-            ToExpressionNode(test_case.expected_bottom));
+            ToAnchorQuery(test_case.expected_bottom));
   EXPECT_EQ(test_case.physical.UsedLeft(),
-            ToExpressionNode(test_case.expected_left));
+            ToAnchorQuery(test_case.expected_left));
   EXPECT_EQ(test_case.physical.UsedRight(),
-            ToExpressionNode(test_case.expected_right));
+            ToAnchorQuery(test_case.expected_right));
 }
 
 }  // namespace blink

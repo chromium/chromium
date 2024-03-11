@@ -35,7 +35,6 @@
 #include <numeric>
 
 #include "base/memory/values_equivalent.h"
-#include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -2399,11 +2398,9 @@ double CSSMathExpressionAnchorQuery::ComputeDouble(
   // AnchorQueryCategory), in which case we'll reach ToCalculationExpression
   // instead.
 
-  // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
-  scoped_refptr<const CalculationExpressionNode> query =
-      ToCalculationExpressionQuery(length_resolver);
+  AnchorQuery query = ToQuery(length_resolver);
 
-  if (std::optional<LayoutUnit> px = EvaluateQuery(*query, length_resolver)) {
+  if (std::optional<LayoutUnit> px = EvaluateQuery(query, length_resolver)) {
     return px.value();
   }
 
@@ -2492,12 +2489,11 @@ CSSAnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
-  scoped_refptr<const CalculationExpressionNode> query =
-      ToCalculationExpressionQuery(length_resolver);
+  AnchorQuery query = ToQuery(length_resolver);
 
   Length result;
 
-  if (std::optional<LayoutUnit> px = EvaluateQuery(*query, length_resolver)) {
+  if (std::optional<LayoutUnit> px = EvaluateQuery(query, length_resolver)) {
     result = Length::Fixed(px.value());
   } else if (fallback_) {
     result = fallback_->ConvertToLength(length_resolver);
@@ -2509,7 +2505,7 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
 }
 
 std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
-    const CalculationExpressionNode& query,
+    const AnchorQuery& query,
     const CSSLengthResolver& length_resolver) const {
   length_resolver.ReferenceAnchor();
   if (AnchorEvaluator* anchor_evaluator =
@@ -2519,10 +2515,8 @@ std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
   return std::nullopt;
 }
 
-scoped_refptr<const CalculationExpressionNode>
-CSSMathExpressionAnchorQuery::ToCalculationExpressionQuery(
+AnchorQuery CSSMathExpressionAnchorQuery::ToQuery(
     const CSSLengthResolver& length_resolver) const {
-  // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
   DCHECK(IsScopedValue());
   AnchorSpecifierValue* anchor_specifier = AnchorSpecifierValue::Default();
   if (const auto* implicit =
@@ -2536,27 +2530,22 @@ CSSMathExpressionAnchorQuery::ToCalculationExpressionQuery(
         *MakeGarbageCollected<ScopedCSSName>(custom_ident->Value(),
                                              custom_ident->GetTreeScope()));
   }
-  Length fallback = fallback_ ? fallback_->ConvertToLength(length_resolver)
-                              : Length::Fixed(0);
-
   if (type_ == CSSAnchorQueryType::kAnchor) {
     if (const CSSPrimitiveValue* percentage =
             DynamicTo<CSSPrimitiveValue>(*value_)) {
       DCHECK(percentage->IsPercentage());
-      return CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
-          *anchor_specifier, percentage->GetFloatValue(), fallback);
+      return AnchorQuery(type_, anchor_specifier, percentage->GetFloatValue(),
+                         CSSAnchorValue::kPercentage);
     }
     const CSSIdentifierValue& side = To<CSSIdentifierValue>(*value_);
-    return CalculationExpressionAnchorQueryNode::CreateAnchor(
-        *anchor_specifier, CSSValueIDToAnchorValueEnum(side.GetValueID()),
-        fallback);
+    return AnchorQuery(type_, anchor_specifier, /* percentage */ 0,
+                       CSSValueIDToAnchorValueEnum(side.GetValueID()));
   }
 
   DCHECK_EQ(type_, CSSAnchorQueryType::kAnchorSize);
   const CSSIdentifierValue& size = To<CSSIdentifierValue>(*value_);
-  return CalculationExpressionAnchorQueryNode::CreateAnchorSize(
-      *anchor_specifier, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
-      fallback);
+  return AnchorQuery(type_, anchor_specifier, /* percentage */ 0,
+                     CSSValueIDToAnchorSizeValueEnum(size.GetValueID()));
 }
 
 const CSSMathExpressionNode&
@@ -3324,56 +3313,6 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(PixelsAndPercent value) {
       op);
 }
 
-namespace {
-
-CSSValue* AnchorQueryValueToCSSValue(
-    const CalculationExpressionAnchorQueryNode& anchor_query) {
-  if (anchor_query.Type() == CSSAnchorQueryType::kAnchor) {
-    switch (anchor_query.AnchorSide()) {
-      case CSSAnchorValue::kTop:
-        return CSSIdentifierValue::Create(CSSValueID::kTop);
-      case CSSAnchorValue::kLeft:
-        return CSSIdentifierValue::Create(CSSValueID::kLeft);
-      case CSSAnchorValue::kRight:
-        return CSSIdentifierValue::Create(CSSValueID::kRight);
-      case CSSAnchorValue::kBottom:
-        return CSSIdentifierValue::Create(CSSValueID::kBottom);
-      case CSSAnchorValue::kStart:
-        return CSSIdentifierValue::Create(CSSValueID::kStart);
-      case CSSAnchorValue::kEnd:
-        return CSSIdentifierValue::Create(CSSValueID::kEnd);
-      case CSSAnchorValue::kSelfStart:
-        return CSSIdentifierValue::Create(CSSValueID::kSelfStart);
-      case CSSAnchorValue::kSelfEnd:
-        return CSSIdentifierValue::Create(CSSValueID::kSelfEnd);
-      case CSSAnchorValue::kCenter:
-        return CSSIdentifierValue::Create(CSSValueID::kCenter);
-      case CSSAnchorValue::kPercentage:
-        return CSSNumericLiteralValue::Create(
-            anchor_query.AnchorSidePercentage(),
-            CSSPrimitiveValue::UnitType::kPercentage);
-    }
-  }
-
-  DCHECK_EQ(anchor_query.Type(), CSSAnchorQueryType::kAnchorSize);
-  switch (anchor_query.AnchorSize()) {
-    case CSSAnchorSizeValue::kWidth:
-      return CSSIdentifierValue::Create(CSSValueID::kWidth);
-    case CSSAnchorSizeValue::kHeight:
-      return CSSIdentifierValue::Create(CSSValueID::kHeight);
-    case CSSAnchorSizeValue::kBlock:
-      return CSSIdentifierValue::Create(CSSValueID::kBlock);
-    case CSSAnchorSizeValue::kInline:
-      return CSSIdentifierValue::Create(CSSValueID::kInline);
-    case CSSAnchorSizeValue::kSelfBlock:
-      return CSSIdentifierValue::Create(CSSValueID::kSelfBlock);
-    case CSSAnchorSizeValue::kSelfInline:
-      return CSSIdentifierValue::Create(CSSValueID::kSelfInline);
-  }
-}
-
-}  // namespace
-
 // static
 CSSMathExpressionNode* CSSMathExpressionNode::Create(
     const CalculationExpressionNode& node) {
@@ -3398,27 +3337,6 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     return CSSMathExpressionNumericLiteral::Create(
         To<CalculationExpressionNumberNode>(node).Value(),
         CSSPrimitiveValue::UnitType::kNumber);
-  }
-
-  if (node.IsAnchorQuery()) {
-    const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
-    CSSAnchorQueryType type = anchor_query.Type() == CSSAnchorQueryType::kAnchor
-                                  ? CSSAnchorQueryType::kAnchor
-                                  : CSSAnchorQueryType::kAnchorSize;
-    const CSSValue* anchor_specifier = nullptr;
-    if (anchor_query.AnchorSpecifier().IsImplicit()) {
-      anchor_specifier = CSSIdentifierValue::Create(CSSValueID::kImplicit);
-    } else if (anchor_query.AnchorSpecifier().IsNamed()) {
-      const ScopedCSSName& name = anchor_query.AnchorSpecifier().GetName();
-      anchor_specifier = To<CSSCustomIdentValue>(
-          &MakeGarbageCollected<CSSCustomIdentValue>(name.GetName())
-               ->EnsureScopedValue(name.GetTreeScope()));
-    }
-    CSSValue* value = AnchorQueryValueToCSSValue(anchor_query);
-    CSSPrimitiveValue* fallback = CSSPrimitiveValue::CreateFromLength(
-        anchor_query.GetFallback(), /* zoom */ 1);
-    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        type, anchor_specifier, *value, fallback);
   }
 
   DCHECK(node.IsOperation());

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/style/inset_area.h"
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
@@ -13,15 +12,6 @@
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 
 namespace blink {
-
-CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
-                          g_anchor_top);
-CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
-                          g_anchor_bottom);
-CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
-                          g_anchor_left);
-CORE_EXPORT DEFINE_GLOBAL(scoped_refptr<const CalculationExpressionNode>,
-                          g_anchor_right);
 
 namespace {
 
@@ -194,67 +184,67 @@ InsetArea InsetArea::ToPhysical(
   return InsetArea(regions[0], regions[1], regions[2], regions[3]);
 }
 
-const CalculationExpressionNode* InsetArea::UsedTop() const {
+std::optional<AnchorQuery> InsetArea::UsedTop() const {
   switch (FirstStart()) {
     case InsetAreaRegion::kTop:
-      return nullptr;  // 0px
+      return std::nullopt;
     case InsetAreaRegion::kCenter:
-      return g_anchor_top.get();
+      return AnchorTop();
     case InsetAreaRegion::kBottom:
-      return g_anchor_bottom.get();
+      return AnchorBottom();
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return nullptr;
+      return std::nullopt;
   }
 }
 
-const CalculationExpressionNode* InsetArea::UsedBottom() const {
+std::optional<AnchorQuery> InsetArea::UsedBottom() const {
   switch (FirstEnd()) {
     case InsetAreaRegion::kTop:
-      return g_anchor_top.get();
+      return AnchorTop();
     case InsetAreaRegion::kCenter:
-      return g_anchor_bottom.get();
+      return AnchorBottom();
     case InsetAreaRegion::kBottom:
-      return nullptr;  // 0px
+      return std::nullopt;
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return nullptr;
+      return std::nullopt;
   }
 }
 
-const CalculationExpressionNode* InsetArea::UsedLeft() const {
+std::optional<AnchorQuery> InsetArea::UsedLeft() const {
   switch (SecondStart()) {
     case InsetAreaRegion::kLeft:
-      return nullptr;  // 0px
+      return std::nullopt;
     case InsetAreaRegion::kCenter:
-      return g_anchor_left.get();
+      return AnchorLeft();
     case InsetAreaRegion::kRight:
-      return g_anchor_right.get();
+      return AnchorRight();
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return nullptr;
+      return std::nullopt;
   }
 }
 
-const CalculationExpressionNode* InsetArea::UsedRight() const {
+std::optional<AnchorQuery> InsetArea::UsedRight() const {
   switch (SecondEnd()) {
     case InsetAreaRegion::kLeft:
-      return g_anchor_left.get();
+      return AnchorLeft();
     case InsetAreaRegion::kCenter:
-      return g_anchor_right.get();
+      return AnchorRight();
     case InsetAreaRegion::kRight:
-      return nullptr;  // 0px
+      return std::nullopt;
     default:
       NOTREACHED();
       [[fallthrough]];
     case InsetAreaRegion::kNone:
-      return nullptr;
+      return std::nullopt;
   }
 }
 
@@ -298,43 +288,28 @@ std::pair<ItemPosition, ItemPosition> InsetArea::AlignJustifySelfFromPhysical(
                                                     converter.InlineStart());
 }
 
-void InsetArea::InitializeAnchors() {
-  // These globals are initialized here instead of Length::Initialize() because
-  // they depend on anchor expressions defined in core/ which cannot be included
-  // from platform.
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_top)
-      scoped_refptr<const CalculationExpressionNode>(
-          CalculationExpressionAnchorQueryNode::CreateAnchor(
-              *AnchorSpecifierValue::Default(), CSSAnchorValue::kTop,
-              Length::FixedZero()));
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_bottom)
-      scoped_refptr<const CalculationExpressionNode>(
-          CalculationExpressionAnchorQueryNode::CreateAnchor(
-              *AnchorSpecifierValue::Default(), CSSAnchorValue::kBottom,
-              Length::FixedZero()));
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_left)
-      scoped_refptr<const CalculationExpressionNode>(
-          CalculationExpressionAnchorQueryNode::CreateAnchor(
-              *AnchorSpecifierValue::Default(), CSSAnchorValue::kLeft,
-              Length::FixedZero()));
-  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_right)
-      scoped_refptr<const CalculationExpressionNode>(
-          CalculationExpressionAnchorQueryNode::CreateAnchor(
-              *AnchorSpecifierValue::Default(), CSSAnchorValue::kRight,
-              Length::FixedZero()));
+AnchorQuery InsetArea::AnchorTop() {
+  return AnchorQuery(CSSAnchorQueryType::kAnchor,
+                     AnchorSpecifierValue::Default(), /* percentage */ 0,
+                     CSSAnchorValue::kTop);
 }
 
-const CalculationExpressionNode* InsetArea::AnchorTop() {
-  return g_anchor_top.get();
+AnchorQuery InsetArea::AnchorBottom() {
+  return AnchorQuery(CSSAnchorQueryType::kAnchor,
+                     AnchorSpecifierValue::Default(), /* percentage */ 0,
+                     CSSAnchorValue::kBottom);
 }
-const CalculationExpressionNode* InsetArea::AnchorBottom() {
-  return g_anchor_bottom.get();
+
+AnchorQuery InsetArea::AnchorLeft() {
+  return AnchorQuery(CSSAnchorQueryType::kAnchor,
+                     AnchorSpecifierValue::Default(), /* percentage */ 0,
+                     CSSAnchorValue::kLeft);
 }
-const CalculationExpressionNode* InsetArea::AnchorLeft() {
-  return g_anchor_left.get();
-}
-const CalculationExpressionNode* InsetArea::AnchorRight() {
-  return g_anchor_right.get();
+
+AnchorQuery InsetArea::AnchorRight() {
+  return AnchorQuery(CSSAnchorQueryType::kAnchor,
+                     AnchorSpecifierValue::Default(), /* percentage */ 0,
+                     CSSAnchorValue::kRight);
 }
 
 }  // namespace blink

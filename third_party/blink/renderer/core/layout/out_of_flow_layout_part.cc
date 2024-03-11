@@ -443,27 +443,27 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   LayoutUnit right;
 
   // The InsetArea::Used*() methods returns either an anchor() function or
-  // nullptr (representing a 0px length), using top/left/right/bottom, to adjust
+  // nullopt (representing a 0px length), using top/left/right/bottom, to adjust
   // the containing block to align with either of the physical edges of the
   // default anchor.
   //
   // Note that the inset adjustment is already set to zero above, so there's
-  // nothing to do here for nullptr values.
-  if (const CalculationExpressionNode* node = inset_area.UsedTop()) {
+  // nothing to do here for nullopt values.
+  if (std::optional<AnchorQuery> query = inset_area.UsedTop()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, anchor_evaluator);
-    top = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
+    top = anchor_evaluator->Evaluate(query.value()).value_or(LayoutUnit());
   }
-  if (const CalculationExpressionNode* node = inset_area.UsedBottom()) {
+  if (std::optional<AnchorQuery> query = inset_area.UsedBottom()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBottom, anchor_evaluator);
-    bottom = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
+    bottom = anchor_evaluator->Evaluate(query.value()).value_or(LayoutUnit());
   }
-  if (const CalculationExpressionNode* node = inset_area.UsedLeft()) {
+  if (std::optional<AnchorQuery> query = inset_area.UsedLeft()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kLeft, anchor_evaluator);
-    left = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
+    left = anchor_evaluator->Evaluate(query.value()).value_or(LayoutUnit());
   }
-  if (const CalculationExpressionNode* node = inset_area.UsedRight()) {
+  if (std::optional<AnchorQuery> query = inset_area.UsedRight()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kRight, anchor_evaluator);
-    right = anchor_evaluator->Evaluate(*node).value_or(LayoutUnit());
+    right = anchor_evaluator->Evaluate(query.value()).value_or(LayoutUnit());
   }
 
   ContainingBlockInfo adjusted_container_info(container_info);

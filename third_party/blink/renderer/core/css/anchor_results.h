@@ -24,53 +24,27 @@
 
 namespace blink {
 
-// An AnchorItem represents an anchor query, i.e. either anchor(...)
-// or anchor-size(). Its purpose is to act as the key for the hash map
-// in AnchorResults, which can answer anchor queries based on predefined
+// An AnchorItem represents an anchor query in a give Mode, i.e. either
+// anchor(...) or anchor-size(). Its purpose is to act as the key for the hash
+// map in AnchorResults, which can answer anchor queries based on predefined
 // results.
 class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
  public:
-  // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
-  static AnchorItem* Create(AnchorScope::Mode,
-                            const CalculationExpressionNode&);
-  scoped_refptr<const CalculationExpressionNode> ToExpressionNode() const;
-
-  AnchorItem(AnchorScope::Mode mode,
-             CSSAnchorQueryType query_type,
-             const AnchorSpecifierValue* anchor_specifier,
-             float percentage,
-             absl::variant<CSSAnchorValue, CSSAnchorSizeValue> value)
-      : mode_(mode),
-        query_type_(query_type),
-        anchor_specifier_(anchor_specifier),
-        percentage_(percentage),
-        value_(value) {
-    CHECK(anchor_specifier);
-  }
+  AnchorItem(AnchorScope::Mode mode, AnchorQuery query)
+      : mode_(mode), query_(query) {}
 
   bool operator==(const AnchorItem& other) const {
-    return mode_ == other.mode_ && query_type_ == other.query_type_ &&
-           percentage_ == other.percentage_ &&
-           base::ValuesEquivalent(anchor_specifier_, other.anchor_specifier_) &&
-           value_ == other.value_;
+    return mode_ == other.mode_ && query_ == other.query_;
   }
   bool operator!=(const AnchorItem& other) const { return !operator==(other); }
 
   AnchorScope::Mode GetMode() const { return mode_; }
+  const AnchorQuery& Query() const { return query_; }
 
   unsigned GetHash() const {
     unsigned hash = 0;
     WTF::AddIntToHash(hash, WTF::HashInt(mode_));
-    WTF::AddIntToHash(hash, WTF::HashInt(query_type_));
-    WTF::AddIntToHash(hash, anchor_specifier_->GetHash());
-    WTF::AddIntToHash(hash, WTF::HashFloat(percentage_));
-    if (query_type_ == CSSAnchorQueryType::kAnchor) {
-      WTF::AddIntToHash(hash, WTF::HashInt(absl::get<CSSAnchorValue>(value_)));
-    } else {
-      CHECK_EQ(query_type_, CSSAnchorQueryType::kAnchorSize);
-      WTF::AddIntToHash(hash,
-                        WTF::HashInt(absl::get<CSSAnchorSizeValue>(value_)));
-    }
+    WTF::AddIntToHash(hash, WTF::HashInt(query_.GetHash()));
     return hash;
   }
 
@@ -78,10 +52,7 @@ class CORE_EXPORT AnchorItem : public GarbageCollected<AnchorItem> {
 
  private:
   AnchorScope::Mode mode_;
-  CSSAnchorQueryType query_type_;
-  Member<const AnchorSpecifierValue> anchor_specifier_;
-  float percentage_;
-  absl::variant<CSSAnchorValue, CSSAnchorSizeValue> value_;
+  AnchorQuery query_;
 };
 
 struct AnchorItemHashTraits : WTF::MemberHashTraits<const blink::AnchorItem> {
@@ -124,11 +95,9 @@ class CORE_EXPORT AnchorResults : public AnchorEvaluator {
   DISALLOW_NEW();
 
  public:
-  std::optional<LayoutUnit> Evaluate(const CalculationExpressionNode&) override;
+  std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override;
 
-  void Set(AnchorScope::Mode,
-           const CalculationExpressionNode&,
-           std::optional<LayoutUnit>);
+  void Set(AnchorScope::Mode, const AnchorQuery&, std::optional<LayoutUnit>);
   void Clear();
 
   // Used for invalidation, see class comment.

@@ -38,8 +38,7 @@ class ModeCheckingAnchorEvaluator : public AnchorEvaluator {
   explicit ModeCheckingAnchorEvaluator(AnchorScope::Mode required_mode)
       : required_mode_(required_mode) {}
 
-  std::optional<LayoutUnit> Evaluate(
-      const CalculationExpressionNode&) override {
+  std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override {
     return (required_mode_ == GetMode()) ? std::optional<LayoutUnit>(1)
                                          : std::optional<LayoutUnit>();
   }

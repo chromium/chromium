@@ -31,8 +31,7 @@ class TestAnchorEvaluator : public AnchorEvaluator {
   explicit TestAnchorEvaluator(std::optional<LayoutUnit> result)
       : result_(result) {}
 
-  std::optional<LayoutUnit> Evaluate(
-      const CalculationExpressionNode&) override {
+  std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override {
     return result_;
   }
 

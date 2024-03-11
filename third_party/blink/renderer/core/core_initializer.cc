@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
-#include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -158,8 +157,6 @@ void CoreInitializer::Initialize() {
   RegisterEventFactory();
 
   StringImpl::FreezeStaticStrings();
-
-  InsetArea::InitializeAnchors();
 
   V8ThrowDOMException::Init();
 

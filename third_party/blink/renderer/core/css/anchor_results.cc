@@ -4,61 +4,23 @@
 
 #include "third_party/blink/renderer/core/css/anchor_results.h"
 
-#include "third_party/blink/renderer/core/css/calculation_expression_anchor_query_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 
 namespace blink {
 
-AnchorItem* AnchorItem::Create(AnchorScope::Mode mode,
-                               const CalculationExpressionNode& node) {
-  const auto& anchor_node = To<CalculationExpressionAnchorQueryNode>(node);
-
-  // Make an AnchorItem for caching purposes.
-  if (anchor_node.Type() == CSSAnchorQueryType::kAnchor) {
-    float percentage = anchor_node.AnchorSide() == CSSAnchorValue::kPercentage
-                           ? anchor_node.AnchorSidePercentage()
-                           : 0.0f;
-    return MakeGarbageCollected<AnchorItem>(
-        mode, CSSAnchorQueryType::kAnchor, &anchor_node.AnchorSpecifier(),
-        percentage, anchor_node.AnchorSide());
-  }
-
-  return MakeGarbageCollected<AnchorItem>(
-      mode, CSSAnchorQueryType::kAnchorSize, &anchor_node.AnchorSpecifier(),
-      /* percentage */ 0, anchor_node.AnchorSize());
-}
-
-scoped_refptr<const CalculationExpressionNode> AnchorItem::ToExpressionNode()
-    const {
-  if (query_type_ == CSSAnchorQueryType::kAnchor) {
-    if (absl::get<CSSAnchorValue>(value_) == CSSAnchorValue::kPercentage) {
-      return CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
-          *anchor_specifier_, percentage_, /* fallback */ Length());
-    }
-    return CalculationExpressionAnchorQueryNode::CreateAnchor(
-        *anchor_specifier_,
-        /* side */ absl::get<CSSAnchorValue>(value_), /* fallback */ Length());
-  }
-  return CalculationExpressionAnchorQueryNode::CreateAnchorSize(
-      *anchor_specifier_,
-      /* side */ absl::get<CSSAnchorSizeValue>(value_),
-      /* fallback */ Length());
-}
-
 void AnchorItem::Trace(Visitor* visitor) const {
-  visitor->Trace(anchor_specifier_);
+  visitor->Trace(query_);
 }
 
 void AnchorResults::Trace(Visitor* visitor) const {
   visitor->Trace(map_);
 }
 
-std::optional<LayoutUnit> AnchorResults::Evaluate(
-    const CalculationExpressionNode& node) {
+std::optional<LayoutUnit> AnchorResults::Evaluate(const AnchorQuery& query) {
   if (GetMode() == AnchorScope::Mode::kNone) {
     return std::nullopt;
   }
-  auto* item = AnchorItem::Create(GetMode(), node);
+  auto* item = MakeGarbageCollected<AnchorItem>(GetMode(), query);
   AnchorResultMap::const_iterator i = map_.find(item);
   if (i != map_.end()) {
     return i->value;
@@ -70,9 +32,9 @@ std::optional<LayoutUnit> AnchorResults::Evaluate(
 }
 
 void AnchorResults::Set(AnchorScope::Mode mode,
-                        const CalculationExpressionNode& node,
+                        const AnchorQuery& query,
                         std::optional<LayoutUnit> result) {
-  map_.Set(AnchorItem::Create(mode, node), result);
+  map_.Set(MakeGarbageCollected<AnchorItem>(mode, query), result);
 }
 
 void AnchorResults::Clear() {
@@ -83,7 +45,7 @@ bool AnchorResults::IsAnyResultDifferent(AnchorEvaluator* evaluator) const {
   for (const auto& [key, old_result] : map_) {
     AnchorScope anchor_scope(key->GetMode(), evaluator);
     std::optional<LayoutUnit> new_result =
-        evaluator ? evaluator->Evaluate(*key->ToExpressionNode())
+        evaluator ? evaluator->Evaluate(key->Query())
                   : std::optional<LayoutUnit>();
     if (new_result != old_result) {
       return true;

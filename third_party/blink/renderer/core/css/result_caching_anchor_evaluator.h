@@ -28,7 +28,7 @@ class ResultCachingAnchorEvaluator : public AnchorEvaluator {
  public:
   ResultCachingAnchorEvaluator(AnchorEvaluator*, AnchorResults&);
 
-  std::optional<LayoutUnit> Evaluate(const CalculationExpressionNode&) override;
+  std::optional<LayoutUnit> Evaluate(const AnchorQuery&) override;
 
  private:
   AnchorEvaluator* evaluator_;
