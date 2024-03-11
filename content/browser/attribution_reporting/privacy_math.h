@@ -10,7 +10,6 @@
 #include <compare>
 #include <map>
 #include <optional>
-#include <tuple>
 #include <vector>
 
 #include "content/common/content_export.h"
@@ -161,7 +160,7 @@ CONTENT_EXPORT std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 //
 // Takes a `StateMap`, to optimize with the cache from previous calls that
 // pre-compute the number of states (`GetNumStatesRecursive()`).
-using ConfigForCache = std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>;
+using ConfigForCache = uint32_t;
 using StateMap = std::map<ConfigForCache, absl::uint128>;
 CONTENT_EXPORT std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const attribution_reporting::TriggerSpecs& specs,
