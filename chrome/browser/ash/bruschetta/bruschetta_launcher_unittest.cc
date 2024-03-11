@@ -186,8 +186,6 @@ TEST_F(BruschettaLauncherTest, LaunchStartVmSuccess) {
   run_loop_.Run();
 
   ASSERT_EQ(result, BruschettaResult::kSuccess);
-  histogram_tester_.ExpectUniqueSample(kLaunchHistogram,
-                                       BruschettaResult::kSuccess, 1);
 
   // Alpha VMs should have vtpm enabled.
   const auto& running_vms =
@@ -195,6 +193,12 @@ TEST_F(BruschettaLauncherTest, LaunchStartVmSuccess) {
   auto it = running_vms.find(kTestVmName);
   ASSERT_NE(it, running_vms.end());
   ASSERT_TRUE(it->second.vtpm_enabled);
+
+  // Run for another few minutes to check that we only get the single success
+  // metric and not e.g. a spurious timeout metric as we saw in b/299415527.
+  this->task_environment_.FastForwardBy(base::Minutes(5));
+  histogram_tester_.ExpectUniqueSample(kLaunchHistogram,
+                                       BruschettaResult::kSuccess, 1);
 }
 
 // Multiple concurrent launch requests are batched into one request.

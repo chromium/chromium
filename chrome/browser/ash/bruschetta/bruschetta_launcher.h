@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -40,6 +39,7 @@ class BruschettaLauncher {
   base::WeakPtr<BruschettaLauncher> GetWeakPtr();
 
  private:
+  class Timeout;
   void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
                  std::optional<vm_tools::concierge::StartVmResponse> response);
@@ -64,6 +64,7 @@ class BruschettaLauncher {
   std::optional<base::CallbackListSubscription> subscription_;
 
   std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_dlc_;
+  std::unique_ptr<Timeout> timeout_;
 
   // Must be last.
   base::WeakPtrFactory<BruschettaLauncher> weak_factory_{this};

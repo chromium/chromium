@@ -7,14 +7,12 @@
 #include <memory>
 #include <optional>
 
-#include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -40,6 +38,21 @@ const char kDiskName[] = "YnJ1.img";
 
 }  // namespace
 
+// Wrapper class for dispatching `OnTimeout` calls so we can cancel the timeout
+// by destroying the wrapper instance.
+class BruschettaLauncher::Timeout {
+ public:
+  explicit Timeout(BruschettaLauncher* launcher) : launcher_(launcher) {}
+  void OnTimeout() { launcher_->OnTimeout(); }
+
+  // BruschettaLauncher owns us so it will always outlive us, hence raw_ptr is
+  // fine.
+  raw_ptr<BruschettaLauncher> launcher_;
+
+  // Must be last.
+  base::WeakPtrFactory<Timeout> weak_factory_{this};
+};
+
 BruschettaLauncher::BruschettaLauncher(std::string vm_name, Profile* profile)
     : vm_name_(vm_name), profile_(profile) {}
 BruschettaLauncher::~BruschettaLauncher() = default;
@@ -54,11 +67,12 @@ void BruschettaLauncher::EnsureRunning(
   callbacks_.AddUnsafe(std::move(callback));
   if (!launch_in_progress) {
     EnsureToolsDlcInstalled();
+    timeout_ = std::make_unique<Timeout>(this);
     // If we're not complete after 4 minutes time out the entire launch.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&BruschettaLauncher::OnTimeout,
-                       weak_factory_.GetWeakPtr()),
+        base::BindOnce(&BruschettaLauncher::Timeout::OnTimeout,
+                       timeout_->weak_factory_.GetWeakPtr()),
         base::Seconds(240));
   }
 }
@@ -179,7 +193,6 @@ void BruschettaLauncher::OnContainerRunning(guest_os::GuestInfo info) {
 }
 
 void BruschettaLauncher::OnTimeout() {
-  // These are no-ops if empty so safe to always call.
   subscription_.reset();
   Finish(BruschettaResult::kTimeout);
 
@@ -191,6 +204,7 @@ void BruschettaLauncher::OnTimeout() {
 void BruschettaLauncher::Finish(BruschettaResult result) {
   base::UmaHistogramEnumeration("Bruschetta.LaunchResult", result);
   callbacks_.Notify(result);
+  timeout_.reset();
 }
 
 base::WeakPtr<BruschettaLauncher> BruschettaLauncher::GetWeakPtr() {
