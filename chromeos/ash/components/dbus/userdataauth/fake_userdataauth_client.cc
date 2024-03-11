@@ -822,9 +822,7 @@ void FakeUserDataAuthClient::StartAuthSession(
   AuthSessionData& session = auth_sessions_[auth_session_id];
   session.id = auth_session_id;
   session.broadcast_id = "b-" + auth_session_id;
-  session.ephemeral =
-      (request.flags() & ::user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER) !=
-      0;
+  session.ephemeral = request.is_ephemeral_user();
   session.account = request.account_id();
   session.requested_auth_session_intent = request.intent();
 

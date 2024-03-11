@@ -137,9 +137,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
   request.set_intent(SerializeIntent(intent));
 
   if (ephemeral) {
-    request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER);
-  } else {
-    request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_NONE);
+    request.set_is_ephemeral_user(true);
   }
 
   client_->StartAuthSession(

@@ -174,8 +174,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // AuthSession id.
     std::string id;
     std::string broadcast_id;
-    // Whether the `AUTH_SESSION_FLAGS_EPHEMERAL_USER` flag was passed on
-    // creation.
+    // Whether the is_ephemeral_user flag was set on creation.
     bool ephemeral = false;
     // Account associated with the session.
     cryptohome::AccountIdentifier account;
