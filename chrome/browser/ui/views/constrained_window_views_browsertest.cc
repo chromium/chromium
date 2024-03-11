@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -194,12 +195,11 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
   // Move the tab to a second browser window; but first create another tab.
   // That prevents the first browser window from closing when its tab is moved.
   chrome::NewTab(browser());
-  std::unique_ptr<content::WebContents> owned_web_contents =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(
           browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
   Browser* browser2 = CreateBrowser(browser()->profile());
-  browser2->tab_strip_model()->AppendWebContents(std::move(owned_web_contents),
-                                                 true);
+  browser2->tab_strip_model()->AppendTab(std::move(detached_tab), true);
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
   // Close the first browser.

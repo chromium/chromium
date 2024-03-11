@@ -975,13 +975,13 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, MoveTabToAppWindow) {
 
   // Detach.
   int src_index = browser1->tab_strip_model()->GetIndexOfWebContents(tab);
-  auto detached =
-      browser1->tab_strip_model()->DetachWebContentsAtForInsertion(src_index);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser1->tab_strip_model()->DetachTabAtForInsertion(src_index);
 
   // Attach.
   int dst_index = browser2->tab_strip_model()->count();
-  browser2->tab_strip_model()->InsertWebContentsAt(
-      dst_index, std::move(detached), AddTabTypes::ADD_ACTIVE);
+  browser2->tab_strip_model()->InsertDetachedTabAt(
+      dst_index, std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
   recorder.Verify({
       // source browser goes into background when app browser is created
       {"updated", 1, kChromeWindow, "", window1, "", kInactive, false},

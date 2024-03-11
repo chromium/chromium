@@ -161,6 +161,7 @@ include_rules = [
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_group.h",
   "+chrome/browser/ui/tabs/tab_group_model.h",
+  "+chrome/browser/ui/tabs/tab_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   "+chrome/browser/ui/test/test_app_window_icon_observer.h",

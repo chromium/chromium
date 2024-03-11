@@ -193,8 +193,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
                                                      ->group_model()
                                                      ->GetTabGroup(group_id)
                                                      ->visual_data());
-  std::unique_ptr<content::WebContents> tab =
-      browser_1->tab_strip_model()->DetachWebContentsAtForInsertion(1);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser_1->tab_strip_model()->DetachTabAtForInsertion(1);
   // This kills the group.
   ASSERT_FALSE(
       browser_1->tab_strip_model()->group_model()->ContainsTabGroup(group_id));
@@ -202,8 +202,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
   // Recreate the local group and add the tab to it (same browser is fine).
   browser_1->tab_strip_model()->group_model()->AddTabGroup(group_id,
                                                            visual_data);
-  browser_1->tab_strip_model()->InsertWebContentsAt(
-      1, std::move(tab), AddTabTypes::ADD_NONE, group_id);
+  browser_1->tab_strip_model()->InsertDetachedTabAt(
+      1, std::move(detached_tab), AddTabTypes::ADD_NONE, group_id);
 
   // Resume tracking.
   service()->ResumeTrackingLocalTabGroup(saved_group_id, group_id);

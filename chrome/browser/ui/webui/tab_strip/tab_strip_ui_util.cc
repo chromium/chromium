@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -65,9 +66,8 @@ void MoveTabAcrossWindows(Browser* source_browser,
       source_browser->tab_strip_model()->active_index() == from_index;
   bool was_pinned = source_browser->tab_strip_model()->IsTabPinned(from_index);
 
-  std::unique_ptr<content::WebContents> detached_contents =
-      source_browser->tab_strip_model()->DetachWebContentsAtForInsertion(
-          from_index);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      source_browser->tab_strip_model()->DetachTabAtForInsertion(from_index);
 
   int add_types = AddTabTypes::ADD_NONE;
   if (was_active) {
@@ -77,8 +77,8 @@ void MoveTabAcrossWindows(Browser* source_browser,
     add_types |= AddTabTypes::ADD_PINNED;
   }
 
-  target_browser->tab_strip_model()->InsertWebContentsAt(
-      to_index, std::move(detached_contents), add_types, to_group_id);
+  target_browser->tab_strip_model()->InsertDetachedTabAt(
+      to_index, std::move(detached_tab), add_types, to_group_id);
 }
 
 bool IsDraggedTab(const ui::OSExchangeData& drop_data) {

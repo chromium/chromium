@@ -5,6 +5,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -132,12 +133,12 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
   EXPECT_CALL(callback, Run(true));
   auto* second_browser_initial_web_contents =
       second_browser->tab_strip_model()->GetActiveWebContents();
-  auto original_web_contents_tab =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(
           browser()->tab_strip_model()->GetIndexOfWebContents(
               original_web_contents));
-  second_browser->tab_strip_model()->AppendWebContents(
-      std::move(original_web_contents_tab), /*foreground=*/true);
+  second_browser->tab_strip_model()->AppendTab(std::move(detached_tab),
+                                               /*foreground=*/true);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
   // Then backgrounding it should trigger the callback.
@@ -180,12 +181,12 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
   // Now move the tab into the second window while keeping it in the foreground.
   // This should not trigger the callback.
   EXPECT_CALL(callback, Run(_)).Times(0);
-  auto original_web_contents_tab =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(
           browser()->tab_strip_model()->GetIndexOfWebContents(
               original_web_contents));
-  second_browser->tab_strip_model()->AppendWebContents(
-      std::move(original_web_contents_tab), /*foreground=*/true);
+  second_browser->tab_strip_model()->AppendTab(std::move(detached_tab),
+                                               /*foreground=*/true);
   testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
