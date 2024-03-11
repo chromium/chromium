@@ -8529,7 +8529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowSnapActionSource2" enum="WindowSnapActionSource"
-    expires_after="2024-04-21">
+    expires_after="2025-03-11">
   <owner>xdai@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <summary>
