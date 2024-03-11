@@ -78,6 +78,12 @@ BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
 // This enables the CPU performance interventions within the side panel.
 BASE_DECLARE_FEATURE(kPerformanceCPUIntervention);
 
+#if BUILDFLAG(IS_WIN)
+// Prefetch the main browser DLL when a new node is added to the PM graph
+// and no prefetch has been done within a reasonable timeframe.
+BASE_DECLARE_FEATURE(kPrefetchVirtualMemoryPolicy);
+#endif
+
 // This represents the duration that CPU must be over the threshold before
 // an intervention is triggered.
 extern const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold;

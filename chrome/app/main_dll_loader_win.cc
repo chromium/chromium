@@ -88,10 +88,19 @@ base::FilePath GetModulePath(std::wstring_view module_name) {
 // directory. Returns a handle to the loaded module on success, or nullptr on
 // failure.
 HMODULE LoadModuleWithDirectory(const base::FilePath& module,
-                                const base::CommandLine& cmd_line) {
+                                const base::CommandLine& cmd_line,
+                                bool is_browser) {
   ::SetCurrentDirectoryW(module.DirName().value().c_str());
-  if (!cmd_line.HasSwitch(switches::kNoPreReadMainDll)) {
+  if (is_browser) {
+    // Always call PreReadFile() for the main browser process.
     base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
+  } else {
+    // The kNoPreReadMainDll experiment only impacts other processes. Isolate
+    // the check so the experiment is easier to remove later if we land the
+    // PrefetchVirtualMemoryPolicy experiment.
+    if (!cmd_line.HasSwitch(switches::kNoPreReadMainDll)) {
+      base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
+    }
   }
   HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
                                     LOAD_WITH_ALTERED_SEARCH_PATH);
@@ -101,13 +110,15 @@ HMODULE LoadModuleWithDirectory(const base::FilePath& module,
 // Prefetches and loads the appropriate DLL for the process type
 // |process_type_|. Populates |module| with the path of the loaded DLL.
 // Returns a handle to the loaded DLL, or nullptr on failure.
-HMODULE Load(base::FilePath* module, const base::CommandLine& cmd_line) {
+HMODULE Load(base::FilePath* module,
+             const base::CommandLine& cmd_line,
+             bool is_browser) {
   *module = GetModulePath(installer::kChromeDll);
   if (module->empty()) {
     PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
     return nullptr;
   }
-  HMODULE dll = LoadModuleWithDirectory(*module, cmd_line);
+  HMODULE dll = LoadModuleWithDirectory(*module, cmd_line, is_browser);
   if (!dll)
     PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
   return dll;
@@ -149,7 +160,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   }
 
   base::FilePath file;
-  dll_ = Load(&file, cmd_line);
+  dll_ = Load(&file, cmd_line, is_browser);
   if (!dll_)
     return chrome::RESULT_CODE_MISSING_DATA;
 
