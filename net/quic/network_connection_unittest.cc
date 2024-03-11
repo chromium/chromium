@@ -34,6 +34,9 @@ TEST_F(NetworkConnectionTest, Connection2G) {
 
   NetworkConnection network_connection;
   EXPECT_EQ(CONNECTION_2G, network_connection.connection_type());
+  const char* description = network_connection.connection_description();
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_2G),
+            description);
 }
 
 TEST_F(NetworkConnectionTest, Connection3G) {
@@ -41,6 +44,9 @@ TEST_F(NetworkConnectionTest, Connection3G) {
 
   NetworkConnection network_connection;
   EXPECT_EQ(CONNECTION_3G, network_connection.connection_type());
+  const char* description = network_connection.connection_description();
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_3G),
+            description);
 }
 
 TEST_F(NetworkConnectionTest, ConnectionEthnernet) {
@@ -48,6 +54,9 @@ TEST_F(NetworkConnectionTest, ConnectionEthnernet) {
 
   NetworkConnection network_connection;
   EXPECT_EQ(CONNECTION_ETHERNET, network_connection.connection_type());
+  const char* description = network_connection.connection_description();
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_ETHERNET),
+            description);
 }
 
 TEST_F(NetworkConnectionTest, ConnectionWifi) {
@@ -55,30 +64,42 @@ TEST_F(NetworkConnectionTest, ConnectionWifi) {
 
   NetworkConnection network_connection;
   EXPECT_EQ(CONNECTION_WIFI, network_connection.connection_type());
+  const char* description = network_connection.connection_description();
+  // On some platforms, the description for wifi will be more detailed
+  // than what is returned by NetworkChangeNotifier::ConnectionTypeToString.
+  EXPECT_NE(nullptr, description);
 }
 
 TEST_F(NetworkConnectionTest, ConnectionChange) {
   notifier_->SetConnectionType(CONNECTION_2G);
 
   NetworkConnection network_connection;
+  const char* description_2g = network_connection.connection_description();
 
   notifier_->SetConnectionType(CONNECTION_3G);
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
   // Spin the message loop so the notification is delivered.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONNECTION_3G, network_connection.connection_type());
+  const char* description_3g = network_connection.connection_description();
 
   NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
       CONNECTION_ETHERNET);
   // Spin the message loop so the notification is delivered.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONNECTION_ETHERNET, network_connection.connection_type());
+  const char* description_ethernet =
+      network_connection.connection_description();
 
   NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
       CONNECTION_WIFI);
-  // Spin the message loop so the notification is delivered.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(CONNECTION_WIFI, network_connection.connection_type());
+  EXPECT_NE(nullptr, network_connection.connection_description());
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_2G),
+            description_2g);
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_3G),
+            description_3g);
+  EXPECT_EQ(NetworkChangeNotifier::ConnectionTypeToString(CONNECTION_ETHERNET),
+            description_ethernet);
 }
 
 }  // namespace net::test

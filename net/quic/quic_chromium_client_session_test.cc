@@ -190,7 +190,7 @@ class QuicChromiumClientSessionTest
             kQuicYieldAfterDurationMilliseconds),
         /*cert_verify_flags=*/0, config_,
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
-        base::TimeTicks::Now(), base::TimeTicks::Now(),
+        "CONNECTION_UNKNOWN", base::TimeTicks::Now(), base::TimeTicks::Now(),
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),

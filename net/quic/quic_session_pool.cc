@@ -1384,7 +1384,8 @@ bool QuicSessionPool::CreateSessionHelper(
       params_.max_migrations_to_non_default_network_on_write_error,
       params_.max_migrations_to_non_default_network_on_path_degrading,
       yield_after_packets_, yield_after_duration_, cert_verify_flags, config,
-      std::move(crypto_config_handle), dns_resolution_start_time,
+      std::move(crypto_config_handle),
+      network_connection_.connection_description(), dns_resolution_start_time,
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
       std::move(socket_performance_watcher), endpoint_result,
       net_log.net_log());

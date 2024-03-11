@@ -44,9 +44,11 @@ AddressFamily GetRealAddressFamily(const IPAddress& address) {
 
 QuicConnectionLogger::QuicConnectionLogger(
     quic::QuicSession* session,
+    const char* const connection_description,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     const NetLogWithSource& net_log)
     : session_(session),
+      connection_description_(connection_description),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       event_logger_(session, net_log) {}
 
@@ -85,6 +87,8 @@ QuicConnectionLogger::~QuicConnectionLogger() {
           duplicate_stream_frame_per_thousand, 1, 1000, 75);
     }
   }
+
+  RecordAggregatePacketLossRate();
 }
 
 void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
@@ -558,6 +562,25 @@ void QuicConnectionLogger::OnZeroRttRejected(int reason) {
 void QuicConnectionLogger::OnEncryptedClientHelloSent(
     std::string_view client_hello) {
   event_logger_.OnEncryptedClientHelloSent(client_hello);
+}
+
+void QuicConnectionLogger::RecordAggregatePacketLossRate() const {
+  // We don't report packet loss rates for short connections under 22 packets in
+  // length to avoid tremendously anomalous contributions to our histogram.
+  // (e.g., if we only got 5 packets, but lost 1, we'd otherwise
+  // record a 20% loss in this histogram!). We may still get some strange data
+  // (1 loss in 22 is still high :-/).
+  if (!largest_received_packet_number_.IsInitialized() ||
+      largest_received_packet_number_ - first_received_packet_number_ < 22) {
+    return;
+  }
+
+  string prefix("Net.QuicSession.PacketLossRate_");
+  base::HistogramBase* histogram = base::Histogram::FactoryGet(
+      prefix + connection_description_, 1, 1000, 75,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->Add(static_cast<base::HistogramBase::Sample>(
+      ReceivedPacketLossRate() * 1000));
 }
 
 }  // namespace net
