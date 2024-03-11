@@ -457,6 +457,19 @@ void BM_Group_Match(benchmark::State& state) {
 }
 BENCHMARK(BM_Group_Match);
 
+void BM_GroupPortable_Match(benchmark::State& state) {
+  std::array<ctrl_t, GroupPortableImpl::kWidth> group;
+  Iota(group.begin(), group.end(), -4);
+  GroupPortableImpl g{group.data()};
+  h2_t h = 1;
+  for (auto _ : state) {
+    ::benchmark::DoNotOptimize(h);
+    ::benchmark::DoNotOptimize(g);
+    ::benchmark::DoNotOptimize(g.Match(h));
+  }
+}
+BENCHMARK(BM_GroupPortable_Match);
+
 void BM_Group_MaskEmpty(benchmark::State& state) {
   std::array<ctrl_t, Group::kWidth> group;
   Iota(group.begin(), group.end(), -4);

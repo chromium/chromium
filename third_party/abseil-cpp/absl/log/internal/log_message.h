@@ -54,7 +54,6 @@ class LogMessage {
   struct InfoTag {};
   struct WarningTag {};
   struct ErrorTag {};
-  struct FatalTag {};
 
   // Used for `LOG`.
   LogMessage(const char* file, int line,
@@ -67,8 +66,6 @@ class LogMessage {
              WarningTag) ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE;
   LogMessage(const char* file, int line,
              ErrorTag) ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE;
-  LogMessage(const char* file, int line,
-             FatalTag) ABSL_ATTRIBUTE_COLD ABSL_ATTRIBUTE_NOINLINE;
   LogMessage(const LogMessage&) = delete;
   LogMessage& operator=(const LogMessage&) = delete;
   ~LogMessage() ABSL_ATTRIBUTE_COLD;
@@ -360,17 +357,7 @@ class LogMessageFatal final : public LogMessage {
   ABSL_ATTRIBUTE_NORETURN ~LogMessageFatal();
 };
 
-class LogMessageQuietly : public LogMessage {
- public:
-  // All instances of LogMessageQuietly are FATAL. DLOG(QFATAL) calls this
-  // directly instead of LogMessageQuietlyFatal to make sure the destructor is
-  // not [[noreturn]] even if this is always FATAL.
-  LogMessageQuietly(const char* file, int line) ABSL_ATTRIBUTE_COLD;
-  ~LogMessageQuietly();
-};
-
-// Used for LOG(QFATAL) to make sure it's properly understood as [[noreturn]].
-class LogMessageQuietlyFatal final : public LogMessageQuietly {
+class LogMessageQuietlyFatal final : public LogMessage {
  public:
   LogMessageQuietlyFatal(const char* file, int line) ABSL_ATTRIBUTE_COLD;
   LogMessageQuietlyFatal(const char* file, int line,

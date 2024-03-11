@@ -333,6 +333,57 @@ TEST(UniquePtr, Swap) {
   }
 }
 
+// Erasing from a container of unique pointers should work fine, with no
+// leaks, despite the fact that unique pointers are trivially relocatable but
+// not trivially destructible.
+// TODO(absl-team): Using unique_ptr here is technically correct, but
+// a trivially relocatable struct would be less semantically confusing.
+TEST(UniquePtr, EraseSingle) {
+  for (size_t size = 4; size < 16; ++size) {
+    absl::InlinedVector<std::unique_ptr<size_t>, 8> a;
+    for (size_t i = 0; i < size; ++i) {
+      a.push_back(std::make_unique<size_t>(i));
+    }
+    a.erase(a.begin());
+    ASSERT_THAT(a, SizeIs(size - 1));
+    for (size_t i = 0; i < size - 1; ++i) {
+      ASSERT_THAT(a[i], Pointee(i + 1));
+    }
+    a.erase(a.begin() + 2);
+    ASSERT_THAT(a, SizeIs(size - 2));
+    ASSERT_THAT(a[0], Pointee(1));
+    ASSERT_THAT(a[1], Pointee(2));
+    for (size_t i = 2; i < size - 2; ++i) {
+      ASSERT_THAT(a[i], Pointee(i + 2));
+    }
+  }
+}
+
+// Erasing from a container of unique pointers should work fine, with no
+// leaks, despite the fact that unique pointers are trivially relocatable but
+// not trivially destructible.
+// TODO(absl-team): Using unique_ptr here is technically correct, but
+// a trivially relocatable struct would be less semantically confusing.
+TEST(UniquePtr, EraseMulti) {
+  for (size_t size = 5; size < 16; ++size) {
+    absl::InlinedVector<std::unique_ptr<size_t>, 8> a;
+    for (size_t i = 0; i < size; ++i) {
+      a.push_back(std::make_unique<size_t>(i));
+    }
+    a.erase(a.begin(), a.begin() + 2);
+    ASSERT_THAT(a, SizeIs(size - 2));
+    for (size_t i = 0; i < size - 2; ++i) {
+      ASSERT_THAT(a[i], Pointee(i + 2));
+    }
+    a.erase(a.begin() + 1, a.begin() + 3);
+    ASSERT_THAT(a, SizeIs(size - 4));
+    ASSERT_THAT(a[0], Pointee(2));
+    for (size_t i = 1; i < size - 4; ++i) {
+      ASSERT_THAT(a[i], Pointee(i + 4));
+    }
+  }
+}
+
 // At the end of this test loop, the elements between [erase_begin, erase_end)
 // should have reference counts == 0, and all others elements should have
 // reference counts == 1.
