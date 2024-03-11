@@ -23,7 +23,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -41,7 +40,7 @@ namespace ash {
 
 namespace {
 
-constexpr float kContainerCornerRadius = 12.0f;
+constexpr float kContainerCornerRadius = 13.0f;
 constexpr int kBorderThickness = 1;
 constexpr int kIconHeight = 20;
 constexpr gfx::Insets kArrowMargins = gfx::Insets::TLBR(0, 6, 0, 0);
@@ -145,11 +144,11 @@ void GameDashboardButton::UpdateArrowIcon() {
   DCHECK(arrow_icon_view_);
   const gfx::VectorIcon& arrow_icon =
       toggled_ ? kGdButtonUpArrowIcon : kGdButtonDownArrowIcon;
-  const SkColor icon_color = GetColorProvider()->GetColor(
+  arrow_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      arrow_icon,
       GetEnabled() ? GetIconAndLabelEnabledColorId(is_recording_)
-                   : cros_tokens::kCrosSysDisabled);
-  arrow_icon_view_->SetImage(
-      ui::ImageModel::FromVectorIcon(arrow_icon, icon_color, kIconHeight));
+                   : cros_tokens::kCrosSysDisabled,
+      kIconHeight));
 }
 
 void GameDashboardButton::UpdateViews() {
@@ -169,20 +168,17 @@ void GameDashboardButton::UpdateViews() {
                       : cros_tokens::kCrosSysBlack,
                   kAlphaForButtonBorder)));
 
-  auto* color_provider = GetColorProvider();
-  DCHECK(color_provider);
-
   const bool enabled = GetEnabled();
-  SetBackground(views::CreateSolidBackground(color_provider->GetColor(
+  SetBackground(views::CreateThemedSolidBackground(
       enabled ? GetBackgroundEnabledColorId(is_recording_)
-              : cros_tokens::kCrosSysDisabledContainer)));
+              : cros_tokens::kCrosSysDisabledContainer));
 
-  const SkColor icon_and_label_color = color_provider->GetColor(
+  const auto icon_and_label_color =
       enabled ? GetIconAndLabelEnabledColorId(is_recording_)
-              : cros_tokens::kCrosSysDisabled);
+              : cros_tokens::kCrosSysDisabled;
   gamepad_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       chromeos::kGameDashboardGamepadIcon, icon_and_label_color, kIconHeight));
-  title_view_->SetEnabledColor(icon_and_label_color);
+  title_view_->SetEnabledColorId(icon_and_label_color);
   UpdateArrowIcon();
 }
 
