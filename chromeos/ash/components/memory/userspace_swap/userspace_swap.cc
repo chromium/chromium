@@ -416,7 +416,7 @@ std::ostream& operator<<(std::ostream& out, const UserspaceSwapConfig& c) {
 // userspace swap.
 COMPONENT_EXPORT(USERSPACE_SWAP) bool KernelSupportsUserspaceSwap() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || !BUILDFLAG(HAS_64_BIT_POINTERS)
-  // We currently only support 64bit partition alloc.
+  // We currently only support 64bit PartitionAlloc.
   return false;
 #else
   static bool userfault_fd_supported = UserfaultFD::KernelSupportsUserfaultFD();
