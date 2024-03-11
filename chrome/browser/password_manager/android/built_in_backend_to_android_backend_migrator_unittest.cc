@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -394,6 +395,39 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
+}
+
+class BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends
+    : public BuiltInBackendToAndroidBackendMigratorTest {
+ protected:
+  BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends() = default;
+  ~BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends() override =
+      default;
+
+  void Init(int current_migration_version = 0) {
+    BuiltInBackendToAndroidBackendMigratorTest::Init(current_migration_version);
+    CreateMigrator(&built_in_backend_, &android_backend_, prefs());
+  }
+
+  MockPasswordStoreBackend built_in_backend_;
+  MockPasswordStoreBackend android_backend_;
+};
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
+       RemoveBlocklistedReturnsWithErrorDoesntCrash) {
+  Init();
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  PasswordForm form = CreateTestPasswordForm(1);
+  form.blocked_by_user = true;
+  std::vector<PasswordForm> built_in_logins = {std::move(form)};
+  EXPECT_CALL(built_in_backend_, GetAllLoginsAsync)
+      .WillOnce(base::test::RunOnceCallback<0>(std::move(built_in_logins)));
+  // Set up `RemoveLoginAsync` to return an error.
+  EXPECT_CALL(built_in_backend_, RemoveLoginAsync)
+      .WillOnce(base::test::RunOnceCallback<1>(kBackendError));
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kInitialForSyncUsers);
 }
 
 // Holds the built in and android backend's logins and the expected result after

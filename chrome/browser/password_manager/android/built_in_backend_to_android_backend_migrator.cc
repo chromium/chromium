@@ -45,7 +45,7 @@ bool HasMigratedToTheAndroidBackend(PrefService* prefs) {
          kRequiredMigrationVersion;
 }
 
-bool IsBlacklistedFormWithValues(const PasswordForm& form) {
+bool IsBlocklistedFormWithValues(const PasswordForm& form) {
   return form.blocked_by_user &&
          (!form.username_value.empty() || !form.password_value.empty());
 }
@@ -256,7 +256,7 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
         &BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData,
         weak_ptr_factory_.GetWeakPtr(), android_backend_);
     callback_chain = base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
-                                        RemoveBlacklistedFormsWithValues,
+                                        RemoveBlocklistedFormsWithValues,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     base::Unretained(built_in_backend_),
                                     std::move(callback_chain));
@@ -326,7 +326,7 @@ void BuiltInBackendToAndroidBackendMigrator::RunMigrationForLocalUsers() {
 
   // Cleanup blacklisted forms in the built in backend before binding.
   builtin_backend_callback_chain = base::BindOnce(
-      &BuiltInBackendToAndroidBackendMigrator::RemoveBlacklistedFormsWithValues,
+      &BuiltInBackendToAndroidBackendMigrator::RemoveBlocklistedFormsWithValues,
       weak_ptr_factory_.GetWeakPtr(), base::Unretained(built_in_backend_),
       std::move(builtin_backend_callback_chain));
 
@@ -339,7 +339,7 @@ void BuiltInBackendToAndroidBackendMigrator::RunMigrationForLocalUsers() {
 
   // Cleanup blacklisted forms in the android backend before binding.
   android_backend_callback_chain = base::BindOnce(
-      &BuiltInBackendToAndroidBackendMigrator::RemoveBlacklistedFormsWithValues,
+      &BuiltInBackendToAndroidBackendMigrator::RemoveBlocklistedFormsWithValues,
       weak_ptr_factory_.GetWeakPtr(), base::Unretained(android_backend_),
       std::move(android_backend_callback_chain));
 
@@ -549,7 +549,7 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
                                   "UnifiedPasswordManagerMigration", this);
 }
 
-void BuiltInBackendToAndroidBackendMigrator::RemoveBlacklistedFormsWithValues(
+void BuiltInBackendToAndroidBackendMigrator::RemoveBlocklistedFormsWithValues(
     PasswordStoreBackend* backend,
     LoginsOrErrorReply result_callback,
     LoginsResultOrError logins_or_error) {
@@ -558,18 +558,31 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveBlacklistedFormsWithValues(
     return;
   }
 
+  LoginsResult all_forms = absl::get<LoginsResult>(std::move(logins_or_error));
   LoginsResult clean_forms;
-  clean_forms.reserve(absl::get<LoginsResult>(logins_or_error).size());
+  LoginsResult forms_to_remove;
+  clean_forms.reserve(all_forms.size());
+  forms_to_remove.reserve(all_forms.size());
 
-  for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
-    if (IsBlacklistedFormWithValues(form)) {
-      RemoveLoginFromBackend(backend, form, base::DoNothing());
-      continue;
+  for (auto& form : all_forms) {
+    if (IsBlocklistedFormWithValues(form)) {
+      forms_to_remove.push_back(std::move(form));
+    } else {
+      clean_forms.push_back(std::move(form));
     }
-    clean_forms.push_back(std::move(form));
   }
 
-  std::move(result_callback).Run(std::move(clean_forms));
+  auto callback_chain =
+      base::BindOnce(std::move(result_callback), std::move(clean_forms));
+
+  for (auto& form : forms_to_remove) {
+    callback_chain = base::BindOnce(
+        &BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend,
+        weak_ptr_factory_.GetWeakPtr(), backend, form,
+        std::move(callback_chain));
+  }
+
+  std::move(callback_chain).Run();
 }
 
 }  // namespace password_manager

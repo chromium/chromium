@@ -157,7 +157,7 @@ class BuiltInBackendToAndroidBackendMigrator {
   // |result_callback| is called with the |LoginsResult| containing valid forms
   // only or |PasswordStoreBackendError| if it contained in |logins_or_error|.
   // |logins_or_error| is modified in place.
-  void RemoveBlacklistedFormsWithValues(PasswordStoreBackend* backend,
+  void RemoveBlocklistedFormsWithValues(PasswordStoreBackend* backend,
                                         LoginsOrErrorReply result_callback,
                                         LoginsResultOrError logins_or_error);
 
