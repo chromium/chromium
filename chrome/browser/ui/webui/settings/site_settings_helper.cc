@@ -142,6 +142,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::WEB_PRINTING, "web-printing"},
     {ContentSettingsType::SPEAKER_SELECTION, "speaker-selection"},
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen"},
+    {ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock"},
+    {ContentSettingsType::POINTER_LOCK, "pointer-lock"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting

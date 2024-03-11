@@ -3549,6 +3549,8 @@ Called by update_net_error_codes.py.-->
   <int value="117" label="Sup-app installation prompts"/>
   <int value="118" label="Speaker Selection"/>
   <int value="119" label="Direct Sockets"/>
+  <int value="120" label="Keyboard lock"/>
+  <int value="121" label="Pointer lock"/>
 </enum>
 
 <enum name="ContextMenuOptionAndroid">

@@ -401,5 +401,13 @@ enum ContentSettingsType {
   // Content settings for access to the Direct Sockets API.
   DIRECT_SOCKETS,
 
+  // Keyboard Lock API allows a site to capture keyboard inputs that would
+  // otherwise be handled by the OS or the browser.
+  KEYBOARD_LOCK,
+
+  // Pointer Lock API allows a site to hide the cursor and have exclusive access
+  // to mouse inputs.
+  POINTER_LOCK,
+
   NUM_TYPES,
 };

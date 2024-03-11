@@ -92,6 +92,10 @@ std::string GetPermissionString(PermissionType permission) {
       return "WebPrinting";
     case PermissionType::SPEAKER_SELECTION:
       return "SpeakerSelection";
+    case PermissionType::KEYBOARD_LOCK:
+      return "KeyboardLock";
+    case PermissionType::POINTER_LOCK:
+      return "PointerLock";
     case PermissionType::NUM:
       NOTREACHED();
       return std::string();
@@ -159,6 +163,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
     case PermissionType::NFC:
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
     case PermissionType::NOTIFICATIONS:
+    case PermissionType::KEYBOARD_LOCK:
+    case PermissionType::POINTER_LOCK:
       return std::nullopt;
 
     case PermissionType::NUM:

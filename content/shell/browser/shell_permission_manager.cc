@@ -72,6 +72,8 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::SMART_CARD:
     case PermissionType::WEB_PRINTING:
     case PermissionType::SPEAKER_SELECTION:
+    case PermissionType::KEYBOARD_LOCK:
+    case PermissionType::POINTER_LOCK:
       return false;
   }
 
