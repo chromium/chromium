@@ -971,6 +971,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
           gfx::Rect(range_start_offset + bounds_in_screen.x(), 0, 0, 0))
           .x();
 
+  // Adust `textfield_rect` to account for the border.
+  textfield_rect.top += omnibox_view_views->GetInsets().top();
+  textfield_rect.height -= omnibox_view_views->GetInsets().height();
+
   std::vector<double> expected_values = std::vector<double>{
       static_cast<double>(left_bound), textfield_rect.top,
       static_cast<double>(range_end_offset - range_start_offset),
