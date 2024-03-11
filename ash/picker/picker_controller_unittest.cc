@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/models/image_model.h"
@@ -246,6 +247,21 @@ TEST_F(PickerControllerTest,
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"http://foo.com/");
+}
+
+TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+  controller.ToggleWidget();
+  std::optional<ui::EmojiPickerCategory> emoji_category;
+  ui::SetShowEmojiKeyboardCallback(base::BindLambdaForTesting(
+      [&emoji_category](ui::EmojiPickerCategory category) {
+        emoji_category = category;
+      }));
+
+  controller.ShowEmojiPicker(ui::EmojiPickerCategory::kSymbols);
+
+  EXPECT_EQ(emoji_category, ui::EmojiPickerCategory::kSymbols);
 }
 
 TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {

@@ -39,6 +39,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/window.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/input_method.h"
@@ -275,6 +276,10 @@ void PickerController::InsertResultOnNextFocus(
   insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
       input_method, *media_to_insert, kInsertMediaTimeout,
       base::BindOnce(&CopyMediaToClipboard, *media_to_insert));
+}
+
+void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
+  ui::ShowEmojiPanelInSpecificMode(category);
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {

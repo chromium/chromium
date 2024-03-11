@@ -123,6 +123,22 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
   return picker_view_bounds;
 }
 
+std::optional<ui::EmojiPickerCategory> PickerCategoryToEmojiPickerCategory(
+    PickerCategory category) {
+  switch (category) {
+    case PickerCategory::kEmojis:
+      return ui::EmojiPickerCategory::kEmojis;
+    case PickerCategory::kSymbols:
+      return ui::EmojiPickerCategory::kSymbols;
+    case PickerCategory::kEmoticons:
+      return ui::EmojiPickerCategory::kEmoticons;
+    case PickerCategory::kGifs:
+      return ui::EmojiPickerCategory::kGifs;
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 PickerView::PickerView(PickerViewDelegate* delegate,
@@ -234,34 +250,20 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 
 void PickerView::SelectCategory(PickerCategory category) {
   selected_category_ = category;
-  std::optional<ui::EmojiPickerCategory> emoji_picker_category;
-  switch (category) {
-    case PickerCategory::kEmojis:
-      emoji_picker_category = ui::EmojiPickerCategory::kEmojis;
-      break;
-    case PickerCategory::kSymbols:
-      emoji_picker_category = ui::EmojiPickerCategory::kSymbols;
-      break;
-    case PickerCategory::kEmoticons:
-      emoji_picker_category = ui::EmojiPickerCategory::kEmoticons;
-      break;
-    case PickerCategory::kGifs:
-      emoji_picker_category = ui::EmojiPickerCategory::kGifs;
-      break;
-    default:
-      // do nothing - this isn't a category supported by the emoji picker;
-      break;
-  }
-  if (emoji_picker_category) {
+
+  if (std::optional<ui::EmojiPickerCategory> emoji_picker_category =
+          PickerCategoryToEmojiPickerCategory(category);
+      emoji_picker_category.has_value()) {
     if (auto* widget = GetWidget()) {
       // TODO(b/316936394): Correctly handle opening of emoji picker. Probably
       // best to wait for the IME on focus event, or save some coordinates and
       // open emoji picker in the correct location in some other way.
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
-    ui::ShowEmojiPanelInSpecificMode(*emoji_picker_category);
+    delegate_->ShowEmojiPicker(*emoji_picker_category);
     return;
   }
+
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   SetActivePage(category_view_);

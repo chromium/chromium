@@ -76,6 +76,7 @@ class ASH_EXPORT PickerController
                    std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override;
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
+  void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
   PickerAssetFetcher* GetAssetFetcher() override;
 
   // ash::input_method::ImeKeyboard::Observer:

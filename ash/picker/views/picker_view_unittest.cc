@@ -99,17 +99,24 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     last_inserted_result_ = result;
   }
 
+  void ShowEmojiPicker(ui::EmojiPickerCategory category) override {
+    showed_emoji_picker_ = true;
+  }
+
   PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
 
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
   }
 
+  bool showed_emoji_picker() const { return showed_emoji_picker_; }
+
  private:
   TestAshWebViewFactory ash_web_view_factory_;
   FakeSearchFunction search_function_;
   MockPickerAssetFetcher asset_fetcher_;
   std::optional<PickerSearchResult> last_inserted_result_;
+  bool showed_emoji_picker_ = false;
 };
 
 PickerView* GetPickerViewFromWidget(views::Widget& widget) {
@@ -658,14 +665,11 @@ TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnEmoji) {
   FakePickerViewDelegate delegate;
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
-  bool called = false;
-  ui::SetShowEmojiKeyboardCallback(base::BindLambdaForTesting(
-      [&](ui::EmojiPickerCategory) { called = true; }));
 
   LeftClickOn(GetCategoryItemView(GetPickerViewFromWidget(*widget)));
 
   EXPECT_TRUE(widget->IsClosed());
-  EXPECT_TRUE(called);
+  EXPECT_TRUE(delegate.showed_emoji_picker());
 }
 
 TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {

@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 
 namespace ash {
 
@@ -45,6 +46,9 @@ class ASH_EXPORT PickerViewDelegate {
   // If there's no focus event within some timeout after the widget is closed,
   // the result is dropped silently.
   virtual void InsertResultOnNextFocus(const PickerSearchResult& result) = 0;
+
+  // Shows the Emoji Picker with `category`.
+  virtual void ShowEmojiPicker(ui::EmojiPickerCategory category) = 0;
 
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 };
