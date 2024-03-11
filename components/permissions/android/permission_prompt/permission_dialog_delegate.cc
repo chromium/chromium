@@ -70,9 +70,9 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   PermissionRequest::AnnotatedMessageText annotatedMessageText =
       permission_prompt_->GetAnnotatedMessageText();
   std::vector<int> bolded_ranges;
-  for (auto [start, length] : annotatedMessageText.bolded_ranges) {
+  for (auto [start, end] : annotatedMessageText.bolded_ranges) {
     bolded_ranges.push_back(base::checked_cast<int>(start));
-    bolded_ranges.push_back(base::checked_cast<int>(length));
+    bolded_ranges.push_back(base::checked_cast<int>(end));
   }
 
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
