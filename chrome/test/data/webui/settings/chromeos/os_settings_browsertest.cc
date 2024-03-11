@@ -640,7 +640,6 @@ class OSSettingsInternetTestApnAndHotspotAndPasspointEnabled
             ash::features::kApnRevamp,
             ash::features::kHotspot,
             ash::features::kPasspointSettings,
-            ash::features::kPasspointARCSupport,
         },
         /*disabled=*/{});
   }
@@ -717,7 +716,6 @@ class OSSettingsInternetTestApnAndPasspointEnabled
         {
             ash::features::kApnRevamp,
             ash::features::kPasspointSettings,
-            ash::features::kPasspointARCSupport,
         },
         /*disabled=*/{});
   }
@@ -738,7 +736,6 @@ class OSSettingsInternetTestPasspointEnabled : public OSSettingsMochaTest {
         /*enabled=*/
         {
             ash::features::kPasspointSettings,
-            ash::features::kPasspointARCSupport,
         },
         /*disabled=*/{});
   }

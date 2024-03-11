@@ -303,14 +303,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      isPasspointEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isPasspointEnabled') &&
-              loadTimeData.getBoolean('isPasspointEnabled');
-        },
-      },
-
       isPasspointSettingsEnabled_: {
         type: Boolean,
         readOnly: true,
@@ -406,7 +398,6 @@ export class SettingsInternetDetailPageElement extends
   private isApnRevampEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
   private isCellularCarrierLockEnabled_: boolean;
-  private isPasspointEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
@@ -2261,9 +2252,6 @@ export class SettingsInternetDetailPageElement extends
 
   private isPasspointWifi_(managedProperties: ManagedProperties|
                            undefined): boolean {
-    if (!this.isPasspointEnabled_) {
-      return false;
-    }
     return !!managedProperties &&
         managedProperties.type === NetworkType.kWiFi &&
         managedProperties.typeProperties.wifi!.passpointId !== '' &&

@@ -31,14 +31,11 @@ export class PasspointRemoveDialogElement extends
     return {};
   }
 
-  private isPasspointEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
 
   constructor() {
     super();
 
-    this.isPasspointEnabled_ = loadTimeData.valueExists('isPasspointEnabled') &&
-        loadTimeData.getBoolean('isPasspointEnabled');
     this.isPasspointSettingsEnabled_ =
         loadTimeData.valueExists('isPasspointSettingsEnabled') &&
         loadTimeData.getBoolean('isPasspointSettingsEnabled');
@@ -82,7 +79,7 @@ export class PasspointRemoveDialogElement extends
   }
 
   private hasDescription_(): boolean {
-    return this.isPasspointEnabled_ && !this.isPasspointSettingsEnabled_;
+    return !this.isPasspointSettingsEnabled_;
   }
 
   private getDialogInformation_(): string {

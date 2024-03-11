@@ -625,7 +625,6 @@ suite('<settings-internet-detail-subpage>', () => {
 
     test('WiFi Passpoint removal shows a dialog', async () => {
       loadTimeData.overrideValues({
-        isPasspointEnabled: true,
         isPasspointSettingsEnabled: false,
       });
       init();
@@ -684,7 +683,6 @@ suite('<settings-internet-detail-subpage>', () => {
 
     test('WiFi Passpoint removal leads to subscription page', async () => {
       loadTimeData.overrideValues({
-        isPasspointEnabled: true,
         isPasspointSettingsEnabled: true,
       });
       init();
@@ -743,40 +741,36 @@ suite('<settings-internet-detail-subpage>', () => {
       assertEquals(subId, showDetailEvent.detail.id);
     });
 
-    [true, false].forEach(isPasspointEnabled => {
-      test(
-          'WiFi network removal without Passpoint does not show a dialog',
-          async () => {
-            loadTimeData.overrideValues({
-              isPasspointEnabled,
-              isPasspointSettingsEnabled: false,
-            });
-            init();
-            mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-            const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi');
-            wifiNetwork.source = OncSource.kUser;
-            wifiNetwork.connectable = true;
-            mojoApi.setManagedPropertiesForTest(wifiNetwork);
-
-            internetDetailPage.init('wifi_guid', 'WiFi', 'wifi');
-            await flushTasks();
-
-            const forgetButton = getButton('forgetButton');
-            assertFalse(forgetButton.hidden);
-            assertFalse(forgetButton.disabled);
-
-            // Click the button and check the dialog is displayed.
-            forgetButton.click();
-            await flushTasks();
-            assertNull(internetDetailPage.shadowRoot!.querySelector(
-                '#passpointRemovalDialog'));
+    test(
+        'WiFi network removal without Passpoint does not show a dialog',
+        async () => {
+          loadTimeData.overrideValues({
+            isPasspointSettingsEnabled: false,
           });
-    });
+          init();
+          mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+          const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi');
+          wifiNetwork.source = OncSource.kUser;
+          wifiNetwork.connectable = true;
+          mojoApi.setManagedPropertiesForTest(wifiNetwork);
+
+          internetDetailPage.init('wifi_guid', 'WiFi', 'wifi');
+          await flushTasks();
+
+          const forgetButton = getButton('forgetButton');
+          assertFalse(forgetButton.hidden);
+          assertFalse(forgetButton.disabled);
+
+          // Click the button and check the dialog is displayed.
+          forgetButton.click();
+          await flushTasks();
+          assertNull(internetDetailPage.shadowRoot!.querySelector(
+              '#passpointRemovalDialog'));
+        });
 
     [true, false].forEach(isPasspointSettingsEnabled => {
       test('WiFi network with Passpoint shows provider row', async () => {
         loadTimeData.overrideValues({
-          isPasspointEnabled: true,
           isPasspointSettingsEnabled,
         });
         init();
@@ -825,7 +819,6 @@ suite('<settings-internet-detail-subpage>', () => {
         'WiFi network without Passpoint does not show provider row',
         async () => {
           loadTimeData.overrideValues({
-            isPasspointEnabled: true,
             isPasspointSettingsEnabled: true,
           });
           init();
@@ -844,7 +837,6 @@ suite('<settings-internet-detail-subpage>', () => {
 
     test('WiFi network with Passpoint has no configure button', async () => {
       loadTimeData.overrideValues({
-        isPasspointEnabled: true,
         isPasspointSettingsEnabled: true,
       });
       init();

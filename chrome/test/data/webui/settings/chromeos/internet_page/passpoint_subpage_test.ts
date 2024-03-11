@@ -104,7 +104,6 @@ suite('PasspointSubpage', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      isPasspointEnabled: true,
       isPasspointSettingsEnabled: true,
     });
     networkConfigApi_ = new FakeNetworkConfig();

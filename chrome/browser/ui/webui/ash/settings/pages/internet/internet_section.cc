@@ -1140,11 +1140,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           ash::features::IsHotspotEnabled());
   html_source->AddBoolean("isInstantHotspotRebrandEnabled",
                           ash::features::IsInstantHotspotRebrandEnabled());
-  html_source->AddBoolean("isPasspointEnabled",
-                          ash::features::IsPasspointARCSupportEnabled());
   html_source->AddBoolean("isPasspointSettingsEnabled",
-                          ash::features::IsPasspointSettingsEnabled() &&
-                              ash::features::IsPasspointARCSupportEnabled());
+                          ash::features::IsPasspointSettingsEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
