@@ -74,6 +74,8 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       timeout: int = 300,
       should_capture_full_screenshot_func: Optional[Callable[
           [browser_module.Browser], bool]] = None,
+      requires_fullscreen_os_screenshot_func: Optional[Callable[[],
+                                                                bool]] = None,
       **kwargs):
     # Video tests can result in non-hermetic test behavior due to overlays, so
     # do a full refresh after each one. See crbug.com/1484212.
@@ -103,6 +105,13 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     if should_capture_full_screenshot_func is None:
       should_capture_full_screenshot_func = lambda _: False
     self.ShouldCaptureFullScreenshot = should_capture_full_screenshot_func
+    # Some tests may require to capture a full OS screenshot to exercise
+    # end-to-end integration. That is, such browsers as LaCros do delegated
+    # compositing and they are interested in comparing the result produced
+    # by the OS compositor rather than Chromium's one.
+    if requires_fullscreen_os_screenshot_func is None:
+      requires_fullscreen_os_screenshot_func = lambda: False
+    self.RequiresFullScreenOSScreenshot = requires_fullscreen_os_screenshot_func
 
 
 class TestActionCrashGpuProcess(sghitb.TestAction):
@@ -242,6 +251,10 @@ def GetMediaStreamTestBrowserArgs(media_stream_source_relpath: str
       '--use-file-for-fake-video-capture=' +
       os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, media_stream_source_relpath)
   ]
+
+
+def RequiresFullScreenOSScreenshot() -> bool:
+  return True
 
 
 def CaptureFullScreenshotOnFuchsia(browser: browser_module.Browser) -> bool:
@@ -532,6 +545,14 @@ class PixelTestPages():
                       base_name + '_WebglResizedCanvas',
                       test_rect=[0, 0, 300, 300],
                       grace_period_end=date(2024, 3, 5)),
+        PixelTestPage(
+            'pixel_render_passes.html',
+            base_name + '_RenderPasses',
+            test_rect=[0, 80, 485, 245],
+            grace_period_end=date(2024, 5, 1),
+            requires_fullscreen_os_screenshot_func=
+              RequiresFullScreenOSScreenshot
+        ),
     ]
 
   @staticmethod

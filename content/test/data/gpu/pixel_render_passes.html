@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>Basic RenderPasses Test: masks/clipping/rounded corners</title>
+<style type="text/css">
+img {
+  transform: translateZ(0) rotate(0.15turn);
+  border-radius: 30px;
+  filter: blur(1px);
+}
+</style>
+<script>
+
+var g_swapsBeforeAck = 50;
+
+function waitForFinish()
+{
+  if (g_swapsBeforeAck == 0) {
+    domAutomationController.send("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+
+function main()
+{
+  waitForFinish()
+}
+
+</script>
+</head>
+
+<body onload="main()" style="display:inline-flex; background: grey; margin-top: 15px; margin-left: 30px;">
+  <img src='single_face.jpg'>
+  <iframe width="140" height="140" frameBorder="0" scrolling="no"
+          style="border-radius: 25px; margin-left: 30px;"
+          title="Iframe Example1"
+          src="render_passes/helper_render_passes_rounded_corners_iframe.html">
+  </iframe>
+  <iframe width="140" height="140" frameBorder="0" scrolling="no"
+          style="border-radius: 5px; margin-left: 15px;"
+          title="Iframe Example1"
+          src="render_passes/helper_render_passes_clipping_iframe.html">
+  </iframe>
+</body>
+</html>

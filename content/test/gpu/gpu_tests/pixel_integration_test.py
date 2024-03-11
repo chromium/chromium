@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import os
 import posixpath
 import sys
@@ -17,7 +18,7 @@ from gpu_tests.util import host_information
 
 import gpu_path_util
 
-from telemetry.util import image_util
+from telemetry.util import image_util, screenshot
 
 # We're not sure if this is actually a fixed value or not, but it's 10 pixels
 # wide on the only device we've had issues with so far (Pixel 4), so assume
@@ -167,14 +168,26 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       test_case: the GPU PixelTestPage object for the test.
     """
     tab = self.tab
+    if test_case.RequiresFullScreenOSScreenshot():
+      if not self.browser.platform.CanTakeScreenshot():
+        logging.warning('Skipping the test because the platform does not '
+                        'support OS screenshots')
+        self.skipTest('The platform does not support fullscreen OS screenshot')
 
-    if test_case.ShouldCaptureFullScreenshot(self.browser):
+      fh = screenshot.TryCaptureScreenShot(self.browser.platform, None,
+                                           self._GetScreenshotTimeout())
+      if fh is None:
+        self.fail('Unable to get file handle of the screenshot')
+      screen_shot = image_util.FromPngFile(fh.GetAbsPath())
+    elif test_case.ShouldCaptureFullScreenshot(self.browser):
       # Screenshot on Fuchsia can take a long time. See crbug.com/1376684.
-      screenshot = tab.FullScreenshot(15)
+      screen_shot = tab.FullScreenshot(15)
     else:
-      screenshot = tab.Screenshot(self._GetScreenshotTimeout())
-    if screenshot is None:
+      screen_shot = tab.Screenshot(self._GetScreenshotTimeout())
+
+    if screen_shot is None:
       self.fail('Could not capture screenshot')
+
     dpr = tab.EvaluateJavaScript('window.devicePixelRatio')
     if test_case.test_rect:
       start_x = int(test_case.test_rect[0] * dpr)
@@ -182,16 +195,16 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       # When actually clamping the value, it's possible we'll catch the
       # scrollbar, so account for its width in the clamp.
       end_x = min(int(test_case.test_rect[2] * dpr),
-                  image_util.Width(screenshot) - SCROLLBAR_WIDTH)
+                  image_util.Width(screen_shot) - SCROLLBAR_WIDTH)
       end_y = min(int(test_case.test_rect[3] * dpr),
-                  image_util.Height(screenshot))
+                  image_util.Height(screen_shot))
       crop_width = end_x - start_x
       crop_height = end_y - start_y
-      screenshot = image_util.Crop(screenshot, start_x, start_y, crop_width,
-                                   crop_height)
+      screen_shot = image_util.Crop(screen_shot, start_x, start_y, crop_width,
+                                    crop_height)
 
     image_name = self._UrlToImageName(test_case.name)
-    self._UploadTestResultToSkiaGold(image_name, screenshot, test_case)
+    self._UploadTestResultToSkiaGold(image_name, screen_shot, test_case)
 
   def _GetScreenshotTimeout(self):
     multiplier = 1

@@ -242,6 +242,14 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 [ catalina ] Pixel_Video_HEVC [ Skip ]
 [ chromeos ] Pixel_Video_HEVC [ Skip ]
 
+# This test relies on a screenshot taken with OS' tools. So far verified only
+# on ChromeOS.
+[ linux ] Pixel_RenderPasses [ Skip ]
+[ android ] Pixel_RenderPasses [ Skip ]
+[ mac ] Pixel_RenderPasses [ Skip ]
+[ win ] Pixel_RenderPasses [ Skip ]
+[ fuchsia ] Pixel_RenderPasses [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

@@ -6313,6 +6313,7 @@ data/gpu/pixel_offscreen_canvas_ibrc_webgl_worker.html
 data/gpu/pixel_paintWorklet_transform.html
 data/gpu/pixel_precision_rounded_corner.html
 data/gpu/pixel_reflected_div.html
+data/gpu/pixel_render_passes.html
 data/gpu/pixel_repeated_webgl_to_2d.html
 data/gpu/pixel_scissor.html
 data/gpu/pixel_scissor_expectations.json
@@ -6380,6 +6381,8 @@ data/gpu/pixel_webgpu_import_video_frame_offscreen_canvas.html
 data/gpu/pixel_webgpu_util.js
 data/gpu/pixel_webgpu_webgl_teximage2d.html
 data/gpu/power_video_bear_1280x720_mp4.html
+data/gpu/render_passes/helper_render_passes_clipping_iframe.html
+data/gpu/render_passes/helper_render_passes_rounded_corners_iframe.html
 data/gpu/screenshot_sync_canvas.html
 data/gpu/screenshot_sync_divs.html
 data/gpu/simple.html
