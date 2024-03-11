@@ -1236,18 +1236,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->enable_ip_protection =
         ipp_config_provider->IsIpProtectionEnabled();
   }
-
-  network_context_params->afp_block_list_experiment_enabled =
-      (base::FeatureList::IsEnabled(
-           features::
-               kEnableNetworkServiceResourceBlockListIfThirdPartyCookiesBlocked) &&
-       cookie_settings_->ShouldBlockThirdPartyCookies()) ||
-      (!profile_->IsOffTheRecord() &&
-       base::FeatureList::IsEnabled(
-           features::kEnableFingerprintingProtectionBlocklist)) ||
-      (profile_->IsOffTheRecord() &&
-       base::FeatureList::IsEnabled(
-           features::kEnableNetworkServiceResourceBlockListInOtrSessions));
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

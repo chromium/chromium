@@ -171,10 +171,6 @@ CorsURLLoaderTestBase::CorsURLLoaderTestBase(bool shared_dictionary_enabled)
 
   context_params->shared_dictionary_enabled = shared_dictionary_enabled;
 
-  // The AFP Block List experiment won't affect tests that don't also populate
-  // the block list, so this is safe to enable for all tests.
-  context_params->afp_block_list_experiment_enabled = true;
-
   network_context_ = std::make_unique<NetworkContext>(
       network_service_.get(),
       network_context_remote_.BindNewPipeAndPassReceiver(),
@@ -308,7 +304,7 @@ void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
       network_context_.get(), std::move(factory_params),
       resource_scheduler_client,
       cors_url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
-      &origin_access_list_, /*resource_block_list=*/nullptr);
+      &origin_access_list_);
 }
 
 std::vector<net::NetLogEntry> CorsURLLoaderTestBase::GetEntries() const {
@@ -365,17 +361,6 @@ net::RedirectInfo CorsURLLoaderTestBase::CreateRedirectInfo(
   redirect_info.new_referrer_policy = referrer_policy;
   redirect_info.new_site_for_cookies = site_for_cookies;
   return redirect_info;
-}
-
-void CorsURLLoaderTestBase::AddResourceBlockListRule(
-    const std::string& domain,
-    const std::string& top_frame_bypass) {
-  net::SchemeHostPortMatcher bypass_matcher;
-  bypass_matcher.AddAsFirstRule(
-      net::SchemeHostPortMatcherRule::FromUntrimmedRawString(top_frame_bypass));
-
-  network_service_->network_service_resource_block_list()
-      ->AddDomainWithBypassForTesting(domain, std::move(bypass_matcher));
 }
 
 }  // namespace network::cors

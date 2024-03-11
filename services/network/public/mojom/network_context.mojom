@@ -592,14 +592,6 @@ struct NetworkContextParams {
   // label value defined by the experiment is empty.
   string? cookie_deprecation_label;
 
-  // Whether the experimental AFP block list is enabled for this NetworkContext.
-  // Default is false and will only be true if a feature corresponding to the
-  // type of NetworkContext is enabled.
-  // TODO(crbug.com/1478868): This is an interim field only for AFP block list
-  // experiment. This field should not be used for other use cases. This will
-  // be removed when AFP block list logic is migrated to subresource filter.
-  bool afp_block_list_experiment_enabled = false;
-
   // Sets the cookie encryption provider to be used by this network context if
   // `enable_encrypted_cookies` is also enabled.
   // If both are set then the `GetEncryptor` method on the supplied

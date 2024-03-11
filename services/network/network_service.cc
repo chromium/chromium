@@ -477,9 +477,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       std::make_unique<NetworkServiceProxyAllowList>(
           params->ip_protection_proxy_bypass_policy);
 
-  network_service_resource_block_list_ =
-      std::make_unique<NetworkServiceResourceBlockList>();
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;
   sct_auditing_cache_ =
@@ -936,18 +933,20 @@ void NetworkService::UpdateMaskedDomainList(
                             mdl.ByteSizeLong() / 1024);
 
     network_service_proxy_allow_list_->UseMaskedDomainList(mdl, exclusion_list);
-    network_service_resource_block_list_->UseMaskedDomainList(mdl);
 
-    base::UmaHistogramBoolean("NetworkService.MaskedDomainList.UpdateSuccess",
-                              true);
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection.ProxyAllowList."
+        "UpdateSuccess",
+        true);
   } else {
-    base::UmaHistogramBoolean("NetworkService.MaskedDomainList.UpdateSuccess",
-                              false);
+    base::UmaHistogramBoolean(
+        "NetworkService.IpProtection.ProxyAllowList.UpdateSuccess", false);
     LOG(ERROR) << "Unable to parse MDL in NetworkService";
   }
 
-  base::UmaHistogramTimes("NetworkService.MaskedDomainList.UpdateProcessTime",
-                          base::Time::Now() - start_time);
+  base::UmaHistogramTimes(
+      "NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime",
+      base::Time::Now() - start_time);
 }
 
 #if BUILDFLAG(IS_ANDROID)

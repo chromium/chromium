@@ -206,8 +206,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     mojom::URLLoaderFactoryParamsPtr params,
     scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
-    const OriginAccessList* origin_access_list,
-    NetworkServiceResourceBlockList* resource_block_list)
+    const OriginAccessList* origin_access_list)
     : context_(context),
       is_trusted_(params->is_trusted),
       disable_web_security_(params->disable_web_security),
@@ -232,8 +231,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
           std::move(params->shared_dictionary_observer)),
       require_cross_site_request_for_cookies_(
           params->require_cross_site_request_for_cookies),
-      origin_access_list_(origin_access_list),
-      resource_block_list_(resource_block_list) {
+      origin_access_list_(origin_access_list) {
   TRACE_EVENT("loading", "CorsURLLoaderFactory::CorsURLLoaderFactory",
               perfetto::Flow::FromPointer(this));
   DCHECK(context_);
@@ -321,18 +319,6 @@ void CorsURLLoaderFactory::DestroyCorsURLLoader(CorsURLLoader* loader) {
   DestroyLoader(loader, cors_url_loaders_);
 }
 
-bool CorsURLLoaderFactory::ShouldBlockRequestForAfpExperiment(
-    const ResourceRequest& resource_request) {
-  if (context_ && context_->AfpBlockListExperimentEnabled() &&
-      resource_block_list_) {
-    return resource_block_list_->Matches(
-        resource_request.url,
-        URLLoader::GetIsolationInfo(isolation_info_, false, resource_request));
-  }
-
-  return false;
-}
-
 void CorsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     int32_t request_id,
@@ -358,15 +344,6 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   if (!IsValidRequest(resource_request, options)) {
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
-    return;
-  }
-
-  if (ShouldBlockRequestForAfpExperiment(resource_request)) {
-    VLOG(1)
-        << "CorsURLLoaderFactory: blocking request for resource_request.url: "
-        << resource_request.url;
-    mojo::Remote<mojom::URLLoaderClient>(std::move(client))
-        ->OnComplete(URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
     return;
   }
 

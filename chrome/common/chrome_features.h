@@ -251,13 +251,6 @@ BASE_DECLARE_FEATURE(kEnableWebUsbOnExtensionServiceWorker);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableFingerprintingProtectionBlocklist);
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kEnableNetworkServiceResourceBlockListInOtrSessions);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(
-    kEnableNetworkServiceResourceBlockListIfThirdPartyCookiesBlocked);
-
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kExtensionDeferredIndividualSettings);

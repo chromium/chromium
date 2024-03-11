@@ -18,7 +18,6 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
 #include "services/network/is_browser_initiated.h"
-#include "services/network/masked_domain_list/network_service_resource_block_list.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -91,7 +90,7 @@ class CorsURLLoaderFactoryTest : public testing::Test {
         network_context_.get(), std::move(factory_params),
         resource_scheduler_client,
         cors_url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
-        &origin_access_list_, &resource_block_list_);
+        &origin_access_list_);
   }
 
   void SetUp() override {
@@ -118,9 +117,6 @@ class CorsURLLoaderFactoryTest : public testing::Test {
   test_cors_loader_clients() {
     return test_cors_loader_clients_;
   }
-
- protected:
-  network::NetworkServiceResourceBlockList resource_block_list_;
 
  private:
   // Test environment.
@@ -336,130 +332,6 @@ TEST_F(CorsURLLoaderFactoryTest,
       "CorsURLLoaderFactory: original_destination is unexpectedly set to "
       "kDocument",
       bad_message_observer.WaitForBadMessage());
-}
-
-class TrustedCorsURLLoaderFactoryTest : public CorsURLLoaderFactoryTest {
-  void SetUp() override {
-    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
-    factory_params->is_trusted = true;
-
-    auto context_params = mojom::NetworkContextParams::New();
-    context_params->afp_block_list_experiment_enabled = true;
-
-    BaseSetup(std::move(factory_params), std::move(context_params));
-  }
-};
-
-TEST_F(TrustedCorsURLLoaderFactoryTest, RequestIsBlockedByBlockList) {
-  auto mdl = masked_domain_list::MaskedDomainList();
-  auto* resource = mdl.add_resource_owners()->add_owned_resources();
-  resource->set_domain(test_server()->base_url().host());
-  resource->add_experiments(masked_domain_list::Resource_Experiment::
-                                Resource_Experiment_EXPERIMENT_AFP);
-  resource_block_list_.UseMaskedDomainList(mdl);
-
-  url::Origin top_frame_origin =
-      url::Origin::Create(GURL("https://topframe.com"));
-
-  ResourceRequest request;
-  GURL url = test_server()->GetURL("/resource.js");
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.method = net::HttpRequestHeaders::kGetMethod;
-  request.url = url;
-  request.referrer = top_frame_origin.GetURL();
-  request.request_initiator = url::Origin::Create(test_server()->base_url());
-  request.trusted_params = network::ResourceRequest::TrustedParams();
-  request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, top_frame_origin,
-      top_frame_origin, net::SiteForCookies::FromOrigin(top_frame_origin));
-  CreateLoaderAndStart(request);
-
-  auto* client = test_cors_loader_clients().back().get();
-  client->RunUntilComplete();
-
-  EXPECT_TRUE(client->has_received_completion());
-  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, client->completion_status().error_code);
-}
-
-TEST_F(TrustedCorsURLLoaderFactoryTest,
-       RequestBypassesBlockListBecauseTopFrameIsFirstParty) {
-  auto mdl = masked_domain_list::MaskedDomainList();
-  auto* owner = mdl.add_resource_owners();
-  owner->add_owned_properties("topframe.com");
-  auto* resource = owner->add_owned_resources();
-  resource->set_domain(test_server()->base_url().host());
-  resource->add_experiments(masked_domain_list::Resource_Experiment::
-                                Resource_Experiment_EXPERIMENT_AFP);
-
-  resource_block_list_.UseMaskedDomainList(mdl);
-
-  url::Origin top_frame_origin =
-      url::Origin::Create(GURL("https://topframe.com"));
-
-  ResourceRequest request;
-  GURL url = test_server()->GetURL("/resource.js");
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.method = net::HttpRequestHeaders::kGetMethod;
-  request.url = url;
-  request.referrer = top_frame_origin.GetURL();
-  request.request_initiator = url::Origin::Create(test_server()->base_url());
-  request.trusted_params = network::ResourceRequest::TrustedParams();
-  request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, top_frame_origin,
-      top_frame_origin, net::SiteForCookies::FromOrigin(top_frame_origin));
-  CreateLoaderAndStart(request);
-
-  auto* client = test_cors_loader_clients().back().get();
-  client->RunUntilComplete();
-
-  EXPECT_TRUE(client->has_received_completion());
-  EXPECT_EQ(net::OK, client->completion_status().error_code);
-}
-
-class AfpDisabledCorsURLLoaderFactoryTest : public CorsURLLoaderFactoryTest {
-  void SetUp() override {
-    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
-    factory_params->is_trusted = true;
-
-    auto context_params = mojom::NetworkContextParams::New();
-    context_params->afp_block_list_experiment_enabled = false;
-
-    BaseSetup(std::move(factory_params), std::move(context_params));
-  }
-};
-
-TEST_F(AfpDisabledCorsURLLoaderFactoryTest, BlockListIsNotUsed) {
-  auto mdl = masked_domain_list::MaskedDomainList();
-  auto* resource = mdl.add_resource_owners()->add_owned_resources();
-  resource->set_domain(test_server()->base_url().host());
-  resource->add_experiments(masked_domain_list::Resource_Experiment::
-                                Resource_Experiment_EXPERIMENT_AFP);
-  resource_block_list_.UseMaskedDomainList(mdl);
-
-  url::Origin top_frame_origin =
-      url::Origin::Create(GURL("https://topframe.com"));
-
-  ResourceRequest request;
-  GURL url = test_server()->GetURL("/resource.js");
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.method = net::HttpRequestHeaders::kGetMethod;
-  request.url = url;
-  request.referrer = top_frame_origin.GetURL();
-  request.request_initiator = url::Origin::Create(test_server()->base_url());
-  request.trusted_params = network::ResourceRequest::TrustedParams();
-  request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, top_frame_origin,
-      top_frame_origin, net::SiteForCookies::FromOrigin(top_frame_origin));
-  CreateLoaderAndStart(request);
-
-  auto* client = test_cors_loader_clients().back().get();
-  client->RunUntilComplete();
-
-  EXPECT_TRUE(client->has_received_completion());
-  EXPECT_EQ(net::OK, client->completion_status().error_code);
 }
 
 class RequireCrossSiteRequestForCookiesCorsURLLoaderFactoryTest
