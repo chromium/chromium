@@ -11,10 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/aligned_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
@@ -53,7 +56,7 @@ using MockProcessedCaptureCallback =
 // The number of packets used for testing.
 const int kNumberOfPacketsForTest = 100;
 
-void ReadDataFromSpeechFile(char* data, int length) {
+void ReadDataFromSpeechFile(base::HeapArray<int16_t>& data) {
   base::FilePath file;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file));
   file = file.Append(FILE_PATH_LITERAL("media"))
@@ -63,8 +66,10 @@ void ReadDataFromSpeechFile(char* data, int length) {
   DCHECK(base::PathExists(file));
   int64_t data_file_size64 = 0;
   DCHECK(base::GetFileSize(file, &data_file_size64));
-  EXPECT_EQ(length, base::ReadFile(file, data, length));
-  DCHECK(data_file_size64 > length);
+  auto bytes = base::as_writable_chars(data.as_span());
+  EXPECT_EQ(base::checked_cast<int>(bytes.size_bytes()),
+            base::ReadFile(file, bytes));
+  DCHECK(data_file_size64 > base::checked_cast<int64_t>(data.size()));
 }
 
 }  // namespace
@@ -88,12 +93,13 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     // Read the audio data from a file.
     const media::AudioParameters& params =
         audio_processor.GetInputFormatForTesting();
-    const int packet_size = params.frames_per_buffer() * 2 * params.channels();
-    const size_t length = packet_size * kNumberOfPacketsForTest;
-    std::unique_ptr<char[]> capture_data(new char[length]);
-    ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
+    const int frames_per_packet =
+        params.frames_per_buffer() * params.channels();
+    const size_t length = frames_per_packet * kNumberOfPacketsForTest;
+    auto capture_data = base::HeapArray<int16_t>::Uninit(length);
+    ReadDataFromSpeechFile(capture_data);
     const int16_t* data_ptr =
-        reinterpret_cast<const int16_t*>(capture_data.get());
+        reinterpret_cast<const int16_t*>(capture_data.data());
     std::unique_ptr<media::AudioBus> data_bus =
         media::AudioBus::Create(params.channels(), params.frames_per_buffer());
 
