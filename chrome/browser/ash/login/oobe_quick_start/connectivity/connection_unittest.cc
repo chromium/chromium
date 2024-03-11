@@ -55,6 +55,11 @@ const char kDeviceTypeKey[] = "deviceType";
 const int kAccountRequirementSingle = 2;
 const int kFlowTypeTargetChallenge = 2;
 const int kDeviceTypeChrome = 7;
+const char kPostTransferActionKey[] = "PostTransferAction";
+const char kURIKey[] = "uri";
+const char kURIValue[] =
+    "intent:#Intent;action=com.google.android.gms.quickstart.LANDING_SCREEN;"
+    "package=com.google.android.gms;end";
 
 const char kChallengeBase64[] = "aQ==";
 
@@ -444,6 +449,9 @@ TEST_F(ConnectionTest, RequestAccountInfo) {
             kAccountRequirementSingle);
   EXPECT_EQ(*bootstrap_options.FindInt(kFlowTypeKey), kFlowTypeTargetChallenge);
   EXPECT_EQ(*bootstrap_options.FindInt(kDeviceTypeKey), kDeviceTypeChrome);
+  EXPECT_EQ(
+      *bootstrap_options.FindDict(kPostTransferActionKey)->FindString(kURIKey),
+      kURIValue);
 
   // Emulate a BootstrapConfigurations response.
   std::vector<uint8_t> instance_id = {0x01, 0x02, 0x03};

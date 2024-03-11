@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
 
 #include "base/base64.h"
+#include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 #include "chromeos/ash/components/quick_start/types.h"
@@ -24,6 +25,14 @@ constexpr char kFlowTypeKey[] = "flowType";
 // bootstrapOptions key telling the phone the number of
 // accounts are expected to transfer account to the target device.
 constexpr char kAccountRequirementKey[] = "accountRequirement";
+// bootstrapOptions key containing object with phone actions after transfer.
+constexpr char kPostTransferActionKey[] = "PostTransferAction";
+// bootstrapOptions URI key inside the PostTransferAction object.
+constexpr char kURIKey[] = "uri";
+// bootstrapOptions PostTransferAction uri value.
+constexpr char kURIValue[] =
+    "intent:#Intent;action=com.google.android.gms.quickstart.LANDING_SCREEN;"
+    "package=com.google.android.gms;end";
 
 // Base64 encoded CBOR bytes containing the Fido command. This will be used
 // for GetInfo and GetAssertion.
@@ -91,6 +100,12 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
   message->GetPayload()->Set(kAccountRequirementKey, kAccountRequirementSingle);
   message->GetPayload()->Set(kFlowTypeKey, kFlowTypeTargetChallenge);
   message->GetPayload()->Set(kDeviceTypeKey, kDeviceTypeChrome);
+
+  base::Value::Dict post_transfer_action;
+  post_transfer_action.Set(kURIKey, kURIValue);
+
+  message->GetPayload()->Set(kPostTransferActionKey,
+                             std::move(post_transfer_action));
   return message;
 }
 
