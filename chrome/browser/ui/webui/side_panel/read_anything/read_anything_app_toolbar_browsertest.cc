@@ -94,7 +94,3 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
                        ReadAnythingToolbar_Visible) {
   ASSERT_TRUE(RunTest("toolbar_visible_with_flag.js"));
 }
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, LinksToggleButtonOnToolbar) {
-  ASSERT_TRUE(RunTest("links_toggle_button.js"));
-}

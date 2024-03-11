@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
-import {LINK_TOGGLE_BUTTON_ID, LINKS_DISABLED_ICON, LINKS_ENABLED_ICON} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {LINK_TOGGLE_BUTTON_ID} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 
-suite('ReadAloudLinksToggled', () => {
+suite('LinksToggledIntegration', () => {
   let app: ReadAnythingElement;
   let linksToggleButton: CrIconButtonElement;
   let playPauseButton: CrIconButtonElement;
@@ -81,15 +81,19 @@ suite('ReadAloudLinksToggled', () => {
   });
 
   suite('by default', () => {
-    test('link toggle enabled', () => {
-      assertFalse(linksToggleButton.disabled);
-    });
-
-    test('links are enabled', () => {
-      assertEquals(linksToggleButton.ironIcon, LINKS_ENABLED_ICON);
-    });
-
     test('container has links', () => {
+      assertContainerHasLinks(true);
+    });
+  });
+
+  suite('without speech', () => {
+    test('on first toggle, links are disabled', () => {
+      linksToggleButton.click();
+      assertContainerHasLinks(false);
+    });
+
+    test('on next toggle, links are enabled', () => {
+      linksToggleButton.click();
       assertContainerHasLinks(true);
     });
   });
@@ -97,14 +101,6 @@ suite('ReadAloudLinksToggled', () => {
   suite('after speech starts', () => {
     setup(() => {
       playPauseButton.click();
-    });
-
-    test('link toggle disabled', () => {
-      assertTrue(linksToggleButton.disabled);
-    });
-
-    test('links are enabled', () => {
-      assertEquals(linksToggleButton.ironIcon, LINKS_ENABLED_ICON);
     });
 
     test('container does not have links', () => {
@@ -118,14 +114,6 @@ suite('ReadAloudLinksToggled', () => {
         }
       });
 
-      test('link toggle enabled', () => {
-        assertFalse(linksToggleButton.disabled);
-      });
-
-      test('links are enabled', () => {
-        assertEquals(linksToggleButton.ironIcon, LINKS_ENABLED_ICON);
-      });
-
       test('container has links again', () => {
         assertContainerHasLinks(true);
       });
@@ -136,14 +124,6 @@ suite('ReadAloudLinksToggled', () => {
     setup(() => {
       playPauseButton.click();
       playPauseButton.click();
-    });
-
-    test('link toggle enabled', () => {
-      assertFalse(linksToggleButton.disabled);
-    });
-
-    test('links are enabled', () => {
-      assertEquals(linksToggleButton.ironIcon, LINKS_ENABLED_ICON);
     });
 
     test('container has links again', () => {
@@ -160,14 +140,6 @@ suite('ReadAloudLinksToggled', () => {
       }
     });
 
-    test('link toggle enabled', () => {
-      assertFalse(linksToggleButton.disabled);
-    });
-
-    test('links are disabled', () => {
-      assertEquals(linksToggleButton.ironIcon, LINKS_DISABLED_ICON);
-    });
-
     test('container does not have links', () => {
       assertContainerHasLinks(false);
     });
@@ -175,14 +147,6 @@ suite('ReadAloudLinksToggled', () => {
     suite('after speech starts', () => {
       setup(() => {
         playPauseButton.click();
-      });
-
-      test('link toggle disabled', () => {
-        assertTrue(linksToggleButton.disabled);
-      });
-
-      test('links are disabled', () => {
-        assertEquals(linksToggleButton.ironIcon, LINKS_DISABLED_ICON);
       });
 
       test('container does not have links', () => {
@@ -194,14 +158,6 @@ suite('ReadAloudLinksToggled', () => {
       setup(() => {
         playPauseButton.click();
         playPauseButton.click();
-      });
-
-      test('link toggle enabled', () => {
-        assertFalse(linksToggleButton.disabled);
-      });
-
-      test('links are disabled', () => {
-        assertEquals(linksToggleButton.ironIcon, LINKS_DISABLED_ICON);
       });
 
       test('container does not have links', () => {

@@ -14,6 +14,7 @@ export class FakeReadingMode {
   // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
   fontName: string = 'MyFont';
   fontSize: number = 0;
+  linksEnabled: boolean = true;
   foregroundColor: number = 0;
   backgroundColor: number = 0;
   lineSpacing: number = 0;
@@ -148,7 +149,9 @@ export class FakeReadingMode {
   }
 
   // Called when a user toggles links via the webui toolbar.
-  onLinksEnabledToggled() {}
+  onLinksEnabledToggled() {
+    this.linksEnabled = !this.linksEnabled;
+  }
 
   // Called when the letter spacing is changed via the webui toolbar.
   onStandardLetterSpacing() {}

@@ -67,6 +67,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggle) {
+  RunSidePanelTest("side_panel/read_anything/links_toggle_button_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, PlayPause) {
   RunSidePanelTest("side_panel/read_anything/play_pause_test.js",
                    "mocha.run()");
@@ -104,8 +109,9 @@ class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudLinksToggled) {
-  RunSidePanelTest("side_panel/read_anything/read_aloud_links_toggled.js",
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
+                       LinksToggledIntegration) {
+  RunSidePanelTest("side_panel/read_anything/links_toggled_integration.js",
                    "mocha.run()");
 }
 

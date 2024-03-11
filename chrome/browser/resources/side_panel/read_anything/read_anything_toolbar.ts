@@ -88,6 +88,9 @@ export const LINKS_ENABLED_ICON = 'read-anything:links-enabled';
 export const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
 export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 
+// Events emitted from the toolbar to the app
+export const LINKS_EVENT = 'links-toggle';
+
 const ReadAnythingToolbarElementBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   contentPage = document.querySelector('read-anything-app');
@@ -472,18 +475,20 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.$.fontMenu.close();
   }
 
-  private onNextGranularityClick_() {
-    this.dispatchEvent(new CustomEvent('next-granularity-click', {
+  private emitEvent_(name: string, eventDetail?: any) {
+    this.dispatchEvent(new CustomEvent(name, {
       bubbles: true,
       composed: true,
+      detail: eventDetail,
     }));
   }
 
+  private onNextGranularityClick_() {
+    this.emitEvent_('next-granularity-click');
+  }
+
   private onPreviousGranularityClick_() {
-    this.dispatchEvent(new CustomEvent('previous-granularity-click', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.emitEvent_('previous-granularity-click');
   }
 
   private onTextStyleMenuButtonClick_(event: DomRepeatEvent<MenuButton>) {
@@ -556,13 +561,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
     }
 
-    this.dispatchEvent(new CustomEvent('highlight-toggle', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        highlightOn: this.isHighlightOn_,
-      },
-    }));
+    this.emitEvent_('highlight-toggle', {
+      highlightOn: this.isHighlightOn_,
+    });
   }
 
   private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem<number>>) {
@@ -618,25 +619,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private propagateFontChange_(fontName: string) {
     chrome.readingMode.onFontChange(fontName);
-    this.dispatchEvent(new CustomEvent('font-change', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        fontName,
-      },
-    }));
+    this.emitEvent_('font-change', {
+      fontName,
+    });
     this.style.fontFamily = validatedFontName(fontName);
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {
     chrome.readingMode.onSpeechRateChange(event.model.item);
-    this.dispatchEvent(new CustomEvent('rate-change', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        rate: event.model.item,
-      },
-    }));
+    this.emitEvent_('rate-change', {
+      rate: event.model.item,
+    });
     this.setRateIcon_(event.model.item);
     this.setCheckMarkForMenu_(this.$.rateMenu, event.model.index);
 
@@ -684,9 +677,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
         ReadAnythingSettingsChange.COUNT);
 
-
     chrome.readingMode.onLinksEnabledToggled();
-    this.contentPage?.updateContent();
+    this.emitEvent_(LINKS_EVENT);
     this.updateLinkToggleButton();
   }
 
@@ -707,7 +699,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeChanged(increase);
-    this.emitFontSizeChange_();
+    this.emitEvent_('font-size-change');
     // Don't close the menu
   }
 
@@ -716,22 +708,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeReset();
-    this.emitFontSizeChange_();
-  }
-
-  private emitFontSizeChange_() {
-    this.dispatchEvent(new CustomEvent('font-size-change', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.emitEvent_('font-size-change');
   }
 
   private onPlayPauseClick_() {
-    this.dispatchEvent(new CustomEvent('play-pause-click', {
-      bubbles: true,
-      composed: true,
-      detail: {},
-    }));
+    this.emitEvent_('play-pause-click');
   }
 
   private onToolbarKeyDown_(e: KeyboardEvent) {
