@@ -215,6 +215,13 @@ static_library("test_support") {
     "scoped_mock_unexportable_key_provider.h",
   ]
 
+  if (is_win) {
+    sources += [
+      "scoped_fake_user_verifying_key_provider.cc",
+      "scoped_fake_user_verifying_key_provider.h",
+    ]
+  }
+
   if (use_nss_certs) {
     sources += [
       "scoped_test_nss_db.cc",

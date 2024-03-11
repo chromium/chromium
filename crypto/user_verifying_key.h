@@ -123,6 +123,13 @@ GetUserVerifyingKeyProvider();
 CRYPTO_EXPORT void AreUserVerifyingKeysSupported(
     base::OnceCallback<void(bool)> callback);
 
+namespace internal {
+
+CRYPTO_EXPORT void SetUserVerifyingKeyProviderForTesting(
+    std::unique_ptr<UserVerifyingKeyProvider> (*func)());
+
+}  // namespace internal
+
 }  // namespace crypto
 
 #endif  // CRYPTO_USER_VERIFYING_KEY_H_

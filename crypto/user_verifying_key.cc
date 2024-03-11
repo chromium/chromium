@@ -8,6 +8,12 @@
 
 namespace crypto {
 
+namespace {
+
+std::unique_ptr<UserVerifyingKeyProvider> (*g_mock_provider)() = nullptr;
+
+}  // namespace
+
 UserVerifyingSigningKey::~UserVerifyingSigningKey() = default;
 UserVerifyingKeyProvider::~UserVerifyingKeyProvider() = default;
 
@@ -40,5 +46,20 @@ void AreUserVerifyingKeysSupported(base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(false);
 #endif
 }
+
+namespace internal {
+
+void SetUserVerifyingKeyProviderForTesting(
+    std::unique_ptr<UserVerifyingKeyProvider> (*func)()) {
+  if (g_mock_provider) {
+    // Prevent nesting of scoped providers.
+    CHECK(!func);
+    g_mock_provider = nullptr;
+  } else {
+    g_mock_provider = func;
+  }
+}
+
+}  // namespace internal
 
 }  // namespace crypto
