@@ -26,6 +26,9 @@
 
 namespace gpu {
 namespace {
+// NOTE: WrappedSkImage cannot be used with raster-over-GLES2 as it doesn't
+// support GLES2 usage, and hence it doesn't support RASTER_OVER_GLES2_ONLY
+// usage.
 constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
@@ -39,6 +42,9 @@ constexpr uint32_t kGraphiteDawnFallbackUsage = 0;
 #else
 constexpr uint32_t kGraphiteDawnFallbackUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
+    // NOTE: In this case, it is also possible to support raster-over-GLES2.
+    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
     SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_WEBGPU_READ |
     SHARED_IMAGE_USAGE_WEBGPU_WRITE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE;
