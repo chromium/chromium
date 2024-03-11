@@ -684,6 +684,8 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
       return prefs::internal::kSyncSharedTabGroupData;
     case UserSelectableType::kPayments:
       return prefs::internal::kSyncPayments;
+    case UserSelectableType::kCompare:
+      return prefs::internal::kSyncCompare;
   }
   NOTREACHED();
   return nullptr;
@@ -759,6 +761,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case UserSelectableType::kExtensions:
     case UserSelectableType::kThemes:
     case UserSelectableType::kSavedTabGroups:
+    case UserSelectableType::kCompare:
       // These types are not supported in transport mode yet.
       return false;
   }

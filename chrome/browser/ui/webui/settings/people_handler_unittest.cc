@@ -101,6 +101,7 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
              types.Has(syncer::UserSelectableType::kAutofill));
   result.Set("bookmarksSynced",
              types.Has(syncer::UserSelectableType::kBookmarks));
+  result.Set("compareSynced", types.Has(syncer::UserSelectableType::kCompare));
   result.Set("extensionsSynced",
              types.Has(syncer::UserSelectableType::kExtensions));
   result.Set("passwordsSynced",

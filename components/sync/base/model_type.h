@@ -164,7 +164,10 @@ enum ModelType {
   // Read-only on the client.
   PLUS_ADDRESS,
 
-  LAST_USER_MODEL_TYPE = PLUS_ADDRESS,
+  // Product comparison groups.
+  COMPARE,
+
+  LAST_USER_MODEL_TYPE = COMPARE,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -258,7 +261,8 @@ enum class ModelTypeForHistograms {
   kSharedTabGroupData = 63,
   kCollaborationGroup = 64,
   kPlusAddresses = 65,
-  kMaxValue = kPlusAddresses,
+  kCompare = 66,
+  kMaxValue = kCompare,
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.

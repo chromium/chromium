@@ -65,6 +65,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       return kDefaultLocalChangeNudgeDelayForSegmentations;
     case BOOKMARKS:
     case PREFERENCES:
+    case COMPARE:
       // Types with sometimes automatic changes get longer delays to allow more
       // coalescing.
       return kBigLocalChangeNudgeDelay;
@@ -178,6 +179,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case SHARED_TAB_GROUP_DATA:
     case COLLABORATION_GROUP:
     case PLUS_ADDRESS:
+    case COMPARE:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

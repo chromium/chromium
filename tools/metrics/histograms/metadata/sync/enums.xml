@@ -839,6 +839,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="Shared Tab Group Data"/>
   <int value="64" label="Collaboration Groups"/>
   <int value="65" label="Plus Address"/>
+  <int value="66" label="Compare"/>
 </enum>
 
 <enum name="SyncPassphraseType">
