@@ -74,8 +74,6 @@ void ThrottlingNetworkInterceptor::UpdateConditions(
   }
 
   // Throttling.
-  DCHECK(conditions_.download_throughput() != 0 ||
-         conditions_.upload_throughput() != 0);
   offset_ = now;
 
   download_last_tick_ = 0;

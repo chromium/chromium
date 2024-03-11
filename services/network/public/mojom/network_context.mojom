@@ -623,6 +623,17 @@ struct NetworkConditions {
   // Maximal aggregated upload throughput (bytes/sec). <=0 disables upload
   // throttling.
   double upload_throughput;
+
+  // Packet loss for WebRTC connections (percent, 0 to 100).<= 0 disables
+  // packet loss.
+  double packet_loss;
+
+  // Packet queue length for WebRTC connections (packet count). <=0 allows for
+  // an infinite queue.
+  int32 packet_queue_length;
+
+  // Allow packet reordering for WebRTC connections.
+  bool packet_reordering;
 };
 
 // Represents a shared dictionary.

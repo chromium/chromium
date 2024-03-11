@@ -170,7 +170,10 @@ class NetworkHandler : public DevToolsDomainHandler,
       double latency,
       double download_throughput,
       double upload_throughput,
-      Maybe<protocol::Network::ConnectionType> connection_type) override;
+      Maybe<protocol::Network::ConnectionType> connection_type,
+      Maybe<double> packet_loss,
+      Maybe<int> packet_queue_length,
+      Maybe<bool> packet_reordering) override;
   Response SetBypassServiceWorker(bool bypass) override;
 
   DispatchResponse SetRequestInterception(

@@ -959,7 +959,7 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
                                                devtools_token_)) {}
 
   void SetUp() override {
-    SetNetworkState(false, 1000000, 1000000, base::Milliseconds(0));
+    SetNetworkState({});
     P2PSocketUdpTest::SetUp();
   }
 
@@ -968,12 +968,17 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
     P2PSocketUdpTest::TearDown();
   }
 
-  void SetNetworkState(bool offline,
-                       double download,
-                       double upload,
-                       base::TimeDelta latency) {
+  struct NetworkState {
+    bool offline = false;
+    base::TimeDelta latency;
+    double packet_loss = 0.0;
+    int packet_queue_length = 0;
+  };
+
+  void SetNetworkState(NetworkState state) {
     std::unique_ptr<NetworkConditions> conditions(new NetworkConditions(
-        offline, latency.InMillisecondsF(), download, upload));
+        state.offline, state.latency.InMillisecondsF(), 0.0, 0.0,
+        state.packet_loss, state.packet_queue_length, false));
     ThrottlingController::SetConditions(*devtools_token_,
                                         std::move(conditions));
   }
@@ -1032,12 +1037,12 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketOffline) {
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
-  SetNetworkState(true, 1000000, 1000000, base::Milliseconds(0));
+  SetNetworkState({.offline = true});
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
   AdvanceClock(base::Milliseconds(100));
   EXPECT_EQ(0U, sent_packets_.size());
 
-  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(0));
+  SetNetworkState({});
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 1));
   AdvanceClock(base::Milliseconds(100));
   EXPECT_EQ(1U, sent_packets_.size());
@@ -1059,7 +1064,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDelayed) {
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
-  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(1000));
+  SetNetworkState({.latency = base::Milliseconds(1000)});
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
 
   AdvanceClock(base::Milliseconds(100));
@@ -1068,7 +1073,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDelayed) {
   AdvanceClock(base::Milliseconds(2000));
   EXPECT_EQ(1U, sent_packets_.size());
 
-  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(0));
+  SetNetworkState({});
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 1));
 
   AdvanceClock(base::Milliseconds(100));
@@ -1105,9 +1110,8 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketAndRemoveThrottling) {
 }
 
 TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDropsLongQueue) {
-  // Hardcoded value that matches the details in ThrottlingP2PNetworkInterceptor
-  // until we can configure it.
-  constexpr size_t kMaxQueueLength = 300;
+  constexpr size_t kMaxQueueLength = 100;
+  SetNetworkState({.packet_queue_length = kMaxQueueLength});
 
   // Receive packet from |dest1_|.
   std::vector<uint8_t> request_packet;
@@ -1130,6 +1134,33 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDropsLongQueue) {
 
   AdvanceClock(base::Milliseconds(1000));
   EXPECT_EQ(kMaxQueueLength, sent_packets_.size());
+}
+
+TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketWithPacketDrop) {
+  // Receive packet from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
+
+  socket_->ReceivePacket(dest1_, request_packet);
+  AdvanceClock(base::Milliseconds(100));
+
+  rtc::PacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  SetNetworkState({.packet_loss = 100.0});
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(0U, sent_packets_.size());
+
+  SetNetworkState({});
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 1));
+  AdvanceClock(base::Milliseconds(100));
+  EXPECT_EQ(1U, sent_packets_.size());
 }
 
 TEST_F(P2PSocketUdpWithInterceptorTest, ReceivePackets) {
@@ -1177,7 +1208,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, ReceivePacketDelayed) {
 
   AdvanceClock(base::Milliseconds(100));
 
-  SetNetworkState(false, 1000000, 1000000, base::Milliseconds(1000));
+  SetNetworkState({.latency = base::Milliseconds(1000)});
 
   EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(0);
   std::vector<uint8_t> packet;

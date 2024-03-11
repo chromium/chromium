@@ -24,6 +24,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkConditions {
                     double latency,
                     double download_throughput,
                     double upload_throughput);
+  NetworkConditions(bool offline,
+                    double latency,
+                    double download_throughput,
+                    double upload_throughput,
+                    double packet_loss,
+                    int packet_queue_length,
+                    bool packet_reordering);
 
   bool IsThrottling() const;
 
@@ -33,12 +40,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkConditions {
   double latency() const { return latency_; }
   double download_throughput() const { return download_throughput_; }
   double upload_throughput() const { return upload_throughput_; }
+  double packet_loss() const { return packet_loss_; }
+  int packet_queue_length() const { return packet_queue_length_; }
+  bool packet_reordering() const { return packet_reordering_; }
 
  private:
   bool offline_;
   double latency_;
   double download_throughput_;
   double upload_throughput_;
+  double packet_loss_;
+  int packet_queue_length_;
+  bool packet_reordering_;
 };
 
 }  // namespace network

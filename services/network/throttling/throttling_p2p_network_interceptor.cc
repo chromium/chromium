@@ -80,19 +80,25 @@ void ThrottlingP2PNetworkInterceptor::UpdateConditions(
           << static_cast<uint64_t>(conditions.download_throughput() *
                                    kBitsPerByte)
           << "kbps, latency: " << static_cast<uint64_t>(conditions.latency())
-          << "ms";
+          << "ms, packet drop: " << conditions.packet_loss()
+          << "%, packet queue: " << conditions.packet_queue_length()
+          << ", packet reordering: " << conditions.packet_reordering();
 
   webrtc::SimulatedNetwork::Config send_config;
-  send_config.queue_length_packets = 300;
   send_config.link_capacity_kbps =
       (conditions.upload_throughput() * kBitsPerByte) / 1000;
   send_config.queue_delay_ms = conditions.latency();
+  send_config.allow_reordering = conditions.packet_reordering();
+  send_config.loss_percent = conditions.packet_loss();
+  send_config.queue_length_packets = conditions.packet_queue_length();
   send_network_.SetConfig(send_config);
 
   webrtc::SimulatedNetwork::Config receive_config;
   receive_config.link_capacity_kbps =
       (conditions.download_throughput() * kBitsPerByte) / 1000;
   receive_config.queue_delay_ms = conditions.latency();
+  receive_config.allow_reordering = conditions.packet_reordering();
+  receive_config.loss_percent = conditions.packet_loss();
   receive_network_.SetConfig(receive_config);
 }
 
