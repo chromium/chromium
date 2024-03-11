@@ -117,30 +117,19 @@ class MidiBrowserTestBlockMidiByDefault : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// MidiManager has no Fuchsia implementation (see https://crbug.com/1302995).
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_RequestMIDIAccess DISABLED_RequestMIDIAccess
-#else
-#define MAYBE_RequestMIDIAccess RequestMIDIAccess
-#endif
-IN_PROC_BROWSER_TEST_F(MidiBrowserTest, MAYBE_RequestMIDIAccess) {
-  NavigateAndCheckResult("/midi/request_midi_access.html");
-}
-IN_PROC_BROWSER_TEST_F(MidiBrowserTestBlockMidiByDefault,
-                       MAYBE_RequestMIDIAccess) {
+IN_PROC_BROWSER_TEST_F(MidiBrowserTest, RequestMIDIAccess) {
   NavigateAndCheckResult("/midi/request_midi_access.html");
 }
 
-// MidiManager has no Fuchsia implementation (see https://crbug.com/1302995).
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_SubscribeAll DISABLED_SubscribeAll
-#else
-#define MAYBE_SubscribeAll SubscribeAll
-#endif
-IN_PROC_BROWSER_TEST_F(MidiBrowserTest, MAYBE_SubscribeAll) {
+IN_PROC_BROWSER_TEST_F(MidiBrowserTestBlockMidiByDefault, RequestMIDIAccess) {
+  NavigateAndCheckResult("/midi/request_midi_access.html");
+}
+
+IN_PROC_BROWSER_TEST_F(MidiBrowserTest, SubscribeAll) {
   NavigateAndCheckResult("/midi/subscribe_all.html");
 }
-IN_PROC_BROWSER_TEST_F(MidiBrowserTestBlockMidiByDefault, MAYBE_SubscribeAll) {
+
+IN_PROC_BROWSER_TEST_F(MidiBrowserTestBlockMidiByDefault, SubscribeAll) {
   NavigateAndCheckResult("/midi/subscribe_all.html");
 }
 

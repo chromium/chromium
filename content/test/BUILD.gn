@@ -2248,6 +2248,11 @@ test("content_browsertests") {
     sources -= [ "../browser/keyboard_lock_browsertest.cc" ]
   }
 
+  # MidiManager is not supported in Fuchsia (see crbug.com/40217214).
+  if (is_fuchsia) {
+    sources -= [ "../browser/media/midi_browsertest.cc" ]
+  }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
