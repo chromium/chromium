@@ -1146,35 +1146,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NullKeyPathPersistence) {
                           "pass - second run");
 }
 
-// Verify that a VERSION_CHANGE transaction is rolled back after a
-// renderer/browser crash
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
-                       PRE_PRE_VersionChangeCrashResilience) {
-  NavigateAndWaitForTitle(shell(), "version_change_crash.html", "#part1",
-                          "pass - part1 - complete");
-}
-
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, PRE_VersionChangeCrashResilience) {
-  NavigateAndWaitForTitle(shell(), "version_change_crash.html", "#part2",
-                          "pass - part2 - crash me");
-  // Previously this test would abruptly terminate the browser process
-  // to ensure that the version update was not partially committed,
-  // which was possible in the very early implementation (circa 2011).
-  // This test no longer abruptly terminates the process, but the
-  // commit scheme has changed so it's not plausible any more anyway.
-  // TODO(jsbell): Delete or rename the test.
-}
-
-// Fails to cleanup GPU processes on swarming.
-// http://crbug.com/552543
-// Flaky on TSAN: crbug.com/1061251
-// Flaky on mac, linux, cast, chromeos, lacros bots: crbug.com/1061251
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
-                       DISABLED_VersionChangeCrashResilience) {
-  NavigateAndWaitForTitle(shell(), "version_change_crash.html", "#part3",
-                          "pass - part3 - rolled back");
-}
-
 // Disable this test on Android due to failures. See crbug.com/427529 and
 // crbug.com/1116464 for details.
 #if defined(ANDROID)

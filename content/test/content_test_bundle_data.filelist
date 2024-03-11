@@ -6595,8 +6595,6 @@ data/indexeddb/v3_migration_test/file__0.indexeddb.leveldb/LOG.old
 data/indexeddb/v3_migration_test/file__0.indexeddb.leveldb/MANIFEST-000001
 data/indexeddb/version_change_blocked.html
 data/indexeddb/version_change_blocked.js
-data/indexeddb/version_change_crash.html
-data/indexeddb/version_change_crash.js
 data/indexeddb/write_4mb_blob.html
 data/indexeddb/write_and_read_blob.html
 data/infinitely_loading_image.html
