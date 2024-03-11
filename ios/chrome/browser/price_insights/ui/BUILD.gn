@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("price_insights_ui") {
+  sources = [
+    "price_insights_cell.h",
+    "price_insights_cell.mm",
+    "price_insights_item.h",
+    "price_insights_item.mm",
+  ]
+
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}

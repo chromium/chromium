@@ -1,0 +1,13 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("price_insights_coordinator") {
+  sources = [
+    "price_insights_modulator.h",
+    "price_insights_modulator.mm",
+  ]
+
+  deps = [ "//ios/chrome/browser/price_insights/ui/price_insights_ui" ]
+  frameworks = [ "UIKit.framework" ]
+}
