@@ -400,24 +400,6 @@ lack of a fully-audited baseline nothing was recorded in audits.toml
 Exemption updated to 1.0.17 in Feb 2024.
 """
 
-[[exemptions.serde]]
-version = "1.0.197"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = """
-Grandparented-in when setting up `cargo vet` in Jan 2024.
-
-Delta audit of 1.0.193 -> 1.0.195 has been done in Jan 2024, but because of a
-lack of a fully-audited baseline nothing was recorded in audits.toml
-
-Exemption updated to 1.0.196 in Feb 2024.
-Exemption updated to 1.0.197 in Feb 2024.
-"""
-
-[[exemptions.serde_json_lenient]]
-version = "0.1.8"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
-
 [[exemptions.skrifa]]
 version = "0.15.5"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

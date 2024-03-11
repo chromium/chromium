@@ -725,6 +725,28 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.21 -> 1.0.22"
 
+[[audits.serde]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.0.197"
+notes = """
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`.
+
+There were some hits for `net`, but they were related to serialization and
+not actually opening any connections or anything like that.
+
+There were 2 hits of `unsafe` when grepping:
+* In `fn as_str` in `impl Buf`
+* In `fn serialize` in `impl Serialize for net::Ipv4Addr`
+
+Unsafe review comments can be found in https://crrev.com/c/5350573/2 (this
+review also covered `serde_json_lenient`).
+
+Version 1.0.130 of the crate has been added to Chromium in
+https://crrev.com/c/3265545.  The CL description contains a link to a
+(Google-internal, sorry) document with a mini security review.
+"""
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -773,6 +795,22 @@ delta = "1.0.111 -> 1.0.113"
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.113 -> 1.0.114"
+
+[[audits.serde_json_lenient]]
+who = "danakj@chromium.org"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.1.8"
+notes = """
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`.
+
+There were some hits for `fs` and `net`, but they were in comments.
+
+Unsafe review comments can be found in https://crrev.com/c/5350573/2.
+There were 8 hits of `unsafe` when grepping.
+
+Version 0.1.4 of the crate was added to Chromium in
+https://crrev.com/c/3511416.
+"""
 
 [[audits.skrifa]]
 who = "drott@chromium.org"
