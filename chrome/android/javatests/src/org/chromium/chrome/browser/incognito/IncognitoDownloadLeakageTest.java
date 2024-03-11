@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.components.feature_engagement.FeatureConstants.CCT_MINIMIZED_FEATURE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Environment;
@@ -32,7 +31,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -70,10 +68,9 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-/* This only disables the CCT_MINIMIZED's IPH which makes the test flaky. */
-@DisableFeatures(CCT_MINIMIZED_FEATURE)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_ALL_IPH
 })
 public class IncognitoDownloadLeakageTest {
     private String mDownloadTestPage;
