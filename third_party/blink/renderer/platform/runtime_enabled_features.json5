@@ -1434,8 +1434,9 @@
       status: "experimental",
     },
     {
+      // https://chromestatus.com/feature/5113053598711808
       name: "DocumentRenderBlocking",
-      status: "test",
+      status: "stable",
       implied_by: ["ViewTransitionOnNavigation"],
     },
     {
