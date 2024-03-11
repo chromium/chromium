@@ -18,7 +18,7 @@ class AutofillClientProvider;
 class AutofillClientProviderFactory : public ProfileKeyedServiceFactory {
  public:
   static AutofillClientProviderFactory* GetInstance();
-  static AutofillClientProvider* GetForProfile(Profile* profile);
+  static AutofillClientProvider& GetForProfile(Profile* profile);
 
   AutofillClientProviderFactory(const AutofillClientProviderFactory&) = delete;
   AutofillClientProviderFactory& operator=(

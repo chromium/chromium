@@ -33,7 +33,7 @@ class AutofillClientProviderBaseTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
-  AutofillClientProvider* provider() {
+  AutofillClientProvider& provider() {
     return AutofillClientProviderFactory::GetForProfile(profile());
   }
 
@@ -45,13 +45,17 @@ class AutofillClientProviderBaseTest : public testing::Test {
 };
 
 TEST_F(AutofillClientProviderBaseTest, ProvidesServiceInNonIncognito) {
-  ASSERT_TRUE(AutofillClientProviderFactory::GetForProfile(profile()));
+  AutofillClientProviderFactory::GetForProfile(profile());
 }
 
 TEST_F(AutofillClientProviderBaseTest, ProvidesServiceInIncognito) {
-  ASSERT_TRUE(AutofillClientProviderFactory::GetForProfile(
+  AutofillClientProviderFactory::GetForProfile(
       profile()->GetOffTheRecordProfile(
-          Profile::OTRProfileID::CreateUniqueForTesting(), true)));
+          Profile::OTRProfileID::CreateUniqueForTesting(), true));
+}
+
+TEST_F(AutofillClientProviderBaseTest, ProvidesNoServiceWithoutProfile) {
+  ASSERT_DEATH(AutofillClientProviderFactory::GetForProfile(nullptr), "");
 }
 
 TEST_F(AutofillClientProviderBaseTest, UsesBuiltInAutofillForDisabledPref) {
@@ -59,7 +63,7 @@ TEST_F(AutofillClientProviderBaseTest, UsesBuiltInAutofillForDisabledPref) {
   // Independent of platform or feature, a disabled pref means Chrome fills.
   prefs()->SetBoolean(prefs::kAutofillUsingVirtualViewStructure, false);
 #endif  // BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(provider()->uses_platform_autofill());
+  EXPECT_FALSE(provider().uses_platform_autofill());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -78,7 +82,7 @@ class AutofillClientProviderLegacyTest : public AutofillClientProviderBaseTest {
 TEST_F(AutofillClientProviderLegacyTest, AlwaysCreatesChromeClient) {
   // The pref is irrelevant if the feature is disabled.
   prefs()->SetBoolean(prefs::kAutofillUsingVirtualViewStructure, true);
-  EXPECT_FALSE(provider()->uses_platform_autofill());
+  EXPECT_FALSE(provider().uses_platform_autofill());
 }
 
 class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
@@ -89,11 +93,11 @@ class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
 
 TEST_F(AutofillClientProviderTest, CreateAndroidClientForEnabledPref) {
   prefs()->SetBoolean(prefs::kAutofillUsingVirtualViewStructure, true);
-  EXPECT_TRUE(provider()->uses_platform_autofill());
+  EXPECT_TRUE(provider().uses_platform_autofill());
 
   // A changing pref doesn't change the clients for new tabs:
   prefs()->SetBoolean(prefs::kAutofillUsingVirtualViewStructure, false);
-  EXPECT_TRUE(provider()->uses_platform_autofill());
+  EXPECT_TRUE(provider().uses_platform_autofill());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

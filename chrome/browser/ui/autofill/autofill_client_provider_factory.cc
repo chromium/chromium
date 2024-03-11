@@ -21,17 +21,25 @@ AutofillClientProviderFactory* AutofillClientProviderFactory::GetInstance() {
 }
 
 // static
-AutofillClientProvider* AutofillClientProviderFactory::GetForProfile(
+AutofillClientProvider& AutofillClientProviderFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<AutofillClientProvider*>(
-      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+  CHECK(profile) << "Autofill requires a valid profile.";
+  auto* provider =
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true);
+  CHECK(provider) << "Autofill is not available for the given profile.";
+  return *static_cast<AutofillClientProvider*>(provider);
 }
 
 AutofillClientProviderFactory::AutofillClientProviderFactory()
     : ProfileKeyedServiceFactory(
           "AutofillClientProvider",
           // TODO: crbug.com/326231439 - Other/no provider for OTR profiles?
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
+              .WithSystem(ProfileSelection::kNone)
+              .Build()) {}
 
 AutofillClientProviderFactory::~AutofillClientProviderFactory() = default;
 
