@@ -6641,4 +6641,49 @@ TEST_F(FederatedAuthRequestExampleOrgTest, WellKnownSameSiteFlag) {
   RunAuthTest(request, expectation, configuration);
 }
 
+class TestDialogControllerWithImmediateDismiss : public TestDialogController {
+ public:
+  explicit TestDialogControllerWithImmediateDismiss(
+      MockConfiguration configuration)
+      : TestDialogController(configuration) {}
+
+  ~TestDialogControllerWithImmediateDismiss() override = default;
+
+  TestDialogControllerWithImmediateDismiss(
+      const TestDialogControllerWithImmediateDismiss&) = delete;
+  TestDialogControllerWithImmediateDismiss& operator=(
+      TestDialogControllerWithImmediateDismiss&) = delete;
+
+  void ShowAccountsDialog(
+      const std::string& top_frame_for_display,
+      const std::optional<std::string>& iframe_for_display,
+      const std::vector<IdentityProviderData>& identity_provider_data,
+      IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
+      const std::optional<content::IdentityProviderData>& new_account_idp,
+      IdentityRequestDialogController::AccountSelectionCallback on_selected,
+      IdentityRequestDialogController::LoginToIdPCallback on_add_account,
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::AccountsDisplayedCallback
+          accounts_displayed_callback) override {
+    std::move(dismiss_callback).Run(DismissReason::kOther);
+  }
+};
+
+// Crash test for crbug.com/328945371.
+TEST_F(FederatedAuthRequestImplTest, ImmediateDismiss) {
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  SetDialogController(
+      std::make_unique<TestDialogControllerWithImmediateDismiss>(
+          kConfigurationValid));
+
+  RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.AccountsDialogShownDuration2", 0);
+}
+
 }  // namespace content

@@ -1583,6 +1583,10 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
+  // Note that ShowAccountsDialog() may result in the request being completed
+  // immediately (for instance on Android when we cannot create a BottomSheet),
+  // so invocations after this method should assume that the members may have
+  // been cleaned up.
   request_dialog_controller_->ShowAccountsDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
@@ -1610,8 +1614,11 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   // Note that accounts dialog shown after mismatch dialog is also recorded.
   // Although not useful for catching malicious IDPs, it should only be a very
-  // small percentage of the samples recorded.
-  fedcm_metrics_->RecordAccountsDialogShown();
+  // small percentage of the samples recorded. However, if the request was
+  // completed right away, we do not record as no dialog was shown.
+  if (fedcm_metrics_) {
+    fedcm_metrics_->RecordAccountsDialogShown();
+  }
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {
