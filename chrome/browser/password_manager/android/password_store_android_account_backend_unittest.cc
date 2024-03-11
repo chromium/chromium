@@ -2110,15 +2110,47 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, RecordPasswordStoreMetrics) {
       true, 1);
 }
 
+// Checks that enabling `kUnifiedPasswordManagerSyncOnlyInGMSCore` flag disables
+// unenrollement.
+TEST_F(PasswordStoreAndroidAccountBackendTest, NoEvictIfM4FlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  backend().InitBackend(
+      /*affiliated_match_helper=*/nullptr,
+      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
+      base::NullCallback(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  ON_CALL(*bridge_helper(), CanRemoveUnenrollment).WillByDefault(Return(false));
+
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillRepeatedly(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
+
+  AndroidBackendError error(AndroidBackendErrorType::kExternalError);
+  error.api_error_code =
+      static_cast<int>(AndroidBackendAPIErrorCode::kAccessDenied);
+
+  consumer().OnError(kJobId, error);
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_FALSE(backend().IsAbleToSavePasswords());
+}
+
 // Test suite to verify there is no unenrollment for most of the errors except
 // Passphrase. Each backend operation is checked by a separate test.
 class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest
     : public PasswordStoreAndroidAccountBackendTest,
-      public testing::WithParamInterface<
-          std::pair<AndroidBackendAPIErrorCode,
-                    PasswordStoreBackendErrorType>> {
+      public testing::WithParamInterface<std::tuple<
+          std::pair<AndroidBackendAPIErrorCode, PasswordStoreBackendErrorType>,
+          bool>> {
  protected:
   PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore,
+        std::get<1>(GetParam()));
     backend().InitBackend(
         /*affiliated_match_helper=*/nullptr,
         PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
@@ -2128,10 +2160,22 @@ class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest
         .WillByDefault(Return(true));
   }
 
+  AndroidBackendAPIErrorCode GetAPIErrorCode() {
+    return std::get<0>(GetParam()).first;
+  }
+
+  PasswordStoreBackendErrorType GetBackendErrorType() {
+    return std::get<0>(GetParam()).second;
+  }
+
   AndroidBackendError GetError() {
     AndroidBackendError error(AndroidBackendErrorType::kExternalError);
-    error.api_error_code = static_cast<int>(GetParam().first);
+    error.api_error_code = static_cast<int>(GetAPIErrorCode());
     return error;
+  }
+
+  bool GetIsUnifiedPasswordManagerSyncOnlyInGMSCoreFeatureEnabled() {
+    return std::get<1>(GetParam());
   }
 
   bool IsRetriableError() {
@@ -2141,11 +2185,12 @@ class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest
         AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall,
         AndroidBackendAPIErrorCode::kReconnectionTimedOut,
         AndroidBackendAPIErrorCode::kBackendGeneric};
-    return kRetriableErrors.contains(GetParam().first);
+    return kRetriableErrors.contains(GetAPIErrorCode());
   }
 
   PasswordStoreBackendErrorRecoveryType RecoveryType() {
-    if (GetParam().first == AndroidBackendAPIErrorCode::kPassphraseRequired) {
+    if (!GetIsUnifiedPasswordManagerSyncOnlyInGMSCoreFeatureEnabled() &&
+        GetAPIErrorCode() == AndroidBackendAPIErrorCode::kPassphraseRequired) {
       return PasswordStoreBackendErrorRecoveryType::kUnrecoverable;
     }
     return PasswordStoreBackendErrorRecoveryType::kRecoverable;
@@ -2154,6 +2199,9 @@ class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest
     return RecoveryType() ==
            PasswordStoreBackendErrorRecoveryType::kUnrecoverable;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
@@ -2164,7 +2212,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   if (IsRetriableError()) {
@@ -2201,7 +2249,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   if (IsRetriableError()) {
@@ -2240,7 +2288,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   consumer().OnError(kJobId, GetError());
@@ -2267,7 +2315,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
                                     forms);
   RunUntilIdle();
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   consumer().OnError(kJobId, GetError());
@@ -2294,7 +2342,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
       mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   consumer().OnError(kJobId, GetError());
@@ -2314,7 +2362,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_CALL(*bridge_helper(), AddLogin(form, _)).WillOnce(Return(kJobId));
   backend().AddLoginAsync(form, mock_reply.Get());
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
@@ -2333,7 +2381,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_CALL(*bridge_helper(), UpdateLogin(form, _)).WillOnce(Return(kJobId));
   backend().UpdateLoginAsync(form, mock_reply.Get());
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
@@ -2352,7 +2400,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_CALL(*bridge_helper(), RemoveLogin(form, _)).WillOnce(Return(kJobId));
   backend().RemoveLoginAsync(form, mock_reply.Get());
 
-  PasswordStoreBackendError error(GetParam().second, RecoveryType());
+  PasswordStoreBackendError error(GetBackendErrorType(), RecoveryType());
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
@@ -2366,47 +2414,54 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
-    testing::ValuesIn(
-        {std::make_pair(AndroidBackendAPIErrorCode::kBackendGeneric,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kNetworkError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kInternalError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kDeveloperError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(
-             AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall,
-             PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kReconnectionTimedOut,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kAccessDenied,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kBadRequest,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kBackendResourceExhausted,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kInvalidData,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kUnmappedErrorCode,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kUnexpectedError,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kApiNotConnected,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kPassphraseRequired,
-                        PasswordStoreBackendErrorType::kUncategorized),
-         std::make_pair(AndroidBackendAPIErrorCode::kAuthErrorResolvable,
-                        PasswordStoreBackendErrorType::kAuthErrorResolvable),
-         std::make_pair(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable,
-                        PasswordStoreBackendErrorType::kAuthErrorUnresolvable),
-         std::make_pair(AndroidBackendAPIErrorCode::kKeyRetrievalRequired,
-                        PasswordStoreBackendErrorType::kKeyRetrievalRequired)}),
-    [](const ::testing::TestParamInfo<
-        std::pair<AndroidBackendAPIErrorCode, PasswordStoreBackendErrorType>>&
-           info) {
+    testing::Combine(
+        testing::ValuesIn(
+            {std::make_pair(AndroidBackendAPIErrorCode::kBackendGeneric,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kNetworkError,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kInternalError,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kDeveloperError,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(
+                 AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall,
+                 PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kReconnectionTimedOut,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kAccessDenied,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kBadRequest,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(
+                 AndroidBackendAPIErrorCode::kBackendResourceExhausted,
+                 PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kInvalidData,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kUnmappedErrorCode,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kUnexpectedError,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kApiNotConnected,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(AndroidBackendAPIErrorCode::kPassphraseRequired,
+                            PasswordStoreBackendErrorType::kUncategorized),
+             std::make_pair(
+                 AndroidBackendAPIErrorCode::kAuthErrorResolvable,
+                 PasswordStoreBackendErrorType::kAuthErrorResolvable),
+             std::make_pair(
+                 AndroidBackendAPIErrorCode::kAuthErrorUnresolvable,
+                 PasswordStoreBackendErrorType::kAuthErrorUnresolvable),
+             std::make_pair(
+                 AndroidBackendAPIErrorCode::kKeyRetrievalRequired,
+                 PasswordStoreBackendErrorType::kKeyRetrievalRequired)}),
+        testing::Bool()),
+    [](const ::testing::TestParamInfo<std::tuple<
+           std::pair<AndroidBackendAPIErrorCode, PasswordStoreBackendErrorType>,
+           bool>>& info) {
       return "APIErrorCode_" +
-             base::ToString(static_cast<int>(info.param.first));
+             base::ToString(static_cast<int>(std::get<0>(info.param).first)) +
+             (std::get<1>(info.param) ? "_M4Enabled" : "_M4Disabled");
     });
 
 class PasswordStoreAndroidAccountBackendTestForMetrics

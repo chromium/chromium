@@ -13,6 +13,7 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
@@ -74,18 +75,29 @@ enum class ActionOnApiError {
   kDisableSavingAndTryFixPassphraseError,
 };
 
+ActionOnApiError GetRecoveryActionForPassphraseRequiredError(
+    bool supports_passphrase_error_fix) {
+  if (supports_passphrase_error_fix) {
+    return ActionOnApiError::kDisableSavingAndTryFixPassphraseError;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+    return ActionOnApiError::kDisableSaving;
+  }
+  return ActionOnApiError::kEvict;
+}
+
 ActionOnApiError GetRecoveryActionOnApiError(
     AndroidBackendAPIErrorCode api_error_code,
-    bool can_remove_unenrollment,
+    bool does_gms_core_version_allow_for_removing_unenrollment,
     bool supports_passphrase_error_fix) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
     case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
       return ActionOnApiError::kDisableSaving;
     case AndroidBackendAPIErrorCode::kPassphraseRequired:
-      return supports_passphrase_error_fix
-                 ? ActionOnApiError::kDisableSavingAndTryFixPassphraseError
-                 : ActionOnApiError::kEvict;
+      return GetRecoveryActionForPassphraseRequiredError(
+          supports_passphrase_error_fix);
     case AndroidBackendAPIErrorCode::kNetworkError:
     case AndroidBackendAPIErrorCode::kApiNotConnected:
     case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
@@ -107,8 +119,13 @@ ActionOnApiError GetRecoveryActionOnApiError(
     case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
       break;
   }
-  return can_remove_unenrollment ? ActionOnApiError::kDisableSaving
-                                 : ActionOnApiError::kEvict;
+  if (does_gms_core_version_allow_for_removing_unenrollment) {
+    return ActionOnApiError::kDisableSaving;
+  }
+  return base::FeatureList::IsEnabled(
+             features::kUnifiedPasswordManagerSyncOnlyInGMSCore)
+             ? ActionOnApiError::kDisableSaving
+             : ActionOnApiError::kEvict;
 }
 
 template <typename Response, typename CallbackType>
@@ -356,6 +373,11 @@ PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
       error, bridge_helper()->CanRemoveUnenrollment(),
       sync_service_->SupportsExplicitPassphrasePlatformClient())) {
     case ActionOnApiError::kEvict: {
+      // if `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled eviction
+      // should not happen.
+      CHECK(!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerSyncOnlyInGMSCore));
       if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs())) {
         password_manager_upm_eviction::EvictCurrentUser(static_cast<int>(error),
                                                         prefs());
