@@ -27,6 +27,7 @@ component("manta") {
 
   deps = [
     "proto",
+    "//components/account_id:account_id",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
