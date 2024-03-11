@@ -185,6 +185,9 @@ class Buffer::Texture : public viz::ContextLostObserver {
                               Texture* destination,
                               base::OnceClosure callback);
 
+  // Returns the ClientSharedImage for this texture.
+  gpu::ClientSharedImage* shared_image() const { return shared_image_.get(); }
+
   // Returns the mailbox for this texture.
   gpu::Mailbox mailbox() const { return shared_image_->mailbox(); }
 
@@ -688,9 +691,13 @@ bool Buffer::ProduceTransferableResource(
       resource->mailbox_holder.sync_token =
           contents_texture->UpdateSharedImage(std::move(acquire_fence));
     }
-    resource->mailbox_holder = gpu::MailboxHolder(
-        contents_texture->mailbox(), resource->mailbox_holder.sync_token,
-        texture_target_);
+    uint32_t texture_target =
+        contents_texture->shared_image()->GetTextureTarget(
+            gpu_memory_buffer_->GetFormat());
+    CHECK_EQ(texture_target, texture_target_);
+    resource->mailbox_holder =
+        gpu::MailboxHolder(contents_texture->mailbox(),
+                           resource->mailbox_holder.sync_token, texture_target);
     resource->is_overlay_candidate = is_overlay_candidate_;
     resource->format =
         viz::GetSinglePlaneSharedImageFormat(gpu_memory_buffer_->GetFormat());
