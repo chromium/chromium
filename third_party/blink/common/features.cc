@@ -1333,12 +1333,9 @@ const base::FeatureParam<int> kLCPPFontURLPredictorMaxPreloadCount{
 const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
     &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
 
-// Since there should be some spaces to run prefetch, the default value
-// has been decided for 4G LTE. We found that browsers on desktops often
-// show "4g" as its effectiveType, and we expect the value is good to
-// prospect a stable connection.
-const base::FeatureParam<double> kLCPPFontURLPredictorPrefetchThresholdInMbps{
-    &kLCPPFontURLPredictor, "lcpp_font_prefetch_threshold", 5.0};
+// Negative value is used for disabling this threshold.
+const base::FeatureParam<double> kLCPPFontURLPredictorThresholdInMbps{
+    &kLCPPFontURLPredictor, "lcpp_font_prefetch_threshold", -1};
 
 BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",

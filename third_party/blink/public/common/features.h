@@ -790,10 +790,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLCPPFontURLPredictorEnablePrefetch;
 
-// Enables prefetch if upper limit bandwidth for the network is larger
-// than this value.
+// Enables prefetch/preload if upper limit bandwidth for the network is
+// larger than this value.
+// The value <=0 is used for disabling the feature.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kLCPPFontURLPredictorPrefetchThresholdInMbps;
+    kLCPPFontURLPredictorThresholdInMbps;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 

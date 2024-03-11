@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
+#include "net/base/network_change_notifier.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace predictors {
@@ -577,6 +578,24 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
       break;
     }
   }
+  if (font_urls.empty()) {
+    return font_urls;
+  }
+
+  // No need to record metrics for pages without web fonts to be prefetched
+  // or preloaded.
+  double max_bandwidth_mbps;
+  net::NetworkChangeNotifier::ConnectionType connection_type;
+  net::NetworkChangeNotifier::GetMaxBandwidthAndConnectionType(
+      &max_bandwidth_mbps, &connection_type);
+  if (blink::features::kLCPPFontURLPredictorThresholdInMbps.Get() > 0 &&
+      (connection_type ==
+           net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN ||
+       max_bandwidth_mbps <
+           blink::features::kLCPPFontURLPredictorThresholdInMbps.Get())) {
+    return std::vector<GURL>();
+  }
+
   return font_urls;
 }
 
