@@ -124,6 +124,7 @@ bool PermissionDashboardController::Update(
 
   if (!indicator_model->is_visible()) {
     if (!indicator_chip->GetVisible()) {
+      indicator_chip->GetViewAccessibility().SetIsIgnored(true);
       return false;
     }
 
@@ -150,8 +151,6 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
   }
 
-  indicator_chip->GetViewAccessibility().SetIsIgnored(false);
-  indicator_chip->SetTooltipText(indicator_model->get_tooltip());
 
   if (request_chip_controller_->is_confirmation_showing()) {
     request_chip_controller_->ResetPermissionPromptChip();
@@ -167,12 +166,30 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetMessage(GetIndicatorTitle(indicator_model));
     indicator_chip->AnimateExpand(
         GetAnimationDuration(kExpandAnimationDuration));
-    // An alert role is required in order to fire the alert event.
-    indicator_chip->SetAccessibleRole(ax::mojom::Role::kAlert);
   } else {
     UpdateIndicatorsVisibilityFlags(location_bar_view_);
   }
   indicator_chip->SetVisible(true);
+
+  indicator_chip->SetTooltipText(indicator_model->get_tooltip());
+  indicator_chip->GetViewAccessibility().SetIsIgnored(false);
+
+  // An alert role is required in order to fire the alert event.
+  indicator_chip->SetAccessibleRole(ax::mojom::Role::kAlert);
+
+  if (indicator_model->ShouldNotifyAccessibility(
+          location_bar_view_->GetWebContents())) {
+    auto name = l10n_util::GetStringUTF16(
+        indicator_model->AccessibilityAnnouncementStringId());
+    indicator_chip->SetAccessibleName(name);
+    const std::u16string& accessible_description =
+        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
+    indicator_chip->SetAccessibleDescription(accessible_description);
+    indicator_chip->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+
+    indicator_model->AccessibilityWasNotified(
+        location_bar_view_->GetWebContents());
+  }
 
   return true;
 }

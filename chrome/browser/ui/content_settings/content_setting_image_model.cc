@@ -986,8 +986,9 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
                DidMicAccessFailBecauseOfSystemLevelBlock()) {
       set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
-      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED));
-      set_accessibility_string_id(IDS_MICROPHONE_CAMERA_BLOCKED);
+      set_tooltip(
+          l10n_util::GetStringUTF16(IDS_CAMERA_MIC_TURNED_OFF_IN_MACOS));
+      set_accessibility_string_id(IDS_CAMERA_MIC_TURNED_OFF_IN_MACOS);
       if (content_settings->camera_was_just_granted_on_site_level() ||
           content_settings->mic_was_just_granted_on_site_level()) {
         // Automatically trigger the new bubble, if the camera
@@ -1013,8 +1014,8 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     } else if (DidCameraAccessFailBecauseOfSystemLevelBlock()) {
       set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
-      set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
-      set_accessibility_string_id(IDS_CAMERA_BLOCKED);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_TURNED_OFF_IN_MACOS));
+      set_accessibility_string_id(IDS_CAMERA_TURNED_OFF_IN_MACOS);
       if (content_settings->camera_was_just_granted_on_site_level()) {
         set_should_auto_open_bubble(true);
       } else {
@@ -1036,8 +1037,8 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     } else if (DidMicAccessFailBecauseOfSystemLevelBlock()) {
       set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
-      set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
-      set_accessibility_string_id(IDS_MICROPHONE_BLOCKED);
+      set_tooltip(l10n_util::GetStringUTF16(IDS_MIC_TURNED_OFF_IN_MACOS));
+      set_accessibility_string_id(IDS_MIC_TURNED_OFF_IN_MACOS);
       if (content_settings->mic_was_just_granted_on_site_level()) {
         set_should_auto_open_bubble(true);
       } else {
@@ -1329,8 +1330,10 @@ void ContentSettingImageModel::SetIconSize(int icon_size) {
 }
 
 int ContentSettingImageModel::AccessibilityAnnouncementStringId() const {
-  return explanatory_string_id_ ? explanatory_string_id_
-                                : accessibility_string_id_;
+  // This method should return `accessibility_string_id_` if it is set.
+  // Otherwise `explanatory_string_id_` can be used for an announcement as well.
+  return accessibility_string_id_ ? accessibility_string_id_
+                                  : explanatory_string_id_;
 }
 
 ContentSettingImageModel::ContentSettingImageModel(
