@@ -860,7 +860,7 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="WebAppType" -->
 
   <owner>ortuno@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
+  <owner>qjw@chromium.org</owner>
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
@@ -1474,7 +1474,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
     expires_after="2024-09-01">
   <owner>ortuno@chromium.org</owner>
-  <owner>cros-web-apps-infra-team@google.com</owner>
+  <owner>qjw@chromium.org</owner>
   <summary>
     Records the time taken to perform a fresh install of all system web apps. It
     measures the time from when we dispatch a call to install them, until we get
@@ -1486,6 +1486,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
     enum="BooleanSuccess" expires_after="2024-07-28">
+  <owner>qjw@chromium.org</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>
   <summary>
     Records whether system web app icons are healthy for each user session that
@@ -1496,6 +1497,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
     expires_after="2024-07-28">
+  <owner>qjw@chromium.org</owner>
+  <owner>clamclamyan@google.com</owner>
   <owner>cros-web-apps-infra-team@google.com</owner>
   <summary>
     Records whether a reinstall fixes previously broken system web app icons.
@@ -1576,6 +1579,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
     enum="WebAppUrlLoaderResult" expires_after="2024-09-01">
+  <owner>qjw@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>Records the result of WebAppUrlLoader::PrepareForLoad().</summary>
