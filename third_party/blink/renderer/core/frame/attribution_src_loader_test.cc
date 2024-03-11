@@ -278,85 +278,44 @@ class AttributionSrcLoaderTest : public PageTestBase {
   Persistent<AttributionSrcLoader> attribution_src_loader_;
 };
 
-TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithoutEligibleHeader) {
-  KURL test_url = ToKURL("https://example1.com/foo.html");
+TEST_F(AttributionSrcLoaderTest, RegisterTrigger) {
+  const struct {
+    const std::optional<AttributionReportingEligibility> eligibility;
+    const std::string name;
+  } kTestCases[] = {
+      {std::nullopt, "unset"},
+      {AttributionReportingEligibility::kTrigger, "kTrigger"},
+      {AttributionReportingEligibility::kEventSourceOrTrigger,
+       "kEventSourceOrTrigger"},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE("Eligibility: " + test_case.name);
+    KURL test_url = ToKURL("https://example1.com/foo.html");
 
-  ResourceRequest request(test_url);
-  auto* resource = MakeGarbageCollected<MockResource>(test_url);
-  ResourceResponse response(test_url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterTrigger,
-      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
+    ResourceRequest request(test_url);
+    if (test_case.eligibility) {
+      request.SetAttributionReportingEligibility(test_case.eligibility.value());
+    }
 
-  MockAttributionHost host(
-      GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
-      request, response, resource));
-  host.WaitUntilBoundAndFlush();
+    auto* resource = MakeGarbageCollected<MockResource>(test_url);
+    ResourceResponse response(test_url);
+    response.SetHttpStatusCode(200);
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterTrigger,
+        AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
-  auto* mock_data_host = host.mock_data_host();
-  ASSERT_TRUE(mock_data_host);
+    MockAttributionHost host(
+        GetFrame().GetRemoteNavigationAssociatedInterfaces());
+    attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
+                                                             resource);
+    host.WaitUntilBoundAndFlush();
 
-  mock_data_host->Flush();
-  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
-  ASSERT_EQ(mock_data_host->trigger_verifications().size(), 1u);
-  ASSERT_THAT(mock_data_host->trigger_verifications().at(0),
-              testing::IsEmpty());
-}
+    auto* mock_data_host = host.mock_data_host();
+    ASSERT_TRUE(mock_data_host);
 
-// TODO(https://crbug.com/1412566): Improve tests to properly cover the
-// different `kAttributionReportingEligible` header values.
-TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithTriggerHeader) {
-  KURL test_url = ToKURL("https://example1.com/foo.html");
-
-  ResourceRequest request(test_url);
-  request.SetAttributionReportingEligibility(
-      AttributionReportingEligibility::kTrigger);
-  auto* resource = MakeGarbageCollected<MockResource>(test_url);
-  ResourceResponse response(test_url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterTrigger,
-      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
-
-  MockAttributionHost host(
-      GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
-                                                           resource);
-  host.WaitUntilBoundAndFlush();
-
-  auto* mock_data_host = host.mock_data_host();
-  ASSERT_TRUE(mock_data_host);
-
-  mock_data_host->Flush();
-  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
-}
-
-TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithSourceTriggerHeader) {
-  KURL test_url = ToKURL("https://example1.com/foo.html");
-
-  ResourceRequest request(test_url);
-  request.SetAttributionReportingEligibility(
-      AttributionReportingEligibility::kEventSourceOrTrigger);
-  auto* resource = MakeGarbageCollected<MockResource>(test_url);
-  ResourceResponse response(test_url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(
-      http_names::kAttributionReportingRegisterTrigger,
-      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
-
-  MockAttributionHost host(
-      GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
-                                                           resource);
-  host.WaitUntilBoundAndFlush();
-
-  auto* mock_data_host = host.mock_data_host();
-  ASSERT_TRUE(mock_data_host);
-
-  mock_data_host->Flush();
-  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
+    mock_data_host->Flush();
+    EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
+  }
 }
 
 TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
