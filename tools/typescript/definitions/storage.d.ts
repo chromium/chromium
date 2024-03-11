@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,22 +52,30 @@ declare global {
       }
 
       export interface StorageArea {
-        get(keys?: string|string[]|
-            {[key: string]: any}): Promise<{[key: string]: any}>;
+        get(keys?: string|string[]|{
+          [key: string]: any,
+        }): Promise<{
+          [key: string]: any,
+        }>;
         getBytesInUse(keys?: string|string[]): Promise<number>;
-        set(items: {[key: string]: any}): Promise<void>;
+        set(items: {
+          [key: string]: any,
+        }): Promise<void>;
         remove(keys: string|string[]): Promise<void>;
         clear(): Promise<void>;
         setAccessLevel(accessOptions: {
           accessLevel: AccessLevel,
         }): Promise<void>;
-        onChanged:
-            ChromeEvent<(changes: {[key: string]: StorageChange}) => void>;
+        onChanged: ChromeEvent<(changes: {
+                                 [key: string]: StorageChange,
+                               }) => void>;
       }
 
       export const onChanged: ChromeEvent<
-          (changes: {[key: string]: StorageChange}, areaName: string) => void>;
-
+          (changes: {
+            [key: string]: StorageChange,
+          },
+           areaName: string) => void>;
     }
   }
 }

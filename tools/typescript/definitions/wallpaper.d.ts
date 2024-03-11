@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@ declare namespace chrome {
       data?: ArrayBuffer,
       url?: string, layout: WallpaperLayout, filename: string,
       thumbnail?: boolean,
-    }): Promise<ArrayBuffer>;
-
+    }): Promise<ArrayBuffer|undefined>;
   }
 }

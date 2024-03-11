@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
  * run `tools/json_schema_compiler/compiler.py
  * extensions/common/api/extension_types.json -g ts_definitions` to regenerate.
  */
+
+
 
 declare namespace chrome {
   export namespace extensionTypes {
@@ -28,6 +30,30 @@ declare namespace chrome {
       DOCUMENT_IDLE = 'document_idle',
     }
 
+    export enum CSSOrigin {
+      AUTHOR = 'author',
+      USER = 'user',
+    }
+
+    export interface InjectDetails {
+      code?: string;
+      file?: string;
+      allFrames?: boolean;
+      frameId?: number;
+      matchAboutBlank?: boolean;
+      runAt?: RunAt;
+      cssOrigin?: CSSOrigin;
+    }
+
+    export interface DeleteInjectionDetails {
+      code?: string;
+      file?: string;
+      allFrames?: boolean;
+      frameId?: number;
+      matchAboutBlank?: boolean;
+      cssOrigin?: CSSOrigin;
+    }
+
     export enum FrameType {
       OUTERMOST_FRAME = 'outermost_frame',
       FENCED_FRAME = 'fenced_frame',
@@ -44,7 +70,9 @@ declare namespace chrome {
     export enum ExecutionWorld {
       ISOLATED = 'ISOLATED',
       MAIN = 'MAIN',
+      USER_SCRIPT = 'USER_SCRIPT',
     }
 
   }
 }
+

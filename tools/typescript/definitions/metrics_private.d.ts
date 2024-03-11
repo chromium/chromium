@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
  * run `tools/json_schema_compiler/compiler.py
  * extensions/common/api/metrics_private.json -g ts_definitions` to regenerate.
  */
+
+
 
 declare namespace chrome {
   export namespace metricsPrivate {
@@ -42,8 +44,9 @@ declare namespace chrome {
 
     export function getFieldTrial(name: string): Promise<string>;
 
-    export function getVariationParams(name: string):
-        Promise<{[key: string]: string}>;
+    export function getVariationParams(name: string): Promise<{
+      [key: string]: string,
+    }|undefined>;
 
     export function recordUserAction(name: string): void;
 

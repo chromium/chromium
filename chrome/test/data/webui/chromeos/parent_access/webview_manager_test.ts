@@ -37,11 +37,10 @@ suite('ParentAccessWebviewManagerTest', function() {
     // used to add the token, so we use it to test the effects.
     webview.request.onSendHeaders.addListener(
         (details: OnSendHeadersDetails) => {
-          assertTrue(details.requestHeaders.some(
-              (header: chrome.webRequest.HttpHeader) => {
-                return header.name === 'authorization' &&
-                    header.value === 'Bearer abcdefg';
-              }));
+          assertTrue(details.requestHeaders.some((header) => {
+            return header.name === 'authorization' &&
+                header.value === 'Bearer abcdefg';
+          }));
           done();
         },
         {urls: ['<all_urls>']}, ['requestHeaders']);
@@ -59,11 +58,10 @@ suite('ParentAccessWebviewManagerTest', function() {
     // used to add the token, so we use it to test the effects.
     webview.request.onSendHeaders.addListener(
         (details: OnSendHeadersDetails) => {
-          assertFalse(details.requestHeaders.some(
-              (header: chrome.webRequest.HttpHeader) => {
-                return header.name === 'authorization' &&
-                    header.value === 'Bearer abcdefg';
-              }));
+          assertFalse(details.requestHeaders.some((header) => {
+            return header.name === 'authorization' &&
+                header.value === 'Bearer abcdefg';
+          }));
           done();
         },
         {urls: ['<all_urls>']}, ['requestHeaders']);
