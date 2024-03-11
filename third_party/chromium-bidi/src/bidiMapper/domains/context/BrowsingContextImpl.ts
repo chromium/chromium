@@ -1043,71 +1043,92 @@ export class BrowsingContextImpl {
 
     const realm = await this.getOrCreateSandbox(params.sandbox);
 
-    switch (params.locator.type) {
+    return await this.#locateNodesByLocator(realm, params.locator);
+  }
+
+  #getLocatorFunction(locator: BrowsingContext.Locator): string {
+    switch (locator.type) {
       case 'css':
-        return await this.#locateNodesByCssSelector(
-          realm,
-          params.locator.value
-        );
+        return String((cssSelector: string) => {
+          const results = document.querySelectorAll(cssSelector);
+          const array = [];
+          for (const item of results) {
+            array.push(item);
+          }
+          return array;
+        });
+      case 'xpath':
+        return String((xPathSelector: string) => {
+          // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
+          const evaluator = new XPathEvaluator();
+          const expression = evaluator.createExpression(xPathSelector);
+          const xPathResult = expression.evaluate(
+            document,
+            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+          );
+          const result = [];
+          for (let i = 0; i < xPathResult.snapshotLength; i++) {
+            result.push(xPathResult.snapshotItem(i));
+          }
+          return result;
+        });
       default:
         throw new UnsupportedOperationException(
-          `locateNodes does not support ${params.locator.type} locator type.`
+          `locateNodes does not support ${locator.type} locator type.`
         );
     }
   }
 
-  async #locateNodesByCssSelector(
+  async #locateNodesByLocator(
     realm: Realm,
-    selector: string
+    locator: BrowsingContext.Locator
   ): Promise<BrowsingContext.LocateNodesResult> {
-    const selectorScriptResult = await realm.callFunction(
-      String((selector: string) => {
-        const results = document.querySelectorAll(selector);
-        const array = [];
-        for (const item of results) {
-          array.push(item);
-        }
-        return array;
-      }),
+    const locatorFunction = this.#getLocatorFunction(locator);
+    const locatorResult = await realm.callFunction(
+      locatorFunction,
       {type: 'undefined'},
-      [{type: 'string', value: selector}],
+      [{type: 'string', value: locator.value}],
       false,
       Script.ResultOwnership.None,
       {},
       false
     );
 
-    this.#logger?.(
-      BrowsingContextImpl.LOGGER_PREFIX,
-      'selectorScriptResult',
-      selectorScriptResult
-    );
+    if (locatorResult.type !== 'success') {
+      this.#logger?.(
+        BrowsingContextImpl.LOGGER_PREFIX,
+        'Failed locateNodesByLocator',
+        locatorResult
+      );
 
-    if (selectorScriptResult.type !== 'success') {
-      // Heuristic to detect invalid selector.
+      // Heuristic to detect invalid selector for different types of selectors.
       if (
-        selectorScriptResult.exceptionDetails.text?.startsWith(
-          'SyntaxError:'
-        ) &&
-        selectorScriptResult.exceptionDetails.text?.endsWith(
+        // CSS selector.
+        locatorResult.exceptionDetails.text?.endsWith(
           'is not a valid selector.'
+        ) ||
+        // XPath selector.
+        locatorResult.exceptionDetails.text?.endsWith(
+          'is not a valid XPath expression.'
         )
       ) {
-        throw new InvalidSelectorException(`Not valid selector ${selector}`);
+        throw new InvalidSelectorException(
+          `Not valid selector ${locator.value}`
+        );
       }
       throw new UnknownErrorException(
-        `Unexpected error in selector script: ${selectorScriptResult.exceptionDetails.text}`
+        `Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`
       );
     }
 
-    if (selectorScriptResult.result.type !== 'array') {
+    if (locatorResult.result.type !== 'array') {
       throw new UnknownErrorException(
-        `Unexpected selector script result type: ${selectorScriptResult.result.type}`
+        `Unexpected selector script result type: ${locatorResult.result.type}`
       );
     }
 
     // Check there are no non-node elements in the result.
-    const nodes = selectorScriptResult.result.value!.map(
+    const nodes = locatorResult.result.value!.map(
       (value): Script.NodeRemoteValue => {
         if (value.type !== 'node') {
           throw new UnknownErrorException(

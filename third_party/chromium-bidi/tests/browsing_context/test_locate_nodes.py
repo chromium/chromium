@@ -18,27 +18,34 @@ import pytest
 from test_helpers import ANY_SHARED_ID, execute_command, goto_url
 
 
+@pytest.mark.parametrize('locator', [
+    {
+        'type': 'css',
+        'value': 'div'
+    },
+    {
+        'type': 'xpath',
+        'value': '//div'
+    },
+])
 @pytest.mark.asyncio
-async def test_locate_nodes_css_locator(websocket, context_id, html):
+async def test_locate_nodes_locator(websocket, context_id, html, locator):
     await goto_url(
         websocket, context_id,
         html(
-            """<div data-class="one">foobarBARbaz</div><div data-class="two">foobarBARbaz</div>"""
+            '<div data-class="one">foobarBARbaz</div><div data-class="two">foobarBARbaz</div>'
         ))
     resp = await execute_command(
         websocket, {
-            "method": "browsingContext.locateNodes",
-            "params": {
-                "context": context_id,
-                "locator": {
-                    "type": "css",
-                    "value": "div"
-                }
+            'method': 'browsingContext.locateNodes',
+            'params': {
+                'context': context_id,
+                'locator': locator
             }
         })
 
     assert resp == {
-        "nodes": [
+        'nodes': [
             {
                 'sharedId': ANY_SHARED_ID,
                 'type': 'node',
@@ -71,24 +78,31 @@ async def test_locate_nodes_css_locator(websocket, context_id, html):
     }
 
 
+@pytest.mark.parametrize('locator', [
+    {
+        'type': 'css',
+        'value': 'a*b'
+    },
+    {
+        'type': 'xpath',
+        'value': ''
+    },
+])
 @pytest.mark.asyncio
-async def test_locate_nodes_css_locator_invalid(websocket, context_id, html):
-    invalid_css_selector = 'a*b'
+async def test_locate_nodes_locator_invalid(websocket, context_id, html,
+                                            locator):
     with pytest.raises(Exception,
                        match=re.escape(
                            str({
                                'error': 'invalid selector',
                                'message': 'Not valid selector ' +
-                                          invalid_css_selector
+                                          locator['value']
                            }))):
         await execute_command(
             websocket, {
                 'method': 'browsingContext.locateNodes',
                 'params': {
                     'context': context_id,
-                    'locator': {
-                        'type': 'css',
-                        'value': invalid_css_selector
-                    }
+                    'locator': locator
                 }
             })
