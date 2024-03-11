@@ -152,9 +152,12 @@ void LensOverlayController::ShowOverlayWidget() {
   overlay_widget_->Init(CreateWidgetInitParams());
   overlay_widget_->SetContentsView(CreateViewForOverlay());
 
+  content::WebContents* active_web_contents = tab_model_->contents();
+  web_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
+      active_web_contents, this);
+
   // Stack widget at top.
 #if BUILDFLAG(IS_MAC)
-  content::WebContents* active_web_contents = tab_model_->contents();
   const gfx::NativeView web_contents_view =
       active_web_contents->GetContentNativeView();
   overlay_widget_->StackAbove(web_contents_view);
@@ -184,8 +187,15 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
   params.layer_type = ui::LAYER_NOT_DRAWN;
 #endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  // TODO(b/329103641): Use correct coordinate system.
   params.bounds = active_web_contents->GetContainerBounds();
   return params;
+}
+
+void LensOverlayController::ResetUIBounds() {
+  content::WebContents* active_web_contents = tab_model_->contents();
+  // TODO(b/329103641): Use correct coordinate system.
+  overlay_widget_->SetBounds(active_web_contents->GetContainerBounds());
 }
 
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
@@ -256,3 +266,32 @@ void LensOverlayController::CloseRequestedByOverlay() {
 raw_ptr<views::Widget> LensOverlayController::GetOverlayWidgetForTesting() {
   return overlay_widget_.get();
 }
+
+class LensOverlayController::UnderlyingWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  UnderlyingWebContentsObserver(content::WebContents* web_contents,
+                                LensOverlayController* lens_overlay_controller)
+      : content::WebContentsObserver(web_contents),
+        lens_overlay_controller_(lens_overlay_controller) {}
+
+  ~UnderlyingWebContentsObserver() override = default;
+
+  UnderlyingWebContentsObserver(const UnderlyingWebContentsObserver&) = delete;
+  UnderlyingWebContentsObserver& operator=(
+      const UnderlyingWebContentsObserver&) = delete;
+
+  // content::WebContentsObserver
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override {
+    // We only care to resize the overlay when it's visible to the user.
+    if (lens_overlay_controller_->state() == State::kStartingWebUI ||
+        lens_overlay_controller_->state() == State::kOverlay ||
+        lens_overlay_controller_->state() == State::kOverlayAndResults) {
+      lens_overlay_controller_->ResetUIBounds();
+    }
+  }
+
+ private:
+  raw_ptr<LensOverlayController> lens_overlay_controller_;
+};

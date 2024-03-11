@@ -87,7 +87,12 @@ class LensOverlayController : public TabStripModelObserver,
   // Testing helper method for checking widget.
   raw_ptr<views::Widget> GetOverlayWidgetForTesting();
 
+  // Resizes the overlay UI. Used when the window size changes.
+  void ResetUIBounds();
+
  private:
+  class UnderlyingWebContentsObserver;
+
   // Called once a screenshot has been captured. This should trigger transition
   // to kOverlay. As this process is asynchronous, there are edge cases that can
   // result in multiple in-flight screenshot attempts. We record the
@@ -152,6 +157,9 @@ class LensOverlayController : public TabStripModelObserver,
   // Side panel coordinator for showing results in the panel.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
+
+  // Observer for the WebContents of the associated tab.
+  std::unique_ptr<UnderlyingWebContentsObserver> web_contents_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};
