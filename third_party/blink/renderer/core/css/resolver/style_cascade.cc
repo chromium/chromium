@@ -1317,8 +1317,11 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
                                        const FunctionContext& function_context,
                                        TokenSequence& out) {
   // TODO(sesse): Deal with tree-scoped references.
-  StyleRuleFunction* function =
-      GetDocument().GetScopedStyleResolver()->FunctionForName(function_name);
+  StyleRuleFunction* function = nullptr;
+  if (GetDocument().GetScopedStyleResolver()) {
+    function =
+        GetDocument().GetScopedStyleResolver()->FunctionForName(function_name);
+  }
   if (!function) {
     return false;
   }
