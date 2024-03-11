@@ -56,11 +56,11 @@ namespace {
 // https://en.wikipedia.org/wiki/Cumulative_distribution_function
 //
 // This data was last updated using a 28-day average of metrics recorded on
-// 2023-03-12.
-const int k20thPercentileRSSI = -81;
-const int k40thPercentileRSSI = -73;
-const int k60thPercentileRSSI = -65;
-const int k80thPercentileRSSI = -55;
+// 2024-03-10.
+const int k20thPercentileRSSI = -83;
+const int k40thPercentileRSSI = -76;
+const int k60thPercentileRSSI = -68;
+const int k80thPercentileRSSI = -57;
 
 // Client name for logging in BLE scanning.
 constexpr char kScanClientName[] = "Web Bluetooth Device Chooser";
