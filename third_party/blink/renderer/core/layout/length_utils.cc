@@ -99,17 +99,14 @@ LayoutUnit ResolveInlineLengthInternal(
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
-      LayoutUnit available_size = constraint_space.AvailableSize().inline_size;
+      const LayoutUnit available_size =
+          override_available_size == kIndefiniteSize
+              ? constraint_space.AvailableSize().inline_size
+              : override_available_size;
       if (available_size == kIndefiniteSize) {
-        // TODO(https://crbug.com/328572265): Should this check go after the
-        // overriding just below?  If so, should InlineLengthUnresolvable
-        // change to match?
         return unresolvable_length_result;
       }
       DCHECK_GE(available_size, LayoutUnit());
-      if (override_available_size != kIndefiniteSize) {
-        available_size = override_available_size;
-      }
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       return std::max(border_padding.InlineSum(),
                       available_size - margins.InlineSum());
@@ -153,16 +150,14 @@ LayoutUnit ResolveInlineLengthInternal(
       if (length.IsMaxContent())
         return min_max_sizes.max_size;
 
-      LayoutUnit available_size = constraint_space.AvailableSize().inline_size;
+      const LayoutUnit available_size =
+          override_available_size == kIndefiniteSize
+              ? constraint_space.AvailableSize().inline_size
+              : override_available_size;
       if (available_size == kIndefiniteSize) {
-        // TODO(https://crbug.com/328572265): Should this check go after the
-        // overriding just below?  If so, should InlineLengthUnresolvable
-        // change to match?
         return unresolvable_length_result;
       }
       DCHECK_GE(available_size, LayoutUnit());
-      if (override_available_size != kIndefiniteSize)
-        available_size = override_available_size;
       BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
       LayoutUnit fill_available =
           (available_size - margins.InlineSum()).ClampNegativeToZero();
@@ -195,15 +190,12 @@ LayoutUnit ResolveBlockLengthInternal(
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
-      LayoutUnit available_size = constraint_space.AvailableSize().block_size;
+      const LayoutUnit available_size =
+          override_available_size == kIndefiniteSize
+              ? constraint_space.AvailableSize().block_size
+              : override_available_size;
       if (available_size == kIndefiniteSize) {
-        // TODO(https://crbug.com/328572265): Should this check go after the
-        // overriding just below?  If so, should BlockLengthUnresolvable
-        // change to match?
         return unresolvable_block_size_func();
-      }
-      if (override_available_size != kIndefiniteSize) {
-        available_size = override_available_size;
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
