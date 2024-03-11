@@ -8,11 +8,13 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -292,6 +294,29 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
     // `AutofillField` exists or not.
     return;
   }
+
+  if (personal_data_manager_->GetProfiles().empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillForUnclassifiedFieldsAvailable)) {
+    auto* web_contents =
+        content::WebContents::FromRenderFrameHost(driver.render_frame_host());
+    AddressBubblesController::SetUpAndShowAddNewAddressBubble(
+        web_contents,
+        base::BindOnce(
+            [](PersonalDataManager* pdm,
+               AutofillClient::AddressPromptUserDecision decision,
+               base::optional_ref<const AutofillProfile> profile) {
+              if (decision == AutofillClient::AddressPromptUserDecision::
+                                  kEditAccepted &&
+                  pdm && profile.has_value()) {
+                pdm->AddProfile(*profile);
+              }
+            },
+            // `PersonalDataManager`, as a keyed service, will always outlive
+            // the bubble, which is bound to a tab.
+            personal_data_manager_));
+  }
+
   driver.browser_events().RendererShouldTriggerSuggestions(
       /*field_id=*/{driver.GetFrameToken(),
                     FieldRendererId(params_.field_renderer_id)},

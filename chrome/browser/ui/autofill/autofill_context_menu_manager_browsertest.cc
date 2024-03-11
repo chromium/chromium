@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 
 #include <array>
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/plus_addresses/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -535,6 +537,31 @@ IN_PROC_BROWSER_TEST_F(
           AutofillSuggestionTriggerSource::kManualFallbackAddress));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
+}
+
+// Tests that when the address manual fallback entry is selected and there are
+// no saved profiles, the "Add new address" bubble is triggered.
+IN_PROC_BROWSER_TEST_F(
+    UnclassifiedFieldsTest,
+    UnclassifiedFormShown_AddressFallbackTriggersAddNewAddressBubble) {
+  autofill_client()->GetPersonalDataManager()->SetAutofillProfileEnabled(true);
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  ASSERT_EQ(AddressBubblesController::FromWebContents(web_contents()), nullptr);
+
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
+
+  // Expect that when the entry is selected, the "add new address" bubble is
+  // triggered.
+  auto* controller = AddressBubblesController::FromWebContents(web_contents());
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(
+      controller->GetPageActionIconTootip(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE));
 }
 
 // Tests that when the payments manual fallback entry for the unclassified
