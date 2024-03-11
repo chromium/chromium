@@ -14,12 +14,14 @@
 #include <unistd.h>
 #include <utility>
 
+#include "base/android/input_hint_checker.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -184,11 +186,22 @@ void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
       return;
 
     next_work_info = delegate_->DoWork();
+
     // If we are prioritizing native, and the next work would normally run
     // immediately, skip the next work and let the native work items have a
     // chance to run. This is useful when user input is waiting for native to
     // have a chance to run.
     if (next_work_info.is_immediate() && next_work_info.yield_to_native) {
+      ScheduleWork();
+      return;
+    }
+
+    // As an optimization, yield to the Looper when input events are waiting to
+    // be handled. In some cases input events can remain undetected. Such "input
+    // hint false negatives" happen, for example, during initialization, in
+    // multi-window cases, or when a previous value is cached to throttle
+    // polling the input channel.
+    if (is_type_ui_ && android::InputHintChecker::HasInput()) {
       ScheduleWork();
       return;
     }

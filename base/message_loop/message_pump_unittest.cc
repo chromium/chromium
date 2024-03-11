@@ -15,11 +15,17 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/input_hint_checker.h"
+#include "base/test/test_support_android.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -226,6 +232,64 @@ TEST_P(MessagePumpTest, QuitStopsWork) {
   message_pump_->ScheduleWork();
   message_pump_->Run(&delegate);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class MockInputHintChecker : public android::InputHintChecker {
+ public:
+  MOCK_METHOD(bool, HasInputImplWithThrottling, (), (override));
+};
+
+TEST_P(MessagePumpTest, DetectingHasInputYieldsOnUi) {
+  testing::InSequence sequence;
+  MessagePumpType pump_type = GetParam();
+  testing::StrictMock<MockMessagePumpDelegate> delegate(pump_type);
+  testing::StrictMock<MockInputHintChecker> hint_checker_mock;
+  android::InputHintChecker::ScopedOverrideInstance scoped_override_hint(
+      &hint_checker_mock);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(android::kYieldWithInputHint);
+  android::InputHintChecker::InitializeFeatures();
+  uint32_t initial_work_enters = GetAndroidNonDelayedWorkEnterCount();
+
+  // Override the first DoWork() to return an immediate next.
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([] {
+    auto work_info =
+        MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
+    CHECK(work_info.is_immediate());
+    return work_info;
+  }));
+
+  if (pump_type == MessagePumpType::UI) {
+    // Override the following InputHintChecker::HasInput() to return true.
+    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling())
+        .WillOnce(Invoke([] { return true; }));
+  }
+
+  // Override the second DoWork() to quit the loop.
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+    message_pump_->Quit();
+    return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
+                                                   TimeTicks::Max()};
+  }));
+
+  if (pump_type == MessagePumpType::UI) {
+    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling())
+        .WillOnce(Return(false));
+  }
+  EXPECT_CALL(delegate, DoIdleWork()).Times(0);
+
+  message_pump_->Run(&delegate);
+
+  // Expect two calls to DoNonDelayedLooperWork(). The first one occurs as a
+  // result of MessagePump::Run(). The second one is the result of yielding
+  // after HasInput() returns true. For non-UI MessagePumpType the
+  // MessagePump::Create() does not intercept entering DoNonDelayedLooperWork(),
+  // so it remains 0 instead of 1.
+  uint32_t work_loop_entered = (pump_type == MessagePumpType::UI) ? 2 : 0;
+  EXPECT_EQ(initial_work_enters + work_loop_entered,
+            GetAndroidNonDelayedWorkEnterCount());
+}
+#endif
 
 TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   testing::InSequence sequence;

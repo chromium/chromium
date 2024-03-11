@@ -1179,6 +1179,8 @@ component("base") {
       "android/features_jni.cc",
       "android/field_trial_list.cc",
       "android/important_file_writer_android.cc",
+      "android/input_hint_checker.cc",
+      "android/input_hint_checker.h",
       "android/int_string_callback.cc",
       "android/int_string_callback.h",
       "android/jank_metric_uma_recorder.cc",

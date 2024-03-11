@@ -169,6 +169,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/input_hint_checker.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
@@ -1180,6 +1181,9 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   base::MessagePumpCFRunLoopBase::InitializeFeatures();
   base::MessagePumpKqueue::InitializeFeatures();
   base::ConditionVariable::InitializeFeatures();
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  base::android::InputHintChecker::InitializeFeatures();
 #endif
 }
 

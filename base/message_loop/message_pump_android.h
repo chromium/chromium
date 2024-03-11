@@ -7,12 +7,9 @@
 
 #include <jni.h>
 
-#include <memory>
 #include <optional>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
@@ -24,8 +21,8 @@ namespace base {
 
 class RunLoop;
 
-// This class implements a MessagePump needed for TYPE_UI MessageLoops on
-// OS_ANDROID platform.
+// This class implements a MessagePump needed for MessagePumpType::UI and
+// MessagePumpType::JAVA MessageLoops on OS_ANDROID platform.
 class BASE_EXPORT MessagePumpForUI : public MessagePump {
  public:
   MessagePumpForUI();
@@ -60,7 +57,9 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // These functions are only public so that the looper callbacks can call them,
   // and should not be called from outside this class.
   void OnDelayedLooperCallback();
-  void OnNonDelayedLooperCallback();
+  virtual void OnNonDelayedLooperCallback();  // Overridden for testing.
+
+  void set_is_type_ui(bool is_type_ui) { is_type_ui_ = is_type_ui; }
 
  protected:
   Delegate* SetDelegate(Delegate* delegate);
@@ -108,6 +107,10 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
 
   // The JNIEnv* for this thread, used to check for pending exceptions.
   raw_ptr<JNIEnv> env_;
+
+  // Whether this message serves a MessagePumpType::UI, and therefore can
+  // consult with the input hint living on the UI thread.
+  bool is_type_ui_ = false;
 };
 
 }  // namespace base

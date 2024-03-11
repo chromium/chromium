@@ -20,6 +20,7 @@
 namespace {
 
 base::FilePath* g_test_data_dir = nullptr;
+uint32_t g_non_delayed_enter_count;
 
 struct RunState {
   RunState(base::MessagePump::Delegate* delegate, int run_depth)
@@ -117,6 +118,11 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     g_state = previous_state;
   }
 
+  void OnNonDelayedLooperCallback() override {
+    g_non_delayed_enter_count++;
+    base::MessagePumpForUI::OnNonDelayedLooperCallback();
+  }
+
   void RunNested(base::MessagePump::Delegate* delegate) {
     bool more_work_is_plausible = true;
 
@@ -171,7 +177,9 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
 };
 
 std::unique_ptr<base::MessagePump> CreateMessagePumpForUIStub() {
-  return std::unique_ptr<base::MessagePump>(new MessagePumpForUIStub());
+  auto message_pump_stub = std::make_unique<MessagePumpForUIStub>();
+  message_pump_stub->set_is_type_ui(true);
+  return message_pump_stub;
 }
 
 // Provides the test path for paths overridden during tests.
@@ -225,6 +233,10 @@ void InitAndroidTestMessageLoop() {
   // factory.
   if (!MessagePump::IsMessagePumpForUIFactoryOveridden())
     MessagePump::OverrideMessagePumpForUIFactory(&CreateMessagePumpForUIStub);
+}
+
+uint32_t GetAndroidNonDelayedWorkEnterCount() {
+  return g_non_delayed_enter_count;
 }
 
 }  // namespace base
