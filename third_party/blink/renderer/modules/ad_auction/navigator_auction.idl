@@ -17,13 +17,13 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   SecureContext
 ] partial interface Navigator {
   [CallWith=ScriptState, Measure, RaisesException]
-  Promise<void> joinAdInterestGroup(AuctionAdInterestGroup group, optional double durationSeconds);
+  Promise<undefined> joinAdInterestGroup(AuctionAdInterestGroup group, optional double durationSeconds);
 
   [CallWith=ScriptState, Measure, RaisesException]
-  Promise<void> leaveAdInterestGroup(optional AuctionAdInterestGroupKey group);
+  Promise<undefined> leaveAdInterestGroup(optional AuctionAdInterestGroupKey group);
 
   [RuntimeEnabled=FledgeClearOriginJoinedAdInterestGroups, CallWith=ScriptState, RaisesException]
-  Promise<void> clearOriginJoinedAdInterestGroups(USVString owner, optional sequence<USVString> groupsToKeep);
+  Promise<undefined> clearOriginJoinedAdInterestGroups(USVString owner, optional sequence<USVString> groupsToKeep);
 
   [CallWith=ScriptState, Measure, RaisesException]
   void updateAdInterestGroups();
@@ -41,7 +41,7 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   Promise<USVString> deprecatedURNToURL(UrnOrConfig urn_or_config, optional boolean send_reports = false);
 
   [RuntimeEnabled=AllowURNsInIframes, CallWith=ScriptState, Measure, RaisesException]
-  Promise<void> deprecatedReplaceInURN(UrnOrConfig urn_or_config, record<USVString, USVString> replacements);
+  Promise<undefined> deprecatedReplaceInURN(UrnOrConfig urn_or_config, record<USVString, USVString> replacements);
 
   [RuntimeEnabled=FledgeBiddingAndAuctionServerAPI, CallWith=ScriptState, Measure, RaisesException]
   Promise<AdAuctionData> getInterestGroupAdAuctionData(AdAuctionDataConfig config);

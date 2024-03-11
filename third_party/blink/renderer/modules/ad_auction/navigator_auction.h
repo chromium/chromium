@@ -54,47 +54,56 @@ class MODULES_EXPORT NavigatorAuction final
   static NavigatorAuction& From(ExecutionContext*, Navigator&);
 
   // TODO(crbug.com/1441988): Make `const AuctionAdInterestGroup*` after rename.
-  ScriptPromise joinAdInterestGroup(ScriptState*,
-                                    AuctionAdInterestGroup*,
-                                    std::optional<double>,
-                                    ExceptionState&);
-  static ScriptPromise joinAdInterestGroup(ScriptState*,
-                                           Navigator&,
-                                           AuctionAdInterestGroup*,
-                                           double,
-                                           ExceptionState&);
-  static ScriptPromise joinAdInterestGroup(ScriptState*,
-                                           Navigator&,
-                                           AuctionAdInterestGroup*,
-                                           ExceptionState&);
-  ScriptPromise leaveAdInterestGroup(ScriptState*,
-                                     const AuctionAdInterestGroupKey*,
-                                     ExceptionState&);
-  static ScriptPromise leaveAdInterestGroup(ScriptState*,
-                                            Navigator&,
-                                            const AuctionAdInterestGroupKey*,
-                                            ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> joinAdInterestGroup(ScriptState*,
+                                                       AuctionAdInterestGroup*,
+                                                       std::optional<double>,
+                                                       ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> joinAdInterestGroup(
+      ScriptState*,
+      Navigator&,
+      AuctionAdInterestGroup*,
+      double,
+      ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> joinAdInterestGroup(
+      ScriptState*,
+      Navigator&,
+      AuctionAdInterestGroup*,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> leaveAdInterestGroup(
+      ScriptState*,
+      const AuctionAdInterestGroupKey*,
+      ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> leaveAdInterestGroup(
+      ScriptState*,
+      Navigator&,
+      const AuctionAdInterestGroupKey*,
+      ExceptionState&);
 
   // Implicit leaveAdInterestGroup - only supported when called from within
   // a fenced frame showing FLEDGE ads.
-  ScriptPromise leaveAdInterestGroupForDocument(ScriptState*, ExceptionState&);
-  static ScriptPromise leaveAdInterestGroup(ScriptState*,
-                                            Navigator&,
-                                            ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> leaveAdInterestGroupForDocument(
+      ScriptState*,
+      ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> leaveAdInterestGroup(ScriptState*,
+                                                               Navigator&,
+                                                               ExceptionState&);
 
-  ScriptPromise clearOriginJoinedAdInterestGroups(ScriptState*,
-                                                  const String,
-                                                  const Vector<String>,
-                                                  ExceptionState&);
-  static ScriptPromise clearOriginJoinedAdInterestGroups(ScriptState*,
-                                                         Navigator&,
-                                                         const String,
-                                                         ExceptionState&);
-  static ScriptPromise clearOriginJoinedAdInterestGroups(ScriptState*,
-                                                         Navigator&,
-                                                         const String,
-                                                         const Vector<String>,
-                                                         ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> clearOriginJoinedAdInterestGroups(
+      ScriptState*,
+      const String,
+      const Vector<String>,
+      ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> clearOriginJoinedAdInterestGroups(
+      ScriptState*,
+      Navigator&,
+      const String,
+      ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> clearOriginJoinedAdInterestGroups(
+      ScriptState*,
+      Navigator&,
+      const String,
+      const Vector<String>,
+      ExceptionState&);
 
   void updateAdInterestGroups();
   static void updateAdInterestGroups(ScriptState*, Navigator&, ExceptionState&);
@@ -146,13 +155,13 @@ class MODULES_EXPORT NavigatorAuction final
       bool send_reports,
       ExceptionState& exception_state);
 
-  ScriptPromise deprecatedReplaceInURN(
+  ScriptPromiseTyped<IDLUndefined> deprecatedReplaceInURN(
       ScriptState* script_state,
       const String& urn_uuid,
       const Vector<std::pair<String, String>>& replacement,
       ExceptionState& exception_state);
 
-  static ScriptPromise deprecatedReplaceInURN(
+  static ScriptPromiseTyped<IDLUndefined> deprecatedReplaceInURN(
       ScriptState* script_state,
       Navigator& navigator,
       const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
@@ -239,7 +248,7 @@ class MODULES_EXPORT NavigatorAuction final
 
   // Completion callback for joinInterestGroup() Mojo calls.
   void JoinComplete(bool is_cross_origin,
-                    ScriptPromiseResolver* resolver,
+                    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                     bool failed_well_known_check);
 
   // Tells the browser process to start `pending_leave`. Its callback will be
@@ -248,7 +257,7 @@ class MODULES_EXPORT NavigatorAuction final
 
   // Completion callback for clearOriginJoinedAdInterestGroups() Mojo calls.
   void LeaveComplete(bool is_cross_origin,
-                     ScriptPromiseResolver* resolver,
+                     ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                      bool failed_well_known_check);
 
   // Tells the browser process to start `pending_clear`. Its callback will be
@@ -257,7 +266,7 @@ class MODULES_EXPORT NavigatorAuction final
 
   // Completion callback for leaveInterestGroup() Mojo calls.
   void ClearComplete(bool is_cross_origin,
-                     ScriptPromiseResolver* resolver,
+                     ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                      bool failed_well_known_check);
 
   // Completion callback for createAuctionNonce() Mojo call.
@@ -273,7 +282,7 @@ class MODULES_EXPORT NavigatorAuction final
   void GetURLFromURNComplete(ScriptPromiseResolverTyped<IDLUSVString>*,
                              const std::optional<KURL>&);
   // Completion callback for Mojo call made by deprecatedReplaceInURNComplete().
-  void ReplaceInURNComplete(ScriptPromiseResolver* resolver);
+  void ReplaceInURNComplete(ScriptPromiseResolverTyped<IDLUndefined>* resolver);
 
   void GetInterestGroupAdAuctionDataComplete(
       base::TimeTicks start_time,

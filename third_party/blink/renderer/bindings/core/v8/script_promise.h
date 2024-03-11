@@ -234,7 +234,8 @@ class ScriptPromiseTyped : public ScriptPromise {
 template <typename IDLType, typename BlinkType>
 ScriptPromiseTyped<IDLType> ToResolvedPromise(ScriptState*, BlinkType value);
 
-ScriptPromiseTyped<IDLUndefined> ToResolvedUndefinedPromise(ScriptState*);
+CORE_EXPORT ScriptPromiseTyped<IDLUndefined> ToResolvedUndefinedPromise(
+    ScriptState*);
 
 }  // namespace blink
 

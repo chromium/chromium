@@ -2733,7 +2733,7 @@ bool HandleOldDictNamesRun(AuctionAdConfig* config,
 
 // TODO(crbug.com/1451034): Remove indirection method
 // JoinAdInterestGroupInternal() when old expiration is removed.
-ScriptPromise JoinAdInterestGroupInternal(
+ScriptPromiseTyped<IDLUndefined> JoinAdInterestGroupInternal(
     ScriptState* script_state,
     Navigator& navigator,
     AuctionAdInterestGroup* group,
@@ -2742,21 +2742,21 @@ ScriptPromise JoinAdInterestGroupInternal(
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (context->GetSecurityOrigin()->Protocol() != url::kHttpsScheme) {
     exception_state.ThrowSecurityError(
         "May only joinAdInterestGroup from an https origin.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   if (!context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   return NavigatorAuction::From(ExecutionContext::From(script_state), navigator)
@@ -3205,7 +3205,7 @@ NavigatorAuction& NavigatorAuction::From(ExecutionContext* context,
 
 const char NavigatorAuction::kSupplementName[] = "NavigatorAuction";
 
-ScriptPromise NavigatorAuction::joinAdInterestGroup(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
     ScriptState* script_state,
     AuctionAdInterestGroup* mutable_group,
     std::optional<double> lifetime_seconds,
@@ -3214,17 +3214,17 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
 
   // TODO(crbug.com/1441988): Remove this code after rename is complete.
   if (!HandleOldDictNamesJoin(mutable_group, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   const AuctionAdInterestGroup* group = mutable_group;
 
   auto mojo_group = mojom::blink::InterestGroup::New();
   if (!CopyLifetimeIdlToMojo(exception_state, lifetime_seconds, *group,
                              *mojo_group)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   mojo_group->name = group->name();
   mojo_group->priority = (group->hasPriority()) ? group->priority() : 0.0;
@@ -3275,7 +3275,7 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
                                          *mojo_group) ||
       !CopyAggregationCoordinatorOriginFromIdlToMojo(exception_state, *group,
                                                      *mojo_group)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   String error_field_name;
@@ -3285,15 +3285,16 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
                                   error_field_value, error)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
         *group, error_field_name, error_field_value, error));
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   bool is_cross_origin =
       !context->GetSecurityOrigin()->IsSameOriginWith(mojo_group->owner.get());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::JoinInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
           WTF::BindOnce(&NavigatorAuction::JoinComplete,
@@ -3310,7 +3311,7 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
 }
 
 /* static */
-ScriptPromise NavigatorAuction::joinAdInterestGroup(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
     ScriptState* script_state,
     Navigator& navigator,
     AuctionAdInterestGroup* group,
@@ -3321,7 +3322,7 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
 }
 
 /* static */
-ScriptPromise NavigatorAuction::joinAdInterestGroup(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
     ScriptState* script_state,
     Navigator& navigator,
     AuctionAdInterestGroup* group,
@@ -3331,7 +3332,7 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
                                      exception_state);
 }
 
-ScriptPromise NavigatorAuction::leaveAdInterestGroup(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
     ScriptState* script_state,
     const AuctionAdInterestGroupKey* group_key,
     ExceptionState& exception_state) {
@@ -3341,23 +3342,24 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
                                    "' for AuctionAdInterestGroup with name '" +
                                    group_key->name() +
                                    "' must be a valid https origin.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (ExecutionContext::From(script_state)->GetSecurityOrigin()->Protocol() !=
       url::kHttpsScheme) {
     exception_state.ThrowSecurityError(
         "May only leaveAdInterestGroup from an https origin.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   bool is_cross_origin = !ExecutionContext::From(script_state)
                               ->GetSecurityOrigin()
                               ->IsSameOriginWith(owner.get());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
           WTF::BindOnce(&NavigatorAuction::LeaveComplete,
@@ -3374,7 +3376,8 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
   return promise;
 }
 
-ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
+ScriptPromiseTyped<IDLUndefined>
+NavigatorAuction::leaveAdInterestGroupForDocument(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
@@ -3382,13 +3385,13 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
     exception_state.ThrowSecurityError(
         "May not leaveAdInterestGroup from a Document that is not fully "
         "active");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   if (ExecutionContext::From(script_state)->GetSecurityOrigin()->Protocol() !=
       url::kHttpsScheme) {
     exception_state.ThrowSecurityError(
         "May only leaveAdInterestGroup from an https origin.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   // The renderer does not have enough information to verify that this document
   // is the result of a FLEDGE auction. The browser will silently ignore
@@ -3399,11 +3402,11 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
   // meaningful in this case (no .well-known fetches), and if it ever does do
   // them, likely don't want to expose timing information to the fenced frame,
   // anyways.
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 /* static */
-ScriptPromise NavigatorAuction::leaveAdInterestGroup(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
     ScriptState* script_state,
     Navigator& navigator,
     const AuctionAdInterestGroupKey* group_key,
@@ -3411,7 +3414,7 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -3420,7 +3423,7 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   return From(context, navigator)
@@ -3428,21 +3431,22 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
 }
 
 /* static */
-ScriptPromise NavigatorAuction::leaveAdInterestGroup(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
     ScriptState* script_state,
     Navigator& navigator,
     ExceptionState& exception_state) {
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   // According to the spec, implicit leave bypasses permission policy.
   return From(ExecutionContext::From(script_state), navigator)
       .leaveAdInterestGroupForDocument(script_state, exception_state);
 }
 
-ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
+ScriptPromiseTyped<IDLUndefined>
+NavigatorAuction::clearOriginJoinedAdInterestGroups(
     ScriptState* script_state,
     const String owner_string,
     const Vector<String> interest_groups_to_keep,
@@ -3451,23 +3455,24 @@ ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
   if (!owner) {
     exception_state.ThrowTypeError("owner '" + owner_string +
                                    "' must be a valid https origin.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (ExecutionContext::From(script_state)->GetSecurityOrigin()->Protocol() !=
       url::kHttpsScheme) {
     exception_state.ThrowSecurityError(
         "May only clearOriginJoinedAdInterestGroups from an https origin.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   bool is_cross_origin = !ExecutionContext::From(script_state)
                               ->GetSecurityOrigin()
                               ->IsSameOriginWith(owner.get());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
           WTF::BindOnce(&NavigatorAuction::ClearComplete,
@@ -3485,7 +3490,8 @@ ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
 }
 
 /* static */
-ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
+ScriptPromiseTyped<IDLUndefined>
+NavigatorAuction::clearOriginJoinedAdInterestGroups(
     ScriptState* script_state,
     Navigator& navigator,
     const String owner,
@@ -3495,7 +3501,8 @@ ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
 }
 
 /* static */
-ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
+ScriptPromiseTyped<IDLUndefined>
+NavigatorAuction::clearOriginJoinedAdInterestGroups(
     ScriptState* script_state,
     Navigator& navigator,
     const String owner,
@@ -3504,7 +3511,7 @@ ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -3513,7 +3520,7 @@ ScriptPromise NavigatorAuction::clearOriginJoinedAdInterestGroups(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   return From(context, navigator)
@@ -3755,7 +3762,7 @@ ScriptPromiseTyped<IDLUSVString> NavigatorAuction::deprecatedURNToURL(
                           exception_state);
 }
 
-ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::deprecatedReplaceInURN(
     ScriptState* script_state,
     const String& uuid_url_string,
     const Vector<std::pair<String, String>>& replacements,
@@ -3763,7 +3770,7 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
   KURL uuid_url(uuid_url_string);
   if (!blink::IsValidUrnUuidURL(GURL(uuid_url))) {
     exception_state.ThrowTypeError("Passed URL must be a valid URN URL.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   Vector<mojom::blink::AdKeywordReplacementPtr> replacements_list;
   for (const auto& replacement : replacements) {
@@ -3773,14 +3780,15 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
           replacement.first.EndsWith("%%"))) {
       exception_state.ThrowTypeError(
           "Replacements must be of the form '${...}' or '%%...%%'");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     replacements_list.push_back(mojom::blink::AdKeywordReplacement::New(
         replacement.first, replacement.second));
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   ad_auction_service_->DeprecatedReplaceInURN(
       std::move(uuid_url), std::move(replacements_list),
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
@@ -3788,7 +3796,7 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
   return promise;
 }
 
-ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
+ScriptPromiseTyped<IDLUndefined> NavigatorAuction::deprecatedReplaceInURN(
     ScriptState* script_state,
     Navigator& navigator,
     const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
@@ -3797,7 +3805,7 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   String uuid_url_string;
   switch (urn_or_config->GetContentType()) {
@@ -3810,7 +3818,7 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
               base::PassKey<NavigatorAuction>());
       if (!uuid_url_opt.has_value()) {
         exception_state.ThrowTypeError("Passed config must have a mapped URL.");
-        return ScriptPromise();
+        return ScriptPromiseTyped<IDLUndefined>();
       }
       uuid_url_string = uuid_url_opt->GetString();
       break;
@@ -3968,9 +3976,10 @@ void NavigatorAuction::StartJoin(PendingJoin&& pending_join) {
                                          std::move(pending_join.callback));
 }
 
-void NavigatorAuction::JoinComplete(bool is_cross_origin,
-                                    ScriptPromiseResolver* resolver,
-                                    bool failed_well_known_check) {
+void NavigatorAuction::JoinComplete(
+    bool is_cross_origin,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    bool failed_well_known_check) {
   if (is_cross_origin) {
     queued_cross_site_joins_.OnComplete();
   }
@@ -3991,9 +4000,10 @@ void NavigatorAuction::StartLeave(PendingLeave&& pending_leave) {
                                           std::move(pending_leave.callback));
 }
 
-void NavigatorAuction::LeaveComplete(bool is_cross_origin,
-                                     ScriptPromiseResolver* resolver,
-                                     bool failed_well_known_check) {
+void NavigatorAuction::LeaveComplete(
+    bool is_cross_origin,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    bool failed_well_known_check) {
   if (is_cross_origin) {
     queued_cross_site_leaves_.OnComplete();
   }
@@ -4014,9 +4024,10 @@ void NavigatorAuction::StartClear(PendingClear&& pending_clear) {
       std::move(pending_clear.callback));
 }
 
-void NavigatorAuction::ClearComplete(bool is_cross_origin,
-                                     ScriptPromiseResolver* resolver,
-                                     bool failed_well_known_check) {
+void NavigatorAuction::ClearComplete(
+    bool is_cross_origin,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    bool failed_well_known_check) {
   if (is_cross_origin) {
     queued_cross_site_clears_.OnComplete();
   }
@@ -4117,7 +4128,8 @@ void NavigatorAuction::GetURLFromURNComplete(
   }
 }
 
-void NavigatorAuction::ReplaceInURNComplete(ScriptPromiseResolver* resolver) {
+void NavigatorAuction::ReplaceInURNComplete(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   resolver->Resolve();
 }
 

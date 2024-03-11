@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AWC_ADDITIONAL_WINDOWING_CONTROLS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AWC_ADDITIONAL_WINDOWING_CONTROLS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 class ExceptionState;
 class LocalDOMWindow;
-class ScriptPromise;
 class ScriptState;
 
 // Complements LocalDOMWindow with additional windowing controls.
@@ -20,19 +20,17 @@ class AdditionalWindowingControls {
 
  public:
   // Web-exposed interfaces:
-  static ScriptPromise maximize(ScriptState*,
-                                LocalDOMWindow&,
-                                ExceptionState& exception_state);
-  static ScriptPromise minimize(ScriptState*,
-                                LocalDOMWindow&,
-                                ExceptionState& exception_state);
-  static ScriptPromise restore(ScriptState*,
-                               LocalDOMWindow&,
-                               ExceptionState& exception_state);
-  static ScriptPromise setResizable(ScriptState*,
-                                    LocalDOMWindow&,
-                                    bool resizable,
-                                    ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLUndefined>
+  maximize(ScriptState*, LocalDOMWindow&, ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLUndefined>
+  minimize(ScriptState*, LocalDOMWindow&, ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLUndefined>
+  restore(ScriptState*, LocalDOMWindow&, ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLUndefined> setResizable(
+      ScriptState*,
+      LocalDOMWindow&,
+      bool resizable,
+      ExceptionState& exception_state);
 };
 
 }  // namespace blink
