@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -538,7 +539,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckSignature() {
     if (!policy_->has_new_public_key_signature() ||
         !VerifySignature(policy_->new_public_key(), key_,
                          policy_->new_public_key_signature(),
-                         em::PolicyFetchRequest::SHA1_RSA)) {
+                         GetSignatureType())) {
       LOG_POLICY(ERROR, POLICY_FETCHING)
           << "New public key rotation signature verification failed";
       return VALIDATION_BAD_SIGNATURE;
@@ -553,8 +554,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckSignature() {
 
   if (!policy_->has_policy_data_signature() ||
       !VerifySignature(policy_->policy_data(), *signature_key,
-                       policy_->policy_data_signature(),
-                       em::PolicyFetchRequest::SHA1_RSA)) {
+                       policy_->policy_data_signature(), GetSignatureType())) {
     LOG_POLICY(ERROR, POLICY_FETCHING) << "Policy signature validation failed";
     return VALIDATION_BAD_SIGNATURE;
   }
@@ -565,8 +565,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckSignature() {
 CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckInitialKey() {
   if (!policy_->has_new_public_key() || !policy_->has_policy_data_signature() ||
       !VerifySignature(policy_->policy_data(), policy_->new_public_key(),
-                       policy_->policy_data_signature(),
-                       em::PolicyFetchRequest::SHA1_RSA)) {
+                       policy_->policy_data_signature(), GetSignatureType())) {
     LOG_POLICY(ERROR, POLICY_FETCHING)
         << "Initial policy signature validation failed";
     return VALIDATION_BAD_INITIAL_SIGNATURE;
@@ -738,6 +737,23 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckDomain() {
   }
 
   return VALIDATION_OK;
+}
+
+CloudPolicyValidatorBase::SignatureType
+CloudPolicyValidatorBase::GetSignatureType() {
+  if (!policy_->has_policy_data_signature_type() ||
+      policy_->policy_data_signature_type() == em::PolicyFetchRequest::NONE) {
+    return em::PolicyFetchRequest::SHA1_RSA;
+  }
+
+  if (policy_type_ != dm_protocol::kChromeMachineLevelUserCloudPolicyType &&
+      policy_type_ !=
+          dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType &&
+      policy_type_ != dm_protocol::kChromeMachineLevelUserCloudPolicyIOSType) {
+    return em::PolicyFetchRequest::SHA1_RSA;
+  }
+
+  return policy_->policy_data_signature_type();
 }
 
 template class CloudPolicyValidator<em::CloudPolicySettings>;

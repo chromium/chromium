@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
 #include "base/base64.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -213,9 +214,22 @@ std::string ConvertPublicKeyToString(const std::vector<uint8_t>& public_key) {
 // Produces |key|'s signature over |data| and stores it in |signature|.
 void SignData(const std::string& data,
               crypto::RSAPrivateKey* const key,
-              std::string* const signature) {
+              std::string* const signature,
+              em::PolicyFetchRequest::SignatureType signature_type) {
+  crypto::SignatureCreator::HashAlgorithm algorithm;
+  switch (signature_type) {
+    case em::PolicyFetchRequest::SHA1_RSA:
+      algorithm = crypto::SignatureCreator::SHA1;
+      break;
+    case em::PolicyFetchRequest::SHA256_RSA:
+      algorithm = crypto::SignatureCreator::SHA256;
+      break;
+    default:
+      algorithm = crypto::SignatureCreator::SHA1;
+  }
+
   std::unique_ptr<crypto::SignatureCreator> signature_creator(
-      crypto::SignatureCreator::Create(key, crypto::SignatureCreator::SHA1));
+      crypto::SignatureCreator::Create(key, algorithm));
   signature_creator->Update(reinterpret_cast<const uint8_t*>(data.c_str()),
                             data.size());
   std::vector<uint8_t> signature_bytes;
@@ -303,6 +317,9 @@ void PolicyBuilder::Build() {
   // Generate signatures if applicable.
   std::unique_ptr<crypto::RSAPrivateKey> policy_signing_key =
       GetNewSigningKey();
+  if (signature_type_ != em::PolicyFetchRequest::NONE) {
+    policy_.set_policy_data_signature_type(signature_type_);
+  }
   if (policy_signing_key) {
     // Add the new public key.
     policy_.set_new_public_key(
@@ -335,7 +352,7 @@ void PolicyBuilder::Build() {
     std::unique_ptr<crypto::RSAPrivateKey> old_signing_key = GetSigningKey();
     if (old_signing_key) {
       SignData(policy_.new_public_key(), old_signing_key.get(),
-               policy_.mutable_new_public_key_signature());
+               policy_.mutable_new_public_key_signature(), signature_type_);
     }
   } else {
     // No new signing key, so clear the old public key (this allows us to
@@ -359,7 +376,7 @@ void PolicyBuilder::Build() {
     // PolicyData signature.
     if (policy_signing_key) {
       SignData(policy_.policy_data(), policy_signing_key.get(),
-               policy_.mutable_policy_data_signature());
+               policy_.mutable_policy_data_signature(), signature_type_);
     }
   } else {
     policy_.clear_policy_data();
@@ -466,6 +483,11 @@ std::vector<std::string> PolicyBuilder::GetUserAffiliationIds() {
 // static
 AccountId PolicyBuilder::GetFakeAccountIdForTesting() {
   return AccountId::FromUserEmailGaiaId(kFakeUsername, kFakeGaiaId);
+}
+
+void PolicyBuilder::SetSignatureType(
+    em::PolicyFetchRequest::SignatureType signature_type) {
+  signature_type_ = signature_type;
 }
 
 template <>

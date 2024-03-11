@@ -347,6 +347,10 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // callers don't try to set conflicting values.
   void set_owning_domain(const std::string& owning_domain);
 
+  // Get signature type from `policy_`. Only available for CBCM policies and
+  // type is set. Otherwise, default to SHA1.
+  SignatureType GetSignatureType();
+
   // Helper functions implementing individual checks.
   Status CheckTimestamp();
   Status CheckUser();

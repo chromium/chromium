@@ -142,6 +142,9 @@ class PolicyBuilder {
   // Created using dummy data used for filling the PolicyData protobuf.
   static AccountId GetFakeAccountIdForTesting();
 
+  void SetSignatureType(
+      enterprise_management::PolicyFetchRequest::SignatureType signature_type);
+
  private:
   enterprise_management::PolicyFetchResponse policy_;
   std::unique_ptr<enterprise_management::PolicyData> policy_data_;
@@ -155,6 +158,9 @@ class PolicyBuilder {
   std::vector<uint8_t> raw_signing_key_;
   std::vector<uint8_t> raw_new_signing_key_;
   std::string raw_new_signing_key_signature_;
+
+  enterprise_management::PolicyFetchRequest::SignatureType signature_type_ =
+      enterprise_management::PolicyFetchRequest::NONE;
 };
 
 // Type-parameterized PolicyBuilder extension that allows for building policy
