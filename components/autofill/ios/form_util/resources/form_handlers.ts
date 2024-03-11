@@ -20,11 +20,6 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 let formMutationObserver: MutationObserver|null = null;
 
 /**
- * The form mutation message scheduled to be sent to browser.
- */
-let formMutationMessageToSend: object|null = null;
-
-/**
  * A message scheduled to be sent to host on the next runloop.
  */
 let messageToSend: object|null = null;
@@ -39,6 +34,11 @@ let lastFocusedElement: Element|null = null;
  * the hook.
  */
 let formSubmitOriginalFunction: Function|null = null;
+
+/**
+ * The number of messages scheduled to be sent to browser.
+ */
+let numberOfPendingMessages: number = 0;
 
 /**
  * Schedule `mesg` to be sent on next runloop.
@@ -188,13 +188,16 @@ function formSubmitted(form: HTMLFormElement): void {
  * to this function are ignored.
  */
 function sendFormMutationMessageAfterDelay(msg: object, delay: number): void {
-  if (formMutationMessageToSend) return;
+  // No more than 2 messages can be scheduled at the same time; for throttling.
+  if (numberOfPendingMessages === 2) {
+    return;
+  }
 
-  formMutationMessageToSend = msg;
+
+  ++numberOfPendingMessages;
   setTimeout(function() {
-    sendWebKitMessage(
-        'FormHandlersMessage', formMutationMessageToSend!);
-    formMutationMessageToSend = null;
+    sendWebKitMessage('FormHandlersMessage', msg);
+    --numberOfPendingMessages;
   }, delay);
 }
 
@@ -323,6 +326,9 @@ function trackFormMutations(delay: number): void {
   if (!delay) return;
 
   formMutationObserver = new MutationObserver(function(mutations) {
+    // Number of messages scheduled when processing the batched mutations.
+    let numberOfScheduledMessages = 0;
+
     for (const mutation of mutations) {
       // Only process mutations to the tree of nodes.
       if (mutation.type !== 'childList') {
@@ -343,7 +349,9 @@ function trackFormMutations(delay: number): void {
           'value': '',
           'hasUserGesture': false,
         };
-        return sendFormMutationMessageAfterDelay(msg, delay);
+        sendFormMutationMessageAfterDelay(
+            msg, (numberOfScheduledMessages + 1) * delay);
+        ++numberOfScheduledMessages;
       }
 
       // Handle removed nodes by starting from the specific removal cases down
@@ -362,7 +370,15 @@ function trackFormMutations(delay: number): void {
           'uniqueFormID': uniqueFormId,
           'uniqueFieldID': '',
         };
-        return sendFormMutationMessageAfterDelay(msg, delay);
+        sendFormMutationMessageAfterDelay(
+            msg, (numberOfScheduledMessages + 1) * delay);
+        ++numberOfScheduledMessages;
+      }
+
+      if (numberOfScheduledMessages > 0) {
+        // No need to go further if there were already messages sent for added
+        // or removed forms.
+        continue;
       }
 
       const removedFormlessPasswordFieldsIds =
