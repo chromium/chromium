@@ -5730,10 +5730,10 @@
           Use arrow keys to move this control to the game action you want. Use the enter key to place the control. Use the escape key to cancel.
         </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu without having created any buttons." translateable="false">
-          Assign first control
+          Create first control
         </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_NEW_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu having created at least one button." translateable="false">
-          Assign another control
+          Create another control
         </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_KEY_EDIT_NUDGE_TITLE" desc="The title of the Key Edit Nudge in the Game Controls editor menu which appears after creating your first button." translateable="false">
           Quickly switch keys
