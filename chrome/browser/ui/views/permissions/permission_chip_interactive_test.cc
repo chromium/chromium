@@ -283,7 +283,10 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
 
 class LocationBarIconOverrideTest : public PermissionChipInteractiveTest {
  public:
-  LocationBarIconOverrideTest() = default;
+  LocationBarIconOverrideTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {content_settings::features::kLeftHandSideActivityIndicators});
+  }
 
   bool IsLocationIconVisible() {
     return BrowserView::GetBrowserViewForBrowser(browser())
@@ -291,6 +294,9 @@ class LocationBarIconOverrideTest : public PermissionChipInteractiveTest {
         ->location_icon_view()
         ->GetVisible();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,

@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -26,6 +27,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
@@ -53,6 +55,11 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
         example_video_id_("fake_video_dev"),
         media_stream_result_(
             blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS) {
+    // `kLeftHandSideActivityIndicators` should be disabled as it changes the UI
+    // of the camera/mic activity indicator. The new UI will be tested
+    // separately.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {content_settings::features::kLeftHandSideActivityIndicators});
   }
 
   void OnMediaStreamResponse(
@@ -277,6 +284,7 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
 
   std::unique_ptr<PermissionBubbleMediaAccessHandler>
       permission_bubble_media_access_handler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MediaStreamDevicesControllerPtzTest

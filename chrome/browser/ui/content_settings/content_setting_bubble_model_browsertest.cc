@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -89,6 +91,9 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {content_settings::features::kLeftHandSideActivityIndicators});
+
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -113,6 +118,7 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that clicking on the manage button in the media bubble opens the

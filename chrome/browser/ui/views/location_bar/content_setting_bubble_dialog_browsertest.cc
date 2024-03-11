@@ -116,7 +116,11 @@ class ContentSettingBubbleDialogTest
     scoped_feature_list_.InitWithFeatures(
         {features::kQuietNotificationPrompts},
         // Cookies icon intentionally does not show when 3PC are blocked.
-        {content_settings::features::kTrackingProtection3pcd});
+        {content_settings::features::kTrackingProtection3pcd,
+         // `kLeftHandSideActivityIndicators` should be disabled as it changes
+         // the UI of the camera/mic activity indicator. The new UI will be
+         // tested separately.
+         content_settings::features::kLeftHandSideActivityIndicators});
   }
 
   ContentSettingBubbleDialogTest(const ContentSettingBubbleDialogTest&) =

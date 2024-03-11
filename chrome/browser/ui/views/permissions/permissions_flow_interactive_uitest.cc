@@ -18,6 +18,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
@@ -37,6 +38,10 @@ const char kFirstPermissionRow[] = "FirstPermissionRow";
 class PermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
  public:
   PermissionsFlowInteractiveUITest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFileSystemAccessPersistentPermissions},
+        {content_settings::features::kLeftHandSideActivityIndicators});
+
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -94,8 +99,7 @@ class PermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kFileSystemAccessPersistentPermissions};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that by default PageInfo has no visible permission.
