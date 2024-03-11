@@ -2990,8 +2990,10 @@ void LayerTreeHostImpl::RegisterMainThreadPresentationTimeCallbackForTesting(
 void LayerTreeHostImpl::
     RegisterMainThreadSuccessfulPresentationTimeCallbackForTesting(
         uint32_t frame_token,
-        PresentationTimeCallbackBuffer::SuccessfulCallback callback) {
-  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> as_vector;
+        PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails
+            callback) {
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
+      as_vector;
   as_vector.push_back(std::move(callback));
   presentation_time_callbacks_.RegisterMainThreadSuccessfulCallbacks(
       frame_token, std::move(as_vector));

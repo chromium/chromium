@@ -807,12 +807,14 @@ void Compositor::DidReceiveCompositorFrameAck() {
 
 void Compositor::DidPresentCompositorFrame(
     uint32_t frame_token,
-    const gfx::PresentationFeedback& feedback) {
-  TRACE_EVENT_MARK_WITH_TIMESTAMP1("cc,benchmark", "FramePresented",
-                                   feedback.timestamp, "environment",
-                                   "browser");
+    const viz::FrameTimingDetails& frame_timing_details) {
+  TRACE_EVENT_MARK_WITH_TIMESTAMP1(
+      "cc,benchmark", "FramePresented",
+      frame_timing_details.presentation_feedback.timestamp, "environment",
+      "browser");
   for (auto& observer : observer_list_)
-    observer.OnDidPresentCompositorFrame(frame_token, feedback);
+    observer.OnDidPresentCompositorFrame(
+        frame_token, frame_timing_details.presentation_feedback);
 }
 
 void Compositor::DidSubmitCompositorFrame() {

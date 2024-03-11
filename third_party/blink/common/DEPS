@@ -60,5 +60,6 @@ specific_include_rules = {
     "+ui/gfx/image/image_unittest_util.h",
     "+v8",
   ],
-  'ad_display_size_utils.cc': [ "+third_party/re2/src/re2/re2.h" ]
+  'ad_display_size_utils.cc': [ "+third_party/re2/src/re2/re2.h" ],
+  'content_to_visible_time_reporter*' :[ "+components/viz/common/frame_timing_details.h"]
 }

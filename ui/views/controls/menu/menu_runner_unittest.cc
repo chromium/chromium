@@ -773,7 +773,8 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesLog) {
       ->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](base::RunLoop* run_loop, base::TimeTicks bubble_created_time) {
+          [](base::RunLoop* run_loop,
+             const viz::FrameTimingDetails& frame_timing_details) {
             run_loop->Quit();
           },
           &run_loop));
@@ -802,7 +803,8 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesNotLog) {
       ->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](base::RunLoop* run_loop, base::TimeTicks bubble_created_time) {
+          [](base::RunLoop* run_loop,
+             const viz::FrameTimingDetails& frame_timing_details) {
             run_loop->Quit();
           },
           &run_loop));

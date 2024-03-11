@@ -319,9 +319,9 @@ class CC_EXPORT LayerTreeImpl {
   TakePresentationCallbacks();
 
   void AddSuccessfulPresentationCallbacks(
-      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
           callbacks);
-  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
   TakeSuccessfulPresentationCallbacks();
 
   // The following viewport related property nodes will only ever be set on the
@@ -958,7 +958,7 @@ class CC_EXPORT LayerTreeImpl {
   gfx::OverlayTransform display_transform_hint_ = gfx::OVERLAY_TRANSFORM_NONE;
 
   std::vector<PresentationTimeCallbackBuffer::Callback> presentation_callbacks_;
-  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
       successful_presentation_callbacks_;
 
   // Event metrics that are reported back from the main thread.

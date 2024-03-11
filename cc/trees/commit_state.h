@@ -144,7 +144,7 @@ struct CC_EXPORT CommitState {
   // added here.
   std::vector<PresentationTimeCallbackBuffer::Callback>
       pending_presentation_callbacks;
-  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
       pending_successful_presentation_callbacks;
 
   std::vector<std::unique_ptr<MicroBenchmarkImpl>> benchmarks;

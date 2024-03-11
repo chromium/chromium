@@ -69,9 +69,9 @@ class CC_EXPORT ProxyMain : public Proxy {
       uint32_t frame_token,
       std::vector<PresentationTimeCallbackBuffer::Callback>
           presentation_callbacks,
-      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
           successful_presentation_callbacks,
-      const gfx::PresentationFeedback& feedback);
+      const viz::FrameTimingDetails& frame_timing_details);
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
   void DidObserveFirstScrollDelay(int source_frame_number,
                                   base::TimeDelta first_scroll_delay,

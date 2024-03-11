@@ -181,7 +181,7 @@ void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
 
 void OnRestoredWindowPresentationTimeReceived(
     int restore_window_id,
-    base::TimeTicks presentation_timestamp) {
+    const viz::FrameTimingDetails& details) {
   LoginUnlockThroughputRecorder* throughput_recorder =
       Shell::Get()->login_unlock_throughput_recorder();
   throughput_recorder->OnRestoredWindowPresented(restore_window_id);

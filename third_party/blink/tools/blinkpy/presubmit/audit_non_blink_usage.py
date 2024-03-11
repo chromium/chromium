@@ -971,6 +971,7 @@ _CONFIG = [
             'cc::InputHandlerScrollResult',
             'cc::SwapPromise',
             'viz::CompositorFrameMetadata',
+            'viz::FrameTimingDetails',
         ],
     },
     {

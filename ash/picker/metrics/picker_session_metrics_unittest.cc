@@ -20,9 +20,10 @@ using ::testing::IsEmpty;
 void WaitUntilNextFramePresented(ui::Compositor* compositor) {
   base::RunLoop run_loop;
   compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](const viz::FrameTimingDetails& frame_timing_details) {
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 

@@ -42,6 +42,23 @@ GenerateSuccessfulCallbacks(int num_callbacks) {
   return result;
 }
 
+std::vector<cc::PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
+GenerateSuccessfulCallbackWithDetails(int num_callbacks) {
+  std::vector<cc::PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
+      result;
+
+  while (num_callbacks-- > 0) {
+    // `PresentationTimeCallbackBuffer` isn't supposed to invoke any callbacks.
+    // We can check for that by passing callbacks which cause test failure.
+    result.push_back(base::BindOnce([](const viz::FrameTimingDetails& details) {
+      FAIL() << "Callbacks should not be directly invoked by "
+                "PresentationTimeCallbackBuffer";
+    }));
+  }
+
+  return result;
+}
+
 constexpr uint32_t kFrameToken1 = 234;
 constexpr uint32_t kFrameToken2 = 345;
 constexpr uint32_t kFrameToken3 = 456;
@@ -133,8 +150,8 @@ TEST(PresentationTimeCallbackBufferTest, TestMainThreadCallbackOnFailure) {
 TEST(PresentationTimeCallbackBufferTest, TestMainThreadSuccessfulCallback) {
   PresentationTimeCallbackBuffer buffer;
 
-  buffer.RegisterMainThreadSuccessfulCallbacks(kFrameToken2,
-                                               GenerateSuccessfulCallbacks(1));
+  buffer.RegisterMainThreadSuccessfulCallbacks(
+      kFrameToken2, GenerateSuccessfulCallbackWithDetails(1));
 
   // Make sure that popping early frame tokens doesn't return irrelevant
   // entries.
@@ -223,8 +240,8 @@ TEST(PresentationTimeCallbackBufferTest, TestMixedCallbacksOnSuccess) {
   PresentationTimeCallbackBuffer buffer;
 
   buffer.RegisterMainThreadCallbacks(kFrameToken2, GenerateCallbacks(1));
-  buffer.RegisterMainThreadSuccessfulCallbacks(kFrameToken2,
-                                               GenerateSuccessfulCallbacks(1));
+  buffer.RegisterMainThreadSuccessfulCallbacks(
+      kFrameToken2, GenerateSuccessfulCallbackWithDetails(1));
   buffer.RegisterCompositorThreadSuccessfulCallbacks(
       kFrameToken2, GenerateSuccessfulCallbacks(1));
 
@@ -261,8 +278,8 @@ TEST(PresentationTimeCallbackBufferTest, TestMixedCallbacksOnFailure) {
   PresentationTimeCallbackBuffer buffer;
 
   buffer.RegisterMainThreadCallbacks(kFrameToken2, GenerateCallbacks(1));
-  buffer.RegisterMainThreadSuccessfulCallbacks(kFrameToken2,
-                                               GenerateSuccessfulCallbacks(1));
+  buffer.RegisterMainThreadSuccessfulCallbacks(
+      kFrameToken2, GenerateSuccessfulCallbackWithDetails(1));
   buffer.RegisterCompositorThreadSuccessfulCallbacks(
       kFrameToken2, GenerateSuccessfulCallbacks(1));
 

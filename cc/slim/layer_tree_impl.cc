@@ -331,7 +331,7 @@ void LayerTreeImpl::DidPresentCompositorFrame(
     // Only run `success_callbacks` if successful.
     if (success) {
       for (auto& callback : itr->success_callbacks) {
-        std::move(callback).Run(details.presentation_feedback.timestamp);
+        std::move(callback).Run(details);
       }
       itr->success_callbacks.clear();
     }

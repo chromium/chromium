@@ -1081,7 +1081,7 @@ class LayerTreeHostPresentationDuringAnimation
   }
 
  private:
-  void OnPresentation(base::TimeTicks presentation_timestamp) { EndTest(); }
+  void OnPresentation(const viz::FrameTimingDetails& details) { EndTest(); }
 
   // Disable sub-sampling to deterministically record histograms under test.
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;

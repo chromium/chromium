@@ -1024,14 +1024,16 @@ LayerTreeImpl::TakePresentationCallbacks() {
 }
 
 void LayerTreeImpl::AddSuccessfulPresentationCallbacks(
-    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks) {
+    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
+        callbacks) {
   base::ranges::move(callbacks,
                      std::back_inserter(successful_presentation_callbacks_));
 }
 
-std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
 LayerTreeImpl::TakeSuccessfulPresentationCallbacks() {
-  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks;
+  std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
+      callbacks;
   callbacks.swap(successful_presentation_callbacks_);
   return callbacks;
 }

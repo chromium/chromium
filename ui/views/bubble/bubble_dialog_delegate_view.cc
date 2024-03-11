@@ -472,7 +472,9 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                 [](base::WeakPtr<BubbleDialogDelegate::BubbleUmaLogger>
                        uma_logger,
                    base::TimeTicks bubble_created_time,
-                   base::TimeTicks presentation_timestamp) {
+                   const viz::FrameTimingDetails& frame_timing_details) {
+                  base::TimeTicks presentation_timestamp =
+                      frame_timing_details.presentation_feedback.timestamp;
                   if (!uma_logger) {
                     return;
                   }
@@ -1083,7 +1085,9 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
               [](base::WeakPtr<BubbleDialogDelegate::BubbleUmaLogger>
                      uma_logger,
                  base::TimeTicks bubble_created_time,
-                 base::TimeTicks presentation_timestamp) {
+                 const viz::FrameTimingDetails& frame_timing_details) {
+                base::TimeTicks presentation_timestamp =
+                    frame_timing_details.presentation_feedback.timestamp;
                 if (!uma_logger) {
                   return;
                 }

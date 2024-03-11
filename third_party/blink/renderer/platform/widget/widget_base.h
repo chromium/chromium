@@ -124,7 +124,7 @@ class PLATFORM_EXPORT WidgetBase
 
   void AddPresentationCallback(
       uint32_t frame_token,
-      base::OnceCallback<void(base::TimeTicks)> callback);
+      base::OnceCallback<void(const viz::FrameTimingDetails&)> callback);
 
 #if BUILDFLAG(IS_APPLE)
   void AddCoreAnimationErrorCodeCallback(

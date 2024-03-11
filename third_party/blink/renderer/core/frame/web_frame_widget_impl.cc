@@ -3333,8 +3333,11 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   static void RunCallbackAfterPresentation(
       base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
       base::TimeTicks swap_time,
-      base::TimeTicks presentation_time) {
+      const viz::FrameTimingDetails& frame_timing_details) {
     DCHECK(!swap_time.is_null());
+
+    base::TimeTicks presentation_time =
+        frame_timing_details.presentation_feedback.timestamp;
     bool presentation_time_is_valid =
         !presentation_time.is_null() && (presentation_time > swap_time);
     UMA_HISTOGRAM_BOOLEAN("PageLoad.Internal.Renderer.PresentationTime.Valid",

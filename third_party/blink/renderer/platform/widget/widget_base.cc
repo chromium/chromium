@@ -1036,7 +1036,7 @@ bool WidgetBase::ShouldRecordBeginMainFrameMetrics() {
 
 void WidgetBase::AddPresentationCallback(
     uint32_t frame_token,
-    base::OnceCallback<void(base::TimeTicks)> callback) {
+    base::OnceCallback<void(const viz::FrameTimingDetails&)> callback) {
   layer_tree_view_->AddPresentationCallback(frame_token, std::move(callback));
 }
 

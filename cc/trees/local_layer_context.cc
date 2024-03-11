@@ -112,7 +112,7 @@ void LocalLayerContext::DidCompletePageScaleAnimation(int source_frame_number) {
 
 void LocalLayerContext::DidPresentCompositorFrame(
     uint32_t frame_token,
-    const gfx::PresentationFeedback& feedback) {}
+    const viz::FrameTimingDetails& frame_timing_details) {}
 
 void LocalLayerContext::RecordStartOfFrameMetrics() {}
 

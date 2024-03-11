@@ -68,10 +68,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
 
-namespace gfx {
-struct PresentationFeedback;
-}
-
 namespace cc {
 
 class ViewTransitionRequest;
@@ -420,7 +416,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).
   void RequestSuccessfulPresentationTimeForNextFrame(
-      PresentationTimeCallbackBuffer::SuccessfulCallback callback);
+      PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails callback);
 
   // Registers a callback that is run when any ongoing scroll-animation ends. If
   // there are no ongoing animations, then the callback is run immediately.
@@ -748,9 +744,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       uint32_t frame_token,
       std::vector<PresentationTimeCallbackBuffer::Callback>
           presentation_callbacks,
-      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+      std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
           successful_presentation_callbacks,
-      const gfx::PresentationFeedback& feedback);
+      const viz::FrameTimingDetails& frame_timing_details);
   // Called when the compositor completed page scale animation.
   void DidCompletePageScaleAnimation();
   // Virtual for testing

@@ -509,7 +509,9 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
     popup_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
             [](base::TimeTicks popup_create_start_time,
-               base::TimeTicks presentation_timestamp) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_timestamp =
+                  frame_timing_details.presentation_feedback.timestamp;
               base::UmaHistogramTimes(
                   "Omnibox.Views.PopupFirstPaint",
                   presentation_timestamp - popup_create_start_time);

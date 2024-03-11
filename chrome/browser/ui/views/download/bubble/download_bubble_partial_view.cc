@@ -271,7 +271,9 @@ void DownloadBubblePartialView::AddedToWidget() {
     GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
             [](base::Time download_completed_time_,
-               base::TimeTicks presentation_time) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_time =
+                  frame_timing_details.presentation_feedback.timestamp;
               UmaHistogramTimes(
                   "Download.Bubble.DownloadCompletionToPartialViewShownLatency",
                   (presentation_time - base::TimeTicks::UnixEpoch()) -

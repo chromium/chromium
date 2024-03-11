@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -110,7 +111,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).
-  using SuccessfulCallback = base::OnceCallback<void(base::TimeTicks)>;
+  using SuccessfulCallback =
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>;
   virtual void RequestSuccessfulPresentationTimeForNextFrame(
       SuccessfulCallback callback) = 0;
 

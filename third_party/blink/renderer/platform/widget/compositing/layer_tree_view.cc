@@ -401,21 +401,22 @@ void LayerTreeView::DidCompletePageScaleAnimation(int source_frame_number) {
 
 void LayerTreeView::DidPresentCompositorFrame(
     uint32_t frame_token,
-    const gfx::PresentationFeedback& feedback) {
+    const viz::FrameTimingDetails& frame_timing_details) {
   if (!delegate_)
     return;
   DCHECK(layer_tree_host_->GetTaskRunnerProvider()
              ->MainThreadTaskRunner()
              ->RunsTasksInCurrentSequence());
   // Only run callbacks on successful presentations.
-  if (feedback.failed())
+  if (frame_timing_details.presentation_feedback.failed()) {
     return;
+  }
   while (!presentation_callbacks_.empty()) {
     const auto& front = presentation_callbacks_.begin();
     if (viz::FrameTokenGT(front->first, frame_token))
       break;
     for (auto& callback : front->second)
-      std::move(callback).Run(feedback.timestamp);
+      std::move(callback).Run(frame_timing_details);
     presentation_callbacks_.erase(front);
   }
 
@@ -424,8 +425,10 @@ void LayerTreeView::DidPresentCompositorFrame(
     const auto& front = core_animation_error_code_callbacks_.begin();
     if (viz::FrameTokenGT(front->first, frame_token))
       break;
-    for (auto& callback : front->second)
-      std::move(callback).Run(feedback.ca_layer_error_code);
+    for (auto& callback : front->second) {
+      std::move(callback).Run(
+          frame_timing_details.presentation_feedback.ca_layer_error_code);
+    }
     core_animation_error_code_callbacks_.erase(front);
   }
 #endif
@@ -507,7 +510,7 @@ void LayerTreeView::ScheduleAnimationForWebTests() {
 
 void LayerTreeView::AddPresentationCallback(
     uint32_t frame_token,
-    base::OnceCallback<void(base::TimeTicks)> callback) {
+    base::OnceCallback<void(const viz::FrameTimingDetails&)> callback) {
   AddCallback(frame_token, std::move(callback), presentation_callbacks_);
 }
 

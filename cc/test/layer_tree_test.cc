@@ -506,7 +506,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override {}
+      const viz::FrameTimingDetails& frame_timing_details) override {}
 
  private:
   explicit LayerTreeHostClientForTesting(TestHooks* test_hooks)

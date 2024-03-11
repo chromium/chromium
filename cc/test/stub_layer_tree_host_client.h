@@ -60,7 +60,7 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void DidCompletePageScaleAnimation(int source_frame_number) override {}
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override {}
+      const viz::FrameTimingDetails& frame_timing_details) override {}
 };
 
 }  // namespace cc

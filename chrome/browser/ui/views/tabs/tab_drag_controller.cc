@@ -1261,7 +1261,10 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
       attached_context_->GetWidget()
           ->GetCompositor()
           ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-              [](base::TimeTicks now, base::TimeTicks presentation_timestamp) {
+              [](base::TimeTicks now,
+                 const viz::FrameTimingDetails& frame_timing_details) {
+                base::TimeTicks presentation_timestamp =
+                    frame_timing_details.presentation_feedback.timestamp;
                 UmaHistogramTimes(kDragAmongTabsPresentationTimeHistogram,
                                   presentation_timestamp - now);
               },
@@ -2411,7 +2414,10 @@ Browser* TabDragController::CreateBrowserForDrag(
   source->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](base::TimeTicks now, base::TimeTicks presentation_timestamp) {
+          [](base::TimeTicks now,
+             const viz::FrameTimingDetails& frame_timing_details) {
+            base::TimeTicks presentation_timestamp =
+                frame_timing_details.presentation_feedback.timestamp;
             UmaHistogramTimes(kDragToNewBrowserPresentationTimeHistogram,
                               presentation_timestamp - now);
           },

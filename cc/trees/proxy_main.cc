@@ -491,12 +491,12 @@ void ProxyMain::DidPresentCompositorFrame(
     uint32_t frame_token,
     std::vector<PresentationTimeCallbackBuffer::Callback>
         presentation_callbacks,
-    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
         sucessful_presentation_callbacks,
-    const gfx::PresentationFeedback& feedback) {
+    const viz::FrameTimingDetails& frame_timing_details) {
   layer_tree_host_->DidPresentCompositorFrame(
       frame_token, std::move(presentation_callbacks),
-      std::move(sucessful_presentation_callbacks), feedback);
+      std::move(sucessful_presentation_callbacks), frame_timing_details);
 }
 
 void ProxyMain::NotifyThroughputTrackerResults(CustomTrackerResults results) {

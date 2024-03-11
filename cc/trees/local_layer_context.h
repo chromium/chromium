@@ -63,7 +63,7 @@ class CC_EXPORT LocalLayerContext : public LayerContext,
   void DidCompletePageScaleAnimation(int source_frame_number) override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override;
+      const viz::FrameTimingDetails& frame_timing_details) override;
   void RecordStartOfFrameMetrics() override;
   void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time,
                                ActiveFrameSequenceTrackers trackers) override;

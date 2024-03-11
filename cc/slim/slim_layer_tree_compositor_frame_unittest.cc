@@ -421,11 +421,13 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SuccessPresentationCallback) {
   std::optional<base::TimeTicks> feedback_time_opt_1;
   std::optional<base::TimeTicks> feedback_time_opt_2;
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_1 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_1 = details.presentation_feedback.timestamp;
+      }));
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_2 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_2 = details.presentation_feedback.timestamp;
+      }));
   viz::CompositorFrame frame1 = ProduceFrame();
 
   viz::FrameTimingDetailsMap timing_map;
@@ -450,15 +452,17 @@ TEST_F(SlimLayerTreeCompositorFrameTest,
 
   std::optional<base::TimeTicks> feedback_time_opt_1;
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_1 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_1 = details.presentation_feedback.timestamp;
+      }));
   viz::CompositorFrame frame1 = ProduceFrame();
   viz::CompositorFrame frame2 = ProduceFrame();
 
   std::optional<base::TimeTicks> feedback_time_opt_2;
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_2 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_2 = details.presentation_feedback.timestamp;
+      }));
   viz::CompositorFrame frame3 = ProduceFrame();
 
   // Frame 1 failed. Should not run either callback.

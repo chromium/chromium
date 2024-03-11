@@ -1299,7 +1299,8 @@ TEST_F(BubbleDialogDelegateViewTest, BubbleMetrics) {
   bubble_delegate->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](base::RunLoop* run_loop, base::TimeTicks bubble_created_time) {
+          [](base::RunLoop* run_loop,
+             const viz::FrameTimingDetails& frame_timing_details) {
             run_loop->Quit();
           },
           &run_loop));

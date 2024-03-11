@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTest,
   // The callback will cancel the loop used to wait.
   static_cast<content::Compositor*>(compositor_impl())
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](base::OnceClosure quit, base::TimeTicks presentation_timestamp) {
+          [](base::OnceClosure quit, const viz::FrameTimingDetails& details) {
             std::move(quit).Run();
           },
           loop.QuitClosure()));

@@ -633,7 +633,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // token is greater than or equal to `frame_token`.
   void RegisterMainThreadSuccessfulPresentationTimeCallbackForTesting(
       uint32_t frame_token,
-      PresentationTimeCallbackBuffer::SuccessfulCallback callback);
+      PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails callback);
 
   // Buffers `callback` until a relevant successful presentation occurs, at
   // which point the callback will be run on the compositor thread. A successful

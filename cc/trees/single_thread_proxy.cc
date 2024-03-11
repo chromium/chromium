@@ -680,8 +680,7 @@ void SingleThreadProxy::DidPresentCompositorFrameOnImplThread(
     DebugScopedSetMainThread main(task_runner_provider_);
     layer_tree_host_->DidPresentCompositorFrame(
         frame_token, std::move(callbacks.main_callbacks),
-        std::move(callbacks.main_successful_callbacks),
-        details.presentation_feedback);
+        std::move(callbacks.main_successful_callbacks), details);
   }
   if (scheduler_on_impl_thread_) {
     scheduler_on_impl_thread_->DidPresentCompositorFrame(frame_token, details);

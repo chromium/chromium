@@ -317,6 +317,7 @@ source_set("common") {
     ":make_generated_origin_trials",
     ":make_generated_permissions_policy_features",
     ":make_runtime_feature_state_contexts_impl",
+    "//components/viz/common:common",
     "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common:headers",

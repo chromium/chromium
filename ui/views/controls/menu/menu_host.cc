@@ -173,7 +173,9 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
     GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
             [](std::string histogram, base::TimeTicks menu_host_init_time,
-               base::TimeTicks presentation_time) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_time =
+                  frame_timing_details.presentation_feedback.timestamp;
               UMA_HISTOGRAM_TIMES(histogram,
                                   presentation_time - menu_host_init_time);
             },

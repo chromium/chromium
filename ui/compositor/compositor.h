@@ -365,8 +365,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).
-  using SuccessfulPresentationTimeCallback =
-      base::OnceCallback<void(base::TimeTicks)>;
+  using SuccessfulPresentationTimeCallback = base::OnceCallback<void(
+      const viz::FrameTimingDetails& frame_timing_details)>;
   void RequestSuccessfulPresentationTimeForNextFrame(
       SuccessfulPresentationTimeCallback callback);
 
@@ -418,7 +418,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void DidCompletePageScaleAnimation(int source_frame_number) override {}
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override;
+      const viz::FrameTimingDetails& frame_timing_details) override;
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(
       base::TimeTicks frame_begin_time,

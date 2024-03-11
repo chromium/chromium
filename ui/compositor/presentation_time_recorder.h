@@ -34,7 +34,7 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
     void OnCompositingDidCommit(ui::Compositor* compositor);
     void OnPresented(int count,
                      base::TimeTicks requested_time,
-                     base::TimeTicks presentation_timestamp);
+                     const viz::FrameTimingDetails& frame_timing_details);
 
    private:
     raw_ptr<PresentationTimeRecorder> recorder_;

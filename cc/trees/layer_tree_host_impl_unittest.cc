@@ -1845,7 +1845,7 @@ class LayerTreeHostImplTestInvokePresentationCallbacks
     for (auto& callback : activated.main_callbacks)
       std::move(callback).Run(details.presentation_feedback);
     for (auto& callback : activated.main_successful_callbacks)
-      std::move(callback).Run(details.presentation_feedback.timestamp);
+      std::move(callback).Run(details);
   }
 };
 
@@ -1892,7 +1892,9 @@ TEST_F(LayerTreeHostImplTestInvokePresentationCallbacks,
   // frame for `frame_token_2` gets presented.
   host_impl_->RegisterMainThreadSuccessfulPresentationTimeCallbackForTesting(
       frame_token_2,
-      base::BindLambdaForTesting([&](base::TimeTicks presentation_timestamp) {
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        base::TimeTicks presentation_timestamp =
+            details.presentation_feedback.timestamp;
         DCHECK(main_successful_callback_presentation_timestamp.is_null());
         DCHECK(!presentation_timestamp.is_null());
         main_successful_callback_fired = true;

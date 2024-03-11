@@ -15,11 +15,8 @@
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-
-namespace gfx {
-struct PresentationFeedback;
-}
 
 namespace viz {
 struct BeginFrameArgs;
@@ -184,7 +181,7 @@ class CC_EXPORT LayerTreeHostClient {
   virtual void DidCompletePageScaleAnimation(int source_frame_number) = 0;
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) = 0;
+      const viz::FrameTimingDetails& frame_timing_details) = 0;
   // Mark the frame start and end time for UMA and UKM metrics that require
   // the time from the start of BeginMainFrame to the Commit, or early out.
   virtual void RecordStartOfFrameMetrics() = 0;

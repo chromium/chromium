@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace cc {
@@ -43,6 +44,8 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
 
   using Callback = base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   using SuccessfulCallback = base::OnceCallback<void(base::TimeTicks)>;
+  using SuccessfulCallbackWithDetails =
+      base::OnceCallback<void(const viz::FrameTimingDetails& details)>;
 
   PresentationTimeCallbackBuffer();
 
@@ -67,7 +70,7 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
   // the main thread once they're popped.
   void RegisterMainThreadSuccessfulCallbacks(
       uint32_t frame_token,
-      std::vector<SuccessfulCallback> callbacks);
+      std::vector<SuccessfulCallbackWithDetails> callbacks);
 
   // Buffers the given `callbacks` in preparation for a successful presentation
   // at or after the given `frame_token`. Calling code invokes these callbacks
@@ -95,7 +98,7 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
 
     // Holds callbacks registered through
     // `RegisterMainThreadSuccessfulPresentationCallbacks()`.
-    std::vector<SuccessfulCallback> main_successful_callbacks;
+    std::vector<SuccessfulCallbackWithDetails> main_successful_callbacks;
 
     // Holds callbacks registered through
     // `RegisterCompositorThreadSuccessfulPresentationCallbacks()`.
@@ -137,7 +140,7 @@ class CC_EXPORT PresentationTimeCallbackBuffer {
     std::vector<Callback> main_callbacks;
 
     // The successful presentation callbacks to send back to the main thread.
-    std::vector<SuccessfulCallback> main_successful_callbacks;
+    std::vector<SuccessfulCallbackWithDetails> main_successful_callbacks;
 
     // The successful presentation callbacks to invoke on the compositor thread.
     std::vector<SuccessfulCallback> compositor_successful_callbacks;

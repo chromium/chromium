@@ -1038,7 +1038,8 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents) {
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
   base::RunLoop run_loop;
   auto callback = base::BindOnce(
-      [](base::RepeatingClosure cb, base::TimeTicks presentation_time) {
+      [](base::RepeatingClosure cb,
+         const viz::FrameTimingDetails& frame_timing_details) {
         std::move(cb).Run();
       },
       run_loop.QuitClosure());

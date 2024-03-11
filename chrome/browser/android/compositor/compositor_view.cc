@@ -382,7 +382,7 @@ void CompositorView::OnTabChanged(
           content::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
   compositor_->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
       [](std::unique_ptr<content::PeakGpuMemoryTracker> tracker,
-         base::TimeTicks presentation_timestamp) {
+         const viz::FrameTimingDetails& frame_timing_details) {
         // This callback will be ran once the content::Compositor presents the
         // next frame. The destruction of |tracker| will get the peak GPU memory
         // and record a histogram.

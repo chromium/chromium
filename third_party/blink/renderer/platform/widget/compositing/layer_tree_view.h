@@ -108,7 +108,7 @@ class PLATFORM_EXPORT LayerTreeView
   void DidCompletePageScaleAnimation(int source_frame_number) override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override;
+      const viz::FrameTimingDetails& frame_timing_details) override;
   void RecordStartOfFrameMetrics() override;
   void RecordEndOfFrameMetrics(
       base::TimeTicks frame_begin_time,
@@ -138,7 +138,7 @@ class PLATFORM_EXPORT LayerTreeView
   // for `frame_token` or a following frame.
   void AddPresentationCallback(
       uint32_t frame_token,
-      base::OnceCallback<void(base::TimeTicks)> callback);
+      base::OnceCallback<void(const viz::FrameTimingDetails&)> callback);
 
 #if BUILDFLAG(IS_APPLE)
   void AddCoreAnimationErrorCodeCallback(
@@ -186,9 +186,9 @@ class PLATFORM_EXPORT LayerTreeView
   };
   FrameSinkState frame_sink_state_ = FrameSinkState::kNoFrameSink;
 
-  base::circular_deque<
-      std::pair<uint32_t,
-                std::vector<base::OnceCallback<void(base::TimeTicks)>>>>
+  base::circular_deque<std::pair<
+      uint32_t,
+      std::vector<base::OnceCallback<void(const viz::FrameTimingDetails&)>>>>
       presentation_callbacks_;
 
 #if BUILDFLAG(IS_APPLE)

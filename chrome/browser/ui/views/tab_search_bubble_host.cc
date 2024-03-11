@@ -95,7 +95,9 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
             [](base::TimeTicks bubble_created_time,
                bool bubble_using_cached_web_contents,
                WebUIBubbleWarmUpLevel bubble_warmup_level,
-               base::TimeTicks presentation_timestamp) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_timestamp =
+                  frame_timing_details.presentation_feedback.timestamp;
               base::TimeDelta time_to_show =
                   presentation_timestamp - bubble_created_time;
               base::UmaHistogramMediumTimes(
@@ -234,7 +236,9 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
         ->GetCompositor()
         ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
             [](base::TimeTicks button_pressed_time,
-               base::TimeTicks presentation_timestamp) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_timestamp =
+                  frame_timing_details.presentation_feedback.timestamp;
               base::UmaHistogramMediumTimes(
                   "Tabs.TabSearch."
                   "ButtonPressedToNextFramePresented",

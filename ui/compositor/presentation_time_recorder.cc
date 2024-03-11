@@ -95,7 +95,7 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
 
   void OnPresented(int count,
                    base::TimeTicks requested_time,
-                   base::TimeTicks presentation_timestamp);
+                   const viz::FrameTimingDetails& frame_timing_details);
 
   State state_ = PRESENTED;
 
@@ -126,7 +126,9 @@ bool PresentationTimeRecorder::PresentationTimeRecorderInternal::RequestNext() {
 
   if (report_immediately_for_test) {
     state_ = COMMITTED;
-    OnPresented(request_count_++, now, now);
+    viz::FrameTimingDetails details;
+    details.presentation_feedback.timestamp = now;
+    OnPresented(request_count_++, now, details);
     return true;
   }
 
@@ -139,7 +141,9 @@ bool PresentationTimeRecorder::PresentationTimeRecorderInternal::RequestNext() {
 void PresentationTimeRecorder::PresentationTimeRecorderInternal::OnPresented(
     int count,
     base::TimeTicks requested_time,
-    base::TimeTicks presentation_timestamp) {
+    const viz::FrameTimingDetails& frame_timing_details) {
+  base::TimeTicks presentation_timestamp =
+      frame_timing_details.presentation_feedback.timestamp;
   std::unique_ptr<PresentationTimeRecorderInternal> deleter;
   if (!recording_ && (count == (request_count_ - 1)))
     deleter = base::WrapUnique(this);
@@ -272,9 +276,9 @@ void PresentationTimeRecorder::TestApi::OnCompositingDidCommit(
 void PresentationTimeRecorder::TestApi::OnPresented(
     int count,
     base::TimeTicks requested_time,
-    base::TimeTicks presentation_timestamp) {
+    const viz::FrameTimingDetails& frame_timing_details) {
   recorder_->recorder_internal_->OnPresented(count, requested_time,
-                                             presentation_timestamp);
+                                             frame_timing_details);
 }
 
 }  // namespace ui

@@ -124,11 +124,8 @@ void WebTestWebFrameWidgetImpl::WasShown(bool was_evicted) {
 
 void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
     base::OnceClosure callback) {
-  LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(WTF::BindOnce(
-      [](base::OnceClosure callback, base::TimeTicks presentation_timestamp) {
-        std::move(callback).Run();
-      },
-      std::move(callback)));
+  LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
+      base::IgnoreArgs<const viz::FrameTimingDetails&>(std::move(callback)));
   LayerTreeHost()->SetNeedsCommitWithForcedRedraw();
   ScheduleAnimationForWebTests();
 }

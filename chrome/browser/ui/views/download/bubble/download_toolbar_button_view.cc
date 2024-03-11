@@ -694,7 +694,10 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
     bubble_delegate_->GetWidget()
         ->GetCompositor()
         ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-            [](base::TimeTicks click_time, base::TimeTicks presentation_time) {
+            [](base::TimeTicks click_time,
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_time =
+                  frame_timing_details.presentation_feedback.timestamp;
               UmaHistogramTimes(
                   "Download.Bubble.ToolbarButtonClickToFullViewShownLatency",
                   presentation_time - click_time);

@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/slim/layer.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/android/resources/ui_resource_provider.h"
@@ -121,7 +122,7 @@ class CONTENT_EXPORT Compositor {
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).
   using SuccessfulPresentationTimeCallback =
-      base::OnceCallback<void(base::TimeTicks)>;
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>;
   virtual void RequestSuccessfulPresentationTimeForNextFrame(
       SuccessfulPresentationTimeCallback callback) = 0;
 

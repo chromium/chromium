@@ -14,6 +14,7 @@
 
 namespace viz {
 class SurfaceId;
+struct FrameTimingDetails;
 }
 
 namespace ui {
@@ -62,7 +63,7 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
   // which is not visible to other ui code. The majority of ui abstracts away
   // ui::Compositor under ui::WindowAndroidCompositor.
   using SuccessfulPresentationTimeCallback =
-      base::OnceCallback<void(base::TimeTicks)>;
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>;
   virtual void PostRequestSuccessfulPresentationTimeForNextFrame(
       SuccessfulPresentationTimeCallback callback) = 0;
 };

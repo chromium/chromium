@@ -494,7 +494,9 @@ void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
         base::BindOnce(
             [](base::TimeTicks insert_timestamp,
                base::TimeTicks paint_timestamp,
-               base::TimeTicks presentation_timestamp) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_timestamp =
+                  frame_timing_details.presentation_feedback.timestamp;
               UMA_HISTOGRAM_TIMES(
                   "Omnibox.CharTypedToRepaintLatency.PaintToPresent",
                   presentation_timestamp - paint_timestamp);
