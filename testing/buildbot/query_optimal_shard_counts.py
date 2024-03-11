@@ -172,9 +172,10 @@ def _calculate_and_filter_optimal_shard_counts(overhead_dict, durations,
       continue
     r['optimal_shard_count'] = optimal_shard_count
 
+    overhead_change = (optimal_shard_count - shard_count) * overhead
     simulated_max_shard_duration = round(
-        (float(r['percentile_duration_minutes']) * shard_count /
-         optimal_shard_count), 2)
+        ((float(r['percentile_duration_minutes']) * shard_count +
+          overhead_change) / optimal_shard_count), 2)
     r['simulated_max_shard_duration'] = simulated_max_shard_duration
 
     filtered_durations.append(r)
