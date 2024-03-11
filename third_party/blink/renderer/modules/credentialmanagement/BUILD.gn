@@ -24,6 +24,8 @@ blink_modules_sources("credentialmanagement") {
     "credential_utils.h",
     "credentials_container.cc",
     "credentials_container.h",
+    "digital_credential.cc",
+    "digital_credential.h",
     "digital_identity_credential.cc",
     "digital_identity_credential.h",
     "federated_credential.cc",

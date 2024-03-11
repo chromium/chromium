@@ -1801,6 +1801,11 @@ interface DevicePosture : EventTarget
     getter type
     method constructor
     setter onchange
+interface DigitalCredential : Credential
+    attribute @@toStringTag
+    getter data
+    getter protocol
+    method constructor
 interface Directive
     attribute @@toStringTag
     getter type

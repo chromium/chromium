@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 
   std::string script = R"(
         (async () => {
-          const {token} = await navigator.identity.get({
+          const credential = await navigator.identity.get({
             digital: {
               providers: [{
                 selector: {
@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
               }],
             },
           });
-          return token;
+          return credential.data;
         }) ()
     )";
 
