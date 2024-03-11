@@ -3136,14 +3136,18 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
   }
 
   // Start a subframe navigation and pause it before `DidCommitNavigation`.
-  void NavigateSubframeAndPauseAtDidCommit(RenderFrameHostImpl* sub_rfh,
+  void NavigateSubframeAndPauseAtDidCommit(FrameTreeNode* ftn,
                                            const GURL& subframe_navigate_url) {
     // We have to pause a navigation before `DidCommitNavigation`, so we don't
     // want to wait for the navigation to finish.
-    ASSERT_TRUE(BeginNavigateToURLFromRenderer(sub_rfh, subframe_navigate_url));
+    ASSERT_TRUE(BeginNavigateToURLFromRenderer(ftn, subframe_navigate_url));
 
-    // Wait until the navigation is pending commit.
-    CommitNavigationPauser commit_pauser(sub_rfh);
+    // Wait until the navigation is pending commit. Note that the navigation
+    // might use a speculative RenderFrameHost, so use that if necessary.
+    RenderFrameHostImpl* speculative_rfh =
+        ftn->render_manager()->speculative_frame_host();
+    CommitNavigationPauser commit_pauser(
+        speculative_rfh ? speculative_rfh : ftn->current_frame_host());
     commit_pauser.WaitForCommitAndPause();
   }
 
@@ -3219,12 +3223,15 @@ IN_PROC_BROWSER_TEST_P(
 
   // Navigate to a page with a cross site iframe.
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
   RenderFrameHostImplWrapper main_rfh(current_frame_host());
   RenderFrameHostImplWrapper sub_rfh(
       main_rfh.get()->child_at(0)->current_frame_host());
 
   // Pause subframe's navigation before `DidCommitNavigation`.
-  NavigateSubframeAndPauseAtDidCommit(sub_rfh.get(), subframe_navigate_url);
+  NavigateSubframeAndPauseAtDidCommit(main_rfh.get()->child_at(0),
+                                      subframe_navigate_url);
 
   // Subframe navigation is ongoing, so `NavigateToURL` cannot be used since
   // this function waits for all frames including subframe to finish loading.
@@ -3283,7 +3290,8 @@ IN_PROC_BROWSER_TEST_F(
                                            /*iframe_id=*/"child-0");
 
     // Pause subframe_c's navigation before `DidCommitNavigation`.
-    NavigateSubframeAndPauseAtDidCommit(sub_rfh_c.get(), subframe_navigate_url);
+    NavigateSubframeAndPauseAtDidCommit(main_rfh.get()->child_at(1),
+                                        subframe_navigate_url);
 
     // Subframe navigation is ongoing, so `NavigateToURL` cannot be used since
     // this function waits for all frames including subframe to finish loading.

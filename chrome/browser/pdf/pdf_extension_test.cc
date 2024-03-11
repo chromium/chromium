@@ -3470,8 +3470,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToSamePdf) {
 
   auto* primary_main_frame2 = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(primary_main_frame2));
-  EXPECT_EQ(primary_main_frame1->GetGlobalId(),
-            primary_main_frame2->GetGlobalId());
 
   // Make sure the stream was replaced by a new stream. The new stream should
   // still have the same URL as the PDF URL.

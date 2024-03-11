@@ -55,6 +55,7 @@
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
@@ -8778,6 +8779,11 @@ TEST_F(AdAuctionServiceImplTest, PageImplChangedBeforeAuction) {
 // TODO(crbug.com/936696): Once RenderDocument is launched, remove this test.
 TEST_F(AdAuctionServiceImplTest,
        ResetAuctionInitiatorPageOnCrossDocumentNavigation) {
+  if (ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
+          /*is_main_frame=*/false,
+          /*is_local_root=*/AreAllSitesIsolatedForTesting())) {
+    GTEST_SKIP() << "RenderDocument is enabled.";
+  }
   content::RenderFrameHostTester* rfh_tester =
       content::RenderFrameHostTester::For(main_rfh());
   content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");

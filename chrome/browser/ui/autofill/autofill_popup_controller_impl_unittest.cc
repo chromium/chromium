@@ -1600,13 +1600,13 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
        HideInSubFrameOnSubFrameNavigation) {
   ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
-  EXPECT_CALL(client().popup_controller(sub_manager()),
-              Hide(PopupHidingReason::kNavigation));
   if (sub_frame()->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
-    // If the RenderFrameHost changes, a RenderFrameDeleted will fire after
-    // navigation, also triggering a `Hide()` call.
+    // If the RenderFrameHost changes, a RenderFrameDeleted will fire first.
     EXPECT_CALL(client().popup_controller(sub_manager()),
                 Hide(PopupHidingReason::kRendererEvent));
+  } else {
+    EXPECT_CALL(client().popup_controller(sub_manager()),
+                Hide(PopupHidingReason::kNavigation));
   }
   NavigateAndCommitFrame(sub_frame(), GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.

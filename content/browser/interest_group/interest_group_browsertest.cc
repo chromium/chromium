@@ -22189,7 +22189,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupOOPIFBrowserTest,
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
 
   run_loop.Run();
-  EXPECT_FALSE(maybe_config.has_value());
+  EXPECT_EQ(maybe_config.has_value(),
+            root_ftn->current_frame_host()
+                ->ShouldChangeRenderFrameHostOnSameSiteNavigation());
 }
 
 }  // namespace

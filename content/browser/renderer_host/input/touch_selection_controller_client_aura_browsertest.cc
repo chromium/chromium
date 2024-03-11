@@ -313,7 +313,8 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
   }
 
   TestTouchSelectionControllerClientAura* selection_controller_client() {
-    return selection_controller_client_;
+    return static_cast<TestTouchSelectionControllerClientAura*>(
+        GetRenderWidgetHostViewAura()->selection_controller_client());
   }
 
   // Performs a tap to place the cursor at `point`.
@@ -377,10 +378,9 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
 
   void InitSelectionController(bool enable_all_menu_commands) {
     RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
-    selection_controller_client_ = new TestTouchSelectionControllerClientAura(
-        rwhva, enable_all_menu_commands);
     rwhva->SetSelectionControllerClientForTest(
-        base::WrapUnique(selection_controller_client_.get()));
+        std::make_unique<TestTouchSelectionControllerClientAura>(
+            rwhva, enable_all_menu_commands));
     // Simulate the start of a motion event sequence, since the tests assume it.
     rwhva->selection_controller()->WillHandleTouchEvent(
         ui::test::MockMotionEvent(ui::MotionEvent::Action::DOWN));
@@ -403,14 +403,10 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
  private:
   void TearDownOnMainThread() override {
     menu_runner_ = nullptr;
-    selection_controller_client_ = nullptr;
     ContentBrowserTest::TearDownOnMainThread();
   }
 
   std::unique_ptr<TestTouchSelectionMenuRunner> menu_runner_;
-
-  raw_ptr<TestTouchSelectionControllerClientAura> selection_controller_client_ =
-      nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -933,6 +929,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
     reload_observer.Wait();
   }
 
+  InitSelectionController(true);
   // Touch selection handles and menu should be deactivated.
   EXPECT_EQ(
       ui::TouchSelectionController::INACTIVE,
