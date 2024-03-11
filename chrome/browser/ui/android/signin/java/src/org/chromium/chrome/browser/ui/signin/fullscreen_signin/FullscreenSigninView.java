@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.signin.fre;
+package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -19,8 +19,8 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** View that wraps signin first run welcome screen and caches references to UI elements. **/
-public class SigninFirstRunView extends RelativeLayout {
+/** View that wraps the fullscreen signin promo and caches references to UI elements. **/
+public class FullscreenSigninView extends RelativeLayout {
     private TextView mTitle;
     private TextView mSubtitle;
     private View mBrowserManagedHeader;
@@ -34,7 +34,7 @@ public class SigninFirstRunView extends RelativeLayout {
     private ProgressBar mSigninProgressSpinner;
     private TextView mSigninProgressText;
 
-    public SigninFirstRunView(Context context, @Nullable AttributeSet attrs) {
+    public FullscreenSigninView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

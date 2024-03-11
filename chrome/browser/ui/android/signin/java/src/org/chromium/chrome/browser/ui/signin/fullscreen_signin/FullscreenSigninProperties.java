@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.signin.fre;
+package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import android.text.SpannableString;
 import android.view.View.OnClickListener;
@@ -16,7 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class SigninFirstRunProperties {
+class FullscreenSigninProperties {
     /**
      * This class regroups the policies supported by FRE.
      * When forced sign-in will be supported, we could use an enum field in this class
@@ -104,5 +104,5 @@ class SigninFirstRunProperties {
                 .build();
     }
 
-    private SigninFirstRunProperties() {}
+    private FullscreenSigninProperties() {}
 }

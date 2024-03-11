@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView
+<org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -89,7 +89,7 @@ found in the LICENSE file.
                     android:alpha="0.0" />
 
 
-                <include layout="@layout/signin_first_run_bottom_group_view" />
+                <include layout="@layout/fullscreen_signin_bottom_group_view" />
 
             </LinearLayout>
 
@@ -143,4 +143,4 @@ found in the LICENSE file.
             android:text="@string/fre_signing_in"
             android:visibility="gone" />
     </FrameLayout>
-</org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView>
+</org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView>

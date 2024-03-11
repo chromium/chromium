@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.signin.fre;
+package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import android.accounts.Account;
 import android.content.Context;
@@ -21,10 +21,10 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** The coordinator handles the update and interaction of the FRE sign-in screen. */
+/** The coordinator handles the update and interaction of the fullscreen sign-in screen. */
 @MainThread
-public class SigninFirstRunCoordinator {
-    /** Delegate for signin fist run MVC. */
+public class FullscreenSigninCoordinator {
+    /** Delegate for the fullscreen signin MVC. */
     public interface Delegate {
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();
@@ -37,6 +37,7 @@ public class SigninFirstRunCoordinator {
         void acceptTermsOfService(boolean allowMetricsAndCrashUploading);
 
         /** Called when the interaction with the page is over and the next page should be shown. */
+        // TODO(crbug.com/41493788): This method is FRE-specific. Figure out what to do with this when the coordinator is used for the upgrade promo.
         void advanceToNextPage();
 
         /** Called to display the device lock page  */
@@ -46,6 +47,7 @@ public class SigninFirstRunCoordinator {
          * Records the FRE progress histogram MobileFre.Progress.*.
          * @param state FRE state to record.
          */
+        // TODO(crbug.com/41493788): This method is FRE-specific. Figure out what to do with this when the coordinator is used for the upgrade promo.
         void recordFreProgressHistogram(@MobileFreProgress int state);
 
         /** Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. **/
@@ -80,10 +82,10 @@ public class SigninFirstRunCoordinator {
         Promise<Void> getNativeInitializationPromise();
     }
 
-    private final SigninFirstRunMediator mMediator;
+    private final FullscreenSigninMediator mMediator;
 
     @Nullable
-    private PropertyModelChangeProcessor<PropertyModel, SigninFirstRunView, PropertyKey>
+    private PropertyModelChangeProcessor<PropertyModel, FullscreenSigninView, PropertyKey>
             mPropertyModelChangeProcessor;
 
     /**
@@ -95,13 +97,13 @@ public class SigninFirstRunCoordinator {
      * @param privacyPreferencesManager is used to check whether metrics and crash reporting are
      *         disabled by policy and set the footer string accordingly.
      */
-    public SigninFirstRunCoordinator(
+    public FullscreenSigninCoordinator (
             Context context,
             ModalDialogManager modalDialogManager,
             Delegate delegate,
             PrivacyPreferencesManager privacyPreferencesManager) {
         mMediator =
-                new SigninFirstRunMediator(
+                new FullscreenSigninMediator(
                         context, modalDialogManager, delegate, privacyPreferencesManager);
     }
 
@@ -112,7 +114,7 @@ public class SigninFirstRunCoordinator {
     }
 
     /**
-     * Resets model properties in {@link SigninFirstRunMediator}.
+     * Resets model properties in {@link FullscreenSigninMediator}.
      * This method is called when the user advances to the sync consent page and then presses back
      * and returns to the FRE again.
      */
@@ -126,7 +128,7 @@ public class SigninFirstRunCoordinator {
      *        the footer string and other view components that change according to different state.
      *        Can be null, in which case the coordinator will just detach from the previous view.
      */
-    public void setView(@Nullable SigninFirstRunView view) {
+    public void setView(@Nullable FullscreenSigninView view) {
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
             mPropertyModelChangeProcessor = null;
@@ -135,7 +137,7 @@ public class SigninFirstRunCoordinator {
         if (view != null) {
             mPropertyModelChangeProcessor =
                     PropertyModelChangeProcessor.create(
-                            mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
+                            mMediator.getModel(), view, FullscreenSigninViewBinder::bind);
         }
     }
 

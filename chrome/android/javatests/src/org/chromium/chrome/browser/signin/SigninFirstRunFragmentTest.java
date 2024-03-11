@@ -86,7 +86,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
-import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunMediator.LoadPoint;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator.LoadPoint;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -374,7 +374,7 @@ public class SigninFirstRunFragmentTest {
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                     // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // SigninFirstRunMediator.
+                    // FullscreenSigninMediator.
                     when(IdentityServicesProvider.get()
                                     .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mIdentityManagerMock);
@@ -708,7 +708,7 @@ public class SigninFirstRunFragmentTest {
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                     // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // SigninFirstRunMediator.
+                    // FullscreenSigninMediator.
                     when(IdentityServicesProvider.get()
                                     .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mIdentityManagerMock);
@@ -854,7 +854,7 @@ public class SigninFirstRunFragmentTest {
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mSigninManagerMock);
                     // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // SigninFirstRunMediator.
+                    // FullscreenSigninMediator.
                     when(IdentityServicesProvider.get()
                                     .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
                             .thenReturn(mIdentityManagerMock);
@@ -1148,7 +1148,7 @@ public class SigninFirstRunFragmentTest {
         slowestPointHistogram =
                 HistogramWatcher.newBuilder().expectNoRecords("MobileFre.SlowestLoadPoint").build();
 
-        // Changing the activity orientation will create SigninFirstRunCoordinator again and call
+        // Changing the activity orientation will create FullscreenSigninCoordinator again and call
         // SigninFirstRunFragment.notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded()
         ActivityTestUtils.rotateActivityToOrientation(
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);

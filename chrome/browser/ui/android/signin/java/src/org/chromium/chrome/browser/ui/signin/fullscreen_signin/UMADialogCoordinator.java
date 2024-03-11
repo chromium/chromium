@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.signin.fre;
+package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Creates a dialog that lets users choose whether or not they want to send diagnostic data to
  * Google in the First Run Experience signin screen.
  */
-public class FreUMADialogCoordinator {
+public class UMADialogCoordinator {
     /** Callback for the switch in the dialog. */
     public interface Listener {
         void onAllowMetricsAndCrashUploadingChecked(boolean allowMetricsAndCrashUploading);
@@ -35,12 +35,12 @@ public class FreUMADialogCoordinator {
 
     /** Constructs the coordinator and shows the dialog. */
     @MainThread
-    public FreUMADialogCoordinator(
+    public UMADialogCoordinator(
             Context context,
             ModalDialogManager modalDialogManager,
             Listener listener,
             boolean allowMetricsAndCrashUploading) {
-        mView = LayoutInflater.from(context).inflate(R.layout.fre_uma_dialog, null);
+        mView = LayoutInflater.from(context).inflate(R.layout.uma_dialog, null);
         mDialogManager = modalDialogManager;
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

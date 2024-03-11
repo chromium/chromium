@@ -144,7 +144,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // Initialize SigninChecker, to kick off sign-in for child accounts as early as possible.
         //
         // TODO(b/245912657): explicitly sign in supervised users in {@link
-        // SigninFirstRunMediator#handleContinueWithNative} rather than relying on SigninChecker.
+        // FullscreenSigninMediator#handleContinueWithNative} rather than relying on SigninChecker.
         SigninCheckerProvider.get(getProfileProviderSupplier().get().getOriginalProfile());
 
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);

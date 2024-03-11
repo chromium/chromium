@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.signin.fre;
+package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -44,7 +44,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator.Listener;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.UMADialogCoordinator.Listener;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -61,7 +61,7 @@ import java.io.IOException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class FreUMADialogTest {
+public class UMADialogTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -77,7 +77,7 @@ public class FreUMADialogTest {
 
     @Mock private Listener mListenerMock;
 
-    private FreUMADialogCoordinator mCoordinator;
+    private UMADialogCoordinator mCoordinator;
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
@@ -169,7 +169,7 @@ public class FreUMADialogTest {
                 () -> {
                     final Activity activity = activityTestRule.getActivity();
                     mCoordinator =
-                            new FreUMADialogCoordinator(
+                            new UMADialogCoordinator(
                                     activity,
                                     new ModalDialogManager(
                                             new AppModalPresenter(activity), ModalDialogType.APP),
