@@ -5,6 +5,8 @@
 #include "base/check_deref.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/test/new_aura_window_watcher.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_lacros_base_test.h"
 #include "chrome/browser/profiles/profile_manager.h"

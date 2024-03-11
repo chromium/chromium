@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -114,7 +114,7 @@ class SecurityTokenSessionController
   raw_ptr<chromeos::CertificateProviderService> certificate_provider_service_ =
       nullptr;
   const raw_ptr<session_manager::SessionManager> session_manager_;
-  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};

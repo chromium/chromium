@@ -594,7 +594,7 @@ class DriveIntegrationService::DriveFsHolder
 
   std::string profile_salt_;
 
-  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive>
+  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive>
       native_message_keep_alive_;
   mojo::Remote<crosapi::mojom::DriveFsNativeMessageHostBridge>
       native_message_host_bridge_;

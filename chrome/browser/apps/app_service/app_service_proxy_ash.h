@@ -25,7 +25,7 @@
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_storage/app_storage.h"
@@ -617,7 +617,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // App service require the Lacros Browser to keep alive for web apps.
   // TODO(crbug.com/1174246): Support Lacros not keeping alive.
-  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

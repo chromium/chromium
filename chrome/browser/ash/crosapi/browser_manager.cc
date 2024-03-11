@@ -726,20 +726,11 @@ void BrowserManager::SetState(State state) {
   }
 }
 
-BrowserManager::ScopedKeepAlive::~ScopedKeepAlive() {
-  manager_->StopKeepAlive(feature_);
-}
-
-BrowserManager::ScopedKeepAlive::ScopedKeepAlive(BrowserManager* manager,
-                                                 Feature feature)
-    : manager_(manager), feature_(feature) {
-  manager_->StartKeepAlive(feature_);
-}
-
-std::unique_ptr<BrowserManager::ScopedKeepAlive> BrowserManager::KeepAlive(
+std::unique_ptr<BrowserManagerScopedKeepAlive> BrowserManager::KeepAlive(
     Feature feature) {
-  // Using new explicitly because ScopedKeepAlive's constructor is private.
-  return base::WrapUnique(new ScopedKeepAlive(this, feature));
+  // Using new explicitly because BrowserManagerScopedKeepAlive's
+  // constructor is private.
+  return base::WrapUnique(new BrowserManagerScopedKeepAlive(this, feature));
 }
 
 BrowserManager::BrowserServiceInfo::BrowserServiceInfo(

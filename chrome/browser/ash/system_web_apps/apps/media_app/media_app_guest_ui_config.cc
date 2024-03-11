@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/version.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

@@ -22,7 +22,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_action_queue.h"
 #include "chrome/browser/ash/crosapi/browser_launcher.h"
+#include "chrome/browser/ash/crosapi/browser_manager_feature.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
+#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
@@ -501,6 +503,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,
                            NewWindowReloadsWhenUpdateAvailable);
   friend class apps::StandaloneBrowserExtensionApps;
+  friend class BrowserManagerScopedKeepAlive;
   // App service require the lacros-chrome to keep alive for web apps to:
   // 1. Have lacros-chrome running before user open the browser so we can
   //    have web apps info showing on the app list, shelf, etc..
@@ -542,34 +545,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Remembers the launch mode of Lacros.
   void RecordLacrosLaunchMode();
 
-  // These ash features are allowed to request that Lacros stay running in the
-  // background.
-  enum class Feature {
-    kTestOnly,
-    kAppService,
-    kApkWebAppService,
-    kChromeApps,
-    kExtensions,
-    kPersistentForcedExtension,
-    kSmartCardSessionController,
-    kDriveFsNativeMessaging,
-  };
-
-  // Any instance of this class will ensure that the Lacros browser will stay
-  // running in the background even when no windows are showing.
-  class ScopedKeepAlive {
-   public:
-    ~ScopedKeepAlive();
-
-   private:
-    friend class BrowserManager;
-
-    // BrowserManager must outlive this instance.
-    ScopedKeepAlive(BrowserManager* manager, Feature feature);
-
-    raw_ptr<BrowserManager> manager_;
-    Feature feature_;
-  };
+  using Feature = BrowserManagerFeature;
 
   // De-registers any already existing KeepAlive features for testing.
   class ScopedUnsetAllKeepAliveForTesting {
@@ -584,7 +560,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Ash features that want Lacros to stay running in the background must be
   // marked as friends of this class so that lacros owners can audit usage.
-  std::unique_ptr<ScopedKeepAlive> KeepAlive(Feature feature);
+  std::unique_ptr<BrowserManagerScopedKeepAlive> KeepAlive(Feature feature);
 
   void StartIfNeeded(bool launching_at_login_screen = false);
 
