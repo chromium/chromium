@@ -34,6 +34,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
@@ -48,6 +50,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -398,12 +401,22 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
       exception_state);
   if (exception_state.HadException())
     return;
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  transferable_message.trace_id = trace_id;
   WorkerThreadDebugger* debugger =
       WorkerThreadDebugger::From(script_state->GetIsolate());
   transferable_message.sender_stack_trace_id =
       debugger->StoreCurrentStackTrace("postMessage");
   WorkerObjectProxy().PostMessageToWorkerObject(
       std::move(transferable_message));
+
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "SchedulePostMessage", "data",
+      [&](perfetto::TracedValue context) {
+        inspector_schedule_post_message_event::Data(
+            std::move(context), GetExecutionContext(), trace_id);
+      },
+      perfetto::Flow::Global(trace_id));  // SchedulePostMessage
 }
 
 void DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript(

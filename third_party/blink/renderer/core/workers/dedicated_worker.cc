@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -179,8 +181,17 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
   transferable_message.sender_stack_trace_id =
       ThreadDebugger::From(script_state->GetIsolate())
           ->StoreCurrentStackTrace("Worker.postMessage");
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  transferable_message.trace_id = trace_id;
   context_proxy_->PostMessageToWorkerGlobalScope(
       std::move(transferable_message));
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "SchedulePostMessage", "data",
+      [&](perfetto::TracedValue context) {
+        inspector_schedule_post_message_event::Data(
+            std::move(context), GetExecutionContext(), trace_id);
+      },
+      perfetto::Flow::Global(trace_id));  // SchedulePostMessage
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model

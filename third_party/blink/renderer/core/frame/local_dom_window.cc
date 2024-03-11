@@ -33,6 +33,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/input/snap_selection_strategy.h"
@@ -1180,6 +1181,15 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
                         std::move(posted_message->target_origin),
                         std::move(location), source->GetAgent()->cluster_id()));
   event->async_task_context()->Schedule(this, "postMessage");
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  event->SetTraceId(trace_id);
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "SchedulePostMessage", "data",
+      [&](perfetto::TracedValue context) {
+        inspector_schedule_post_message_event::Data(
+            std::move(context), GetExecutionContext(), trace_id);
+      },
+      perfetto::Flow::Global(trace_id));
 }
 
 void LocalDOMWindow::DispatchPostMessage(
@@ -1196,6 +1206,14 @@ void LocalDOMWindow::DispatchPostMessage(
     return;
 
   event->EntangleMessagePorts(this);
+
+  TRACE_EVENT(
+      "devtools.timeline", "HandlePostMessage", "data",
+      [&](perfetto::TracedValue context) {
+        inspector_handle_post_message_event::Data(
+            std::move(context), GetExecutionContext(), *event);
+      },
+      perfetto::Flow::Global(event->GetTraceId()));
 
   DispatchMessageEventWithOriginCheck(intended_target_origin.get(), event,
                                       std::move(location),

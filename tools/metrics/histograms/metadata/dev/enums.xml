@@ -994,6 +994,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="83" label="sourcesFrameIndentationMarkersTemporarilyDisable"/>
   <int value="84" label="heapSnapshotTreatBackingStoreAsContainingObject"/>
   <int value="85" label="cssTypeComponentLengthDeprecate"/>
+  <int value="86" label="timelineShowPostMessageEvents"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">

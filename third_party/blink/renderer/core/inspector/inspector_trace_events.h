@@ -49,6 +49,7 @@ class DocumentLoader;
 class Element;
 class EncodedFormData;
 class Event;
+class MessageEvent;
 class ExecutionContext;
 class HitTestLocation;
 class HitTestRequest;
@@ -589,6 +590,18 @@ void EndData(perfetto::TracedValue context,
 
 namespace inspector_async_task {
 void Data(perfetto::TracedValue context, const StringView&);
+}
+
+namespace inspector_schedule_post_message_event {
+void Data(perfetto::TracedValue context,
+          ExecutionContext* execution_context,
+          uint64_t trace_id);
+}
+
+namespace inspector_handle_post_message_event {
+void Data(perfetto::TracedValue context,
+          ExecutionContext* execution_context,
+          const MessageEvent& event);
 }
 
 CORE_EXPORT String ToHexString(const void* p);

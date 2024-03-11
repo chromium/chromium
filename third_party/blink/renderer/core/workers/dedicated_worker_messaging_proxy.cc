@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "third_party/blink/renderer/core/loader/worker_resource_timing_notifier_impl.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
@@ -232,8 +233,17 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
       *GetExecutionContext(), std::move(message.ports));
   debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
   if (message.message->CanDeserializeIn(GetExecutionContext())) {
-    worker_object_->DispatchEvent(
-        *MessageEvent::Create(ports, std::move(message.message)));
+    MessageEvent* event =
+        MessageEvent::Create(ports, std::move(message.message));
+    event->SetTraceId(message.trace_id);
+    TRACE_EVENT(
+        "devtools.timeline", "HandlePostMessage", "data",
+        [&](perfetto::TracedValue context) {
+          inspector_handle_post_message_event::Data(
+              std::move(context), GetExecutionContext(), *event);
+        },
+        perfetto::Flow::Global(event->GetTraceId()));
+    worker_object_->DispatchEvent(*event);
   } else {
     worker_object_->DispatchEvent(*MessageEvent::CreateError());
   }

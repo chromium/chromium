@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -1333,6 +1334,23 @@ void inspector_produce_script_cache_event::Data(
   auto dict = std::move(context).WriteDictionary();
   FillLocation(dict, url, text_position);
   dict.Add("producedCacheSize", cache_size);
+}
+
+void inspector_handle_post_message_event::Data(
+    perfetto::TracedValue context,
+    ExecutionContext* execution_context,
+    const MessageEvent& message_event) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("traceId", base::NumberToString(message_event.GetTraceId()));
+}
+
+void inspector_schedule_post_message_event::Data(
+    perfetto::TracedValue context,
+    ExecutionContext* execution_context,
+    uint64_t trace_id) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("traceId", base::NumberToString(trace_id));
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 void inspector_function_call_event::Data(
