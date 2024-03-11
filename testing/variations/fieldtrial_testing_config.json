@@ -14798,6 +14798,21 @@
             ]
         }
     ],
+    "ReduceIPAddressChangeNotification": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReduceIPAddressChangeNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceIPCCombined": [
         {
             "platforms": [

@@ -3044,6 +3044,14 @@ const char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://web-app-internals";
 
+#if BUILDFLAG(IS_MAC)
+const char kReduceIPAddressChangeNotificationName[] =
+    "Reduce IP address change notification";
+const char kReduceIPAddressChangeNotificationDescription[] =
+    "Reduce the frequency of IP address change notifications that result in "
+    "TCP and QUIC connection resets.";
+#endif  // BUILDFLAG(IS_MAC)
+
 const char kReduceAcceptLanguageName[] =
     "Reduce Accept-Language request header";
 const char kReduceAcceptLanguageDescription[] =

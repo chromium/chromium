@@ -504,6 +504,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired);
 // Enables truncating the response body to the content length.
 NET_EXPORT BASE_DECLARE_FEATURE(kTruncateBodyToContentLength);
 
+#if BUILDFLAG(IS_MAC)
+// Reduces the frequency of IP address change notifications that result in
+// TCP and QUIC connection resets.
+NET_EXPORT BASE_DECLARE_FEATURE(kReduceIPAddressChangeNotification);
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

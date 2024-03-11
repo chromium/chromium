@@ -66,6 +66,9 @@ struct NET_EXPORT NetworkInterface {
   NetworkInterface(const NetworkInterface& other);
   ~NetworkInterface();
 
+  bool operator==(const NetworkInterface& that) const = default;
+  bool operator!=(const NetworkInterface& that) const = default;
+
   std::string name;
   std::string friendly_name;  // Same as |name| on non-Windows.
   uint32_t interface_index;  // Always 0 on Android.

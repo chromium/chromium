@@ -17645,6 +17645,7 @@ from previous Chrome versions.
   <int value="-1454397907" label="OptimizationHints:disabled"/>
   <int value="-1454327921"
       label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:disabled"/>
+  <int value="-1454278433" label="ReduceIPAddressChangeNotification:enabled"/>
   <int value="-1454264660" label="ProminentDarkModeActiveTabTitle:disabled"/>
   <int value="-1453647118" label="PasswordLeakDetection:disabled"/>
   <int value="-1452786530" label="ChromeOSZramWriteback:enabled"/>
@@ -22588,6 +22589,7 @@ from previous Chrome versions.
   <int value="773563826" label="CrostiniUsbSupport:disabled"/>
   <int value="773743944" label="show-android-files-in-files-app"/>
   <int value="773919225" label="disable-office-editing-component-extension"/>
+  <int value="773952982" label="ReduceIPAddressChangeNotification:disabled"/>
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
   <int value="777569794" label="FeedWebUi:enabled"/>

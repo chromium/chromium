@@ -1769,6 +1769,11 @@ extern const char kReadLaterDescription[];
 extern const char kRecordWebAppDebugInfoName[];
 extern const char kRecordWebAppDebugInfoDescription[];
 
+#if BUILDFLAG(IS_MAC)
+extern const char kReduceIPAddressChangeNotificationName[];
+extern const char kReduceIPAddressChangeNotificationDescription[];
+#endif  // BUILDFLAG(IS_MAC)
+
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 

@@ -97,6 +97,7 @@ void NetworkConfigWatcherAppleThread::Init() {
 void NetworkConfigWatcherAppleThread::CleanUp() {
   if (!run_loop_source_.get())
     return;
+  delegate_->CleanUpOnNotifierThread();
 
   CFRunLoopRemoveSource(CFRunLoopGetCurrent(), run_loop_source_.get(),
                         kCFRunLoopCommonModes);
@@ -158,7 +159,7 @@ bool NetworkConfigWatcherAppleThread::InitNotificationsHelper() {
   // Set up notifications for interface and IP address changes.
   delegate_->StartReachabilityNotifications();
 #if !BUILDFLAG(IS_IOS)
-  delegate_->SetDynamicStoreNotificationKeys(store.get());
+  delegate_->SetDynamicStoreNotificationKeys(std::move(store));
 #endif  // !BUILDFLAG(IS_IOS)
   return true;
 }
@@ -174,5 +175,9 @@ NetworkConfigWatcherApple::NetworkConfigWatcherApple(Delegate* delegate)
 }
 
 NetworkConfigWatcherApple::~NetworkConfigWatcherApple() = default;
+
+base::Thread* NetworkConfigWatcherApple::GetNotifierThreadForTest() {
+  return notifier_thread_.get();
+}
 
 }  // namespace net

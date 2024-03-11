@@ -2966,7 +2966,11 @@ test("net_unittests") {
   }
 
   if (is_mac) {
-    frameworks = [ "Security.framework" ]
+    sources += [ "base/network_change_notifier_apple_unittest.cc" ]
+    frameworks = [
+      "Security.framework",
+      "SystemConfiguration.framework",
+    ]
   }
 
   if (!is_win) {

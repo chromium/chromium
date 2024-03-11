@@ -57,15 +57,18 @@ class ProxyConfigServiceMac : public ProxyConfigService {
 
     // NetworkConfigWatcherApple::Delegate implementation:
     void StartReachabilityNotifications() override {}
-    void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store) override;
+    void SetDynamicStoreNotificationKeys(
+        base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store) override;
     void OnNetworkConfigChange(CFArrayRef changed_keys) override;
+    void CleanUpOnNotifierThread() override {}
 
    private:
     const raw_ptr<ProxyConfigServiceMac> proxy_config_service_;
   };
 
   // Methods directly called by the NetworkConfigWatcherApple::Delegate:
-  void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store);
+  void SetDynamicStoreNotificationKeys(
+      base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store);
   void OnNetworkConfigChange(CFArrayRef changed_keys);
 
   // Called when the proxy configuration has changed, to notify the observers.

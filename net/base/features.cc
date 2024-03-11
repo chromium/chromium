@@ -515,4 +515,10 @@ BASE_FEATURE(kTruncateBodyToContentLength,
              "TruncateBodyToContentLength",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kReduceIPAddressChangeNotification,
+             "ReduceIPAddressChangeNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace net::features

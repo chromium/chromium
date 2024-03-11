@@ -11027,6 +11027,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableVcnGrayOutForMerchantOptOut)},
 
+#if BUILDFLAG(IS_MAC)
+    {"reduce-ip-address-change-notification",
+     flag_descriptions::kReduceIPAddressChangeNotificationName,
+     flag_descriptions::kReduceIPAddressChangeNotificationDescription, kOsMac,
+     FEATURE_VALUE_TYPE(net::features::kReduceIPAddressChangeNotification)},
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_ANDROID)
     {"upm-sync-only-in-gms-core",
      flag_descriptions::kUnifiedPasswordManagerSyncOnlyInGMSCoreName,
