@@ -56,7 +56,7 @@ namespace blink {
 namespace {
 
 BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
-             "AddSharedImageRasterUsageWithNonOOPR",
+             "CanvasAddSharedImageRasterUsageWithNonOOPR",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
