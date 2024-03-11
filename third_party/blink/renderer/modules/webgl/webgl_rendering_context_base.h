@@ -679,7 +679,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   // The maximum supported size of an ArrayBuffer is the maximum size that can
   // be allocated in JavaScript. This maximum is defined by the maximum size
-  // partition alloc can allocate.
+  // PartitionAlloc can allocate.
   // We limit the maximum size of ArrayBuffers we support to avoid integer
   // overflows in the WebGL implementation. WebGL stores the data size as
   // uint32_t, so if sizes just below uint32_t::max() were passed in, integer
