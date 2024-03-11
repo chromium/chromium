@@ -307,6 +307,7 @@ public class PriceAlertsMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisabledTest(message = "crbug.com/329099267")
     public void testRemoveMessageWhenClosingLastTab() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
