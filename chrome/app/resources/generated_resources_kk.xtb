@@ -2247,6 +2247,7 @@
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ашылмады</translation>
 <translation id="2669454659051515572">Осы құрылғыны пайдаланатын кез келген адам жүктеп алынған файлдарды көре алады.</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> қолданбасы Chrome қойындысын бөлісуде.</translation>
+<translation id="2670350619068134931">Азайтылған анимациялар</translation>
 <translation id="2670403088701171361">Сайттардың буферіңіздегі мәтінді немесе суреттерді көруіне рұқсат бермеу</translation>
 <translation id="2671451824761031126">Бетбелгілер мен параметрлер дайын</translation>
 <translation id="2672142220933875349">CRX файлы жарамсыз, пакеттен шығару сәтсіз аяқталды.</translation>
@@ -4251,6 +4252,7 @@
 <translation id="4231141543165771749">Ойынды басқару элементтерін жабу</translation>
 <translation id="4231231258999726714">Steam for Chromebook қолданбасын реттеу</translation>
 <translation id="4232375817808480934">Kerberos билетін конфигурациялау</translation>
+<translation id="4232484478444192782">Android телефоныңыздағы Wi-Fi мен құпия сөз тасымалданып жатыр.</translation>
 <translation id="4233739489690259993">Chromebook жүйеңіз енді қауіпсіздік және бағдарламалық құрал жаңартуларын алмайды. Соңғы қауіпсіздік пен жаңа мүмкіндіктер үшін құрылғыңызды жаңартыңыз. Ұсыныс шарттары қолданылады.</translation>
 <translation id="4235965441080806197">Жүйеге кіруден бас тарту</translation>
 <translation id="4235976607074422892">Айналдыру жылдамдығы</translation>
@@ -6123,6 +6125,7 @@
 <translation id="5713033452812927234">Алдыңғы құрылғыңыздан терезелер ашылып жатыр.</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> құрылғысына жалғанған</translation>
 <translation id="5713960379473463904">Бос орын енгізу стилі</translation>
+<translation id="5714100381896040477">Экрандағы қозғалысты шектеу</translation>
 <translation id="5715711091495208045">Плагин делдалы: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">Оларды тез арада өзгертіп тастауыңыз керек.</translation>
 <translation id="5719854774000914513">Сайттар HID құрылғыларына қосылуға рұқсат сұрайды</translation>
@@ -7331,6 +7334,7 @@
 <translation id="6675665718701918026">Меңзеу құрылғысы қосылған</translation>
 <translation id="6675985668044425385">Сайт ойдағыдай жұмыс істемесе, ол сайтта үшінші тарап cookie файлдарын қосуға болады. Ол үшін мекенжай жолағында "Бақылаудан қорғау" опциясын таңдаңыз.</translation>
 <translation id="6676212663108450937">Дауысыңызды жазу кезінде құлақаспаптарды пайдаланыңыз</translation>
+<translation id="667752334740867460">Wi-Fi туралы ақпарат алынып жатыр...</translation>
 <translation id="6678717876183468697">Сұрау URL мекенжайы</translation>
 <translation id="6680442031740878064">Бос: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Жылдамдық</translation>

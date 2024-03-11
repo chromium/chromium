@@ -2139,6 +2139,7 @@
 <translation id="2569972178052279830">రిటైలర్ పేరు</translation>
 <translation id="257088987046510401">థీమ్‌లు</translation>
 <translation id="2571655996835834626">కుక్కీలు, JavaScript, ప్లగ్ఇన్‌లు, భౌగోళిక స్థానం, మైక్రోఫోన్, కెమెరా మొదలైన ఫీచ‌ర్‌లకు వెబ్‌సైట్‌ల యాక్సెస్‌ను నియంత్రించే మీ సెట్టింగ్‌లను మార్చండి.</translation>
+<translation id="257175846174451436">ట్యాబ్ గ్రూప్‌ను సూచించారు</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />కి చదవడానికి మాత్రమే యాక్సెస్ మంజూరు చేయబడింది.</translation>
 <translation id="2573276323521243649">అవతార్ ఎంపిక పేజీ నుండి వెనుకకు వెళ్లండి</translation>
 <translation id="2573417407488272418">అప్‌గ్రేడ్ చేయడానికి ముందు, యాప్‌లు, ఫైల్స్‌ను Files &gt; నా ఫైల్స్ అనే సెట్టింగ్‌లో బ్యాకప్ చేయండి.</translation>
@@ -2673,6 +2674,7 @@
 <translation id="2981113813906970160">పెద్ద మౌస్ కర్సర్‌ను చూపు</translation>
 <translation id="2983102365694924129">సైట్‌లోని మీ యాక్టివిటీ ఆధారంగా. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="2983373101216420412">కేస్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
+<translation id="2984727013951557074">ఫైల్ ఇంకా Driveకు సింక్ అవుతోంది.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />"ను ఇన్‌స్టాల్ చేయడానికి మీ అడ్మినిస్ట్రేటర్‌కు రిక్వెస్ట్‌ పంపాలా?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" />, ఒక యాప్‌ను అన్‌ఇన్‌స్టాల్ చేసింది}other{<ph name="APP_NAME" />, # యాప్‌లను అన్‌ఇన్‌స్టాల్ చేసింది}}</translation>
 <translation id="2987620471460279764">ఇతర పరికరం నుండి షేర్ చేయబడిన వచనం</translation>
@@ -4066,6 +4068,7 @@
 <translation id="4051177682900543628">సెర్చ్ + కుడి వైపు బాణం</translation>
 <translation id="4052120076834320548">చిన్న</translation>
 <translation id="4052913941260326985">&amp;QR కోడ్‌ను క్రియేట్ చేయండి</translation>
+<translation id="4053833479432165765">&amp;పేజీని యాప్‌గా ఇన్‌స్టాల్ చేయండి...</translation>
 <translation id="4054070260844648638">ప్రతిఒక్కరికీ కనిపిస్తుంది</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome యాప్‌కు మీ తల్లి/తండ్రి సెట్ చేసిన సమయ పరిమితిని మీరు చేరుకున్నారు. మీరు రేపు దానిని <ph name="TIME_LIMIT" /> సమయం ఉపయోగించవచ్చు.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4478,6 +4481,7 @@
 <translation id="4388650384344483842">కనీసం 8 అక్షరాలను ఉపయోగించండి</translation>
 <translation id="4389091756366370506">వినియోగదారు <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, మరో <ph name="NUMBER_OF_OTHER_SWITCHES" /> స్విచ్‌లు</translation>
+<translation id="4390569024397171409">మీ <ph name="DEVICE_TYPE" />‌లో యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="439266289085815679">బ్లూటూత్ కాన్ఫిగరేషన్ <ph name="USER_EMAIL" /> ద్వారా నియంత్రించబడుతుంది.</translation>
 <translation id="4392896746540753732">కాన్ఫిగరేషన్ ఫైల్‌ను ఎడిట్ చేయండి</translation>
 <translation id="4393102500004843976">సెర్చ్ + shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -5480,6 +5484,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" కొత్త వెర్షన్ నిలిపివేయబడింది ఎందుకంటే దానికి మరిన్ని అనుమతులు అవసరం.</translation>
 <translation id="5185500136143151980">ఇంటర్నెట్ లేదు</translation>
 <translation id="5186381005592669696">సపోర్ట్ చేసే యాప్‌ల కోసం డిస్‌ప్లే భాషలను అనుకూలంగా మార్చండి</translation>
+<translation id="5187641678926990264">&amp;పేజీని యాప్‌గా ఇన్‌స్టాల్ చేయండి...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" />ని ఉపయోగిస్తోంది</translation>
 <translation id="5190926251776387065">పోర్ట్‌ను యాక్టివేట్ చేయండి</translation>
@@ -6122,6 +6127,7 @@
 <translation id="5696679855467848181">వినియోగంలో ఉన్న ప్రస్తుత PPD ఫైల్: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">ఎమోజి పికర్</translation>
 <translation id="5698878456427040674">ఎంచుకున్న ఖాతా సపోర్ట్ చేస్తుందో లేదో చెక్ చేయండి.</translation>
+<translation id="5699227710146832453">మీ నుండి</translation>
 <translation id="570043786759263127">Google Play యాప్‌లు మరియు సేవలు</translation>
 <translation id="5700761515355162635">థర్డ్-పార్టీ కుక్కీలు అనుమతించబడతాయి</translation>
 <translation id="5700836101007545240">కనెక్షన్‌ను జోడించడాన్ని మీ నిర్వాహకులు నిలిపివేశారు</translation>
@@ -7976,6 +7982,7 @@
 <translation id="7168109975831002660">కనిష్ఠ ఫాంట్ సైజ్‌</translation>
 <translation id="7169122689956315694">పరికరాలు సమీపంలో ఉన్నప్పుడు నోటిఫికేషన్‌లను ఆన్ చేయండి</translation>
 <translation id="7170236477717446850">ప్రొఫైల్ ఫోటో</translation>
+<translation id="7170751905948784001">డెవలపర్ సమాచారం:</translation>
 <translation id="7171000599584840888">ప్రొఫైల్‌ను జోడించండి...</translation>
 <translation id="7171259390164035663">నమోదు చేసుకోవద్దు</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ట్యాబ్‌ను కొత్త గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను కొత్త గ్రూప్‌నకు జోడించండి}}</translation>
@@ -8785,6 +8792,7 @@
 <translation id="7776156998370251340">మీరు ఈ సైట్‌లోని అన్ని ట్యాబ్‌లను మూసివేసే వరకు <ph name="ORIGIN" />, <ph name="FOLDERNAME" />లో ఉన్న ఫైల్స్‌ను చూడగలదు</translation>
 <translation id="777637629667389858">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది.</translation>
 <translation id="7776701556330691704">వాయిస్‌లు ఏవీ కనుగొనబడలేదు</translation>
+<translation id="7776950606649732730">ఫైల్ సింక్ అవ్వడం పూర్తయ్యాక మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> కోసం <ph name="SHORTCUT" /> షార్ట్‌కట్</translation>
 <translation id="7779840061887151693">డిస్‌ప్లే</translation>
 <translation id="7781335840981796660">అన్ని వినియోగదారు ఖాతాలు మరియు స్థానిక డేటా తీసివేయబడతాయి.</translation>
@@ -8975,6 +8983,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" />సె</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" />ను చూడగలదు</translation>
 <translation id="7920482456679570420">మీరు వేటికి స్పెల్ చెక్‌ను స్కిప్ చేయాలనుకుంటారో ఆ పదాలను జోడించండి</translation>
+<translation id="7920715534283810633"><ph name="FILE_NAMES" />‌ను తెరవడం సాధ్యపడదు</translation>
 <translation id="7921347341284348270">మీరు ఈ మేనేజ్ చేయబడే ఖాతాలో మీ ఫోన్ నోటిఫికేషన్‌లను చూడలేరు. వేరే ఖాతాతో మళ్లీ ట్రై చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">ఈ ఎక్స్‌టెన్షన్ <ph name="HOST" />‌ను చదవగలదు, మార్చగలదు</translation>
 <translation id="7922606348470480702">1 ఎక్స్‌టెన్షన్</translation>
@@ -10287,6 +10296,7 @@
 <translation id="8916476537757519021">అజ్ఞాత సబ్‌ఫ్రేమ్: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">సరే, నాకు సమ్మతమే</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />కు చెందిన <ph name="DEVICE_TYPE" /></translation>
+<translation id="8918900204934259333">యాప్ ఇన్‌స్టాల్ అవుతోంది...</translation>
 <translation id="891931289445130855">డేటాను, అనుమతులను తొలగించండి</translation>
 <translation id="8920133120839850939">మరిన్ని సంజ్ఞల ట్యాబ్‌ను ఎంచుకుని, వెనుకకు, ముందుకు నావిగేట్ చేయడానికి పేజీల మధ్య 'స్వైప్ చేయండి'ని ఆన్ చేయండి</translation>
 <translation id="8922624386829239660">స్క్రీన్ అంచులను మౌస్ తాకినప్పుడు స్క్రీన్‌ను జరుపుతుంది</translation>
@@ -10780,6 +10790,7 @@
 <translation id="992032470292211616">ఎక్స్‌టెన్ష‌న్‌లు, యాప్‌లు మరియు థీమ్‌లు మీ పరికరానికి హాని కలిగించవచ్చు. మీరు ఖచ్చితంగా కొనసాగాలని అనుకుంటున్నారా?</translation>
 <translation id="992256792861109788">గులాబి రంగు</translation>
 <translation id="992592832486024913">ChromeVox (చదవబడే అభిప్రాయం)ను నిలిపివేయి</translation>
+<translation id="992653586748191655"><ph name="NUM" /> ట్యాబ్ గ్రూప్‌లను సూచించారు</translation>
 <translation id="992778845837390402">ప్రస్తుతం Linux బ్యాకప్ ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="993540765962421562">ఇన్‌స్టాలేషన్ జరుగుతోంది</translation>
 <translation id="994289308992179865">&amp;లూప్</translation>

@@ -7652,6 +7652,7 @@ Si se inhabilita esta política, nunca se recordarán las contraseñas y se elim
           Si no la estableces, el botón izquierdo del ratón será el principal inicialmente, pero el usuario podrá cambiarlo en cualquier momento.</translation>
 <translation id="7136237405361383549">Usar el renderizador predeterminado según la configuración de la prueba de campo</translation>
 <translation id="7138762292550697459">Controla el tiempo de espera mínimo de la función de JavaScript setTimeout().</translation>
+<translation id="7138792262152376158">Sigue los plazos de discontinuación habituales de la API PrefixedVideoFullscreen</translation>
 <translation id="714219487865269980">Habilitar el resaltado del foco del teclado</translation>
 <translation id="7144022711746703451">
       Esta política se eliminó en M80. No es necesaria porque ahora
@@ -7818,6 +7819,7 @@ El valor de la política es una lista de certificados X.509 codificados en Base6
 <translation id="7269263983506766969">Utiliza la prioridad predeterminada para el proceso de audio</translation>
 <translation id="7270001383428188269">El identificador de este certificado de cliente.</translation>
 <translation id="7271085005502526897">Importar la página de inicio desde el navegador predeterminado en la primera ejecución</translation>
+<translation id="7272043145652398361">Inhabilita las APIs de pantalla completa de vídeos con prefijo</translation>
 <translation id="7272892848025145170">Controla si la función Kerberos está habilitada. Kerberos es un protocolo de autenticación que puede usarse para autenticarse en aplicaciones web y en archivos compartidos.
 
 Si se habilita esta política, se habilitará la función Kerberos. Las cuentas de Kerberos pueden añadirse mediante la política "Configurar cuentas de Kerberos" o a través de la configuración de cuentas de Kerberos en la página de configuración de cuentas de Kerberos.
@@ -8021,6 +8023,7 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
 <translation id="7459633275230216698">Permitir cuadros de diálogo de selección de archivos</translation>
 <translation id="7462256705280836453">Elegir si se puede inhabilitar la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="7463055558720530430">Permitir que los usuarios activen la opción de recordar contraseñas de Kerberos</translation>
+<translation id="7463934096276667908">Habilita las APIs de pantalla completa de vídeos con prefijo</translation>
 <translation id="7464058117970792805">Habilitar vista previa de impresión</translation>
 <translation id="7464991223784276288">Limitar las cookies de las URL coincidentes de la sesión actual</translation>
 <translation id="7468182772656807573">Si se define esta política, determinará la frecuencia con la que se envían paquetes de red de monitorización (en milisegundos). Los intervalos se sitúan entre 30 segundos y 24 horas. Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
@@ -8354,6 +8357,7 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 <translation id="7734212505800048991">
           Se bloquearán las llamadas a getDisplayMedia que se originen en contextos no incluidos
            en la lista de permitidos.</translation>
+<translation id="7734846328530412287">Gestiona la disponibilidad de la API de pantalla completa de vídeos con prefijo discontinuada</translation>
 <translation id="7736218466096907954">Si se habilita esta política o no se define, se mostrará la nueva interfaz del cuadro de descargas en <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> seguirá mostrando la interfaz antigua de la estantería de descargas.
@@ -9085,6 +9089,15 @@ Para obtener más información sobre las tecnologías antiguas, consulta la pág
 <translation id="8331479227794770304">Habilitar teclas persistentes</translation>
 <translation id="8332822245414537447">Inhabilitar la comprobación de uso de claves RSA</translation>
 <translation id="8334685561819743286">Inhabilitar la autocorrección en el teclado físico cuando los usuarios escriban</translation>
+<translation id="8336819406993366823">Si se asigna el valor <ph name="ENABLED_VALUE_NAME" /> a esta política, las APIs de pantalla completa específicas de vídeo con prefijo (por ejemplo, Video.webkitEnterFullscreen()) se podrán usar desde JavaScript.
+
+Si se asigna el valor <ph name="DISABLED_VALUE_NAME" /> a esta política, se evitará que las APIs de pantalla completa específicas de vídeo con prefijo se utilicen en JavaScript, dejando solo las API de pantalla completa estándar (por ejemplo, Element.requestFullscreen()).
+
+Si se asigna el valor <ph name="RUNTIME_ENABLED_VALUE_NAME" /> a esta política, la marca de función con tiempo de ejecución activado de prefixedFullscreenVideo podrá determinar si las API de pantalla completa específicas de vídeo con prefijo están disponibles para sitios web.
+
+Si no se define esta política, el comportamiento predeterminado será <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
+
+Nota: Esta política es una solución temporal para dejar de usar las APIs de pantalla completa con prefijo webkit. Se eliminará provisionalmente en la versión M130 o en las próximas versiones.</translation>
 <translation id="8337114537412769126">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar sugerencias con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda de sugerencias se enviarán mediante el método GET.</translation>

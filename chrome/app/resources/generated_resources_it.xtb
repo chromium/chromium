@@ -2250,6 +2250,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2669241540496514785">Impossibile aprire <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> condivide una scheda Chrome.</translation>
+<translation id="2670350619068134931">Animazioni ridotte</translation>
 <translation id="2670403088701171361">Non consentire ai siti di vedere testo o immagini negli appunti</translation>
 <translation id="2671451824761031126">Preferiti e impostazioni sono pronti</translation>
 <translation id="2672142220933875349">File crx non valido, decompressione non riuscita.</translation>
@@ -4254,6 +4255,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4231141543165771749">Chiudi i controlli di gioco</translation>
 <translation id="4231231258999726714">Configurazione di Steam per Chromebook in corso…</translation>
 <translation id="4232375817808480934">Configura Kerberos</translation>
+<translation id="4232484478444192782">Ci pensa il tuo smartphone Android. Il Wi-Fi e la password sono in fase di trasferimento.</translation>
 <translation id="4233739489690259993">Il tuo Chromebook non riceve più aggiornamenti della sicurezza e del software. Esegui l'upgrade del tuo dispositivo per avere le funzionalità di sicurezza nuove e più recenti. Si applicano i termini dell'offerta.</translation>
 <translation id="4235965441080806197">Annulla accesso</translation>
 <translation id="4235976607074422892">Velocità di scorrimento</translation>
@@ -6126,6 +6128,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5713033452812927234">Apertura di finestre dal dispositivo precedente in corso…</translation>
 <translation id="5713158217420111469">Collegato a <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Stile di immissione spazi</translation>
+<translation id="5714100381896040477">Limita il movimento sullo schermo</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">Dovresti cambiarle subito</translation>
 <translation id="5719854774000914513">I siti possono chiedere di connettersi ai dispositivi HID</translation>
@@ -7334,6 +7337,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6675665718701918026">Dispositivo di puntamento collegato</translation>
 <translation id="6675985668044425385">Se un sito non funziona come previsto, puoi attivare i cookie di terze parti usando l'opzione Protezione antitracciamento nella barra degli indirizzi.</translation>
 <translation id="6676212663108450937">Considera l'uso di cuffie mentre eserciti il riconoscimento vocale</translation>
+<translation id="667752334740867460">Ricezione di informazioni sulla rete Wi-Fi in corso…</translation>
 <translation id="6678717876183468697">URL query</translation>
 <translation id="6680442031740878064">Disponibile: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocità</translation>

@@ -397,6 +397,7 @@
 <translation id="3484914941826596830">Během aktualizace firmwaru neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="3486220673238053218">definice</translation>
 <translation id="3488065109653206955">Částečně aktivováno</translation>
+<translation id="3493187369049186498">Data měří Chromebook. Údaje se od údajů poskytovatele mohou lišit.</translation>
 <translation id="3502426834823382181">zobrazit všechny aplikace</translation>
 <translation id="3510890413042482857">Odesílat <ph name="BEGIN_LINK1" />údaje sledování výkonu<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizace ChromeOS</translation>
@@ -454,6 +455,7 @@
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="3877066159641251281">Poslechnout si překlad</translation>
 <translation id="3885327323343477505">Změnit spořič obrazovky</translation>
+<translation id="3889914174935857450">Resetovat datum</translation>
 <translation id="391412459402535266">Zařízení nelze otestovat. Přepněte na režim notebooku.</translation>
 <translation id="3916998944874125962">pořídit snímek obrazovky</translation>
 <translation id="3923184630988645767">Využití dat</translation>
@@ -831,6 +833,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nejsou k dispozici žádné skenery</translation>
 <translation id="6232017090690406397">Baterie</translation>
+<translation id="6234024205316847054">Zobrazit osnovu</translation>
 <translation id="6235460611964961764">Využití dat resetovat ručně</translation>
 <translation id="6243280677745499710">Aktuálně nastaveno</translation>
 <translation id="6250316632541035980">slanina s vejci</translation>
@@ -976,6 +979,7 @@
 <translation id="7107255225945990211">Vybrat umělecké dílo exkluzivní pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">napájení</translation>
+<translation id="7129287270910503851">V tento den se využití dat každý měsíc resetuje</translation>
 <translation id="7130438335435247835">Název přístupového bodu</translation>
 <translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7135814714616751706">Vyhledat zkratky</translation>
@@ -1210,6 +1214,7 @@
 <translation id="8508640263392900755">Podrobnosti o APN</translation>
 <translation id="8522687886059337719">Nyní máte přístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /> a <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />spořiči obrazovky<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Používá Google AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Někteří operátoři k připojení k síti vyžadují tuto možnost. Na podrobnosti se zeptejte mobilního operátora.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>

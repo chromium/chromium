@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Messaggio inviato.</translation>
 <translation id="1582732959743469162">Verrà interrotto l'avanzamento del tuo download attuale.</translation>
 <translation id="158591023028013564">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura}other{{count} pagine aggiunte al tuo elenco di lettura}}</translation>
+<translation id="1587629076612412684">Personalizza i servizi Google</translation>
 <translation id="1594034544529347967">Inizio</translation>
 <translation id="160275202205869636">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="1605405588277479165">Off - Sconsigliata</translation>
@@ -1605,6 +1606,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9106655997975673326">Di "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Controlla eventuali password compromesse</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nuova password per questo sito}other{Nuove password per questo sito}}</translation>
+<translation id="9110489518258031250">Controlla il modo in cui la cronologia di navigazione sincronizzata può essere utilizzata per personalizzare altri servizi Google</translation>
 <translation id="9120217828624527905">Passa alla traduzione della pagina intera</translation>
 <translation id="9124387962554796433">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google.</translation>
 <translation id="9137526406337347448">Google Services</translation>

@@ -7710,6 +7710,7 @@ Se il criterio viene disattivato, le password non vengono mai memorizzate e tutt
           Se questo criterio non viene impostato, inizialmente il pulsante principale sarà il pulsante sinistro del mouse, ma l'utente può cambiarlo in qualsiasi momento.</translation>
 <translation id="7136237405361383549">Utilizza il renderer predefinito in base alla configurazione della prova sul campo.</translation>
 <translation id="7138762292550697459">Controlla il timeout minimo della funzione JavaScript setTimeout().</translation>
+<translation id="7138792262152376158">Segue le normali tempistiche di ritiro dell'API PrefixedVideoFullscreen</translation>
 <translation id="714219487865269980">Attiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="7144022711746703451">
       Questo criterio non è più necessario poiché WebDriver è ora compatibile con tutti i criteri esistenti ed è stato pertanto rimosso da M80.
@@ -7877,6 +7878,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7269263983506766969">Viene usata la priorità predefinita per il processo audio</translation>
 <translation id="7270001383428188269">L'identificatore di questo certificato client.</translation>
 <translation id="7271085005502526897">Importazione della home page dal browser predefinito alla prima esecuzione</translation>
+<translation id="7272043145652398361">Disabilita le API video a schermo intero con prefisso</translation>
 <translation id="7272892848025145170">Consente di stabilire se attivare o meno la funzionalità Kerberos. Kerberos è un protocollo di autenticazione che può essere utilizzato per eseguire l'autenticazione per app web e condivisioni di file.
 
 Se questo criterio viene attivato, la funzionalità Kerberos viene attivata. Gli account Kerberos possono essere aggiunti tramite il criterio "Configura account Kerberos" o tramite le impostazioni relative agli account Kerberos nella pagina di impostazioni Kerberos.
@@ -8078,6 +8080,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="7459633275230216698">Consenti finestre di dialogo per la selezione di file</translation>
 <translation id="7462256705280836453">Scegli se è possibile o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti</translation>
 <translation id="7463055558720530430">Consenti agli utenti di memorizzare le password Kerberos</translation>
+<translation id="7463934096276667908">Abilita le API video a schermo intero con prefisso</translation>
 <translation id="7464058117970792805">Attiva anteprima di stampa</translation>
 <translation id="7464991223784276288">Limita i cookie degli URL corrispondenti alla sessione corrente</translation>
 <translation id="7468182772656807573">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare nei limiti.
@@ -8406,6 +8409,7 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
 <translation id="7732907212083471072">Criteri rimossi</translation>
 <translation id="7734212505800048991">
           Le chiamate a getDisplayMedia che provengono da contesti non aggiunti alla lista consentita vengono rifiutate.</translation>
+<translation id="7734846328530412287">Gestisci la disponibilità dell'API video a schermo intero deprecata</translation>
 <translation id="7736218466096907954">Se il criterio viene impostato su Attivato o se non viene impostato, in <ph name="PRODUCT_NAME" /> viene mostrata l'UI del nuovo fumetto dei download.
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> continua a mostrare l'UI della barra dei download precedente.
@@ -9125,6 +9129,15 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8331479227794770304">Attiva tasti permanenti</translation>
 <translation id="8332822245414537447">Disattiva il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8334685561819743286">Disattiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
+<translation id="8336819406993366823">Se il criterio viene impostato su <ph name="ENABLED_VALUE_NAME" />, sarà possibile utilizzare le API a schermo intero per video con prefisso (ad esempio Video.webkitEnterFullscreen()) da JavaScript.
+
+Se il criterio viene impostato su <ph name="DISABLED_VALUE_NAME" />, le API a schermo intero per video con prefisso non verranno utilizzate in JavaScript, lasciando solo le API standard a schermo intero (ad esempio Element.requestFullscreen()).
+
+Se il criterio viene impostato su <ph name="RUNTIME_ENABLED_VALUE_NAME" />, consentirà al flag funzionalità abilitato per il tempo di esecuzione PrefixedFullscreenVideo di determinare se le API a schermo intero per video con prefisso sono disponibili per i siti web.
+
+Se il criterio non viene configurato, il comportamento predefinito è <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
+
+Nota: questo criterio costituisce una soluzione temporanea per aiutare la transizione dalle API a schermo intero con prefisso -webkit. Ne è prevista la rimozione nella versione M130 o in alcune delle versioni successive.</translation>
 <translation id="8337114537412769126">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di suggerimenti con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca di suggerimenti vengono inviate utilizzando il metodo Get.</translation>

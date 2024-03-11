@@ -2128,6 +2128,7 @@
 <translation id="2569972178052279830">Название магазина</translation>
 <translation id="257088987046510401">Темы</translation>
 <translation id="2571655996835834626">Изменение настроек доступа сайтов к файлам cookie, JavaScript, плагинам, геоданным, микрофону, камере и другим функциям</translation>
+<translation id="257175846174451436">Рекомендуется создать группу</translation>
 <translation id="2572032849266859634">Предоставлен доступ к тому <ph name="VOLUME_NAME" /> (только чтение).</translation>
 <translation id="2573276323521243649">Вернуться на предыдущую страницу</translation>
 <translation id="2573417407488272418">Перед обновлением сохраните резервные копии приложений и файлов в папке "Файлы &gt; Мои файлы".</translation>
@@ -2252,6 +2253,7 @@
 <translation id="2669241540496514785">Не удалось запустить <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
 <translation id="2670102641511624474">Приложение "<ph name="APP_NAME" />" предоставило доступ к вкладке Chrome.</translation>
+<translation id="2670350619068134931">Меньше анимаций</translation>
 <translation id="2670403088701171361">Запретить сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="2671451824761031126">Импорт закладок и настроек завершен</translation>
 <translation id="2672142220933875349">Файл CRX поврежден, распаковать его не удалось.</translation>
@@ -2661,6 +2663,7 @@
 <translation id="2981113813906970160">Показывать большой курсор мыши</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
 <translation id="2983373101216420412">Чехол заряжен на <ph name="PERCENTAGE" /> %.</translation>
+<translation id="2984727013951557074">Файл по-прежнему синхронизируется с Диском.</translation>
 <translation id="2985348301114641460">Отправить администратору запрос на установку расширения "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{Приложение "<ph name="APP_NAME" />" удалило приложение}one{Приложение "<ph name="APP_NAME" />" удалило # приложение}few{Приложение "<ph name="APP_NAME" />" удалило # приложения}many{Приложение "<ph name="APP_NAME" />" удалило # приложений}other{Приложение "<ph name="APP_NAME" />" удалило # приложения}}</translation>
 <translation id="2987620471460279764">Текст, полученный с другого устройства</translation>
@@ -4054,6 +4057,7 @@
 <translation id="4051177682900543628">Поиск + Стрелка вправо</translation>
 <translation id="4052120076834320548">Мелкий</translation>
 <translation id="4052913941260326985">С&amp;оздать QR-код</translation>
+<translation id="4053833479432165765">&amp;Установить страницу как приложение…</translation>
 <translation id="4054070260844648638">Доступно всем</translation>
 <translation id="4056908315660577142">Время, установленное родителями для приложения Chrome "<ph name="APP_NAME" />", истекло. Лимит на завтра: <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4256,6 +4260,7 @@
 <translation id="4231141543165771749">Закрыть настройки игры</translation>
 <translation id="4231231258999726714">Установка Steam для Chromebook</translation>
 <translation id="4232375817808480934">Настройка Kerberos</translation>
+<translation id="4232484478444192782">Благодаря телефону Android вы легко выполните настройку. Название сети Wi-Fi и пароль к ней уже передаются на устройство.</translation>
 <translation id="4233739489690259993">Ваше устройство Chromebook больше не получает обновления системы безопасности и программного обеспечения. Рекомендуем перейти на более новую модель. Для предложения действуют специальные условия.</translation>
 <translation id="4235965441080806197">Отменить вход</translation>
 <translation id="4235976607074422892">Скорость прокрутки</translation>
@@ -4465,6 +4470,7 @@
 <translation id="4388650384344483842">Минимальное количество символов: 8.</translation>
 <translation id="4389091756366370506">Пользователь <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё несколько переключателей (<ph name="NUMBER_OF_OTHER_SWITCHES" />)</translation>
+<translation id="4390569024397171409">Установка приложения на устройство (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="439266289085815679">Конфигурацию Bluetooth контролирует пользователь <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Изменение файла конфигурации.</translation>
 <translation id="4393102500004843976">Клавиша поиска + Shift + <ph name="TOP_ROW_KEY" /></translation>
@@ -5466,6 +5472,7 @@
 <translation id="5185386675596372454">Новая версия "<ph name="EXTENSION_NAME" />" была отключена, так как для нее требуются дополнительные разрешения.</translation>
 <translation id="5185500136143151980">Нет подключения к Интернету</translation>
 <translation id="5186381005592669696">Выбрать язык интерфейса для поддерживаемых приложений</translation>
+<translation id="5187641678926990264">&amp;Установить страницу как приложение…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">Используется <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">Активировать порт</translation>
@@ -6108,6 +6115,7 @@
 <translation id="5696679855467848181">PPD-файл, используемый сейчас: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Окно выбора эмодзи</translation>
 <translation id="5698878456427040674">Проверьте, поддерживается ли выбранный аккаунт.</translation>
+<translation id="5699227710146832453">С вашего устройства:</translation>
 <translation id="570043786759263127">Приложения и сервисы Google Play</translation>
 <translation id="5700761515355162635">Сторонние файлы cookie разрешены</translation>
 <translation id="5700836101007545240">Администратор запретил добавлять подключения</translation>
@@ -6130,6 +6138,7 @@
 <translation id="5713033452812927234">Открываются окна с вашего предыдущего устройства…</translation>
 <translation id="5713158217420111469">Подключено устройство "<ph name="DEVICE" />"</translation>
 <translation id="5713960379473463904">Стиль ввода пробелов</translation>
+<translation id="5714100381896040477">Ограничить перемещение на экране</translation>
 <translation id="5715711091495208045">Посредник: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">Смените их прямо сейчас</translation>
 <translation id="5719854774000914513">Разрешить сайтам отправлять запрос на подключение к HID-устройствам</translation>
@@ -7345,6 +7354,7 @@
 <translation id="6675665718701918026">Подключено дополнительное устройство</translation>
 <translation id="6675985668044425385">Если сайт не работает должным образом, вы можете разрешить ему использовать сторонние файлы cookie. Для этого воспользуйтесь функцией "Защита от слежения" в адресной строке.</translation>
 <translation id="6676212663108450937">Используйте наушники при обучении голосовым командам.</translation>
+<translation id="667752334740867460">Получение информации о сети Wi-Fi…</translation>
 <translation id="6678717876183468697">URL запроса</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорость речи</translation>
@@ -7966,6 +7976,7 @@
 <translation id="7168109975831002660">Минимальный размер шрифта</translation>
 <translation id="7169122689956315694">Включить уведомления об устройствах поблизости</translation>
 <translation id="7170236477717446850">Фото профиля</translation>
+<translation id="7170751905948784001">Сведения о разработчике:</translation>
 <translation id="7171000599584840888">Добавить профиль…</translation>
 <translation id="7171259390164035663">Отказаться</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Добавить вкладку в новую группу}one{Добавить вкладки в новую группу}few{Добавить вкладки в новую группу}many{Добавить вкладки в новую группу}other{Добавить вкладки в новую группу}}</translation>
@@ -8774,6 +8785,7 @@
 <translation id="7776156998370251340">Сайт <ph name="ORIGIN" /> сможет просматривать файлы в папке "<ph name="FOLDERNAME" />", пока вы не закроете все вкладки этого сайта.</translation>
 <translation id="777637629667389858">Если вы вошли в аккаунт, защищает вас во всех сервисах Google.</translation>
 <translation id="7776701556330691704">Образцы не найдены.</translation>
+<translation id="7776950606649732730">Повторите попытку, когда этот процесс будет завершен.</translation>
 <translation id="7777624210360383048">Сочетание клавиш <ph name="SHORTCUT" /> для расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="7779840061887151693">дисплей</translation>
 <translation id="7781335840981796660">Все пользовательские аккаунты и локальные данные будут удалены.</translation>
@@ -8965,6 +8977,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> сек.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> может просматривать файл "<ph name="FILENAME" />".</translation>
 <translation id="7920482456679570420">Добавьте ниже слова, правописание которых не нужно проверять.</translation>
+<translation id="7920715534283810633">Не удается открыть: <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">Вы не можете просматривать уведомления с телефона в этом управляемом аккаунте. Повторите попытку, используя другой аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">Это расширение может читать и изменять данные <ph name="HOST" />.</translation>
 <translation id="7922606348470480702">1 расширение</translation>
@@ -10283,6 +10296,7 @@
 <translation id="8916476537757519021">Субфрейм в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Включить функцию</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> пользователя <ph name="GIVEN_NAME" /></translation>
+<translation id="8918900204934259333">Установка приложения…</translation>
 <translation id="891931289445130855">Удалить данные и разрешения</translation>
 <translation id="8920133120839850939">Выберите вкладку с дополнительными жестами, а затем включите функцию "Пролистывание страниц" для перехода вперед или назад.</translation>
 <translation id="8922624386829239660">Перемещать экран, когда курсор касается его краев</translation>
@@ -10776,6 +10790,7 @@
 <translation id="992032470292211616">Расширения, приложения и темы могут причинить вред вашему мобильному устройству. Продолжить?</translation>
 <translation id="992256792861109788">Розовый</translation>
 <translation id="992592832486024913">Отключить ChromeVox (голосовое сопровождение)</translation>
+<translation id="992653586748191655">Рекомендуется создать группы (<ph name="NUM" />)</translation>
 <translation id="992778845837390402">Выполняется резервное копирование Linux.</translation>
 <translation id="993540765962421562">Выполняется установка</translation>
 <translation id="994289308992179865">&amp;Повтор</translation>

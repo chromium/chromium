@@ -2123,6 +2123,7 @@
 <translation id="2569972178052279830">खुद्रा विक्रेताको नाम</translation>
 <translation id="257088987046510401">थिमहरू</translation>
 <translation id="2571655996835834626">कुकी, JavaScript, प्लग-इन, भूस्थान, माइक्रोफोन र क्यामेरा जस्ता सुविधाहरूमाथि वेबसाइटको पहुँच नियन्त्रण गर्ने आफ्ना सेटिङहरू परिवर्तन गर्नुहोस्।</translation>
+<translation id="257175846174451436">सिफारिस गरिएको ट्याब समूह</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> मा पढ्ने-मात्र अनुमति प्रदान गरिएको छ।</translation>
 <translation id="2573276323521243649">अवतार चयन गर्ने पेजबाट अघिल्लो पेजमा फर्कनुहोस्</translation>
 <translation id="2573417407488272418">अपग्रेड गर्नुअघि एप तथा फाइलहरू ब्याकअप गरेर "फाइलहरू &gt; मेरा फाइलहरू" मा राख्नुहोस्।</translation>
@@ -2658,6 +2659,7 @@
 <translation id="2981113813906970160">ठुलो माउस कर्सर देखाउँनुहोस्</translation>
 <translation id="2983102365694924129">तपाईंले कुनै साइटमा गरेका गतिविधिका आधारमा। यो सेटिङ अफ छ।</translation>
 <translation id="2983373101216420412">केसमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="2984727013951557074">यो फाइल अझै पनि Drive मा सिंक भइरहेको छ।</translation>
 <translation id="2985348301114641460">आफ्ना प्रशासकलाई "<ph name="EXTENSION_NAME" />" स्थापना गरिदिन आग्रह गर्दै एउटा अनुरोध पठाउने हो?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> ले एउटा एप अनइन्स्टल गरेको छ}other{<ph name="APP_NAME" /> ले # वटा एप अनइन्स्टल गरेको छ}}</translation>
 <translation id="2987620471460279764">अर्को यन्त्रबाट आदान प्रदान गरिएको टेक्स्ट म्यासेज</translation>
@@ -4050,6 +4052,7 @@
 <translation id="4051177682900543628">सर्च + राइट एरो</translation>
 <translation id="4052120076834320548">सानु</translation>
 <translation id="4052913941260326985">QR कोड बनाउनुहोस्</translation>
+<translation id="4053833479432165765">एपका रूपमा पेज इन्स्टल गर्नुहोस्...</translation>
 <translation id="4054070260844648638">सबैजनाले देख्न सक्ने</translation>
 <translation id="4056908315660577142">तपाईं आफ्ना अभिभावकले <ph name="APP_NAME" /> Chrome एप कति समय प्रयोग गर्न पाउने भनी तोक्नुभएको समयको सीमामा पुग्नुभएको छ। तपाईं भोलि यो एप <ph name="TIME_LIMIT" /> प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4462,6 +4465,7 @@
 <translation id="4388650384344483842">कम्तीमा ८ वटा वर्ण प्रयोग गर्नुहोस्</translation>
 <translation id="4389091756366370506">प्रयोगकर्ता <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र अन्य <ph name="NUMBER_OF_OTHER_SWITCHES" /> वटा स्विच थपिए</translation>
+<translation id="4390569024397171409">आफ्नो <ph name="DEVICE_TYPE" /> मा एप इन्स्टल गर्नुहोस्</translation>
 <translation id="439266289085815679">ब्लुटुथ कन्फिगुरेसन <ph name="USER_EMAIL" /> द्वारा नियन्त्रित छ।</translation>
 <translation id="4392896746540753732">कन्फिगुरेसन फाइल सम्पादन गर्नुहोस्</translation>
 <translation id="4393102500004843976">खोज्नुहोस् + सिफ्ट + <ph name="TOP_ROW_KEY" /></translation>
@@ -5463,6 +5467,7 @@
 <translation id="5185386675596372454">"<ph name="EXTENSION_NAME" />" को नयाँ संस्करणलाई अक्षम गरिएको छ किनकी यसलाई धेरै अनुमतिहरूको आवश्यकता पर्छ।</translation>
 <translation id="5185500136143151980">इन्टरनेट छैन</translation>
 <translation id="5186381005592669696">यो सुविधा उपलब्ध भएका एपहरूमा डिस्प्लेको टेक्स्टको भाषा कस्टमाइज गर्नुहोस्</translation>
+<translation id="5187641678926990264">एपका रूपमा पेज इन्स्टल गर्नुहोस्...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> प्रयोग गरिँदै छ</translation>
 <translation id="5190926251776387065">पोर्ट अन गर्नुहोस्</translation>
@@ -6105,6 +6110,7 @@
 <translation id="5696679855467848181">हाल प्रयोगमा रहेको PPD फाइल: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">इमोजी पिकर</translation>
 <translation id="5698878456427040674">चयन गरिएको खाता प्रयोग गर्न मिल्छ कि मिल्दैन भन्ने कुरा जाँच्नुहोस्।</translation>
+<translation id="5699227710146832453">निम्न साइटबाट</translation>
 <translation id="570043786759263127">Google Play एप र सेवाहरू</translation>
 <translation id="5700761515355162635">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5700836101007545240">तपाईंका प्रशासकले जडान थप्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
@@ -7957,6 +7963,7 @@
 <translation id="7168109975831002660">न्यूनतम फन्ट साइज</translation>
 <translation id="7169122689956315694">डिभाइसहरू नजिकै हुँदा सूचना दिने सुविधा अन गरियोस्</translation>
 <translation id="7170236477717446850">प्रोफाइल तस्बिर</translation>
+<translation id="7170751905948784001">विकासकर्ताका बारेमा जानकारी:</translation>
 <translation id="7171000599584840888">प्रोफाइल हाल्नुहोस्...</translation>
 <translation id="7171259390164035663">दर्ता नगर्नुहोस्</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{नयाँ समूहमा ट्याब थप्नुहोस्}other{नयाँ समूहमा ट्याबहरू थप्नुहोस्}}</translation>
@@ -8766,6 +8773,7 @@
 <translation id="7776156998370251340">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा रहेका फाइलहरू हेर्न सक्ने छ</translation>
 <translation id="777637629667389858">तपाईं साइन इन हुनुभएका अवस्थामा Google का सेवाहरूमा तपाईंको जानकारी सुरक्षित राख्छ।</translation>
 <translation id="7776701556330691704">कुनै पनि आवाज फेला परेन</translation>
+<translation id="7776950606649732730">फाइल सिंक भइसकेपछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> का लागि सर्टकट <ph name="SHORTCUT" /></translation>
 <translation id="7779840061887151693">डिस्प्ले</translation>
 <translation id="7781335840981796660">सबै प्रयोगकर्ता खाताहरू र स्थानीय लगत हटाइनेछन्।</translation>
@@ -8957,6 +8965,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकेन्ड</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न सक्छ</translation>
 <translation id="7920482456679570420">तपाईं जुन जुन शब्दहरूको हिज्जे जाँच नगरियोस् भन्ने चाहनुहुन्छ ती शब्दहरू थप्नुहोस्</translation>
+<translation id="7920715534283810633"><ph name="FILE_NAMES" /> खोल्न मिल्दैन</translation>
 <translation id="7921347341284348270">तपाईं व्यवस्थापन गरिएको यो खाता प्रयोग गरी आफ्नो फोनका सूचनाहरू हेर्न सक्नुहुन्न। अर्कै खाता प्रयोग गरी फेरि प्रयास गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">यो एक्स्टेन्सनले <ph name="HOST" /> रिड गर्न वा परिवर्तन गर्न सक्छ</translation>
 <translation id="7922606348470480702">एउटा एक्स्टेन्सन</translation>
@@ -10271,6 +10280,7 @@
 <translation id="8916476537757519021">इनकगनिटो सबफ्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">हो, म सहमत छु</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> को <ph name="DEVICE_TYPE" /></translation>
+<translation id="8918900204934259333">एप इन्स्टल गरिँदै छ...</translation>
 <translation id="891931289445130855">डेटा मेटाउनुहोस् तथा अनुमति रद्द गर्नुहोस्</translation>
 <translation id="8920133120839850939">"थप इसाराहरू" ट्याब छनौट गर्नुहोस् अनि अगाडि र पछाडि जान पेजहरूका बिचमा स्वाइप गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="8922624386829239660">माउसको कर्सरले स्क्रिनका किनारामा छुँदा स्क्रिन सारियोस्</translation>
@@ -10764,6 +10774,7 @@
 <translation id="992032470292211616">विस्तारहरू, एपहरू, र विषयवस्तुहरूले तपाइँको यन्त्रलाई हानी गर्न सक्छ। के तपाइँ पक्का हुनुहुन्छ की तपाइँ जारी राख्न चाहनुहुन्छ?</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 <translation id="992592832486024913">ChromeVox असक्षम गर्नुहोस् (बोली पृष्ठपोषण)</translation>
+<translation id="992653586748191655">सिफारिस गरिएका <ph name="NUM" /> वटा ट्याब समूह</translation>
 <translation id="992778845837390402">हाल Linux को ब्याकअप हुँदै छ</translation>
 <translation id="993540765962421562">स्थापना गर्ने कार्य जारी छ</translation>
 <translation id="994289308992179865">&amp;लुप</translation>

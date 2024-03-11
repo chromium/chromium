@@ -2141,7 +2141,7 @@
 <translation id="2569972178052279830">零售商名稱</translation>
 <translation id="257088987046510401">主題背景</translation>
 <translation id="2571655996835834626">變更設定來控制網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
-<translation id="257175846174451436">建議的分頁群組</translation>
+<translation id="257175846174451436">已建議分頁群組</translation>
 <translation id="2572032849266859634">已授與「<ph name="VOLUME_NAME" />」的唯讀權限。</translation>
 <translation id="2573276323521243649">從選取顯示圖片頁面返回</translation>
 <translation id="2573417407488272418">升級前將應用程式和檔案備份至「檔案」&gt;「我的檔案」。</translation>
@@ -2266,6 +2266,7 @@
 <translation id="2669241540496514785">無法開啟 <ph name="APP_NAME" />。</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
+<translation id="2670350619068134931">減少動畫</translation>
 <translation id="2670403088701171361">不允許網站查看剪貼簿中的文字或圖片</translation>
 <translation id="2671451824761031126">現在可以使用您的書籤和設定了</translation>
 <translation id="2672142220933875349">crx 檔案損毀，無法解除套件。</translation>
@@ -2675,7 +2676,7 @@
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2983102365694924129">根據您在網站上的活動推薦。此設定已關閉。</translation>
 <translation id="2983373101216420412">充電盒電量係 <ph name="PERCENTAGE" />%。</translation>
-<translation id="2984727013951557074">系統仍在將檔案同步到 Google 雲端硬碟。</translation>
+<translation id="2984727013951557074">檔案仍在同步至「雲端硬碟」。</translation>
 <translation id="2985348301114641460">要向管理員傳送「<ph name="EXTENSION_NAME" />」的安裝要求嗎？</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」已解除安裝 應用程式}other{「<ph name="APP_NAME" />」已解除安裝 # 個應用程式}}</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
@@ -4065,7 +4066,7 @@
 <translation id="4051177682900543628">搜尋鍵 + 向右箭咀鍵</translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4052913941260326985">建立 QR code(&amp;Q)</translation>
-<translation id="4053833479432165765">將頁面安裝為應用程式(&amp;I)...</translation>
+<translation id="4053833479432165765">將網頁作為應用程式安裝…</translation>
 <translation id="4054070260844648638">向所有人顯示</translation>
 <translation id="4056908315660577142">您已達到家長為「<ph name="APP_NAME" />」Chrome 應用程式設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4268,6 +4269,7 @@
 <translation id="4231141543165771749">關閉遊戲控制項</translation>
 <translation id="4231231258999726714">正在設定 Chromebook 版 Steam</translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
+<translation id="4232484478444192782">Android 手機能為你處理大小事，目前正在轉移你的 Wi-Fi 和密碼。</translation>
 <translation id="4233739489690259993">Chromebook 不會再收到安全和軟件更新。請改用新款裝置，以取得最新的安全性和新功能。須遵守優惠條款。</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4235976607074422892">捲動速度</translation>
@@ -5480,7 +5482,7 @@
 <translation id="5185386675596372454">由於最新版本的「<ph name="EXTENSION_NAME" />」需要更多權限，因此已經停用。</translation>
 <translation id="5185500136143151980">沒有互聯網連線</translation>
 <translation id="5186381005592669696">自訂支援應用程式的顯示語言</translation>
-<translation id="5187641678926990264">將頁面安裝為應用程式(&amp;I)...</translation>
+<translation id="5187641678926990264">將網頁作為應用程式安裝…</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869">儲存空間使用量：<ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
@@ -6144,6 +6146,7 @@
 <translation id="5713033452812927234">正在開啟舊裝置中的視窗</translation>
 <translation id="5713158217420111469">連咗線去 <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">空格鍵輸入樣式</translation>
+<translation id="5714100381896040477">限制螢幕上的動作</translation>
 <translation id="5715711091495208045">外掛程式代理組件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">您應立即變更這些密碼</translation>
 <translation id="5719854774000914513">網站可要求連接 USB 裝置</translation>
@@ -7353,6 +7356,7 @@
 <translation id="6675665718701918026">已連接指標裝置</translation>
 <translation id="6675985668044425385">如果網站唔可以正常運作，可以透過網址列入面嘅追蹤保護功能選項，為嗰個網站啟用第三方 Cookie。</translation>
 <translation id="6676212663108450937">訓練聲音時，建議您使用耳機</translation>
+<translation id="667752334740867460">正在接收 Wi-Fi 資料…</translation>
 <translation id="6678717876183468697">查詢網址</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">語速</translation>
@@ -7974,7 +7978,7 @@
 <translation id="7168109975831002660">最小字型大小</translation>
 <translation id="7169122689956315694">附近有其他裝置時開啟通知</translation>
 <translation id="7170236477717446850">個人檔案相片</translation>
-<translation id="7170751905948784001">開發人員資訊：</translation>
+<translation id="7170751905948784001">開發人員資料：</translation>
 <translation id="7171000599584840888">新增設定檔…</translation>
 <translation id="7171259390164035663">不要註冊</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{在新群組中加入分頁}other{在新群組中加入分頁}}</translation>
@@ -8783,7 +8787,7 @@
 <translation id="7776156998370251340">在您關閉此網站的所有分頁前，<ph name="ORIGIN" /> 都能查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
 <translation id="7776701556330691704">找不到語音</translation>
-<translation id="7776950606649732730">請於檔案同步完成後再試一次。</translation>
+<translation id="7776950606649732730">請在檔案完成同步後再試一次。</translation>
 <translation id="7777624210360383048">「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
 <translation id="7779840061887151693">顯示屏</translation>
 <translation id="7781335840981796660">系統將移除所有使用者帳戶和本機數據。</translation>
@@ -8975,7 +8979,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可查看「<ph name="FILENAME" />」</translation>
 <translation id="7920482456679570420">新增您想拼字檢查略過的字詞</translation>
-<translation id="7920715534283810633">無法開啟「<ph name="FILE_NAMES" />」</translation>
+<translation id="7920715534283810633">無法開啟 <ph name="FILE_NAMES" /></translation>
 <translation id="7921347341284348270">您無法在此受管帳戶上查看手機的通知。請改用其他帳戶重試。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">此擴充程式可讀取和變更 <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 個擴充程式</translation>
@@ -10291,7 +10295,7 @@
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">係，我同意</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
-<translation id="8918900204934259333">正在安裝應用程式...</translation>
+<translation id="8918900204934259333">正在安裝應用程式…</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>
 <translation id="8920133120839850939">選取「更多手勢」分頁，然後開啟「滑動瀏覽頁面」以瀏覽上一個或下一個頁面</translation>
 <translation id="8922624386829239660">在滑鼠觸觸畫面邊緣時移動畫面</translation>
@@ -10785,7 +10789,7 @@
 <translation id="992032470292211616">擴充功能、應用程式和主題可能會損害您的裝置，您確定要繼續嗎？</translation>
 <translation id="992256792861109788">粉紅色</translation>
 <translation id="992592832486024913">停用 ChromeVox (互動朗讀)</translation>
-<translation id="992653586748191655"><ph name="NUM" /> 個建議的分頁群組</translation>
+<translation id="992653586748191655">已建議 <ph name="NUM" /> 個分頁群組</translation>
 <translation id="992778845837390402">正在執行 Linux 備份</translation>
 <translation id="993540765962421562">正在安装</translation>
 <translation id="994289308992179865">循環播放(&amp;L)</translation>

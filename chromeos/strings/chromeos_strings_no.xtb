@@ -407,6 +407,7 @@
 <translation id="3486220673238053218">definisjon</translation>
 <translation id="3488065109653206955">Delvis aktivert</translation>
 <translation id="3492882532495507361">Et <ph name="OFFICE_STYLE" /> kontor med <ph name="OFFICE_COLOR" /> toner</translation>
+<translation id="3493187369049186498">Chromebook måler databruk. Disse målingene kan avvike fra operatørens.</translation>
 <translation id="3502426834823382181">se alle appene</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />ytelsessporingsdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-oppdatering</translation>
@@ -466,6 +467,7 @@
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
 <translation id="3877066159641251281">Lytt til oversettelsen</translation>
 <translation id="3885327323343477505">Bytt skjermsparer</translation>
+<translation id="3889914174935857450">Tilbakestillingsdato</translation>
 <translation id="391412459402535266">Kan ikke teste enheten. Bytt til laptopmodus for å teste.</translation>
 <translation id="3916998944874125962">ta skjermdump</translation>
 <translation id="3923184630988645767">Databruk</translation>
@@ -832,7 +834,7 @@
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
-<translation id="6108952804512516814">Skap med AI</translation>
+<translation id="6108952804512516814">Lag med AI</translation>
 <translation id="6112878310391905610">Denne innstillingen administreres av administratorene dine</translation>
 <translation id="6113701710518389813">Oppoverpil</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> og <ph name="NUMBER" /> album til</translation>
@@ -854,6 +856,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>
 <translation id="6232017090690406397">Batteri</translation>
+<translation id="6234024205316847054">Vis omriss</translation>
 <translation id="6235460611964961764">Tilbakestill databruken manuelt</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>
 <translation id="6250316632541035980">bacon og egg</translation>
@@ -1004,6 +1007,7 @@
 <translation id="7107255225945990211">Velg grafikk som kun finnes på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7119389851461848805">av/på</translation>
+<translation id="7129287270910503851">Databruken din tilbakestilles denne dagen hver måned</translation>
 <translation id="7130438335435247835">Navn på tilgangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navnetjener}other{Navnetjenere}}</translation>
 <translation id="7135814714616751706">Søkesnarveier</translation>
@@ -1242,6 +1246,7 @@
 <translation id="8508640263392900755">APN-detaljer</translation>
 <translation id="8522687886059337719">Du har nå tilgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunner<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og en ny <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skjermsparer<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Basert på AI-løsninger fra Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>

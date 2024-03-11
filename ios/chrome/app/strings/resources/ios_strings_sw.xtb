@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Barua imetumwa.</translation>
 <translation id="1582732959743469162">Hatua hii itasimamisha upakuaji wako wote wa sasa.</translation>
 <translation id="158591023028013564">{count,plural, =1{Ukurasa umewekwa kwenye orodha yako ya kusoma}other{Kurasa {count} zimewekwa kwenye orodha yako ya kusoma}}</translation>
+<translation id="1587629076612412684">Wekea Huduma mapendeleo</translation>
 <translation id="1594034544529347967">Litaanza</translation>
 <translation id="160275202205869636">Ukiwasha, tumia na uhifadhi data kwenye Akaunti yako ya Google. Ukizima, data inahifadhiwa kwenye kifaa hiki tu.</translation>
 <translation id="1605405588277479165">Kimezimwa - Haipendekezwi</translation>
@@ -1605,6 +1606,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9106655997975673326">Kwenye "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Kagua kama kuna manenosiri yaliyoathiriwa</translation>
 <translation id="9109699888944026290">{count,plural, =1{Nenosiri Jipya La Tovuti Hii}other{Manenosiri Mapya Ya Tovuti Hii}}</translation>
+<translation id="9110489518258031250">Dhibiti jinsi historia yako ya kuvinjari iliyosawazishwa inaweza kutumika kuwekea mapendeleo huduma nyingine za Google</translation>
 <translation id="9120217828624527905">Badilisha utumie Tafsiri ya Ukurasa Mzima</translation>
 <translation id="9124387962554796433">Huenda Google ikatumia historia yako kuboresha huduma ya Tafuta na huduma nyingine za Google.</translation>
 <translation id="9137526406337347448">Huduma za Google</translation>
