@@ -267,7 +267,8 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
       std::move(gmb_handle));
   CHECK(swap_chain_info.shared_image);
   swap_chain_info.sync_token = sii->GenVerifiedSyncToken();
-  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format));
+  DCHECK_EQ(swap_chain_info.shared_image->GetTextureTarget(format),
+            static_cast<uint32_t>(GL_TEXTURE_2D));
 
   DVLOG(2) << ": CreateSharedImage, mailbox="
            << swap_chain_info.shared_image->mailbox().ToDebugString()
