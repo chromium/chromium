@@ -17,7 +17,6 @@
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_with_dedicated_underlying_model.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_with_shared_underlying_model.h"
@@ -49,14 +48,19 @@ BuildLegacyBookmarkModelWithDedicatedUnderlyingModel(
     ChromeBrowserState* browser_state) {
   CHECK(!base::FeatureList::IsEnabled(
       syncer::kEnableBookmarkFoldersForAccountStorage));
+  // When using a dedicated BookmarkModel instance, another factory
+  // (AccountBookmarkModelFactory) deals with account bookmarks. Hence,
+  // dependencies related to account bookmarks can be null here. This includes
+  // BookmarkClientImpl, which AccountBookmarkModelFactory instantiates
+  // separately.
   auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
       std::make_unique<BookmarkClientImpl>(
           browser_state,
           ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
           ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state),
-          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-          BookmarkModelType::kLocalOrSyncable));
+          /*account_bookmark_sync_service=*/nullptr,
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)));
   bookmark_model->Load(browser_state->GetStatePath());
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->StartObservingBookmarkModel(bookmark_model.get());

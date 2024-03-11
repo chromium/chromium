@@ -18,7 +18,6 @@
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_with_dedicated_underlying_model.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_with_shared_underlying_model.h"
@@ -52,15 +51,21 @@ BuildLegacyBookmarkModelWithDedicatedUnderlyingModel(
     ChromeBrowserState* browser_state) {
   CHECK(!base::FeatureList::IsEnabled(
       syncer::kEnableBookmarkFoldersForAccountStorage));
-  // Using nullptr for `ManagedBookmarkService`, since managed bookmarks
+  // When using a dedicated BookmarkModel instance, account bookmarks are
+  // actually stored as descendants of the local-or-syncable permanent folders
+  // in the dedicated BookmarkModel instance (created here). Their sync
+  // metadata is also persisted as regular (local-or-syncable) sync metadata, so
+  // BookmarkClientImpl takes a null `account_bookmark_sync_service`.
+  //
+  // Also, using nullptr for `ManagedBookmarkService`, since managed bookmarks
   // affect only the local bookmark storage.
   auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
       std::make_unique<BookmarkClientImpl>(
           browser_state, /*managed_bookmark_service=*/nullptr,
           ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state),
-          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-          BookmarkModelType::kAccount));
+          /*account_bookmark_sync_service=*/nullptr,
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)));
   bookmark_model->LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
       browser_state->GetStatePath());
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)

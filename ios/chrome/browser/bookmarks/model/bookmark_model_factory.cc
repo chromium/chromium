@@ -21,6 +21,7 @@
 #include "components/sync/base/features.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
@@ -125,15 +126,15 @@ std::unique_ptr<KeyedService> BuildUnifiedBookmarkModel(
   CHECK(base::FeatureList::IsEnabled(
       syncer::kEnableBookmarkFoldersForAccountStorage));
 
-  // TODO(crbug.com/326185948): Inject both instances of BookmarkSyncService.
   auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
       std::make_unique<BookmarkClientImpl>(
           browser_state,
           ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
           ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state),
-          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
-          BookmarkModelType::kLocalOrSyncable));
+          ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
+              browser_state),
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)));
   bookmark_model->Load(browser_state->GetStatePath());
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->StartObservingBookmarkModel(bookmark_model.get());
@@ -199,6 +200,7 @@ BookmarkModelFactory::BookmarkModelFactory()
           BrowserStateDependencyManager::GetInstance()) {
   if (base::FeatureList::IsEnabled(
           syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());
     DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
     DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
     DependsOn(ManagedBookmarkServiceFactory::GetInstance());

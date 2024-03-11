@@ -13,7 +13,6 @@
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "components/power_bookmarks/core/bookmark_client_base.h"
 
-enum class BookmarkModelType;
 class BookmarkUndoService;
 class ChromeBrowserState;
 class GURL;
@@ -32,9 +31,10 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
   BookmarkClientImpl(
       ChromeBrowserState* browser_state,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
-      sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
-      BookmarkUndoService* bookmark_undo_service,
-      BookmarkModelType model_type_for_uma);
+      sync_bookmarks::BookmarkSyncService*
+          local_or_syncable_bookmark_sync_service,
+      sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+      BookmarkUndoService* bookmark_undo_service);
 
   BookmarkClientImpl(const BookmarkClientImpl&) = delete;
   BookmarkClientImpl& operator=(const BookmarkClientImpl&) = delete;
@@ -77,14 +77,15 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
   // be null during testing.
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 
-  // Pointer to the BookmarkSyncService responsible for encoding and decoding
-  // sync metadata persisted together with the bookmarks model.
-  const raw_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service_;
+  // Pointers to the two BookmarkSyncService instances responsible for encoding
+  // and decoding sync metadata persisted together with the bookmarks model.
+  const raw_ptr<sync_bookmarks::BookmarkSyncService>
+      local_or_syncable_bookmark_sync_service_;
+  const raw_ptr<sync_bookmarks::BookmarkSyncService>
+      account_bookmark_sync_service_;
 
   // Pointer to BookmarkUndoService, responsible for making operations undoable.
   const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
-
-  const BookmarkModelType model_type_for_uma_;
 
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
 };
