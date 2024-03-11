@@ -171,14 +171,11 @@ LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     // the term "content".
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().BlockSum();
-    std::optional<LayoutUnit> inline_size;
-    if (container_builder_.InlineSize() != kIndefiniteSize)
-      inline_size = container_builder_.InlineSize();
     return ComputeBlockSizeForFragment(
                GetConstraintSpace(), Style(), BorderPadding(),
                sum_hypothetical_main_size.ClampNegativeToZero() +
                    border_scrollbar_padding,
-               inline_size) -
+               container_builder_.InlineSize()) -
            border_scrollbar_padding;
   }
   return ChildAvailableSize().inline_size;

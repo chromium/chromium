@@ -108,7 +108,7 @@ class LengthUtilsTestWithNode : public RenderingTest {
       const BlockNode& node,
       ConstraintSpace constraint_space = ConstructConstraintSpace(200, 300),
       LayoutUnit content_size = LayoutUnit(),
-      std::optional<LayoutUnit> inline_size = std::nullopt) {
+      LayoutUnit inline_size = kIndefiniteSize) {
     const auto& style = node.Style();
     BoxStrut border_padding = ComputeBorders(constraint_space, node) +
                               ComputePadding(constraint_space, style);

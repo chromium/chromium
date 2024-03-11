@@ -267,7 +267,7 @@ CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     const ComputedStyle&,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    std::optional<LayoutUnit> inline_size,
+    LayoutUnit inline_size,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 CORE_EXPORT LayoutUnit
@@ -324,7 +324,7 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
     const ComputedStyle&,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    std::optional<LayoutUnit> inline_size,
+    LayoutUnit inline_size,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 // Calculates default content size for html and body elements in quirks mode.

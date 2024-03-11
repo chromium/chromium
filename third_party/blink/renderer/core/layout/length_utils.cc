@@ -470,7 +470,7 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const ConstraintSpace& space,
 
   const auto block_size = ComputeBlockSizeForFragment(
       space, style, border_padding, /* intrinsic_size */ kIndefiniteSize,
-      /* inline_size */ std::nullopt);
+      /* inline_size */ kIndefiniteSize);
 
   if (block_size == kIndefiniteSize)
     return kIndefiniteSize;
@@ -686,7 +686,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     const ComputedStyle& style,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    std::optional<LayoutUnit> inline_size,
+    LayoutUnit inline_size,
     LayoutUnit override_available_size = kIndefiniteSize) {
   MinMaxSizes min_max = ComputeMinMaxBlockSizes(space, style, border_padding,
                                                 override_available_size);
@@ -706,8 +706,8 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   Length logical_height = style.LogicalHeight();
 
   LayoutUnit extent = kIndefiniteSize;
-  if (has_aspect_ratio && inline_size) {
-    DCHECK_GE(*inline_size, LayoutUnit());
+  if (has_aspect_ratio && inline_size != kIndefiniteSize) {
+    DCHECK_GE(inline_size, LayoutUnit());
     const bool has_explicit_stretch =
         logical_height.IsAuto() &&
         space.BlockAutoBehavior() == AutoSizeBehavior::kStretchExplicit &&
@@ -716,7 +716,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
         !has_explicit_stretch) {
       extent = BlockSizeFromAspectRatio(
           border_padding, style.LogicalAspectRatio(),
-          style.BoxSizingForAspectRatio(), *inline_size);
+          style.BoxSizingForAspectRatio(), inline_size);
       DCHECK_NE(extent, kIndefiniteSize);
 
       // Apply the automatic minimum size for aspect ratio:
@@ -761,7 +761,7 @@ LayoutUnit ComputeBlockSizeForFragment(const ConstraintSpace& constraint_space,
                                        const ComputedStyle& style,
                                        const BoxStrut& border_padding,
                                        LayoutUnit intrinsic_size,
-                                       std::optional<LayoutUnit> inline_size,
+                                       LayoutUnit inline_size,
                                        LayoutUnit override_available_size) {
   // The |override_available_size| should only be used for <table>s.
   DCHECK(override_available_size == kIndefiniteSize ||
@@ -792,7 +792,7 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
     const ComputedStyle& style,
     const BoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    std::optional<LayoutUnit> inline_size,
+    LayoutUnit inline_size,
     LayoutUnit override_available_size) {
   if (space.IsInitialBlockSizeIndefinite())
     return intrinsic_size;
@@ -1473,43 +1473,38 @@ FragmentGeometry CalculateInitialFragmentGeometry(
     return {border_box_size, border, scrollbar, padding};
   }
 
-  std::optional<LayoutUnit> inline_size;
-  const auto default_block_size = CalculateDefaultBlockSize(
-      space, node, break_token, border_scrollbar_padding);
+  const LayoutUnit inline_size =
+      is_intrinsic ? kIndefiniteSize
+                   : ComputeInlineSizeForFragment(space, node, border_padding,
+                                                  min_max_sizes_func);
 
-  if (!is_intrinsic &&
-      (space.IsFixedInlineSize() ||
-       !InlineLengthUnresolvable(space, style.LogicalWidth()))) {
-    inline_size = ComputeInlineSizeForFragment(space, node, border_padding,
-                                               min_max_sizes_func);
-
-    if (UNLIKELY(*inline_size < border_scrollbar_padding.InlineSum() &&
-                 scrollbar.InlineSum() && !space.IsAnonymous())) {
-      // Clamp the inline size of the scrollbar, unless it's larger than the
-      // inline size of the content box, in which case we'll return that
-      // instead. Scrollbar handling is quite bad in such situations, and this
-      // method here is just to make sure that left-hand scrollbars don't mess
-      // up scrollWidth. For the full story, visit http://crbug.com/724255.
-      const auto content_box_inline_size =
-          *inline_size - border_padding.InlineSum();
-
-      if (scrollbar.InlineSum() > content_box_inline_size) {
-        if (scrollbar.inline_end) {
-          DCHECK(!scrollbar.inline_start);
-          scrollbar.inline_end = content_box_inline_size;
-        } else {
-          DCHECK(scrollbar.inline_start);
-          scrollbar.inline_start = content_box_inline_size;
-        }
+  if (UNLIKELY(inline_size != kIndefiniteSize &&
+               inline_size < border_scrollbar_padding.InlineSum() &&
+               scrollbar.InlineSum() && !space.IsAnonymous())) {
+    // Clamp the inline size of the scrollbar, unless it's larger than the
+    // inline size of the content box, in which case we'll return that instead.
+    // Scrollbar handling is quite bad in such situations, and this method here
+    // is just to make sure that left-hand scrollbars don't mess up scrollWidth.
+    // For the full story, visit http://crbug.com/724255.
+    const auto content_box_inline_size =
+        inline_size - border_padding.InlineSum();
+    if (scrollbar.InlineSum() > content_box_inline_size) {
+      if (scrollbar.inline_end) {
+        DCHECK(!scrollbar.inline_start);
+        scrollbar.inline_end = content_box_inline_size;
+      } else {
+        DCHECK(scrollbar.inline_start);
+        scrollbar.inline_start = content_box_inline_size;
       }
     }
   }
 
+  const auto default_block_size = CalculateDefaultBlockSize(
+      space, node, break_token, border_scrollbar_padding);
   const auto block_size = ComputeInitialBlockSizeForFragment(
       space, style, border_padding, default_block_size, inline_size);
 
-  return {LogicalSize(inline_size.value_or(kIndefiniteSize), block_size),
-          border, scrollbar, padding};
+  return {LogicalSize(inline_size, block_size), border, scrollbar, padding};
 }
 
 FragmentGeometry CalculateInitialFragmentGeometry(
@@ -1620,7 +1615,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
   if (space.IsTableCell() && style.LogicalHeight().IsFixed()) {
     LayoutUnit block_size = ComputeBlockSizeForFragmentInternal(
         space, style, border_padding, kIndefiniteSize /* intrinsic_size */,
-        std::nullopt /* inline_size */);
+        kIndefiniteSize /* inline_size */);
     DCHECK_NE(block_size, kIndefiniteSize);
     return {child_available_size.inline_size,
             (block_size - border_scrollbar_padding.BlockSum())

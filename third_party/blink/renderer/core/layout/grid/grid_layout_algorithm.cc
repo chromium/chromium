@@ -1070,14 +1070,10 @@ LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
   const auto& node = To<GridNode>(subgrid_data.node);
   const auto& style = node.Style();
 
-  const auto available_inline_size =
-      std::make_optional(space.AvailableSize().inline_size);
-
   return ComputeBlockSizeForFragment(
       space, style, ComputeBorders(space, node) + ComputePadding(space, style),
       node.ComputeSubgridIntrinsicBlockSize(sizing_subtree, space),
-      (*available_inline_size == kIndefiniteSize) ? std::nullopt
-                                                  : available_inline_size);
+      space.AvailableSize().inline_size);
 }
 
 }  // namespace
