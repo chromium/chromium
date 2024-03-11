@@ -134,6 +134,10 @@ bool PrefetchNIKScopeEnabled();
 // skipped. See crbug.com/1503003 for details.
 bool PrefetchDocumentManagerEarlyCookieCopySkipped();
 
+// Returns true if browser-initiated prefetch is enabled.
+// Please see crbug.com/40946257 for more details.
+bool PrefetchBrowserInitiatedTriggersEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_

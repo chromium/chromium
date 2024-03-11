@@ -34,6 +34,10 @@ BASE_DECLARE_FEATURE(kPrefetchNIKScope);
 // skipped. See crbug.com/1503003 for details.
 BASE_DECLARE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped);
 
+// If enabled, browser-initiated prefetch is become to be allowed.
+// Please see crbug.com/40946257 for more details.
+BASE_DECLARE_FEATURE(kPrefetchBrowserInitiatedTriggers);
+
 // If enabled, a will retrieve and store responses from/to the HTTP cache
 // whenever possible.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUsesHTTPCache);

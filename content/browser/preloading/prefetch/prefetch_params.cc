@@ -287,4 +287,9 @@ bool PrefetchDocumentManagerEarlyCookieCopySkipped() {
       features::kPrefetchDocumentManagerEarlyCookieCopySkipped);
 }
 
+bool PrefetchBrowserInitiatedTriggersEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kPrefetchBrowserInitiatedTriggers);
+}
+
 }  // namespace content
