@@ -226,15 +226,15 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
         base::TimeTicks() + base::Microseconds(timestamp_us);
     base::UmaHistogramCustomTimes(
         "WebRTC.Video.CaptureTimeToTimestampAligner.Ms",
-        timestamp_aligner_timestamp -
+        base::Milliseconds(250) + timestamp_aligner_timestamp -
             frame->metadata().capture_begin_time.value(),
-        base::TimeDelta(), base::Milliseconds(250), 50);
+        base::TimeDelta(), base::Milliseconds(500), 50);
     if (frame->metadata().reference_time.has_value()) {
       base::UmaHistogramCustomTimes(
           "WebRTC.Video.CaptureTimeToReferenceTime.Ms",
-          frame->metadata().reference_time.value() -
+          base::Milliseconds(250) + frame->metadata().reference_time.value() -
               frame->metadata().capture_begin_time.value(),
-          base::TimeDelta(), base::Milliseconds(250), 50);
+          base::TimeDelta(), base::Milliseconds(500), 50);
     }
     if (base::FeatureList::IsEnabled(
             features::kWebRtcUseCaptureBeginTimestamp)) {

@@ -1830,23 +1830,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.CaptureTimeToReferenceTime.Ms" units="ms"
+<histogram name="WebRTC.Video.CaptureTimeToReferenceTimePlus250.Ms" units="ms"
     expires_after="2024-08-22">
   <owner>handellm@google.com</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
-    Total time in milliseconds from capture timestamp to reference timestamp.
-    Recorded on every incoming frame containing both timestamps.
+    Total time in milliseconds from capture timestamp to reference timestamp,
+    plus 250 milliseconds. Recorded on every incoming frame containing both
+    timestamps.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.CaptureTimeToTimestampAligner.Ms" units="ms"
-    expires_after="2024-08-22">
+<histogram name="WebRTC.Video.CaptureTimeToTimestampAlignerPlus250.Ms"
+    units="ms" expires_after="2024-08-22">
   <owner>handellm@google.com</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     Total time in milliseconds from capture timestamp to timestamp aligner's
-    timestamp. Recorded on every incoming frame containing both timestamps.
+    timestamp, plus 250 milliseconds. Recorded on every incoming frame
+    containing both timestamps.
   </summary>
 </histogram>
 
