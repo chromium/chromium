@@ -1593,10 +1593,9 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
                               std::move(subgrid_layout_subtree));
 
     // Skip this item if we aren't able to resolve our inline size.
-    const auto& item_style = grid_item.node.Style();
-    if (InlineLengthUnresolvable(space, item_style.LogicalWidth()) ||
-        InlineLengthUnresolvable(space, item_style.LogicalMinWidth()) ||
-        InlineLengthUnresolvable(space, item_style.LogicalMaxWidth())) {
+    if (CalculateInitialFragmentGeometry(space, grid_item.node,
+                                         /* break_token */ nullptr)
+            .border_box_size.inline_size == kIndefiniteSize) {
       continue;
     }
 
@@ -1618,7 +1617,8 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     }
 
     const LayoutUnit extra_margin = GetExtraMarginForBaseline(
-        ComputeMarginsFor(space, item_style, baseline_writing_direction),
+        ComputeMarginsFor(space, grid_item.node.Style(),
+                          baseline_writing_direction),
         subgridded_item, track_direction, writing_mode);
 
     const LayoutUnit baseline =
