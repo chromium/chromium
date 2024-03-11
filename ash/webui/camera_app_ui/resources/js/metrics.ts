@@ -422,7 +422,7 @@ export function sendCaptureEvent({
       resolutionLevel:
           mojoTypeUtils.convertResolutionLevelToMojo(resolutionLevel),
       aspectRatioSet: mojoTypeUtils.convertAspectRatioSetToMojo(aspectRatioSet),
-      captureDetails: {},
+      captureDetails: null,
     };
     if (mode === Mode.PHOTO || isVideoSnapshot) {
       captureEvent.captureDetails = {

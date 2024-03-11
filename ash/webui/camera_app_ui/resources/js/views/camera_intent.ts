@@ -26,6 +26,7 @@ const DOWNSCALE_INTENT_MAX_PIXEL_NUM = 50 * 1024;
 
 interface MetricArgs {
   resolution: Resolution;
+  recordType: metrics.RecordType;
   duration?: number;
 }
 
@@ -124,7 +125,10 @@ export class CameraIntent extends Camera {
     await super.onPhotoCaptureDone(pendingPhotoResult);
     const {blob, resolution} = await pendingPhotoResult;
     await this.review.setReviewPhoto(blob);
-    await this.reviewIntentResult({resolution});
+    await this.reviewIntentResult({
+      resolution,
+      recordType: metrics.RecordType.NOT_RECORDING,
+    });
     ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
@@ -132,8 +136,11 @@ export class CameraIntent extends Camera {
     await super.onVideoCaptureDone(videoResult);
     assert(this.videoResultFile !== null);
     const cleanup = await this.review.setReviewVideo(this.videoResultFile);
-    await this.reviewIntentResult(
-        {resolution: videoResult.resolution, duration: videoResult.duration});
+    await this.reviewIntentResult({
+      resolution: videoResult.resolution,
+      recordType: metrics.RecordType.NORMAL_VIDEO,
+      duration: videoResult.duration,
+    });
     cleanup();
     ChromeHelper.getInstance().maybeTriggerSurvey();
   }
