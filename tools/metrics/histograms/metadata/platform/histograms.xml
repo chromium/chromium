@@ -827,6 +827,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Hibernate.ImagePreload.Percent" units="%"
+    expires_after="2024-10-11">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The fraction of the encrypted hibernate image data that could be preloaded
+    into memory before the user logged in. Reported at resume from hibernate.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Hibernate.ImagePreload.Rate" units="MiB/s"
+    expires_after="2024-10-11">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The data rate at which the encrypted hibernate image was preloaded into
+    memory before the user logged in. Reported at resume from hibernate.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Hibernate.IO.ReadMainImage.Duration" units="seconds"
     expires_after="2024-08-11">
   <owner>mka@chromium.org</owner>
