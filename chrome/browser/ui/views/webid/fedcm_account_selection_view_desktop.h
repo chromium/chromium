@@ -257,6 +257,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   std::vector<IdentityProviderDisplayData> idp_display_data_list_;
 
+  // This class needs to own the IDP display data for a newly logged in account
+  // since the AccountSelectionBubbleView does not take ownership.
+  std::optional<IdentityProviderDisplayData> new_account_idp_display_data_;
+
   std::u16string top_frame_for_display_;
 
   std::optional<std::u16string> iframe_for_display_;

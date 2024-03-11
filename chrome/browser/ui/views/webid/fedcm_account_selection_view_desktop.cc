@@ -163,7 +163,7 @@ void FedCmAccountSelectionView::Show(
     // TODO(crbug.com/41490360): verify this works on modal dialog.
     state_ = GetDialogType() == DialogType::MODAL ? State::SINGLE_ACCOUNT_PICKER
                                                   : State::REQUEST_PERMISSION;
-    IdentityProviderDisplayData new_account_idp_display_data(
+    new_account_idp_display_data_ = IdentityProviderDisplayData(
         base::UTF8ToUTF16(new_account_idp->idp_for_display),
         new_account_idp->idp_metadata, new_account_idp->client_metadata,
         new_account_idp->accounts, new_account_idp->request_permission,
@@ -171,7 +171,8 @@ void FedCmAccountSelectionView::Show(
 
     account_selection_view_->ShowSingleAccountConfirmDialog(
         top_frame_for_display_, iframe_for_display_,
-        new_account_idp->accounts[0], new_account_idp_display_data,
+        new_account_idp_display_data_->accounts[0],
+        *new_account_idp_display_data_,
         /*show_back_button=*/accounts_size > 1u ? true : false);
   } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u &&
              !idp_display_data_list_[0].idp_metadata.supports_add_account) {
