@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] measure raising and lowering audio jitterBufferTarget
-  assert_greater_than: audio increased delay NaN  greater than base delay NaN expected a number greater than NaN but got NaN
-Harness: the test ran to completion.
-

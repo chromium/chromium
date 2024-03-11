@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] measure raising and lowering video jitterBufferTarget
+  assert_true: jitterBuffer does not reach target expected true got false
+Harness: the test ran to completion.
+
