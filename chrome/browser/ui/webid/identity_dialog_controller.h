@@ -89,6 +89,11 @@ class IdentityDialogController
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
 
+  // Request the IdP Registration permission.
+  void RequestIdPRegistrationPermision(
+      const url::Origin& origin,
+      base::OnceCallback<void(bool accepted)> callback) override;
+
  private:
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;

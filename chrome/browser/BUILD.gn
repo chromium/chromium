@@ -1894,6 +1894,8 @@ static_library("browser") {
     "webid/federated_identity_permission_context.h",
     "webid/federated_identity_permission_context_factory.cc",
     "webid/federated_identity_permission_context_factory.h",
+    "webid/identity_provider_permission_request.cc",
+    "webid/identity_provider_permission_request.h",
   ]
 
   if (!is_android) {

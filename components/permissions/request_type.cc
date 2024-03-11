@@ -45,6 +45,8 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_FOLDER;
     case RequestType::kGeolocation:
       return IDR_ANDROID_INFOBAR_GEOLOCATION;
+    case RequestType::kIdentityProvider:
+      return IDR_ANDROID_INFOBAR_IDENTITY_PROVIDER;
     case RequestType::kIdleDetection:
       return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
     case RequestType::kMicStream:
@@ -137,6 +139,9 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
                   : vector_icons::kSelectWindowIcon;
     case RequestType::kFileSystemAccess:
       return vector_icons::kFolderIcon;
+    case RequestType::kIdentityProvider:
+      // TODO(crbug.com/1406698): provide a dedicated icon.
+      return vector_icons::kFolderIcon;
   }
   NOTREACHED();
   return gfx::kNoneIcon;
@@ -174,6 +179,9 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
                   : vector_icons::kMidiOffIcon;
     case RequestType::kStorageAccess:
       return vector_icons::kStorageAccessOffIcon;
+    case RequestType::kIdentityProvider:
+      // TODO(crbug.com/1406698): use a dedicated icon
+      return gfx::kNoneIcon;
     default:
       NOTREACHED();
   }
@@ -435,6 +443,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
         return "window_management";
       }
 #endif
+    case permissions::RequestType::kIdentityProvider:
+      return "identity_provider";
   }
 
   return nullptr;

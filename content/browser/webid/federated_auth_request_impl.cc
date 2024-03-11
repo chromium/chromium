@@ -1051,13 +1051,35 @@ void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
     std::move(callback).Run(false);
     return;
   }
+
   if (!origin().IsSameOriginWith(url::Origin::Create(idp))) {
     std::move(callback).Run(false);
     return;
   }
-  // TODO(crbug.com/1406698): prompt the user for permission.
-  permission_delegate_->RegisterIdP(idp);
-  std::move(callback).Run(true);
+
+  if (!render_frame_host().HasTransientUserActivation()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!request_dialog_controller_) {
+    request_dialog_controller_ = CreateDialogController();
+  }
+
+  request_dialog_controller_->RequestIdPRegistrationPermision(
+      origin(),
+      base::BindOnce(&FederatedAuthRequestImpl::OnRegisterIdPPermissionResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), idp));
+}
+
+void FederatedAuthRequestImpl::OnRegisterIdPPermissionResponse(
+    RegisterIdPCallback callback,
+    const GURL& idp,
+    bool accepted) {
+  if (accepted) {
+    permission_delegate_->RegisterIdP(idp);
+  }
+  std::move(callback).Run(accepted);
 }
 
 void FederatedAuthRequestImpl::UnregisterIdP(const GURL& idp,

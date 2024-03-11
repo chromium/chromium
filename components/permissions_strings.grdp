@@ -76,6 +76,9 @@
     <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone and camera permission when a website has requested access to microphone and camera, but Chrome is missing the Android microphone and camera permission.">
       Allow 2 permissions?
     </message>
+    <message name="IDS_IDENTITY_PROVIDER_INFOBAR_TEXT" desc="Text requesting permission for a site to register itself as an Federated Identity Provider." translateable="false">
+      Would you like to use your <ph name="URL">$1<ex>google.com</ex></ph> accounts to login to websites?
+    </message>
 </if>
   <if expr="is_android or is_chromeos or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">
@@ -140,6 +143,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_IDLE_DETECTION_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to monitor when the user is interacting with their device. Follows a prompt: 'This site would like to:'">
     Know when you're actively using this device
+  </message>
+  <message name="IDS_IDENTITY_PROVIDER_PERMISSION_FRAGMENT" desc="Permission request shown when the user wants to register a website as a Federated Identity Provider'" translateable="false">
+      Use your accounts to login to websites
   </message>
   <message name="IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT" desc="Permission request shown if multiple downloads are attempted without user interaction and there are multiple permissions requested. Follows a prompt: 'This site would like to:'">
     Download multiple files

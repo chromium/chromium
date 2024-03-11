@@ -71,6 +71,10 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   void WebContentsDestroyed() override;
 
+  void RequestIdPRegistrationPermision(
+      const url::Origin& origin,
+      base::OnceCallback<void(bool accepted)> callback) override;
+
  private:
   std::optional<std::string> selected_account_;
   std::string title_;

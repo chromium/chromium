@@ -86,6 +86,7 @@ enum class RequestTypeForUma {
   CAPTURED_SURFACE_CONTROL = 33,
   PERMISSION_SMART_CARD = 34,
   PERMISSION_WEB_PRINTING = 35,
+  PERMISSION_IDENTITY_PROVIDER = 36,
   // NUM must be the last value in the enum.
   NUM
 };

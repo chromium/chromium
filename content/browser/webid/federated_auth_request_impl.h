@@ -392,6 +392,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::optional<IdpNetworkRequestManager::FedCmErrorUrlType>
           error_url_type);
 
+  void OnRegisterIdPPermissionResponse(RegisterIdPCallback callback,
+                                       const GURL& idp,
+                                       bool accepted);
   void MaybeCreateFedCmMetrics(const GURL& provider_config_url);
 
   RpMode GetRpMode() const { return rp_mode_; }

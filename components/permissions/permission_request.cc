@@ -142,6 +142,9 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kVrSession:
       message_id = IDS_VR_INFOBAR_TEXT;
       break;
+    case RequestType::kIdentityProvider:
+      message_id = IDS_IDENTITY_PROVIDER_INFOBAR_TEXT;
+      break;
   }
   DCHECK_NE(0, message_id);
 
@@ -334,6 +337,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
 #endif
     case RequestType::kWindowManagement:
       message_id = IDS_WINDOW_MANAGEMENT_PERMISSION_FRAGMENT;
+      break;
+    case RequestType::kIdentityProvider:
+      message_id = IDS_IDENTITY_PROVIDER_PERMISSION_FRAGMENT;
       break;
   }
   DCHECK_NE(0, message_id);

@@ -122,4 +122,10 @@ WebContents* IdentityRequestDialogController::ShowModalDialog(
 
 void IdentityRequestDialogController::CloseModalDialog() {}
 
+void IdentityRequestDialogController::RequestIdPRegistrationPermision(
+    const url::Origin& origin,
+    base::OnceCallback<void(bool accepted)> callback) {
+  std::move(callback).Run(false);
+}
+
 }  // namespace content

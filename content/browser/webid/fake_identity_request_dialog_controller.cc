@@ -152,4 +152,9 @@ void FakeIdentityRequestDialogController::WebContentsDestroyed() {
   popup_window_ = nullptr;
 }
 
+void FakeIdentityRequestDialogController::RequestIdPRegistrationPermision(
+    const url::Origin& origin,
+    base::OnceCallback<void(bool accepted)> callback) {
+  std::move(callback).Run(false);
+}
 }  // namespace content

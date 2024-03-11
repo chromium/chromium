@@ -140,6 +140,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
     case RequestType::kCapturedSurfaceControl:
       return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
 #endif
+    case RequestType::kIdentityProvider:
+      return RequestTypeForUma::PERMISSION_IDENTITY_PROVIDER;
   }
 }
 
@@ -199,6 +201,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "SmartCard";
     case RequestTypeForUma::PERMISSION_WEB_PRINTING:
       return "WebPrinting";
+    case RequestTypeForUma::PERMISSION_IDENTITY_PROVIDER:
+      return "IdentityProvider";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:

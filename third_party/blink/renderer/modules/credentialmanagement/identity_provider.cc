@@ -128,20 +128,22 @@ void IdentityProvider::close(ScriptState* script_state) {
   request->CloseModalDialogView();
 }
 
-void OnRegisterIdP(ScriptPromiseResolver* resolver, bool accepted) {
+void OnRegisterIdP(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
+                   bool accepted) {
   if (!accepted) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "User declined the permission to register the Identity Provider."));
     return;
   }
-  resolver->Resolve();
+  resolver->Resolve(true);
 }
 
 ScriptPromise IdentityProvider::registerIdentityProvider(
     ScriptState* script_state,
     const String& configURL) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
+      script_state);
   ScriptPromise promise = resolver->Promise();
 
   auto* request =

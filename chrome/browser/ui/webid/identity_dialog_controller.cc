@@ -9,6 +9,8 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/browser/webid/identity_provider_permission_request.h"
+#include "components/permissions/permission_request_manager.h"
 
 IdentityDialogController::IdentityDialogController(
     content::WebContents* rp_web_contents)
@@ -165,4 +167,17 @@ void IdentityDialogController::CloseModalDialog() {
 #endif  // BUILDFLAG(IS_ANDROID)
   CHECK(account_view_);
   account_view_->CloseModalDialog();
+}
+
+void IdentityDialogController::RequestIdPRegistrationPermision(
+    const url::Origin& origin,
+    base::OnceCallback<void(bool accepted)> callback) {
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(rp_web_contents_);
+
+  auto* request =
+      new IdentityProviderPermissionRequest(origin, std::move(callback));
+
+  permission_request_manager->AddRequest(
+      rp_web_contents_->GetPrimaryMainFrame(), request);
 }

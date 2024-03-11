@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -75,8 +76,10 @@ struct CONTENT_EXPORT IdentityProviderData {
   bool has_login_status_mismatch;
 };
 
-// IdentityRequestDialogController is in interface for control of the UI
-// surfaces that are displayed to intermediate the exchange of ID tokens.
+// IdentityRequestDialogController is an interface, overridden and implemented
+// by embedders, that controls the UI surfaces that are displayed to
+// intermediate the exchange of federated accounts between identity providers
+// and relying parties.
 class CONTENT_EXPORT IdentityRequestDialogController {
  public:
   // This enum is used to back a histogram. Do not remove or reorder members.
@@ -188,6 +191,13 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Closes the modal dialog.
   virtual void CloseModalDialog();
+
+  // Request the user's permission to register an origin as an identity
+  // provider. Calls the callback with a response of whether the request was
+  // accepted or not.
+  virtual void RequestIdPRegistrationPermision(
+      const url::Origin& origin,
+      base::OnceCallback<void(bool accepted)> callback);
 
  protected:
   bool is_interception_enabled_{false};
