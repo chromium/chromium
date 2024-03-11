@@ -8,6 +8,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -103,6 +104,20 @@ void WindowPreviewView::Layout(PassKey) {
     entry.second->SetBoundsRect(
         gfx::ScaleToRoundedRect(bounds, scale.x(), scale.y()));
   }
+
+  if (!chromeos::features::IsRoundedWindowsEnabled()) {
+    return;
+  }
+
+  if (!layer_tree_synchronizer_) {
+    layer_tree_synchronizer_ =
+        std::make_unique<ScopedLayerTreeSynchronizer>(layer());
+  }
+
+  // Once the mirror_views are correctly positioned w.r.t to WindowPreviewView,
+  // synchronize the rounded corners of WindowPreviewView with its subtree to
+  // avoid the need of render surfaces to correctly draw the final result.
+  layer_tree_synchronizer_->SynchronizeRoundedCornersAvoidingRenderSurfaces();
 }
 
 void WindowPreviewView::OnTransientChildWindowAdded(

@@ -37,7 +37,7 @@ namespace {
 
 constexpr int kFocusRingCornerRadius = 14;
 constexpr int kFocusRingCornerRadiusOld = 20;
-constexpr float kFocusRingThickness = 4.f;
+constexpr float kFocusRingThickness = 4.0f;
 
 // Returns the rounded corners of the preview view scaled by the given value of
 // `scale` for the preview view with given source `window`. If the preview view
@@ -159,9 +159,7 @@ void WindowMiniView::RefreshPreviewRoundedCorners() {
   layer->SetRoundedCornerRadius(GetRoundedCornersForPreviewView(
       source_window_, backdrop_view_, preview_view_->GetBoundsInScreen(),
       layer->transform().To2dScale().x(), preview_view_rounded_corners_));
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    layer->SetIsFastRoundedCorner(true);
-  }
+  layer->SetIsFastRoundedCorner(true);
 }
 
 void WindowMiniView::RefreshHeaderViewRoundedCorners() {
