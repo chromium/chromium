@@ -22,18 +22,19 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.tab.Tab;
 
 /** Tests for {@link TabGroupTitleUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupTitleUtilsUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
@@ -42,7 +43,6 @@ public class TabGroupTitleUtilsUnitTest {
     private static final String TAB_TITLE = "Tab";
 
     @Mock Context mContext;
-    @Mock Tab mTab;
     @Mock SharedPreferences mSharedPreferences;
     @Mock SharedPreferences.Editor mEditor;
     @Mock SharedPreferences.Editor mPutStringEditor;
@@ -50,8 +50,6 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         doReturn(mSharedPreferences)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
