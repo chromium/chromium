@@ -294,6 +294,9 @@ class AuthenticatorRequestDialogModel
     kEmpty,
     // The enclave is ready to use.
     kReady,
+    // The enclave is ready to use, but the UI needs to collect a PIN before
+    // making a transaction.
+    kReadyWithPIN,
   };
 
   // Possible error states during GPM pin entry / creation.
@@ -718,6 +721,8 @@ class AuthenticatorRequestDialogModel
   AccountState account_state() const;
   void set_account_state(AccountState);
 
+  void set_gpm_pin_is_arbitrary(bool is_arbitrary);
+
   void SetHints(
       const content::AuthenticatorRequestClientDelegate::Hints& hints) {
     hints_ = hints;
@@ -1013,6 +1018,10 @@ class AuthenticatorRequestDialogModel
 
   // Records the error during GPM pin entry / creation, if any.
   GpmPinError gpm_pin_error_ = GpmPinError::kNone;
+
+  // If true then the GPM PIN is known to be an arbitrary string rather than
+  // the default 6-digit number.
+  bool gpm_pin_is_arbitrary_ = false;
 
   // The entered GPM PIN.
   std::string gpm_pin_;

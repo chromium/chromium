@@ -94,8 +94,6 @@ class EnclaveManager : public KeyedService {
   bool is_ready() const;
   // Returns the number of times that `StoreKeys` has been called.
   unsigned store_keys_count() const;
-  // Returns true when a UV signing key has been configured.
-  bool is_uv_key_available() const;
 
   // Start by loading the persisted state from disk. Harmless to call multiple
   // times.
@@ -105,8 +103,14 @@ class EnclaveManager : public KeyedService {
   // Set up an account with a newly-created PIN.
   void SetupWithPIN(std::string pin);
   // Adds the current device to the security domain. Only valid to call after
-  // `StoreKeys` has been called and thus `has_pending_keys` returns true.
-  void AddDeviceToAccount();
+  // `StoreKeys` has been called and thus `has_pending_keys` returns true. If
+  // `serialized_wrapped_pin` has a value then it is taken to be the contents
+  // of a WrappedPIN protobuf for the current GPM PIN. If you want to add a
+  // new PIN to the account, see `AddDeviceAndPINToAccount`.
+  //
+  // Returns false if `serialized_wrapped_pin` fails to parse and true
+  // otherwise.
+  bool AddDeviceToAccount(std::optional<std::string> serialized_wrapped_pin);
   // Adds the current device, and a GPM PIN, to the security domain. Only valid
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.
@@ -127,6 +131,36 @@ class EnclaveManager : public KeyedService {
   // Get the version and value of the current wrapped secret. Only valid to call
   // if `is_ready`.
   std::pair<int32_t, std::vector<uint8_t>> GetCurrentWrappedSecret();
+  // Returns true if a wrapped PIN is available for the current user. Requires
+  // `is_ready`.
+  bool has_wrapped_pin() const;
+  // Returns true if the wrapped PIN is arbitrary. I.e. is a general
+  // alphanumeric string. If false then the wrapped PIN is a 6-digit numeric
+  // string. Requires `has_wrapped_pin` to be true.
+  bool wrapped_pin_is_arbitrary() const;
+  // Returns a copy of the wrapped PIN for passing to `MakeClaimedPINSlowly`.
+  // Requires `has_wrapped_pin`.
+  std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN> GetWrappedPIN();
+
+  // Enumerates the types of user verifying signing keys that the EnclaveManager
+  // might have for the currently signed-in user.
+  enum class UvKeyState {
+    // No UV key present; perform user verification using a PIN.
+    kNone,
+    // A UV key is present and `UserVerifyingKeySigningCallback` will return a
+    // signing callback where the UI is handled by the system.
+    kUsesSystemUI,
+    // A UV key is present and `UserVerifyingKeySigningCallback` will return a
+    // valid callback. However, Chrome UI needs to be shown in order to collect
+    // biometrics.
+    kUsesChromeUI,
+    // A UV key is present, but not in a convenient modality. For example,
+    // if Touch ID isn't available on macOS but the system sign-in password
+    // can still be used. Or if biometrics aren't available on Windows, but
+    // a Hello PIN could still be used.
+    kFallback,
+  };
+  UvKeyState uv_key_state() const;
 
   // Get an access token for contacting the enclave.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> GetAccessToken(
@@ -144,7 +178,7 @@ class EnclaveManager : public KeyedService {
   // Slowly compute a PIN claim for the given PIN for submission to the enclave.
   static std::unique_ptr<device::enclave::ClaimedPIN> MakeClaimedPINSlowly(
       std::string pin,
-      const webauthn_pb::EnclaveLocalState_WrappedPIN& wrapped_pin);
+      std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN> wrapped_pin);
 
   // If background processes need to be stopped then return true and call
   // `on_stop` when stopped. Otherwise return false.

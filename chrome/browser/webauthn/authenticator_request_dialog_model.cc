@@ -1285,11 +1285,7 @@ void AuthenticatorRequestDialogModel::OnGPMPinEntered(
   DCHECK(current_step() == Step::kGPMCreatePin ||
          current_step() == Step::kGPMEnterPin);
   gpm_pin_ = base::UTF16ToUTF8(pin);
-  if (current_step_ == Step::kGPMCreatePin) {
-    SetCurrentStep(Step::kWaitingForEnclave);
-  } else {
-    NOTIMPLEMENTED();
-  }
+  SetCurrentStep(Step::kWaitingForEnclave);
 }
 
 void AuthenticatorRequestDialogModel::AddAuthenticator(
@@ -1382,6 +1378,10 @@ void AuthenticatorRequestDialogModel::OnAccountPreselected(
     switch (account_state_) {
       case AccountState::kReady:
         SetCurrentStep(Step::kWaitingForEnclave);
+        break;
+
+      case AccountState::kReadyWithPIN:
+        SetCurrentStep(Step::kGPMEnterPin);
         break;
 
       case AccountState::kRecoverable:
@@ -1555,11 +1555,21 @@ AuthenticatorRequestDialogModel::account_state() const {
 
 void AuthenticatorRequestDialogModel::set_account_state(AccountState state) {
   account_state_ = state;
-  if (current_step() == Step::kRecoverSecurityDomain &&
-      state == AccountState::kReady) {
-    // The user completed the recovery that we were waiting for.
-    SetCurrentStep(Step::kWaitingForEnclave);
+  if (current_step() == Step::kRecoverSecurityDomain) {
+    if (state == AccountState::kReady) {
+      // The user completed the recovery that we were waiting for.
+      SetCurrentStep(Step::kWaitingForEnclave);
+    } else if (state == AccountState::kReadyWithPIN) {
+      // The account was recovered but now we need to prompt for an existing
+      // GPM PIN.
+      SetCurrentStep(Step::kGPMEnterPin);
+    }
   }
+}
+
+void AuthenticatorRequestDialogModel::set_gpm_pin_is_arbitrary(
+    bool is_arbitrary) {
+  gpm_pin_is_arbitrary_ = is_arbitrary;
 }
 
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
@@ -1871,6 +1881,10 @@ void AuthenticatorRequestDialogModel::StartEnclave() {
   switch (account_state_) {
     case AccountState::kReady:
       SetCurrentStep(Step::kWaitingForEnclave);
+      break;
+
+    case AccountState::kReadyWithPIN:
+      SetCurrentStep(Step::kGPMEnterPin);
       break;
 
     case AccountState::kRecoverable:

@@ -21,6 +21,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/sys_byteorder.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/chrome_switches.h"
@@ -294,6 +296,61 @@ class CableLinkingEventHandler : public ProfileObserver {
  private:
   raw_ptr<Profile> profile_;
 };
+
+// EnclaveUserVerificationMethod enumerates the possible ways that user
+// verification will be performed for an enclave transaction.
+enum class EnclaveUserVerificationMethod {
+  // No user verification will be performed.
+  kNone,
+  // The user will enter a GPM PIN.
+  kPIN,
+  // The operating system will perform user verification and allow signing
+  // with the UV key.
+  kUVKeyWithSystemUI,
+  // Chrome will show user verification UI for the operating system, which will
+  // then allow signing
+  // with the UV key.
+  kUVKeyWithChromeUI,
+  // The request cannot be satisfied.
+  kUnsatisfiable,
+};
+
+// Pick an enclave user verification method for a specific request.
+EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
+    device::UserVerificationRequirement uv,
+    bool has_pin,
+    EnclaveManager::UvKeyState uv_key_state) {
+  switch (uv) {
+    case device::UserVerificationRequirement::kDiscouraged:
+      return EnclaveUserVerificationMethod::kNone;
+
+    case device::UserVerificationRequirement::kPreferred:
+    case device::UserVerificationRequirement::kRequired:
+      switch (uv_key_state) {
+        case EnclaveManager::UvKeyState::kNone:
+          if (has_pin) {
+            return EnclaveUserVerificationMethod::kPIN;
+          } else if (uv == device::UserVerificationRequirement::kPreferred) {
+            return EnclaveUserVerificationMethod::kNone;
+          } else {
+            return EnclaveUserVerificationMethod::kUnsatisfiable;
+          }
+
+        case EnclaveManager::UvKeyState::kUsesSystemUI:
+          return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
+
+        case EnclaveManager::UvKeyState::kUsesChromeUI:
+          return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
+
+        case EnclaveManager::UvKeyState::kFallback:
+          if (has_pin) {
+            return EnclaveUserVerificationMethod::kPIN;
+          } else {
+            return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
+          }
+      }
+  }
+}
 
 }  // namespace
 
@@ -779,7 +836,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         dialog_model_->set_account_state(AccountState::kNone);
       } else if (enclave_manager_->is_ready()) {
         FIDO_LOG(EVENT) << "Enclave is ready";
-        dialog_model_->set_account_state(AccountState::kReady);
+        SetAccountStateReady();
       } else if (enclave_manager_->is_loaded()) {
         FIDO_LOG(EVENT) << "Account state needs to be checked";
         dialog_model_->set_account_state(AccountState::kChecking);
@@ -1178,13 +1235,16 @@ void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
 }
 
 void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
+  bool start_transaction = false;
+
   if (dialog_model_->current_step() ==
       AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
     if (dialog_model_->account_state() == AccountState::kRecoverable &&
         enclave_manager_->has_pending_keys()) {
       // In this case, we were waiting for the user to create their GPM PIN
       // and the needed enclave action is to set up using that PIN.
-      enclave_manager_->AddDeviceAndPINToAccount(dialog_model_->TakeGPMPin());
+      gpm_pin_stashed_ = dialog_model_->TakeGPMPin();
+      enclave_manager_->AddDeviceAndPINToAccount(*gpm_pin_stashed_);
       return;
     }
 
@@ -1194,9 +1254,20 @@ void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
       return;
     }
 
-    access_token_fetcher_ = enclave_manager_->GetAccessToken(base::BindOnce(
-        &ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction,
-        weak_ptr_factory_.GetWeakPtr()));
+    start_transaction = true;
+  } else if (dialog_model_->current_step() ==
+                 AuthenticatorRequestDialogModel::Step::
+                     kRecoverSecurityDomain &&
+             enclave_manager_->is_ready()) {
+    // Finished setting up without enrolling a GPM PIN.
+    start_transaction = true;
+  }
+
+  if (start_transaction) {
+    access_token_fetcher_ = enclave_manager_->GetAccessToken(
+        base::BindOnce(&ChromeAuthenticatorRequestDelegate::
+                           MaybeHashPinAndStartEnclaveTransaction,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -1279,7 +1350,7 @@ void ChromeAuthenticatorRequestDelegate::OnEnclaveManagerIdle() {
     if (dialog_model_->account_state() == AccountState::kLoading) {
       if (enclave_manager_->is_ready()) {
         FIDO_LOG(EVENT) << "Enclave is ready";
-        dialog_model_->set_account_state(AccountState::kReady);
+        SetAccountStateReady();
       } else {
         FIDO_LOG(EVENT) << "Account state needs to be checked";
         dialog_model_->set_account_state(AccountState::kChecking);
@@ -1300,16 +1371,25 @@ void ChromeAuthenticatorRequestDelegate::OnEnclaveManagerIdle() {
           AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain &&
       enclave_manager_->has_pending_keys()) {
     CHECK(!enclave_manager_->is_ready());
-    // If the user has local biometrics, and an existing recovery factor, we'll
-    // likely choose not to create a GPM PIN. For now, however, we always do:
-    dialog_model_->OnCreateGPMPin();
+    if (serialized_wrapped_pin_.has_value()) {
+      // The account already has a GPM PIN.
+      if (!enclave_manager_->AddDeviceToAccount(serialized_wrapped_pin_)) {
+        // TODO(enclave): move the UI to a to-be-created error state.
+        NOTREACHED();
+      }
+    } else {
+      // If the user has local biometrics, and an existing recovery factor,
+      // we'll likely choose not to create a GPM PIN. For now, however, we
+      // always do:
+      dialog_model_->OnCreateGPMPin();
+    }
     return;
   }
 
   if (enclave_manager_->is_ready() &&
       (dialog_model_->account_state() == AccountState::kRecoverable ||
        dialog_model_->account_state() == AccountState::kEmpty)) {
-    dialog_model_->set_account_state(AccountState::kReady);
+    SetAccountStateReady();
 
     if (dialog_model_->current_step() ==
         AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
@@ -1347,6 +1427,38 @@ void ChromeAuthenticatorRequestDelegate::DownloadAccountState() {
               weak_ptr_factory_.GetWeakPtr(), std::move(trusted_vault_conn)));
 }
 
+void ChromeAuthenticatorRequestDelegate::SetAccountStateReady() {
+  const bool has_pin = enclave_manager_->has_wrapped_pin();
+
+  AccountState account_state;
+  switch (PickEnclaveUserVerificationMethod(*user_verification_requirement_,
+                                            enclave_manager_->has_wrapped_pin(),
+                                            enclave_manager_->uv_key_state())) {
+    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+    case EnclaveUserVerificationMethod::kNone:
+      account_state = AccountState::kReady;
+      break;
+
+    case EnclaveUserVerificationMethod::kPIN:
+      account_state = AccountState::kReadyWithPIN;
+      break;
+
+    case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
+      // TODO(enclave): wire this up with a Touch ID UI in a bubble.
+      NOTIMPLEMENTED();
+      account_state = AccountState::kReady;
+      break;
+
+    case EnclaveUserVerificationMethod::kUnsatisfiable:
+      account_state = AccountState::kNone;
+      break;
+  }
+
+  dialog_model_->set_gpm_pin_is_arbitrary(
+      has_pin && enclave_manager_->wrapped_pin_is_arbitrary());
+  dialog_model_->set_account_state(account_state);
+}
+
 void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
     std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -1380,10 +1492,38 @@ void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
   FIDO_LOG(EVENT) << "Download account state result: " << state_str
                   << ", key_version: " << result.key_version.value_or(0)
                   << ", has PIN: " << result.serialized_wrapped_pin.has_value();
+
+  serialized_wrapped_pin_ = std::move(result.serialized_wrapped_pin);
+}
+
+void ChromeAuthenticatorRequestDelegate::MaybeHashPinAndStartEnclaveTransaction(
+    std::optional<std::string> token) {
+  std::string pin = gpm_pin_stashed_.has_value() ? std::move(*gpm_pin_stashed_)
+                                                 : dialog_model_->TakeGPMPin();
+  gpm_pin_stashed_.reset();
+  if (pin.empty()) {
+    StartEnclaveTransaction(std::move(token), nullptr);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(
+          [](std::string pin,
+             std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN>
+                 wrapped_pin) -> std::unique_ptr<device::enclave::ClaimedPIN> {
+            return EnclaveManager::MakeClaimedPINSlowly(std::move(pin),
+                                                        std::move(wrapped_pin));
+          },
+          std::move(pin), enclave_manager_->GetWrappedPIN()),
+      base::BindOnce(
+          &ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction,
+          weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction(
-    std::optional<std::string> token) {
+    std::optional<std::string> token,
+    std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin) {
   CHECK(request_type_);
   CHECK(user_verification_requirement_);
   // The UI has advanced to the point where it wants to perform an enclave
@@ -1393,26 +1533,29 @@ void ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction(
 
   auto request = std::make_unique<device::enclave::CredentialRequest>();
 
-  // TODO(enclave): We should test if biometrics are available for the
-  // underlying system, and if not, fall back to GPM PIN once that is
-  // implemented.
-  switch (*user_verification_requirement_) {
-    case device::UserVerificationRequirement::kDiscouraged:
+  switch (PickEnclaveUserVerificationMethod(*user_verification_requirement_,
+                                            enclave_manager_->has_wrapped_pin(),
+                                            enclave_manager_->uv_key_state())) {
+    case EnclaveUserVerificationMethod::kNone:
       request->signing_callback =
           enclave_manager_->HardwareKeySigningCallback();
       break;
-    case device::UserVerificationRequirement::kPreferred:
-    case device::UserVerificationRequirement::kRequired:
-      // TODO(enclave): For kRequired when local UV is not available, this is
-      // wrong. When GPM PIN exists that becomes the fallback UV mechanism.
-      if (enclave_manager_->is_uv_key_available()) {
-        request->signing_callback =
-            enclave_manager_->UserVerifyingKeySigningCallback();
-      } else {
-        request->signing_callback =
-            enclave_manager_->HardwareKeySigningCallback();
-      }
+
+    case EnclaveUserVerificationMethod::kPIN:
+      request->signing_callback =
+          enclave_manager_->HardwareKeySigningCallback();
+      CHECK(claimed_pin);
+      request->claimed_pin = std::move(claimed_pin);
       break;
+
+    case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
+    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+      request->signing_callback =
+          enclave_manager_->UserVerifyingKeySigningCallback();
+      break;
+
+    case EnclaveUserVerificationMethod::kUnsatisfiable:
+      NOTREACHED_NORETURN();
   }
 
   // If fetching the access token failed a transaction is still started. Without

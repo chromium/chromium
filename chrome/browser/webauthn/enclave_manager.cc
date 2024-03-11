@@ -83,6 +83,7 @@ struct EnclaveManager::PendingActions {
   std::unique_ptr<StoreKeysArgs> store_keys_args;
   bool setup_account = false;
   std::string pin;
+  std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
 };
 
 namespace {
@@ -186,6 +187,35 @@ bool IsValidUncompressedP256X962(base::span<const uint8_t> x962) {
                                  /*bn_ctx=*/nullptr);
 }
 
+std::optional<int> CheckPINInvariants(
+    const EnclaveLocalState::WrappedPIN& wrapped_pin) {
+  // The nonce is 12 bytes, and the tag is 16 bytes, so this establishes
+  // a lower-bound of one byte of plaintext.
+  if (wrapped_pin.wrapped_pin().size() < 12 + 1 + 16) {
+    return __LINE__;
+  }
+  if (wrapped_pin.claim_key().size() != 32) {
+    return __LINE__;
+  }
+  if (wrapped_pin.generation() < 0) {
+    return __LINE__;
+  }
+  if (wrapped_pin.form() == wrapped_pin.FORM_UNSPECIFIED) {
+    return __LINE__;
+  }
+  if (wrapped_pin.hash() == wrapped_pin.HASH_UNSPECIFIED) {
+    return __LINE__;
+  }
+  if (wrapped_pin.hash_difficulty() <= 0) {
+    return __LINE__;
+  }
+  if (wrapped_pin.hash_salt().empty()) {
+    return __LINE__;
+  }
+
+  return std::nullopt;
+}
+
 // CheckInvariants checks all the invariants of `user`, returning either a
 // line-number for the failing check, or else `nullopt` to indicate success.
 std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
@@ -231,31 +261,8 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
 
-  for (const auto& it : user.wrapped_pins()) {
-    const EnclaveLocalState::WrappedPIN& wrapped_pin = it.second;
-    // The nonce is 12 bytes, and the tag is 16 bytes, so this establishes
-    // a lower-bound of one byte of plaintext.
-    if (wrapped_pin.wrapped_pin().size() < 12 + 1 + 16) {
-      return __LINE__;
-    }
-    if (wrapped_pin.claim_key().size() != 32) {
-      return __LINE__;
-    }
-    if (wrapped_pin.generation() < 0) {
-      return __LINE__;
-    }
-    if (wrapped_pin.form() == wrapped_pin.FORM_UNSPECIFIED) {
-      return __LINE__;
-    }
-    if (wrapped_pin.hash() == wrapped_pin.HASH_UNSPECIFIED) {
-      return __LINE__;
-    }
-    if (wrapped_pin.hash_difficulty() <= 0) {
-      return __LINE__;
-    }
-    if (wrapped_pin.hash_salt().empty()) {
-      return __LINE__;
-    }
+  if (user.has_wrapped_pin()) {
+    return CheckPINInvariants(user.wrapped_pin());
   }
 
   return std::nullopt;
@@ -742,6 +749,11 @@ class EnclaveManager::StateMachine {
 
   void set_pending_pin(std::string pending_pin) {
     pending_pin_ = std::move(pending_pin);
+  }
+
+  void set_wrapped_pin(
+      std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin) {
+    wrapped_pin_ = std::move(wrapped_pin);
   }
 
   void Start() {
@@ -1349,6 +1361,11 @@ class EnclaveManager::StateMachine {
       return;
     }
 
+    if (wrapped_pin_) {
+      *user_->mutable_wrapped_pin() = std::move(*wrapped_pin_);
+      wrapped_pin_.reset();
+    }
+
     if (!user_->joined()) {
       JoinSecurityDomain();
     } else {
@@ -1594,9 +1611,7 @@ class EnclaveManager::StateMachine {
     }
 
     store_keys_args_for_joining_->last_key_version = key_version;
-    user_->mutable_wrapped_pins()->clear();
-    user_->mutable_wrapped_pins()->insert(
-        {key_version, std::move(*wrapped_pin_)});
+    *user_->mutable_wrapped_pin() = std::move(*wrapped_pin_);
     wrapped_pin_.reset();
 
     if (!StoreWrappedSecrets(
@@ -1666,7 +1681,7 @@ class EnclaveManager::StateMachine {
   // virtual member metadata. The inner CBOR structure contains everything that
   // the enclave would need when processing a PIN and is authenticated (and
   // encrypted) by the security domain secret.
-  static webauthn_pb::EnclaveLocalState::WrappedPIN BuildWrappedPIN(
+  static std::unique_ptr<EnclaveLocalState::WrappedPIN> BuildWrappedPIN(
       const HashedPIN& hashed_pin,
       int64_t generation,
       const trusted_vault_pb::Vault* vault,
@@ -1701,27 +1716,26 @@ class EnclaveManager::StateMachine {
         cbor_bytes, nonce, /*additional_data=*/base::span<const uint8_t>());
     wrapped_pin.insert(wrapped_pin.begin(), std::begin(nonce), std::end(nonce));
 
-    webauthn_pb::EnclaveLocalState::WrappedPIN ret;
-    ret.set_wrapped_pin(VecToString(std::move(wrapped_pin)));
-    ret.set_claim_key(VecToString(claim_key));
-    ret.set_generation(generation);
-    ret.set_form(
-        hashed_pin.is_six_digits
-            ? webauthn_pb::EnclaveLocalState::WrappedPIN::FORM_SIX_DIGITS
-            : webauthn_pb::EnclaveLocalState::WrappedPIN::FORM_ARBITRARY);
-    ret.set_hash(webauthn_pb::EnclaveLocalState::WrappedPIN::HASH_SCRYPT);
-    ret.set_hash_difficulty(hashed_pin.n);
-    ret.set_hash_salt(VecToString(hashed_pin.salt));
+    auto ret = std::make_unique<EnclaveLocalState::WrappedPIN>();
+    ret->set_wrapped_pin(VecToString(std::move(wrapped_pin)));
+    ret->set_claim_key(VecToString(claim_key));
+    ret->set_generation(generation);
+    ret->set_form(hashed_pin.is_six_digits
+                      ? EnclaveLocalState::WrappedPIN::FORM_SIX_DIGITS
+                      : EnclaveLocalState::WrappedPIN::FORM_ARBITRARY);
+    ret->set_hash(EnclaveLocalState::WrappedPIN::HASH_SCRYPT);
+    ret->set_hash_difficulty(hashed_pin.n);
+    ret->set_hash_salt(VecToString(hashed_pin.salt));
     return ret;
   }
 
   const raw_ptr<EnclaveManager> manager_;
   // local_state_ contains a copy of the EnclaveManager's state from when this
   // StateMachine was created.
-  webauthn_pb::EnclaveLocalState local_state_;
+  EnclaveLocalState local_state_;
   // user_ points within `local_state_` to the state for the user specified in
   // `primary_account_info_`.
-  const raw_ptr<webauthn_pb::EnclaveLocalState::User> user_;
+  const raw_ptr<EnclaveLocalState::User> user_;
   const std::unique_ptr<CoreAccountInfo> primary_account_info_;
 
   State state_ = State::kInit;
@@ -1746,7 +1760,7 @@ class EnclaveManager::StateMachine {
   std::optional<std::string> sig_xml_;
   std::unique_ptr<HashedPIN> hashed_pin_;
   std::unique_ptr<trusted_vault_pb::Vault> vault_;
-  std::optional<webauthn_pb::EnclaveLocalState::WrappedPIN> wrapped_pin_;
+  std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin_;
   std::optional<cbor::Value> wrapping_response_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -1801,10 +1815,6 @@ unsigned EnclaveManager::store_keys_count() const {
   return store_keys_count_;
 }
 
-bool EnclaveManager::is_uv_key_available() const {
-  return user_ && !user_->wrapped_uv_private_key().empty();
-}
-
 void EnclaveManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Act();
@@ -1832,12 +1842,27 @@ void EnclaveManager::SetupWithPIN(std::string pin) {
   Act();
 }
 
-void EnclaveManager::AddDeviceToAccount() {
+bool EnclaveManager::AddDeviceToAccount(
+    std::optional<std::string> serialized_wrapped_pin) {
+  CHECK(has_pending_keys());
+
+  std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
+  if (serialized_wrapped_pin.has_value()) {
+    wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
+    if (!wrapped_pin->ParseFromString(*serialized_wrapped_pin) ||
+        CheckPINInvariants(*wrapped_pin).has_value()) {
+      return false;
+    }
+  }
+
   if (!pending_actions_) {
     pending_actions_ = std::make_unique<PendingActions>();
   }
   pending_actions_->store_keys_args = std::move(pending_keys_);
+  pending_actions_->wrapped_pin = std::move(wrapped_pin);
+
   Act();
+  return true;
 }
 
 void EnclaveManager::AddDeviceAndPINToAccount(std::string pin) {
@@ -2124,6 +2149,29 @@ EnclaveManager::GetCurrentWrappedSecret() {
   return std::make_pair(it->first, ToVector(it->second));
 }
 
+bool EnclaveManager::has_wrapped_pin() const {
+  CHECK(is_ready());
+  return user_->has_wrapped_pin();
+}
+
+bool EnclaveManager::wrapped_pin_is_arbitrary() const {
+  CHECK(has_wrapped_pin());
+  return user_->wrapped_pin().form() ==
+         EnclaveLocalState::WrappedPIN::FORM_ARBITRARY;
+}
+
+std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN>
+EnclaveManager::GetWrappedPIN() {
+  CHECK(has_wrapped_pin());
+  return std::make_unique<webauthn_pb::EnclaveLocalState_WrappedPIN>(
+      user_->wrapped_pin());
+}
+
+EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
+  // TODO(enclave): change this when UV key support is ready.
+  return UvKeyState::kNone;
+}
+
 std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
 EnclaveManager::GetAccessToken(
     base::OnceCallback<void(std::optional<std::string>)> callback) {
@@ -2179,25 +2227,25 @@ void EnclaveManager::StoreKeys(const std::string& gaia_id,
 
 std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
     std::string pin,
-    const webauthn_pb::EnclaveLocalState::WrappedPIN& wrapped_pin) {
+    std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN> wrapped_pin) {
   uint8_t hashed[32];
-  const std::string& salt = wrapped_pin.hash_salt();
+  const std::string& salt = wrapped_pin->hash_salt();
   CHECK(EVP_PBE_scrypt(pin.data(), pin.size(),
                        reinterpret_cast<const uint8_t*>(salt.data()),
-                       salt.size(), wrapped_pin.hash_difficulty(), 8, 1,
+                       salt.size(), wrapped_pin->hash_difficulty(), 8, 1,
                        1ul << 28, hashed, sizeof(hashed)));
 
   static constexpr uint8_t kAAD[] = {'P', 'I', 'N', ' ', 'c',
                                      'l', 'a', 'i', 'm'};
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(ToSpan(wrapped_pin.claim_key()));
+  aead.Init(ToSpan(wrapped_pin->claim_key()));
   uint8_t nonce[12];
   crypto::RandBytes(nonce);
   std::vector<uint8_t> ciphertext = aead.Seal(hashed, nonce, kAAD);
   ciphertext.insert(ciphertext.begin(), std::begin(nonce), std::end(nonce));
 
   return std::make_unique<enclave::ClaimedPIN>(
-      std::move(ciphertext), ToVector(wrapped_pin.wrapped_pin()));
+      std::move(ciphertext), ToVector(wrapped_pin->wrapped_pin()));
 }
 
 bool EnclaveManager::RunWhenStoppedForTesting(base::OnceClosure on_stop) {
@@ -2210,8 +2258,7 @@ bool EnclaveManager::RunWhenStoppedForTesting(base::OnceClosure on_stop) {
   return true;
 }
 
-const webauthn_pb::EnclaveLocalState& EnclaveManager::local_state_for_testing()
-    const {
+const EnclaveLocalState& EnclaveManager::local_state_for_testing() const {
   return *local_state_;
 }
 
@@ -2312,6 +2359,10 @@ void EnclaveManager::Act() {
         std::make_unique<CoreAccountInfo>(*primary_account_info_));
   }
 
+  // TODO(enclave): the state machine should take a `PendingActions` rather than
+  // have all this code. We might want a queue of them in `Enclave Manager` and
+  // to have a functions like `AddDeviceToAccount` take a callback rather than
+  // depend on the idle callback.
   if (pending_actions_->want_registration) {
     state_machine_->set_want_registration();
   }
@@ -2324,6 +2375,9 @@ void EnclaveManager::Act() {
   }
   if (!pending_actions_->pin.empty()) {
     state_machine_->set_pending_pin(std::move(pending_actions_->pin));
+  }
+  if (pending_actions_->wrapped_pin) {
+    state_machine_->set_wrapped_pin(std::move(pending_actions_->wrapped_pin));
   }
 
   pending_actions_.reset();

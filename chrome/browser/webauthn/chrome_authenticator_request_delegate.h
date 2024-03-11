@@ -42,6 +42,7 @@ class PublicKeyCredentialDescriptor;
 class PublicKeyCredentialUserEntity;
 enum class FidoRequestType : uint8_t;
 namespace enclave {
+struct ClaimedPIN;
 struct CredentialRequest;
 }
 }  // namespace device
@@ -274,6 +275,9 @@ class ChromeAuthenticatorRequestDelegate
   // trusted vault service.
   void DownloadAccountState();
 
+  // Tell `dialog_model_` that the enclave manager is ready.
+  void SetAccountStateReady();
+
   // Called when the state of the trusted vault has been determined by
   // `DownloadAccountState`.
   void OnAccountStateDownloaded(
@@ -282,8 +286,14 @@ class ChromeAuthenticatorRequestDelegate
           result);
 
   // Called when the UI has reached a state where it needs to do an enclave
-  // operation and an OAuth token for the enclave has been fetched.
-  void StartEnclaveTransaction(std::optional<std::string> token);
+  // operation, and an OAuth token for the enclave has been fetched.
+  void MaybeHashPinAndStartEnclaveTransaction(std::optional<std::string> token);
+
+  // Called when the UI has reached a state where it needs to do an enclave
+  // operation, an OAuth token for the enclave has been fetched, and any PIN
+  // hashing has been completed.
+  void StartEnclaveTransaction(std::optional<std::string> token,
+                               std::unique_ptr<device::enclave::ClaimedPIN>);
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing
@@ -415,6 +425,15 @@ class ChromeAuthenticatorRequestDelegate
   // The credential ID of the last credential to be selected by the user in
   // modal or conditional UI.
   std::optional<std::vector<uint8_t>> preselected_cred_id_;
+
+  // Contains the bytes of a WrappedPIN structure, downloaded from the security
+  // domain service.
+  std::optional<std::string> serialized_wrapped_pin_;
+
+  // Hold the GPM PIN in the special case where we prompt for a PIN to add one
+  // to the account, but then immediately need it in order to satisfy UV for
+  // the request.
+  std::optional<std::string> gpm_pin_stashed_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

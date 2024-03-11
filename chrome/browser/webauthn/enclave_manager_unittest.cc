@@ -127,6 +127,23 @@ std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> GetTestEntity() {
   return ret;
 }
 
+std::string StringOfZeros(size_t len) {
+  return std::string(len, '0');
+}
+
+webauthn_pb::EnclaveLocalState::WrappedPIN GetTestWrappedPIN() {
+  webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin;
+  wrapped_pin.set_wrapped_pin(StringOfZeros(30));
+  wrapped_pin.set_claim_key(StringOfZeros(32));
+  wrapped_pin.set_generation(0);
+  wrapped_pin.set_form(wrapped_pin.FORM_SIX_DIGITS);
+  wrapped_pin.set_hash(wrapped_pin.HASH_SCRYPT);
+  wrapped_pin.set_hash_difficulty(1 << 12);
+  wrapped_pin.set_hash_salt(StringOfZeros(16));
+
+  return wrapped_pin;
+}
+
 struct TempDir {
  public:
   TempDir() { CHECK(dir_.CreateUniqueTempDir()); }
@@ -507,7 +524,8 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  manager_.AddDeviceToAccount();
+  ASSERT_TRUE(
+      manager_.AddDeviceToAccount(/*serialized_wrapped_pin=*/std::nullopt));
   ASSERT_FALSE(manager_.is_idle());
   RunUntilIdle();
 
@@ -533,7 +551,8 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  manager_.AddDeviceToAccount();
+  ASSERT_TRUE(
+      manager_.AddDeviceToAccount(/*serialized_wrapped_pin=*/std::nullopt));
   RunUntilIdle();
 
   ASSERT_TRUE(manager_.is_idle());
@@ -553,7 +572,8 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  manager_.AddDeviceToAccount();
+  ASSERT_TRUE(
+      manager_.AddDeviceToAccount(/*serialized_wrapped_pin=*/std::nullopt));
   RunUntilIdle();
 
   ASSERT_TRUE(manager_.is_idle());
@@ -659,6 +679,43 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
   ASSERT_FALSE(manager_.is_ready());
 }
 
+TEST_F(EnclaveManagerTest, AddPINToAccount) {
+  security_domain_service_->pretend_there_are_members();
+  manager_.Start();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/GetTestWrappedPIN().SerializeAsString()));
+  RunUntilIdle();
+
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.is_loaded());
+  ASSERT_TRUE(manager_.is_registered());
+  ASSERT_TRUE(manager_.is_ready());
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  // The PIN should not have been added to the account. Instead this test is
+  // pretending that it was already there.
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
+  EXPECT_TRUE(manager_.has_wrapped_pin());
+}
+
+TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
+
+  // A wrapped PIN that isn't a valid protobuf should be rejected.
+  EXPECT_FALSE(manager_.AddDeviceToAccount("nonsense wrapped PIN"));
+
+  // A valid protobuf, but which fails invariants, should be rejected.
+  webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = GetTestWrappedPIN();
+  wrapped_pin.set_wrapped_pin("too short");
+  EXPECT_FALSE(manager_.AddDeviceToAccount(wrapped_pin.SerializeAsString()));
+}
+
 TEST_F(EnclaveManagerTest, SetupWithPIN) {
   manager_.Start();
   const std::string pin = "123456";
@@ -677,18 +734,14 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
   manager_.SetupWithPIN(pin);
   RunUntilIdle();
   ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  EXPECT_FALSE(manager_.wrapped_pin_is_arbitrary());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
 
   std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
-      EnclaveManager::MakeClaimedPINSlowly(pin,
-                                           manager_.local_state_for_testing()
-                                               .users()
-                                               .begin()
-                                               ->second.wrapped_pins()
-                                               .begin()
-                                               ->second);
+      EnclaveManager::MakeClaimedPINSlowly(pin, manager_.GetWrappedPIN());
   std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin));
@@ -729,7 +782,7 @@ TEST_F(EnclaveManagerTest, SetupWithPIN_SigXMLFailure) {
 TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   security_domain_service_->pretend_there_are_members();
   manager_.Start();
-  const std::string pin = "123456";
+  const std::string pin = "pin";
 
   url_loader_factory_.AddResponse(
       std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
@@ -751,18 +804,14 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   manager_.AddDeviceAndPINToAccount(pin);
   RunUntilIdle();
   ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  EXPECT_TRUE(manager_.wrapped_pin_is_arbitrary());
 
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
 
   std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
-      EnclaveManager::MakeClaimedPINSlowly(pin,
-                                           manager_.local_state_for_testing()
-                                               .users()
-                                               .begin()
-                                               ->second.wrapped_pins()
-                                               .begin()
-                                               ->second);
+      EnclaveManager::MakeClaimedPINSlowly(pin, manager_.GetWrappedPIN());
   std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin));

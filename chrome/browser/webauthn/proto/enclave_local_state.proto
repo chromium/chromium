@@ -95,9 +95,8 @@ message EnclaveLocalState {
     // secret for that epoch.
     map<int32, bytes> wrapped_security_domain_secrets = 10;
 
-    // A map from security domain epoch to the wrapped Google Password Manager
-    // PIN for that epoch.
-    map<int32, WrappedPIN> wrapped_pins = 11;
+    // The wrapped Google Password Manager PIN.
+    optional WrappedPIN wrapped_pin = 11;
   }
 
   map<string, User> users = 1;
