@@ -209,6 +209,29 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithANGLEMetal) {
   }
 }
 
+// Tests that GLES2 usages, which would normally be disallowed with ANGLE-Metal
+// due to WebGL potentially being on different GPU from raster, are allowed if
+// the client specifies that the GLES2 usage is for raster only.
+TEST_F(GLTextureImageBackingFactoryTest,
+       GLES2UsageAllowedWithANGLEMetalIfRasterOnly) {
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(256, 256);
+
+  backing_factory()->ForceSetUsingANGLEMetalForTesting(true);
+  backing_factory()->EnableSupportForAllMetalUsagesForTesting(false);
+
+  for (uint32_t gles2_usage :
+       {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE}) {
+    bool supported = backing_factory_->CanCreateSharedImage(
+        gles2_usage | SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY, format, size,
+        /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+    EXPECT_TRUE(supported) << gles2_usage;
+  }
+
+  backing_factory()->ForceSetUsingANGLEMetalForTesting(false);
+  backing_factory()->EnableSupportForAllMetalUsagesForTesting(true);
+}
+
 // Tests that GLTextureImageBackingFactory will not create SharedImages with
 // Skia usages when Skia is using Graphite (as in that case Skia is not
 // necessarily using GL).
@@ -228,6 +251,25 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithGraphite) {
         graphite_invalid_usage, format, size, /*thread_safe=*/false,
         gfx::EMPTY_BUFFER, GrContextType::kGraphiteDawn, {});
     EXPECT_FALSE(supported) << graphite_invalid_usage;
+  }
+}
+
+// Tests that GLTextureImageBackingFactory will allow creation of SharedImages
+// with Skia usages when Skia is using Graphite if the client specifies that
+// raster usage is over the GLES2 interface only, as in that case Skia is by
+// definition using GL.
+TEST_F(GLTextureImageBackingFactoryTest,
+       RasterUsageWithGraphiteAllowedWhenOverGLES2Only) {
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(256, 256);
+
+  for (uint32_t raster_usage :
+       {SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_RASTER_WRITE}) {
+    bool supported = backing_factory_->CanCreateSharedImage(
+        raster_usage | SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY, format, size,
+        /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGraphiteDawn,
+        {});
+    EXPECT_TRUE(supported) << raster_usage;
   }
 }
 
