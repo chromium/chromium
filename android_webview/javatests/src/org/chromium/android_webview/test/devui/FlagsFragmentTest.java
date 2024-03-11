@@ -74,7 +74,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -153,6 +152,17 @@ public class FlagsFragmentTest {
         ViewUtils.waitForVisibleView(withId(R.id.flag_search_bar));
         ViewUtils.waitForVisibleView(withId(R.id.flags_list));
         ViewUtils.waitForVisibleView(withId(R.id.reset_flags_button));
+
+        // For some reasons, the blinking Text Cursor can make the UI thread very busy.
+        // This leads to AppNotIdleException and flaky tests, because Espresso could not find a 15ms
+        // gap between calls to update UI thread. To fix this, we should just hide the edit text
+        // cursor. It does not change the test functionality, but will eliminate one source of
+        // flakiness.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    EditText searchBar = mRule.getActivity().findViewById(R.id.flag_search_bar);
+                    searchBar.setCursorVisible(false);
+                });
 
         // Always close the soft keyboard when the activity is launched which is sometimes shown
         // because flags search TextView has input focus by default. The keyboard may cover up some
@@ -302,7 +312,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testSearchByName() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
@@ -317,7 +326,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testSearchByDescription() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
@@ -347,7 +355,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testSearchHighlightingQueryWordsInFlagName() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
         int searchBarChangeCount = helper.getCallCount();
@@ -365,7 +372,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testSearchHighlightingQueryWordsInFlagDescription() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
         int searchBarChangeCount = helper.getCallCount();
@@ -414,7 +420,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testMultipleResults() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
@@ -436,7 +441,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testClearingSearchShowsAllFlags() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
@@ -456,7 +460,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testTappingClearButtonClearsText() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
@@ -484,7 +487,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testDeletingTextHidesClearTextButton() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
@@ -511,7 +513,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testElsewhereOnSearchBarDoesNotClearText() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
@@ -574,7 +575,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     /** Verify if the baseFeature flag contains only "Default", "Enabled" , "Disabled" states. */
     public void testFlagStates_baseFeature() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
@@ -640,7 +640,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testTogglingFlagShowsBlueDot_baseFeature() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
 
@@ -662,7 +661,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testTogglingFlagShowsBlueDot_commandLineFlag() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
 
@@ -722,7 +720,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testToggledFlagsFloatToTop() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
         int totalNumFlags = flagsList.getCount();
@@ -762,7 +759,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testResetFlags() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
         String firstFlagName = ((Flag) flagsList.getAdapter().getItem(1)).getName();
@@ -792,7 +788,6 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "The test is flaky, see b/41487821.")
     public void testResetFlagsByIntent() throws Throwable {
         // 1. First test that the intent resets the flags
         // Given one flag is set
