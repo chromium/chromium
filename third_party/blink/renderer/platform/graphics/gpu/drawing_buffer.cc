@@ -1959,6 +1959,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     front_buffer_shared_image = std::move(shared_images.front_buffer);
   } else {
     if (ShouldUseChromiumImage()) {
+#if !BUILDFLAG(IS_ANDROID)
+      // Android's SharedImage backing for ChromiumImage does not support BGRX.
+
       // TODO(b/286417069): BGRX has issues when Vulkan is used for raster and
       // composite. Using BGRX is technically possible but will require a lot
       // of work given the current state of the codebase. There are projects in
@@ -1978,6 +1981,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
               ContextProvider()->GetCapabilities())) {
         color_buffer_format_ = viz::SinglePlaneFormat::kBGRX_8888;
       }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
       bool disallow_gmb = base::FeatureList::IsEnabled(
           features::kDrawingBufferWithoutGpuMemoryBuffer);
