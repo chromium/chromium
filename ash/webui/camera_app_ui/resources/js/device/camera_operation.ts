@@ -198,10 +198,16 @@ class Reconfigurer {
   /**
    * Checks if PTZ can be enabled.
    */
-  private async checkEnablePTZ(c: ConfigureCandidate): Promise<void> {
+  private async checkEnablePTZ(
+      c: ConfigureCandidate, builtinPTZSupport: boolean): Promise<void> {
     const enablePTZ = await (async () => {
       if (!this.preview.isSupportPTZ()) {
         return false;
+      }
+      // In case of digital zoom PTZ or fake camera, PTZ is supported in all
+      // capture and preview resolutions.
+      if (!builtinPTZSupport) {
+        return true;
       }
       const modeSupport = state.get(state.State.USE_FAKE_CAMERA) ||
           (c.captureCandidate.resolution !== null &&
@@ -279,7 +285,8 @@ class Reconfigurer {
         facing = this.preview.getFacing();
         const deviceId = assertString(this.preview.getDeviceId());
 
-        await this.checkEnablePTZ(c);
+        const builtinPTZSupport = cameraInfo.hasBuiltinPTZSupport(c.deviceId);
+        await this.checkEnablePTZ(c, builtinPTZSupport);
         factory.setPreviewVideo(this.preview.getVideo());
         factory.setFacing(facing);
         await this.modes.updateMode(factory);

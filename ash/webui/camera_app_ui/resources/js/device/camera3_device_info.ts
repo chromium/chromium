@@ -55,7 +55,7 @@ export class Camera3DeviceInfo {
    * @param videoResolutionFpses Supported available video
    *     resolutions and maximal capture fps of the video device.
    * @param fpsRanges Supported fps ranges of the video device.
-   * @param supportPTZ Is supported PTZ controls.
+   * @param builtinPTZSupport Is PTZ controls supported by the camera.
    */
   constructor(
       deviceInfo: MediaDeviceInfo,
@@ -63,7 +63,7 @@ export class Camera3DeviceInfo {
       readonly photoResolutions: ResolutionList,
       videoResolutionFpses: VideoConfig[],
       readonly fpsRanges: FpsRangeList,
-      readonly supportPTZ: boolean,
+      readonly builtinPTZSupport: boolean,
   ) {
     this.deviceId = deviceInfo.deviceId;
     // If all fps supported by the camera is lower than 24, use the maximum
@@ -135,10 +135,13 @@ export class Camera3DeviceInfo {
       throw new Error('Device operation is not supported');
     }
     const facing = await deviceOperator.getCameraFacing(deviceId);
-    const supportPTZ =
-        (await deviceOperator.getPanDefault(deviceId)) !== undefined ||
-        (await deviceOperator.getTiltDefault(deviceId)) !== undefined ||
-        (await deviceOperator.getZoomDefault(deviceId)) !== undefined;
+    // Check if the camera has PTZ support, not the PTZ support through stream
+    // manipulators, by checking with USB HAL vendor tags.
+    const builtinPTZSupport =
+        !(await deviceOperator.isDigitalZoomSupported(deviceId)) &&
+        ((await deviceOperator.getPanDefault(deviceId)) !== undefined ||
+         (await deviceOperator.getTiltDefault(deviceId)) !== undefined ||
+         (await deviceOperator.getZoomDefault(deviceId)) !== undefined);
     const photoResolution = await deviceOperator.getPhotoResolutions(deviceId);
     const videoConfigs = await deviceOperator.getVideoConfigs(deviceId);
     const filteredVideoConfigs = videoConfigs.filter(videoConfigFilter);
@@ -147,6 +150,6 @@ export class Camera3DeviceInfo {
 
     return new Camera3DeviceInfo(
         deviceInfo, facing, photoResolution, filteredVideoConfigs,
-        supportedFpsRanges, supportPTZ);
+        supportedFpsRanges, builtinPTZSupport);
   }
 }

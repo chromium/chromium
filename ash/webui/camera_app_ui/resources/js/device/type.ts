@@ -64,6 +64,11 @@ export class CameraInfo {
     const info = this.idToCamera3DeviceInfo.get(deviceId);
     return assertInstanceof(info, Camera3DeviceInfo);
   }
+
+  hasBuiltinPTZSupport(deviceId: string): boolean {
+    const info = this.getCamera3DeviceInfo(deviceId);
+    return info === null ? false : info.builtinPTZSupport;
+  }
 }
 
 /**

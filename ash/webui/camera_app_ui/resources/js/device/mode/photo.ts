@@ -44,6 +44,11 @@ export interface PhotoHandler {
   onPhotoError(): void;
 
   onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>): Promise<void>;
+
+  /**
+   * Whether the photo taking should be done by using preview frame as photo.
+   */
+  shouldUsePreviewAsPhoto(): boolean;
 }
 
 /**
@@ -134,9 +139,7 @@ export class Photo extends ModeBase {
     track.addEventListener('ended', stopTakingPhoto, {once: true});
 
     (async () => {
-      if (state.get(state.State.ENABLE_PTZ)) {
-        // Workaround for b/184089334 on PTZ camera to use preview frame as
-        // photo result.
+      if (this.handler.shouldUsePreviewAsPhoto()) {
         const blob = await this.getImageCapture().grabJpegFrame();
         this.handler.playShutterEffect();
         photoResult.signal({

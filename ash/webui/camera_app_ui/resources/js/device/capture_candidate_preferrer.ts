@@ -407,7 +407,7 @@ export class CaptureCandidatePreferrer {
         const candidatesByLevel = option.resolutions.map(
             (r) => new PhotoCaptureCandidate(
                 deviceId, r, photoPreviewPair.previewResolutions,
-                cameraInfo.supportPTZ));
+                cameraInfo.builtinPTZSupport));
         if (showAllResolutions &&
             option.resolutions[0].equals(prefResolution)) {
           candidatesByAspectRatio.unshift(...candidatesByLevel);

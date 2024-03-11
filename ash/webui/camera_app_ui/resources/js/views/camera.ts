@@ -494,6 +494,10 @@ export class Camera extends View implements CameraViewUI {
     toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
   }
 
+  shouldUsePreviewAsPhoto(): boolean {
+    return this.cameraManager.shouldUsePreviewAsPhoto();
+  }
+
   async cropIfUsingSquareResolution(result: Promise<PhotoResult>):
       Promise<PhotoResult> {
     if (!this.cameraManager.useSquareResolution()) {

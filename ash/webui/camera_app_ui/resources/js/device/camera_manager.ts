@@ -492,6 +492,20 @@ export class CameraManager implements EventListener {
   }
 
   /**
+   * Whether the photo taking should be done by using preview frame as photo.
+   * This is the workaround for b/184089334 to avoid mismatch between preview
+   * and photo results in some PTZ cameras.
+   */
+  shouldUsePreviewAsPhoto(): boolean {
+    const deviceId = this.getDeviceId();
+    if (deviceId === null) {
+      return false;
+    }
+    return state.get(state.State.ENABLE_PTZ) &&
+        this.getCameraInfo().hasBuiltinPTZSupport(deviceId);
+  }
+
+  /**
    * Whether app window is suspended.
    */
   private shouldSuspend(): boolean {
