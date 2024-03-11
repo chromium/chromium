@@ -99,4 +99,18 @@ std::string Mailbox::ToDebugString() const {
   return s;
 }
 
+bool Mailbox::operator==(const Mailbox& other) const {
+  return memcmp(&name, &other.name, sizeof(name)) == 0;
+}
+
+std::strong_ordering Mailbox::operator<=>(const Mailbox& other) const {
+  int result = memcmp(&name, &other.name, sizeof(name));
+  if (result < 0) {
+    return std::strong_ordering::less;
+  } else if (result > 0) {
+    return std::strong_ordering::greater;
+  }
+  return std::strong_ordering::equal;
+}
+
 }  // namespace gpu

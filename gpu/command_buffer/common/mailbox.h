@@ -81,17 +81,10 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
 
   std::string ToDebugString() const;
 
-  Name name;
+  bool operator==(const Mailbox& other) const;
+  std::strong_ordering operator<=>(const Mailbox& other) const;
 
-  bool operator<(const Mailbox& other) const {
-    return memcmp(this, &other, sizeof other) < 0;
-  }
-  bool operator==(const Mailbox& other) const {
-    return memcmp(this, &other, sizeof other) == 0;
-  }
-  bool operator!=(const Mailbox& other) const {
-    return !operator==(other);
-  }
+  Name name;
 
  private:
   // Generate a unique unguessable mailbox name for use with the legacy mailbox
