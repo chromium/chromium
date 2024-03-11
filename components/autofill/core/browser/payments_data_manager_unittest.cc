@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/personal_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -1587,5 +1588,83 @@ TEST_F(PaymentsDataManagerTest, ClearAllCreditCardBenefits) {
 
   ASSERT_EQ(0U, test_api(*personal_data_).GetCreditCardBenefitsCount());
 }
+
+#if !BUILDFLAG(IS_IOS)
+TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
+  gfx::Image expected_image = gfx::test::CreateImage(40, 24);
+  std::unique_ptr<CreditCardArtImage> credit_card_art_image =
+      std::make_unique<CreditCardArtImage>(GURL("https://www.example.com"),
+                                           expected_image);
+  std::vector<std::unique_ptr<CreditCardArtImage>> images;
+  images.push_back(std::move(credit_card_art_image));
+  test_api(*personal_data_).OnCardArtImagesFetched(std::move(images));
+
+  gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
+      GURL("https://www.example.com"));
+  ASSERT_TRUE(actual_image);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
+
+  // TODO(crbug.com/1284788): Look into integrating with PersonalDataManagerMock
+  // and checking that PersonalDataManager::FetchImagesForUrls() does not get
+  // triggered when PersonalDataManager::GetCachedCardArtImageForUrl() is
+  // called.
+  gfx::Image* cached_image = personal_data_->GetCachedCardArtImageForUrl(
+      GURL("https://www.example.com"));
+  ASSERT_TRUE(cached_image);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *cached_image));
+}
+
+TEST_F(PaymentsDataManagerTest,
+       TestNoImageFetchingAttemptForCardsWithInvalidCardArtUrls) {
+  base::HistogramTester histogram_tester;
+
+  gfx::Image* actual_image =
+      personal_data_->GetCreditCardArtImageForUrl(GURL());
+  EXPECT_FALSE(actual_image);
+  EXPECT_EQ(0, histogram_tester.GetTotalSum("Autofill.ImageFetcher.Result"));
+}
+
+class MockAutofillImageFetcher : public AutofillImageFetcherBase {
+ public:
+  MOCK_METHOD(
+      void,
+      FetchImagesForURLs,
+      (base::span<const GURL> card_art_urls,
+       base::OnceCallback<void(
+           const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback),
+      (override));
+};
+
+TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
+  MockAutofillImageFetcher mock_image_fetcher;
+  test_api(*personal_data_).SetImageFetcher(&mock_image_fetcher);
+  auto wait_for_fetch_images_for_url = [&] {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_image_fetcher, FetchImagesForURLs)
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+  };
+
+  CreditCard card = test::GetFullServerCard();
+  card.set_server_id("card_server_id");
+  personal_data_->AddFullServerCreditCardForTesting(card);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  card.set_server_id("card_server_id");
+  card.set_card_art_url(GURL("https://www.example.com/card1"));
+  std::vector<GURL> updated_urls;
+  updated_urls.emplace_back("https://www.example.com/card1");
+
+  personal_data_->AddFullServerCreditCardForTesting(card);
+  wait_for_fetch_images_for_url();
+
+  card.set_card_art_url(GURL("https://www.example.com/card2"));
+  updated_urls.clear();
+  updated_urls.emplace_back("https://www.example.com/card2");
+
+  personal_data_->AddFullServerCreditCardForTesting(card);
+  wait_for_fetch_images_for_url();
+}
+#endif
 
 }  // namespace autofill

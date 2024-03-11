@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
-#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -58,7 +57,6 @@
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -73,19 +71,6 @@ constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
 
 const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
 const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
-
-class PersonalDataManagerMock : public PersonalDataManager {
- public:
-  explicit PersonalDataManagerMock(const std::string& app_locale,
-                                   const std::string& variations_country_code)
-      : PersonalDataManager(app_locale, variations_country_code) {}
-  ~PersonalDataManagerMock() override = default;
-
-  MOCK_METHOD(void,
-              FetchImagesForURLs,
-              ((base::span<const GURL> updated_urls)),
-              (const override));
-};
 
 template <typename T>
 bool CompareElements(T* a, T* b) {
@@ -264,43 +249,6 @@ class PersonalDataManagerSyncTransportModeTest
         /*use_sync_transport_mode=*/true);
   }
   void TearDown() override { TearDownTest(); }
-};
-
-class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
-                                    public testing::Test {
- protected:
-  void SetUp() override {
-    SetUpTest();
-    ResetPersonalDataManager();
-  }
-
-  void TearDown() override {
-    if (personal_data_) {
-      personal_data_->Shutdown();
-    }
-    personal_data_.reset();
-    TearDownTest();
-  }
-
-  void ResetPersonalDataManager() {
-    if (personal_data_) {
-      personal_data_->Shutdown();
-    }
-    personal_data_ =
-        std::make_unique<PersonalDataManagerMock>("en", std::string());
-    PersonalDataManagerTestBase::ResetPersonalDataManager(
-        /*use_sync_transport_mode=*/true, personal_data_.get());
-  }
-
-  // Verifies the credit card art image fetching should begin.
-  void WaitForFetchImagesForUrls() {
-    base::RunLoop run_loop;
-    EXPECT_CALL(*personal_data_, FetchImagesForURLs)
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    run_loop.Run();
-  }
-
-  std::unique_ptr<PersonalDataManagerMock> personal_data_;
 };
 
 // Tests that `GetProfilesForSettings()` orders by descending modification
@@ -632,66 +580,6 @@ TEST_F(PersonalDataManagerTest, RecordIbanUsage_ServerIban) {
   EXPECT_EQ(server_iban.use_date(), kSomeLaterTime);
   EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
 }
-
-#if !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
-  gfx::Image expected_image = gfx::test::CreateImage(40, 24);
-  std::unique_ptr<CreditCardArtImage> credit_card_art_image =
-      std::make_unique<CreditCardArtImage>(GURL("https://www.example.com"),
-                                           expected_image);
-  std::vector<std::unique_ptr<CreditCardArtImage>> images;
-  images.push_back(std::move(credit_card_art_image));
-
-  personal_data_->payments_data_manager().OnCardArtImagesFetched(
-      std::move(images));
-
-  gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
-      GURL("https://www.example.com"));
-  ASSERT_TRUE(actual_image);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
-
-  // TODO(crbug.com/1284788): Look into integrating with PersonalDataManagerMock
-  // and checking that PersonalDataManager::FetchImagesForUrls() does not get
-  // triggered when PersonalDataManager::GetCachedCardArtImageForUrl() is
-  // called.
-  gfx::Image* cached_image = personal_data_->GetCachedCardArtImageForUrl(
-      GURL("https://www.example.com"));
-  ASSERT_TRUE(cached_image);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *cached_image));
-}
-
-TEST_F(PersonalDataManagerTest,
-       TestNoImageFetchingAttemptForCardsWithInvalidCardArtUrls) {
-  base::HistogramTester histogram_tester;
-
-  gfx::Image* actual_image =
-      personal_data_->GetCreditCardArtImageForUrl(GURL());
-  EXPECT_FALSE(actual_image);
-  EXPECT_EQ(0, histogram_tester.GetTotalSum("Autofill.ImageFetcher.Result"));
-}
-
-TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
-  CreditCard card = test::GetFullServerCard();
-  card.set_server_id("card_server_id");
-  personal_data_->AddFullServerCreditCardForTesting(card);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  card.set_server_id("card_server_id");
-  card.set_card_art_url(GURL("https://www.example.com/card1"));
-  std::vector<GURL> updated_urls;
-  updated_urls.emplace_back("https://www.example.com/card1");
-
-  personal_data_->AddFullServerCreditCardForTesting(card);
-  WaitForFetchImagesForUrls();
-
-  card.set_card_art_url(GURL("https://www.example.com/card2"));
-  updated_urls.clear();
-  updated_urls.emplace_back("https://www.example.com/card2");
-
-  personal_data_->AddFullServerCreditCardForTesting(card);
-  WaitForFetchImagesForUrls();
-}
-#endif
 
 // Test that ensure local data is not lost on sign-in.
 // Clearing/changing the primary account is not supported on CrOS.

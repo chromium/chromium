@@ -252,9 +252,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   friend class TestPaymentsDataManager;
   friend class TestPersonalDataManager;
 
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           AddAndGetCreditCardArtImage);
-
   // Loads the saved credit cards from the web database.
   virtual void LoadCreditCards();
 

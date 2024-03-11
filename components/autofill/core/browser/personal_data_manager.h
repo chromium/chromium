@@ -706,9 +706,6 @@ class PersonalDataManager : public KeyedService,
   GetAccountStatusForTesting() const;
 
  protected:
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           AddAndGetCreditCardArtImage);
-
   friend class PaymentsDataCleaner;
   // TODO(b/322170538): The `PaymentsDataManager` shouldn't depend on the PDM
   // at all, let alone befriend it.
@@ -742,11 +739,6 @@ class PersonalDataManager : public KeyedService,
   // Sets which PrefService to use and observe. |pref_service| is not owned by
   // this class and must outlive |this|.
   void SetPrefService(PrefService* pref_service);
-
-  // Asks `image_fetcher_` to fetch images. Virtual for testing.
-  // TODO(b/322170538): Remove and only rely on the implementation in
-  // `PaymentsDataManager`. This is only relied upon by some tests.
-  virtual void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
 
   // Responsible for all address-related logic of the PDM.
   // Non-null after `Init()`.

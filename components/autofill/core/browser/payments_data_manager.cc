@@ -1308,7 +1308,7 @@ void PaymentsDataManager::ProcessCardArtUrlChanges() {
     }
   }
   if (!updated_urls.empty()) {
-    pdm_->FetchImagesForURLs(updated_urls);
+    FetchImagesForURLs(updated_urls);
   }
 }
 

@@ -19,8 +19,19 @@ class PersonalDataManagerTestApi {
 
   // Returns the number of credit card benefits.
   size_t GetCreditCardBenefitsCount() {
-    return personal_data_manager_->payments_data_manager_->credit_card_benefits_
-        .size();
+    return personal_data_manager_->payments_data_manager()
+        .credit_card_benefits_.size();
+  }
+
+  void SetImageFetcher(AutofillImageFetcherBase* image_fetcher) {
+    personal_data_manager_->payments_data_manager().image_fetcher_ =
+        image_fetcher;
+  }
+
+  void OnCardArtImagesFetched(
+      std::vector<std::unique_ptr<CreditCardArtImage>> images) {
+    personal_data_manager_->payments_data_manager().OnCardArtImagesFetched(
+        std::move(images));
   }
 
  private:

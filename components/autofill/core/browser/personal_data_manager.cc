@@ -810,11 +810,6 @@ void PersonalDataManager::SetPrefService(PrefService* pref_service) {
   }
 }
 
-void PersonalDataManager::FetchImagesForURLs(
-    base::span<const GURL> updated_urls) const {
-  payments_data_manager_->FetchImagesForURLs(updated_urls);
-}
-
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
     const {
   if (default_country_code_.empty() && IsAutofillEnabled()) {
