@@ -214,37 +214,30 @@ bool IsPasscodeSettingsAvailable() {
   // backgrounded. Otherwise just pop the reauth view controller and unblock the
   // surface below.
   switch (level) {
+    case SceneActivationLevelBackground:
+      // Require auth next time the scene is foregrounded.
+      _authOnForegroundActive = YES;
+      [[fallthrough]];
     case SceneActivationLevelForegroundInactive:
       // Present reauth vc if not presented already.
-      // Do it while the scene is still in the foreground to prevent the top
-      // surface in the navigation stack from being visible in the app switcher.
+      // Ideally do it while the scene is still in the foreground to prevent the
+      // top surface in the navigation stack from being visible in the app
+      // switcher. This is not always possible as the app some times goes
+      // straight to `SceneActivationLevelBackground`. See crbug.com/40074678.
       if (!_reauthViewController) {
         [self pushReauthenticationViewControllerWithRequestAuth:NO];
       }
       break;
-    case SceneActivationLevelBackground:
-      // Require auth next time the scene is foregrounded.
-      _authOnForegroundActive = YES;
-      break;
+
     case SceneActivationLevelForegroundActive:
       // Either ask for reauth if the scene was fully backgrounded or just
       // remove the blocking view controller.
       if (_authOnForegroundActive) {
         _authOnForegroundActive = NO;
-
         // Reauth vc should have been pushed on
-        // `SceneActivationLevelForegroundInactive` when the scene was moving to
-        // the background.
-        if (!_reauthViewController) {
-          // TODO(crbug.com/1492017): Fix scenario where the scene is active but
-          // reauth vc wasn't pushed when inactive.
-          base::debug::DumpWithoutCrashing();
-          // Gracefully handling this scenario by pushing the reauth vc and
-          // request auth.
-          [self pushReauthenticationViewControllerWithRequestAuth:YES];
-          return;
-        }
-
+        // `SceneActivationLevelForegroundInactive` or
+        // SceneActivationLevelBackground`.
+        CHECK(_reauthViewController, base::NotFatalUntil::M125);
         [_reauthViewController requestAuthentication];
       } else {
         [self popReauthenticationViewController];

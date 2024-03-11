@@ -118,18 +118,23 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
 
   // Tests the auth flow works correctly when backgrounding/foregrounding the
   // scene.
-  void CheckReauthFlowAfterGoingToBackground() {
+  // - simulate_foreground_inactive: When false the test changes the scene state
+  // to the background state without going through foreground inactive.
+  void CheckReauthFlowAfterGoingToBackground(
+      bool simulate_foreground_inactive) {
     CheckReauthenticationViewControllerNotPresented();
 
-    // Simulate start of transition to background state.
-    scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
-
-    CheckReauthenticationViewControllerIsPresented();
+    if (simulate_foreground_inactive) {
+      // Simulate transition to inactive state before background state.
+      scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+      CheckReauthenticationViewControllerIsPresented();
+    }
 
     // Simulate transition to background.
     scene_state_.activationLevel = SceneActivationLevelBackground;
 
-    // Reauth vc should still be there.
+    // Reauth vc should have been presented either in the inactive or background
+    // state.
     CheckReauthenticationViewControllerIsPresented();
     ASSERT_FALSE(delegate_.successfulReauth);
 
@@ -159,7 +164,14 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
 // Tests the auth flow works correctly when backgrounding/foregrounding the
 // scene.
 TEST_F(ReauthenticationCoordinatorTest, RequestAuthAfterSceneGoesToBackground) {
-  CheckReauthFlowAfterGoingToBackground();
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/true);
+}
+
+// Tests the auth flow works correctly when backgrounding/foregrounding the
+// scene but skipping the foreground inactive state.
+TEST_F(ReauthenticationCoordinatorTest,
+       RequestAuthAfterSceneGoesToBackgroundSkippingInactive) {
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/false);
 }
 
 // Tests the auth flow works correctly when backgrounding/foregrounding the
@@ -167,12 +179,12 @@ TEST_F(ReauthenticationCoordinatorTest, RequestAuthAfterSceneGoesToBackground) {
 // auth flow due to scene state changes.
 TEST_F(ReauthenticationCoordinatorTest,
        RequestAuthAfterSceneGoesToBackgroundRepeated) {
-  CheckReauthFlowAfterGoingToBackground();
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/true);
 
   delegate_.successfulReauth = NO;
   delegate_.willPushReauthVCCalled = NO;
 
-  CheckReauthFlowAfterGoingToBackground();
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/true);
 }
 
 // Tests that auth is not requested with scene goes to the foreground inactive
