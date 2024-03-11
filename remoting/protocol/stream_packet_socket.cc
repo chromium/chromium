@@ -268,6 +268,10 @@ int StreamPacketSocket::SetOption(rtc::Socket::Option option, int value) {
     case rtc::Socket::OPT_RTP_SENDTIME_EXTN_ID:
       NOTIMPLEMENTED();
       return -1;
+
+    default:
+      NOTIMPLEMENTED() << "Unexpected socket option: " << option;
+      return -1;
   }
 
   NOTREACHED();
