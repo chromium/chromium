@@ -146,7 +146,7 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
   std::unique_ptr<MockAffiliationSourceObserver> mock_source_observer_;
 };
 
-// Verifies that facets no facets are returned if the password store is empty.
+// Verifies that no facets are returned if the password store is empty.
 TEST_F(PasswordAffiliationSourceAdapterTest, GetFacetsReturnsNoCredentials) {
   EXPECT_TRUE(ExpectAdapterToReturnFacets({}));
 }
