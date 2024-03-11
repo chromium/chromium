@@ -256,7 +256,8 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   top_level_contents_ =
       constrained_window::GetTopLevelWebContents(web_contents_)->GetWeakPtr();
   top_level_contents_->StoreFocus();
-  scoped_ignore_input_events_ = top_level_contents_->IgnoreInputEvents();
+  scoped_ignore_input_events_ =
+      top_level_contents_->IgnoreInputEvents(std::nullopt);
 
   if (ShowDialogDelay().is_zero() || !is_pending()) {
     DVLOG(1) << __func__ << ": Showing in ctor";

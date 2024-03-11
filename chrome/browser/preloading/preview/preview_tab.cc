@@ -21,6 +21,7 @@
 #include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -94,6 +95,9 @@ PreviewTab::PreviewTab(PreviewManager* preview_manager,
       url_(url) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kLinkPreview));
   web_contents_->SetDelegate(this);
+  scoped_ignore_web_inputs_ =
+      web_contents_->IgnoreInputEvents(base::BindRepeating(
+          &PreviewTab::AuditWebInputEvent, base::Unretained(this)));
 
   // WebView setup.
   view_->SetWebContents(web_contents_.get());
@@ -153,6 +157,20 @@ void PreviewTab::InitWindow(content::WebContents& initiator_web_contents) {
       std::make_unique<views::FillLayout>());
   widget_->Show();
   widget_->SetCapture(widget_->client_view());
+}
+
+bool PreviewTab::AuditWebInputEvent(const blink::WebInputEvent& event) {
+  // Permit only page scroll related events.
+  // TODO(b:329147054): Revisit to support touch devices, and care for web
+  // exposed behaviors' compatibility.
+  const blink::WebInputEvent::Type type = event.GetType();
+  if (type == blink::WebInputEvent::Type::kMouseWheel ||
+      type == blink::WebInputEvent::Type::kGestureScrollBegin ||
+      type == blink::WebInputEvent::Type::kGestureScrollEnd ||
+      type == blink::WebInputEvent::Type::kGestureScrollUpdate) {
+    return true;
+  }
+  return false;
 }
 
 content::PreloadingEligibility PreviewTab::IsPrerender2Supported(

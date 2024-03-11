@@ -1406,8 +1406,9 @@ void WebContentsViewAura::DragEnteredCallback(
 }
 
 void WebContentsViewAura::OnDragEntered(const ui::DropTargetEvent& event) {
-  if (web_contents_->ShouldIgnoreInputEvents())
+  if (web_contents_->ShouldIgnoreInputEvents()) {
     return;
+  }
 
 #if BUILDFLAG(IS_WIN)
   async_drop_navigation_observer_.reset();
@@ -1494,8 +1495,9 @@ void WebContentsViewAura::DragUpdatedCallback(
 
 aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
     const ui::DropTargetEvent& event) {
-  if (web_contents_->ShouldIgnoreInputEvents())
+  if (web_contents_->ShouldIgnoreInputEvents()) {
     return aura::client::DragUpdateInfo();
+  }
   aura::client::DragUpdateInfo drag_info;
   auto* focused_frame = web_contents_->GetFocusedFrame();
   if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord()) {

@@ -773,10 +773,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   // intercept.
   virtual void DidChangeCloseSignalInterceptStatus() {}
 
-  // Report that cancellation occurred in preview navigation.
+  // Reports that cancellation occurred in preview navigation.
   virtual void CancelPreview(PreviewCancelReason reason) {}
 
-  // Notify the previewed page is activated.
+  // Notifies the previewed page is activated.
   virtual void DidActivatePreviewedPage() {}
 
 #if !BUILDFLAG(IS_ANDROID)

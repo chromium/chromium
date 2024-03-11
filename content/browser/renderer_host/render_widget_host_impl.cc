@@ -1487,7 +1487,7 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
     }
   }
 
-  if (IsIgnoringInputEvents()) {
+  if (IsIgnoringWebInputEvents(mouse_event)) {
     return;
   }
 
@@ -1518,7 +1518,7 @@ void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
   TRACE_EVENT2("input", "RenderWidgetHostImpl::ForwardWheelEvent", "dx",
                wheel_event.delta_x, "dy", wheel_event.delta_y);
 
-  if (IsIgnoringInputEvents()) {
+  if (IsIgnoringWebInputEvents(wheel_event)) {
     return;
   }
 
@@ -1571,7 +1571,7 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
   }
 
   // Early out if necessary, prior to performing latency logic.
-  if (IsIgnoringInputEvents()) {
+  if (IsIgnoringWebInputEvents(gesture_event)) {
     return;
   }
 
@@ -1633,7 +1633,7 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
   }
   NotifyUISchedulerOfGestureEventUpdate(gesture_event.GetType());
 
-  // Delegate must be non-null, due to |IsIgnoringInputEvents()| test.
+  // Delegate must be non-null, due to `IsIgnoringWebInputEvents()` test.
   if (delegate_->PreHandleGestureEvent(gesture_event)) {
     return;
   }
@@ -1704,7 +1704,7 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
     return;
   }
 
-  if (IsIgnoringInputEvents()) {
+  if (IsIgnoringWebInputEvents(key_event)) {
     return;
   }
 
@@ -3150,7 +3150,7 @@ blink::mojom::InputEventResultState RenderWidgetHostImpl::FilterInputEvent(
   // Don't ignore touch cancel events, since they may be sent while input
   // events are being ignored in order to keep the renderer from getting
   // confused about how many touches are active.
-  if (IsIgnoringInputEvents() &&
+  if (IsIgnoringWebInputEvents(event) &&
       event.GetType() != WebInputEvent::Type::kTouchCancel) {
     return blink::mojom::InputEventResultState::kNoConsumerExists;
   }
@@ -3396,6 +3396,12 @@ void RenderWidgetHostImpl::OnTouchEventAck(
   } else if (view_) {
     view_->ProcessAckedTouchEvent(event, ack_result);
   }
+}
+
+bool RenderWidgetHostImpl::IsIgnoringWebInputEvents(
+    const blink::WebInputEvent& event) const {
+  return agent_scheduling_group_->GetProcess()->IsBlocked() || !delegate_ ||
+         delegate_->ShouldIgnoreWebInputEvents(event);
 }
 
 bool RenderWidgetHostImpl::IsIgnoringInputEvents() const {

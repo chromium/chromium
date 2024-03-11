@@ -2191,8 +2191,9 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
     // We need to honor input bypass if the associated tab does not want input.
     // This gives the current focused window a chance to be the text input
     // client and handle events.
-    if (host()->IsIgnoringInputEvents())
+    if (host()->IsIgnoringInputEvents()) {
       return;
+    }
 
     host()->GotFocus();
     UpdateActiveState(true);

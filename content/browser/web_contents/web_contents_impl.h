@@ -574,7 +574,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   service_manager::InterfaceProvider* GetJavaInterfaces() override;
 #endif
   bool HasRecentInteraction() override;
-  [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents() override;
+  [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents(
+      std::optional<WebInputEventAuditCallback> audit_callback) override;
   bool HasActiveEffectivelyFullscreenVideo() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   const base::Location& GetCreatorLocation() override;
@@ -872,6 +873,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const blink::RendererPreferences& GetRendererPrefs() const override;
   void DidReceiveInputEvent(RenderWidgetHostImpl* render_widget_host,
                             const blink::WebInputEvent& event) override;
+  bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event) override;
   bool ShouldIgnoreInputEvents() override;
   void OnIgnoredUIEvent() override;
   void Activate() override;
@@ -2105,6 +2107,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Counts the number of outstanding requests to ignore input events. They will
   // not be sent when this is greater than zero.
   int ignore_input_events_count_ = 0;
+  uint64_t next_web_input_event_audit_callback_id_ = 0;
+  base::flat_map<uint64_t, WebInputEventAuditCallback>
+      web_input_event_audit_callbacks_;
 
   // Pointer to the JavaScript dialog manager, lazily assigned. Used because the
   // delegate of this WebContentsImpl is nulled before its destructor is called.

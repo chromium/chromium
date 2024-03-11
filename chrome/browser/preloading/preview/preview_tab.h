@@ -14,6 +14,10 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "url/gurl.h"
 
+namespace blink {
+class WebInputEvent;
+}  // namespace blink
+
 namespace content {
 class WebContents;
 class PrerenderHandle;
@@ -67,6 +71,8 @@ class PreviewTab final : public content::WebContentsDelegate,
 
   void InitWindow(content::WebContents& parent);
 
+  bool AuditWebInputEvent(const blink::WebInputEvent& event);
+
   // content::WebContentsDelegate implementation:
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
@@ -78,6 +84,8 @@ class PreviewTab final : public content::WebContentsDelegate,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   std::unique_ptr<content::WebContents> web_contents_;
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_web_inputs_;
   std::unique_ptr<PreviewWidget> widget_;
   std::unique_ptr<views::WebView> view_;
   std::unique_ptr<PreviewZoomController> preview_zoom_controller_;

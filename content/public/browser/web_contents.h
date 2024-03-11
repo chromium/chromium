@@ -70,6 +70,7 @@ namespace blink {
 namespace web_pref {
 struct WebPreferences;
 }
+class WebInputEvent;
 struct UserAgentOverride;
 struct RendererPreferences;
 }  // namespace blink
@@ -1367,9 +1368,17 @@ class WebContents : public PageNavigator,
   virtual bool HasRecentInteraction() = 0;
 
   // Causes the WebContents to ignore input events for at least as long as the
-  // token exists.  In the event of multiple calls, input events will be ignored
+  // token exists. In the event of multiple calls, input events will be ignored
   // until all tokens have been destroyed.
-  [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents() = 0;
+  // If WebInputEventAuditCallback is given, it can audits WebInputEvent based
+  // input events and ignore only events that the callback returns false for the
+  // event. Other kind of events, such as focus event or ui::Events will be
+  // always ignored without asking the callback. The given callback will be
+  // invoked only while the returned ScopedIgnoreInputEvents alives.
+  using WebInputEventAuditCallback =
+      base::RepeatingCallback<bool(const blink::WebInputEvent&)>;
+  [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents(
+      std::optional<WebInputEventAuditCallback> audit_callback) = 0;
 
   // Returns the group id for all audio streams that correspond to a single
   // WebContents. This can be used to determine if a AudioOutputStream was

@@ -117,6 +117,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
                                     const blink::WebInputEvent& event) {}
 
   // Asks whether the page is in a state of ignoring input events.
+  virtual bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event);
   virtual bool ShouldIgnoreInputEvents();
 
   // Callback to give the browser a chance to handle the specified gesture

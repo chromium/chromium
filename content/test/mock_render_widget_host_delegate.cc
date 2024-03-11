@@ -81,8 +81,4 @@ MockRenderWidgetHostDelegate::GetVisibleTimeRequestTrigger() {
   return visible_time_request_trigger_;
 }
 
-bool MockRenderWidgetHostDelegate::ShouldIgnoreInputEvents() {
-  return should_ignore_input_events_;
-}
-
 }  // namespace content

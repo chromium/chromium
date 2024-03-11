@@ -468,6 +468,9 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   }
 
   bool ShouldIgnoreInputEvents() override { return ignore_input_events_; }
+  bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event) override {
+    return ignore_input_events_;
+  }
 
   void ExecuteEditCommand(const std::string& command,
                           const std::optional<std::u16string>& value) override {

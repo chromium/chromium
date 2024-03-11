@@ -32,6 +32,11 @@ bool RenderWidgetHostDelegate::HandleKeyboardEvent(
   return false;
 }
 
+bool RenderWidgetHostDelegate::ShouldIgnoreWebInputEvents(
+    const blink::WebInputEvent& event) {
+  return false;
+}
+
 bool RenderWidgetHostDelegate::ShouldIgnoreInputEvents() {
   return false;
 }

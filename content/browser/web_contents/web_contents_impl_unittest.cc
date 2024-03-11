@@ -3144,12 +3144,12 @@ TEST_F(WebContentsImplTest, IgnoreInputEvents) {
   // By default, input events should not be ignored.
   EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
   std::optional<WebContents::ScopedIgnoreInputEvents> ignore_1 =
-      contents()->IgnoreInputEvents();
+      contents()->IgnoreInputEvents(std::nullopt);
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
 
   // A second request to ignore should continue to ignore events.
   WebContents::ScopedIgnoreInputEvents ignore_2 =
-      contents()->IgnoreInputEvents();
+      contents()->IgnoreInputEvents(std::nullopt);
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
 
   // Releasing one of them should not change anything.
@@ -3164,7 +3164,7 @@ TEST_F(WebContentsImplTest, IgnoreInputEvents) {
     // Cannot create an empty `ScopedIgnoreInputEvents`, so get a new one and
     // move-assign over it to verify that we end up with one outstanding token.
     WebContents::ScopedIgnoreInputEvents ignore_4 =
-        contents()->IgnoreInputEvents();
+        contents()->IgnoreInputEvents(std::nullopt);
     ignore_4 = std::move(ignore_3);
     EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
     // `ignore_4` goes out of scope.

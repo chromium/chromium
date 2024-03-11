@@ -636,7 +636,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Cancels an ongoing composition.
   void ImeCancelComposition();
 
-  // Whether forwarded WebInputEvents are being ignored.
+  // Whether forwarded WebInputEvents or other events are being ignored.
+  bool IsIgnoringWebInputEvents(const blink::WebInputEvent& event) const;
   bool IsIgnoringInputEvents() const;
 
   // Called when the response to a pending pointer lock request has arrived.

@@ -2644,19 +2644,38 @@ bool WebContentsImpl::HasRecentInteraction() {
   return delta <= kMaxInterval;
 }
 
-WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents() {
+WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
+    std::optional<WebInputEventAuditCallback> audit_callback) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::IgnoreInputEvents");
-  ++ignore_input_events_count_;
+
+  uint64_t callback_id = 0;
+  if (audit_callback.has_value()) {
+    do {
+      callback_id = next_web_input_event_audit_callback_id_++;
+    } while (web_input_event_audit_callbacks_.contains(callback_id));
+    web_input_event_audit_callbacks_[callback_id] = std::move(*audit_callback);
+  } else {
+    ++ignore_input_events_count_;
+  }
+
   // Bind weakly, since the token might outlive us.
   return ScopedIgnoreInputEvents(base::BindOnce(
-      [](base::WeakPtr<WebContentsImpl> wc) {
+      [](base::WeakPtr<WebContentsImpl> wc,
+         std::optional<uint64_t> callback_id) {
         if (wc) {
           OPTIONAL_TRACE_EVENT0("content",
                                 "WebContentsImpl::IgnoreInputEvents.Release");
-          --wc->ignore_input_events_count_;
+          if (callback_id.has_value()) {
+            CHECK(wc->web_input_event_audit_callbacks_.contains(*callback_id));
+            wc->web_input_event_audit_callbacks_.erase(*callback_id);
+          } else {
+            --wc->ignore_input_events_count_;
+          }
         }
       },
-      weak_factory_.GetWeakPtr()));
+      weak_factory_.GetWeakPtr(),
+      audit_callback.has_value() ? std::make_optional<uint64_t>(callback_id)
+                                 : std::nullopt));
 }
 
 bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
@@ -8873,16 +8892,33 @@ void WebContentsImpl::DidReceiveInputEvent(
                              event);
 }
 
-bool WebContentsImpl::ShouldIgnoreInputEvents() {
-  WebContentsImpl* web_contents = this;
-  while (web_contents) {
-    if (web_contents->ignore_input_events_count_ > 0) {
+bool WebContentsImpl::ShouldIgnoreWebInputEvents(
+    const blink::WebInputEvent& event) {
+  if (ignore_input_events_count_ > 0) {
+    return true;
+  }
+  for (const auto& callback : web_input_event_audit_callbacks_) {
+    if (!callback.second.Run(event)) {
       return true;
     }
-    web_contents = web_contents->GetOuterWebContents();
   }
+  WebContentsImpl* web_contents = GetOuterWebContents();
+  if (!web_contents) {
+    return false;
+  }
+  return web_contents->ShouldIgnoreWebInputEvents(event);
+}
 
-  return false;
+bool WebContentsImpl::ShouldIgnoreInputEvents() {
+  if (ignore_input_events_count_ > 0 ||
+      !web_input_event_audit_callbacks_.empty()) {
+    return true;
+  }
+  WebContentsImpl* web_contents = GetOuterWebContents();
+  if (!web_contents) {
+    return false;
+  }
+  return web_contents->ShouldIgnoreInputEvents();
 }
 
 void WebContentsImpl::FocusOwningWebContents(

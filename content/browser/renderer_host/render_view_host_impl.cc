@@ -842,14 +842,14 @@ RenderViewHostImpl::GetAssociatedPageBroadcast() {
 void RenderViewHostImpl::RenderWidgetDidForwardMouseEvent(
     const blink::WebMouseEvent& mouse_event) {
   if (mouse_event.GetType() == WebInputEvent::Type::kMouseWheel &&
-      GetWidget()->IsIgnoringInputEvents()) {
+      GetWidget()->IsIgnoringWebInputEvents(mouse_event)) {
     delegate_->OnIgnoredUIEvent();
   }
 }
 
 bool RenderViewHostImpl::MayRenderWidgetForwardKeyboardEvent(
     const NativeWebKeyboardEvent& key_event) {
-  if (GetWidget()->IsIgnoringInputEvents()) {
+  if (GetWidget()->IsIgnoringWebInputEvents(key_event)) {
     if (key_event.GetType() == WebInputEvent::Type::kRawKeyDown)
       delegate_->OnIgnoredUIEvent();
     return false;
