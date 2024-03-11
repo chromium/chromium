@@ -47,6 +47,11 @@ class CONTENT_EXPORT PrefetchType {
   // Returns the eagerness of the prefetch based on the speculation rules API.
   blink::mojom::SpeculationEagerness GetEagerness() const;
 
+  // Whether this prefetch is initiated by renderer processes.
+  // Currently this is equivalent to whether the trigger type is Speculation
+  // Rules or not.
+  bool IsRendererInitiated() const;
+
  private:
   const PreloadingTriggerType trigger_type_;
   const bool use_prefetch_proxy_;

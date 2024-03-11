@@ -173,6 +173,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
 
+  // Whether this prefetch is initiated by renderer processes.
+  // Currently this is equivalent to whether the trigger type is Speculation
+  // Rules or not.
+  bool IsRendererInitiated() const;
+
   // The origin and that initiates the prefetch request.
   const url::Origin& GetReferringOrigin() const { return referring_origin_; }
 

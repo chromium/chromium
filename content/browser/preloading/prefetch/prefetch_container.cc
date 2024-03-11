@@ -425,6 +425,8 @@ PrefetchContainer::PrefetchContainer(
       attempt_(std::move(attempt)),
       initiator_devtools_navigation_token_(
           referring_render_frame_host.GetDevToolsNavigationToken()) {
+  CHECK(prefetch_type_.IsRendererInitiated());
+
   auto* web_contents =
       WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host);
   is_javascript_enabled_ =
@@ -1235,6 +1237,10 @@ GURL PrefetchContainer::GetCurrentURL() const {
 
 GURL PrefetchContainer::GetPreviousURL() const {
   return GetPreviousSinglePrefetchToPrefetch().url_;
+}
+
+bool PrefetchContainer::IsRendererInitiated() const {
+  return prefetch_type_.IsRendererInitiated();
 }
 
 bool PrefetchContainer::IsIsolatedNetworkContextRequiredForCurrentPrefetch()

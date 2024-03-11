@@ -36,7 +36,7 @@ BASE_DECLARE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped);
 
 // If enabled, browser-initiated prefetch is become to be allowed.
 // Please see crbug.com/40946257 for more details.
-BASE_DECLARE_FEATURE(kPrefetchBrowserInitiatedTriggers);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchBrowserInitiatedTriggers);
 
 // If enabled, a will retrieve and store responses from/to the HTTP cache
 // whenever possible.
