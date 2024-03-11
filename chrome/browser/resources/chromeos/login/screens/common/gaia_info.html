@@ -29,11 +29,14 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'gaiaInfoScreenTitle')]]
   </h1>
   <div slot="subtitle">
-    <div>
+    <div hidden="[[isQuickStartVisible]]">
       [[i18nAdvancedDynamic(locale, 'gaiaInfoScreenDescription')]]
     </div>
+    <div hidden="[[!isQuickStartVisible]]">
+      [[i18nAdvancedDynamic(locale, 'gaiaInfoScreenDescriptionQuickStartP1')]]
+    </div>
     <div id="quickstart-subtitle" hidden="[[!isQuickStartVisible]]">
-      [[i18nAdvancedDynamic(locale, 'gaiaInfoScreenDescriptionQuickStart')]]
+      [[i18nAdvancedDynamic(locale, 'gaiaInfoScreenDescriptionQuickStartP2')]]
     </div>
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
