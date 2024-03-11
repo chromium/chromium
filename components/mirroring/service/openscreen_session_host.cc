@@ -471,9 +471,9 @@ void OpenscreenSessionHost::OnNegotiated(
     audio_capturing_callback_ = std::make_unique<AudioCapturingCallback>(
         base::BindPostTaskToCurrentDefault(base::BindRepeating(
             &AudioRtpStream::InsertAudio, audio_stream_->AsWeakPtr())),
-        base::BindOnce(&OpenscreenSessionHost::ReportAndLogError,
-                       weak_factory_.GetWeakPtr(),
-                       SessionError::AUDIO_CAPTURE_ERROR));
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &OpenscreenSessionHost::ReportAndLogError,
+            weak_factory_.GetWeakPtr(), SessionError::AUDIO_CAPTURE_ERROR)));
     audio_input_device_ = new media::AudioInputDevice(
         std::make_unique<CapturedAudioInput>(base::BindRepeating(
             &OpenscreenSessionHost::CreateAudioStream, base::Unretained(this))),
