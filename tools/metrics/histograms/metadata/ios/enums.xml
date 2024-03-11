@@ -675,6 +675,9 @@ chromium-metrics-reviews@google.com.
       label="Success - StoreKit opened and app not installed (maybe dismissed
              before full installation)"/>
   <int value="8" label="Success - StoreKit opened and app installed"/>
+  <int value="9" label="Failure - User out-of-storage and DID manage storage"/>
+  <int value="10"
+      label="Failure - User out-of-storage and did NOT manage storage"/>
 </enum>
 
 <enum name="IOSSearchExtensionAction">

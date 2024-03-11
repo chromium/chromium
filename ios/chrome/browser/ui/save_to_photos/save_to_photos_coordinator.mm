@@ -310,7 +310,8 @@
   UIAlertAction* cancelAction =
       [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                                style:UIAlertActionStyleCancel
-                             handler:^(UIAlertAction* action){
+                             handler:^(UIAlertAction* action) {
+                               [weakMediator manageStorageAlertDidCancel];
                              }];
   [_alertController addAction:manageStorageAction];
   [_alertController addAction:cancelAction];

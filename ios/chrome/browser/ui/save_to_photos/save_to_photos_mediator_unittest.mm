@@ -385,17 +385,7 @@ TEST_F(SaveToPhotosMediatorTest,
   EXPECT_NSEQ(GetTestPhotosService()->GetImageData(), GetFakeImageData());
   EXPECT_EQ(GetTestPhotosService()->GetIdentity(), fake_identity_);
 
-  // Expect that the account picker is hidden once the PhotosService is done
-  // uploading.
-  OCMExpect([mock_save_to_photos_mediator_delegate hideAccountPicker]);
-
-  // Run until the PhotosService finishes to upload the image and check that the
-  // account picker was hidden.
-  task_environment_.RunUntilQuit();
-  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
-
-  // Expect that the success snackbar is shown once the account picker is
-  // hidden.
+  // Expect that the success snackbar is shown once image is uploaded.
   NSString* expected_message = l10n_util::GetNSStringF(
       IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_MESSAGE,
       base::SysNSStringToUTF16(fake_identity_.userEmail));
@@ -407,7 +397,8 @@ TEST_F(SaveToPhotosMediatorTest,
                 messageAction:[OCMArg isNotNil]
              completionAction:[OCMArg isNotNil]]);
 
-  [mediator accountPickerWasHidden];
+  // Run until the PhotosService finishes to upload the image.
+  task_environment_.RunUntilQuit();
 
   // Verify that the success snackbar has been shown.
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
