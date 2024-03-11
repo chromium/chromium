@@ -43,6 +43,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace views {
 
 using test::TestInkDrop;
@@ -877,6 +881,13 @@ class BubbleDialogDelegateViewArrowTest
 };
 
 TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    GTEST_SKIP() << "Global screen coordinates unavailable";
+  }
+#endif
   std::unique_ptr<Widget> anchor_widget =
       CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
   auto* bubble_delegate =

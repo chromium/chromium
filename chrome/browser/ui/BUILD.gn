@@ -7032,6 +7032,9 @@ static_library("test_support") {
         "//ui/wm",
       ]
     }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 
   if (!is_android) {

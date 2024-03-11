@@ -38,6 +38,10 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 class ExtensionsMenuTestUtil::MenuViewObserver : public views::ViewObserver {
  public:
   explicit MenuViewObserver(ExtensionsMenuView** menu_view_ptr)
@@ -229,6 +233,13 @@ gfx::Size ExtensionsMenuTestUtil::GetToolbarActionSize() {
 
 gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
     const extensions::ExtensionId& id) {
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    return ExtensionPopup::kMaxSize;
+  }
+#endif
   auto* view_delegate = static_cast<ToolbarActionViewDelegateViews*>(
       static_cast<ExtensionActionViewController*>(
           extensions_container_->GetActionForId(id))
