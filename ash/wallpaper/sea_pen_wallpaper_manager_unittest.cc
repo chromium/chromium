@@ -105,9 +105,9 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   EXPECT_TRUE(base::PathExists(file_path));
 }
 
-TEST_F(SeaPenWallpaperManagerTest, StoresTenImages) {
-  // Create 10 images in the temp directory.
-  for (uint32_t i = 1; i <= 10; i++) {
+TEST_F(SeaPenWallpaperManagerTest, StoresTwelveImages) {
+  // Create 12 images in the temp directory.
+  for (uint32_t i = 1; i <= 12; i++) {
     base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
     sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), i},
@@ -126,14 +126,14 @@ TEST_F(SeaPenWallpaperManagerTest, StoresTenImages) {
     EXPECT_TRUE(base::PathExists(file_path));
   }
 
-  EXPECT_THAT(
-      GetIdsFromFilePaths(GetJpgFilesForAccountId(kAccountId1)),
-      testing::UnorderedElementsAre(1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u));
+  EXPECT_THAT(GetIdsFromFilePaths(GetJpgFilesForAccountId(kAccountId1)),
+              testing::UnorderedElementsAre(1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u,
+                                            10u, 11u, 12u));
 }
 
-TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
-  // Create 10 images in the temp directory.
-  for (uint32_t i = 1; i <= 10; i++) {
+TEST_F(SeaPenWallpaperManagerTest, ThirteenthImageReplacesOldest) {
+  // Create 12 images in the temp directory.
+  for (uint32_t i = 1; i <= 12; i++) {
     base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
     sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), i},
@@ -150,13 +150,13 @@ TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
                       /*last_accessed=*/base::Time::Now(),
                       /*last_modified=*/base::Time::Now() - base::Minutes(30)));
 
-  constexpr uint32_t new_image_id = 11;
+  constexpr uint32_t new_image_id = 13;
 
   ASSERT_FALSE(
       base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
           kAccountId1, new_image_id)));
 
-  // Decode and save the 11th sea pen image.
+  // Decode and save the 13th sea pen image.
   base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
   sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
       kAccountId1, {CreateJpgBytes(), new_image_id},
@@ -170,10 +170,10 @@ TEST_F(SeaPenWallpaperManagerTest, EleventhImageReplacesOldest) {
       *decode_sea_pen_image_future.Get<gfx::ImageSkia>().bitmap(),
       /*max_deviation=*/1));
 
-  // The last modified image should be deleted when the 11th image is added.
+  // The last modified image should be deleted when the 13th image is added.
   EXPECT_THAT(GetIdsFromFilePaths(GetJpgFilesForAccountId(kAccountId1)),
               testing::UnorderedElementsAre(1u, 2u, 3u, 4u, 6u, 7u, 8u, 9u, 10u,
-                                            new_image_id));
+                                            11u, 12u, new_image_id));
   EXPECT_FALSE(
       base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
           kAccountId1, oldest_image_id)));

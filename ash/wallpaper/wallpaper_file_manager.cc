@@ -29,7 +29,7 @@ namespace ash {
 namespace {
 // The max number of Sea Pen image files to keep in Sea Pen directory before
 // adding a new file.
-constexpr int kMaxSeaPenFiles = 9;
+constexpr int kMaxSeaPenFiles = 11;
 
 // Returns the file name of the online wallpaper based on the `resolution`.
 std::string GetOnlineWallpaperFileName(const std::string& file_name,
