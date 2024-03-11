@@ -109,6 +109,12 @@ BASE_FEATURE(kGetTheMostOutOfChrome,
 // Enables or disables the Happiness Tracking Surveys being delivered via chrome
 // webui, rather than a separate static website.
 BASE_FEATURE(kHaTSWebUI, "HaTSWebUI", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, requesting to use the keyboard or pointer lock API causes a
+// permission prompt to be shown.
+BASE_FEATURE(kKeyboardAndPointerLockPrompt,
+             "KeyboardAndPointerLockPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

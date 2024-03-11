@@ -5113,6 +5113,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "keyboard-and-pointer-lock-prompt",
+    "owners": ["takumif@chromium.org", "muyaoxu@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lacros-availability-ignore",
     "owners": [ "hidehiko@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this

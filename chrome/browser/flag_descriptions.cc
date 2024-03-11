@@ -4777,6 +4777,12 @@ const char kForceSigninFlowInProfilePickerDescription[] =
     "Profile Picker, to the regular sign in flow within the Profile Picker "
     "with adaptation to the policy settings";
 
+const char kKeyboardAndPointerLockPromptName[] =
+    "Keyboard and Pointer Lock prompt";
+const char kKeyboardAndPointerLockPromptDescription[] =
+    "Requesting to use the keyboard or pointer lock API causes a permission"
+    "prompt to be shown.";
+
 const char kPressAndHoldEscToExitBrowserFullscreenName[] =
     "Holding Esc to exit browser fullscreen";
 const char kPressAndHoldEscToExitBrowserFullscreenDescription[] =

@@ -2771,6 +2771,9 @@ extern const char kEsbDownloadRowPromoDescription[];
 extern const char kForceSigninFlowInProfilePickerName[];
 extern const char kForceSigninFlowInProfilePickerDescription[];
 
+extern const char kKeyboardAndPointerLockPromptName[];
+extern const char kKeyboardAndPointerLockPromptDescription[];
+
 extern const char kPressAndHoldEscToExitBrowserFullscreenName[];
 extern const char kPressAndHoldEscToExitBrowserFullscreenDescription[];
 

@@ -72,6 +72,10 @@ BASE_DECLARE_FEATURE(kGetTheMostOutOfChrome);
 BASE_DECLARE_FEATURE(kHaTSWebUI);
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kKeyboardAndPointerLockPrompt);
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 #endif
