@@ -631,7 +631,7 @@
     Manage personal information
   </message>
   <message name="IDS_OS_SETTINGS_SUGGESTIONS_ORCA_TITLE" desc="The label for orca" translateable="false">
-    Orca
+    Help me write
   </message>
   <message name="IDS_OS_SETTINGS_SUGGESTIONS_ORCA_DESCRIPTION" desc="The description for orca" translateable="false">
     Create a draft or refine existing work, powered by Google AI.
