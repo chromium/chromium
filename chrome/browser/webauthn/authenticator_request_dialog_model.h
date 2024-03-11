@@ -168,6 +168,7 @@ class AuthenticatorRequestDialogModel
     // GPM passkey creation.
     kGPMOnboarding,
     kGPMCreatePasskey,
+    kGPMPasskeySaved,
     kCreatePasskey,
 
     // Device bootstrap to use GPM passkeys.
@@ -597,6 +598,9 @@ class AuthenticatorRequestDialogModel
 
   // Return the last entered GPM PIN.
   std::string&& TakeGPMPin();
+
+  // Called when the passkey creation is successful.
+  void OnGPMPasskeySaved();
 
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a

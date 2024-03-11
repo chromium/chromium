@@ -391,6 +391,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kTrustThisComputer:
     case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
     case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
+    case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
       return StepUIType::BUBBLE;
 
     default:
@@ -1273,6 +1274,10 @@ void AuthenticatorRequestDialogModel::OnCreateGPMPin() {
 
 std::string&& AuthenticatorRequestDialogModel::TakeGPMPin() {
   return std::move(gpm_pin_);
+}
+
+void AuthenticatorRequestDialogModel::OnGPMPasskeySaved() {
+  SetCurrentStep(Step::kGPMPasskeySaved);
 }
 
 void AuthenticatorRequestDialogModel::OnGPMPinEntered(

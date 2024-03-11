@@ -18,6 +18,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -90,6 +91,15 @@ constexpr BubbleContents kGPMOnboardingContents = {
     .on_ok = &AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted,
 };
 
+// TODO(rgod): Add username row and correct footer when mocks are ready.
+constexpr BubbleContents kGPMPasskeySavedContents = {
+    .buttons = ui::DIALOG_BUTTON_NONE,
+    .title = u"Passkey saved (UT)",
+    .show_footer = true,
+    .show_icon = true,
+    .on_cancel = &AuthenticatorRequestDialogModel::OnRequestComplete,
+};
+
 class AuthenticatorRequestBubbleDelegate
     : public views::BubbleDialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer {
@@ -141,6 +151,8 @@ class AuthenticatorRequestBubbleDelegate
         return &kGPMTouchID;
       case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
         return &kGPMOnboardingContents;
+      case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
+        return &kGPMPasskeySavedContents;
       default:
         NOTREACHED();
         return nullptr;
