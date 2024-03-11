@@ -24,6 +24,7 @@ namespace {
 
 // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on Android.
 using sync_util::IsSyncFeatureEnabledIncludingPasswords;
+using MigrationType = BuiltInBackendToAndroidBackendMigrator::MigrationType;
 
 // Time in seconds by which the passwords migration from the built-in backend to
 // the Android backend is delayed.
@@ -38,8 +39,7 @@ LegacyPasswordStoreBackendMigrationDecorator::
         PrefService* prefs)
     : built_in_backend_(built_in_backend.get()),
       android_backend_(android_backend.get()),
-      prefs_(prefs),
-      sync_settings_helper_(prefs) {
+      prefs_(prefs) {
   // LegacyPasswordStoreBackendMigrationDecorator should not be created after
   // stores split under any circumstances.
   CHECK(!password_manager::UsesSplitStoresAndUPMForLocal(prefs_));
@@ -53,9 +53,14 @@ LegacyPasswordStoreBackendMigrationDecorator::
 LegacyPasswordStoreBackendMigrationDecorator::
     ~LegacyPasswordStoreBackendMigrationDecorator() = default;
 
+BuiltInBackendToAndroidBackendMigrator::MigrationType
+LegacyPasswordStoreBackendMigrationDecorator::migration_in_progress_type()
+    const {
+  return migrator_->migration_in_progress_type();
+}
+
 LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
-    PasswordSyncSettingsHelper(PrefService* prefs)
-    : prefs_(prefs) {}
+    PasswordSyncSettingsHelper() {}
 
 void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     CachePasswordSyncSettingOnStartup(syncer::SyncService* sync) {
@@ -82,6 +87,14 @@ bool LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
 
   password_sync_configured_setting_ = is_password_sync_enabled;
   return true;
+}
+
+bool LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
+    IsSyncFeatureEnabledIncludingPasswords() {
+  CHECK(sync_service_);
+  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  return sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_);
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::InitBackend(
@@ -272,7 +285,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationIfNecessary() {
   // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
   bool password_sync_enabled =
-      sync_util::IsSyncFeatureActiveIncludingPasswords(sync_service_);
+      sync_settings_helper_.IsSyncFeatureEnabledIncludingPasswords();
 
   if (prefs_->GetBoolean(
           prefs::kUnenrolledFromGoogleMobileServicesDueToErrors) &&
@@ -282,7 +295,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationIfNecessary() {
     prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
                        reenrollment_attempts + 1);
     migrator_->StartAccountMigrationIfNecessary(
-        /*should_attempt_upm_reenrollment=*/true);
+        MigrationType::kReenrollmentAttempt);
     return;
   }
 
@@ -299,8 +312,12 @@ void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationIfNecessary() {
     return;
   }
 
-  migrator_->StartAccountMigrationIfNecessary(
-      /*should_attempt_upm_reenrollment=*/false);
+  if (password_sync_enabled &&
+      prefs_->GetInteger(
+          prefs::kCurrentMigrationVersionToGoogleMobileServices) == 0) {
+    migrator_->StartAccountMigrationIfNecessary(
+        MigrationType::kInitialForSyncUsers);
+  }
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
@@ -309,11 +326,19 @@ void LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
     return;
   }
 
+  bool act_on_password_changes =
+      sync_settings_helper_.ShouldActOnSyncStatusChanges();
   prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange,
-                     sync_settings_helper_.ShouldActOnSyncStatusChanges());
-  // Non-syncable data needs to be migrated to the new active backend.
-  migrator_->StartAccountMigrationIfNecessary(
-      /*should_attempt_upm_reenrollment=*/false);
+                     act_on_password_changes);
+
+  if (act_on_password_changes) {
+    // Non-syncable data needs to be migrated to the new active backend.
+    MigrationType type =
+        sync_settings_helper_.IsSyncFeatureEnabledIncludingPasswords()
+            ? MigrationType::kNonSyncableToAndroidBackend
+            : MigrationType::kNonSyncableToBuiltInBackend;
+    migrator_->StartAccountMigrationIfNecessary(type);
+  }
 }
 
 }  // namespace password_manager

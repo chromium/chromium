@@ -75,8 +75,7 @@ class BuiltInBackendToAndroidBackendMigrator {
       BuiltInBackendToAndroidBackendMigrator&&) = delete;
   ~BuiltInBackendToAndroidBackendMigrator();
 
-  // TODO: b/323880741 - Call explicitly required migration.
-  void StartAccountMigrationIfNecessary(bool should_attempt_upm_reenrollment);
+  void StartAccountMigrationIfNecessary(MigrationType type);
 
   // Starts migration from |built_in_backend| to |android_backend| if time from
   // last attempt is enough.

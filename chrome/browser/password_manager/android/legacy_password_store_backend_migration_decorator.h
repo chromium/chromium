@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -17,8 +18,6 @@
 class PrefService;
 
 namespace password_manager {
-
-class BuiltInBackendToAndroidBackendMigrator;
 
 // This is the backend that should be used on Android platform until the full
 // migration to the Android backend is launched. Internally, this backend
@@ -42,10 +41,13 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
       LegacyPasswordStoreBackendMigrationDecorator&&) = delete;
   ~LegacyPasswordStoreBackendMigrationDecorator() override;
 
+  BuiltInBackendToAndroidBackendMigrator::MigrationType
+  migration_in_progress_type() const;
+
  private:
   class PasswordSyncSettingsHelper {
    public:
-    explicit PasswordSyncSettingsHelper(PrefService* prefs);
+    PasswordSyncSettingsHelper();
 
     // Remembers the initial sync setting to track its changes later.
     // Should be called after SyncService is initialized.
@@ -54,8 +56,9 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
     // Called when sync settings were applied to confirm change of state.
     bool ShouldActOnSyncStatusChanges();
 
-    // Clears cached prefs when they are not needed anymore.
-    void ResetCachedPrefs();
+    // Returns sync_util::IsSyncFeatureEnabledIncludingPasswords value.
+    bool IsSyncFeatureEnabledIncludingPasswords();
+
    private:
 
     // Pref service.
@@ -131,8 +134,6 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
   raw_ptr<PasswordStoreBackend> android_backend_;
 
   const raw_ptr<PrefService> prefs_ = nullptr;
-
-  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
 

@@ -180,7 +180,9 @@ BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
 void BuiltInBackendToAndroidBackendMigrator::StartAccountMigrationIfNecessary(
-    bool should_attempt_upm_reenrollment) {
+    MigrationType type) {
+  CHECK_NE(MigrationType::kNone, type);
+
   // Don't try to migrate passwords if there was an attempt earlier today.
   base::TimeDelta time_passed_since_last_migration_attempt =
       base::Time::Now() -
@@ -195,10 +197,7 @@ void BuiltInBackendToAndroidBackendMigrator::StartAccountMigrationIfNecessary(
   if (migration_in_progress_type_ != MigrationType::kNone)
     return;
 
-  MigrationType migration_type =
-      GetMigrationType(should_attempt_upm_reenrollment);
-  if (migration_type != MigrationType::kNone)
-    PrepareForMigration(migration_type);
+  PrepareForMigration(type);
 }
 
 void BuiltInBackendToAndroidBackendMigrator::StartMigrationOfLocalPasswords() {
@@ -229,38 +228,6 @@ BuiltInBackendToAndroidBackendMigrator::migration_in_progress_type() const {
 base::WeakPtr<BuiltInBackendToAndroidBackendMigrator>
 BuiltInBackendToAndroidBackendMigrator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-BuiltInBackendToAndroidBackendMigrator::MigrationType
-BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
-    bool should_attempt_upm_reenrollement) const {
-  if (should_attempt_upm_reenrollement)
-    return MigrationType::kReenrollmentAttempt;
-
-  // Checks that pref and sync state indicate that the user needs an initial
-  // migration to the android backend after enrolling into the UPM experiment.
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (!HasMigratedToTheAndroidBackend(prefs_) &&
-      IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
-    return MigrationType::kInitialForSyncUsers;
-  }
-
-  // If the user enables or disables password sync, the new active backend needs
-  // non-syncable data from the previously active backend, as logins are
-  // already transmitted through sync.
-  // Once the local storage is supported, android backend becomes the only
-  // active backend and there is no need to do this migration.
-  if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange)) {
-    // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-    // Android.
-    return IsSyncFeatureEnabledIncludingPasswords(sync_service_)
-               ? MigrationType::kNonSyncableToAndroidBackend
-               : MigrationType::kNonSyncableToBuiltInBackend;
-  }
-
-  // No other migration should be executed.
-  return MigrationType::kNone;
 }
 
 void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration(
