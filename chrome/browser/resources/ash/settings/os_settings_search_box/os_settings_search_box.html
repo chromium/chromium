@@ -84,6 +84,10 @@
     padding-bottom: var(--separator-height);
   }
 
+  :host-context([chrome-refresh-2023]) cr-toolbar-search-field {
+    outline-offset: 0;
+  }
+
   :host-context([chrome-refresh-2023]):host([should-show-dropdown_]:focus-within)
       cr-toolbar-search-field {
     --cr-toolbar-search-field-border-radius: 20px 20px 0 0;
