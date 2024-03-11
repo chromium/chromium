@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -109,7 +109,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   std::unique_ptr<SystemShadow> shadow_;
 
   PickerKeyEventHandler key_event_handler_;
-  PickerSessionMetrics session_metrics_;
+  PickerPerformanceMetrics performance_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
 
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/metrics/picker_performance_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -10,13 +10,13 @@
 
 namespace ash {
 
-PickerSessionMetrics::PickerSessionMetrics(
+PickerPerformanceMetrics::PickerPerformanceMetrics(
     const base::TimeTicks trigger_start_timestamp)
     : trigger_start_timestamp_(trigger_start_timestamp) {}
 
-PickerSessionMetrics::~PickerSessionMetrics() = default;
+PickerPerformanceMetrics::~PickerPerformanceMetrics() = default;
 
-void PickerSessionMetrics::StartRecording(views::Widget& widget) {
+void PickerPerformanceMetrics::StartRecording(views::Widget& widget) {
   // Initialize presentation time recorders based on the new widget's
   // compositor. After this, a presentation latency metric is recorded every
   // time `RequestNext` is called on the recorder.
@@ -31,11 +31,11 @@ void PickerSessionMetrics::StartRecording(views::Widget& widget) {
   is_recording_ = true;
 }
 
-void PickerSessionMetrics::StopRecording() {
+void PickerPerformanceMetrics::StopRecording() {
   is_recording_ = false;
 }
 
-void PickerSessionMetrics::MarkInputFocus() {
+void PickerPerformanceMetrics::MarkInputFocus() {
   if (!is_recording_ || marked_first_focus_) {
     return;
   }
@@ -47,7 +47,7 @@ void PickerSessionMetrics::MarkInputFocus() {
   marked_first_focus_ = true;
 }
 
-void PickerSessionMetrics::MarkContentsChanged() {
+void PickerPerformanceMetrics::MarkContentsChanged() {
   if (!is_recording_) {
     return;
   }
@@ -59,7 +59,7 @@ void PickerSessionMetrics::MarkContentsChanged() {
   search_start_timestamp_ = base::TimeTicks::Now();
 }
 
-void PickerSessionMetrics::MarkSearchResultsUpdated() {
+void PickerPerformanceMetrics::MarkSearchResultsUpdated() {
   if (!is_recording_) {
     return;
   }

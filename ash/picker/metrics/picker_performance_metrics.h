@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PICKER_METRICS_PICKER_SESSION_METRICS_H_
-#define ASH_PICKER_METRICS_PICKER_SESSION_METRICS_H_
+#ifndef ASH_PICKER_METRICS_PICKER_PERFORMANCE_METRICS_H_
+#define ASH_PICKER_METRICS_PICKER_PERFORMANCE_METRICS_H_
 
 #include <optional>
 
@@ -20,16 +20,15 @@ class Widget;
 
 namespace ash {
 
-// Records metrics for a session of using Picker, such as latency, memory usage,
-// and user funnel metrics.
-class ASH_EXPORT PickerSessionMetrics {
+// Records performance metrics for a session of using Picker, such as latency.
+class ASH_EXPORT PickerPerformanceMetrics {
  public:
   // `trigger_event_timestamp` is the timestamp of the event that triggered the
-  // session. By default, this uses the time PickerSessionMetrics is created.
-  // Call `StartRecording` to start recording metrics for the session.
-  PickerSessionMetrics(
+  // session. By default, this uses the time PickerPerformanceMetrics is
+  // created. Call `StartRecording` to start recording metrics for the session.
+  PickerPerformanceMetrics(
       base::TimeTicks trigger_start_timestamp = base::TimeTicks::Now());
-  ~PickerSessionMetrics();
+  ~PickerPerformanceMetrics();
 
   // Starts recording metrics for this session.
   // `widget` is the widget that contains the Picker UI. It must outlive this
@@ -73,4 +72,4 @@ class ASH_EXPORT PickerSessionMetrics {
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_METRICS_PICKER_SESSION_METRICS_H_
+#endif  // ASH_PICKER_METRICS_PICKER_PERFORMANCE_METRICS_H_

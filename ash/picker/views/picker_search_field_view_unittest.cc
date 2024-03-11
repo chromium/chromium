@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "base/test/test_future.h"
@@ -27,7 +27,7 @@ using PickerSearchFieldViewTest = views::ViewsTestBase;
 TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
-  PickerSessionMetrics metrics;
+  PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(future.GetRepeatingCallback(), &key_event_handler,
                              &metrics);
 
@@ -38,7 +38,7 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
-  PickerSessionMetrics metrics;
+  PickerPerformanceMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
       future.GetRepeatingCallback(), &key_event_handler, &metrics));
 
@@ -50,7 +50,7 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
 
 TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
   PickerKeyEventHandler key_event_handler;
-  PickerSessionMetrics metrics;
+  PickerPerformanceMetrics metrics;
   PickerSearchFieldView view(base::DoNothing(), &key_event_handler, &metrics);
 
   view.SetPlaceholderText(u"hello");

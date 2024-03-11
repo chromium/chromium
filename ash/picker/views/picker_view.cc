@@ -144,7 +144,7 @@ std::optional<ui::EmojiPickerCategory> PickerCategoryToEmojiPickerCategory(
 PickerView::PickerView(PickerViewDelegate* delegate,
                        PickerLayoutType layout_type,
                        const base::TimeTicks trigger_event_timestamp)
-    : session_metrics_(trigger_event_timestamp), delegate_(delegate) {
+    : performance_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
   SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColor,
                                                          kBorderRadius));
@@ -197,11 +197,11 @@ std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
 }
 
 void PickerView::AddedToWidget() {
-  session_metrics_.StartRecording(*GetWidget());
+  performance_metrics_.StartRecording(*GetWidget());
 }
 
 void PickerView::RemovedFromWidget() {
-  session_metrics_.StopRecording();
+  performance_metrics_.StopRecording();
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
@@ -235,7 +235,7 @@ void PickerView::PublishSearchResults(
   for (PickerSearchResultsSection& result : results) {
     search_results_view_->AppendSearchResults(std::move(result));
   }
-  session_metrics_.MarkSearchResultsUpdated();
+  performance_metrics_.MarkSearchResultsUpdated();
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
@@ -282,7 +282,7 @@ void PickerView::AddSearchFieldView() {
   // `search_field_view_`.
   search_field_view_ = AddChildView(std::make_unique<PickerSearchFieldView>(
       base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
-      &key_event_handler_, &session_metrics_));
+      &key_event_handler_, &performance_metrics_));
 }
 
 void PickerView::AddContentsView(PickerLayoutType layout_type) {
