@@ -798,6 +798,74 @@ TEST_P(RTCVideoEncoderEncodeTest, VP9CreateAndInitSucceedsForOddSize) {
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
+TEST_P(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+
+  mock_vea_ = new media::MockVideoEncodeAccelerator();
+  EXPECT_CALL(*mock_gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
+      .WillOnce(Return(mock_vea_.get()));
+  media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
+  media::VideoEncodeAccelerator::Config::StorageType storage_type =
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem;
+  bool drop_frame = false;
+  EXPECT_CALL(
+      *mock_vea_,
+      Initialize(CheckConfig(pixel_format, storage_type, drop_frame), _, _))
+      .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+  const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+      webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+  FillFrameBuffer(buffer);
+  std::vector<webrtc::VideoFrameType> frame_types;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(buffer)
+                                     .set_timestamp_rtp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  // Notify error status to rtc video encoder.
+  encoder_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&media::VideoEncodeAccelerator::Client::NotifyErrorStatus,
+                     base::Unretained(client_),
+                     media::EncoderStatus::Codes::kEncoderFailedEncode));
+
+  auto* mock_vea_new = new media::MockVideoEncodeAccelerator();
+  EXPECT_CALL(*mock_gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
+      .WillOnce(Return(mock_vea_new));
+  EXPECT_CALL(
+      *mock_vea_new,
+      Initialize(CheckConfig(pixel_format, storage_type, drop_frame), _, _))
+      .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
+  auto encoder_metrics_provider =
+      std::make_unique<media::MockVideoEncoderMetricsProvider>();
+  EXPECT_CALL(*mock_encoder_metrics_provider_factory_,
+              CreateVideoEncoderMetricsProvider())
+      .WillOnce(Return(::testing::ByMove(std::move(encoder_metrics_provider))));
+  // When InitEncode() is called again, RTCVideoEncoder will release current
+  // impl_ and create a new instance, the set error request from a released
+  // impl_ is regarded as invalid and should be rejected.
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+  // If the invalid set error request is rejected as expected, Encode() will
+  // return with WEBRTC_VIDEO_CODEC_OK.
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(buffer)
+                                     .set_timestamp_rtp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  rtc_encoder_->Release();
+}
+
 // Checks that WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE is returned when there is
 // platform error.
 TEST_P(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {

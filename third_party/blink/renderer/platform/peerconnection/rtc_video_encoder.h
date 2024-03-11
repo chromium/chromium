@@ -96,7 +96,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   void UpdateEncoderInfo(
       media::VideoEncoderInfo encoder_info,
       std::vector<webrtc::VideoFrameBuffer::Type> preferred_pixel_formats);
-  void SetError();
+  void SetError(uint32_t impl_id);
 
   const media::VideoCodecProfile profile_;
 
@@ -140,6 +140,9 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
   // The RTCVideoEncoder::Impl that does all the work.
   std::unique_ptr<Impl> impl_;
+  // |impl_id_| starts from 0 and increases by 1 when creating a new instance of
+  // Impl.
+  uint32_t impl_id_ = 0;
 
   // This weak pointer is bound to |gpu_task_runner_|.
   base::WeakPtr<Impl> weak_impl_;

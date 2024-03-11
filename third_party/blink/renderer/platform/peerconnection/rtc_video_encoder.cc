@@ -1943,8 +1943,8 @@ int32_t RTCVideoEncoder::InitEncode(
       base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo,
                           base::Unretained(this));
   base::RepeatingClosure execute_software_fallback =
-      base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &RTCVideoEncoder::SetError, weak_this_, ++impl_id_));
 
   impl_ = std::make_unique<Impl>(
       gpu_factories_, encoder_metrics_provider_factory_,
@@ -2028,7 +2028,7 @@ int32_t RTCVideoEncoder::Encode(
     int32_t initialization_val = InitializeEncoder(*vea_config_);
     vea_config_.reset();
     if (initialization_val != WEBRTC_VIDEO_CODEC_OK) {
-      SetError();
+      SetError(impl_id_);
       Release();
       CHECK(!impl_);
       pending_rate_params_.reset();
@@ -2208,9 +2208,13 @@ void RTCVideoEncoder::UpdateEncoderInfo(
                                                preferred_pixel_formats.end());
 }
 
-void RTCVideoEncoder::SetError() {
+void RTCVideoEncoder::SetError(uint32_t impl_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
-  has_error_ = true;
+  //  RTCVideoEncoder should reject to set error if the impl_id is not equal to
+  //  current impl_id_, which means it's requested by a released impl_.
+  if (impl_id == impl_id_) {
+    has_error_ = true;
+  }
 
   if (error_callback_for_testing_)
     std::move(error_callback_for_testing_).Run();
