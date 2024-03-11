@@ -125,16 +125,19 @@ NSAttributedString* Strikethrough(NSString* text) {
         [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
     tryButton.titleLabel.font =
         CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-    [tryButton
-        setTitle:l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT)
-        forState:UIControlStateNormal];
+    NSString* tryButtonTitle =
+        l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT);
+    [tryButton setTitle:tryButtonTitle forState:UIControlStateNormal];
     [tryButton setTitleColor:[UIColor colorNamed:kBlueColor]
                     forState:UIControlStateNormal];
     [tryButton addTarget:self
                   action:@selector(tryTapped)
         forControlEvents:UIControlEventTouchUpInside];
+    NSString* itemTitle = [self titleText];
     tryButton.accessibilityIdentifier =
-        [NSString stringWithFormat:@"%@ Try Button", [self titleText]];
+        [NSString stringWithFormat:@"%@ Try Button", itemTitle];
+    tryButton.accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", tryButtonTitle, itemTitle];
     tryButton.layer.cornerRadius = 15;
     [NSLayoutConstraint activateConstraints:@[
       [tryButton.widthAnchor constraintEqualToConstant:kTryButtonWidth],
