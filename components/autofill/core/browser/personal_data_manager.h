@@ -172,16 +172,6 @@ class PersonalDataManager : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Returns true if the PDM is currently awaiting an address-related responses
-  // from the database. In this case, the PDM's address data is currently
-  // potentially inconsistent with the database. Once the state has converged,
-  // PersonalDataManagerObserver:: OnPersonalDataFinishedProfileTasks() will be
-  // called.
-  bool IsAwaitingPendingAddressChanges() const {
-    return address_data_manager_->ProfileChangesAreOngoing() ||
-           address_data_manager_->HasPendingQueries();
-  }
-
   // history::HistoryServiceObserver
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;

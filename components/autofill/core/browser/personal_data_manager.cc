@@ -1361,7 +1361,7 @@ void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
-  if (IsAwaitingPendingAddressChanges() ||
+  if (address_data_manager_->IsAwaitingPendingAddressChanges() ||
       payments_data_manager_->HasPendingPaymentQueries()) {
     return;
   }

@@ -106,14 +106,18 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Updates the `profile`'s use count and use date in the database.
   virtual void RecordUseOf(const AutofillProfile& profile);
 
+  // Returns true if the PDM is currently awaiting an address-related responses
+  // from the database. In this case, the PDM's address data is currently
+  // potentially inconsistent with the database. Once the state has converged,
+  // PersonalDataManagerObserver:: OnPersonalDataFinishedProfileTasks() will be
+  // called.
+  bool IsAwaitingPendingAddressChanges() const {
+    return ProfileChangesAreOngoing() || HasPendingQueries();
+  }
+
   void CancelAllPendingQueries() {
     CancelPendingQuery(pending_synced_local_profiles_query_);
     CancelPendingQuery(pending_account_profiles_query_);
-  }
-
-  bool HasPendingQueries() const {
-    return pending_synced_local_profiles_query_ ||
-           pending_account_profiles_query_;
   }
 
  protected:
@@ -147,6 +151,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   using QueuedAutofillProfileChange = std::pair<AutofillProfileChange, bool>;
 
   void CancelPendingQuery(WebDataServiceBase::Handle& handle);
+
+  bool HasPendingQueries() const {
+    return pending_synced_local_profiles_query_ ||
+           pending_account_profiles_query_;
+  }
 
   // Triggered when a profile is added/updated/removed on db.
   void OnAutofillProfileChanged(const AutofillProfileChange& change);
