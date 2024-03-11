@@ -1246,6 +1246,47 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       SafeBrowsingPrivateEventRouter::kKeyHasWatermarking));
 }
 
+TEST_F(SafeBrowsingPrivateEventRouterTest,
+       TestOnUrlFilteringInterstitial_WatermarkAudit) {
+  SetUpRouters();
+
+  base::Value::Dict report;
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce(CaptureArg(&report));
+
+  TriggerOnUrlFilteringInterstitial("", "watermark message");
+  base::RunLoop().RunUntilIdle();
+
+  Mock::VerifyAndClearExpectations(client_.get());
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  ASSERT_NE(nullptr, event_list);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
+      SafeBrowsingPrivateEventRouter::kKeyUrlFilteringInterstitialEvent);
+  ASSERT_NE(nullptr, event);
+
+  EXPECT_FALSE(
+      *event->FindBool(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
+  EXPECT_FALSE(
+      event->FindString(SafeBrowsingPrivateEventRouter::kKeyThreatType));
+
+  const base::Value::List* triggered_rule_info =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+  ASSERT_NE(nullptr, triggered_rule_info);
+  ASSERT_EQ(1u, triggered_rule_info->size());
+  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
+  EXPECT_EQ(
+      safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_EQ("test rule name",
+            *triggered_rule.FindString(
+                SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
+  EXPECT_TRUE(triggered_rule.FindBool(
+      SafeBrowsingPrivateEventRouter::kKeyHasWatermarking));
+}
+
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
   SetUpRouters();
 

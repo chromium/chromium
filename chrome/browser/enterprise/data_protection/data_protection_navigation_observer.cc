@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
+#include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
@@ -30,17 +31,49 @@ content::Page& GetPageFromWebContents(content::WebContents* web_contents) {
   return web_contents->GetPrimaryMainFrame()->GetPage();
 }
 
+DataProtectionPageUserData* GetUserData(content::WebContents* web_contents) {
+  return DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents));
+}
+
+void RunPendingNavigationCallback(
+    content::WebContents* web_contents,
+    DataProtectionNavigationObserver::Callback callback) {
+  DCHECK(web_contents);
+
+  auto* user_data = GetUserData(web_contents);
+  DCHECK(user_data);
+
+  // TODO: Move this logic out of this class and into DataProtectionPageUserData
+  if (!user_data->watermark_text().empty() && user_data->rt_lookup_response() &&
+      !user_data->rt_lookup_response()->threat_info().empty() &&
+      user_data->rt_lookup_response()->threat_info(0).verdict_type() ==
+          safe_browsing::RTLookupResponse::ThreatInfo::SAFE) {
+    // For warn/block+watermark verdicts, a security event is reported as part
+    // of the interstitial page appearing. For SAFE verdicts no interstitial is
+    // shown, so the report indicating a watermark was shown to the user must be
+    // done separately here.
+    MaybeTriggerUrlFilteringInterstitialEvent(
+        web_contents, web_contents->GetLastCommittedURL(),
+        /*threat_type=*/"", *user_data->rt_lookup_response());
+  }
+
+  std::move(callback).Run(user_data->watermark_text());
+}
+
 void UpdateDataProtectionState(
     base::WeakPtr<content::WebContents> web_contents,
     DataProtectionNavigationObserver::Callback callback,
+    std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response,
     const std::string& watermark_text) {
   if (!web_contents) {
     return;
   }
 
   DataProtectionPageUserData::UpdateDataProtectionState(
-      GetPageFromWebContents(web_contents.get()), watermark_text);
-  std::move(callback).Run(watermark_text);
+      GetPageFromWebContents(web_contents.get()), watermark_text,
+      std::move(rt_lookup_response));
+  RunPendingNavigationCallback(web_contents.get(), std::move(callback));
 }
 
 bool SkipUrl(const GURL& url) {
@@ -53,8 +86,12 @@ base::Time TimestampToTime(safe_browsing::Timestamp timestamp) {
          base::Nanoseconds(timestamp.nanos());
 }
 
+using LookupCallback =
+    base::OnceCallback<void(std::unique_ptr<safe_browsing::RTLookupResponse>,
+                            const std::string&)>;
+
 void OnRealTimeLookupComplete(
-    DataProtectionNavigationObserver::Callback callback,
+    LookupCallback callback,
     const std::string& identifier,
     bool is_success,
     bool is_cached,
@@ -67,21 +104,40 @@ void OnRealTimeLookupComplete(
     watermark_text =
         GetWatermarkString(identifier, rt_lookup_response->threat_info(0));
   }
-  std::move(callback).Run(watermark_text);
+  std::move(callback).Run(std::move(rt_lookup_response), watermark_text);
 }
 
 void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
               const GURL& url,
               const std::string& identifier,
-              DataProtectionNavigationObserver::Callback callback,
+              LookupCallback callback,
               content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
+  DCHECK(!callback.is_null());
+
   lookup_service->StartLookup(
       url,
       base::BindOnce(&OnRealTimeLookupComplete, std::move(callback),
                      identifier),
       base::SequencedTaskRunner::GetCurrentDefault(),
       sessions::SessionTabHelper::IdForTab(web_contents));
+}
+
+void DoStringLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
+                    const GURL& url,
+                    const std::string& identifier,
+                    DataProtectionNavigationObserver::Callback callback,
+                    content::WebContents* web_contents) {
+  DoLookup(lookup_service, url, identifier,
+           base::BindOnce(
+               [](DataProtectionNavigationObserver::Callback callback,
+                  std::unique_ptr<safe_browsing::RTLookupResponse> response,
+                  const std::string& watermark_text) {
+                 std::move(callback).Run(watermark_text);
+               },
+               std::move(callback)),
+           web_contents);
 }
 
 bool IsEnterpriseLookupEnabled(Profile* profile) {
@@ -167,8 +223,7 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
     Profile* profile,
     content::WebContents* web_contents,
     Callback callback) {
-  auto* ud = DataProtectionPageUserData::GetForPage(
-      GetPageFromWebContents(web_contents));
+  auto* ud = GetUserData(web_contents);
   if (ud) {
     std::move(callback).Run(ud->watermark_text());
     return;
@@ -181,8 +236,8 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
   auto* lookup_service = safe_browsing::
       ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(profile);
   if (lookup_service && web_contents->GetLastCommittedURL().is_valid()) {
-    DoLookup(lookup_service, web_contents->GetLastCommittedURL(),
-             GetIdentifier(profile), std::move(callback), web_contents);
+    DoStringLookup(lookup_service, web_contents->GetLastCommittedURL(),
+                   GetIdentifier(profile), std::move(callback), web_contents);
   } else {
     std::move(callback).Run(std::string());
   }
@@ -221,9 +276,12 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
 DataProtectionNavigationObserver::~DataProtectionNavigationObserver() = default;
 
 void DataProtectionNavigationObserver::OnLookupComplete(
+    std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response,
     const std::string& watermark_text) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!is_from_cache_);
+
+  rt_lookup_response_ = std::move(rt_lookup_response);
   watermark_text_ = watermark_text;
 }
 
@@ -259,16 +317,14 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
   // the navigation happens from the bfcache, the page itself is located in
   // the browser's cache, and the lookup service's cache TTL has expired.
   // Will need to see if in practice this is a problem.
-  auto* ud = DataProtectionPageUserData::GetForPage(
-      GetPageFromWebContents(web_contents()));
+  auto* ud = GetUserData(web_contents());
   if (ud) {
-    UpdateDataProtectionState(web_contents()->GetWeakPtr(),
-                              std::move(pending_navigation_callback_),
-                              ud->watermark_text());
+    RunPendingNavigationCallback(web_contents(),
+                                 std::move(pending_navigation_callback_));
   } else if (watermark_text_.has_value()) {
     UpdateDataProtectionState(web_contents()->GetWeakPtr(),
                               std::move(pending_navigation_callback_),
-                              watermark_text_.value());
+                              std::move(rt_lookup_response_), *watermark_text_);
   } else {
     DoLookup(
         lookup_service_, navigation_handle->GetURL(), identifier_,

@@ -79,7 +79,9 @@ class DataProtectionNavigationObserver
   friend class content::NavigationHandleUserData<
       DataProtectionNavigationObserver>;
 
-  void OnLookupComplete(const std::string& watermark_text);
+  void OnLookupComplete(
+      std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response,
+      const std::string& watermark_text);
 
   // content::WebContentsObserver:
   void DidRedirectNavigation(
@@ -91,7 +93,12 @@ class DataProtectionNavigationObserver
 
   // The full watermark string to show over the page. Empty if no watermark
   // verdict has been obtained.
+  // TODO: Remove this value as it is redundant with `rt_lookup_response_`.
   std::optional<std::string> watermark_text_;
+
+  // The verdict corresponding to `watermark_text_` if it is populated. Used for
+  // reporting.
+  std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response_;
 
   // Identifier string to show in the watermark if needed. This is either a user
   // email or a device ID.
