@@ -1370,6 +1370,30 @@ suite('NewTabPageAppTest', () => {
                 32,
                 $$<HTMLElement>(app, '#customizeButtonContainer')!.offsetWidth);
           });
+
+      test(
+          'button hides/shows in accordance with callback router', async () => {
+            assertNotStyle(
+                $$(app, '#customizeButtonContainer')!, 'display', 'none');
+            assertNotStyle(
+                $$(app, '#wallpaperSearchButtonContainer')!, 'display', 'none');
+
+            callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
+            await callbackRouterRemote.$.flushForTesting();
+
+            assertNotStyle(
+                $$(app, '#customizeButtonContainer')!, 'display', 'none');
+            assertStyle(
+                $$(app, '#wallpaperSearchButtonContainer')!, 'display', 'none');
+
+            callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
+            await callbackRouterRemote.$.flushForTesting();
+
+            assertNotStyle(
+                $$(app, '#customizeButtonContainer')!, 'display', 'none');
+            assertNotStyle(
+                $$(app, '#wallpaperSearchButtonContainer')!, 'display', 'none');
+          });
     });
 
     suite('AnimationDisabled', () => {

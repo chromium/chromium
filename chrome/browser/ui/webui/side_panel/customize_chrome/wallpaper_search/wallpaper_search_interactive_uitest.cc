@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -30,16 +32,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCustomizeChromeElementId);
 }  // namespace
 
-// Disabled due to failures; see https://crbug.com/325721633.
-class DISABLED_WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
+class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
  public:
-  DISABLED_WallpaperSearchInteractiveTest() {
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                RegisterMockOptimizationGuideKeyedServiceFactory));
-  }
-  ~DISABLED_WallpaperSearchInteractiveTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -59,6 +53,93 @@ class DISABLED_WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
         IdentityManagerFactory::GetForProfile(browser()->profile());
     signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
                                         signin::ConsentLevel::kSignin);
+  }
+
+  InteractiveTestApi::MultiStep WaitForElementVisible(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementVisibleEvent);
+    StateChange element_visible;
+    element_visible.type = StateChange::Type::kExistsAndConditionTrue;
+    element_visible.where = element;
+    element_visible.event = kElementVisibleEvent;
+    element_visible.test_function = "(el) => el.offsetParent !== null";
+
+    return WaitForStateChange(contents_id, element_visible);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
+                       NTPWallpaperSearchButtonVisibilityDependsOnSettings) {
+  const DeepQuery kWallpaperSearchButtonContainer = {
+      "ntp-app", "#wallpaperSearchButtonContainer"};
+
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHiddenEvent);
+  StateChange wallpaper_search_button_hidden;
+  wallpaper_search_button_hidden.type =
+      StateChange::Type::kExistsAndConditionTrue;
+  wallpaper_search_button_hidden.where = kWallpaperSearchButtonContainer;
+  wallpaper_search_button_hidden.event = kElementHiddenEvent;
+  wallpaper_search_button_hidden.test_function =
+      "(el) => el.offsetParent === null";
+
+  RunTestSequence(
+      // 1. Open the NTP.
+      Steps(InstrumentTab(kNewTabPageElementId, 0), Do([=]() {
+              browser()->profile()->GetPrefs()->SetInteger(
+                  optimization_guide::prefs::GetSettingEnabledPrefName(
+                      optimization_guide::proto::ModelExecutionFeature::
+                          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+                  static_cast<int>(
+                      optimization_guide::prefs::FeatureOptInState::kEnabled));
+            }),
+            NavigateWebContents(kNewTabPageElementId,
+                                GURL(chrome::kChromeUINewTabPageURL)),
+            WaitForWebContentsReady(kNewTabPageElementId,
+                                    GURL(chrome::kChromeUINewTabPageURL))),
+      // 2. Ensure the wallpaper search button is visible.
+      WaitForElementVisible(kNewTabPageElementId,
+                            kWallpaperSearchButtonContainer),
+      // 3. Turn wallpaper search setting off.
+      Do([=]() {
+        browser()->profile()->GetPrefs()->SetInteger(
+            optimization_guide::prefs::GetSettingEnabledPrefName(
+                optimization_guide::proto::ModelExecutionFeature::
+                    MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+            static_cast<int>(
+                optimization_guide::prefs::FeatureOptInState::kDisabled));
+      }),
+      // 4. Ensure the wallpaper search button is hidden.
+      WaitForStateChange(kNewTabPageElementId, wallpaper_search_button_hidden),
+      // 5. Turn wallpaper search setting on.
+      Do([=]() {
+        browser()->profile()->GetPrefs()->SetInteger(
+            optimization_guide::prefs::GetSettingEnabledPrefName(
+                optimization_guide::proto::ModelExecutionFeature::
+                    MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+            static_cast<int>(
+                optimization_guide::prefs::FeatureOptInState::kEnabled));
+      }),
+      // 6. Ensure the wallpaper search button is visible.
+      WaitForElementVisible(kNewTabPageElementId,
+                            kWallpaperSearchButtonContainer));
+}
+
+class WallpaperSearchOptimizationGuideInteractiveTest
+    : public WallpaperSearchInteractiveTest {
+ public:
+  WallpaperSearchOptimizationGuideInteractiveTest() {
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                RegisterMockOptimizationGuideKeyedServiceFactory));
+  }
+
+  void SetUpOnMainThread() override {
+    WallpaperSearchInteractiveTest::SetUpOnMainThread();
     mock_optimization_guide_keyed_service_ =
         static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
             OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -106,31 +187,23 @@ class DISABLED_WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
   InteractiveTestApi::MultiStep ClickElement(
       const ui::ElementIdentifier& contents_id,
       const DeepQuery& element) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementVisibleEvent);
-    StateChange element_visible;
-    element_visible.type = StateChange::Type::kExistsAndConditionTrue;
-    element_visible.where = element;
-    element_visible.event = kElementVisibleEvent;
-    element_visible.test_function = "(el) => el.offsetParent !== null";
-
-    return Steps(WaitForStateChange(contents_id, element_visible),
+    return Steps(WaitForElementVisible(contents_id, element),
                  MoveMouseTo(contents_id, element), ClickMouse());
   }
 
   InteractiveTestApi::MultiStep OpenNewTabPage() {
-    return Steps(InstrumentTab(kNewTabPageElementId, 0),
-                 NavigateWebContents(kNewTabPageElementId,
-                                     GURL(chrome::kChromeUINewTabPageURL)),
-                 WaitForWebContentsReady(kNewTabPageElementId,
-                                         GURL(chrome::kChromeUINewTabPageURL)),
-                 Do([this]() {
+    return Steps(InstrumentTab(kNewTabPageElementId, 0), Do([this]() {
                    ON_CALL(
                        mock_optimization_guide_keyed_service(),
                        ShouldFeatureBeCurrentlyEnabledForUser(
                            optimization_guide::proto::ModelExecutionFeature::
                                MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH))
                        .WillByDefault(testing::Return(true));
-                 }));
+                 }),
+                 NavigateWebContents(kNewTabPageElementId,
+                                     GURL(chrome::kChromeUINewTabPageURL)),
+                 WaitForWebContentsReady(kNewTabPageElementId,
+                                         GURL(chrome::kChromeUINewTabPageURL)));
   }
 
   InteractiveTestApi::MultiStep OpenCustomizeChromeAt(
@@ -203,13 +276,12 @@ class DISABLED_WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
         }));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription subscription_;
   raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
       mock_optimization_guide_keyed_service_;
+  base::CallbackListSubscription subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(DISABLED_WallpaperSearchInteractiveTest,
+IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        CustomizeButtonsWorkTogether) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedCustomizeChromeElementId);
 
@@ -233,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_WallpaperSearchInteractiveTest,
             WaitForHide(kCustomizeChromeSidePanelWebViewElementId)));
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_WallpaperSearchInteractiveTest,
+IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        SearchesAndSetsNewAndHistoricalResults) {
   // Intercept Wallpaper Search descriptor fetches, and respond with data.
   std::unique_ptr<content::URLLoaderInterceptor> descriptors_fetch_interceptor =
@@ -318,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_WallpaperSearchInteractiveTest,
 // which cannot be easily tested here. LaCrOS has a separate feedback
 // browser test which gives us some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(DISABLED_WallpaperSearchInteractiveTest,
+IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        FeedbackDialogShowsOnThumbsDown) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
               ShouldFeatureBeCurrentlyAllowedForLogging(

@@ -19,6 +19,7 @@
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/ntp_logging_events.h"
+#include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -62,7 +64,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public NtpCustomBackgroundServiceObserver,
                           public NtpBackgroundServiceObserver,
                           public ui::SelectFileDialog::Listener,
-                          public PromoServiceObserver {
+                          public PromoServiceObserver,
+                          public optimization_guide::SettingsEnabledObserver {
  public:
   NewTabPageHandler(
       mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
@@ -172,6 +175,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnPromoDataUpdated() override;
   void OnPromoServiceShuttingDown() override;
 
+  // SettingsEnabledObserver:
+  void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
+
   // SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
@@ -241,6 +247,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       loader_map_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PromoService> promo_service_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>

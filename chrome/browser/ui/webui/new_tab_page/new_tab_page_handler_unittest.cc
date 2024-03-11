@@ -103,6 +103,7 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD(void, SetCustomizeChromeSidePanelVisibility, (bool));
   MOCK_METHOD(void, SetPromo, (new_tab_page::mojom::PromoPtr));
   MOCK_METHOD(void, ShowWebstoreToast, ());
+  MOCK_METHOD(void, SetWallpaperSearchButtonVisibility, (bool));
 
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};
 };

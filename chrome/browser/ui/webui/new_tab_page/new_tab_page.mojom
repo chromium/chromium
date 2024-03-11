@@ -381,4 +381,6 @@ interface Page {
   SetPromo(Promo? promo);
   // Shows a toast with information about Chrome Webstore themes.
   ShowWebstoreToast();
+  // Sets wallpaper search button's visibility to to |visible|.
+  SetWallpaperSearchButtonVisibility(bool visible);
 };

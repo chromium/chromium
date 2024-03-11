@@ -395,6 +395,7 @@ export class AppElement extends AppElementBase {
   private backgroundManager_: BackgroundManager;
   private setThemeListenerId_: number|null = null;
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
+  private setWallpaperSearchButtonVisibilityListener_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private shouldPrintPerformance_: boolean;
   private backgroundImageLoadStartEpoch_: number;
@@ -466,6 +467,11 @@ export class AppElement extends AppElementBase {
             }
           }
         });
+    this.setWallpaperSearchButtonVisibilityListener_ =
+        this.callbackRouter_.setWallpaperSearchButtonVisibility.addListener(
+            (visible: boolean) => {
+              this.wallpaperSearchButtonEnabled_ = visible;
+            });
 
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.showCustomize_) {
@@ -517,6 +523,8 @@ export class AppElement extends AppElementBase {
     this.callbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_!);
     this.callbackRouter_.removeListener(this.showWebstoreToastListenerId_!);
+    this.callbackRouter_.removeListener(
+        this.setWallpaperSearchButtonVisibilityListener_!);
     this.eventTracker_.removeAll();
   }
 
