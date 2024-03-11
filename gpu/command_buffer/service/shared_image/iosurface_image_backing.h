@@ -138,7 +138,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
                                      wgpu::Texture texture);
 
   void AddWGPUDeviceWithPendingCommands(wgpu::Device device);
-  void WaitForDawnCommandsToBeScheduled(const wgpu::Device& excluded_device);
+  void WaitForDawnCommandsToBeScheduled(const wgpu::Device& device_to_exclude);
 #endif
 
   void AddEGLDisplayWithPendingCommands(gl::GLDisplayEGL* display);

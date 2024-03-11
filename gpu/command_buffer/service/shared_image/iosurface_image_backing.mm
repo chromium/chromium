@@ -663,7 +663,7 @@ bool IOSurfaceImageBacking::OverlayRepresentation::BeginReadAccess(
 #if BUILDFLAG(USE_DAWN)
   // Likewise do the same for Dawn's commands.
   iosurface_backing->WaitForDawnCommandsToBeScheduled(
-      /*excluded_device=*/nullptr);
+      /*device_to_exclude=*/nullptr);
 #endif
 
   gl::GLContext* context = gl::GLContext::GetCurrent();
@@ -789,7 +789,7 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   // be scheduled.
   iosurface_backing->WaitForANGLECommandsToBeScheduled();
   iosurface_backing->WaitForDawnCommandsToBeScheduled(
-      /*excluded_device=*/device_);
+      /*device_to_exclude=*/device_);
 
   usage_ = wgpu_texture_usage;
 
@@ -1353,18 +1353,20 @@ void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
 }
 
 void IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled(
-    const wgpu::Device& excluded_device) {
+    const wgpu::Device& device_to_exclude) {
+  bool excluded_device_was_pending_flush = false;
   for (const auto& device : wgpu_devices_pending_flush_) {
-    if (device.Get() == excluded_device.Get()) {
+    if (device.Get() == device_to_exclude.Get()) {
+      excluded_device_was_pending_flush = true;
       continue;
     }
     dawn::native::metal::WaitForCommandsToBeScheduled(device.Get());
   }
 
   wgpu_devices_pending_flush_.clear();
-  if (excluded_device != nullptr) {
+  if (excluded_device_was_pending_flush) {
     // This device wasn't flushed, so we need to add it to the list again.
-    wgpu_devices_pending_flush_.insert(excluded_device);
+    wgpu_devices_pending_flush_.insert(device_to_exclude);
   }
 }
 #endif
@@ -1691,7 +1693,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
   // be scheduled because it is already done when the previous GL context is
   // made uncurrent.
 #if BUILDFLAG(USE_DAWN)
-  WaitForDawnCommandsToBeScheduled(/*excluded_device=*/nullptr);
+  WaitForDawnCommandsToBeScheduled(/*device_to_exclude=*/nullptr);
 #endif
 
   // If the GL texture is already bound (the bind is not marked as pending),
