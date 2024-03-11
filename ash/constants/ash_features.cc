@@ -2111,6 +2111,11 @@ BASE_FEATURE(kOrcaRephrase, "OrcaRephrase", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables shorten for Orca.
 BASE_FEATURE(kOrcaShorten, "OrcaShorten", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables Orca capability check.
+BASE_FEATURE(kOrcaUseAccountCapabilities,
+             "OrcaUseAccountCapabilities",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Orca on Workspace.
 BASE_FEATURE(kOrcaOnWorkspace,
              "OrcaOnWorkspace",

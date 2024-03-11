@@ -12,11 +12,15 @@
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/manta/manta_service.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/network_change_notifier.h"
@@ -73,6 +77,16 @@ constexpr int kTextLengthMaxLimit = 10000;
 constexpr char kExperimentName[] = "OrcaEnabled";
 
 constexpr char kImeAllowlistLabel[] = "ime_allowlist";
+
+manta::FeatureSupportStatus FetchOrcaAccountCapabilityFromMantaService(
+    Profile* profile) {
+  if (manta::MantaService* service =
+          manta::MantaServiceFactory::GetForProfile(profile)) {
+    return service->SupportsOrca();
+  }
+
+  return manta::FeatureSupportStatus::kUnknown;
+}
 
 bool IsProfileManaged(Profile* profile) {
   policy::ProfilePolicyConnector* profile_policy_connector =
@@ -206,7 +220,11 @@ bool EditorSwitch::IsAllowedForUse() const {
   if (!base::FeatureList::IsEnabled(chromeos::features::kOrca) ||
       !base::FeatureList::IsEnabled(
           chromeos::features::kFeatureManagementOrca) ||
-      !IsCountryAllowed(country_code_)) {
+      !IsCountryAllowed(country_code_) || 
+      (base::FeatureList::IsEnabled(
+          ash::features::kOrcaUseAccountCapabilities) &&
+      FetchOrcaAccountCapabilityFromMantaService(profile_) !=
+          manta::FeatureSupportStatus::kSupported)) {
     return false;
   }
 
