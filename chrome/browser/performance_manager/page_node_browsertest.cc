@@ -10,6 +10,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/process_manager.h"
 
 namespace performance_manager {
 

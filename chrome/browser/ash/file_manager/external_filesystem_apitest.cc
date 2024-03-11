@@ -45,6 +45,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/common/test_util.h"

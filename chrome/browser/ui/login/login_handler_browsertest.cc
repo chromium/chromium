@@ -59,6 +59,7 @@
 #include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/process_manager.h"
 #include "net/base/auth.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

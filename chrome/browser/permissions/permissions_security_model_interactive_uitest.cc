@@ -25,6 +25,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_widget_host_view.h"

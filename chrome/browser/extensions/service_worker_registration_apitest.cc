@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
@@ -11,6 +12,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/common/extension.h"

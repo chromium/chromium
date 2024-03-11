@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_extension_apitest.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "content/public/test/browser_test.h"

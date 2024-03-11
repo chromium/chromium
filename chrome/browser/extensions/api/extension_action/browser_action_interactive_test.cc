@@ -41,6 +41,7 @@
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/view_type.mojom.h"

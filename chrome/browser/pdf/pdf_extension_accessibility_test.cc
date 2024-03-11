@@ -35,6 +35,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/ax_inspect_factory.h"

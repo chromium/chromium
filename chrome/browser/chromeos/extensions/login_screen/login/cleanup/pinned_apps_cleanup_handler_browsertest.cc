@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"

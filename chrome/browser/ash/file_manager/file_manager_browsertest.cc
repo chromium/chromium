@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"

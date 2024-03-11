@@ -16,6 +16,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 

@@ -41,6 +41,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"

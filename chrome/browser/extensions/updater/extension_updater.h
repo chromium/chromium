@@ -19,8 +19,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
@@ -36,6 +36,7 @@ class ScopedProfileKeepAlive;
 namespace extensions {
 
 class CrxInstallError;
+class CrxInstaller;
 class ExtensionCache;
 class ExtensionPrefs;
 class ExtensionRegistry;
@@ -169,7 +170,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   // A callback that is invoked when the next invocation of CxrInstaller
   // finishes (successfully or not).
   void SetCrxInstallerResultCallbackForTesting(
-      CrxInstaller::InstallerResultCallback callback);
+      ExtensionSystem::InstallUpdateCallback callback);
 
  private:
   friend class ExtensionUpdaterTest;
@@ -344,7 +345,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
 
   base::RepeatingClosure updating_started_callback_;
 
-  CrxInstaller::InstallerResultCallback installer_result_callback_for_testing_;
+  ExtensionSystem::InstallUpdateCallback installer_result_callback_for_testing_;
 
   base::WeakPtrFactory<ExtensionUpdater> weak_ptr_factory_{this};
 };
