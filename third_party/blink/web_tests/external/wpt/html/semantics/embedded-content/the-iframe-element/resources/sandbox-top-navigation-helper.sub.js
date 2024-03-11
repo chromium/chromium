@@ -5,7 +5,7 @@
 // // META: script=/resources/testdriver.js
 // // META: script=/resources/testdriver-vendor.js
 // // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
-// // META: script=./resources/sandbox-top-navigation-helper.js
+// // META: script=./resources/sandbox-top-navigation-helper.sub.js
 
 // Helper file that provides various functions to test top-level navigation
 // with various frame and sandbox flag configurations.
@@ -27,8 +27,7 @@ async function createNestedIframe(parent, origin, frame_sandbox, header_sandbox)
     origin: origin,
     scripts: [
       '/resources/testdriver.js',
-      '/resources/testdriver-driver.js',
-      '/resources/testdriver-vendor.js'
+      '/resources/testdriver-vendor.js',
     ],
     headers: headers,
   }, iframe_attributes);
@@ -39,8 +38,7 @@ async function navigateFrameTo(frame, origin) {
     origin: origin,
     scripts: [
       '/resources/testdriver.js',
-      '/resources/testdriver-driver.js',
-      '/resources/testdriver-vendor.js'
+      '/resources/testdriver-vendor.js',
     ],
   });
 }
@@ -49,7 +47,8 @@ async function attemptTopNavigation(iframe, should_succeed) {
   let did_succeed;
   try {
     await iframe.executeScript(() => {
-      window.top.location.href = "https://google.com";
+      window.top.location.href =
+          'http://{{hosts[alt][www2]}}:{{ports[http][0]}}';
     });
     did_succeed = true;
   } catch (e) {
