@@ -1319,9 +1319,14 @@ crbug.com/750992 external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-008
 crbug.com/750992 [ Linux ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-020.xht [ Failure ]
 crbug.com/750992 [ Win ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-020.xht [ Failure ]
 
-# PEPC crash
-crbug.com/1512722 external/wpt/html/semantics/permission-element/no-end-tag-no-contents.html [ Crash Failure ]
-crbug.com/1512722 virtual/permission-element/external/wpt/html/semantics/permission-element/no-end-tag-no-contents.html [ Pass ]
+# PEPC tests currently PASS as the necessary feature is enabled by the experimental web platform features
+# flag but this might not remain the case. In any event, these tests are marked Fail/Pass for now, and a
+# virtual test suite is responsible for ensuring these tests pass with the feature flag enabled.
+# To be removed together with the virtual test suite when PEPC is enabled by default.
+crbug.com/1512722 external/wpt/html/semantics/permission-element/bounded-css-properties.html [ Crash Failure Pass ]
+crbug.com/1512722 external/wpt/html/semantics/permission-element/invalid-css-properties.html [ Crash Failure Pass ]
+crbug.com/1512722 external/wpt/html/semantics/permission-element/negative-offset-and-margin.html [ Crash Failure Pass ]
+crbug.com/1512722 external/wpt/html/semantics/permission-element/no-end-tag-no-contents.html [ Crash Failure Pass ]
 
 # These tests are mismatch tests which means they will only pass if the rendered page is not the
 # same between vertical and horizontal writing mode. Failing the tests is equivalent to testing

@@ -17,6 +17,8 @@ permission {
   height: 1.2em;
   outline: solid 1px #767676;
   width: 188px;
+  font-weight: normal;
+  font-style: normal;
  }
 
 permission:granted {
@@ -27,8 +29,8 @@ permission::-internal-permission-text {
   display: inherit;
   font-family: Arial, Helvetica, sans-serif !important;
   font-size: inherit;
-  font-style: normal;
-  font-weight: 400;
+  font-style: inherit;
+  font-weight: inherit;
   height: 100%;
   hyphenate-character: auto !important;
   line-height: inherit;

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -26,6 +28,8 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -44,6 +48,7 @@ using MojoPermissionStatus = mojom::blink::PermissionStatus;
 namespace {
 
 const base::TimeDelta kDefaultDisableTimeout = base::Milliseconds(500);
+constexpr FontSelectionValue kMinimumFontWeight = FontSelectionValue(200);
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -343,6 +348,30 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.ResetMarginBottom();
   }
 
+  // Check and modify (if needed) properties related to the font.
+  std::optional<FontDescription> new_font_description;
+
+  // Font weight has to be at least kMinimumFontWeight.
+  if (builder.GetFontDescription().Weight() <= kMinimumFontWeight) {
+    if (!new_font_description) {
+      new_font_description = builder.GetFontDescription();
+    }
+    new_font_description->SetWeight(kMinimumFontWeight);
+  }
+
+  // Any other values other than 'italic' and 'normal' are reset to 'normal'.
+  if (builder.GetFontDescription().Style() != kItalicSlopeValue &&
+      builder.GetFontDescription().Style() != kNormalSlopeValue) {
+    if (!new_font_description) {
+      new_font_description = builder.GetFontDescription();
+    }
+    new_font_description->SetStyle(kNormalSlopeValue);
+  }
+
+  if (new_font_description) {
+    builder.SetFontDescription(*new_font_description);
+  }
+
   // TODO(crbug.com/1462930): Validate here that the 'background-color' and
   // 'color' properties pass accessibility checks (and are at 100% alpha).
 
@@ -350,10 +379,6 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   // TODO(crbug.com/1462930): Validate here the `letter-spacing` property, and
   // that it's not too big.
-
-  // TODO(crbug.com/1462930): Clamp font weight to at least 200.
-
-  // TODO(crbug.com/1462930): Remove <angle> from font-style: 'oblique'.
 
   // TODO(crbug.com/1462930): Set text direction (ltr\rtl) based on language.
 
