@@ -19,6 +19,7 @@ namespace autofill {
 // Details for a user's bank account. This data is synced from Google payments.
 class BankAccount {
  public:
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.payments
   // The type of bank account owned by the user. This is used for display
   // purposes only.
   enum class AccountType {
