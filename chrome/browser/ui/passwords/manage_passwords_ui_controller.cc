@@ -456,7 +456,9 @@ void ManagePasswordsUIController::ShowBiometricActivationConfirmation() {
 
 void ManagePasswordsUIController::ShowMovePasswordBubble(
     const password_manager::PasswordForm& form) {
-  CHECK_EQ(GetState(), password_manager::ui::MANAGE_STATE);
+  CHECK(GetState() == password_manager::ui::MANAGE_STATE ||
+        GetState() == password_manager::ui::SAVE_CONFIRMATION_STATE ||
+        GetState() == password_manager::ui::UPDATE_CONFIRMATION_STATE);
   // Existing dialog shouldn't be closed.
   if (dialog_controller_) {
     return;
