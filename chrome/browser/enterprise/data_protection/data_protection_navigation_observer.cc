@@ -139,8 +139,15 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     Callback callback) {
   if (navigation_handle->IsSameDocument() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
-      SkipUrl(navigation_handle->GetURL()) ||
       !IsEnterpriseLookupEnabled(profile)) {
+    return;
+  }
+
+  // If this is a skipped URL, force the view to clear any data protections if
+  // present.  This is needed to handle for example navigating from a watermaked
+  // page to the NTP.
+  if (SkipUrl(navigation_handle->GetURL())) {
+    std::move(callback).Run(std::string());
     return;
   }
 
@@ -234,6 +241,15 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
 
 void DataProtectionNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Only consider primary main frame commits, which will come eventually.
+  // Even though some of these checks where already performed in
+  // CreateForNavigationIfNeeded(), they still need to checked again here
+  // to handle pages with iframes.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
   // If the page already has cached data protection information, use that first.
   // Otherwise if `watermark_text_` has been set then use the specified value.
   // Finally, ask the the lookup service right now for a lookup.
