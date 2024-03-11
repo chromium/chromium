@@ -114,14 +114,12 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   // Install a new app to migrate the old one to.
   webapps::AppId new_app_id = test::InstallDummyWebApp(
       profile(), "new_app", GURL("https://new.app.com"));
-  if (AreSubManagersExecuteEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
-            new_app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_TRUE(os_state->run_on_os_login().has_run_on_os_login_mode());
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
+          new_app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_TRUE(os_state->run_on_os_login().has_run_on_os_login_mode());
 
   // Set up the existing shortcuts.
   auto shortcut_info = std::make_unique<ShortcutInfo>();
@@ -142,15 +140,12 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   EXPECT_TRUE(options->add_to_desktop);
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
   EXPECT_FALSE(options->add_to_quick_launch_bar);
-  if (AreSubManagersExecuteEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
-            new_app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-              proto::RunOnOsLoginMode::WINDOWED);
-  }
+  os_state = provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
+      new_app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
+            proto::RunOnOsLoginMode::WINDOWED);
 }
 
 TEST_F(WebAppUninstallAndReplaceJobTest, DoubleMigration) {

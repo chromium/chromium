@@ -39,12 +39,6 @@ namespace web_app {
 class FakeOsIntegrationManager;
 class WebAppProvider;
 
-// Returns if the sub-manager architecture is enabled AND the "execute"
-// architecture is enabled. This causes os integration execution to happen from
-// the sub-managers and not the OsIntegrationManager.
-// TODO(b/327431493): Remove when production code is being cleaned up.
-bool AreSubManagersExecuteEnabled();
-
 // OsHooksErrors contains the result of all Os hook deployments.
 // If a bit is set to `true`, then an error did occur.
 using OsHooksErrors = std::bitset<OsHookType::kMaxValue + 1>;

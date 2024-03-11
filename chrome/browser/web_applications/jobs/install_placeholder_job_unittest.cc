@@ -157,14 +157,12 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
   EXPECT_TRUE(last_install_options->add_to_desktop);
   EXPECT_TRUE(last_install_options->add_to_quick_launch_bar);
   EXPECT_FALSE(last_install_options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreSubManagersExecuteEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-              proto::RunOnOsLoginMode::NOT_RUN);
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
+            proto::RunOnOsLoginMode::NOT_RUN);
 }
 
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
@@ -204,12 +202,10 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
-  if (AreSubManagersExecuteEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
 }
 
 }  // namespace

@@ -232,8 +232,7 @@ void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
                                   (result == Result::kOk));
       }).Then(std::move(execute_done));
 
-  ScheduleRegisterRunOnOsLogin(&provider_->sync_bridge_unsafe(),
-                               std::move(shortcut_info),
+  ScheduleRegisterRunOnOsLogin(std::move(shortcut_info),
                                std::move(record_metric_and_complete));
 }
 

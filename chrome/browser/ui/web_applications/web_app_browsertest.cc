@@ -1584,22 +1584,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
   // No shortcuts should be read.
   EXPECT_TRUE(shortcuts_menu_items.empty());
 
-  bool sub_manager_execute_enabled = AreSubManagersExecuteEnabled();
   base::test::TestFuture<webapps::UninstallResultCode> future;
   provider().scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
-  if (sub_manager_execute_enabled) {
-    // TODO(crbug.com/1401125): Sub manager code smartly knows that there
-    // aren't any shortcuts menu data, so doesn't do anything. The old OS
-    // integration code does not read current OS states, so it triggers
-    // the histogram. Clean up once sub managers are released.
-    EXPECT_THAT(tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
-                BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
-  } else {
-    EXPECT_THAT(tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
-                BucketsAre(base::Bucket(true, 1)));
-  }
+  EXPECT_THAT(tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+              BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
 }
 
 #endif

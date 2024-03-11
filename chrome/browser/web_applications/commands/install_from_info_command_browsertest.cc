@@ -141,15 +141,13 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
   EXPECT_TRUE(options->add_to_desktop);
   EXPECT_TRUE(options->add_to_quick_launch_bar);
   EXPECT_FALSE(options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreSubManagersExecuteEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
-            result_app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-              proto::RunOnOsLoginMode::NOT_RUN);
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          result_app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
+            proto::RunOnOsLoginMode::NOT_RUN);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -203,15 +201,13 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest,
   EXPECT_FALSE(options->add_to_desktop);
   EXPECT_TRUE(options->add_to_quick_launch_bar);
   EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
-  if (AreSubManagersExecuteEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
-            result_app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-              proto::RunOnOsLoginMode::WINDOWED);
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          result_app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
+            proto::RunOnOsLoginMode::WINDOWED);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

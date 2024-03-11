@@ -198,10 +198,10 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   ASSERT_TRUE(updated_state.has_value());
   const proto::WebAppOsIntegrationState& updated_os_states =
       updated_state.value();
+  ASSERT_TRUE(updated_os_states.has_shortcut());
 
   // OS integration should be triggered now.
   if (HasShortcutsOsIntegration()) {
-    ASSERT_EQ(AreSubManagersExecuteEnabled(), updated_os_states.has_shortcut());
     ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));

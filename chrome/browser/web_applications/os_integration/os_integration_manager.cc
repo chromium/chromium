@@ -70,10 +70,6 @@ base::AtomicRefCount& GetSuppressCount() {
 }
 }  // namespace
 
-bool AreSubManagersExecuteEnabled() {
-  return true;
-}
-
 OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting() {
 // Creating OS hooks on ChromeOS doesn't write files to disk, so it's
 // unnecessary to suppress and it provides better crash coverage.
@@ -217,8 +213,7 @@ void OsIntegrationManager::Synchronize(
 
   // This is usually called to clean up OS integration states on the OS,
   // regardless of whether there are apps existing in the app registry or not.
-  if (AreSubManagersExecuteEnabled() && options.has_value() &&
-      options.value().force_unregister_os_integration) {
+  if (options.has_value() && options.value().force_unregister_os_integration) {
     ForceUnregisterOsIntegrationOnSubManager(
         app_id, /*index=*/0,
         std::move(callback).Then(
@@ -235,11 +230,6 @@ void OsIntegrationManager::Synchronize(
          "SynchronizeOsOptions";
 
   CHECK(set_provider_called_);
-
-  if (!AreSubManagersExecuteEnabled()) {
-    std::move(callback).Run();
-    return;
-  }
 
   if (sub_managers_.empty()) {
     std::move(callback).Run();
@@ -273,49 +263,8 @@ void OsIntegrationManager::InstallOsHooks(
     InstallOsHooksCallback callback,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
-  // If the "Execute" step is enabled for sub-managers, then the 'old' os
-  // integration path needs to be turned off so that os integration doesn't get
-  // done twice.
-  if (AreOsHooksSuppressedForTesting() || AreSubManagersExecuteEnabled()) {
-    OsHooksErrors os_hooks_errors;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
-    return;
-  }
-  MacAppShimOnAppInstalledForProfile(app_id);
-
-  OsHooksErrors os_hooks_errors;
-  scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
-      os_hooks_errors, std::move(callback));
-
-  CHECK(options.os_hooks[OsHookType::kShortcuts] ||
-        !options.os_hooks[OsHookType::kShortcutsMenu])
-      << "Cannot install shortcuts menu without installing shortcuts.";
-
-  auto shortcuts_callback = base::BindOnce(
-      &OsIntegrationManager::OnShortcutsCreated, weak_ptr_factory_.GetWeakPtr(),
-      app_id, std::move(web_app_info), options, barrier);
-
-#if BUILDFLAG(IS_MAC)
-  // This has to happen before creating shortcuts on Mac because the shortcut
-  // creation step uses the file type associations which are marked for enabling
-  // by `RegisterFileHandlers()`.
-  if (options.os_hooks[OsHookType::kFileHandlers]) {
-    RegisterFileHandlers(app_id, barrier->CreateBarrierCallbackForType(
-                                     OsHookType::kFileHandlers));
-  }
-#endif
-
-  // TODO(ortuno): Make adding a shortcut to the applications menu independent
-  // from adding a shortcut to desktop.
-  if (options.os_hooks[OsHookType::kShortcuts]) {
-    CreateShortcuts(app_id, options.add_to_desktop, options.reason,
-                    std::move(shortcuts_callback));
-  } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(shortcuts_callback),
-                                  /*shortcuts_created=*/false));
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), OsHooksErrors()));
 }
 
 void OsIntegrationManager::UninstallAllOsHooks(
@@ -329,61 +278,8 @@ void OsIntegrationManager::UninstallAllOsHooks(
 void OsIntegrationManager::UninstallOsHooks(const webapps::AppId& app_id,
                                             const OsHooksOptions& os_hooks,
                                             UninstallOsHooksCallback callback) {
-  // If the "Execute" step is enabled for sub-managers, then the 'old' os
-  // integration path needs to be turned off so that os integration doesn't get
-  // done twice.
-  if (AreOsHooksSuppressedForTesting() || AreSubManagersExecuteEnabled()) {
-    OsHooksErrors os_hooks_errors;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
-    return;
-  }
-
-  OsHooksErrors os_hooks_errors;
-  scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
-      os_hooks_errors, std::move(callback));
-
-  if (os_hooks[OsHookType::kShortcutsMenu]) {
-    bool success = UnregisterShortcutsMenu(
-        app_id,
-        barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
-    if (!success)
-      barrier->OnError(OsHookType::kShortcutsMenu);
-  }
-
-  if (os_hooks[OsHookType::kRunOnOsLogin] &&
-      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    UnregisterRunOnOsLogin(app_id, barrier->CreateBarrierCallbackForType(
-                                       OsHookType::kRunOnOsLogin));
-  }
-
-  if (os_hooks[OsHookType::kShortcuts]) {
-    std::unique_ptr<ShortcutInfo> shortcut_info = BuildShortcutInfo(app_id);
-    base::FilePath shortcut_data_dir =
-        internals::GetShortcutDataDir(*shortcut_info);
-
-    DeleteShortcuts(
-        app_id, shortcut_data_dir, std::move(shortcut_info),
-        barrier->CreateBarrierCallbackForType(OsHookType::kShortcuts));
-  }
-  // unregistration and record errors during unregistration.
-  if (os_hooks[OsHookType::kFileHandlers]) {
-    UnregisterFileHandlers(app_id, barrier->CreateBarrierCallbackForType(
-                                       OsHookType::kFileHandlers));
-  }
-
-  if (os_hooks[OsHookType::kProtocolHandlers]) {
-    UnregisterProtocolHandlers(app_id, barrier->CreateBarrierCallbackForType(
-                                           OsHookType::kProtocolHandlers));
-  }
-
-  if (os_hooks[OsHookType::kUrlHandlers])
-    UnregisterUrlHandlers(app_id);
-
-  // There is a chance uninstallation point was created with feature flag
-  // enabled so we need to clean it up regardless of feature flag state.
-  if (os_hooks[OsHookType::kUninstallationViaOsSettings])
-    UnregisterWebAppOsUninstallation(app_id);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), OsHooksErrors()));
 }
 
 void OsIntegrationManager::UpdateOsHooks(
@@ -392,40 +288,8 @@ void OsIntegrationManager::UpdateOsHooks(
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
     UpdateOsHooksCallback callback) {
-  // If the "Execute" step is enabled for sub-managers, then the 'old' os
-  // integration path needs to be turned off so that os integration doesn't get
-  // done twice.
-  if (AreOsHooksSuppressedForTesting() || AreSubManagersExecuteEnabled()) {
-    OsHooksErrors os_hooks_errors;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
-    return;
-  }
-
-  OsHooksErrors os_hooks_errors;
-  scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
-      os_hooks_errors, std::move(callback));
-
-  UpdateFileHandlers(app_id, file_handlers_need_os_update,
-                     base::BindOnce(barrier->CreateBarrierCallbackForType(
-                         OsHookType::kFileHandlers)));
-  UpdateShortcuts(app_id, old_name,
-                  base::BindOnce(barrier->CreateBarrierCallbackForType(
-                      OsHookType::kShortcuts)));
-  UpdateShortcutsMenu(app_id, web_app_info,
-                      base::BindOnce(barrier->CreateBarrierCallbackForType(
-                          OsHookType::kShortcutsMenu)));
-  UpdateUrlHandlers(
-      app_id,
-      base::BindOnce(
-          [](ResultCallback callback, bool success) {
-            std::move(callback).Run(success ? Result::kOk : Result::kError);
-          },
-          barrier->CreateBarrierCallbackForType(OsHookType::kUrlHandlers)));
-  UpdateProtocolHandlers(app_id, /*force_shortcut_updates_if_needed=*/false,
-                         base::BindOnce(barrier->CreateBarrierCallbackForType(
-                                            OsHookType::kProtocolHandlers),
-                                        Result::kOk));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), OsHooksErrors()));
 }
 
 void OsIntegrationManager::GetAppExistingShortCutLocation(
@@ -682,7 +546,7 @@ void OsIntegrationManager::UnregisterRunOnOsLogin(const webapps::AppId& app_id,
       }).Then(std::move(callback));
 
   ScheduleUnregisterRunOnOsLogin(
-      *provider_, app_id, profile_->GetPath(),
+      app_id, profile_->GetPath(),
       base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id)),
       std::move(metrics_callback));
 }
@@ -747,29 +611,8 @@ void OsIntegrationManager::UnregisterWebAppOsUninstallation(
 void OsIntegrationManager::UpdateShortcuts(const webapps::AppId& app_id,
                                            base::StringPiece old_name,
                                            ResultCallback callback) {
-  // If the "Execute" step is enabled for sub-managers, then the 'old' os
-  // integration path needs to be turned off so that os integration doesn't get
-  // done twice.
-  if (AreSubManagersExecuteEnabled()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
-    return;
-  }
-  CHECK(shortcut_manager_);
-  if (!shortcut_manager_->CanCreateShortcuts()) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-
-  ResultCallback metrics_callback =
-      base::BindOnce([](Result result) {
-        base::UmaHistogramBoolean("WebApp.Shortcuts.Update.Result",
-                                  (result == Result::kOk));
-        return result;
-      }).Then(std::move(callback));
-
-  shortcut_manager_->UpdateShortcuts(app_id, old_name,
-                                     std::move(metrics_callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
 void OsIntegrationManager::UpdateShortcutsMenu(
@@ -788,104 +631,30 @@ void OsIntegrationManager::UpdateShortcutsMenu(
 void OsIntegrationManager::UpdateUrlHandlers(
     const webapps::AppId& app_id,
     base::OnceCallback<void(bool success)> callback) {
-  // If the "Execute" step is enabled for sub-managers, then the 'old' os
-  // integration path needs to be turned off so that os integration doesn't get
-  // done twice.
-  if (AreSubManagersExecuteEnabled()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true));
-    return;
-  }
-  if (!url_handler_manager_)
-    return;
-
-  url_handler_manager_->UpdateUrlHandlers(app_id, std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void OsIntegrationManager::UpdateFileHandlers(
     const webapps::AppId& app_id,
     FileHandlerUpdateAction file_handlers_need_os_update,
     ResultCallback finished_callback) {
-  // If the "Execute" step is enabled for sub-managers, then the 'old' os
-  // integration path needs to be turned off so that os integration doesn't get
-  // done twice.
-  if (AreSubManagersExecuteEnabled()) {
-    // Due to the way UpdateFileHandlerCommand is currently written, this needs
-    // to be synchronously called on Mac.
+  // Due to the way UpdateFileHandlerCommand is currently written, this needs
+  // to be synchronously called on Mac.
 #if BUILDFLAG(IS_MAC)
-    std::move(finished_callback).Run(Result::kOk);
-    return;
+  std::move(finished_callback).Run(Result::kOk);
 #else
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(finished_callback), Result::kOk));
-    return;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(finished_callback), Result::kOk));
 #endif
-  }
-  if (file_handlers_need_os_update == FileHandlerUpdateAction::kNoUpdate) {
-    std::move(finished_callback).Run(Result::kOk);
-    return;
-  }
-
-  ResultCallback callback_after_removal;
-  if (file_handlers_need_os_update == FileHandlerUpdateAction::kUpdate) {
-    callback_after_removal = base::BindOnce(
-        [](base::WeakPtr<OsIntegrationManager> os_integration_manager,
-           const webapps::AppId& app_id, ResultCallback finished_callback,
-           Result result) {
-          if (!os_integration_manager) {
-            std::move(finished_callback).Run(Result::kError);
-            return;
-          }
-          os_integration_manager->RegisterFileHandlers(
-              app_id, std::move(finished_callback));
-        },
-        weak_ptr_factory_.GetWeakPtr(), app_id, std::move(finished_callback));
-  } else {
-    CHECK_EQ(file_handlers_need_os_update, FileHandlerUpdateAction::kRemove);
-    callback_after_removal = std::move(finished_callback);
-  }
-
-  // Update file handlers via complete uninstallation, then potential
-  // reinstallation.
-  UnregisterFileHandlers(app_id, std::move(callback_after_removal));
 }
 
 void OsIntegrationManager::UpdateProtocolHandlers(
     const webapps::AppId& app_id,
     bool force_shortcut_updates_if_needed,
     base::OnceClosure callback) {
-  // If the "Execute" step is enabled for sub-managers, then the 'old' os
-  // integration path needs to be turned off so that os integration doesn't get
-  // done twice.
-  if (AreSubManagersExecuteEnabled()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-    return;
-  }
-
-  if (!protocol_handler_manager_) {
-    std::move(callback).Run();
-    return;
-  }
-
-  auto shortcuts_callback = base::BindOnce(
-      &OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers,
-      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback));
-
-#if !BUILDFLAG(IS_WIN)
-  // Windows handles protocol registration through the registry. For other
-  // OS's we also need to regenerate the shortcut file before we call into
-  // the OS. Since `UpdateProtocolHandlers` function is also called in
-  // `UpdateOSHooks`, which also recreates the shortcuts, only do it if
-  // required.
-  if (force_shortcut_updates_if_needed) {
-    UpdateShortcuts(app_id, "",
-                    base::IgnoreArgs<Result>(std::move(shortcuts_callback)));
-    return;
-  }
-#endif
-
-  std::move(shortcuts_callback).Run();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 void OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers(
@@ -930,21 +699,15 @@ void OsIntegrationManager::SubManagersUnregistered(
 
 void OsIntegrationManager::OnWebAppProfileWillBeDeleted(
     const webapps::AppId& app_id) {
-  if (AreSubManagersExecuteEnabled()) {
-    // This is used to keep the profile from being deleted while doing a
-    // ForceUnregister when profile deletion is started.
-    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-        profile_, ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration);
-    ForceUnregisterOsIntegrationOnSubManager(
-        app_id, 0,
-        base::BindOnce(&OsIntegrationManager::SubManagersUnregistered,
-                       weak_ptr_factory_.GetWeakPtr(), app_id,
-                       std::move(profile_keep_alive)));
-  } else {
-    UninstallAllOsHooks(app_id,
-                        base::IgnoreArgs<OsHooksErrors>(base::BindOnce(
-                            force_unregister_callback_for_testing_, app_id)));
-  }
+  // This is used to keep the profile from being deleted while doing a
+  // ForceUnregister when profile deletion is started.
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration);
+  ForceUnregisterOsIntegrationOnSubManager(
+      app_id, 0,
+      base::BindOnce(&OsIntegrationManager::SubManagersUnregistered,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(profile_keep_alive)));
 }
 
 void OsIntegrationManager::OnAppRegistrarDestroyed() {
@@ -967,17 +730,10 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
     std::optional<SynchronizeOsOptions> options,
     std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
     base::OnceClosure on_all_execution_done) {
-  // This can never be a use-case where we execute OS integration registration/
-  // unregistration but do not update the WebAppOsIntegrationState proto in the
-  // web_app DB.
-  CHECK(AreSubManagersExecuteEnabled());
-
   // The "execute" step is skipped in the following cases:
   // 1. The app is no longer in the registrar. The whole synchronize process is
   //    stopped here.
   // 2. The `g_suppress_os_hooks_for_testing_` flag is set.
-  // 3. Execution has been disabled by the feature parameters (see
-  //    `AreSubManagersExecuteEnabled()`).
 
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
@@ -990,7 +746,7 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
       &OsIntegrationManager::WriteStateToDB, weak_ptr_factory_.GetWeakPtr(),
       app_id, std::move(desired_states), std::move(on_all_execution_done));
 
-  if (AreOsHooksSuppressedForTesting() || !AreSubManagersExecuteEnabled()) {
+  if (AreOsHooksSuppressedForTesting()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(write_state_to_db));
     return;
@@ -1148,8 +904,7 @@ void OsIntegrationManager::OnShortcutsDeleted(const webapps::AppId& app_id,
 void OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin(
     ResultCallback callback,
     std::unique_ptr<ShortcutInfo> info) {
-  ScheduleRegisterRunOnOsLogin(&provider_->sync_bridge_unsafe(),
-                               std::move(info), std::move(callback));
+  ScheduleRegisterRunOnOsLogin(std::move(info), std::move(callback));
 }
 
 }  // namespace web_app

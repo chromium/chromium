@@ -160,22 +160,21 @@ void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
   }
   login_mode_ = lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value;
 
-  if (AreSubManagersExecuteEnabled()) {
-    // This is temporary solution for preinstalled apps getting fully installed.
-    // Do not run the below 'synchronize' code at all if the expected state ==
-    // the desired state.
-    // TODO(dmurph): Remove this after 'locally installed without os
-    // integration' is implemented for preinstalled apps.
-    // https://crbug.com/1480068
-    std::optional<RunOnOsLoginMode> os_integration_state =
-        lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
-    if (os_integration_state && login_mode_.value() == *os_integration_state) {
-      RecordCompletionState(
-          RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-      OnOsHooksSet(OsHooksErrors());
-      return;
-    }
+  // This is temporary solution for preinstalled apps getting fully installed.
+  // Do not run the below 'synchronize' code at all if the expected state ==
+  // the desired state.
+  // TODO(dmurph): Remove this after 'locally installed without os
+  // integration' is implemented for preinstalled apps.
+  // https://crbug.com/1480068
+  std::optional<RunOnOsLoginMode> os_integration_state =
+      lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
+  if (os_integration_state && login_mode_.value() == *os_integration_state) {
+    RecordCompletionState(
+        RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
+    OnOsHooksSet(OsHooksErrors());
+    return;
   }
+
   auto synchronize_barrier =
       OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
           &RunOnOsLoginCommand::OnOsHooksSet, weak_factory_.GetWeakPtr()));

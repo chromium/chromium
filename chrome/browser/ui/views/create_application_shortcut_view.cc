@@ -212,12 +212,11 @@ void CreateChromeApplicationShortcutView::OnDialogAccepted() {
   creation_locations.in_quick_launch_bar = false;
 #endif
 
-  // If the dialog has been triggered from a web_app and the sub manager
-  // architecture for OS integration is enabled, then we need to perform OS
+  // If the dialog has been triggered from a web_app, then we need to perform OS
   // integration using sub managers so that shortcuts can be properly added,
-  // updated or deleted.
-  if (!shortcut_info_->app_id.empty() && !is_extension_ &&
-      web_app::AreSubManagersExecuteEnabled()) {
+  // updated or deleted. Otherwise, shortcuts created need not be tracked as
+  // they will not be tied to an app_id.
+  if (!shortcut_info_->app_id.empty() && !is_extension_) {
     auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
     CHECK(provider);
     provider->scheduler().SynchronizeOsIntegration(

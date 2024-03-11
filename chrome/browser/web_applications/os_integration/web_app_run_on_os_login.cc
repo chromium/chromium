@@ -35,40 +35,20 @@ void RegisterRunOnOsLoginAndPostCallback(ResultCallback callback,
 
 }  // namespace
 
-void ScheduleRegisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
-                                  std::unique_ptr<ShortcutInfo> shortcut_info,
+void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
                                   ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(sync_bridge);
-
-  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
-  //  OsIntegrationManager::Synchronize() is running fine.
-  if (!AreSubManagersExecuteEnabled()) {
-    ScopedRegistryUpdate update = sync_bridge->BeginUpdate();
-    update->UpdateApp(shortcut_info->app_id)
-        ->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kWindowed);
-  }
 
   internals::PostShortcutIOTask(
       base::BindOnce(&RegisterRunOnOsLoginAndPostCallback, std::move(callback)),
       std::move(shortcut_info));
 }
 
-void ScheduleUnregisterRunOnOsLogin(WebAppProvider& provider,
-                                    const std::string& app_id,
+void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
                                     const base::FilePath& profile_path,
                                     const std::u16string& shortcut_title,
                                     ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
-  //  OsIntegrationManager::Synchronize() is running fine.
-  if (!AreSubManagersExecuteEnabled() &&
-      provider.registrar_unsafe().IsInstalled(app_id)) {
-    ScopedRegistryUpdate update = provider.sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
-        RunOnOsLoginMode::kNotRun);
-  }
 
   internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,

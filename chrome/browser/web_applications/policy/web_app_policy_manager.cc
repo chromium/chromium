@@ -102,8 +102,7 @@ void RecordErrorLoadedPolicyAppsMigrated(PrefService* pref_service) {
 
 bool IsForceUnregistrationPolicyEnabled() {
   return base::FeatureList::IsEnabled(
-             web_app::kDesktopPWAsForceUnregisterOSIntegration) &&
-         web_app::AreSubManagersExecuteEnabled();
+      web_app::kDesktopPWAsForceUnregisterOSIntegration);
 }
 
 }  // namespace

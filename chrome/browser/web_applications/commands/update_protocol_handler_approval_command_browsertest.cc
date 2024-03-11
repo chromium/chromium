@@ -403,38 +403,16 @@ IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
 #endif
 
   if (AreProtocolsRegisteredWithOs()) {
-#if BUILDFLAG(IS_WIN)
-    if (AreSubManagersExecuteEnabled()) {
-      // The sub managers first add a protocol, then remove it on being
-      // disallowed and then adds it again.
-      EXPECT_THAT(
-          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
-          testing::ElementsAre(
-              std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
-              std::make_tuple(app_id, std::vector<std::string>()),
-              std::make_tuple(app_id,
-                              std::vector({protocol_handler.protocol}))));
-    } else {
-      // The old OS integration code first adds a protocol, and then does an
-      // update with no approved protocols (hence an unregistration but no
-      // registration). The last update call performs an unregistration and a
-      // re-addition of the protocol, so there are four entries.
-      EXPECT_THAT(
-          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
-          testing::ElementsAre(
-              std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
-              std::make_tuple(app_id, std::vector<std::string>()),
-              std::make_tuple(app_id, std::vector<std::string>()),
-              std::make_tuple(app_id,
-                              std::vector({protocol_handler.protocol}))));
-    }
-#else
+    // The sub managers first add a protocol, then remove it on being
+    // disallowed and then adds it again.
     EXPECT_THAT(
         OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
         testing::ElementsAre(
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
-            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
+#if BUILDFLAG(IS_WIN)
+            std::make_tuple(app_id, std::vector<std::string>()),
 #endif  // BUILDFLAG(IS_WIN)
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
   }
 }
 
@@ -476,38 +454,14 @@ IN_PROC_BROWSER_TEST_F(UpdateProtocolHandlerApprovalCommandTest,
 #endif
 
   if (AreProtocolsRegisteredWithOs()) {
-#if BUILDFLAG(IS_WIN)
-    if (AreSubManagersExecuteEnabled()) {
-      // The sub managers first add a protocol, then remove it on being
-      // disallowed and then adds it again.
-      EXPECT_THAT(
-          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
-          testing::ElementsAre(
-              std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
-              std::make_tuple(app_id, std::vector<std::string>()),
-              std::make_tuple(app_id,
-                              std::vector({protocol_handler.protocol}))));
-    } else {
-      // The old OS integration code first adds a protocol, and then does an
-      // update with no approved protocols (hence an unregistration but no
-      // registration). The last update call performs an unregistration and a
-      // re-addition of the protocol, so there are four entries.
-      EXPECT_THAT(
-          OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
-          testing::ElementsAre(
-              std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
-              std::make_tuple(app_id, std::vector<std::string>()),
-              std::make_tuple(app_id, std::vector<std::string>()),
-              std::make_tuple(app_id,
-                              std::vector({protocol_handler.protocol}))));
-    }
-#else
     EXPECT_THAT(
         OsIntegrationTestOverrideImpl::Get()->protocol_scheme_registrations(),
         testing::ElementsAre(
             std::make_tuple(app_id, std::vector({protocol_handler.protocol})),
-            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
+#if BUILDFLAG(IS_WIN)
+            std::make_tuple(app_id, std::vector<std::string>()),
 #endif  // BUILDFLAG(IS_WIN)
+            std::make_tuple(app_id, std::vector({protocol_handler.protocol}))));
   }
 }
 
