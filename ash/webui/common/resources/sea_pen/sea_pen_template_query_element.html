@@ -105,11 +105,13 @@
   }
 </style>
 <div class="main">
-  <sea-pen-options
-      options="[[options_]]"
-      selected-chip="[[selectedChip_]]"
-      selected-options="{{selectedOptions_}}">
-  </sea-pen-options>
+  <template is="dom-if" if="[[shouldShowOptions_(options_)]]">
+    <sea-pen-options
+        options="[[options_]]"
+        selected-chip="[[selectedChip_]]"
+        selected-options="{{selectedOptions_}}">
+    </sea-pen-options>
+  </template>
   <div id="template">
     <template is="dom-repeat" items="[[templateTokens_]]" as="token">
       <template is="dom-if" if="[[isChip_(token)]]">

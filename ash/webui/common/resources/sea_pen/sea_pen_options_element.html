@@ -10,6 +10,12 @@
     /* Leave 4px of padding for chip outlines. */
     padding: 4px;
     width: calc(100% - 8px);
+    max-height: 80px;
+    overflow: hidden;
+  }
+
+  #options.expanded {
+    max-height: unset;
   }
 
   #options cr-button {
@@ -33,18 +39,35 @@
     margin-inline-end: 8px;
     width: 20px;
   }
+
+  #expand {
+    align-items: center;
+    background-color: var(--cros-sys-app_base_shaded);
+    display: flex;
+    justify-content: center;
+  }
+
+  #expand > span.clickable {
+    color: var(--cros-text-color-prominent);
+    font: var(--cros-annotation-1-font);
+  }
 </style>
-<template is="dom-if" if="[[shouldShowOptions_(options)]]">
-  <div id="options">
-    <template is="dom-repeat" items="[[options]]" as="option">
-      <cr-button
-          on-click="onClickOption_"
-          aria-selected$="[[isSelected_(option, selectedChip, selectedOptions)]]">
-        <template is="dom-if" if="[[option.previewUrl]]" restamp>
-          <img is="cr-auto-img" auto-src="[[option.previewUrl]]">
-        </template>
-        [[option.translation]]
-      </cr-button>
-    </template>
+<div id="options" class$="[[getOptionsClassName_(chipsExpanded_)]]">
+  <template is="dom-repeat" items="[[options]]" as="option">
+    <cr-button
+        on-click="onClickOption_"
+        aria-selected$="[[isSelected_(option, selectedChip, selectedOptions)]]">
+      <template is="dom-if" if="[[option.previewUrl]]" restamp>
+        <img is="cr-auto-img" auto-src="[[option.previewUrl]]">
+      </template>
+      [[option.translation]]
+    </cr-button>
+  </template>
+</div>
+<template is="dom-if" if="[[shouldShowExpandButton_]]">
+  <div id="expand">
+    <span class="clickable" on-click="showMoreChips_">
+      [[i18n('seaPenShowMoreOptions')]]
+    </span>
   </div>
 </template>

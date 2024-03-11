@@ -49,6 +49,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenWallpaperTermsOfServiceDesc",
        IDS_SEA_PEN_WALLPAPER_TERMS_OF_SERVICE_DESC},
       {"seaPenCreatingHighResImage", IDS_SEA_PEN_CREATING_HIGH_RES_IMAGE},
+      {"seaPenShowMoreOptions", IDS_SEA_PEN_SHOW_MORE_OPTIONS},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 }

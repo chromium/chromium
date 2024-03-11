@@ -11,15 +11,22 @@ import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SeaPenOption} from './constants.js';
 import {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_options_element.html.js';
-import {ChipToken, isNonEmptyArray} from './sea_pen_utils.js';
+import {ChipToken} from './sea_pen_utils.js';
 
-export class SeaPenOptionsElement extends I18nMixin
-(PolymerElement) {
+const SeaPenOptionsElementBase = I18nMixin(PolymerElement);
+
+export interface SeaPenOptionsElement {
+  $: {
+    options: HTMLDivElement,
+  };
+}
+
+export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
   static get is() {
     return 'sea-pen-options';
   }
@@ -36,21 +43,50 @@ export class SeaPenOptionsElement extends I18nMixin
 
       selectedChip: {
         type: Object,
+        observer: 'onSelectedChipChanged_',
       },
 
       selectedOptions: {
         type: Object,
         notify: true,
       },
+
+      chipsExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      shouldShowExpandButton_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-private options:
-  SeaPenOption[]|null;
-private selectedChip:
-  ChipToken|null;
-private selectedOptions:
-  Map<SeaPenTemplateChip, SeaPenOption>;
+  private options: SeaPenOption[]|null;
+  private selectedChip: ChipToken|null;
+  private selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>;
+  private chipsExpanded_: boolean;
+  private shouldShowExpandButton_: boolean;
+  private debouncer_: Debouncer;
+  private onResized_: () => void = () => {
+    this.debouncer_ =
+        Debouncer.debounce(this.debouncer_, timeOut.after(100), () => {
+          this.shouldShowExpandButton_ = this.checkWhetherExpandShouldShow_();
+        });
+  };
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    window.addEventListener('resize', this.onResized_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    window.removeEventListener('resize', this.onResized_);
+  }
 
   private onClickOption_(event: Event&{model: {option: SeaPenOption}}) {
     const option = event.model.option;
@@ -62,16 +98,34 @@ private selectedOptions:
     this.selectedOptions = copiedSelectedOptions;
   }
 
-  private shouldShowOptions_(options: SeaPenOption[]|null): boolean {
-    return isNonEmptyArray(options);
-  }
-
   private isSelected_(
       option: SeaPenOption, selectedChip: ChipToken|null,
       selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>): boolean {
     return !!selectedOptions && !!selectedChip &&
         selectedOptions.has(selectedChip.id) &&
         option === selectedOptions.get(selectedChip.id);
+  }
+
+  private showMoreChips_() {
+    this.chipsExpanded_ = true;
+    this.shouldShowExpandButton_ = false;
+  }
+
+  private checkWhetherExpandShouldShow_(): boolean {
+    return !this.chipsExpanded_ &&
+        this.$.options.clientHeight < this.$.options.scrollHeight;
+  }
+
+  private onSelectedChipChanged_() {
+    this.chipsExpanded_ = false;
+    this.shouldShowExpandButton_ = false;
+    afterNextRender(this, () => {
+      this.shouldShowExpandButton_ = this.checkWhetherExpandShouldShow_();
+    });
+  }
+
+  private getOptionsClassName_(chipsExpanded: boolean): string {
+    return chipsExpanded ? 'expanded' : '';
   }
 }
 

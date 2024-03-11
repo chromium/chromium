@@ -24,7 +24,7 @@ import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
-import {ChipToken, getDefaultOptions, getTemplateTokens, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
+import {ChipToken, getDefaultOptions, getTemplateTokens, isNonEmptyArray, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
 
 export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
@@ -256,6 +256,10 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         this.searchButtonIcon_ = 'sea-pen:photo-spark';
         break;
     }
+  }
+
+  private shouldShowOptions_(options: SeaPenOption[]|null): boolean {
+    return isNonEmptyArray(options);
   }
 }
 
