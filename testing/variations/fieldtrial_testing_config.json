@@ -20993,6 +20993,22 @@
             ]
         }
     ],
+    "WebRtcHWDecodingDisabledCfM": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_webrtc-hw-decoding",
+                    "disable_features": [
+                        "webrtc-hw-decoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRtcInitializeEncoderOnFirstFrame": [
         {
             "platforms": [
