@@ -100,8 +100,14 @@
   <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's microphone.">
     Use your microphones
   </message>
+  <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's microphone, in addition to the number of real mics.">
+    Use your microphones (<ph name="MICS_COUNT">$1<ex>1</ex></ph>)
+  </message>
   <message name="IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's camera.">
     Use your cameras
+  </message>
+  <message name="IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's camera, in addition to the number of real cameras.">
+    Use your cameras (<ph name="CAMERAS_COUNT">$1<ex>1</ex></ph>)
   </message>
   <message name="IDS_MEDIA_CAPTURE_CAMERA_PAN_TILT_ZOOM_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions prompt when a web page requests access to the computer's camera, including zoom and move.">
     Use &amp; move your camera

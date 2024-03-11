@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
@@ -249,6 +250,15 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (request->request_type() == permissions::RequestType::kMicStream) {
+    mic_permission_label_ = label;
+  } else if (request->request_type() ==
+             permissions::RequestType::kCameraStream) {
+    camera_permission_label_ = label;
+  }
+#endif
+
   if (features::IsChromeRefresh2023()) {
     label->SetTextStyle(views::style::STYLE_BODY_3);
     label->SetEnabledColorId(kColorPermissionPromptRequestText);
@@ -276,6 +286,17 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     return;
   }
 
+  auto* cached_device_info = media_effects::MediaDeviceInfo::GetInstance();
+  devices_observer_.Observe(cached_device_info);
+  if (camera_permission_label_) {
+    // Initialize camera label with the current number of cached video devices.
+    OnVideoDevicesChanged(cached_device_info->GetVideoDeviceInfos());
+  }
+  if (mic_permission_label_) {
+    // Initialize mic label with the current number of cached audio devices.
+    OnAudioDevicesChanged(cached_device_info->GetAudioDeviceInfos());
+  }
+
   media_preview_coordinator_.emplace(
       view_type.value(),
       *scroll_media_preview::CreateScrollViewAndGetContents(*this, index),
@@ -286,3 +307,26 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
       *browser_->profile()->GetPrefs());
 #endif
 }
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+void PermissionPromptBubbleOneOriginView::OnAudioDevicesChanged(
+    const std::optional<std::vector<media::AudioDeviceDescription>>&
+        device_infos) {
+  if (mic_permission_label_ && device_infos) {
+    mic_permission_label_->SetText(l10n_util::GetStringFUTF16(
+        IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
+        base::NumberToString16(
+            media_effects::GetRealAudioDeviceCount(device_infos.value()))));
+  }
+}
+
+void PermissionPromptBubbleOneOriginView::OnVideoDevicesChanged(
+    const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
+        device_infos) {
+  if (camera_permission_label_ && device_infos) {
+    camera_permission_label_->SetText(l10n_util::GetStringFUTF16(
+        IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
+        base::NumberToString16(device_infos->size())));
+  }
+}
+#endif
