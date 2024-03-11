@@ -6,6 +6,7 @@
 #define BASE_TYPES_EXPECTED_MACROS_H_
 
 #include <functional>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "base/macros/remove_parens.h"
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 
 // Executes an expression `rexpr` that returns a `base::expected<T, E>`. If the
@@ -267,18 +267,18 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
                                 return_keyword, error_expr);               \
   } while (false)
 
-#define BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN(                             \
-    expected, rexpr, return_keyword, error_expr, lhs)                        \
-  BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, ASSIGN_OR_RETURN,             \
-                              return_keyword, error_expr);                   \
-  {                                                                          \
-    static_assert(#lhs[0] != '(' || #lhs[sizeof #lhs - 2] != ')' ||          \
-                      base::StringPiece(#lhs).rfind('?', sizeof #lhs - 2) == \
-                          base::StringPiece::npos,                           \
-                  "Identified possible ternary in `lhs`; avoid passing "     \
-                  "parenthesized expressions containing '?' to the first "   \
-                  "argument of ASSIGN_OR_RETURN()");                         \
-  }                                                                          \
+#define BASE_INTERNAL_EXPECTED_ASSIGN_OR_RETURN(                            \
+    expected, rexpr, return_keyword, error_expr, lhs)                       \
+  BASE_INTERNAL_EXPECTED_BODY(expected, rexpr, ASSIGN_OR_RETURN,            \
+                              return_keyword, error_expr);                  \
+  {                                                                         \
+    static_assert(#lhs[0] != '(' || #lhs[sizeof #lhs - 2] != ')' ||         \
+                      std::string_view(#lhs).rfind('?', sizeof #lhs - 2) == \
+                          base::StringPiece::npos,                          \
+                  "Identified possible ternary in `lhs`; avoid passing "    \
+                  "parenthesized expressions containing '?' to the first "  \
+                  "argument of ASSIGN_OR_RETURN()");                        \
+  }                                                                         \
   BASE_REMOVE_PARENS(lhs) = std::move(expected).value();
 
 #define BASE_INTERNAL_EXPECTED_PASS_ARGS(func, ...) func(__VA_ARGS__)

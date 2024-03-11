@@ -6,6 +6,7 @@
 #define BASE_TYPES_EXPECTED_H_
 
 #include <concepts>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -35,7 +36,7 @@
 // Example Usage:
 //
 // Before:
-//   bool ParseInt32(base::StringPiece input,
+//   bool ParseInt32(std::string_view input,
 //                   int32_t* output,
 //                   ParseIntError* error);
 //   ...
@@ -50,7 +51,7 @@
 //
 // After:
 //
-//   base::expected<int32_t, ParseIntError> ParseInt32(base::StringPiece input);
+//   base::expected<int32_t, ParseIntError> ParseInt32(std::string_view input);
 //   ...
 //
 //   if (auto parsed = ParseInt32("..."); parsed.has_value()) {

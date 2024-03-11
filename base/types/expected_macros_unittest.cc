@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,7 +26,7 @@ expected<int, std::string> ReturnValue(int v) {
   return v;
 }
 
-expected<int, std::string> ReturnError(StringPiece msg) {
+expected<int, std::string> ReturnError(std::string_view msg) {
   return unexpected(std::string(msg));
 }
 
@@ -36,7 +36,8 @@ expected<std::tuple<Args...>, std::string> ReturnTupleValue(Args&&... v) {
 }
 
 template <class... Args>
-expected<std::tuple<Args...>, std::string> ReturnTupleError(StringPiece msg) {
+expected<std::tuple<Args...>, std::string> ReturnTupleError(
+    std::string_view msg) {
   return unexpected(std::string(msg));
 }
 

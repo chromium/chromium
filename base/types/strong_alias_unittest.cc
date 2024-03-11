@@ -9,11 +9,11 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/types/supports_ostream_operator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -335,7 +335,7 @@ TYPED_TEST(StrongAliasTest, CanDifferentiateOverloads) {
 
 TEST(StrongAliasTest, EnsureConstexpr) {
   using FooAlias = StrongAlias<class FooTag, int>;
-  using BarAlias = StrongAlias<class BarTag, base::StringPiece>;
+  using BarAlias = StrongAlias<class BarTag, std::string_view>;
 
   // Check constructors.
   static constexpr FooAlias kZero{};
