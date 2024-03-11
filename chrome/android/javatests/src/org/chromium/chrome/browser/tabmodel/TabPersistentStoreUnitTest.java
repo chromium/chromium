@@ -579,6 +579,35 @@ public class TabPersistentStoreUnitTest {
                 metadata.incognitoModelMetadata.urls.get(3));
     }
 
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature("TabPersistentStore")
+    public void testSerializeTabModelSelector_closingTabsSkipped() throws IOException {
+        when(mNormalTabModel.getCount()).thenReturn(2);
+        when(mNormalTabModel.index()).thenReturn(1);
+        Tab regularTab1 = mock(Tab.class);
+        when(regularTab1.getId()).thenReturn(11);
+        when(regularTab1.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
+        when(regularTab1.isClosing()).thenReturn(false);
+        when(mNormalTabModel.getTabAt(0)).thenReturn(regularTab1);
+        Tab regularTab2 = mock(Tab.class);
+        when(regularTab2.getId()).thenReturn(22);
+        when(regularTab2.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_2));
+        when(regularTab2.isClosing()).thenReturn(true);
+        when(mNormalTabModel.getTabAt(1)).thenReturn(regularTab2);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+
+        TabModelSelectorMetadata metadata =
+                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, false);
+
+        Assert.assertEquals(1, metadata.normalModelMetadata.ids.size());
+        Assert.assertEquals(1, metadata.normalModelMetadata.urls.size());
+        Assert.assertEquals(0, metadata.normalModelMetadata.index);
+        Assert.assertEquals(11, metadata.normalModelMetadata.ids.get(0).intValue());
+        Assert.assertEquals(REGULAR_TAB_STRING_1, metadata.normalModelMetadata.urls.get(0));
+    }
+
     private void setupSerializationTestMocks() {
         when(mNormalTabModel.getCount()).thenReturn(2);
         when(mNormalTabModel.index()).thenReturn(0);
