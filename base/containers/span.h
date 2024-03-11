@@ -95,6 +95,11 @@ constexpr size_t must_not_be_dynamic_extent() {
   return kExtent;
 }
 
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::equality_comparable_with<T, U>)
+constexpr bool span_cmp(span<T, N> l, span<U, M> r);
+
 }  // namespace internal
 
 // A span is a value type that represents an array of elements of type T. Since
@@ -224,6 +229,7 @@ constexpr size_t must_not_be_dynamic_extent() {
 // - span_from_cstring() function.
 // - byte_span_from_cstring() function.
 // - split_at() method.
+// - operator==() comparator function.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
@@ -600,9 +606,43 @@ class GSL_POINTER span {
     return std::span<const T, N>(*this);
   }
 
+  // Compares two spans for equality by comparing the objects pointed to by the
+  // spans. The operation is defined for spans of different types as long as the
+  // types are themselves comparable.
+  //
+  // For primitive types, this replaces the less safe `memcmp` function, where
+  // `memcmp(a.data(), b.data(), a.size())` can be written as `a == b` and can
+  // no longer go outside the bounds of `b`. Otherwise, it replaced std::equal
+  // or std::ranges::equal when working with spans, and when no projection is
+  // needed.
+  //
+  // If the spans are of different sizes, they are not equal. If both spans are
+  // empty, they are always equal (even though their data pointers may differ).
+  //
+  // # Implementation note
+  // The non-template overloads allow implicit conversions to span for
+  // comparison.
+  friend constexpr bool operator==(span lhs, span rhs)
+    requires(std::equality_comparable<const T>)
+  {
+    return internal::span_cmp(span<const T, N>(lhs), span<const T, N>(rhs));
+  }
+  friend constexpr bool operator==(span lhs, span<const T, N> rhs)
+    requires(!std::is_const_v<T> && std::equality_comparable<const T>)
+  {
+    return internal::span_cmp(span<const T, N>(lhs), span<const T, N>(rhs));
+  }
+  template <class U, size_t M>
+    requires((N == M || M == dynamic_extent) &&
+             std::equality_comparable_with<const T, const U>)
+  friend constexpr bool operator==(span lhs, span<U, M> rhs) {
+    return internal::span_cmp(span<const T, N>(lhs), span<const U, M>(rhs));
+  }
+
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field is not a raw_ptr<> since span is mostly used for stack
+  // variables. Use `raw_span` instead for class fields, which does use
+  // raw_ptr<> internally.
   InternalPtrType data_ = nullptr;
 };
 
@@ -949,9 +989,42 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
         std::copy(other.data(), other.data() + other.size(), data()));
   }
 
+  // Compares two spans for equality by comparing the objects pointed to by the
+  // spans. The operation is defined for spans of different types as long as the
+  // types are themselves comparable.
+  //
+  // For primitive types, this replaces the less safe `memcmp` function, where
+  // `memcmp(a.data(), b.data(), a.size())` can be written as `a == b` and can
+  // no longer go outside the bounds of `b`. Otherwise, it replaced std::equal
+  // or std::ranges::equal when working with spans, and when no projection is
+  // needed.
+  //
+  // If the spans are of different sizes, they are not equal. If both spans are
+  // empty, they are always equal (even though their data pointers may differ).
+  //
+  // # Implementation note
+  // The non-template overloads allow implicit conversions to span for
+  // comparison.
+  friend constexpr bool operator==(span lhs, span rhs)
+    requires(std::equality_comparable<const T>)
+  {
+    return internal::span_cmp(span<const T>(lhs), span<const T>(rhs));
+  }
+  friend constexpr bool operator==(span lhs, span<const T> rhs)
+    requires(!std::is_const_v<T> && std::equality_comparable<const T>)
+  {
+    return internal::span_cmp(span<const T>(lhs), span<const T>(rhs));
+  }
+  template <class U, size_t M>
+    requires(std::equality_comparable_with<const T, const U>)
+  friend constexpr bool operator==(span lhs, span<U, M> rhs) {
+    return internal::span_cmp(span<const T>(lhs), span<const U, M>(rhs));
+  }
+
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field is not a raw_ptr<> since span is mostly used for stack
+  // variables. Use `raw_span` instead for class fields, which does use
+  // raw_ptr<> internally.
   InternalPtrType data_ = nullptr;
   size_t size_ = 0;
 };
@@ -1272,6 +1345,18 @@ constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
     T (&&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
   return as_writable_bytes(make_span<N>(arr));
 }
+
+namespace internal {
+
+// Template helper for implementing operator==.
+template <class T, class U, size_t N, size_t M>
+  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
+           std::equality_comparable_with<T, U>)
+constexpr bool span_cmp(span<T, N> l, span<U, M> r) {
+  return l.size() == r.size() && std::equal(l.begin(), l.end(), r.begin());
+}
+
+}  // namespace internal
 
 }  // namespace base
 

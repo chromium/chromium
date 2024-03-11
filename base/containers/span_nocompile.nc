@@ -231,4 +231,44 @@ void FromCStringThatIsntStaticLifetime() {
       byte_span_from_cstring({'a', 'b', '\0'});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work2' will be destroyed at the end of the full-expression}}
 }
 
+void CompareFixedSizeMismatch() {
+  const int arr[] = {1, 2, 3};
+  const int arr2[] = {1, 2, 3, 4};
+  (void)(span(arr) == arr2);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(arr) == span(arr2));  // expected-error@*:* {{invalid operands to binary expression}}
+}
+
+void CompareNotComparable() {
+  struct NoEq { int i; };
+  static_assert(!std::equality_comparable<NoEq>);
+
+  const NoEq arr[] = {{1}, {2}, {3}};
+  (void)(span(arr) == arr);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(arr) == span(arr));  // expected-error@*:* {{invalid operands to binary expression}}
+
+  struct SelfEq {
+    constexpr bool operator==(SelfEq s) const { return i == s.i; }
+    int i;
+  };
+  static_assert(std::equality_comparable<SelfEq>);
+  static_assert(!std::equality_comparable_with<SelfEq, int>);
+
+  const SelfEq self_arr[] = {{1}, {2}, {3}};
+  const int int_arr[] = {1, 2, 3};
+
+  (void)(span(self_arr) == int_arr);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(self_arr) == span(int_arr));  // expected-error@*:* {{invalid operands to binary expression}}
+
+  // Span's operator== works on `const T` and thus won't be able to use the
+  // non-const operator here. We get this from equality_comparable which also
+  // requires it.
+  struct NonConstEq {
+    constexpr bool operator==(NonConstEq s) { return i == s.i; }
+    int i;
+  };
+  const NonConstEq non_arr[] = {{1}, {2}, {3}};
+  (void)(span(non_arr) == non_arr);  // expected-error@*:* {{invalid operands to binary expression}}
+  (void)(span(non_arr) == span(non_arr));  // expected-error@*:* {{invalid operands to binary expression}}
+}
+
 }  // namespace base
