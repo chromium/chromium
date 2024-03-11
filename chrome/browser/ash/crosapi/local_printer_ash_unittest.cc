@@ -580,8 +580,6 @@ TEST_F(LocalPrinterAshTest, GetPrinters) {
 // depending on its autoconf compatibility.
 TEST_F(LocalPrinterAshTest, GetCapabilityForNonInstalledPrinters) {
   feature_list().Reset();
-  feature_list().InitAndEnableFeature(
-      ash::features::kPrintPreviewDiscoveredPrinters);
 
   const std::string autoconf_printer_id = "printer1";
   Printer autoconf_printer =

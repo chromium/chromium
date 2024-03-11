@@ -6665,13 +6665,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "print-preview-discovered-printers",
-    "owners": [
-      "//ash/webui/print_management/OWNERS"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "print-preview-setup-assistance",
     "owners": [
       "//ash/webui/print_management/OWNERS",

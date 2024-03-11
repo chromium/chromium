@@ -2323,11 +2323,6 @@ BASE_FEATURE(kPrintPreviewCrosApp,
              "PrintPreviewCrosApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables showing discovered printers in the Print Preview dialog.
-BASE_FEATURE(kPrintPreviewDiscoveredPrinters,
-             "PrintPreviewDiscoveredPrinters",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables showing notification and status area indicators when an app is
 // using camera/microphone.
 BASE_FEATURE(kPrivacyIndicators,
@@ -4131,7 +4126,7 @@ bool IsPrinterPreviewCrosAppEnabled() {
 }
 
 bool IsPrintPreviewDiscoveredPrintersEnabled() {
-  return base::FeatureList::IsEnabled(kPrintPreviewDiscoveredPrinters);
+  return true;
 }
 
 // TODO(b/305749608): Remove this function and only use

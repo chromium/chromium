@@ -7027,12 +7027,6 @@ const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";
 
-const char kPrintPreviewDiscoveredPrintersName[] =
-    "Enables showing discovered printers in the Print Preview dialog.";
-const char kPrintPreviewDiscoveredPrintersDescription[] =
-    "Shows discovered printers in the Print Preview dialog that get set up "
-    "once selected.";
-
 const char kPrintingPpdChannelName[] = "Printing PPD channel";
 const char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "
