@@ -93,6 +93,10 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
     begin_access_desc.fenceCount = 1;
     begin_access_desc.fences = &shared_fence;
     begin_access_desc.signaledValues = &signaled_value;
+
+    // We save the SyncFD passed to BeginAccess() in case we need to restore it
+    // in EndAccess() (otherwise we will drop it in EndAccess()).
+    begin_access_sync_fd_ = std::move(sync_fd);
   }
 
   if (!shared_texture_memory_) {
@@ -144,15 +148,32 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
   wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
   export_info.nextInChain = &sync_fd_export_info;
 
-  // TODO(dawn:286): Handle waiting on multiple semaphores from dawn.
-  DCHECK_EQ(end_access_desc.fenceCount, 1u);
-  end_access_desc.fences[0].ExportInfo(&export_info);
+  base::ScopedFD end_access_sync_fd;
 
-  // Dawn will close its FD when `end_access_desc` falls out of scope, and so it
-  // is necessary to dup() it to give AndroidImageBacking an FD that it can own.
-  base::ScopedFD sync_fd = base::ScopedFD(dup(sync_fd_export_info.handle));
-  android_backing()->EndWrite(std::move(sync_fd));
+  // Dawn currently has a bug wherein if it doesn't access the texture during
+  // the access, it will return 2 fences: the fence that this instance gave it
+  // in BeginAccess() (which Dawn didn't consume), and a fence that Dawn created
+  // in EndAccess(). In this case, restore the fence created in BeginAccess() to
+  // the backing, as it is still the fence that the next access should wait on.
+  // TODO(crbug.com/dawn/2454): Remove this special-case after Dawn fixes its
+  // bug and simply returns the fence that it dup'd from that given to it in
+  // BeginAccess().
+  if (end_access_desc.fenceCount == 2u) {
+    end_access_sync_fd = std::move(begin_access_sync_fd_);
+  } else {
+    DCHECK_EQ(end_access_desc.fenceCount, 1u);
+    end_access_desc.fences[0].ExportInfo(&export_info);
 
+    // Dawn will close its FD when `end_access_desc` falls out of scope, and so
+    // it is necessary to dup() it to give AndroidImageBacking an FD that it can
+    // own.
+    end_access_sync_fd = base::ScopedFD(dup(sync_fd_export_info.handle));
+
+    // In this case `begin_access_sync_fd_` is no longer needed, so drop it.
+    begin_access_sync_fd_.reset();
+  }
+
+  android_backing()->EndWrite(std::move(end_access_sync_fd));
   texture_.Destroy();
   texture_ = nullptr;
 }
