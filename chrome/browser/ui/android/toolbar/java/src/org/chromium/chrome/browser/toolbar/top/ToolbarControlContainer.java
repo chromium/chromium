@@ -63,6 +63,7 @@ import java.util.function.BooleanSupplier;
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 public class ToolbarControlContainer extends OptimizedFrameLayout implements ControlContainer {
     private boolean mIncognito;
+    private boolean mMidVisibilityToggle;
 
     private Toolbar mToolbar;
     private ToolbarViewResourceFrameLayout mToolbarContainer;
@@ -144,6 +145,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         }
     }
 
+    @Override
+    public void setVisibility(int visibility) {
+        mMidVisibilityToggle = true;
+        super.setVisibility(visibility);
+        mMidVisibilityToggle = false;
+    }
+
     private Drawable getTempTabStripDrawable(boolean incognito) {
         Drawable bgdColor =
                 new ColorDrawable(
@@ -205,7 +213,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 browserStateBrowserControlsVisibilityDelegate,
                 isVisible,
                 layoutStateProviderSupplier,
-                fullscreenManager);
+                fullscreenManager,
+                () -> mMidVisibilityToggle);
 
         View toolbarView = findViewById(R.id.toolbar);
         assert toolbarView != null;
@@ -260,6 +269,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     /** The layout that handles generating the toolbar view resource. */
     // Only publicly visible due to lint warnings.
     public static class ToolbarViewResourceFrameLayout extends ViewResourceFrameLayout {
+        @Nullable private BooleanSupplier mIsMidVisibilityToggle;
         private boolean mReadyForBitmapCapture;
 
         public ToolbarViewResourceFrameLayout(Context context, AttributeSet attrs) {
@@ -287,7 +297,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier isVisible,
                 OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-                FullscreenManager fullscreenManager) {
+                FullscreenManager fullscreenManager,
+                BooleanSupplier isMidVisibilityToggle) {
+            mIsMidVisibilityToggle = isMidVisibilityToggle;
             ToolbarViewResourceAdapter adapter =
                     ((ToolbarViewResourceAdapter) getResourceAdapter());
             adapter.setPostInitializationDependencies(
@@ -303,7 +315,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
         @Override
         protected boolean isReadyForCapture() {
-            return mReadyForBitmapCapture && getVisibility() == VISIBLE;
+            // This method is checked when invalidateChildInParent happens. Returning false will
+            // prevent the dirty bit from being set in ViewResourceAdapter. This is what we want
+            // when the visibility of this view is being toggled. Many of our children report
+            // material changes that propagate back up. But we don't care about any of this for
+            // capturing as the captures occur below this frame layout.
+            return mReadyForBitmapCapture
+                    && getVisibility() == VISIBLE
+                    && !mIsMidVisibilityToggle.getAsBoolean();
         }
     }
 
