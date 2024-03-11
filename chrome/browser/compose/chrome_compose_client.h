@@ -184,9 +184,9 @@ class ChromeComposeClient
   // `active_compose_form_id_`.
   void RemoveAllSessions();
 
-  // Shows the saved state notification for the active session if valid,
-  // otherwise noop.
-  void ShowSavedStateNotification();
+  // Shows the saved state notification for `field_id` as long as any newly
+  // focused field will not show autofill suggestions.
+  void ShowSavedStateNotification(autofill::FieldGlobalId field_id);
 
   // Returns nullptr if no such session exists.
   ComposeSession* GetSessionForActiveComposeField();

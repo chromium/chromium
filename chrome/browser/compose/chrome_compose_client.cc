@@ -170,7 +170,8 @@ void ChromeComposeClient::ShowUI() {
   if (compose_dialog_controller_) {
     compose_dialog_controller_->ShowUI(
         base::BindOnce(&ChromeComposeClient::ShowSavedStateNotification,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*field_id=*/active_compose_ids_->first));
     compose::LogComposeDialogOpenLatency(base::TimeTicks::Now() -
                                          show_dialog_start_);
   }
@@ -425,10 +426,15 @@ void ChromeComposeClient::RemoveAllSessions() {
   active_compose_ids_.reset();
 }
 
-void ChromeComposeClient::ShowSavedStateNotification() {
-  // As a callback, this method may be called at anytime. But it only shows the
-  // notification for the most recently used field if valid, otherwise it noops.
-  if (!active_compose_ids_.has_value()) {
+void ChromeComposeClient::ShowSavedStateNotification(
+    autofill::FieldGlobalId field_id) {
+  if (active_compose_ids_->first != field_id &&
+      HasSession(active_compose_ids_->first)) {
+    // Do not show the saved state notification on a previous field if focusing
+    // on a new field that will show a compose nudge. Do not show nudge and
+    // saved state notification on two different fields at the same time.
+    // TODO(b/328730215): Saved state notification should not appear when user
+    // focuses on a password field and the password autofill suggestion shows.
     return;
   }
 
@@ -437,7 +443,7 @@ void ChromeComposeClient::ShowSavedStateNotification() {
               &GetWebContents())
               ->DriverForFrame(GetWebContents().GetPrimaryMainFrame())) {
     driver->RendererShouldTriggerSuggestions(
-        /*field_id=*/active_compose_ids_->first,
+        field_id,
         autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus);
   }
 }
@@ -473,6 +479,13 @@ compose::PageUkmTracker* ChromeComposeClient::getPageUkmTracker() {
 
 bool ChromeComposeClient::ShouldTriggerPopup(
     const autofill::FormFieldData& form_field_data) {
+  // Saved state notification needs the active field set earlier here at nudge
+  // triggering, rather than later when the compose dialog is shown so that we
+  // can know if the user focused on a different field.
+  active_compose_ids_ = std::make_optional<
+      std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>(
+      form_field_data.global_id(), form_field_data.renderer_form_id());
+
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
   content::RenderFrameHost* top_level_frame =

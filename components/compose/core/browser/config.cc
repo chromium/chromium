@@ -62,6 +62,10 @@ Config::Config() {
       features::kEnableComposeSavedStateNotification,
       "saved_state_timeout_milliseconds", saved_state_timeout_milliseconds);
 
+  focus_lost_delay_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+      features::kEnableComposeSavedStateNotification,
+      "focus_lost_delay_milliseconds", focus_lost_delay_milliseconds);
+
   stay_in_window_bounds = base::GetFieldTrialParamByFeatureAsBool(
       features::kComposeUiParams, "stay_in_window_bounds",
       stay_in_window_bounds);

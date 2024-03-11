@@ -39,6 +39,10 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
   WebUIContentsWrapperT<ComposeUntrustedUI>* GetBubbleWrapper() const;
 
   // Shows the current dialog view, if there is one.
+  // TODO(b/328730979): `focus_lost_callback` is called after some delay after
+  // the compose dialog loses focus. The delay is configurable via
+  // ComposeConfig. The purpose of the delay is so that `focus_lost_callback` is
+  // called after all focus-related events have been processed.
   void ShowUI(base::OnceClosure focus_lost_callback) override;
 
   void Close() override;
@@ -51,6 +55,9 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
 
  private:
   friend class ChromeComposeDialogControllerTest;
+
+  // Called after the compose dialog loses focus.
+  void OnAfterWidgetDestroyed();
 
   base::WeakPtr<ComposeDialogView> bubble_;
   base::WeakPtr<content::WebContents> web_contents_;
