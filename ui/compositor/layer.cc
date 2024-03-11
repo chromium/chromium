@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/mirror_layer.h"
 #include "cc/layers/nine_patch_layer.h"
@@ -1507,11 +1506,6 @@ void Layer::SetScrollOffset(const gfx::PointF& offset) {
 
 void Layer::RequestCopyOfOutput(
     std::unique_ptr<viz::CopyOutputRequest> request) {
-  if (!request->has_result_task_runner()) {
-    request->set_result_task_runner(
-        base::SequencedTaskRunner::GetCurrentDefault());
-  }
-
   cc_layer_->RequestCopyOfOutput(std::move(request));
 }
 
