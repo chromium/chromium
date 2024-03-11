@@ -89,7 +89,7 @@ class CreditCardRiskBasedAuthenticator {
     // handling logic with OnRiskBasedAuthenticationResponseReceived().
     virtual void OnVirtualCardRiskBasedAuthenticationResponseReceived(
         AutofillClient::PaymentsRpcResult result,
-        payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+        const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
             response_details) = 0;
   };
 
@@ -118,7 +118,7 @@ class CreditCardRiskBasedAuthenticator {
 
   void OnUnmaskResponseReceivedForTesting(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details) {
     OnUnmaskResponseReceived(result, response_details);
   }
@@ -130,7 +130,7 @@ class CreditCardRiskBasedAuthenticator {
   // Callback function invoked when an unmask response has been received.
   void OnUnmaskResponseReceived(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details);
 
   // Reset the authenticator to its initial state.

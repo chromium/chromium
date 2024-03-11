@@ -115,7 +115,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // the correct error message and end the session.
   void OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details);
 
   // Reset the authenticator to initial states.

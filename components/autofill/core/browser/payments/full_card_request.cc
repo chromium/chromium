@@ -268,7 +268,7 @@ void FullCardRequest::SendUnmaskCardRequest() {
 
 void FullCardRequest::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+    const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
         response_details) {
   // If the CVC field is populated, that means the user performed a CVC check.
   // If FIDO AssertionInfo is populated, then the user must have performed FIDO

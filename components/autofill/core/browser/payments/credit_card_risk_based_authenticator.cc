@@ -88,7 +88,7 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
 
 void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+    const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
         response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
     autofill_metrics::LogRiskBasedAuthLatency(
@@ -125,8 +125,10 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
       // The Payments server indicates further authentication is required.
       response.result =
           RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
-      response.fido_request_options =
-          std::move(response_details.fido_request_options);
+      if (response_details.fido_request_options.has_value()) {
+        response.fido_request_options =
+            response_details.fido_request_options->Clone();
+      }
       response.context_token = response_details.context_token;
 
       autofill_metrics::LogRiskBasedAuthResult(

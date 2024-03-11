@@ -267,8 +267,9 @@ void PaymentsNetworkInterface::GetUnmaskDetails(
 
 void PaymentsNetworkInterface::UnmaskCard(
     const PaymentsNetworkInterface::UnmaskRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsNetworkInterface::UnmaskResponseDetails&)> callback) {
+    base::OnceCallback<void(
+        AutofillClient::PaymentsRpcResult,
+        const PaymentsNetworkInterface::UnmaskResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UnmaskCardRequest>(
       request_details,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),

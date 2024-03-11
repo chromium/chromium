@@ -44,7 +44,7 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
   void UnmaskCard(
       const UnmaskRequestDetails& unmask_request_,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              UnmaskResponseDetails&)> callback) override;
+                              const UnmaskResponseDetails&)> callback) override;
 
   void GetCardUploadDetails(
       const std::vector<AutofillProfile>& addresses,

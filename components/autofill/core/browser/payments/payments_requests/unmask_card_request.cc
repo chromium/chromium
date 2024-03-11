@@ -213,9 +213,9 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
 UnmaskCardRequest::UnmaskCardRequest(
     const PaymentsNetworkInterface::UnmaskRequestDetails& request_details,
     const bool full_sync_enabled,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsNetworkInterface::UnmaskResponseDetails&)>
-        callback)
+    base::OnceCallback<
+        void(AutofillClient::PaymentsRpcResult,
+             const PaymentsNetworkInterface::UnmaskResponseDetails&)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {

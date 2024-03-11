@@ -175,7 +175,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Called by the PaymentsNetworkInterface when a card has been unmasked.
   void OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details);
 
   // Called when verification is cancelled. This is used only by

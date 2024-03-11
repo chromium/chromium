@@ -215,8 +215,9 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     unmask_details_ = unmask_details;
   }
 
-  void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       PaymentsNetworkInterface::UnmaskResponseDetails& response) {
+  void OnDidGetRealPan(
+      AutofillClient::PaymentsRpcResult result,
+      const PaymentsNetworkInterface::UnmaskResponseDetails& response) {
     result_ = result;
     unmask_response_details_ = response;
   }

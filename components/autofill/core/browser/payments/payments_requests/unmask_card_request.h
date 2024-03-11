@@ -16,9 +16,9 @@ class UnmaskCardRequest : public PaymentsRequest {
   UnmaskCardRequest(
       const PaymentsNetworkInterface::UnmaskRequestDetails& request_details,
       const bool full_sync_enabled,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              PaymentsNetworkInterface::UnmaskResponseDetails&)>
-          callback);
+      base::OnceCallback<void(
+          AutofillClient::PaymentsRpcResult,
+          const PaymentsNetworkInterface::UnmaskResponseDetails&)> callback);
   UnmaskCardRequest(const UnmaskCardRequest&) = delete;
   UnmaskCardRequest& operator=(const UnmaskCardRequest&) = delete;
   ~UnmaskCardRequest() override;
@@ -48,8 +48,9 @@ class UnmaskCardRequest : public PaymentsRequest {
 
   PaymentsNetworkInterface::UnmaskRequestDetails request_details_;
   const bool full_sync_enabled_;
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                          PaymentsNetworkInterface::UnmaskResponseDetails&)>
+  base::OnceCallback<void(
+      AutofillClient::PaymentsRpcResult,
+      const PaymentsNetworkInterface::UnmaskResponseDetails&)>
       callback_;
   PaymentsNetworkInterface::UnmaskResponseDetails response_details_;
 };

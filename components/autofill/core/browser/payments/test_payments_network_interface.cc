@@ -50,7 +50,7 @@ void TestPaymentsNetworkInterface::GetUnmaskDetails(
 void TestPaymentsNetworkInterface::UnmaskCard(
     const UnmaskRequestDetails& unmask_request,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            UnmaskResponseDetails&)> callback) {
+                            const UnmaskResponseDetails&)> callback) {
   unmask_request_ = unmask_request;
 }
 

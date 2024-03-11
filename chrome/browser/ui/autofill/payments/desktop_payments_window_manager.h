@@ -68,7 +68,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // UnmaskCardRequest, triggered after the authentication has completed.
   void OnVcn3dsAuthenticationResponseReceived(
       AutofillClient::PaymentsRpcResult result,
-      PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
+      const PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
 
   // Resets the state of `this` in relation to the ongoing UnmaskCardRequest.
   // Called if the user clicks cancel on the progress dialog, which is shown

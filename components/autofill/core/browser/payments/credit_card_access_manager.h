@@ -178,7 +178,7 @@ class CreditCardAccessManager
           response) override;
   void OnVirtualCardRiskBasedAuthenticationResponseReceived(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details) override;
 
  private:
