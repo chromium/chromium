@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-import {LABELS_TO_TESTS} from './labelled-tests.mjs';
+const INTERESTING_LABELS = new Set(['chromium-bidi-2023']);
 
-// The set of tests with the `chromium-bidi-2023` label.
-// https://github.com/web-platform-tests/wpt-metadata/pull/5725
-const RELEVANT_TESTS = LABELS_TO_TESTS.get('chromium-bidi-2023');
+export const LABELS_TO_TESTS = new Map();
 
-export const apply2023Filter = (reportData) => {
-  const filteredResults = [];
-  for (const result of reportData.results) {
-    if (RELEVANT_TESTS.has(result.test)) {
-      filteredResults.push(result);
+const response = await fetch(
+  'https://wpt.fyi/api/metadata?includeTestLevel=true&product=chrome'
+);
+const data = await response.json();
+
+for (const [path, elements] of Object.entries(data)) {
+  for (const element of elements) {
+    const label = element.label;
+    if (INTERESTING_LABELS.has(label)) {
+      if (LABELS_TO_TESTS.has(label)) {
+        LABELS_TO_TESTS.get(label).add(path);
+      } else {
+        LABELS_TO_TESTS.set(label, new Set([path]));
+      }
     }
   }
-  const filteredReportData = structuredClone(reportData);
-  filteredReportData.results = filteredResults;
-  filteredReportData.isFiltered = true;
-  return filteredReportData;
-};
+}
