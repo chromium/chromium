@@ -370,12 +370,17 @@ try_.orchestrator_builder(
     compilator = "win-arm64-rel-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     coverage_test_types = ["unit", "overall"],
-    use_clang_coverage = True,
-    # Enable when stable.
-    # main_list_view = "try",
+    main_list_view = "try",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
+    tryjob = try_.job(
+        location_filters = [
+            "sandbox/win/.+",
+            "sandbox/policy/win/.+",
+        ],
+    ),
+    use_clang_coverage = True,
 )
 
 try_.builder(

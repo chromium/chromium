@@ -344,9 +344,7 @@ ci.builder(
     builderless = False,
     cores = 16,
     os = os.WINDOWS_DEFAULT,
-    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "release|builder",
         short_name = "a64",
@@ -383,8 +381,6 @@ ci.thin_tester(
     builder_config_settings = builder_config.ci_settings(
         retry_failed_shards = True,
     ),
-    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
-    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
@@ -423,9 +419,7 @@ ci.builder(
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "a64",
