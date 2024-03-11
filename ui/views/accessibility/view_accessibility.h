@@ -219,29 +219,6 @@ class VIEWS_EXPORT ViewAccessibility {
       const std::u16string& name,
       const ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
 
-  // Sets the accessible description to the specified string value.
-  // By default the source type of the description is aria-description. While
-  // Views technically don't support ARIA, aria-description is the closest
-  // existing DescriptionFrom source for Views providing a flat string
-  // description. And assistive technologies already know how to recognize this
-  // source type. Therefore, Views are encouraged to go with this default unless
-  // they have a specific reason not to. If a View has a need to remove the
-  // accessible description, the string should be empty and the source of the
-  // description should instead be kAttributeExplicitlyEmpty. If a View never
-  // had an accessible description, there is no need to override it with an
-  // empty string.
-  //
-  // Deprecated. Use ViewAccessibility::SetDescription instead.
-  // See https://crbug.com/324485311.
-  void OverrideDescription(const std::string& description,
-                           const ax::mojom::DescriptionFrom description_from =
-                               ax::mojom::DescriptionFrom::kAriaDescription);
-  // Deprecated. Use ViewAccessibility::SetDescription instead.
-  // See https://crbug.com/324485311.
-  void OverrideDescription(const std::u16string& description,
-                           const ax::mojom::DescriptionFrom description_from =
-                               ax::mojom::DescriptionFrom::kAriaDescription);
-
   // Sets the platform-specific accessible name/title property of the
   // NativeViewAccessible window. This is needed on platforms where the name
   // of the NativeViewAccessible window is automatically calculated by the

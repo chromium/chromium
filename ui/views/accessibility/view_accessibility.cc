@@ -636,24 +636,6 @@ void ViewAccessibility::OverrideName(const std::u16string& name,
   OverrideName(base::UTF16ToUTF8(name), name_from);
 }
 
-void ViewAccessibility::OverrideDescription(
-    const std::string& description,
-    const ax::mojom::DescriptionFrom description_from) {
-  DCHECK_EQ(
-      description.empty(),
-      description_from == ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty)
-      << "If the description is being removed to improve the user experience, "
-         "|description_from| should be set to |kAttributeExplicitlyEmpty|.";
-  override_data_.SetDescriptionFrom(description_from);
-  override_data_.SetDescription(description);
-}
-
-void ViewAccessibility::OverrideDescription(
-    const std::u16string& description,
-    const ax::mojom::DescriptionFrom description_from) {
-  OverrideDescription(base::UTF16ToUTF8(description), description_from);
-}
-
 void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {
   NOTIMPLEMENTED() << "Only implemented on Mac for now.";
 }
