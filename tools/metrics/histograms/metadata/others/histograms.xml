@@ -4254,6 +4254,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DefaultBrowser.InfoBar.TimesShownBeforeAccept" units="count"
+    expires_after="2024-09-01">
+  <owner>agale@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Times the default browser info bar has been shown before the user accepted
+    the prompt.
+  </summary>
+</histogram>
+
 <histogram name="DefaultBrowser.InfoBar.UserInteraction"
     enum="DefaultBrowserInfoBarUserInteraction" expires_after="2024-09-01">
   <owner>pmonette@chromium.org</owner>

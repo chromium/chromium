@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -44,6 +45,13 @@ class DefaultBrowserInfobarInteractiveTest : public InteractiveBrowserTest {
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
     CHECK(infobar_manager);
     return static_cast<ConfirmInfoBar*>(infobar_manager->infobars()[0]);
+  }
+
+  auto NameAcceptButton() {
+    return NameView(kInfoBarAcceptButton, base::BindLambdaForTesting([&]() {
+                      return static_cast<views::View*>(
+                          GetActiveInfoBar()->ok_button_for_testing());
+                    }));
   }
 };
 
@@ -86,12 +94,21 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
-      NameView(kInfoBarAcceptButton, base::BindLambdaForTesting([&]() {
-                 return static_cast<views::View*>(
-                     GetActiveInfoBar()->ok_button_for_testing());
-               })),
-      PressButton(kInfoBarAcceptButton), FlushEvents(),
+      NameAcceptButton(), PressButton(kInfoBarAcceptButton), FlushEvents(),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       SelectTab(kTabStripElementId, 0), FlushEvents(),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       LogsMetrics) {
+  base::HistogramTester histogram_tester;
+  ShowPromptForTesting();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+                  NameAcceptButton(), PressButton(kInfoBarAcceptButton),
+                  FlushEvents(), WaitForHide(ConfirmInfoBar::kInfoBarElementId),
+                  FlushEvents());
+
+  histogram_tester.ExpectTotalCount(
+      "DefaultBrowser.InfoBar.TimesShownBeforeAccept", 1);
 }

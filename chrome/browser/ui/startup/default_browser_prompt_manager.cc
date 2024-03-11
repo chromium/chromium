@@ -9,12 +9,16 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
+#include "chrome/common/pref_names.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 // static
@@ -93,6 +97,10 @@ void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
 }
 
 void DefaultBrowserPromptManager::OnAccept() {
+  base::UmaHistogramCounts100("DefaultBrowser.InfoBar.TimesShownBeforeAccept",
+                              g_browser_process->local_state()->GetInteger(
+                                  prefs::kDefaultBrowserDeclinedCount) +
+                                  1);
   CloseAllInfoBars();
 }
 
