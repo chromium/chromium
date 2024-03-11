@@ -30,3 +30,8 @@ NSString* const kBatchUploadRecommendationItemAccessibilityIdentifier =
     @"BatchUploadRecommendationItemAccessibilityIdentifier";
 NSString* const kBatchUploadAccessibilityIdentifier =
     @"BatchUploadAccessibilityIdentifier";
+
+NSString* const kPersonalizeGoogleServicesIdentifier =
+    @"PersonalizeGoogleServicesIdentifier";
+NSString* const kPersonalizeGoogleServicesViewIdentifier =
+    @"PersonalizeGoogleServicesViewIdentifier";

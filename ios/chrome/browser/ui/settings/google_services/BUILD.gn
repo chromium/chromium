@@ -30,6 +30,7 @@ source_set("google_services") {
     ":constants",
     ":features",
     ":parcel_tracking",
+    ":personalize_google_services",
     "resources:google_services_enterprise",
     "//base",
     "//components/browser_sync",
@@ -133,6 +134,24 @@ source_set("parcel_tracking") {
   ]
 }
 
+source_set("personalize_google_services") {
+  sources = [
+    "personalize_google_services_coordinator.h",
+    "personalize_google_services_coordinator.mm",
+    "personalize_google_services_view_controller.h",
+    "personalize_google_services_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ui/base",
+  ]
+}
+
 source_set("constants") {
   sources = [
     "google_services_settings_constants.h",
@@ -180,12 +199,14 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
+    ":features",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
+    "//components/search_engines",
     "//components/signin/public/base",
     "//components/strings",
     "//components/supervised_user/core/common:features",

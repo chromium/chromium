@@ -36,6 +36,11 @@ extern NSString* const kBatchUploadRecommendationItemAccessibilityIdentifier;
 // Accessibility identifier for batch upload item.
 extern NSString* const kBatchUploadAccessibilityIdentifier;
 
+// Accessibility identifier for the Personalize Google Services item.
+extern NSString* const kPersonalizeGoogleServicesIdentifier;
+// Accessibility identifier for the Personalize Google Services view.
+extern NSString* const kPersonalizeGoogleServicesViewIdentifier;
+
 // Sections used in Sync Settings page.
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.

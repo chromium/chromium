@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/personalize_google_services_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
@@ -68,6 +69,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     BulkUploadCoordinatorDelegate,
     ManageSyncSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
+    PersonalizeGoogleServicesCoordinatorDelegate,
     SettingsNavigationControllerDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
@@ -112,6 +114,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   // The navigation controller to use only when presenting the
   // ManageSyncSettings modally.
   SettingsNavigationController* _navigationControllerInModalView;
+  // The coordinator for the Personalize Google Services view.
+  PersonalizeGoogleServicesCoordinator* _personalizeGoogleServicesCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -237,6 +241,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _syncObserver.reset();
   [self.signoutActionSheetCoordinator stop];
   _signoutActionSheetCoordinator = nil;
+
+  [self stopPersonalizedGoogleServicesCoordinator];
 }
 
 #pragma mark - Properties
@@ -277,6 +283,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [_bulkUploadCoordinator stop];
   _bulkUploadCoordinator.delegate = nil;
   _bulkUploadCoordinator = nil;
+}
+
+- (void)stopPersonalizedGoogleServicesCoordinator {
+  [_personalizeGoogleServicesCoordinator stop];
+  _personalizeGoogleServicesCoordinator = nil;
 }
 
 // Closes the Manage sync settings view controller.
@@ -338,6 +349,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
 }
 
+#pragma mark - PersonalizeGoogleServicesCoordinatorDelegate
+
+- (void)personalizeGoogleServicesCoordinatorWasRemoved:
+    (PersonalizeGoogleServicesCoordinator*)coordinator {
+  CHECK_EQ(_personalizeGoogleServicesCoordinator, coordinator);
+  [self stopPersonalizedGoogleServicesCoordinator];
+}
+
 #pragma mark - ManageSyncSettingsCommandHandler
 
 - (void)openBulkUpload {
@@ -363,7 +382,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)openPersonalizeGoogleServices {
-  // TODO(crbug.com/324091979): Different behavior for EEA users.
+  CHECK(!_personalizeGoogleServicesCoordinator);
+
+  _personalizeGoogleServicesCoordinator = [[PersonalizeGoogleServicesCoordinator
+      alloc]
+      initWithBaseNavigationController:self.navigationControllerForChildPages
+                               browser:self.browser];
+  _personalizeGoogleServicesCoordinator.delegate = self;
+  [_personalizeGoogleServicesCoordinator start];
 }
 
 - (void)openDataFromChromeSyncWebPage {

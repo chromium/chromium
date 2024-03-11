@@ -458,6 +458,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         GetNSString(IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE);
     personalizeGoogleServicesItem.detailText = GetNSString(
         IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION);
+    personalizeGoogleServicesItem.accessibilityIdentifier =
+        kPersonalizeGoogleServicesIdentifier;
     personalizeGoogleServicesItem.accessibilityTraits |=
         UIAccessibilityTraitButton;
     [model addItem:personalizeGoogleServicesItem

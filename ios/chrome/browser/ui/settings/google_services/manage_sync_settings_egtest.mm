@@ -5,6 +5,7 @@
 #import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -185,6 +187,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
           isRunningTest:@selector(testRememberCustomPassphraseAfterSignout)]) {
     config.features_enabled.push_back(
         syncer::kSyncRememberCustomPassphraseAfterSignout);
+  }
+  if ([self isRunningTest:@selector
+            (testPersonalizeGoogleServicesSettingsDismissedOnSignOut)]) {
+    config.additional_args.push_back(
+        std::string("--") + switches::kSearchEngineChoiceCountry + "=BE");
+    config.features_enabled.push_back(kLinkedServicesSettingIos);
   }
   return config;
 }
@@ -1483,6 +1491,45 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                  grey_accessibilityLabel(l10n_util::GetNSString(
                      IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Test that the Personalize Google Services page is dismissed when the user
+// signs out.
+- (void)testPersonalizeGoogleServicesSettingsDismissedOnSignOut {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Go to the Sync settings page.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Scroll to the bottom to view all section.
+  id<GREYMatcher> scroll_view_matcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap on the Personalize Google Services item.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPersonalizeGoogleServicesIdentifier)]
+      performAction:grey_tap()];
+
+  // Check that the Personalize Google Services view is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPersonalizeGoogleServicesViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Remove fakeIdentity from device.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+
+  // Check that user is signed out and back to Settings main view.
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
