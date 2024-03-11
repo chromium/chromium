@@ -78,6 +78,7 @@ enum GroupId {
   GROUP_MOBILE_MOST_VISITED = 30001;
   GROUP_MOBILE_CLIPBOARD = 30002;
   GROUP_MOBILE_QUERY_TILES = 30003;  // E.g. "News", "Films", "Sports", ...
+  GROUP_MOBILE_RICH_ANSWER = 30004;  // Visually rich answer suggestion.
 
   // Reserved for personalized zero-prefix suggestions.
   // Produced by LocalHistoryZeroSuggestProvider and maybe ZeroSuggestProvider.
@@ -139,6 +140,8 @@ enum GroupSection {
 
   // Query tiles - a carousel with high-level query recommendations.
   SECTION_MOBILE_QUERY_TILES = 15;
+  // Visually rich answer suggestion presented as a standalone card.
+  SECTION_MOBILE_RICH_ANSWER = 16;
 
   // Cross platform suggestions with vanilla visual representation (i.e.
   // vertical, primary column, and no header), but useful for sorting.
