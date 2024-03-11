@@ -230,6 +230,8 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="TEXT_INSERTION_REQUESTED"/>
   <int value="43" label="TEXT_QUEUED_FOR_INSERTION"/>
   <int value="44" label="REQUEST"/>
+  <int value="45" label="FEATURE_BLOCKED_BY_UNSUPPORTED_CAPABILITY"/>
+  <int value="46" label="FEATURE_BLOCKED_BY_UNKNOWN_CAPABILITY"/>
 </enum>
 
 <enum name="IMEGrammarActions">

@@ -266,6 +266,22 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
     if (IsProfileManaged(profile_)) {
       blocked_reasons.push_back(EditorBlockedReason::kBlockedByManagedStatus);
     }
+
+    if (base::FeatureList::IsEnabled(
+            ash::features::kOrcaUseAccountCapabilities)) {
+      switch (FetchOrcaAccountCapabilityFromMantaService(profile_)) {
+        case manta::FeatureSupportStatus::kUnsupported:
+          blocked_reasons.push_back(
+              EditorBlockedReason::kBlockedByUnsupportedCapability);
+          break;
+        case manta::FeatureSupportStatus::kUnknown:
+          blocked_reasons.push_back(
+              EditorBlockedReason::kBlockedByUnknownCapability);
+          break;
+        case manta::FeatureSupportStatus::kSupported:
+          break;
+      }
+    }
   }
 
   if (!IsTriggerableFromConsentStatus(GetConsentStatusFromInteger(

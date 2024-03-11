@@ -83,6 +83,10 @@ EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
       return EditorStates::kBlockedByUnsupportedRegion;
     case EditorBlockedReason::kBlockedByManagedStatus:
       return EditorStates::kBlockedByManagedStatus;
+    case EditorBlockedReason::kBlockedByUnknownCapability:
+      return EditorStates::kBlockedByUnknownCapability;
+    case EditorBlockedReason::kBlockedByUnsupportedCapability:
+      return EditorStates::kBlockedByUnsupportedCapability;
   }
 }
 

@@ -126,13 +126,19 @@ enum class EditorStates {
   kPromoCardExplicitDismissal = 40,
   // Increase by 1 when the webui consent screen is shown.
   kConsentScreenImpression = 41,
-  // Increase by 1 when a text insertion has been requested..
+  // Increase by 1 when a text insertion has been requested.
   kTextInsertionRequested = 42,
   // Increase by 1 when text has been queued for insertion.
   kTextQueuedForInsertion = 43,
-  // Increase by 1 when any request is made
+  // Increase by 1 when any request is made.
   kRequest = 44,
-  kMaxValue = kRequest,
+  // Increase by 1 when the feature is blocked because user does not have the
+  // capability (age, account type) to use the feature.
+  kBlockedByUnsupportedCapability = 45,
+  //  Increase by 1 when the feature is blocked because the capability value has
+  //  been been fetched and determined yet.
+  kBlockedByUnknownCapability = 46,
+  kMaxValue = kBlockedByUnknownCapability,
 };
 
 }  // namespace ash::input_method
