@@ -126,3 +126,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudHighlight) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
                    "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
+                       WordBoundariesUsedForSpeech) {
+  RunSidePanelTest(
+      "side_panel/read_anything/word_boundaries_used_for_speech.js",
+      "mocha.run()");
+}

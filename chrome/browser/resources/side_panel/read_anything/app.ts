@@ -163,10 +163,30 @@ export enum PauseActionSource {
   VOICE_SETTINGS_CHANGE,
 }
 
+export enum WordBoundaryMode {
+  NO_BOUNDARIES,
+  BOUNDARY_DETECTED,
+}
+
 export interface SpeechPlayingState {
   paused: boolean;
   pauseSource?: PauseActionSource;
   speechStarted: boolean;
+}
+
+export interface WordBoundaryState {
+  mode: WordBoundaryMode;
+  // The charIndex of the last word boundary index retrieved by the "Boundary"
+  // event. Default is 0.
+  previouslySpokenIndex: number;
+  // Is only non-zero if the current state has already resumed speech on a
+  // word boundary. e.g. If we interrupted speech for the segment
+  // "This is a sentence" at "is," so the next segment spoken is "is a
+  // sentence," if we attempt to interrupt speech again at "a." This helps us
+  // keep track of the correct index in the overall granularity string- not
+  // just the correct index within the current string.
+  // Default is 0.
+  speechUtteranceStartIndex: number;
 }
 
 export interface ReadAnythingElement {
@@ -238,6 +258,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   };
 
   maxSpeechLength = 175;
+
+  wordBoundaryState: WordBoundaryState = {
+    mode: WordBoundaryMode.NO_BOUNDARIES,
+    speechUtteranceStartIndex: 0,
+    previouslySpokenIndex: 0,
+  };
 
   // The node id of the first text node that should be used by Read Aloud.
   // -1 if the node is not set.
@@ -766,6 +792,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private playNextGranularity_() {
     this.synth.cancel();
     this.resetPreviousHighlight();
+    // Reset the word boundary index whenever we move the granularity position.
+    this.resetToDefaultWordBoundaryState();
     chrome.readingMode.movePositionToNextGranularity();
 
     if (!this.highlightAndPlayMessage()) {
@@ -778,6 +806,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private playPreviousGranularity_() {
     this.synth.cancel();
     this.resetPreviousHighlightAndRemoveCurrentHighlight();
+    // Reset the word boundary index whenever we move the granularity position.
+    this.resetToDefaultWordBoundaryState();
     chrome.readingMode.movePositionToPreviousGranularity();
 
     if (!this.highlightAndPlayMessage()) {
@@ -792,10 +822,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       const pausedFromButton = this.speechPlayingState.pauseSource ===
           PauseActionSource.BUTTON_CLICK;
 
-      if (pausedFromButton) {
+      // If word boundaries aren't supported for the given voice, we should
+      // still continue to use synth.resume, as this is preferable to
+      // restarting the current message.
+      if (pausedFromButton &&
+          this.wordBoundaryState.mode !== WordBoundaryMode.BOUNDARY_DETECTED) {
         this.synth.resume();
       } else {
-        this.highlightAndPlayMessage();
+        this.synth.cancel();
+        this.highlightAndPlayInterruptedMessage();
       }
 
       this.speechPlayingState = {paused: false, speechStarted: true};
@@ -833,6 +868,31 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.highlightAndPlayMessage();
       }
     }
+  }
+
+  // TODO: Should this be merged with highlightAndPlayMessage?
+  highlightAndPlayInterruptedMessage() {
+    // getCurrentText gets the AX Node IDs of text that should be spoken and
+    // highlighted.
+    const axNodeIds: number[] = chrome.readingMode.getCurrentText();
+
+    const utteranceText = this.extractTextOf(axNodeIds);
+    // Return if the utterance is empty or null.
+    if (!utteranceText) {
+      return false;
+    }
+
+    if (this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED) {
+      const substringIndex = this.wordBoundaryState.previouslySpokenIndex +
+          this.wordBoundaryState.speechUtteranceStartIndex;
+      this.wordBoundaryState.previouslySpokenIndex = 0;
+      this.wordBoundaryState.speechUtteranceStartIndex = substringIndex;
+      this.playText(utteranceText.substring(substringIndex));
+    } else {
+      this.playText(utteranceText);
+    }
+    this.highlightNodes(axNodeIds);
+    return true;
   }
 
   // Play text of these axNodeIds. When finished, read and highlight to read the
@@ -905,6 +965,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.synth.cancel();
     };
 
+    message.addEventListener('boundary', (event) => {
+      this.updateBoundary(event.charIndex);
+    });
+
     message.onend = () => {
       if (isTextTooLong) {
         // Since our previous utterance was too long, continue speaking pieces
@@ -921,6 +985,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       // Now that we've finiished reading this utterance, update the Granularity
       // state to point to the next one
+      // Reset the word boundary index whenever we move the granularity
+      // position.
+      this.resetToDefaultWordBoundaryState();
       chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
       if (!this.highlightAndPlayMessage()) {
@@ -945,6 +1012,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     message.rate = utteranceSettings.rate;
 
     this.synth.speak(message);
+  }
+
+  updateBoundary(charIndex: number) {
+    this.wordBoundaryState.previouslySpokenIndex = charIndex;
+    this.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
+  }
+
+  resetToDefaultWordBoundaryState() {
+    this.wordBoundaryState = {
+      previouslySpokenIndex: 0,
+      mode: WordBoundaryMode.NO_BOUNDARIES,
+      speechUtteranceStartIndex: 0,
+    };
   }
 
   private extractTextOf(axNodeIds: number[]): string {
@@ -1074,6 +1154,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       speechStarted: false,
     };
     this.previousHighlight_ = [];
+    this.resetToDefaultWordBoundaryState();
   }
 
   private onSelectVoice_(
