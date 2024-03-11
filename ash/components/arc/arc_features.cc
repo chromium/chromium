@@ -173,6 +173,11 @@ const base::FeatureParam<bool> kGuestReclaimEnabled{
 const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous{
     &kGuestZram, "guest_reclaim_only_anonymous", false};
 
+// Controls whether enable ignoring hover event ANR in input dispatcher.
+BASE_FEATURE(kIgnoreHoverEventAnr,
+             "IgnoreHoverEventAnr",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables/disables ghost when user launch ARC app from shelf/launcher when
 // App already ready for launch.
 BASE_FEATURE(kInstantResponseWindowOpen,

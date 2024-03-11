@@ -290,6 +290,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "arc-ignore-hover-event-anr",
+    "owners": [ "lingyufeng@chromium.org", "arc-user-focus@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "arc-input-overlay-alpha-v2",
     "owners": [ "cuicuiruan@google.com", "pjlee@google.com", "arc-gaming@google.com" ],
     "expiry_milestone": 125

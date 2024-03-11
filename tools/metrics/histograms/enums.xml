@@ -23570,6 +23570,7 @@ from previous Chrome versions.
   <int value="1242100010" label="AutofillProfileClientValidation:disabled"/>
   <int value="1242632259" label="ContentSuggestionsCategoryOrder:disabled"/>
   <int value="1243017558" label="QuickDeleteAndroidAnimation:disabled"/>
+  <int value="1243036309" label="IgnoreHoverEventAnr:disabled"/>
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
   <int value="1243704644" label="ArcFixupWindowFeature:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>
@@ -23659,6 +23660,7 @@ from previous Chrome versions.
   <int value="1281379527" label="AmbientSubpageUIChange:enabled"/>
   <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
+  <int value="1282551250" label="IgnoreHoverEventAnr:enabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
   <int value="1283455082" label="DeskProfiles:disabled"/>
   <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>

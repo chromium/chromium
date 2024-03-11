@@ -3224,6 +3224,9 @@ extern const char kArcFilePickerExperimentDescription[];
 extern const char kArcIdleManagerName[];
 extern const char kArcIdleManagerDescription[];
 
+extern const char kArcIgnoreHoverEventAnrName[];
+extern const char kArcIgnoreHoverEventAnrDescription[];
+
 extern const char kArcInstantResponseWindowOpenName[];
 extern const char kArcInstantResponseWindowOpenDescription[];
 
