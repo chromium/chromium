@@ -41,6 +41,7 @@ constexpr char kOneApp[] =
     R"pb(app_groups: {
            uuid: "cf2890ac-486f-11ee-be56-0242ac120002"
            name: "app_name"
+           badge_text: "GeForce NOW"
            action_link: "https://game-deeplink.com/cf2be56486f11ee"
            icons: {
              url: "http://icon/"
@@ -52,6 +53,7 @@ constexpr char kTwoValidApps[] =
     R"pb(app_groups: {
            uuid: "e42c6c70-7732-437f-b2e7-0d17036b8cc1"
            name: "app_name1"
+           badge_text: "GeForce NOW"
            action_link: "https://game-deeplink.com/jrioj324j2095245234320o"
            icons: {
              url: "http://icon1/"
@@ -62,6 +64,7 @@ constexpr char kTwoValidApps[] =
          app_groups: {
            uuid: "d8eb7470-9d43-472c-aa49-125f5c3111d4"
            name: "app_name2"
+           badge_text: "Play"
            action_link: "https://game-deeplink.com/reijarowaiore131983u12jkljs893"
            icons: {
              url: "http://icon2/"
@@ -191,7 +194,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesTwoApps) {
   EXPECT_TRUE(results[1].GetSourceExtras());
   game_extras = results[1].GetSourceExtras()->AsGameExtras();
   ASSERT_TRUE(game_extras);
-  EXPECT_EQ(game_extras->GetSource(), u"GeForce NOW");
+  EXPECT_EQ(game_extras->GetSource(), u"Play");
   EXPECT_EQ(game_extras->GetDeeplinkUrl(),
             GURL("https://game-deeplink.com/"
                  "reijarowaiore131983u12jkljs893"));
@@ -310,7 +313,7 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_TRUE(results[1].GetSourceExtras());
         game_extras = results[1].GetSourceExtras()->AsGameExtras();
         ASSERT_TRUE(game_extras);
-        EXPECT_EQ(game_extras->GetSource(), u"GeForce NOW");
+        EXPECT_EQ(game_extras->GetSource(), u"Play");
         EXPECT_EQ(game_extras->GetDeeplinkUrl(),
                   GURL("https://game-deeplink.com/"
                        "reijarowaiore131983u12jkljs893"));

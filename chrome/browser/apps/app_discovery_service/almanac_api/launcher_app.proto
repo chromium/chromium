@@ -33,6 +33,10 @@ message LauncherAppResponse {
     // The name of the app group in the requested language.
     optional string name = 2;
 
+    // Optional badging text to render next to the name in the requested
+    // language.
+    optional string badge_text = 5;
+
     // A set of icons for the app group in the requested language.
     repeated Icon icons = 3;
 

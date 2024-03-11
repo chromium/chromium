@@ -46,11 +46,11 @@ std::vector<Result> MapToApps(const proto::LauncherAppResponse& proto) {
         app_group.action_link().empty()) {
       continue;
     }
-    // There should be just a single GFN app with a single icon. We want to
+    // There should be just a single app with a single icon. We want to
     // handle more in the future but for now just read the first icon.
     const proto::LauncherAppResponse::Icon& icon = app_group.icons(0);
     auto extras = std::make_unique<GameExtras>(
-        u"GeForce NOW",
+        base::UTF8ToUTF16(app_group.badge_text()),
         /*relative_icon_path_=*/base::FilePath(""), icon.is_masking_allowed(),
         GURL(app_group.action_link()));
 
