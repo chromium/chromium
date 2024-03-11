@@ -332,6 +332,8 @@ class AuthenticatorRequestDialogModel
   // that either the request has finished, or that the current step
   // has no UI, or a different style of UI.
   bool should_dialog_be_closed() const;
+  // Similar to above, but for bubbles.
+  bool should_bubble_be_closed() const;
 
   const TransportAvailabilityInfo* transport_availability() const {
     return &transport_availability_;

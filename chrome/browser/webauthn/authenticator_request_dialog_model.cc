@@ -466,6 +466,10 @@ bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
   return step_ui_type(current_step_) != StepUIType::DIALOG;
 }
 
+bool AuthenticatorRequestDialogModel::should_bubble_be_closed() const {
+  return step_ui_type(current_step_) != StepUIType::BUBBLE;
+}
+
 void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
     bool use_conditional_mediation) {

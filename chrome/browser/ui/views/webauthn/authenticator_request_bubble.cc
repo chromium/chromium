@@ -178,6 +178,13 @@ class AuthenticatorRequestBubbleDelegate
   }
 
   void OnStepTransition() override {
+    if (model_->should_bubble_be_closed()) {
+      if (GetWidget()) {
+        GetWidget()->Close();
+      }
+      return;
+    }
+
     if (model_->current_step() == step_) {
       return;
     }
