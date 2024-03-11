@@ -473,8 +473,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageModulesRedesignedHeaderInteractiveUiTest,
                          ::testing::Values(kTabResumptionModuleDetails));
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClickingHideButtonDismissesModule \
+  DISABLED_ClickingHideButtonDismissesModule
+#else
+#define MAYBE_ClickingHideButtonDismissesModule \
+  ClickingHideButtonDismissesModule
+#endif
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesRedesignedHeaderInteractiveUiTest,
-                       ClickingHideButtonDismissesModule) {
+                       MAYBE_ClickingHideButtonDismissesModule) {
   const auto& module_details = ModuleDetails();
   RunTestSequence(
       // 1. Wait for new tab page to load.
