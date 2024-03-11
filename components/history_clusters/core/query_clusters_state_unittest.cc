@@ -113,7 +113,6 @@ class QueryClustersStateTest : public testing::Test {
 TEST_F(QueryClustersStateTest, FilterParamsSetForZeroStateSyncedVisits) {
   Config config;
   config.apply_zero_state_filtering = true;
-  config.persist_clusters_in_history_db = true;
   config.use_navigation_context_clusters = true;
   config.include_synced_visits = true;
   SetConfigForTesting(config);
@@ -130,7 +129,6 @@ TEST_F(QueryClustersStateTest, FilterParamsSetForZeroStateSyncedVisits) {
 TEST_F(QueryClustersStateTest, FilterParamsSetForZeroState) {
   Config config;
   config.apply_zero_state_filtering = true;
-  config.persist_clusters_in_history_db = true;
   config.use_navigation_context_clusters = true;
   config.include_synced_visits = false;
   SetConfigForTesting(config);
@@ -148,7 +146,6 @@ TEST_F(QueryClustersStateTest,
        FilterParamsNotSetForZeroStateFeatureDisabledButSyncedVisitsStillSet) {
   Config config;
   config.apply_zero_state_filtering = false;
-  config.persist_clusters_in_history_db = true;
   config.use_navigation_context_clusters = true;
   config.include_synced_visits = true;
   SetConfigForTesting(config);
@@ -167,7 +164,6 @@ TEST_F(
     FilterParamsNotSetForZeroStateContextClusteringDisabledSyncedVisitsStillSet) {
   Config config;
   config.apply_zero_state_filtering = true;
-  config.persist_clusters_in_history_db = false;
   config.use_navigation_context_clusters = false;
   config.include_synced_visits = true;
   SetConfigForTesting(config);
@@ -185,7 +181,6 @@ TEST_F(QueryClustersStateTest,
        FilterParamsEnabledButNotSetForQueryButSyncedVisitsStillSet) {
   Config config;
   config.apply_zero_state_filtering = true;
-  config.persist_clusters_in_history_db = true;
   config.use_navigation_context_clusters = true;
   config.include_synced_visits = true;
   SetConfigForTesting(config);
@@ -203,7 +198,6 @@ TEST_F(QueryClustersStateTest,
        FilterParamsEnabledButNotSetForQueryButDisabledSyncedVisitsStillSet) {
   Config config;
   config.apply_zero_state_filtering = true;
-  config.persist_clusters_in_history_db = true;
   config.use_navigation_context_clusters = true;
   config.include_synced_visits = false;
   SetConfigForTesting(config);

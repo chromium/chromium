@@ -395,8 +395,7 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
 }
 
 bool ShouldUseNavigationContextClustersFromPersistence() {
-  return GetConfig().persist_clusters_in_history_db &&
-         GetConfig().use_navigation_context_clusters;
+  return GetConfig().use_navigation_context_clusters;
 }
 
 bool IsTransitionUserVisible(int32_t transition) {

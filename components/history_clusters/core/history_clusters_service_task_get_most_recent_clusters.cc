@@ -179,7 +179,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
 void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
   get_most_recent_persisted_clusters_start_time_ = base::TimeTicks::Now();
-  if (GetConfig().persist_clusters_in_history_db && !recluster_) {
+  if (!recluster_) {
     history_service_->GetMostRecentClusters(
         begin_time_, exclusive_max_time,
         GetConfig().max_persisted_clusters_to_fetch,
@@ -210,7 +210,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
           GetHistogramNameSliceForRequestSource(clustering_request_source_),
       elapsed_time);
 
-  if (GetConfig().persist_clusters_in_history_db && !recluster_ &&
+  if (!recluster_ &&
       weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "GET MOST RECENT CLUSTERS TASK - PERSISTED CLUSTERS %zu:",

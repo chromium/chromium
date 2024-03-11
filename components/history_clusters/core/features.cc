@@ -40,10 +40,6 @@ BASE_FEATURE(kJourneysImages,
 const base::FeatureParam<bool> kJourneysImagesCover{
     &kJourneysImages, "JourneysImagesCover", true};
 
-BASE_FEATURE(kPersistedClusters,
-             "HistoryClustersPersistedClusters",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmniboxAction,
              "JourneysOmniboxAction",
              base::FEATURE_DISABLED_BY_DEFAULT);

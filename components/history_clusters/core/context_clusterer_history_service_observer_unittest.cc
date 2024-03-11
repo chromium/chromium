@@ -188,7 +188,6 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
     // TODO(b/276488340): Update this test when non context clusterer code gets
     //   cleaned up.
     Config config;
-    config.persist_clusters_in_history_db = false;
     config.use_navigation_context_clusters = false;
     SetConfigForTesting(config);
   }
@@ -203,7 +202,6 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
   // code path.
   void SetPersistenceExpectedConfig() {
     Config config;
-    config.persist_clusters_in_history_db = true;
     config.use_navigation_context_clusters = true;
     SetConfigForTesting(config);
   }

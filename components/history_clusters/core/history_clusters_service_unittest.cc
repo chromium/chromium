@@ -463,7 +463,6 @@ class HistoryClustersServiceTest : public HistoryClustersServiceTestBase,
   HistoryClustersServiceTest() {
     scoped_feature_list_.InitAndEnableFeature(internal::kJourneys);
     Config config;
-    config.persist_clusters_in_history_db = true;
     // TODO(b/276488340): Update this test when non context clusterer code gets
     //   cleaned up.
     config.use_navigation_context_clusters = false;
@@ -687,7 +686,6 @@ TEST_P(HistoryClustersServiceTest,
   // Test the case where there are persisted clusters but no unclustered visits.
 
   Config config;
-  config.persist_clusters_in_history_db = true;
   // Set use navigation context clusters to false so the synthetic clusters can
   // be added without testing the history service observer logic that adds its
   // own clusters.
@@ -711,7 +709,6 @@ TEST_P(HistoryClustersServiceTest,
 
   // Update config so that the new context clusters are used.
   Config new_config;
-  new_config.persist_clusters_in_history_db = true;
   new_config.use_navigation_context_clusters = true;
   new_config.include_synced_visits = ExpectSyncedVisits();
   SetConfigForTesting(new_config);
@@ -741,52 +738,6 @@ TEST_P(HistoryClustersServiceTest,
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, true);
-    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
-    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
-    EXPECT_TRUE(continuation_params.exhausted_all_visits);
-  }
-}
-
-TEST_P(HistoryClustersServiceTest,
-       QueryClusters_PersistedClusters_PersistenceDisabled) {
-  // Test the case where there are persisted clusters but persistence is
-  // disabled to check users who were in an enabled then disabled group
-  // don't encounter weirdness.
-
-  Config config;
-  config.persist_clusters_in_history_db = false;
-  SetConfigForTesting(config);
-
-  // Unclustered visit.
-  AddCompleteVisit(1, DaysAgo(1));
-
-  // Clustered visit; i.e. persisted cluster.
-  AddCompleteVisit(2, DaysAgo(2));
-  AddCluster({2});
-
-  QueryClustersContinuationParams continuation_params = {};
-  continuation_params.continuation_time = base::Time::Now();
-
-  // 2 queries should return the 2 visits and treat both as unclustered.
-  {
-    const auto [clusters, visits] = NextQueryClusters(continuation_params);
-    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
-    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
-    EXPECT_FALSE(continuation_params.exhausted_all_visits);
-  }
-  {
-    const auto [clusters, visits] = NextQueryClusters(continuation_params);
-    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(2));
-    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
-    EXPECT_FALSE(continuation_params.exhausted_all_visits);
-  }
-  // 3rd query should consider history exhausted.
-  {
-    const auto [clusters, visits] =
-        NextQueryClusters(continuation_params, false);
     EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
@@ -1371,7 +1322,6 @@ TEST_P(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
 TEST_P(HistoryClustersServiceTest,
        DoesQueryMatchAnyClusterSecondaryCacheNavigationContextClusters) {
   Config config;
-  config.persist_clusters_in_history_db = true;
   config.use_navigation_context_clusters = true;
   config.include_synced_visits = ExpectSyncedVisits();
   SetConfigForTesting(config);
@@ -1436,7 +1386,6 @@ class HistoryClustersServicePrefPersistenceTest
                               internal::kJourneysPersistCachesToPrefs},
         /*disabled_features=*/{});
     Config config;
-    config.persist_clusters_in_history_db = true;
     // TODO(b/276488340): Update this test when non context clusterer code gets
     //   cleaned up.
     config.use_navigation_context_clusters = false;
@@ -1685,7 +1634,6 @@ TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Sparse) {
   // Test the case where visits day distribution is wider than
   // `persist_clusters_recluster_window_days`; i.e. no reclustering occurs.
   Config config;
-  config.persist_clusters_in_history_db = true;
   // TODO(b/276488340): Update this test when non context clusterer code gets
   //   cleaned up.
   config.use_navigation_context_clusters = false;
@@ -1758,7 +1706,6 @@ TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Reclustering) {
   // Test the case where visits day distribution is denser than
   // `persist_clusters_recluster_window_days`; i.e. reclustering occurs.
   Config config;
-  config.persist_clusters_in_history_db = true;
   // TODO(b/276488340): Update this test when non context clusterer code gets
   //   cleaned up.
   config.use_navigation_context_clusters = false;
@@ -1908,7 +1855,6 @@ TEST_F(HistoryClustersServiceTestBase,
   // Test the case where there are multiple clusters reconsulted in the same
   // batch.
   Config config;
-  config.persist_clusters_in_history_db = true;
   // TODO(b/276488340): Update this test when non context clusterer code gets
   //   cleaned up.
   config.use_navigation_context_clusters = false;
@@ -1976,7 +1922,6 @@ TEST_F(HistoryClustersServiceTestBase,
 TEST_F(HistoryClustersServiceTestBase, UpdateClusters_PopularDay) {
   // Test the case there are more visits than `max_visits_to_cluster` in a day.
   Config config;
-  config.persist_clusters_in_history_db = true;
   // TODO(b/276488340): Update this test when non context clusterer code gets
   //   cleaned up.
   config.use_navigation_context_clusters = false;
