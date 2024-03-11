@@ -62,6 +62,19 @@ std::string GetLogSeverity(const PolicyLogger::Log::Severity log_severity) {
   }
 }
 
+int GetLogSeverityInt(const PolicyLogger::Log::Severity log_severity) {
+  switch (log_severity) {
+    case PolicyLogger::Log::Severity::kInfo:
+      return ::logging::LOGGING_INFO;
+    case PolicyLogger::Log::Severity::kWarning:
+      return ::logging::LOGGING_WARNING;
+    case PolicyLogger::Log::Severity::kError:
+      return ::logging::LOGGING_ERROR;
+    case PolicyLogger::Log::Severity::kVerbose:
+      return ::logging::LOGGING_VERBOSE;
+  }
+}
+
 // Constructs the URL for Chromium Code Search that points to the line of code
 // that generated the log and the Chromium git revision hash.
 std::string GetLineURL(const base::Location location) {
@@ -114,51 +127,32 @@ PolicyLogger::LogHelper::~LogHelper() {
 }
 
 void PolicyLogger::LogHelper::StreamLog() const {
-  std::string_view filename(location_.file_name());
-  std::ostringstream message;
-
-  // Create the message to be logged to the terminal.
-  // The `:` is needed as the location of the message logged to the terminal
-  // would be policy_logger.cc (from one the lines below), but we need to see
-  // the original location where xLOG_POLICY was called.
-  message << ":" << filename << "(" << location_.line_number() << ") "
-          << message_buffer_.str();
-
-  size_t last_slash_pos = filename.find_last_of("\\/");
-  if (last_slash_pos != std::string_view::npos) {
-    filename.remove_prefix(last_slash_pos + 1);
+#if !DCHECK_IS_ON()
+  if (log_type_ == LogHelper::LogType::kDLog) {
+    return;
   }
+#endif
 
   // Check for verbose logging.
   if (log_verbosity_ != policy::PolicyLogger::LogHelper::kNoVerboseLog) {
-    if (log_type_ == LogHelper::LogType::kDLog) {
-      DVLOG(log_verbosity_) << message.str();
-      return;
-    }
-    VLOG(log_verbosity_) << message.str();
+    LAZY_STREAM(
+        ::logging::LogMessage(location_.file_name(), location_.line_number(),
+                              -(log_verbosity_))
+            .stream(),
+        log_verbosity_ <=
+            ::logging::GetVlogLevelHelper(location_.file_name(),
+                                          strlen(location_.file_name()) + 1))
+        << message_buffer_.str();
     return;
   }
 
-  // Non-verbose logging.
-  if (log_severity_ == PolicyLogger::Log::Severity::kInfo) {
-    if (log_type_ == PolicyLogger::LogHelper::LogType::kLog) {
-      LOG(INFO) << message.str();
-    } else if (log_type_ == PolicyLogger::LogHelper::LogType::kDLog) {
-      DLOG(INFO) << message.str();
-    }
-  } else if (log_severity_ == PolicyLogger::Log::Severity::kWarning) {
-    if (log_type_ == PolicyLogger::LogHelper::LogType::kLog) {
-      LOG(WARNING) << message.str();
-    } else if (log_type_ == PolicyLogger::LogHelper::LogType::kDLog) {
-      DLOG(WARNING) << message.str();
-    }
-  } else if (log_severity_ == PolicyLogger::Log::Severity::kError) {
-    if (log_type_ == PolicyLogger::LogHelper::LogType::kLog) {
-      LOG(ERROR) << message.str();
-    } else if (log_type_ == PolicyLogger::LogHelper::LogType::kDLog) {
-      DLOG(ERROR) << message.str();
-    }
-  }
+  int log_severity_int = GetLogSeverityInt(log_severity_);
+
+  LAZY_STREAM(::logging::LogMessage(location_.file_name(),
+                                    location_.line_number(), log_severity_int)
+                  .stream(),
+              ::logging::ShouldCreateLogMessage(log_severity_int))
+      << message_buffer_.str();
 }
 
 base::Value::Dict PolicyLogger::Log::GetAsDict() const {
