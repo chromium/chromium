@@ -78,13 +78,28 @@ source_set("prefs") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "safety_check_view_unittest.mm" ]
+  sources = [
+    "safety_check_magic_stack_mediator_unittest.mm",
+    "safety_check_view_unittest.mm",
+  ]
   deps = [
     ":constants",
+    ":prefs",
     ":safety_check",
     "//base",
     "//base/test:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
     "//ui/base:test_support",
   ]
 }
