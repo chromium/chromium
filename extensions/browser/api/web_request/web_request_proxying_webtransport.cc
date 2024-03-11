@@ -237,6 +237,11 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   }
 
  private:
+  // WebRequestAPI::Proxy:
+  void OnDNRExtensionUnloaded(const Extension* extension) override {
+    info_.EraseDNRActionsForExtension(extension->id());
+  }
+
   mojo::PendingRemote<WebTransportHandshakeClient> handshake_client_;
   // Weak reference to the ProxySet. This is safe as `proxies_` owns this
   // object.

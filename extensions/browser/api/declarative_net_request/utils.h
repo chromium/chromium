@@ -17,6 +17,7 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
+#include "extensions/common/extension.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace base {
@@ -166,6 +167,10 @@ T CreateString(const flatbuffers::String& str) {
 // Returns the number of static rules enabled for the specified
 // |composite_matcher|.
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
+
+// Whether the `extension` has the permission to use the declarativeNetRequest
+// API.
+bool HasAnyDNRPermission(const Extension& extension);
 
 // Returns true if |extension| has the declarativeNetRequestFeedback permission
 // for the specified |tab_id|. If |tab_is| is omitted, then non-tab specific

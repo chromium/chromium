@@ -28,6 +28,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -238,6 +239,13 @@ void WebRequestAPI::ProxySet::MaybeProxyAuthRequest(
 
   proxy->HandleAuthRequest(auth_info, std::move(response_headers),
                            request_id.request_id, std::move(callback));
+}
+
+void WebRequestAPI::ProxySet::OnDNRExtensionUnloaded(
+    const Extension* extension) {
+  for (const auto& proxy : proxies_) {
+    proxy->OnDNRExtensionUnloaded(extension);
+  }
 }
 
 WebRequestAPI::RequestIDGenerator::RequestIDGenerator() = default;
@@ -629,6 +637,10 @@ void WebRequestAPI::OnExtensionUnloaded(
   if (HasAnyWebRequestPermissions(extension)) {
     --web_request_extension_count_;
     UpdateMayHaveProxies();
+  }
+
+  if (declarative_net_request::HasAnyDNRPermission(*extension)) {
+    proxies_->OnDNRExtensionUnloaded(extension);
   }
 }
 

@@ -94,6 +94,11 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
         int32_t request_id,
         AuthRequestCallback callback);
+
+    // Called when an extension that can execute declarativeNetRequest actions
+    // is unloaded, so orphaned DNR actions on current requests can be cleaned
+    // up.
+    virtual void OnDNRExtensionUnloaded(const Extension* extension) = 0;
   };
 
   // A ProxySet is a set of proxies used by WebRequestAPI: It holds Proxy
@@ -132,6 +137,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
         const content::GlobalRequestID& request_id,
         AuthRequestCallback callback);
+
+    void OnDNRExtensionUnloaded(const Extension* extension);
 
    private:
     // Although these members are initialized on the UI thread, we expect at

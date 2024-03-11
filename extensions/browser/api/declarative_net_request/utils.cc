@@ -488,6 +488,14 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
   return enabled_static_rule_count;
 }
 
+bool HasAnyDNRPermission(const Extension& extension) {
+  const PermissionsData* permissions = extension.permissions_data();
+  return permissions->HasAPIPermission(
+             mojom::APIPermissionID::kDeclarativeNetRequest) ||
+         permissions->HasAPIPermission(
+             mojom::APIPermissionID::kDeclarativeNetRequestWithHostAccess);
+}
+
 bool HasDNRFeedbackPermission(const Extension* extension,
                               const std::optional<int>& tab_id) {
   const PermissionsData* permissions_data = extension->permissions_data();

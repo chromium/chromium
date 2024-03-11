@@ -1326,6 +1326,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
   std::move(callback_pair.second).Run(net::OK);
 }
+
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnRequestError(
     const network::URLLoaderCompletionStatus& status,
     State state) {
@@ -1432,6 +1433,13 @@ network::URLLoaderCompletionStatus WebRequestProxyingURLLoaderFactory::
   }
 
   return status;
+}
+
+void WebRequestProxyingURLLoaderFactory::InProgressRequest::
+    EraseDNRActionsForExtension(const ExtensionId& extension_id) {
+  if (info_) {
+    info_->EraseDNRActionsForExtension(extension_id);
+  }
 }
 
 WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
@@ -1617,6 +1625,13 @@ void WebRequestProxyingURLLoaderFactory::HandleAuthRequest(
   DCHECK(request_it != requests_.end());
   request_it->second->HandleAuthRequest(auth_info, std::move(response_headers),
                                         std::move(callback));
+}
+
+void WebRequestProxyingURLLoaderFactory::OnDNRExtensionUnloaded(
+    const Extension* extension) {
+  for (auto& request : requests_) {
+    request.second->EraseDNRActionsForExtension(extension->id());
+  }
 }
 
 WebRequestProxyingURLLoaderFactory::~WebRequestProxyingURLLoaderFactory() =

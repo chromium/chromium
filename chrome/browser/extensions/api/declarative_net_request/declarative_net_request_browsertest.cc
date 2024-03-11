@@ -121,6 +121,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -6957,6 +6958,85 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
   bfcache_render_frame_host_delete_observer->WaitUntilDeleted();
 }
 
+class DeclarativeNetRequestControllableResponseTest
+    : public DeclarativeNetRequestBrowserTest {
+ public:
+  DeclarativeNetRequestControllableResponseTest() = default;
+
+  void SetUpOnMainThread() override {
+    // The controllable response handler needs to be set up first before the
+    // test server can be started, which is why the SetUpOnMainThread from the
+    // super class which starts the test server is called afterwards here.
+    controllable_http_response_.emplace(embedded_test_server(),
+                                        "/pages_with_script/index.html");
+    DeclarativeNetRequestBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  net::test_server::ControllableHttpResponse& controllable_http_response() {
+    return *controllable_http_response_;
+  }
+
+ private:
+  std::optional<net::test_server::ControllableHttpResponse>
+      controllable_http_response_;
+};
+
+// Test that DNR actions from an extension are cleaned up when the extension is
+// disabled. This fixes a crash/bug where DNR actions such as modifyHeaders
+// which are created on the OnBeforeRequest phase when an extension was enabled
+// are supposed to take effect in a later request stage but the extension may no
+// longer be enabled at that point.
+// Regression for crbug.com/40072083 which would've caused a crash in this test.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestControllableResponseTest,
+                       EraseActionsOnExtensionDisabled) {
+  // Create an extension with a rule that modifies response headers. This
+  // extension will match its rule during OnBeforeRequest but the rule would not
+  // be applied until OnHeadersReceived which is after when the request is sent
+  // and the response has started.
+  TestRule headers_rule = CreateModifyHeadersRule(
+      kMinValidID, kMinValidPriority, "google.com", std::nullopt,
+      std::vector<TestHeaderInfo>(
+          {TestHeaderInfo("resp-header", "append", "resp-value")}));
+  headers_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame"});
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {headers_rule}, "extension_1", {URLPattern::kAllUrlsPattern}));
+  const ExtensionId& extension_id = last_loaded_extension_id();
+
+  const GURL page_url = embedded_test_server()->GetURL(
+      "google.com", "/pages_with_script/index.html");
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+
+  controllable_http_response().WaitForRequest();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  controllable_http_response().Send(net::HTTP_OK, "text/html",
+                                    "<html>Hello, World!</html>");
+
+  // Disable the extension after the response has been sent but before the
+  // request has finished.
+  DisableExtension(extension_id);
+
+  controllable_http_response().Done();
+
+  // Block until the web contents have been fully loaded to be certain that the
+  // web request event router finishes processing all events after the request
+  // has finished, such as OnHeadersReceived, and that the extension will be
+  // disabled at that point. The test should not crash at this point.
+  // TODO(crbug.com/40072083): Follow up with verifying the values of response
+  // headers. This may require initiating a request from a JS script injected
+  // into the page.
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_FALSE(extension_service()->IsExtensionEnabled(extension_id));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
@@ -7002,6 +7082,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestControllableResponseTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
 }  // namespace
 }  // namespace declarative_net_request
 }  // namespace extensions

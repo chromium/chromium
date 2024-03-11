@@ -71,16 +71,6 @@ void LogLoadRulesetResult(LoadRulesetResult result) {
   UMA_HISTOGRAM_ENUMERATION(kLoadRulesetResultHistogram, result);
 }
 
-// Whether the `extension` has the permission to use the declarativeNetRequest
-// API.
-bool HasAPIPermission(const Extension& extension) {
-  const PermissionsData* permissions = extension.permissions_data();
-  return permissions->HasAPIPermission(
-             mojom::APIPermissionID::kDeclarativeNetRequest) ||
-         permissions->HasAPIPermission(
-             mojom::APIPermissionID::kDeclarativeNetRequestWithHostAccess);
-}
-
 // Returns whether the extension's allocation should be released. This would
 // return true for cases where we expect the extension to be unloaded for a
 // while or if the extension directory's contents changed in a reload.
@@ -141,7 +131,7 @@ std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
 
 HostPermissionsAlwaysRequired GetHostPermissionsAlwaysRequired(
     const Extension& extension) {
-  DCHECK(HasAPIPermission(extension));
+  DCHECK(HasAnyDNRPermission(extension));
   const PermissionsData* permissions = extension.permissions_data();
 
   if (permissions->HasAPIPermission(
@@ -461,8 +451,9 @@ void RulesMonitorService::OnExtensionWillBeInstalled(
     const Extension* extension,
     bool is_update,
     const std::string& old_name) {
-  if (!HasAPIPermission(*extension))
+  if (!HasAnyDNRPermission(*extension)) {
     return;
+  }
 
   if (!is_update || Manifest::IsUnpackedLocation(extension->location()))
     return;
@@ -481,8 +472,9 @@ void RulesMonitorService::OnExtensionLoaded(
     const Extension* extension) {
   DCHECK_EQ(context_, browser_context);
 
-  if (!HasAPIPermission(*extension))
+  if (!HasAnyDNRPermission(*extension)) {
     return;
+  }
 
   LoadRequestData load_data(extension->id(), extension->version());
   int expected_ruleset_checksum;
@@ -554,8 +546,9 @@ void RulesMonitorService::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   DCHECK_EQ(context_, browser_context);
 
-  if (!HasAPIPermission(*extension))
+  if (!HasAnyDNRPermission(*extension)) {
     return;
+  }
 
   // If the extension is unloaded for any reason other than an update, the
   // unused rule allocation should not be kept for this extension the next
@@ -585,8 +578,9 @@ void RulesMonitorService::OnExtensionUninstalled(
     UninstallReason reason) {
   DCHECK_EQ(context_, browser_context);
 
-  if (!HasAPIPermission(*extension))
+  if (!HasAnyDNRPermission(*extension)) {
     return;
+  }
 
   session_rules_.erase(extension->id());
 

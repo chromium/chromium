@@ -139,6 +139,10 @@ class WebRequestProxyingURLLoaderFactory
                            const net::IPEndPoint& endpoint,
                            OnHeadersReceivedCallback callback) override;
 
+    // Erases all DNR actions in `info_` that are associated with
+    // `extension_id`.
+    void EraseDNRActionsForExtension(const ExtensionId& extension_id);
+
    private:
     // The state of an InProgressRequest. This is reported via UMA and UKM
     // at the end of the request, so do not change enum values.
@@ -348,6 +352,7 @@ class WebRequestProxyingURLLoaderFactory
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       int32_t request_id,
       WebRequestAPI::AuthRequestCallback callback) override;
+  void OnDNRExtensionUnloaded(const Extension* extension) override;
 
   content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type()
       const {

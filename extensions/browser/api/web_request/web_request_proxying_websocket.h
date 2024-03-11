@@ -87,6 +87,9 @@ class WebRequestProxyingWebSocket
                          const net::IPEndPoint& endpoint,
                          OnHeadersReceivedCallback callback) override;
 
+  // WebRequestAPI::Proxy:
+  void OnDNRExtensionUnloaded(const Extension* extension) override;
+
   static void StartProxying(
       WebSocketFactory factory,
       const GURL& url,

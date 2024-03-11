@@ -93,6 +93,10 @@ struct WebRequestInfo {
   void AddResponseInfoFromResourceResponse(
       const network::mojom::URLResponseHead& response);
 
+  // Erases all actions in `dnr_actions` that are associated with the given
+  // `extension_id`.
+  void EraseDNRActionsForExtension(const ExtensionId& extension_id);
+
   // A unique identifier for this request.
   const uint64_t id;
 
