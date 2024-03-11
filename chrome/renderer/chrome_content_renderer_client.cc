@@ -1584,12 +1584,14 @@ ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
       browser_interface_broker_.get());
 }
 
-void ChromeContentRendererClient::GetSupportedKeySystems(
+std::unique_ptr<media::KeySystemSupportObserver>
+ChromeContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  GetChromeKeySystems(std::move(cb));
+  return GetChromeKeySystems(std::move(cb));
 #else
   std::move(cb).Run({});
+  return nullptr;
 #endif
 }
 

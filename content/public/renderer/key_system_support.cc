@@ -6,18 +6,22 @@
 
 #include "base/logging.h"
 #include "content/public/renderer/render_thread.h"
+#include "media/base/key_systems_support_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
-namespace {
-
 class KeySystemSupportObserverImpl
-    : public media::mojom::KeySystemSupportObserver {
+    : public media::KeySystemSupportObserver,
+      public media::mojom::KeySystemSupportObserver {
  public:
-  explicit KeySystemSupportObserverImpl(KeySystemSupportCB cb)
-      : key_system_support_cb_(std::move(cb)) {}
+  KeySystemSupportObserverImpl(
+      media::KeySystemSupportCB cb,
+      mojo::PendingReceiver<media::mojom::KeySystemSupportObserver> receiver)
+      : key_system_support_cb_(std::move(cb)),
+        receiver_(this, std::move(receiver)) {}
+
   KeySystemSupportObserverImpl(const KeySystemSupportObserverImpl&) = delete;
   KeySystemSupportObserverImpl& operator=(const KeySystemSupportObserverImpl&) =
       delete;
@@ -30,12 +34,12 @@ class KeySystemSupportObserverImpl
   }
 
  private:
-  KeySystemSupportCB key_system_support_cb_;
+  media::KeySystemSupportCB key_system_support_cb_;
+  mojo::Receiver<media::mojom::KeySystemSupportObserver> receiver_;
 };
 
-}  // namespace
-
-void ObserveKeySystemSupportUpdate(KeySystemSupportCB cb) {
+std::unique_ptr<media::KeySystemSupportObserver> ObserveKeySystemSupportUpdate(
+    media::KeySystemSupportCB cb) {
   DVLOG(1) << __func__;
 
   // `key_system_support` will be destructed after this function returns. This
@@ -46,10 +50,12 @@ void ObserveKeySystemSupportUpdate(KeySystemSupportCB cb) {
       key_system_support.BindNewPipeAndPassReceiver());
 
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<KeySystemSupportObserverImpl>(std::move(cb)),
-      observer_remote.InitWithNewPipeAndPassReceiver());
+  auto key_system_support_update =
+      std::make_unique<KeySystemSupportObserverImpl>(
+          std::move(cb), observer_remote.InitWithNewPipeAndPassReceiver());
   key_system_support->AddObserver(std::move(observer_remote));
+
+  return std::move(key_system_support_update);
 }
 
 }  // namespace content

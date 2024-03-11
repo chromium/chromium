@@ -27,6 +27,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_channel_proxy.h"
+#include "media/base/key_systems_support_observer.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -170,7 +171,8 @@ class ChromeContentRendererClient
   std::unique_ptr<media::SpeechRecognitionClient> CreateSpeechRecognitionClient(
       content::RenderFrame* render_frame) override;
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
-  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
+  std::unique_ptr<media::KeySystemSupportObserver> GetSupportedKeySystems(
+      media::GetSupportedKeySystemsCB cb) override;
   bool IsPluginAllowedToUseCameraDeviceAPI(const GURL& url) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;

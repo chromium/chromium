@@ -8,6 +8,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/decoder.h"
+#include "media/base/key_systems_support_observer.h"
 #include "media/base/media_client.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -29,7 +30,8 @@ class RenderMediaClient : public media::MediaClient {
   static void Initialize();
 
   // MediaClient implementation.
-  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) final;
+  std::unique_ptr<media::KeySystemSupportObserver> GetSupportedKeySystems(
+      media::GetSupportedKeySystemsCB cb) final;
   bool IsSupportedAudioType(const media::AudioType& type) final;
   bool IsSupportedVideoType(const media::VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec) final;

@@ -167,9 +167,11 @@ bool ContentRendererClient::IsOriginIsolatedPepperPlugin(
   return true;
 }
 
-void ContentRendererClient::GetSupportedKeySystems(
+std::unique_ptr<media::KeySystemSupportObserver>
+ContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   std::move(cb).Run({});
+  return nullptr;
 }
 
 bool ContentRendererClient::IsSupportedAudioType(const media::AudioType& type) {

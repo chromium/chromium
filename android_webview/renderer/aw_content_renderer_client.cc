@@ -225,10 +225,12 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
   communication->RunScriptsAtDocumentStart();
 }
 
-void AwContentRendererClient::GetSupportedKeySystems(
+std::unique_ptr<media::KeySystemSupportObserver>
+AwContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   // WebView always allows persisting data.
-  cdm::GetSupportedKeySystemsUpdates(/*can_persist_data=*/true, std::move(cb));
+  return cdm::GetSupportedKeySystemsUpdates(/*can_persist_data=*/true,
+                                            std::move(cb));
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>

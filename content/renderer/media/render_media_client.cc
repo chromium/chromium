@@ -76,9 +76,9 @@ RenderMediaClient::RenderMediaClient()
 
 RenderMediaClient::~RenderMediaClient() = default;
 
-void RenderMediaClient::GetSupportedKeySystems(
-    media::GetSupportedKeySystemsCB cb) {
-  GetContentClient()->renderer()->GetSupportedKeySystems(std::move(cb));
+std::unique_ptr<media::KeySystemSupportObserver>
+RenderMediaClient::GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) {
+  return GetContentClient()->renderer()->GetSupportedKeySystems(std::move(cb));
 }
 
 bool RenderMediaClient::IsSupportedAudioType(const media::AudioType& type) {

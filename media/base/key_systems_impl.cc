@@ -309,8 +309,7 @@ void KeySystemsImpl::UpdateSupportedKeySystems() {
     OnSupportedKeySystemsUpdated({});
     return;
   }
-
-  GetMediaClient()->GetSupportedKeySystems(
+  key_system_support_observer_ = GetMediaClient()->GetSupportedKeySystems(
       base::BindRepeating(&KeySystemsImpl::OnSupportedKeySystemsUpdated,
                           weak_factory_.GetWeakPtr()));
 }

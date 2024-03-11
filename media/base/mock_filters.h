@@ -871,7 +871,9 @@ class MockMediaClient : public media::MediaClient {
   ~MockMediaClient() override;
 
   // MediaClient implementation.
-  MOCK_METHOD1(GetSupportedKeySystems, void(GetSupportedKeySystemsCB cb));
+  MOCK_METHOD1(GetSupportedKeySystems,
+               std::unique_ptr<::media::KeySystemSupportObserver>(
+                   GetSupportedKeySystemsCB cb));
   MOCK_METHOD1(IsSupportedAudioType, bool(const media::AudioType& type));
   MOCK_METHOD1(IsSupportedVideoType, bool(const media::VideoType& type));
   MOCK_METHOD1(IsSupportedBitstreamAudioCodec, bool(media::AudioCodec codec));

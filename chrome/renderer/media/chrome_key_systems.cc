@@ -6,8 +6,10 @@
 
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "components/cdm/renderer/key_system_support_update.h"
+#include "media/base/key_systems_support_observer.h"
 
-void GetChromeKeySystems(media::GetSupportedKeySystemsCB cb) {
-  cdm::GetSupportedKeySystemsUpdates(
+std::unique_ptr<media::KeySystemSupportObserver> GetChromeKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  return cdm::GetSupportedKeySystemsUpdates(
       !ChromeRenderThreadObserver::is_incognito_process(), std::move(cb));
 }

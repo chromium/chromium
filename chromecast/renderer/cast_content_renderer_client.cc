@@ -170,10 +170,11 @@ void CastContentRendererClient::RunScriptsAtDocumentStart(
 void CastContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {}
 
-void CastContentRendererClient::GetSupportedKeySystems(
+std::unique_ptr<::media::KeySystemSupportObserver>
+CastContentRendererClient::GetSupportedKeySystems(
     ::media::GetSupportedKeySystemsCB cb) {
 #if BUILDFLAG(IS_ANDROID)
-  cdm::GetSupportedKeySystemsUpdates(
+  return cdm::GetSupportedKeySystemsUpdates(
       /*can_persist_data=*/true, std::move(cb));
 #else
   ::media::KeySystemInfos key_systems;
@@ -181,6 +182,7 @@ void CastContentRendererClient::GetSupportedKeySystems(
                                  false /* enable_persistent_license_support */,
                                  false /* enable_playready */);
   std::move(cb).Run(std::move(key_systems));
+  return nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

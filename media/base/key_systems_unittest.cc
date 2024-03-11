@@ -234,7 +234,8 @@ class TestMediaClient : public MediaClient {
   ~TestMediaClient() override;
 
   // MediaClient implementation.
-  void GetSupportedKeySystems(GetSupportedKeySystemsCB cb) final;
+  std::unique_ptr<::media::KeySystemSupportObserver> GetSupportedKeySystems(
+      GetSupportedKeySystemsCB cb) final;
   bool IsSupportedAudioType(const AudioType& type) final;
   bool IsSupportedVideoType(const VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(AudioCodec codec) final;
@@ -256,11 +257,13 @@ class TestMediaClient : public MediaClient {
 TestMediaClient::TestMediaClient() = default;
 TestMediaClient::~TestMediaClient() = default;
 
-void TestMediaClient::GetSupportedKeySystems(GetSupportedKeySystemsCB cb) {
+std::unique_ptr<::media::KeySystemSupportObserver>
+TestMediaClient::GetSupportedKeySystems(GetSupportedKeySystemsCB cb) {
   // Save the callback for future updates.
   get_supported_key_systems_cb_ = cb;
 
   get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal());
+  return nullptr;
 }
 
 bool TestMediaClient::IsSupportedAudioType(const AudioType& type) {

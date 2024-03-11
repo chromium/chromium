@@ -200,7 +200,8 @@ WebEngineContentRendererClient::CreateURLLoaderThrottleProvider(
   return std::make_unique<WebEngineURLLoaderThrottleProvider>(this);
 }
 
-void WebEngineContentRendererClient::GetSupportedKeySystems(
+std::unique_ptr<media::KeySystemSupportObserver>
+WebEngineContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   media::KeySystemInfos key_systems;
   media::SupportedCodecs supported_video_codecs = 0;
@@ -273,6 +274,7 @@ void WebEngineContentRendererClient::GetSupportedKeySystems(
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
   std::move(cb).Run(std::move(key_systems));
+  return nullptr;
 }
 
 bool WebEngineContentRendererClient::IsSupportedVideoType(
