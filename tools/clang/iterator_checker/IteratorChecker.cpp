@@ -18,6 +18,7 @@
 #include "clang/Tooling/Transformer/Stencil.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/Support/TimeProfiler.h"
 
 // This clang plugin check for iterators used after they have been
 // invalidated.
@@ -1087,6 +1088,9 @@ class IteratorInvalidationConsumer : public clang::ASTConsumer {
   IteratorInvalidationConsumer(clang::CompilerInstance& instance) {}
 
   void HandleTranslationUnit(clang::ASTContext& context) final {
+    llvm::TimeTraceScope TimeScope(
+        "IteratorInvalidationConsumer::HandleTranslationUnit");
+
     IteratorInvalidationCheck checker;
     clang::ast_matchers::MatchFinder match_finder;
     checker.Register(match_finder);

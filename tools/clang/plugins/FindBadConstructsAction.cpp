@@ -6,6 +6,7 @@
 
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Frontend/FrontendPluginRegistry.h"
+#include "llvm/Support/TimeProfiler.h"
 
 #include "FindBadConstructsConsumer.h"
 
@@ -50,6 +51,8 @@ class PluginConsumer : public ASTConsumer {
       : visitor_(*instance, options) {}
 
   void HandleTranslationUnit(clang::ASTContext& context) override {
+    llvm::TimeTraceScope TimeScope(
+        "HandleTranslationUnit for find-bad-constructs plugin");
     visitor_.Traverse(context);
   }
 
