@@ -56,8 +56,7 @@ bool IsIrrecoverableError(int response_code) {
 }
 
 // Generates new backoff entry.
-std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(
-    ::reporting::Priority priority) {
+std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(Priority priority) {
   // Retry policy for SECURITY queue.
   static const ::net::BackoffEntry::Policy kSecurityUploadBackoffPolicy = {
       // Number of initial errors to ignore before applying
@@ -108,8 +107,8 @@ std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(
   // events to be backed off only slightly: max delay is set to 1 minute.
   // For all other priorities max delay is set to 24 hours.
   auto backoff_entry = std::make_unique<::net::BackoffEntry>(
-      priority == ::reporting::SECURITY ? &kSecurityUploadBackoffPolicy
-                                        : &kDefaultUploadBackoffPolicy);
+      priority == Priority::SECURITY ? &kSecurityUploadBackoffPolicy
+                                     : &kDefaultUploadBackoffPolicy);
   return backoff_entry;
 }
 
@@ -118,10 +117,18 @@ std::unique_ptr<::net::BackoffEntry> GetBackoffEntry(
 // EncryptedReportingJobConfiguration actions are called on the sequenced task
 // runner.
 struct UploadState {
+  // Keyed by priority+generation_id with explicit hash.
+  using Key = std::pair<Priority, int64_t /*generation_id*/>;
+  struct Hash {
+    std::size_t operator()(const Key& key) const noexcept {
+      const std::size_t h1 = std::hash<Priority>{}(key.first);
+      const std::size_t h2 = std::hash<int64_t>{}(key.second);
+      return h1 ^ (h2 << 1);  // hash_combine
+    }
+  };
+
   // Highest sequence id that has been posted for upload.
   int64_t last_sequence_id;
-  // Generation id that has been posted for upload.
-  int64_t last_generation_id;
 
   // Time when the next request will be allowed.
   // This is essentially the cache value of the backoff->GetReleaseTime().
@@ -132,28 +139,28 @@ struct UploadState {
   // Current backoff entry for this priority.
   std::unique_ptr<::net::BackoffEntry> backoff_entry;
 };
-// Map of all the queues states.
-using UploadStateMap = base::flat_map<::reporting::Priority, UploadState>;
+// Unordered map of all the queues states.
+using UploadStateMap =
+    std::unordered_map<UploadState::Key, UploadState, UploadState::Hash>;
 
 UploadStateMap* state_map() {
   static base::NoDestructor<UploadStateMap> map;
   return map.get();
 }
 
-UploadState* GetState(::reporting::Priority priority,
+UploadState* GetState(Priority priority,
                       int64_t generation_id,
                       int64_t sequence_id) {
-  auto state_it = state_map()->find(priority);
-  if (state_it == state_map()->end() ||
-      state_it->second.last_generation_id != generation_id) {
-    // This priority pops up for the first time or (rare case) generation has
-    // changed. Record new state and allow upload.
+  auto key = std::make_pair(priority, generation_id);
+  auto state_it = state_map()->find(key);
+  if (state_it == state_map()->end()) {
+    // This priority+generation_id pop up for the first time.
+    // Record new state and allow upload.
     state_it = state_map()
-                   ->insert_or_assign(
-                       priority,
+                   ->emplace(std::make_pair(
+                       std::move(key),
                        UploadState{.last_sequence_id = sequence_id,
-                                   .last_generation_id = generation_id,
-                                   .backoff_entry = GetBackoffEntry(priority)})
+                                   .backoff_entry = GetBackoffEntry(priority)}))
                    .first;
     state_it->second.earliest_retry_timestamp =
         state_it->second.backoff_entry->GetReleaseTime();
@@ -162,7 +169,8 @@ UploadState* GetState(::reporting::Priority priority,
 }
 
 // Builds uploading payload.
-// Returns dictionary (null in case of failure) and matching memory reservation.
+// Returns dictionary (null in case of failure) and matching memory
+// reservation.
 void BuildPayload(
     bool is_generation_guid_required,
     bool need_encryption_key,
@@ -223,8 +231,8 @@ class PayloadSizeUmaReporter {
   static constexpr base::TimeDelta kMinReportTimeDelta = base::Hours(1);
 
   // Last time UMA report was done. This is accessed from |Report| and
-  // |ShouldReport|, both of which of all instances of this class should only be
-  // called in the same sequence.
+  // |ShouldReport|, both of which of all instances of this class should only
+  // be called in the same sequence.
   static base::Time last_reported_time_;
 
   // Response payload size. Negative means not set yet.
@@ -235,8 +243,8 @@ class PayloadSizeUmaReporter {
 base::Time PayloadSizeUmaReporter::last_reported_time_{base::Time::UnixEpoch()};
 
 // Limits the rate at which payload sizes are computed for UMA reporting
-// purposes. Since computing payload size is expensive, this is for limiting how
-// frequently they are computed.
+// purposes. Since computing payload size is expensive, this is for limiting
+// how frequently they are computed.
 
 class PayloadSizeComputationRateLimiterForUma {
  public:
