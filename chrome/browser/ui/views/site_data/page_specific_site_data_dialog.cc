@@ -159,8 +159,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     host_content_settings_map_ =
         HostContentSettingsMapFactory::GetForProfile(profile);
 
-    RecordPageSpecificSiteDataDialogAction(
-        PageSpecificSiteDataDialogAction::kDialogOpened);
+    RecordPageSpecificSiteDataDialogOpenedAction();
   }
 
   void OnDialogExplicitlyClosed() {
@@ -305,8 +304,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     blocked_browsing_data_model()->RemovePartitionedBrowsingData(
         origin.host(), net::SchemefulSite(origin), base::DoNothing());
 
-    RecordPageSpecificSiteDataDialogAction(
-        PageSpecificSiteDataDialogAction::kSiteDeleted);
+    RecordPageSpecificSiteDataDialogRemoveButtonClickedAction();
 
     browsing_data::RecordDeleteBrowsingDataAction(
         browsing_data::DeleteBrowsingDataAction::kCookiesInUseDialog);
@@ -322,8 +320,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
       cookie_settings_->ResetCookieSetting(url);
       cookie_settings_->SetCookieSetting(url, setting);
     }
-    RecordPageSpecificSiteDataDialogAction(
-        GetDialogActionForContentSetting(setting));
   }
 
   void OnManageOnDeviceSiteDataClicked() {

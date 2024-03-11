@@ -6,7 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -64,7 +64,9 @@ const char kFirstPartyAllowedRow[] = "FirstPartyAllowedRow";
 const char kThirdPartyBlockedRow[] = "ThirdPartyBlockedRow";
 const char kOnlyPartitionedRow[] = "OnlyPartitionedRow";
 const char kMixedPartitionedRow[] = "MixedPartitionedRow";
-const char kCookiesDialogHistogramName[] = "Privacy.CookiesInUseDialog.Action";
+const char kCookiesDialogOpenedActionName[] = "CookiesInUseDialog.Opened";
+const char kCookiesDialogRemoveButtonClickedActionName[] =
+    "CookiesInUseDialog.RemoveButtonClicked";
 
 class CookieChangeObserver : public content::WebContentsObserver {
  public:
@@ -128,25 +130,26 @@ class PageSpecificSiteDataDialogInteractiveUiTest
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
-    histograms_ = std::make_unique<base::HistogramTester>();
-    histograms_->ExpectTotalCount(kCookiesDialogHistogramName, 0);
+    user_actions_ = std::make_unique<base::UserActionTester>();
+    EXPECT_EQ(0, user_actions_->GetActionCount(kCookiesDialogOpenedActionName));
+    EXPECT_EQ(0, user_actions_->GetActionCount(
+                     kCookiesDialogRemoveButtonClickedActionName));
     SetUpCookieControlMode();
     SetUpPrivacySandboxState();
   }
 
   void TearDownOnMainThread() override {
-    histograms_.reset();
+    user_actions_.reset();
     EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
-  // Returns a callback that queries an expected histogram count.
-  auto ExpectActionCount(PageSpecificSiteDataDialogAction action, int count) {
+  // Returns a callback that queries an expected user action count.
+  auto ExpectActionCount(std::string action, int count) {
     return base::BindLambdaForTesting([this, action, count]() {
-      histograms().ExpectBucketCount(kCookiesDialogHistogramName, action,
-                                     count);
+      EXPECT_EQ(count, user_actions().GetActionCount(action));
     });
   }
 
@@ -166,9 +169,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),
         InAnyContext(AfterShow(
-            section_id,
-            ExpectActionCount(PageSpecificSiteDataDialogAction::kDialogOpened,
-                              1))));
+            section_id, ExpectActionCount(kCookiesDialogOpenedActionName, 1))));
   }
 
   // Returns a test step that verifies that the label for `row` matches
@@ -198,7 +199,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
         }));
   }
 
-  const base::HistogramTester& histograms() const { return *histograms_; }
+  const base::UserActionTester& user_actions() const { return *user_actions_; }
   ui::ElementContext context() const {
     return browser()->window()->GetElementContext();
   }
@@ -219,7 +220,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
     return "/third_party_partitioned_cookies.html";
   }
 
-  std::unique_ptr<base::HistogramTester> histograms_;
+  std::unique_ptr<base::UserActionTester> user_actions_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
@@ -259,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       // the correct histogram was logged.
       AfterHide(
           kFirstPartyAllowedRow,
-          ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteDeleted, 1)),
+          ExpectActionCount(kCookiesDialogRemoveButtonClickedActionName, 1)),
       // Verify that after deleting the last (and only) row in a section, a
       // label explaining the empty state is shown.
       InAnyContext(CheckViewProperty(
@@ -301,14 +302,13 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       WaitForEvent(kThirdPartyBlockedRow, kSiteRowMenuItemClicked),
       CheckRowLabel(kThirdPartyBlockedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
-      Do(ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteAllowed, 1)),
       // Verify that after allowing a site, it can be deleted.
       DeleteRow(kThirdPartyBlockedRow),
       // Verify that UI has updated as a result of clicking on the delete
       // button and the correct histogram was logged.
-      AfterHide(kThirdPartyBlockedRow,
-                ExpectActionCount(
-                    PageSpecificSiteDataDialogAction::kSiteDeleted, 1)));
+      AfterHide(
+          kThirdPartyBlockedRow,
+          ExpectActionCount(kCookiesDialogRemoveButtonClickedActionName, 1)));
 }
 
 // Flaky on ChromeOS: crbug.com/1429381
@@ -348,8 +348,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       WaitForEvent(kOnlyPartitionedRow, kSiteRowMenuItemClicked),
 
       CheckRowLabel(kOnlyPartitionedRow,
-                    IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE),
-      Do(ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteBlocked, 1)));
+                    IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
 }
 // Flaky on ChromeOS: crbug.com/1429381
 #if BUILDFLAG(IS_CHROMEOS)
@@ -394,8 +393,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       // Verify that UI has updated as a result of clicking on a menu
       // item and the correct histogram was logged.
       CheckRowLabel(kMixedPartitionedRow,
-                    IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
-      Do(ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteAllowed, 1)));
+                    IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
 }
 
 class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
@@ -463,8 +461,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
                  PressButton(PageInfoCookiesContentView::kCookieDialogButton),
                  InAnyContext(AfterShow(
                      section_id,
-                     ExpectActionCount(
-                         PageSpecificSiteDataDialogAction::kDialogOpened, 1))));
+                     ExpectActionCount(kCookiesDialogOpenedActionName, 1))));
   }
 
   // Returns a test step that verifies that the hostname for `row` is equal to
@@ -564,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(
       // the correct histogram was logged.
       AfterHide(
           kFirstPartyAllowedRow,
-          ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteDeleted, 1)),
+          ExpectActionCount(kCookiesDialogRemoveButtonClickedActionName, 1)),
       // Verify that after deleting the last (and only) row in a section, a
       // label explaining the empty state is shown.
       InAnyContext(CheckViewProperty(

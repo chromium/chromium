@@ -12,44 +12,13 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
 
-void RecordPageSpecificSiteDataDialogAction(
-    PageSpecificSiteDataDialogAction action) {
-  switch (action) {
-    case PageSpecificSiteDataDialogAction::kSiteDeleted:
-    case PageSpecificSiteDataDialogAction::kSingleCookieDeleted:
-    case PageSpecificSiteDataDialogAction::kCookiesFolderDeleted:
-    case PageSpecificSiteDataDialogAction::kFolderDeleted:
-      base::RecordAction(
-          base::UserMetricsAction("CookiesInUseDialog.RemoveButtonClicked"));
-      break;
-    case PageSpecificSiteDataDialogAction::kDialogOpened:
-      base::RecordAction(base::UserMetricsAction("CookiesInUseDialog.Opened"));
-      break;
-    case PageSpecificSiteDataDialogAction::kSiteBlocked:
-    case PageSpecificSiteDataDialogAction::kSiteAllowed:
-    case PageSpecificSiteDataDialogAction::kSiteClearedOnExit:
-      // No user actions for these metrics.
-      break;
-  }
-
-  base::UmaHistogramEnumeration("Privacy.CookiesInUseDialog.Action", action);
+void RecordPageSpecificSiteDataDialogOpenedAction() {
+  base::RecordAction(base::UserMetricsAction("CookiesInUseDialog.Opened"));
 }
 
-PageSpecificSiteDataDialogAction GetDialogActionForContentSetting(
-    ContentSetting setting) {
-  switch (setting) {
-    case ContentSetting::CONTENT_SETTING_BLOCK:
-      return PageSpecificSiteDataDialogAction::kSiteBlocked;
-    case ContentSetting::CONTENT_SETTING_ALLOW:
-      return PageSpecificSiteDataDialogAction::kSiteAllowed;
-    case ContentSetting::CONTENT_SETTING_SESSION_ONLY:
-      return PageSpecificSiteDataDialogAction::kSiteClearedOnExit;
-    case ContentSetting::CONTENT_SETTING_DEFAULT:
-    case ContentSetting::CONTENT_SETTING_ASK:
-    case ContentSetting::CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
-    case ContentSetting::CONTENT_SETTING_NUM_SETTINGS:
-      NOTREACHED_NORETURN() << "Unknown ContentSetting value: " << setting;
-  }
+void RecordPageSpecificSiteDataDialogRemoveButtonClickedAction() {
+  base::RecordAction(
+      base::UserMetricsAction("CookiesInUseDialog.RemoveButtonClicked"));
 }
 
 // static

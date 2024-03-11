@@ -14,29 +14,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// Used for UMA histogram to record types of actions done by the user in
-// the "Cookies in use" dialog. These values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
-enum class PageSpecificSiteDataDialogAction {
-  kDialogOpened = 0,
-  kSingleCookieDeleted = 1,
-  kCookiesFolderDeleted = 2,
-  kFolderDeleted = 3,
-  kSiteDeleted = 4,
-  kSiteBlocked = 5,
-  kSiteAllowed = 6,
-  kSiteClearedOnExit = 7,
-  kMaxValue = kSiteClearedOnExit,
-};
+// Records a user action for opening the dialog.
+void RecordPageSpecificSiteDataDialogOpenedAction();
 
-// Records UMA for the |action| and an user action if applicable (for opening
-// dialog and deleting action).
-void RecordPageSpecificSiteDataDialogAction(
-    PageSpecificSiteDataDialogAction action);
-
-// Returns a dialog action that corresponds to the |setting|.
-PageSpecificSiteDataDialogAction GetDialogActionForContentSetting(
-    ContentSetting setting);
+// Records a user action clicking remove button.
+void RecordPageSpecificSiteDataDialogRemoveButtonClickedAction();
 
 // The controller responsible for creating, showing and holding the reference to
 // the page specific site data dialog. The actual dialog opened could be either
