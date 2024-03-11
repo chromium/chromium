@@ -161,15 +161,15 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
   EXPECT_NE(content::RenderProcessHost::GetSpareRenderProcessHostForTesting(),
             nullptr);
   bubble_manager()->ShowBubble();
-  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
-            WebUIBubbleWarmUpLevel::kSpareRenderer);
+  EXPECT_EQ(bubble_manager()->contents_warmup_level(),
+            WebUIContentsWarmupLevel::kSpareRenderer);
 
   // Create a new process if there is no spare renderer.
   DestroySpareRenderProcess();
   DestroyBubble(bubble_manager(), browser()->profile());
   bubble_manager()->ShowBubble();
-  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
-            WebUIBubbleWarmUpLevel::kNoRenderer);
+  EXPECT_EQ(bubble_manager()->contents_warmup_level(),
+            WebUIContentsWarmupLevel::kNoRenderer);
 
   // Use the process dedicated to top chrome WebUIs if there is one.
   DestroyBubble(bubble_manager(), browser()->profile());
@@ -179,13 +179,13 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
       MakeBubbleManager(GURL("chrome://test2.top-chrome"));
   another_bubble_manager->ShowBubble();
   bubble_manager()->ShowBubble();
-  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
-            WebUIBubbleWarmUpLevel::kDedicatedRenderer);
+  EXPECT_EQ(bubble_manager()->contents_warmup_level(),
+            WebUIContentsWarmupLevel::kDedicatedRenderer);
 
   // Use the cached WebContents if there is one.
   bubble_manager()->CloseBubble();
   base::RunLoop().RunUntilIdle();
   bubble_manager()->ShowBubble();
-  EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
-            WebUIBubbleWarmUpLevel::kReshowingWebContents);
+  EXPECT_EQ(bubble_manager()->contents_warmup_level(),
+            WebUIContentsWarmupLevel::kReshowingWebContents);
 }

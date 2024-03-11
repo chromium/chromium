@@ -13,7 +13,6 @@
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/widget/widget.h"
 
 namespace {
 

@@ -94,7 +94,7 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
         base::BindOnce(
             [](base::TimeTicks bubble_created_time,
                bool bubble_using_cached_web_contents,
-               WebUIBubbleWarmUpLevel bubble_warmup_level,
+               WebUIContentsWarmupLevel contents_warmup_level,
                const viz::FrameTimingDetails& frame_timing_details) {
               base::TimeTicks presentation_timestamp =
                   frame_timing_details.presentation_feedback.timestamp;
@@ -107,12 +107,12 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
                   time_to_show);
               base::UmaHistogramMediumTimes(
                   base::StrCat({"Tabs.TabSearch.TimeToShow.",
-                                ToString(bubble_warmup_level)}),
+                                ToString(contents_warmup_level)}),
                   time_to_show);
             },
             *bubble_created_time_,
             webui_bubble_manager_.bubble_using_cached_web_contents(),
-            webui_bubble_manager_.bubble_warmup_level()));
+            webui_bubble_manager_.contents_warmup_level()));
     bubble_created_time_.reset();
   }
 }
