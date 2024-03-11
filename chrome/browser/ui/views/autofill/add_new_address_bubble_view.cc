@@ -25,7 +25,6 @@ AddNewAddressBubbleView::AddNewAddressBubbleView(
                      base::Unretained(controller_.get()),
                      AutofillClient::AddressPromptUserDecision::kDeclined));
 
-  SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE));
 
@@ -94,7 +93,9 @@ void AddNewAddressBubbleView::Hide() {
 }
 
 void AddNewAddressBubbleView::AddedToWidget() {
-  GetBubbleFrameView()->SetHeaderView(
+  views::BubbleFrameView* frame_view = GetBubbleFrameView();
+  frame_view->SetProperty(views::kElementIdentifierKey, kTopViewId);
+  frame_view->SetHeaderView(
       std::make_unique<ThemeTrackingNonAccessibleImageView>(
           ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS),
           ui::ImageModel::FromResourceId(IDR_SAVE_ADDRESS_DARK),

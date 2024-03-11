@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 
+#include "chrome/browser/ui/autofill/add_new_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/update_address_bubble_controller.h"
@@ -71,6 +72,17 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowUpdateAddressProfileBubble(
         std::make_unique<TestAutofillBubble>();
   }
   return update_address_profile_bubble_view_.get();
+}
+
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowAddNewAddressProfileBubble(
+    content::WebContents* contents,
+    std::unique_ptr<AddNewAddressBubbleController> controller,
+    bool is_user_gesture) {
+  if (!add_new_address_profile_bubble_view_) {
+    add_new_address_profile_bubble_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return add_new_address_profile_bubble_view_.get();
 }
 
 AutofillBubbleBase*

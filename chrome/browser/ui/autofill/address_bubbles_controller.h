@@ -53,6 +53,10 @@ class AddressBubblesController
       AutofillClient::SaveAddressProfilePromptOptions options,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
+  static void SetUpAndShowAddNewAddressBubble(
+      content::WebContents* web_contents,
+      AutofillClient::AddressProfileSavePromptCallback callback);
+
   // AddressBubbleControllerDelegate:
   void OnUserDecision(
       AutofillClient::AddressPromptUserDecision decision,
@@ -86,6 +90,8 @@ class AddressBubblesController
   friend class content::WebContentsUserData<
       AddressBubblesController>;
 
+  // TODO(b/325440757): Remove `profile` and `original_profile`, put them in
+  // specific bubble controllers.
   void SetUpAndShowBubble(
       ShowBubbleViewCallback show_bubble_view_callback,
       std::u16string page_action_icon_tootip,

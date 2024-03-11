@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/autofill/add_new_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
@@ -30,6 +31,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -72,6 +74,19 @@ AutofillBubbleBase* ShowUpdateBubble(
           web_contents, std::move(update_controller), shown_by_user_gesture);
 }
 
+AutofillBubbleBase* ShowAddNewAddressBubble(
+    bool save_into_account,
+    content::WebContents* web_contents,
+    bool shown_by_user_gesture,
+    base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
+  auto controller = std::make_unique<AddNewAddressBubbleController>(
+      web_contents, save_into_account, delegate);
+  return chrome::FindBrowserWithTab(web_contents)
+      ->window()
+      ->GetAutofillBubbleHandler()
+      ->ShowAddNewAddressProfileBubble(web_contents, std::move(controller),
+                                       shown_by_user_gesture);
+}
 }  // namespace
 
 AddressBubblesController::AddressBubblesController(
@@ -115,6 +130,38 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
   controller->SetUpAndShowBubble(
       std::move(show_bubble_view_impl), std::move(page_action_icon_tootip),
       profile, original_profile, options, std::move(callback));
+}
+
+// static
+void AddressBubblesController::SetUpAndShowAddNewAddressBubble(
+    content::WebContents* web_contents,
+    AutofillClient::AddressProfileSavePromptCallback callback) {
+  AddressBubblesController::CreateForWebContents(web_contents);
+  auto* controller = AddressBubblesController::FromWebContents(web_contents);
+  PersonalDataManager* pdm =
+      ContentAutofillClient::FromWebContents(web_contents)
+          ->GetPersonalDataManager();
+  AddressCountryCode country_code(pdm->GetDefaultCountryCodeForNewAddress());
+  // Note: addresses from unsupported countries can't be saved in account.
+  // TODO(crbug.com/1432505): remove temporary unsupported countries
+  // filtering.
+  bool is_account_eligible =
+      pdm->IsEligibleForAddressAccountStorage() &&
+      pdm->IsCountryEligibleForAccountStorage(country_code.value());
+  autofill::AutofillProfile::Source source =
+      is_account_eligible ? autofill::AutofillProfile::Source::kAccount
+                          : autofill::AutofillProfile::Source::kLocalOrSyncable;
+  autofill::AutofillProfile profile(source, country_code);
+
+  auto show_bubble_view_callback = base::BindRepeating(
+      ShowAddNewAddressBubble,
+      profile.source() == AutofillProfile::Source::kAccount);
+  std::u16string page_action_icon_tootip =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE);
+
+  controller->SetUpAndShowBubble(std::move(show_bubble_view_callback),
+                                 std::move(page_action_icon_tootip), profile,
+                                 nullptr, {}, std::move(callback));
 }
 
 void AddressBubblesController::OnUserDecision(

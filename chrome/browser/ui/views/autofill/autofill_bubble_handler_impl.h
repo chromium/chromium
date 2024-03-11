@@ -68,6 +68,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       content::WebContents* web_contents,
       std::unique_ptr<UpdateAddressBubbleController> controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowAddNewAddressProfileBubble(
+      content::WebContents* web_contents,
+      std::unique_ptr<AddNewAddressBubbleController> controller,
+      bool is_user_gesture) override;
   AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
       content::WebContents* web_contents,
       VirtualCardManualFallbackBubbleController* controller,

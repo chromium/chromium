@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
@@ -45,6 +46,33 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace autofill {
+
+namespace {
+
+template <class ViewType, class ControllerType>
+AutofillBubbleBase* ShowAddressProfileBubble(
+    ToolbarButtonProvider* toolbar_button_provider_,
+    content::WebContents* web_contents,
+    std::unique_ptr<ControllerType> controller,
+    bool is_user_gesture) {
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kAutofillAddress);
+  ViewType* bubble =
+      new ViewType(std::move(controller), anchor_view, web_contents);
+  DCHECK(bubble);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kAutofillAddress);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(is_user_gesture
+                            ? LocationBarBubbleDelegateView::USER_GESTURE
+                            : LocationBarBubbleDelegateView::AUTOMATIC);
+  return bubble;
+}
+
+}  // namespace
 
 AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
     Browser* browser,
@@ -187,40 +215,27 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
     content::WebContents* web_contents,
     std::unique_ptr<SaveAddressBubbleController> controller,
     bool is_user_gesture) {
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kAutofillAddress);
-  SaveAddressProfileView* bubble = new SaveAddressProfileView(
-      std::move(controller), anchor_view, web_contents);
-  DCHECK(bubble);
-  PageActionIconView* icon_view =
-      toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kAutofillAddress);
-  DCHECK(icon_view);
-  bubble->SetHighlightedButton(icon_view);
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
-                               : LocationBarBubbleDelegateView::AUTOMATIC);
-  return bubble;
+  return ShowAddressProfileBubble<SaveAddressProfileView>(
+      toolbar_button_provider_, web_contents, std::move(controller),
+      is_user_gesture);
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
     content::WebContents* web_contents,
     std::unique_ptr<UpdateAddressBubbleController> controller,
     bool is_user_gesture) {
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kAutofillAddress);
-  UpdateAddressProfileView* bubble = new UpdateAddressProfileView(
-      std::move(controller), anchor_view, web_contents);
-  DCHECK(bubble);
-  PageActionIconView* icon_view =
-      toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kAutofillAddress);
-  DCHECK(icon_view);
-  bubble->SetHighlightedButton(icon_view);
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
-                               : LocationBarBubbleDelegateView::AUTOMATIC);
-  return bubble;
+  return ShowAddressProfileBubble<UpdateAddressProfileView>(
+      toolbar_button_provider_, web_contents, std::move(controller),
+      is_user_gesture);
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddNewAddressProfileBubble(
+    content::WebContents* web_contents,
+    std::unique_ptr<AddNewAddressBubbleController> controller,
+    bool is_user_gesture) {
+  return ShowAddressProfileBubble<AddNewAddressBubbleView>(
+      toolbar_button_provider_, web_contents, std::move(controller),
+      is_user_gesture);
 }
 
 AutofillBubbleBase*
