@@ -672,13 +672,19 @@ bool OSExchangeDataProviderWin::GetFileContents(
   return true;
 }
 
-bool OSExchangeDataProviderWin::GetHtml(std::u16string* html,
-                                        GURL* base_url) const {
+std::optional<OSExchangeDataProvider::HtmlInfo>
+OSExchangeDataProviderWin::GetHtml() const {
+  std::u16string html;
   std::string url;
-  bool success = clipboard_util::GetHtml(source_object_.Get(), html, &url);
-  if (success)
-    *base_url = GURL(url);
-  return success;
+  bool success = clipboard_util::GetHtml(source_object_.Get(), &html, &url);
+  if (!success) {
+    return std::nullopt;
+  }
+
+  return HtmlInfo{
+      .html = html,
+      .base_url = GURL(url),
+  };
 }
 
 bool OSExchangeDataProviderWin::HasString() const {

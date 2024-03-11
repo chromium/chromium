@@ -221,12 +221,11 @@ TEST_F(OSExchangeDataTest, TestHTML) {
     return data.provider().Clone();
   }());
 
-  std::u16string read_html;
-  GURL read_url;
   EXPECT_TRUE(copy.HasHtml());
-  EXPECT_TRUE(copy.GetHtml(&read_html, &read_url));
-  EXPECT_EQ(html, read_html);
-  EXPECT_EQ(url, read_url);
+  std::optional<ui::OSExchangeData::HtmlInfo> html_content = copy.GetHtml();
+  ASSERT_TRUE(html_content.has_value());
+  EXPECT_EQ(html, html_content->html);
+  EXPECT_EQ(url, html_content->base_url);
 }
 #endif
 

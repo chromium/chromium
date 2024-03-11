@@ -481,21 +481,22 @@ void XOSExchangeDataProvider::SetHtml(const std::u16string& html,
   format_map_.Insert(x11::GetAtom(kMimeTypeHTML), mem);
 }
 
-bool XOSExchangeDataProvider::GetHtml(std::u16string* html,
-                                      GURL* base_url) const {
+std::optional<OSExchangeDataProvider::HtmlInfo>
+XOSExchangeDataProvider::GetHtml() const {
   std::vector<x11::Atom> url_atoms;
   url_atoms.push_back(x11::GetAtom(kMimeTypeHTML));
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
   ui::SelectionData data(format_map_.GetFirstOf(requested_types));
-  if (data.IsValid()) {
-    *html = data.GetHtml();
-    *base_url = GURL();
-    return true;
+  if (!data.IsValid()) {
+    return std::nullopt;
   }
 
-  return false;
+  return HtmlInfo{
+      .html = data.GetHtml(),
+      .base_url = GURL(),
+  };
 }
 
 bool XOSExchangeDataProvider::HasHtml() const {

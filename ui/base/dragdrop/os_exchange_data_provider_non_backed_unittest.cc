@@ -74,11 +74,11 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_EQ(base::FilePath(kFileContentsFileName), copy_file_contents_filename);
   EXPECT_EQ(std::string(kFileContents), copy_file_contents);
 
-  std::u16string copy_html;
-  GURL copy_base_url;
-  EXPECT_TRUE(copy->GetHtml(&copy_html, &copy_base_url));
-  EXPECT_EQ(kHtml, copy_html);
-  EXPECT_EQ(GURL(kBaseUrl), copy_base_url);
+  std::optional<OSExchangeDataProvider::HtmlInfo> html_content =
+      copy->GetHtml();
+  ASSERT_TRUE(html_content.has_value());
+  EXPECT_EQ(kHtml, html_content->html);
+  EXPECT_EQ(GURL(kBaseUrl), html_content->base_url);
 
   EXPECT_TRUE(copy->IsRendererTainted());
 

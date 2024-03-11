@@ -720,13 +720,13 @@ void WebContentsViewAura::PrepareDropData(
     drop_data->url_title = url_title;
   }
 
-  std::u16string html;
-  GURL html_base_url;
-  data.GetHtml(&html, &html_base_url);
-  if (!html.empty())
-    drop_data->html = html;
-  if (html_base_url.is_valid())
-    drop_data->html_base_url = html_base_url;
+  std::optional<ui::OSExchangeData::HtmlInfo> html_content = data.GetHtml();
+  if (html_content.has_value()) {
+    drop_data->html = html_content->html;
+    if (html_content->base_url.is_valid()) {
+      drop_data->html_base_url = html_content->base_url;
+    }
+  }
 
   // Only add FileContents if Filenames is empty to avoid duplicates
   // (https://crbug.com/1251482). We prefer filenames since it supports multiple

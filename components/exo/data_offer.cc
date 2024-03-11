@@ -322,18 +322,19 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     delegate_->OnOffer(text_plain_mime_type);
   }
 
-  std::u16string html_content;
-  GURL url_content;
-  if (data.HasHtml() && data.GetHtml(&html_content, &url_content)) {
+  if (std::optional<ui::OSExchangeData::HtmlInfo> html_content = data.GetHtml();
+      html_content.has_value()) {
     const std::string utf8_html_mime_type = std::string(ui::kMimeTypeHTMLUtf8);
-    data_callbacks_.emplace(utf8_html_mime_type,
-                            AsyncEncodeAsRefCountedString(html_content, kUTF8));
+    data_callbacks_.emplace(
+        utf8_html_mime_type,
+        AsyncEncodeAsRefCountedString(html_content->html, kUTF8));
     delegate_->OnOffer(utf8_html_mime_type);
 
     const std::string utf16_html_mime_type =
         std::string(kTextHtmlMimeTypeUtf16);
-    data_callbacks_.emplace(utf16_html_mime_type, AsyncEncodeAsRefCountedString(
-                                                      html_content, kUTF16));
+    data_callbacks_.emplace(
+        utf16_html_mime_type,
+        AsyncEncodeAsRefCountedString(html_content->html, kUTF16));
     delegate_->OnOffer(utf16_html_mime_type);
   }
 }

@@ -308,10 +308,8 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   }
   if ((mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) &&
       HasHtml()) {
-    std::u16string data;
-    GURL base_url;
-    GetHtml(&data, &base_url);
-    out_content->append(base::UTF16ToUTF8(data));
+    const std::optional<ui::OSExchangeData::HtmlInfo>& html_content = GetHtml();
+    out_content->append(base::UTF16ToUTF8(html_content->html));
     return true;
   }
   if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream) &&

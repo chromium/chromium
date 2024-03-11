@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   bool HasFileContents() const override;
 
   void SetHtml(const std::u16string& html, const GURL& base_url) override;
-  bool GetHtml(std::u16string* html, GURL* base_url) const override;
+  std::optional<HtmlInfo> GetHtml() const override;
   bool HasHtml() const override;
   void SetDragImage(const gfx::ImageSkia& image,
                     const gfx::Vector2d& cursor_offset) override;

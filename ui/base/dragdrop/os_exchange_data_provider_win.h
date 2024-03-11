@@ -184,7 +184,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
                       base::Pickle* data) const override;
   bool GetFileContents(base::FilePath* filename,
                        std::string* file_contents) const override;
-  bool GetHtml(std::u16string* html, GURL* base_url) const override;
+  std::optional<HtmlInfo> GetHtml() const override;
   bool HasString() const override;
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;

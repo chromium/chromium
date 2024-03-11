@@ -201,13 +201,16 @@ void OSExchangeDataProviderNonBacked::SetHtml(const std::u16string& html,
   base_url_ = base_url;
 }
 
-bool OSExchangeDataProviderNonBacked::GetHtml(std::u16string* html,
-                                              GURL* base_url) const {
-  if ((formats_ & OSExchangeData::HTML) == 0)
-    return false;
-  *html = html_;
-  *base_url = base_url_;
-  return true;
+std::optional<OSExchangeData::HtmlInfo>
+OSExchangeDataProviderNonBacked::GetHtml() const {
+  if (!HasHtml()) {
+    return std::nullopt;
+  }
+
+  return HtmlInfo{
+      .html = html_,
+      .base_url = base_url_,
+  };
 }
 
 bool OSExchangeDataProviderNonBacked::HasHtml() const {

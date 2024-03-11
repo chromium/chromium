@@ -167,8 +167,8 @@ void OSExchangeData::SetHtml(const std::u16string& html, const GURL& base_url) {
   provider_->SetHtml(html, base_url);
 }
 
-bool OSExchangeData::GetHtml(std::u16string* html, GURL* base_url) const {
-  return provider_->GetHtml(html, base_url);
+std::optional<OSExchangeData::HtmlInfo> OSExchangeData::GetHtml() const {
+  return provider_->GetHtml();
 }
 #endif
 

@@ -415,10 +415,10 @@ class DragStartWaiter : public aura::client::DragDropClient {
         text_ = "<no text>";
       }
 
-      GURL base_url;
-      std::u16string html;
-      if (data->GetHtml(&html, &base_url)) {
-        html_ = base::UTF16ToUTF8(html);
+      std::optional<ui::OSExchangeData::HtmlInfo> html_content =
+          data->GetHtml();
+      if (html_content.has_value()) {
+        html_ = base::UTF16ToUTF8(html_content->html);
       } else {
         html_ = "<no html>";
       }

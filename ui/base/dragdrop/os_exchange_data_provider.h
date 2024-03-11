@@ -98,7 +98,11 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
 
 #if defined(USE_AURA)
   virtual void SetHtml(const std::u16string& html, const GURL& base_url) = 0;
-  virtual bool GetHtml(std::u16string* html, GURL* base_url) const = 0;
+  struct HtmlInfo {
+    std::u16string html;
+    GURL base_url;
+  };
+  virtual std::optional<HtmlInfo> GetHtml() const = 0;
   virtual bool HasHtml() const = 0;
 #endif
 

@@ -195,7 +195,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // Adds a snippet of HTML.  |html| is just raw html but this sets both
   // text/html and CF_HTML.
   void SetHtml(const std::u16string& html, const GURL& base_url);
-  bool GetHtml(std::u16string* html, GURL* base_url) const;
+  using HtmlInfo = OSExchangeDataProvider::HtmlInfo;
+  std::optional<HtmlInfo> GetHtml() const;
   bool HasHtml() const;
 #endif
 
