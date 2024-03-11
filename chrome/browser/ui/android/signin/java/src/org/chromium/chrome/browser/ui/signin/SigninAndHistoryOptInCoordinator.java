@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.signin;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
@@ -60,6 +59,7 @@ public class SigninAndHistoryOptInCoordinator
 
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
     private HistorySyncCoordinator mHistorySyncCoordinator;
+    private PropertyModel mDialogModel;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
@@ -193,6 +193,13 @@ public class SigninAndHistoryOptInCoordinator
         }
     }
 
+    public void switchHistorySyncLayout() {
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+            showDialogContentView();
+        }
+    }
+
     /** Implements {@link HistorySyncDelegate} */
     @Override
     public void dismissHistorySync() {
@@ -296,9 +303,8 @@ public class SigninAndHistoryOptInCoordinator
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
         assert manager != null;
 
-        PropertyModel dialogModel =
+        mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, getDialogContentView())
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(
                                 ModalDialogProperties.DIALOG_STYLES,
@@ -337,18 +343,22 @@ public class SigninAndHistoryOptInCoordinator
                                 })
                         .build();
 
-        manager.showDialog(
-                dialogModel,
-                ModalDialogManager.ModalDialogType.APP,
-                ModalDialogManager.ModalDialogPriority.VERY_HIGH);
+        showDialogContentView();
     }
 
-    private @NonNull View getDialogContentView() {
+    private void showDialogContentView() {
         Profile profile = mProfileSupplier.get();
         assert profile != null;
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(mActivity, this, profile, mSigninAccessPoint);
-        return mHistorySyncCoordinator.getView();
+        assert mDialogModel != null;
+        mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, mHistorySyncCoordinator.getView());
+        ModalDialogManager manager = mModalDialogManagerSupplier.get();
+        assert manager != null;
+        manager.showDialog(
+                mDialogModel,
+                ModalDialogManager.ModalDialogType.APP,
+                ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
     private void onFlowComplete() {

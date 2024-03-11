@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -136,6 +137,12 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         // Remove activity animation to avoid visual glitches due to the semi-transparent
         // background.
         overridePendingTransition(0, R.anim.no_anim);
+    }
+
+    @Override
+    public void performOnConfigurationChanged(Configuration newConfig) {
+        super.performOnConfigurationChanged(newConfig);
+        mCoordinator.switchHistorySyncLayout();
     }
 
     @Override
