@@ -295,13 +295,14 @@ HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
   return out;
 }
 
-ScriptPromise Fence::disableUntrustedNetwork(ScriptState* script_state,
-                                             ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> Fence::disableUntrustedNetwork(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a Fence object associated with a Document that is not "
         "fully active.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
@@ -313,20 +314,20 @@ ScriptPromise Fence::disableUntrustedNetwork(ScriptState* script_state,
   if (!can_disable_untrusted_network) {
     exception_state.ThrowTypeError(
         "This frame is not allowed to disable untrusted network.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   frame->GetLocalFrameHostRemote().DisableUntrustedNetworkInFencedFrame(
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &Fence::DisableUntrustedNetworkComplete, WrapPersistent(this))));
+      WTF::BindOnce(
+          [](ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+            resolver->Resolve();
+          },
+          WrapPersistent(resolver)));
   return promise;
-}
-
-void Fence::DisableUntrustedNetworkComplete(ScriptPromiseResolver* resolver) {
-  resolver->Resolve();
 }
 
 void Fence::reportPrivateAggregationEvent(const String& event,

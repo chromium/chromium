@@ -20,10 +20,11 @@ class CORE_EXPORT ElementFullscreen {
   STATIC_ONLY(ElementFullscreen);
 
  public:
-  static ScriptPromise requestFullscreen(ScriptState*,
-                                         Element&,
-                                         const FullscreenOptions*,
-                                         ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLUndefined> requestFullscreen(
+      ScriptState*,
+      Element&,
+      const FullscreenOptions*,
+      ExceptionState& exception_state);
 
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(fullscreenchange, kFullscreenchange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(fullscreenerror, kFullscreenerror)

@@ -5,5 +5,5 @@
 [
     ImplementedAs=InternalsStorageAccess
 ] partial interface Internals {
-    [CallWith=ScriptState, RaisesException] Promise<void> setStorageAccess(USVString origin, USVString embeddingOrigin, boolean blocked);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> setStorageAccess(USVString origin, USVString embeddingOrigin, boolean blocked);
 };

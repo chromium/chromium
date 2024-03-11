@@ -5,5 +5,5 @@
 [
     ImplementedAs=InternalsDeleteAllCookies
 ] partial interface Internals {
-    [CallWith=ScriptState] Promise<void> deleteAllCookies();
+    [CallWith=ScriptState] Promise<undefined> deleteAllCookies();
 };

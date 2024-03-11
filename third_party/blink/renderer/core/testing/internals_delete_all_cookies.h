@@ -5,21 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_DELETE_ALL_COOKIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_DELETE_ALL_COOKIES_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class Internals;
-class ScriptPromise;
 class ScriptState;
 
 class InternalsDeleteAllCookies {
   STATIC_ONLY(InternalsDeleteAllCookies);
 
  public:
-  static ScriptPromise deleteAllCookies(ScriptState* script_state,
-                                        Internals& internals);
+  static ScriptPromiseTyped<IDLUndefined> deleteAllCookies(
+      ScriptState* script_state,
+      Internals& internals);
 };
 
 }  // namespace blink

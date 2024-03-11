@@ -144,10 +144,11 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
 class OperatorForEachInternalObserver final
     : public ObservableInternalObserver {
  public:
-  OperatorForEachInternalObserver(ScriptPromiseResolver* resolver,
-                                  AbortController* controller,
-                                  V8Visitor* callback,
-                                  AbortSignal::AlgorithmHandle* handle)
+  OperatorForEachInternalObserver(
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+      AbortController* controller,
+      V8Visitor* callback,
+      AbortSignal::AlgorithmHandle* handle)
       : resolver_(resolver),
         controller_(controller),
         callback_(callback),
@@ -201,7 +202,7 @@ class OperatorForEachInternalObserver final
 
  private:
   uint64_t idx_ = 0;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
   Member<AbortController> controller_;
   Member<V8Visitor> callback_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
@@ -859,12 +860,14 @@ ScriptPromiseTyped<IDLSequence<IDLAny>> Observable::toArray(
   return promise;
 }
 
-ScriptPromise Observable::forEach(ScriptState* script_state,
-                                  V8Visitor* callback,
-                                  SubscribeOptions* options) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> Observable::forEach(
+    ScriptState* script_state,
+    V8Visitor* callback,
+    SubscribeOptions* options) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   AbortController* visitor_callback_controller =
       AbortController::Create(script_state);

@@ -231,7 +231,7 @@ void ResetMockOverlayScrollbars() {
 
 class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
  public:
-  UseCounterImplObserverImpl(ScriptPromiseResolver* resolver,
+  UseCounterImplObserverImpl(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                              WebFeature feature)
       : resolver_(resolver), feature_(feature) {}
   UseCounterImplObserverImpl(const UseCounterImplObserverImpl&) = delete;
@@ -251,7 +251,7 @@ class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
   }
 
  private:
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
   WebFeature feature_;
 };
 
@@ -322,7 +322,8 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
     if (generator_) {
       return ScriptPromise::CastUndefined(script_state);
     }
-    resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    resolver_ = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+        script_state);
     return resolver_->Promise();
   }
 
@@ -385,7 +386,7 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
  private:
   const Type type_;
   std::unique_ptr<Generator> generator_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
 };
 
 UnderlyingSourceBase*
@@ -488,7 +489,9 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
     if (internal_sink_) {
       return ScriptPromise::CastUndefined(script_state);
     }
-    start_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    start_resolver_ =
+        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+            script_state);
     return start_resolver_->Promise();
   }
   ScriptPromise write(ScriptState* script_state,
@@ -595,7 +598,7 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
   // initially, and set atomically when the associated optimizer is activated.
   scoped_refptr<base::RefCountedData<std::atomic_bool>> optimizer_flag_;
   std::unique_ptr<InternalSink> internal_sink_;
-  Member<ScriptPromiseResolver> start_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> start_resolver_;
   bool closed_ = false;
   bool detached_ = false;
   Reply reply_;
@@ -3686,11 +3689,14 @@ Vector<String> Internals::getCSSPropertyAliases() const {
   return result;
 }
 
-ScriptPromise Internals::observeUseCounter(ScriptState* script_state,
-                                           Document* document,
-                                           uint32_t feature) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> Internals::observeUseCounter(
+    ScriptState* script_state,
+    Document* document,
+    uint32_t feature) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
   if (feature >= static_cast<int32_t>(WebFeature::kNumberOfFeatures)) {
     resolver->Reject();
     return promise;

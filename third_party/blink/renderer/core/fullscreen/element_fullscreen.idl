@@ -7,7 +7,7 @@
 [
     ImplementedAs=ElementFullscreen
 ] partial interface Element {
-    [CallWith=ScriptState, RaisesException] Promise<void> requestFullscreen(optional FullscreenOptions options = {});
+    [CallWith=ScriptState, RaisesException] Promise<undefined> requestFullscreen(optional FullscreenOptions options = {});
 
     attribute EventHandler onfullscreenchange;
     attribute EventHandler onfullscreenerror;

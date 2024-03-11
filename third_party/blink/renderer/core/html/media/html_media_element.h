@@ -239,7 +239,7 @@ class CORE_EXPORT HTMLMediaElement
   bool Autoplay() const;
   bool Loop() const;
   void SetLoop(bool);
-  ScriptPromise playForBindings(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> playForBindings(ScriptState*);
   std::optional<DOMExceptionCode> Play();
 
   // Called when the video should pause to let audio descriptions finish.

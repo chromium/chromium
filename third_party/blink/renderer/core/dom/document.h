@@ -55,6 +55,8 @@
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -227,8 +229,6 @@ class RootScrollerController;
 class SVGDocumentExtensions;
 class SVGUseElement;
 class ScriptElementBase;
-class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptRegexp;
 class ScriptRunner;
 class ScriptRunnerDelayer;
@@ -1246,9 +1246,11 @@ class CORE_EXPORT Document : public ContainerNode,
   // Storage Access API methods to check for or request access to storage that
   // may otherwise be blocked.
   ScriptPromiseTyped<IDLBoolean> hasStorageAccess(ScriptState* script_state);
-  ScriptPromise requestStorageAccess(ScriptState* script_state);
-  ScriptPromise requestStorageAccessFor(ScriptState* script_state,
-                                        const AtomicString& site);
+  ScriptPromiseTyped<IDLUndefined> requestStorageAccess(
+      ScriptState* script_state);
+  ScriptPromiseTyped<IDLUndefined> requestStorageAccessFor(
+      ScriptState* script_state,
+      const AtomicString& site);
 
   // Fragment directive API, currently used to feature detect text-fragments.
   // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
@@ -2291,7 +2293,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // Attempt permission checks for unpartitioned storage access and enable
   // unpartitioned cookie access based on success if
   // `request_unpartitioned_cookie_access` is true.
-  ScriptPromise RequestStorageAccessImpl(
+  ScriptPromiseTyped<IDLUndefined> RequestStorageAccessImpl(
       ScriptState* script_state,
       bool request_unpartitioned_cookie_access);
 
@@ -2299,14 +2301,14 @@ class CORE_EXPORT Document : public ContainerNode,
   // otherwise, and consumes user activation. Enables unpartitioned cookie
   // access if `request_unpartitioned_cookie_access` is true.
   void ProcessStorageAccessPermissionState(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
       bool request_unpartitioned_cookie_access,
       mojom::blink::PermissionStatus status);
 
   // Similar to `ProcessStorageAccessPermissionState`, but for the top-level
   // variant. Notably, does not modify the per-frame storage access bit.
   void ProcessTopLevelStorageAccessPermissionState(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
       mojom::blink::PermissionStatus status);
 
   // Fetch the compression dictionary sent in the response header after the

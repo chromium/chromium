@@ -542,7 +542,9 @@ class Internals final : public ScriptWrappable {
   // Observes changes on Document's UseCounter. Returns a promise that is
   // resolved when |feature| is counted. When |feature| was already counted,
   // it's immediately resolved.
-  ScriptPromise observeUseCounter(ScriptState*, Document*, uint32_t feature);
+  ScriptPromiseTyped<IDLUndefined> observeUseCounter(ScriptState*,
+                                                     Document*,
+                                                     uint32_t feature);
 
   // Used by the iterable<>.
   unsigned length() const { return 5; }

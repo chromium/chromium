@@ -45,23 +45,25 @@ void Worklet::Dispose() {
 // Implementation of the first half of the "addModule(moduleURL, options)"
 // algorithm:
 // https://drafts.css-houdini.org/worklets/#dom-worklet-addmodule
-ScriptPromise Worklet::addModule(ScriptState* script_state,
-                                 const String& module_url,
-                                 const WorkletOptions* options,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> Worklet::addModule(
+    ScriptState* script_state,
+    const String& module_url,
+    const WorkletOptions* options,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "This frame is already detached");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   UseCounter::Count(GetExecutionContext(),
                     mojom::WebFeature::kWorkletAddModule);
 
   // Step 1: "Let promise be a new promise."
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   // Step 2: "Let worklet be the current Worklet."
   // |this| is the current Worklet.

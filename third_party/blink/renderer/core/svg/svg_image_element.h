@@ -60,7 +60,7 @@ class CORE_EXPORT SVGImageElement final
     return GetImageLoader().HasPendingActivity();
   }
 
-  ScriptPromise decode(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> decode(ScriptState*, ExceptionState&);
 
   // Exposed for testing.
   ImageResourceContent* CachedImage() const {

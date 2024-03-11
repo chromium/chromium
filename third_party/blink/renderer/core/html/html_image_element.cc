@@ -841,8 +841,9 @@ int HTMLImageElement::y() const {
   return abs_pos.top.ToInt();
 }
 
-ScriptPromise HTMLImageElement::decode(ScriptState* script_state,
-                                       ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> HTMLImageElement::decode(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return GetImageLoader().Decode(script_state, exception_state);
 }
 

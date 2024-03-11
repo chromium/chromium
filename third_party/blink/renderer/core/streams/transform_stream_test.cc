@@ -414,7 +414,8 @@ TEST_F(TransformStreamTest, WaitInTransform) {
     explicit WaitInTransformTransformer(ScriptState* script_state)
         : TestTransformer(script_state),
           transform_promise_resolver_(
-              MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {}
+              MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+                  script_state)) {}
 
     ScriptPromise Transform(v8::Local<v8::Value>,
                             TransformStreamDefaultController*,
@@ -436,7 +437,8 @@ TEST_F(TransformStreamTest, WaitInTransform) {
     }
 
    private:
-    const Member<ScriptPromiseResolver> transform_promise_resolver_;
+    const Member<ScriptPromiseResolverTyped<IDLUndefined>>
+        transform_promise_resolver_;
     bool flush_called_ = false;
   };
 
@@ -481,7 +483,8 @@ TEST_F(TransformStreamTest, WaitInFlush) {
     explicit WaitInFlushTransformer(ScriptState* script_state)
         : TestTransformer(script_state),
           flush_promise_resolver_(
-              MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {}
+              MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+                  script_state)) {}
 
     ScriptPromise Flush(TransformStreamDefaultController*,
                         ExceptionState&) override {
@@ -496,7 +499,8 @@ TEST_F(TransformStreamTest, WaitInFlush) {
     }
 
    private:
-    const Member<ScriptPromiseResolver> flush_promise_resolver_;
+    const Member<ScriptPromiseResolverTyped<IDLUndefined>>
+        flush_promise_resolver_;
   };
 
   V8TestingScope scope;

@@ -340,7 +340,16 @@ class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
         MakeGarbageCollected<IDLResolvedType>(value));
   }
 
-  void Resolve() { ScriptPromiseResolver::Resolve(); }
+  // Many IDL-exposed promises with a type other than undefined nevertheless
+  // resolve with undefined in certain circumstances. Do we need to support this
+  // behavior?
+  void Resolve() {
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    ResolveOrReject<IDLUndefined, ToV8UndefinedGenerator>(
+        ToV8UndefinedGenerator());
+  }
 
   ScriptPromiseTyped<IDLResolvedType> Promise() {
 #if DCHECK_IS_ON()

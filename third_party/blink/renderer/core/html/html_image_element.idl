@@ -62,7 +62,7 @@
     [MeasureAs=HTMLImageElementX] readonly attribute long x;
     [MeasureAs=HTMLImageElementY] readonly attribute long y;
 
-    [CallWith=ScriptState, RaisesException] Promise<void> decode();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> decode();
 };
 
 HTMLImageElement includes HTMLAttributionSrcElementUtils;

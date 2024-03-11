@@ -6654,25 +6654,27 @@ ScriptPromiseTyped<IDLBoolean> Document::hasStorageAccess(
   return promise;
 }
 
-ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
-                                                const AtomicString& origin) {
+ScriptPromiseTyped<IDLUndefined> Document::requestStorageAccessFor(
+    ScriptState* script_state,
+    const AtomicString& origin) {
   if (!GetFrame()) {
     FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_NO_ORIGIN);
     // Note that in detached frames, resolvers are not able to return a promise.
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "requestStorageAccessFor: Cannot be used unless "
                           "the document is fully active."));
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (!IsInOutermostMainFrame()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -6771,21 +6773,22 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
+ScriptPromiseTyped<IDLUndefined> Document::requestStorageAccess(
+    ScriptState* script_state) {
   // Requesting storage access via `requestStorageAccess()` idl always requests
   // unpartitioned cookie access.
   return RequestStorageAccessImpl(script_state,
                                   /*request_unpartitioned_cookie_access=*/true);
 }
 
-ScriptPromise Document::RequestStorageAccessImpl(
+ScriptPromiseTyped<IDLUndefined> Document::RequestStorageAccessImpl(
     ScriptState* script_state,
     bool request_unpartitioned_cookie_access) {
   if (!GetFrame()) {
     FireRequestStorageAccessHistogram(RequestStorageResult::REJECTED_NO_ORIGIN);
 
     // Note that in detached frames, resolvers are not able to return a promise.
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "requestStorageAccess: Cannot be used unless the "
@@ -6799,12 +6802,13 @@ ScriptPromise Document::RequestStorageAccessImpl(
     cookie_jar_->InvalidateCache();
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (!dom_window_->isSecureContext()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -6892,7 +6896,7 @@ ScriptPromise Document::RequestStorageAccessImpl(
 }
 
 void Document::ProcessStorageAccessPermissionState(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     bool request_unpartitioned_cookie_access,
     mojom::blink::PermissionStatus status) {
   DCHECK(resolver);
@@ -6930,7 +6934,7 @@ void Document::ProcessStorageAccessPermissionState(
 }
 
 void Document::ProcessTopLevelStorageAccessPermissionState(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     mojom::blink::PermissionStatus status) {
   DCHECK(resolver);
   DCHECK(GetFrame());

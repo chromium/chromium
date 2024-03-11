@@ -25,7 +25,7 @@ class Worklet;
 class CORE_EXPORT WorkletPendingTasks final
     : public GarbageCollected<WorkletPendingTasks> {
  public:
-  WorkletPendingTasks(Worklet*, ScriptPromiseResolver*);
+  WorkletPendingTasks(Worklet*, ScriptPromiseResolverTyped<IDLUndefined>*);
 
   // This must be called after the construction and before decrementing the
   // counter.
@@ -44,7 +44,7 @@ class CORE_EXPORT WorkletPendingTasks final
   // |resolver_| already rejected the promise.
   int counter_;
 
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
 
   Member<Worklet> worklet_;
 };

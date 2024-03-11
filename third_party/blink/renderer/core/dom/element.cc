@@ -8144,15 +8144,14 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
 ScriptValue Element::requestPointerLock(ScriptState* script_state,
                                         const PointerLockOptions* options,
                                         ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise;
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   if (GetDocument().GetPage()) {
-    promise =
-        GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
-            resolver, this, exception_state, options);
+    GetDocument().GetPage()->GetPointerLockController().RequestPointerLock(
+        resolver, this, exception_state, options);
   } else {
-    promise = resolver->Promise();
     exception_state.ThrowDOMException(
         DOMExceptionCode::kWrongDocumentError,
         "PointerLock cannot be request when there "

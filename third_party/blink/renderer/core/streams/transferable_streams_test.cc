@@ -539,7 +539,9 @@ TEST(ConcatenatedReadableStreamTest, PendingStart1) {
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
   TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({1, 2}),
       resolver->Promise());
@@ -574,7 +576,9 @@ TEST(ConcatenatedReadableStreamTest, PendingStart2) {
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
   TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({1}));
   TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(

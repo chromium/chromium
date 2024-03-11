@@ -345,4 +345,13 @@ ScriptPromise ScriptPromise::All(ScriptState* script_state,
   return PromiseAllHandler::All(script_state, promises);
 }
 
+ScriptPromiseTyped<IDLUndefined> ToResolvedUndefinedPromise(
+    ScriptState* script_state) {
+  ScriptPromiseTyped<IDLUndefined>::InternalResolverTyped resolver(
+      script_state);
+  auto promise = resolver.Promise();
+  resolver.Resolve(v8::Undefined(script_state->GetIsolate()));
+  return promise;
+}
+
 }  // namespace blink

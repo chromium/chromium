@@ -230,29 +230,24 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
   window->GetFrame()->GetPage()->SetPreferenceOverride(featureName, String());
 }
 
-ScriptPromise PreferenceObject::requestOverride(
+ScriptPromiseTyped<IDLUndefined> PreferenceObject::requestOverride(
     ScriptState* script_state,
     std::optional<AtomicString> value) {
   if (!script_state || !script_state->ContextIsValid()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   auto* execution_context = ExecutionContext::From(script_state);
   if (!execution_context || execution_context->IsContextDestroyed()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (!window) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
 
   if (!value.has_value() || value.value().empty()) {
     clearOverride(script_state);
-    resolver->Resolve();
-
-    return promise;
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   // TODO add equality check before overriding
@@ -307,16 +302,14 @@ ScriptPromise PreferenceObject::requestOverride(
   }
 
   if (newValue.empty()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kTypeMismatchError,
-        value.value() + " is not a valid value."));
-    return promise;
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kTypeMismatchError,
+                          value.value() + " is not a valid value."));
   }
 
   window->GetFrame()->GetPage()->SetPreferenceOverride(featureName, newValue);
-  resolver->Resolve();
-
-  return promise;
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 const FrozenArray<IDLString>& PreferenceObject::validValues() {

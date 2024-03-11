@@ -27,7 +27,7 @@
     [LegacyLenientSetter] readonly attribute boolean fullscreenEnabled;
     [LegacyLenientSetter, Unscopable, ImplementedAs=fullscreenElement] readonly attribute boolean fullscreen;
 
-    [CallWith=ScriptState, RaisesException] Promise<void> exitFullscreen();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> exitFullscreen();
 
     attribute EventHandler onfullscreenchange;
     attribute EventHandler onfullscreenerror;
