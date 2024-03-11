@@ -173,7 +173,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_enabled = False,
     tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -186,7 +185,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.MAC_BRANCHES,
     cpu = cpu.ARM64,
     main_list_view = "try",
-    siso_enabled = False,
 )
 
 try_.builder(
@@ -749,7 +747,6 @@ try_.gpu.optional_tests_builder(
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
-    siso_enabled = False,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.
