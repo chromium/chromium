@@ -78,21 +78,40 @@ enum class TrustedVaultRecoverabilityStatus {
   kMaxValue = kError,
 };
 
-// The possible results for `DownloadAuthenticationFactorsRegistrationState`.
-// These values are persisted in histograms. Entries should not be renumbered
-// and numeric values should never be reused.
-enum class DownloadAuthenticationFactorsRegistrationStateResult {
-  // The state of the security domain could not be determined.
-  kError = 0,
-  // The security domain is empty and thus doesn't have any secrets.
-  kEmpty = 1,
-  // The security domain is non-empty, but has virtual devices that are valid
-  // for recovery.
-  kRecoverable = 2,
-  // The security domain is non-empty, but has no virtual devices that can be
-  // used for recovery.
-  kIrrecoverable = 3,
-  kMaxValue = kIrrecoverable,
+// The result of calling
+// DownloadAuthenticationFactorsRegistrationState.
+struct DownloadAuthenticationFactorsRegistrationStateResult {
+  DownloadAuthenticationFactorsRegistrationStateResult();
+  DownloadAuthenticationFactorsRegistrationStateResult(
+      DownloadAuthenticationFactorsRegistrationStateResult&&);
+  DownloadAuthenticationFactorsRegistrationStateResult& operator=(
+      DownloadAuthenticationFactorsRegistrationStateResult&&);
+  ~DownloadAuthenticationFactorsRegistrationStateResult();
+
+  // These values are persisted in histograms. Entries should not be renumbered
+  // and numeric values should never be reused.
+  enum class State {
+    // The state of the security domain could not be determined.
+    kError = 0,
+    // The security domain is empty and thus doesn't have any secrets.
+    kEmpty = 1,
+    // The security domain is non-empty, but has virtual devices that are valid
+    // for recovery.
+    kRecoverable = 2,
+    // The security domain is non-empty, but has no virtual devices that can be
+    // used for recovery.
+    kIrrecoverable = 3,
+    kMaxValue = kIrrecoverable,
+  };
+  State state = State::kError;
+
+  // If there are members in the domain then this will contain the current key
+  // version.
+  std::optional<int> key_version;
+
+  // If a Google Password Manager PIN is a member of the domain, and is usable
+  // for retrieval, then this will contain its metadata.
+  std::optional<std::string> serialized_wrapped_pin;
 };
 
 // Authentication factor types:

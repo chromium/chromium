@@ -1354,28 +1354,32 @@ void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
   using Result =
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult;
   download_account_state_request_.reset();
-  constexpr char kPrefix[] = "Download account state result: ";
-  switch (result) {
-    case Result::kError:
-      FIDO_LOG(EVENT) << kPrefix << "Error";
+  const char* state_str;
+  switch (result.state) {
+    case Result::State::kError:
+      state_str = "Error";
       dialog_model_->set_account_state(AccountState::kNone);
       break;
 
-    case Result::kEmpty:
-      FIDO_LOG(EVENT) << kPrefix << "Empty";
+    case Result::State::kEmpty:
+      state_str = "Empty";
       dialog_model_->set_account_state(AccountState::kEmpty);
       break;
 
-    case Result::kRecoverable:
-      FIDO_LOG(EVENT) << kPrefix << "Recoverable";
+    case Result::State::kRecoverable:
+      state_str = "Recoverable";
       dialog_model_->set_account_state(AccountState::kRecoverable);
       break;
 
-    case Result::kIrrecoverable:
-      FIDO_LOG(EVENT) << kPrefix << "Irrecoverable";
+    case Result::State::kIrrecoverable:
+      state_str = "Irrecoverable";
       dialog_model_->set_account_state(AccountState::kIrrecoverable);
       break;
   }
+
+  FIDO_LOG(EVENT) << "Download account state result: " << state_str
+                  << ", key_version: " << result.key_version.value_or(0)
+                  << ", has PIN: " << result.serialized_wrapped_pin.has_value();
 }
 
 void ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction(

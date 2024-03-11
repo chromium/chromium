@@ -299,6 +299,8 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         url_loader_factory_(std::move(url_loader_factory)),
         access_token_fetcher_(std::move(access_token_fetcher)),
         callback_(std::move(callback)) {
+    result_.state =
+        DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
     StartOrContinueRequest();
   }
 
@@ -327,15 +329,17 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
   void ProcessResponse(TrustedVaultRequest::HttpStatus http_status,
                        const std::string& response_body) {
     if (http_status != TrustedVaultRequest::HttpStatus::kSuccess) {
-      FinishWithResultAndMaybeDestroySelf(
-          DownloadAuthenticationFactorsRegistrationStateResult::kError);
+      result_.state =
+          DownloadAuthenticationFactorsRegistrationStateResult::State::kError;
+      FinishWithResultAndMaybeDestroySelf();
       return;
     }
 
     trusted_vault_pb::ListSecurityDomainMembersResponse response;
     if (!response.ParseFromString(response_body)) {
-      FinishWithResultAndMaybeDestroySelf(
-          DownloadAuthenticationFactorsRegistrationStateResult::kError);
+      result_.state =
+          DownloadAuthenticationFactorsRegistrationStateResult::State::kError;
+      FinishWithResultAndMaybeDestroySelf();
       return;
     }
 
@@ -346,6 +350,14 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       for (const auto& membership : member.memberships()) {
         if (membership.security_domain() == security_domain_name) {
           is_member_of_domain = true;
+          for (const auto& key : membership.keys()) {
+            const int key_version = key.epoch();
+            if (key_version != 0 &&
+                (!result_.key_version.has_value() ||
+                 result_.key_version.value() < key_version)) {
+              result_.key_version = key_version;
+            }
+          }
           break;
         }
       }
@@ -355,12 +367,23 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
 
       if (member.has_member_metadata() &&
           member.member_metadata().usable_for_retrieval()) {
-        FinishWithResultAndMaybeDestroySelf(
-            DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable);
-        return;
+        result_.state = DownloadAuthenticationFactorsRegistrationStateResult::
+            State::kRecoverable;
+      } else if (result_.state ==
+                 DownloadAuthenticationFactorsRegistrationStateResult::State::
+                     kEmpty) {
+        result_.state = DownloadAuthenticationFactorsRegistrationStateResult::
+            State::kIrrecoverable;
       }
 
-      domain_has_members_ = true;
+      if (member.member_type() == trusted_vault_pb::SecurityDomainMember::
+                                      MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN &&
+          member.member_metadata().has_google_password_manager_pin_metadata()) {
+        result_.serialized_wrapped_pin =
+            member.member_metadata()
+                .google_password_manager_pin_metadata()
+                .encrypted_pin_hash();
+      }
     }
 
     if (!response.next_page_token().empty()) {
@@ -368,20 +391,15 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       return;
     }
 
-    FinishWithResultAndMaybeDestroySelf(
-        domain_has_members_
-            ? DownloadAuthenticationFactorsRegistrationStateResult::
-                  kIrrecoverable
-            : DownloadAuthenticationFactorsRegistrationStateResult::kEmpty);
+    FinishWithResultAndMaybeDestroySelf();
   }
 
-  void FinishWithResultAndMaybeDestroySelf(
-      DownloadAuthenticationFactorsRegistrationStateResult result) {
+  void FinishWithResultAndMaybeDestroySelf() {
     base::UmaHistogramEnumeration(
         "TrustedVault.DownloadAuthenticationFactorsRegistrationState." +
             GetSecurityDomainNameForUma(security_domain_),
-        result);
-    std::move(callback_).Run(result);
+        result_.state);
+    std::move(callback_).Run(std::move(result_));
   }
 
   const SecurityDomainId security_domain_;
@@ -392,7 +410,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
   TrustedVaultConnection::DownloadAuthenticationFactorsRegistrationStateCallback
       callback_;
   std::unique_ptr<TrustedVaultRequest> request_;
-  bool domain_has_members_ = false;
+  DownloadAuthenticationFactorsRegistrationStateResult result_;
 };
 
 TrustedVaultURLFetchReasonForUMA

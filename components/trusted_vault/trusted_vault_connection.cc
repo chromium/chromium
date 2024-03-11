@@ -19,4 +19,18 @@ TrustedVaultKeyAndVersion& TrustedVaultKeyAndVersion::operator=(
 
 TrustedVaultKeyAndVersion::~TrustedVaultKeyAndVersion() = default;
 
+DownloadAuthenticationFactorsRegistrationStateResult::
+    DownloadAuthenticationFactorsRegistrationStateResult() = default;
+
+DownloadAuthenticationFactorsRegistrationStateResult::
+    DownloadAuthenticationFactorsRegistrationStateResult(
+        DownloadAuthenticationFactorsRegistrationStateResult&&) = default;
+
+DownloadAuthenticationFactorsRegistrationStateResult&
+DownloadAuthenticationFactorsRegistrationStateResult::operator=(
+    DownloadAuthenticationFactorsRegistrationStateResult&&) = default;
+
+DownloadAuthenticationFactorsRegistrationStateResult::
+    ~DownloadAuthenticationFactorsRegistrationStateResult() = default;
+
 }  // namespace trusted_vault

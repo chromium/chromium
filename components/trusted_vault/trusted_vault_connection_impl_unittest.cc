@@ -79,11 +79,15 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
   return response;
 }
 
+constexpr char kTestSerializedWrappedPIN[] = "wrapped PIN";
+constexpr int kTestKeyVersion = 100;
+
 enum class Member {
   kPhysical,
   kOtherSecurityDomain,
   kUsableVirtual,
   kUnusableVirtual,
+  kGooglePasswordManagerPIN,
 };
 
 trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
@@ -97,9 +101,14 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         response.add_security_domain_members();
     member->set_name("name");
     member->add_memberships()->set_security_domain("other security domain");
+    auto* membership = member->add_memberships();
+    auto* key = membership->add_keys();
     if (member_type != Member::kOtherSecurityDomain) {
-      member->add_memberships()->set_security_domain(
+      membership->set_security_domain(
           GetSecurityDomainPath(security_domain_id));
+      key->set_epoch(kTestKeyVersion * 2);
+    } else {
+      key->set_epoch(kTestKeyVersion);
     }
 
     switch (member_type) {
@@ -109,6 +118,13 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         break;
       case Member::kUsableVirtual:
         member->mutable_member_metadata()->set_usable_for_retrieval(true);
+        break;
+      case Member::kGooglePasswordManagerPIN:
+        member->mutable_member_metadata()->set_usable_for_retrieval(true);
+        member->mutable_member_metadata()
+            ->mutable_google_password_manager_pin_metadata()
+            ->set_encrypted_pin_hash(kTestSerializedWrappedPIN);
+        break;
     }
   }
   if (next_page_token) {
@@ -953,6 +969,12 @@ TEST_P(TrustedVaultConnectionImplTest,
           .SerializeAsString());
 }
 
+MATCHER_P(HasRecoveryState,
+          state,
+          "DownloadAuthenticationFactorsRegistrationStateResult::State") {
+  return arg.state == state;
+}
+
 TEST_P(TrustedVaultConnectionImplTest,
        DownloadAuthenticationFactorsRegistrationState_Basic) {
   base::MockCallback<TrustedVaultConnection::
@@ -964,9 +986,10 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(
-      callback,
-      Run(DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable));
+  EXPECT_CALL(callback,
+              Run(HasRecoveryState(
+                  DownloadAuthenticationFactorsRegistrationStateResult::State::
+                      kRecoverable)));
 
   ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
       /*next_page_token=*/std::nullopt, net::HTTP_OK,
@@ -981,65 +1004,87 @@ TEST_P(TrustedVaultConnectionImplTest,
 
 TEST_P(TrustedVaultConnectionImplTest,
        DownloadAuthenticationFactorsRegistrationState_Cases) {
+  using State = DownloadAuthenticationFactorsRegistrationStateResult::State;
   const struct TestCase {
     // responses contains the set of security domain members included in each
     // page of results from the "server".
     std::vector<std::vector<Member>> responses;
-    DownloadAuthenticationFactorsRegistrationStateResult expected_result;
-    // The enumeration can finish before downloading all the pages of results
-    // if it has seen enough to determine the result. This value specifies the
-    // number of pages that should be downloaded.
-    int expected_num_pages_downloaded;
+    State expected_result;
+    std::optional<int> expected_key_version;
+    std::optional<std::string> expected_wrapped_pin;
   } kTestCases[] = {
       {
           {{}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kEmpty,
-          1,
+          State::kEmpty,
+          /*expected_key_version=*/std::nullopt,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{}, {}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kEmpty,
-          2,
+          State::kEmpty,
+          /*expected_key_version=*/std::nullopt,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kOtherSecurityDomain}, {Member::kOtherSecurityDomain}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kEmpty,
-          2,
+          State::kEmpty,
+          /*expected_key_version=*/std::nullopt,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kPhysical}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
-          1,
+          State::kIrrecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kPhysical, Member::kUsableVirtual}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable,
-          1,
+          State::kRecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kPhysical, Member::kUnusableVirtual}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
-          1,
+          State::kIrrecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kPhysical}, {}, {Member::kUsableVirtual}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable,
-          3,
+          State::kRecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kUsableVirtual}, {}, {Member::kPhysical}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kRecoverable,
-          1,
+          State::kRecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kPhysical}, {}, {Member::kUnusableVirtual}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
-          3,
+          State::kIrrecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/std::nullopt,
       },
       {
           {{Member::kPhysical}, {}, {Member::kOtherSecurityDomain}},
-          DownloadAuthenticationFactorsRegistrationStateResult::kIrrecoverable,
-          3,
+          State::kIrrecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/std::nullopt,
+      },
+      {
+          {{Member::kGooglePasswordManagerPIN}, {Member::kOtherSecurityDomain}},
+          State::kRecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/kTestSerializedWrappedPIN,
+      },
+      {
+          {{Member::kGooglePasswordManagerPIN},
+           {Member::kGooglePasswordManagerPIN}},
+          State::kRecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_wrapped_pin=*/kTestSerializedWrappedPIN,
       },
   };
 
@@ -1052,7 +1097,7 @@ TEST_P(TrustedVaultConnectionImplTest,
     auto callback = base::BindLambdaForTesting(
         [&result](
             DownloadAuthenticationFactorsRegistrationStateResult in_result) {
-          result = in_result;
+          result.emplace(std::move(in_result));
         });
 
     std::unique_ptr<TrustedVaultConnection::Request> request =
@@ -1061,7 +1106,7 @@ TEST_P(TrustedVaultConnectionImplTest,
     ASSERT_THAT(request, NotNull());
 
     std::optional<std::string> prev_next_page_token;
-    int num_pages_downloaded = 0;
+    size_t num_pages_downloaded = 0;
     for (size_t i = 0; i < test.responses.size(); i++) {
       if (result.has_value()) {
         // The process stopped early. (This is valid if enough members have been
@@ -1084,8 +1129,8 @@ TEST_P(TrustedVaultConnectionImplTest,
       prev_next_page_token = std::move(next_page_token);
     }
 
-    EXPECT_EQ(num_pages_downloaded, test.expected_num_pages_downloaded);
-    EXPECT_EQ(result.value(), test.expected_result);
+    EXPECT_EQ(num_pages_downloaded, test.responses.size());
+    EXPECT_EQ(result->state, test.expected_result);
   }
 }
 
@@ -1100,9 +1145,10 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(
-      callback,
-      Run(DownloadAuthenticationFactorsRegistrationStateResult::kError));
+  EXPECT_CALL(callback,
+              Run(HasRecoveryState(
+                  DownloadAuthenticationFactorsRegistrationStateResult::State::
+                      kError)));
 
   ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
       /*next_page_token=*/std::nullopt, net::HTTP_INTERNAL_SERVER_ERROR,
@@ -1120,9 +1166,10 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(
-      callback,
-      Run(DownloadAuthenticationFactorsRegistrationStateResult::kError));
+  EXPECT_CALL(callback,
+              Run(HasRecoveryState(
+                  DownloadAuthenticationFactorsRegistrationStateResult::State::
+                      kError)));
 
   ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
       /*next_page_token=*/std::nullopt, net::HTTP_OK,
