@@ -292,6 +292,13 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
              "AutofillExtractOnlyNonAdFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, XHR form submissions are detected on iOS when the last interacted
+// form in a frame is removed. Otherwise only HTTP form submissions are detected
+// on iOS.
+BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
+             "AutofillEnableXHRSubmissionDetectionIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes the mechanisms of FormTracker and the requirements for firing
 // submission on formless elements.
 BASE_FEATURE(kAutofillImproveSubmissionDetection,

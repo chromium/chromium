@@ -102,6 +102,10 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnableVirtualCardsName[];
 extern const char kAutofillEnableVirtualCardsDescription[];
 
+// Title and description for flag to enable XHR submission detection on iOS.
+extern const char kAutofillEnableXHRSubmissionDetectionIOSName[];
+extern const char kAutofillEnableXHRSubmissionDetectionIOSDescription[];
+
 // Title and description for the flag to parse standalone CVC fields for VCN
 // card on file in Autofill.
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
