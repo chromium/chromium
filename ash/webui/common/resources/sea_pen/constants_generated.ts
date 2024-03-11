@@ -369,11 +369,15 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption.kArtFeatureField,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureField'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/field_of_flowers.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureSwamp,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureSwamp'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/swamp.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureBeach,
@@ -384,79 +388,111 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption.kArtFeatureMeadow,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureMeadow'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/meadow.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureForest,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureForest'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/forest.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureGlacier,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureGlacier'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glacier.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureIsland,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureIsland'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/island.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureJungle,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureJungle'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/jungle.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureLake,
               translation: loadTimeData.getString('seaPenOptionArtFeatureLake'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lake.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureCliff,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureCliff'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cliff.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureOcean,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureOcean'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/vast_ocean.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureRiver,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureRiver'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/river.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureDune,
               translation: loadTimeData.getString('seaPenOptionArtFeatureDune'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sand_dune.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureMountain,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureMountain'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mountain.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureValley,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureValley'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/valley.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureWaterfall,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureWaterfall'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/waterfall.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureCanyon,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureCanyon'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/canyon.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureCityscape,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureCityscape'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cityscape.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureVillage,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureVillage'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mediterranean_village.jpg',
             },
           ],
         ],
@@ -467,71 +503,99 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption.kArtMovementAvantGarde,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementAvantGarde'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/avant-garde.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementRealist,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementRealist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/realist.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementExpressionist,
               translation: loadTimeData.getString(
                   'seaPenOptionArtMovementExpressionist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/expressionist.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementImpressionist,
               translation: loadTimeData.getString(
                   'seaPenOptionArtMovementImpressionist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/impressionist.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementPostImpressionist,
               translation: loadTimeData.getString(
                   'seaPenOptionArtMovementPostImpressionist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/post-impressionist.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementArtNouveau,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementArtNouveau'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/art_nouveau.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementBaroque,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementBaroque'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/baroque.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementBauhaus,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementBauhaus'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bauhaus.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementClassicist,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementClassicist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/classicist.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementWatercolor,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementWatercolor'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/watercolor.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementAbstract,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementAbstract'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/abstract.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementPointillist,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementPointillist'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pointillist.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementGraphicDesign,
               translation: loadTimeData.getString(
                   'seaPenOptionArtMovementGraphicDesign'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/graphic.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementModernArt,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementModernArt'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/modern_art.jpg',
             },
           ],
         ],
