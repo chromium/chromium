@@ -99,15 +99,15 @@ export function groupTests(tests) {
           group: currentPath,
           children: new Map(),
           stat: {
-            all: 0,
-            pass: 0,
+            total: 0,
+            passing: 0,
           },
         });
       }
       currentPathMap = currentPathMap.children.get(part);
 
-      currentPathMap.stat.all++;
-      currentPathMap.stat.pass += test.status === 'PASS' ? 1 : 0;
+      currentPathMap.stat.total++;
+      currentPathMap.stat.passing += test.status === 'PASS' ? 1 : 0;
     }
     currentPathMap.test = test;
   }
@@ -140,7 +140,21 @@ function mergeSingleChildren(map) {
   };
 }
 
-function generateHtml(map, commitHash, isFiltered) {
+function printDelta(baseline, current) {
+  const multiplier = ((current - baseline) / baseline) * 100;
+  const sign = multiplier < 0 ? '-' : '+';
+  return `${sign}${multiplier.toFixed(2)}%`;
+}
+
+function compareToBaseLine(current, baseline) {
+  return `
+    Since ${baseline.date},
+    the total number of subtests went from ${baseline.total} to ${current.total} (${printDelta(baseline.total, current.total)}),
+    and the number of passing subtests went from ${baseline.passing} to ${current.passing} (${printDelta(baseline.passing, current.passing)}).
+  `;
+}
+
+function generateHtml(map, commitHash, isFiltered, baseline) {
   const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
   const shortCommitHash = commitHash.slice(0, 8);
 
@@ -191,11 +205,12 @@ function generateHtml(map, commitHash, isFiltered) {
                 ? ' matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>'
                 : ''
             }
-            for <a href="${linkCommit(commitHash)}">${shortCommitHash}</a>
+            for <a href="${linkCommit(commitHash)}"><code>${shortCommitHash}</code></a>
             @ <time>${date}</time>
-          <h2>${map.stat.pass} / ${map.stat.all} (${
-            map.stat.all - map.stat.pass
+          <h2>${map.stat.passing} / ${map.stat.total} (${
+            map.stat.total - map.stat.passing
           } remaining)</h2>
+          ${isFiltered ? `<p>${compareToBaseLine(map.stat, baseline)}</p>` : ''}
         </div>
         <div>
           <button class="expand button" type="button">Expand</button>
@@ -262,15 +277,15 @@ function generateTestReport(map, parent) {
     <div class="test-card">
       <details>
         <summary class="path ${
-          map.stat.all === map.stat.pass
+          map.stat.total === map.stat.passing
             ? 'pass'
-            : map.stat.pass === 0
+            : map.stat.passing === 0
               ? 'fail'
               : 'part'
         }">
           <span class="short-name">${escapeHtml(name)}</span>
           <span class="long-name hidden">${escapeHtml(map.path)}</span>
-          <span class="stat"><b>${map.stat.pass}/${map.stat.all}</b></span>
+          <span class="stat"><b>${map.stat.passing}/${map.stat.total}</b></span>
         </summary>
         ${map.children
           .map((child) => {
@@ -309,6 +324,7 @@ export function generateReport(reportData, commitHash) {
   return generateHtml(
     groupTests(flattenTests(reportData)),
     commitHash,
-    reportData.isFiltered
+    reportData.isFiltered,
+    reportData.baseline
   );
 }

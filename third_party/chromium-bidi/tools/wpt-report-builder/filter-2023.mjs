@@ -31,5 +31,13 @@ export const apply2023Filter = (reportData) => {
   const filteredReportData = structuredClone(reportData);
   filteredReportData.results = filteredResults;
   filteredReportData.isFiltered = true;
+  // The status at 2023-12-31 gives us a baseline to compare against
+  // to track our progress during 2024.
+  filteredReportData.baseline = {
+    date: '2023-12-31',
+    passing: 2456,
+    // TODO: Why does https://wpt.fyi/results/webdriver/tests/bidi?sha=2a639a9fe4cdefd4ecd124a3f30caf631150eea5&label=master&max-count=1&q=label%3Achromium-bidi-2023 show a greater number of total subtests (2894)?
+    total: 2807,
+  };
   return filteredReportData;
 };

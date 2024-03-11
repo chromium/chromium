@@ -216,8 +216,8 @@ describe('HTML WPT reporter', () => {
         name: null,
         status: null,
         stat: {
-          all: 5,
-          pass: 3,
+          total: 5,
+          passing: 3,
         },
         children: [
           {
@@ -226,8 +226,8 @@ describe('HTML WPT reporter', () => {
             name: null,
             status: null,
             stat: {
-              all: 4,
-              pass: 3,
+              total: 4,
+              passing: 3,
             },
             children: [
               {
@@ -236,8 +236,8 @@ describe('HTML WPT reporter', () => {
                 name: null,
                 status: null,
                 stat: {
-                  all: 3,
-                  pass: 2,
+                  total: 3,
+                  passing: 2,
                 },
                 children: [
                   {
@@ -274,8 +274,8 @@ describe('HTML WPT reporter', () => {
             name: null,
             status: null,
             stat: {
-              all: 1,
-              pass: 0,
+              total: 1,
+              passing: 0,
             },
             children: [
               {
