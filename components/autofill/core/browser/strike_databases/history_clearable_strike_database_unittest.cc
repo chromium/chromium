@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -17,9 +17,23 @@ namespace autofill {
 
 namespace {
 
-class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
+struct TestStrikeDatabaseTraits {
+  static constexpr std::string_view kName = "Test";
+  static constexpr size_t kMaxStrikeEntities = 200;
+  static constexpr size_t kMaxStrikeEntitiesAfterCleanup = 150;
+  static constexpr size_t kMaxStrikeLimit = 3;
+  static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(180);
+  static constexpr bool kUniqueIdRequired = true;
+
+  static std::string OriginFromId(const std::string& id) {
+    // To keep testing simple, we assume the database is only keyed by origin.
+    return id;
+  }
+};
+
+class HistoryClearableStrikeDatabaseTest : public ::testing::Test {
  public:
-  AutofillProfileSaveStrikeDatabaseTest() = default;
+  HistoryClearableStrikeDatabaseTest() = default;
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -27,7 +41,8 @@ class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
         temp_dir_.GetPath());
     strike_database_service_ = std::make_unique<StrikeDatabase>(
         db_provider_.get(), temp_dir_.GetPath());
-    strike_database_ = std::make_unique<AutofillProfileSaveStrikeDatabase>(
+    strike_database_ = std::make_unique<
+        HistoryClearableStrikeDatabase<TestStrikeDatabaseTraits>>(
         strike_database_service_.get());
   }
 
@@ -45,7 +60,8 @@ class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   std::unique_ptr<StrikeDatabase> strike_database_service_;
-  std::unique_ptr<AutofillProfileSaveStrikeDatabase> strike_database_;
+  std::unique_ptr<HistoryClearableStrikeDatabase<TestStrikeDatabaseTraits>>
+      strike_database_;
 
   std::string test_host1 = "https://www.strikedhost.com";
   std::string test_host2 = "https://www.otherhost.com";
@@ -56,7 +72,7 @@ class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
                                                 test_host3};
 };
 
-TEST_F(AutofillProfileSaveStrikeDatabaseTest,
+TEST_F(HistoryClearableStrikeDatabaseTest,
        RemoveStrikesByOriginWithinDeletionWindow) {
   base::Time start_time = AutofillClock::Now();
   // Both strikes are added within the deletion window, but the second should
@@ -68,14 +84,14 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest,
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
   EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
 
-  strike_database_->ClearStrikesByOriginAndTimeInternal(delete_first_host_set,
-                                                        start_time, end_time);
+  strike_database_->ClearStrikesByOriginAndTime(delete_first_host_set,
+                                                start_time, end_time);
 
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 0);
   EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
 }
 
-TEST_F(AutofillProfileSaveStrikeDatabaseTest, RemoveStrikesByOrigin) {
+TEST_F(HistoryClearableStrikeDatabaseTest, RemoveStrikesByOrigin) {
   strike_database_->AddStrike(test_host1);
   strike_database_->AddStrike(test_host2);
 
@@ -88,7 +104,7 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest, RemoveStrikesByOrigin) {
   EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
 }
 
-TEST_F(AutofillProfileSaveStrikeDatabaseTest,
+TEST_F(HistoryClearableStrikeDatabaseTest,
        DoNotRemoveStrikeAfterDeletionWindow) {
   TestAutofillClock test_autofill_clock;
   test_autofill_clock.SetNow(AutofillClock::Now());
@@ -103,12 +119,12 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest,
   // By this, the entry should not be deleted.
   strike_database_->AddStrike(test_host1);
 
-  strike_database_->ClearStrikesByOriginAndTimeInternal(delete_all_hosts_set,
-                                                        start_time, end_time);
+  strike_database_->ClearStrikesByOriginAndTime(delete_all_hosts_set,
+                                                start_time, end_time);
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 2);
 }
 
-TEST_F(AutofillProfileSaveStrikeDatabaseTest,
+TEST_F(HistoryClearableStrikeDatabaseTest,
        DoNotRemoveStrikeBeforeDeletionWindow) {
   // The strike is added before the deletion window.
   TestAutofillClock test_autofill_clock;
@@ -121,8 +137,8 @@ TEST_F(AutofillProfileSaveStrikeDatabaseTest,
   test_autofill_clock.Advance(base::Minutes(1));
   base::Time end_time = AutofillClock::Now();
 
-  strike_database_->ClearStrikesByOriginAndTimeInternal(delete_all_hosts_set,
-                                                        start_time, end_time);
+  strike_database_->ClearStrikesByOriginAndTime(delete_all_hosts_set,
+                                                start_time, end_time);
 
   EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
 }

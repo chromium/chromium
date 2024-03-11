@@ -240,7 +240,7 @@ void PersonalDataManager::OnURLsDeleted(
       }
       if (deletion_info.time_range().IsValid() &&
           !deletion_info.time_range().IsAllTime()) {
-        profile_save_strike_database_->ClearStrikesByOriginAndTimeInternal(
+        profile_save_strike_database_->ClearStrikesByOriginAndTime(
             deleted_hosts, deletion_info.time_range().begin(),
             deletion_info.time_range().end());
       } else {
