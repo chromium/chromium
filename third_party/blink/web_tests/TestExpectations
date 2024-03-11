@@ -2616,7 +2616,7 @@ crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external
 crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-use-other-account-button-flow.tentative.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribution-disabled.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child.tentative.sub.window.html [ Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Timeout ]
+crbug.com/626703 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Skip Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/embedder-context.tentative.https.sub.html [ Timeout ]
 crbug.com/328501805 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Pass Timeout ]
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-005.html [ Failure ]
