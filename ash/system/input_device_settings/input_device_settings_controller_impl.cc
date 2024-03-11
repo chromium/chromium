@@ -570,18 +570,6 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
 }
 
 void InputDeviceSettingsControllerImpl::Init() {
-  if (features::IsModifierSplitEnabled()) {
-    const std::string debug_key_hash = base::SHA1HashString(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            ash::switches::kModifierSplitFeatureKey));
-
-    const std::string hash =
-        "\xFC\xEF\x09\x7D\x01\x39\x86\x6A\x57\x08\x7C\x22\x5F\x1C\xEF\x8A\x3B"
-        "\x7E\x10\x99";
-    // If key fails to match, crash chrome.
-    CHECK_EQ(debug_key_hash, hash);
-  }
-
   Shell::Get()->session_controller()->AddObserver(this);
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->AddObserver(this);
