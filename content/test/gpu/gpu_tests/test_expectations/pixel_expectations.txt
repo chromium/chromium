@@ -52,8 +52,7 @@
 #         angle-swiftshader
 #         angle-vulkan ]
 # Skia Renderer
-# tags: [ renderer-skia-dawn
-#         renderer-skia-gl
+# tags: [ renderer-skia-gl
 #         renderer-skia-vulkan
 #         renderer-software ]
 # Driver
@@ -199,14 +198,12 @@ crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
 
 # WebGPU SwiftShader tests are only supported on Linux with SkiaRenderer Vulkan.
 crbug.com/1307787 [ linux renderer-skia-gl ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
-crbug.com/1307787 [ linux renderer-skia-dawn ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ android ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ chromeos ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ fuchsia ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ mac ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ win ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ linux renderer-skia-gl ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
-crbug.com/1307787 [ linux renderer-skia-dawn ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ android ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ chromeos ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ fuchsia ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]

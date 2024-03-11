@@ -176,8 +176,7 @@ def GetSkiaGraphiteStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
   return 'graphite-disabled'
 
 
-def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo],
-                    extra_browser_args: List[str]) -> str:
+def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
   retval = 'renderer-software'
   if gpu_info:
     gpu_feature_status = gpu_info.feature_status
@@ -185,9 +184,7 @@ def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo],
         gpu_feature_status
         and gpu_feature_status.get('gpu_compositing') == 'enabled')
     if skia_renderer_enabled:
-      if HasDawnSkiaRenderer(extra_browser_args):
-        retval = 'renderer-skia-dawn'
-      elif HasVulkanSkiaRenderer(gpu_feature_status):
+      if HasVulkanSkiaRenderer(gpu_feature_status):
         retval = 'renderer-skia-vulkan'
       # The check for GL must come after Vulkan since the 'opengl' feature can
       # be enabled for WebGL and interop even if SkiaRenderer is using Vulkan.
@@ -233,15 +230,6 @@ def GetClangCoverage(gpu_info: Optional[tgi.GPUInfo]) -> str:
   if gpu_info and gpu_info.aux_attributes.get('is_clang_coverage', False):
     return 'clang-coverage'
   return 'no-clang-coverage'
-
-
-# TODO(rivr): Use GPU feature status for Dawn instead of command line.
-def HasDawnSkiaRenderer(extra_browser_args: List[str]) -> bool:
-  if extra_browser_args:
-    for arg in extra_browser_args:
-      if arg.startswith('--enable-features') and 'SkiaDawn' in arg:
-        return True
-  return False
 
 
 def HasGlSkiaRenderer(gpu_feature_status: Dict[str, str]) -> bool:
