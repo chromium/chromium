@@ -62,10 +62,11 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
                                          Profile* profile)
     : button_(button),
       profile_(profile),
-      webui_bubble_manager_(button,
-                            profile,
-                            GURL(chrome::kChromeUITabSearchURL),
-                            IDS_ACCNAME_TAB_SEARCH),
+      webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
+          button,
+          profile,
+          GURL(chrome::kChromeUITabSearchURL),
+          IDS_ACCNAME_TAB_SEARCH)),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);
@@ -88,7 +89,7 @@ TabSearchBubbleHost::~TabSearchBubbleHost() = default;
 
 void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
                                                     bool visible) {
-  CHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
+  CHECK_EQ(webui_bubble_manager_->GetBubbleWidget(), widget);
   if (visible && widget && bubble_created_time_.has_value()) {
     widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
@@ -111,16 +112,16 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
                   time_to_show);
             },
             *bubble_created_time_,
-            webui_bubble_manager_.bubble_using_cached_web_contents(),
-            webui_bubble_manager_.contents_warmup_level()));
+            webui_bubble_manager_->bubble_using_cached_web_contents(),
+            webui_bubble_manager_->contents_warmup_level()));
     bubble_created_time_.reset();
   }
 }
 
 void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
+  DCHECK_EQ(webui_bubble_manager_->GetBubbleWidget(), widget);
   DCHECK(bubble_widget_observation_.IsObservingSource(
-      webui_bubble_manager_.GetBubbleWidget()));
+      webui_bubble_manager_->GetBubbleWidget()));
   bubble_widget_observation_.Reset();
   pressed_lock_.reset();
 }
@@ -157,8 +158,9 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
                                      tab_index);
   }
 
-  if (webui_bubble_manager_.GetBubbleWidget())
+  if (webui_bubble_manager_->GetBubbleWidget()) {
     return false;
+  }
 
   // Close the Tab Search IPH if it is showing.
   BrowserFeaturePromoController* controller =
@@ -184,11 +186,11 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   }
 
   bubble_created_time_ = base::TimeTicks::Now();
-  webui_bubble_manager_.ShowBubble(anchor,
-                                   ShouldTabSearchRenderBeforeTabStrip()
-                                       ? views::BubbleBorder::TOP_LEFT
-                                       : views::BubbleBorder::TOP_RIGHT,
-                                   kTabSearchBubbleElementId);
+  webui_bubble_manager_->ShowBubble(anchor,
+                                    ShouldTabSearchRenderBeforeTabStrip()
+                                        ? views::BubbleBorder::TOP_LEFT
+                                        : views::BubbleBorder::TOP_RIGHT,
+                                    kTabSearchBubbleElementId);
 
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
@@ -203,8 +205,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   // There should only ever be a single bubble widget active for the
   // TabSearchBubbleHost.
   DCHECK(!bubble_widget_observation_.IsObserving());
-  bubble_widget_observation_.Observe(webui_bubble_manager_.GetBubbleWidget());
-  widget_open_timer_.Reset(webui_bubble_manager_.GetBubbleWidget());
+  bubble_widget_observation_.Observe(webui_bubble_manager_->GetBubbleWidget());
+  widget_open_timer_.Reset(webui_bubble_manager_->GetBubbleWidget());
 
   // Hold the pressed lock while the |bubble_| is active.
   pressed_lock_ = menu_button_controller_->TakeLock();
@@ -212,7 +214,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
 }
 
 void TabSearchBubbleHost::CloseTabSearchBubble() {
-  webui_bubble_manager_.CloseBubble();
+  webui_bubble_manager_->CloseBubble();
 }
 
 const Browser* TabSearchBubbleHost::GetBrowser() const {
@@ -232,7 +234,7 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
                                   GetActionForEvent(event));
 
-    webui_bubble_manager_.GetBubbleWidget()
+    webui_bubble_manager_->GetBubbleWidget()
         ->GetCompositor()
         ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
             [](base::TimeTicks button_pressed_time,

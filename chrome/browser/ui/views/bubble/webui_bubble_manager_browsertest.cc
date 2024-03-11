@@ -98,7 +98,7 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
   // process.
   std::unique_ptr<WebUIBubbleManager> MakeBubbleManager(
       GURL site_url = GURL("chrome://test.top-chrome")) {
-    return std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
+    return WebUIBubbleManager::Create<TestWebUIController>(
         BrowserView::GetBrowserViewForBrowser(browser()), browser()->profile(),
         site_url, 1);
   }

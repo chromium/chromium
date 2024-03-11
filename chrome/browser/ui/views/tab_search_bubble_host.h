@@ -55,7 +55,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   views::View* button() { return button_; }
 
   WebUIBubbleManager* webui_bubble_manager_for_testing() {
-    return &webui_bubble_manager_;
+    return webui_bubble_manager_.get();
   }
   const std::optional<base::TimeTicks>& bubble_created_time_for_testing()
       const {
@@ -74,7 +74,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   const raw_ptr<Profile> profile_;
 
-  WebUIBubbleManagerT<TabSearchUI> webui_bubble_manager_;
+  std::unique_ptr<WebUIBubbleManager> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;
 

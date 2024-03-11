@@ -96,9 +96,8 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
-  auto bubble_manager =
-      std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
-          anchor_widget->GetContentsView(), test_profile, GURL(kTestURL), 1);
+  auto bubble_manager = WebUIBubbleManager::Create<TestWebUIController>(
+      anchor_widget->GetContentsView(), test_profile, GURL(kTestURL), 1);
   bubble_manager->DisableCloseBubbleHelperForTesting();
 
   // The per-profile persistent renderer will not have been created until the
@@ -137,9 +136,8 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
-  auto bubble_manager =
-      std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
-          anchor_widget->GetContentsView(), otr_profile, GURL(kTestURL), 1);
+  auto bubble_manager = WebUIBubbleManager::Create<TestWebUIController>(
+      anchor_widget->GetContentsView(), otr_profile, GURL(kTestURL), 1);
   bubble_manager->DisableCloseBubbleHelperForTesting();
 
   // The service should not exist for off the record profiles.
@@ -170,9 +168,8 @@ TEST_F(WebUIBubbleManagerTest, CreateWebUIBubbleDialogWithAnchorProvided) {
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
-  auto bubble_manager =
-      std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
-          anchor_widget->GetContentsView(), test_profile, GURL(kTestURL), 1);
+  auto bubble_manager = WebUIBubbleManager::Create<TestWebUIController>(
+      anchor_widget->GetContentsView(), test_profile, GURL(kTestURL), 1);
   bubble_manager->DisableCloseBubbleHelperForTesting();
 
   gfx::Rect anchor(666, 666, 0, 0);
@@ -199,8 +196,9 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
   auto create_manager = [&](Profile* profile) {
-    auto manager = std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
-        anchor_widget->GetContentsView(), profile, GURL(kTestURL), 1);
+    std::unique_ptr<WebUIBubbleManager> manager =
+        WebUIBubbleManager::Create<TestWebUIController>(
+            anchor_widget->GetContentsView(), profile, GURL(kTestURL), 1);
     manager->DisableCloseBubbleHelperForTesting();
     return manager;
   };
