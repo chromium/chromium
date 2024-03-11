@@ -76,7 +76,8 @@ class CORE_EXPORT StyleTimeline {
   };
 
   explicit StyleTimeline(CSSValueID keyword) : data_(keyword) {}
-  explicit StyleTimeline(const ScopedCSSName* name) : data_(name) {}
+  explicit StyleTimeline(const ScopedCSSName* name)
+      : data_(absl::in_place_type<Persistent<const ScopedCSSName>>, name) {}
   explicit StyleTimeline(const ScrollData& scroll_data) : data_(scroll_data) {}
   explicit StyleTimeline(const ViewData& view_data) : data_(view_data) {}
 

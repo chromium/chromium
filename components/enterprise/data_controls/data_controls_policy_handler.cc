@@ -4,6 +4,7 @@
 
 #include "components/enterprise/data_controls/data_controls_policy_handler.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "components/enterprise/data_controls/rule.h"
 #include "components/prefs/pref_value_map.h"
 
@@ -53,7 +54,7 @@ bool DataControlsPolicyHandler::CheckPolicySettings(
   for (size_t i = 0; i < rules_list.size(); ++i) {
     DCHECK(rules_list[i].is_dict());
     valid &= Rule::ValidateRuleValue(policy_name(), rules_list[i].GetDict(),
-                                     {i}, errors);
+                                     {base::checked_cast<int>(i)}, errors);
   }
   return valid;
 }
