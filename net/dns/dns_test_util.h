@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/condition_variable.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -197,6 +198,8 @@ class DnsSession;
 class IPAddress;
 class ResolveContext;
 class URLRequestContext;
+
+DnsConfig CreateValidDnsConfig();
 
 DnsResourceRecord BuildTestDnsRecord(std::string name,
                                      uint16_t type,
@@ -476,6 +479,84 @@ class MockDnsClient : public DnsClient {
   std::unique_ptr<AddressSorter> address_sorter_;
   std::optional<url::SchemeHostPort> preset_endpoint_;
   std::optional<std::vector<IPEndPoint>> preset_addrs_;
+};
+
+// A HostResolverProc that pushes each host mapped into a list and allows
+// waiting for a specific number of requests. Unlike RuleBasedHostResolverProc
+// it never calls SystemHostResolverCall. By default resolves all hostnames to
+// "127.0.0.1". After AddRule(), it resolves only names explicitly specified.
+class MockHostResolverProc : public HostResolverProc {
+ public:
+  struct ResolveKey {
+    ResolveKey(const std::string& hostname,
+               AddressFamily address_family,
+               HostResolverFlags flags)
+        : hostname(hostname), address_family(address_family), flags(flags) {}
+    bool operator<(const ResolveKey& other) const {
+      return std::tie(address_family, hostname, flags) <
+             std::tie(other.address_family, other.hostname, other.flags);
+    }
+    std::string hostname;
+    AddressFamily address_family;
+    HostResolverFlags flags;
+  };
+
+  typedef std::vector<ResolveKey> CaptureList;
+
+  MockHostResolverProc();
+
+  MockHostResolverProc(const MockHostResolverProc&) = delete;
+  MockHostResolverProc& operator=(const MockHostResolverProc&) = delete;
+
+  // Waits until `count` calls to `Resolve` are blocked. Returns false when
+  // timed out.
+  bool WaitFor(unsigned count);
+
+  // Signals `count` waiting calls to `Resolve`. First come first served.
+  void SignalMultiple(unsigned count);
+
+  // Signals all waiting calls to `Resolve`. Beware of races.
+  void SignalAll();
+
+  void AddRule(const std::string& hostname,
+               AddressFamily family,
+               const AddressList& result,
+               HostResolverFlags flags = 0);
+
+  void AddRule(const std::string& hostname,
+               AddressFamily family,
+               const std::string& ip_list,
+               HostResolverFlags flags = 0,
+               const std::string& canonical_name = "");
+
+  void AddRuleForAllFamilies(const std::string& hostname,
+                             const std::string& ip_list,
+                             HostResolverFlags flags = 0,
+                             const std::string& canonical_name = "");
+
+  int Resolve(const std::string& hostname,
+              AddressFamily address_family,
+              HostResolverFlags host_resolver_flags,
+              AddressList* addrlist,
+              int* os_error) override;
+
+  CaptureList GetCaptureList() const;
+
+  void ClearCaptureList();
+
+  bool HasBlockedRequests() const;
+
+ protected:
+  ~MockHostResolverProc() override;
+
+ private:
+  mutable base::Lock lock_;
+  std::map<ResolveKey, AddressList> rules_;
+  CaptureList capture_list_;
+  unsigned num_requests_waiting_ = 0;
+  unsigned num_slots_available_ = 0;
+  base::ConditionVariable requests_waiting_;
+  base::ConditionVariable slots_available_;
 };
 
 }  // namespace net

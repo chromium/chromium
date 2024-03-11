@@ -420,6 +420,7 @@ source_set("tests") {
     "host_cache_unittest.cc",
     "host_resolver_cache_unittest.cc",
     "host_resolver_internal_result_unittest.cc",
+    "host_resolver_manager_ipv6_reachability_override_unittest.cc",
     "host_resolver_manager_unittest.cc",
     "https_record_rdata_unittest.cc",
     "httpssvc_metrics_unittest.cc",
@@ -484,6 +485,7 @@ source_set("test_support") {
   public = [
     "dns_test_util.h",
     "host_resolver_internal_result_test_util.h",
+    "host_resolver_manager_unittest.h",
     "host_resolver_results_test_util.h",
     "mock_host_resolver.h",
   ]
@@ -501,6 +503,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",

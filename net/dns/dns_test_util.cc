@@ -20,6 +20,8 @@
 #include "base/strings/strcat.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "net/base/io_buffer.h"
@@ -31,6 +33,7 @@
 #include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_session.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/resolve_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -84,6 +87,17 @@ class MockAddressSorter : public AddressSorter {
 };
 
 }  // namespace
+
+DnsConfig CreateValidDnsConfig() {
+  IPAddress dns_ip(192, 168, 1, 0);
+  DnsConfig config;
+  config.nameservers.emplace_back(dns_ip, dns_protocol::kDefaultPort);
+  config.doh_config =
+      *DnsOverHttpsConfig::FromString("https://dns.example.com/");
+  config.secure_dns_mode = SecureDnsMode::kOff;
+  EXPECT_TRUE(config.IsValid());
+  return config;
+}
 
 DnsResourceRecord BuildTestDnsRecord(std::string name,
                                      uint16_t type,
@@ -859,6 +873,130 @@ scoped_refptr<DnsSession> MockDnsClient::BuildSession() {
 
   return base::MakeRefCounted<DnsSession>(
       effective_config_.value(), null_random_callback, nullptr /* net_log */);
+}
+
+MockHostResolverProc::MockHostResolverProc()
+    : HostResolverProc(nullptr),
+      requests_waiting_(&lock_),
+      slots_available_(&lock_) {}
+
+MockHostResolverProc::~MockHostResolverProc() = default;
+
+bool MockHostResolverProc::WaitFor(unsigned count) {
+  base::AutoLock lock(lock_);
+  base::Time start_time = base::Time::Now();
+  while (num_requests_waiting_ < count) {
+    requests_waiting_.TimedWait(TestTimeouts::action_timeout());
+    if (base::Time::Now() > start_time + TestTimeouts::action_timeout()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void MockHostResolverProc::SignalMultiple(unsigned count) {
+  base::AutoLock lock(lock_);
+  num_slots_available_ += count;
+  slots_available_.Broadcast();
+}
+
+void MockHostResolverProc::SignalAll() {
+  base::AutoLock lock(lock_);
+  num_slots_available_ = num_requests_waiting_;
+  slots_available_.Broadcast();
+}
+
+void MockHostResolverProc::AddRule(const std::string& hostname,
+                                   AddressFamily family,
+                                   const AddressList& result,
+                                   HostResolverFlags flags) {
+  base::AutoLock lock(lock_);
+  rules_[ResolveKey(hostname, family, flags)] = result;
+}
+
+void MockHostResolverProc::AddRule(const std::string& hostname,
+                                   AddressFamily family,
+                                   const std::string& ip_list,
+                                   HostResolverFlags flags,
+                                   const std::string& canonical_name) {
+  AddressList result;
+  std::vector<std::string> dns_aliases;
+  if (canonical_name != "") {
+    dns_aliases = {canonical_name};
+  }
+  int rv = ParseAddressList(ip_list, &result.endpoints());
+  result.SetDnsAliases(dns_aliases);
+  DCHECK_EQ(OK, rv);
+  AddRule(hostname, family, result, flags);
+}
+
+void MockHostResolverProc::AddRuleForAllFamilies(
+    const std::string& hostname,
+    const std::string& ip_list,
+    HostResolverFlags flags,
+    const std::string& canonical_name) {
+  AddressList result;
+  std::vector<std::string> dns_aliases;
+  if (canonical_name != "") {
+    dns_aliases = {canonical_name};
+  }
+  int rv = ParseAddressList(ip_list, &result.endpoints());
+  result.SetDnsAliases(dns_aliases);
+  DCHECK_EQ(OK, rv);
+  AddRule(hostname, ADDRESS_FAMILY_UNSPECIFIED, result, flags);
+  AddRule(hostname, ADDRESS_FAMILY_IPV4, result, flags);
+  AddRule(hostname, ADDRESS_FAMILY_IPV6, result, flags);
+}
+
+int MockHostResolverProc::Resolve(const std::string& hostname,
+                                  AddressFamily address_family,
+                                  HostResolverFlags host_resolver_flags,
+                                  AddressList* addrlist,
+                                  int* os_error) {
+  base::AutoLock lock(lock_);
+  capture_list_.emplace_back(hostname, address_family, host_resolver_flags);
+  ++num_requests_waiting_;
+  requests_waiting_.Broadcast();
+  {
+    base::ScopedAllowBaseSyncPrimitivesForTesting
+        scoped_allow_base_sync_primitives;
+    while (!num_slots_available_) {
+      slots_available_.Wait();
+    }
+  }
+  DCHECK_GT(num_requests_waiting_, 0u);
+  --num_slots_available_;
+  --num_requests_waiting_;
+  if (rules_.empty()) {
+    int rv = ParseAddressList("127.0.0.1", &addrlist->endpoints());
+    DCHECK_EQ(OK, rv);
+    return OK;
+  }
+  ResolveKey key(hostname, address_family, host_resolver_flags);
+  if (rules_.count(key) == 0) {
+    return ERR_NAME_NOT_RESOLVED;
+  }
+  *addrlist = rules_[key];
+  return OK;
+}
+
+MockHostResolverProc::CaptureList MockHostResolverProc::GetCaptureList() const {
+  CaptureList copy;
+  {
+    base::AutoLock lock(lock_);
+    copy = capture_list_;
+  }
+  return copy;
+}
+
+void MockHostResolverProc::ClearCaptureList() {
+  base::AutoLock lock(lock_);
+  capture_list_.clear();
+}
+
+bool MockHostResolverProc::HasBlockedRequests() const {
+  base::AutoLock lock(lock_);
+  return num_requests_waiting_ > num_slots_available_;
 }
 
 }  // namespace net
