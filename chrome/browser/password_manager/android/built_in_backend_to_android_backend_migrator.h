@@ -53,7 +53,7 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   // The type of operation triggered on backend during the migration. Used for
   // the metrics reporting.
-  enum class BackendOperation {
+  enum class BackendOperationForMigration {
     kAddLogin,
     kUpdateLogin,
     kRemoveLogin,
@@ -145,9 +145,10 @@ class BuiltInBackendToAndroidBackendMigrator {
   // If |changelist| is an empty changelist, migration is aborted by calling
   // MigrationFinished() indicating the migration is *not* successful.
   // Otherwise, |callback| is invoked.
-  void RunCallbackOrAbortMigration(base::OnceClosure callback,
-                                   BackendOperation backend_operation,
-                                   PasswordChangesOrError changelist);
+  void RunCallbackOrAbortMigration(
+      base::OnceClosure callback,
+      BackendOperationForMigration backend_operation,
+      PasswordChangesOrError changelist);
 
   // Reports metrics and deletes |metrics_reporter_|
   void MigrationFinished(bool is_success);

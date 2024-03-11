@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
+#include <string>
 
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
@@ -71,6 +72,22 @@ std::string MigrationTypeToString(
     case BuiltInBackendToAndroidBackendMigrator::MigrationType::kNone:
       NOTREACHED() << "No migration should be executed.";
       return std::string();
+  }
+}
+
+std::string BackendOperationToString(
+    BuiltInBackendToAndroidBackendMigrator::BackendOperationForMigration
+        backend_operation) {
+  switch (backend_operation) {
+    case BuiltInBackendToAndroidBackendMigrator::BackendOperationForMigration::
+        kAddLogin:
+      return "AddLogin";
+    case BuiltInBackendToAndroidBackendMigrator::BackendOperationForMigration::
+        kUpdateLogin:
+      return "UpdateLogin";
+    case BuiltInBackendToAndroidBackendMigrator::BackendOperationForMigration::
+        kRemoveLogin:
+      return "RemoveLogin";
   }
 }
 
@@ -145,13 +162,33 @@ class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
     }
   }
 
+  void HandleBackendOperationResult(
+      BackendOperationForMigration backend_operation,
+      bool is_success) {
+    base::UmaHistogramBoolean(metric_infix_ +
+                                  BackendOperationToString(backend_operation) +
+                                  ".Success",
+                              is_success);
+    if (!is_success) {
+      return;
+    }
+
+    switch (backend_operation) {
+      case BackendOperationForMigration::kAddLogin:
+        added_logins_count_++;
+        break;
+      case BackendOperationForMigration::kUpdateLogin:
+        update_logins_count_++;
+        break;
+      case BackendOperationForMigration::kRemoveLogin:
+        // No metric for removal operation.
+        break;
+    }
+  }
+
   void SetLocalConflictsWonByAndroidCount(int count) {
     migration_conflict_won_by_android_count_ = count;
   }
-
-  void AddUpdatedCredential() { update_logins_count_++; }
-
-  void AddAddedCredential() { added_logins_count_++; }
 
  private:
   base::Time start_ = base::Time::Now();
@@ -439,7 +476,7 @@ void BuiltInBackendToAndroidBackendMigrator::AddLoginToBackend(
       base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          BackendOperation::kAddLogin));
+          BackendOperationForMigration::kAddLogin));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend(
@@ -451,7 +488,7 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend(
       base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          BackendOperation::kUpdateLogin));
+          BackendOperationForMigration::kUpdateLogin));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
@@ -463,14 +500,16 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
       base::BindOnce(
           &BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          BackendOperation::kRemoveLogin));
+          BackendOperationForMigration::kRemoveLogin));
 }
 
 void BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration(
     base::OnceClosure callback,
-    BackendOperation backend_operation,
+    BackendOperationForMigration backend_operation,
     PasswordChangesOrError changes_or_error) {
   if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
+    metrics_reporter_->HandleBackendOperationResult(backend_operation,
+                                                    /*is_success=*/false);
     MigrationFinished(/*is_success=*/false);
     return;
   }
@@ -480,23 +519,16 @@ void BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration(
   // provide exact changelist (e.g. Android). This indicates success operation
   // as well as non-empty changelist.
   if (!changes.has_value() || !changes.value().empty()) {
+    metrics_reporter_->HandleBackendOperationResult(backend_operation,
+                                                    /*is_success=*/true);
     // The step was successful, continue the migration.
-    switch (backend_operation) {
-      case BackendOperation::kAddLogin:
-        metrics_reporter_->AddAddedCredential();
-        break;
-      case BackendOperation::kUpdateLogin:
-        metrics_reporter_->AddUpdatedCredential();
-        break;
-      case BackendOperation::kRemoveLogin:
-        // No metric for removal operation.
-        break;
-    }
     std::move(callback).Run();
     return;
   }
 
   // Migration failed.
+  metrics_reporter_->HandleBackendOperationResult(backend_operation,
+                                                  /*is_success=*/false);
   MigrationFinished(/*is_success=*/false);
 }
 

@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BackendOperationForMigration">
+  <variant name="AddLogin"
+      summary="Calling AddLoginAsync on the backend when migrating passwords
+               between built in and Android backends."/>
+  <variant name="RemoveLogin"
+      summary="Calling RemoveLoginAsync on the backend when migrating
+               passwords between built in and Android backends."/>
+  <variant name="UpdateLogin"
+      summary="Calling UpdateLoginAsync on the backend when migrating
+               passwords between built in and Android backends."/>
+</variants>
+
 <variants name="CustomPassphraseStatus">
   <variant name=""/>
   <variant name=".WithCustomPassphrase"
@@ -3923,6 +3935,23 @@ chromium-metrics-reviews@google.com.
     the overall migration success.
   </summary>
   <token key="UPMMigrationType" variants="UPMMigrationType"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.{BackendOperationForMigration}.Success"
+    enum="BooleanSuccess" expires_after="2024-08-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records whether {BackendOperationForMigration} finished successfully for the
+    {UPMMigrationType}. The metric is reported when the response for
+    {BackendOperationForMigration} comes back irrespective of the overall
+    migration success.
+  </summary>
+  <token key="UPMMigrationType" variants="UPMMigrationType"/>
+  <token key="BackendOperationForMigration"
+      variants="BackendOperationForMigration"/>
 </histogram>
 
 <histogram name="PasswordManager.UpdateUIDismissalReason"

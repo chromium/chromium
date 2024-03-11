@@ -418,6 +418,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
   Init();
   InitSyncService(/*is_password_sync_enabled=*/true);
 
+  base::HistogramTester histogram_tester;
+
   PasswordForm form = CreateTestPasswordForm(1);
   form.blocked_by_user = true;
   std::vector<PasswordForm> built_in_logins = {std::move(form)};
@@ -428,6 +430,76 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
       .WillOnce(base::test::RunOnceCallback<1>(kBackendError));
   migrator()->StartAccountMigrationIfNecessary(
       MigrationType::kInitialForSyncUsers);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
+      "RemoveLogin.Success",
+      false, 1);
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
+       UpdateLoginMetricReportsSuccess) {
+  Init();
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  base::HistogramTester histogram_tester;
+
+  std::vector<PasswordForm> built_in_logins = {CreateTestPasswordForm(0)};
+  EXPECT_CALL(built_in_backend_, GetAllLoginsAsync)
+      .WillOnce(base::test::RunOnceCallback<0>(std::move(built_in_logins)));
+  EXPECT_CALL(android_backend_, UpdateLoginAsync)
+      .WillOnce(base::test::RunOnceCallback<1>(PasswordChangesOrError()));
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kInitialForSyncUsers);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
+      "UpdateLogin.Success",
+      true, 1);
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
+       UpdateLoginMetricReportsFailure) {
+  Init();
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  base::HistogramTester histogram_tester;
+
+  std::vector<PasswordForm> built_in_logins = {CreateTestPasswordForm(0)};
+  EXPECT_CALL(built_in_backend_, GetAllLoginsAsync)
+      .WillOnce(base::test::RunOnceCallback<0>(std::move(built_in_logins)));
+  EXPECT_CALL(android_backend_, UpdateLoginAsync)
+      .WillOnce(base::test::RunOnceCallback<1>(kBackendError));
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kInitialForSyncUsers);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
+      "UpdateLogin.Success",
+      false, 1);
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
+       RemoveLoginMetricReportsSuccess) {
+  Init();
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  base::HistogramTester histogram_tester;
+
+  PasswordForm form_1 = CreateTestPasswordForm(1);
+  form_1.blocked_by_user = true;
+  std::vector<PasswordForm> built_in_logins = {std::move(form_1)};
+  EXPECT_CALL(built_in_backend_, GetAllLoginsAsync)
+      .WillOnce(base::test::RunOnceCallback<0>(std::move(built_in_logins)));
+  EXPECT_CALL(built_in_backend_, RemoveLoginAsync)
+      .WillOnce(base::test::RunOnceCallback<1>(PasswordChangesOrError()));
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kInitialForSyncUsers);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
+      "RemoveLogin.Success",
+      true, 1);
 }
 
 // Holds the built in and android backend's logins and the expected result after
@@ -642,6 +714,14 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       p.updated_in_android_backend_credentials_count +
           added_to_anroid_backend_count,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+      "AddLogin.Success",
+      true, added_to_anroid_backend_count);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+      "UpdateLogin.Success",
+      true, p.updated_in_android_backend_credentials_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -674,6 +754,7 @@ INSTANTIATE_TEST_SUITE_P(
                        .merged_logins = {{1}, {2}, {3}},
                        .initial_sync_migration_android_logins = {{1}, {2}, {3}},
                        .conflicts_won_by_android = 0},
+
         MigrationParam{
             .built_in_logins = {{1, "old_password", base::Days(1)}, {2}},
             .android_logins = {{1, "new_password", base::Days(2)}, {3}},
@@ -701,7 +782,6 @@ INSTANTIATE_TEST_SUITE_P(
                              /*date_last_used=*/base::Days(2)}},
                        .updated_in_android_backend_credentials_count = 1,
                        .conflicts_won_by_android = 0},
-
         MigrationParam{
             .built_in_logins = {{1, "old_password",
                                  /*date_created=*/base::Days(1),
