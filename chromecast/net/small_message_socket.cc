@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/net/io_buffer_pool.h"
 #include "net/base/net_errors.h"
@@ -165,9 +166,9 @@ void* SmallMessageSocket::PrepareSend(size_t message_size) {
   }
 
   write_buffer_->SetUnderlyingBuffer(write_storage_, total_size);
-  char* data = write_buffer_->data();
-  WriteSizeData(data, message_size);
-  return data + bytes_for_size;
+  auto span = base::as_writable_bytes(write_buffer_->span());
+  WriteSizeData(span, message_size);
+  return span.subspan(bytes_for_size).data();
 }
 
 bool SmallMessageSocket::SendBuffer(scoped_refptr<net::IOBuffer> data,
@@ -188,16 +189,18 @@ size_t SmallMessageSocket::SizeDataBytes(size_t message_size) {
 }
 
 // static
-size_t SmallMessageSocket::WriteSizeData(char* ptr, size_t message_size) {
+size_t SmallMessageSocket::WriteSizeData(base::span<uint8_t> buf,
+                                         size_t message_size) {
+  base::BigEndianWriter writer(buf);
   if (message_size < kMax2ByteSize) {
-    base::WriteBigEndian(ptr, static_cast<uint16_t>(message_size));
-    return 2;
+    writer.WriteU16(static_cast<uint16_t>(message_size));
+  } else {
+    writer.WriteU16(base::checked_cast<uint16_t>(kMax2ByteSize));
+    writer.WriteU32(
+        // NOTE: This may truncate the message_size.
+        static_cast<uint32_t>(message_size));
   }
-
-  base::WriteBigEndian(ptr, static_cast<uint16_t>(kMax2ByteSize));
-  base::WriteBigEndian(ptr + sizeof(uint16_t),
-                       static_cast<uint32_t>(message_size));
-  return 6;
+  return buf.size() - writer.remaining();
 }
 
 void SmallMessageSocket::Send() {
@@ -337,20 +340,24 @@ bool SmallMessageSocket::ReadSize(char* ptr,
     return false;
   }
 
-  uint16_t first_size;
-  base::ReadBigEndian(reinterpret_cast<uint8_t*>(ptr), &first_size);
+  // TODO(crbug.com/40284755): This span is not safely constructed and is likely
+  // incorrect for some callers. ReadSize() should receive a span instead of the
+  // unbounded pointer `ptr`. We use up to bytes from the pointer below, so we
+  // unsoundly claim that the span has 6 bytes here.
+  auto span = UNSAFE_BUFFERS(base::as_bytes(base::span(ptr, 6u)));
 
+  uint16_t first_size = base::numerics::U16FromBigEndian(span.first<2u>());
+  span = span.subspan(sizeof(uint16_t));
+  data_offset = sizeof(uint16_t);
   if (first_size < kMax2ByteSize) {
-    data_offset = sizeof(uint16_t);
     message_size = first_size;
   } else {
     if (bytes_read < sizeof(uint16_t) + sizeof(uint32_t)) {
       return false;
     }
-    uint32_t real_size;
-    base::ReadBigEndian(reinterpret_cast<uint8_t*>(ptr) + sizeof(uint16_t),
-                        &real_size);
-    data_offset = sizeof(uint16_t) + sizeof(uint32_t);
+    uint32_t real_size = base::numerics::U32FromBigEndian(span.first<4u>());
+    span = span.subspan(sizeof(uint32_t));
+    data_offset += sizeof(uint32_t);
     message_size = real_size;
   }
   return true;

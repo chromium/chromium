@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
@@ -87,6 +88,9 @@ class SmallMessageSocket {
   // then call Send() to send the finished message.
   // If nullptr is returned, then OnSendUnblocked() will be called once sending
   // is possible again.
+  //
+  // TODO(crbug.com/40284755): This method should return a span of size
+  // `message_size` instead of a pointer.
   void* PrepareSend(size_t message_size);
   void Send();
 
@@ -102,11 +106,12 @@ class SmallMessageSocket {
   // size.
   static size_t SizeDataBytes(size_t message_size);
 
-  // Writes the necessary |message_size| information into ptr. This can be used
-  // to prepare a buffer for SendBuffer(). Note that if |message_size| is
+  // Writes the necessary |message_size| information into `buf`. This can be
+  // used to prepare a buffer for SendBuffer(). Note that if `message_size` is
   // greater than or equal to 0xffff, the message size data will take up 6
-  // bytes. Returns the number of bytes written (= SizeDataBytes(message_size)).
-  static size_t WriteSizeData(char* ptr, size_t message_size);
+  // bytes, and the `buf` will need to be large enough. Returns the number of
+  // bytes written (= SizeDataBytes(message_size)).
+  static size_t WriteSizeData(base::span<uint8_t> buf, size_t message_size);
 
   // Reads the message size from a |ptr| which contains |bytes_read| of data.
   // Returns |false| if there was not enough data to read a valid size.

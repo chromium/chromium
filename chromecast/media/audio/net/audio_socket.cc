@@ -9,9 +9,12 @@
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/net/io_buffer_pool.h"
 #include "net/base/io_buffer.h"
@@ -37,7 +40,16 @@ bool GetMetaDataPaddingBytes(const char* data,
     return false;
   }
 
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(data), &padding_bytes);
+  padding_bytes =
+      // NOTE: This cast may convert large unsigned values to negative values.
+      // We check for and reject negative values below.
+      static_cast<int32_t>(base::numerics::U32FromBigEndian(
+          base::as_bytes(
+              // TODO(crbug.com/402847551): This span construction is unsound as
+              // we can't know that the size is right, the function should be
+              // receiving a span.
+              UNSAFE_BUFFERS(base::span(data, size)))
+              .first<sizeof(padding_bytes)>()));
   size -= sizeof(padding_bytes);
 
   if (padding_bytes < 0 || padding_bytes > 3) {
@@ -123,21 +135,32 @@ void AudioSocket::PrepareAudioBuffer(net::IOBuffer* audio_buffer,
                                      int64_t timestamp) {
   // Audio message format:
   //   uint16_t size (for SmallMessageSocket)
+  //   == AudioHeader ==
   //   uint16_t type (audio or metadata)
   //   uint64_t timestamp
+  //   uint32_t padding
+  //   == End of AudioHeader ==
   //   ... audio data ...
-  int payload_size = kAudioHeaderSize + filled_bytes;
-  uint16_t size = static_cast<uint16_t>(payload_size);
-  int16_t type = static_cast<int16_t>(MessageType::kAudio);
-  char* ptr = audio_buffer->data();
 
-  base::WriteBigEndian(ptr, size);
-  ptr += sizeof(size);
-  memcpy(ptr, &type, sizeof(type));
-  ptr += sizeof(type);
-  memcpy(ptr, &timestamp, sizeof(timestamp));
-  ptr += sizeof(timestamp);
-  memset(ptr, 0, sizeof(int32_t));
+  // The payload size is header + payload.
+  auto payload_size =
+      base::checked_cast<uint16_t>(kAudioHeaderSize + filled_bytes);
+
+  auto buffer = base::as_writable_bytes(audio_buffer->span());
+
+  buffer.first<sizeof(uint16_t)>().copy_from(
+      base::numerics::U16ToBigEndian(payload_size));
+  buffer = buffer.subspan(sizeof(uint16_t));
+
+  buffer.first<sizeof(uint16_t)>().copy_from(
+      base::byte_span_from_ref(MessageType::kAudio));
+  buffer = buffer.subspan(sizeof(uint16_t));
+
+  buffer.first<sizeof(uint64_t)>().copy_from(
+      base::byte_span_from_ref(timestamp));
+  buffer = buffer.subspan(sizeof(uint64_t));
+
+  std::ranges::fill(buffer.first<sizeof(uint32_t)>(), uint8_t{0});
 }
 
 bool AudioSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
@@ -149,9 +172,8 @@ bool AudioSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
 
 bool AudioSocket::SendPreparedAudioBuffer(
     scoped_refptr<net::IOBuffer> audio_buffer) {
-  uint16_t payload_size;
-  base::ReadBigEndian(reinterpret_cast<uint8_t*>(audio_buffer->data()),
-                      &payload_size);
+  uint16_t payload_size = base::numerics::U16FromBigEndian(
+      base::as_bytes(base::as_bytes(audio_buffer->span()).first<2>()));
   DCHECK_GE(payload_size, kAudioHeaderSize);
   return SendBuffer(0, std::move(audio_buffer),
                     sizeof(uint16_t) + payload_size);
@@ -159,17 +181,25 @@ bool AudioSocket::SendPreparedAudioBuffer(
 
 bool AudioSocket::SendProto(int type,
                             const google::protobuf::MessageLite& message) {
-  int16_t packet_type = static_cast<int16_t>(MessageType::kMetadata);
+  auto packet_type = static_cast<uint16_t>(MessageType::kMetadata);
   size_t message_size = message.ByteSizeLong();
-  int32_t padding_bytes = (4 - (message_size % 4)) % 4;
+  uint32_t padding_bytes = (4u - (message_size % 4u)) % 4u;
 
   int total_size = sizeof(packet_type) + sizeof(padding_bytes) + message_size +
                    padding_bytes;
 
   scoped_refptr<net::IOBuffer> buffer;
-  char* ptr = (socket_ ? static_cast<char*>(socket_->PrepareSend(total_size))
-                       : nullptr);
-  if (!ptr) {
+  base::span<uint8_t> send_buf;
+  {
+    void* ptr = socket_ ? socket_->PrepareSend(total_size) : nullptr;
+    send_buf =
+        // SAFETY: The `ptr` returned from PrepareSend(), when non-null,
+        // will always point to at least `total_size` many bytes.
+        UNSAFE_BUFFERS(
+            base::span(static_cast<uint8_t*>(ptr), ptr ? total_size : 0u));
+  }
+
+  if (send_buf.empty()) {
     if (buffer_pool_ &&
         buffer_pool_->buffer_size() >= sizeof(uint16_t) + total_size) {
       buffer = buffer_pool_->GetBuffer();
@@ -178,18 +208,24 @@ bool AudioSocket::SendProto(int type,
       buffer = base::MakeRefCounted<net::IOBufferWithSize>(sizeof(uint16_t) +
                                                            total_size);
     }
-    ptr = buffer->data();
-    base::WriteBigEndian(ptr, static_cast<uint16_t>(total_size));
-    ptr += sizeof(uint16_t);
+
+    base::BigEndianWriter writer(base::as_writable_bytes(buffer->span()));
+    writer.WriteU16(static_cast<uint16_t>(total_size));
+    // Move `send_buf` from pointing into `socket_` to pointing into `buffer`.
+    send_buf = writer.remaining_bytes();
   }
 
-  base::WriteBigEndian(ptr, packet_type);
-  ptr += sizeof(packet_type);
-  base::WriteBigEndian(ptr, padding_bytes);
-  ptr += sizeof(padding_bytes);
-  message.SerializeToArray(ptr, message_size);
-  ptr += message_size;
-  memset(ptr, 0, padding_bytes);
+  {
+    base::BigEndianWriter writer(send_buf);
+    writer.WriteU16(packet_type);
+    writer.WriteU32(padding_bytes);
+    send_buf = writer.remaining_bytes();
+  }
+
+  auto [message_buf, rem1] = send_buf.split_at(message_size);
+  auto [padding_buf, rem2] = rem1.split_at(padding_bytes);
+  message.SerializeToArray(message_buf.data(), message_size);
+  std::ranges::fill(padding_buf, 0u);
 
   if (!buffer) {
     socket_->Send();
@@ -229,9 +265,8 @@ void AudioSocket::OnSendUnblocked() {
   base::flat_map<int, scoped_refptr<net::IOBuffer>> pending;
   pending_writes_.swap(pending);
   for (auto& m : pending) {
-    uint16_t message_size;
-    base::ReadBigEndian(reinterpret_cast<uint8_t*>(m.second->data()),
-                        &message_size);
+    uint16_t message_size = base::numerics::U16FromBigEndian(
+        base::as_bytes(m.second->span().first<2u>()));
     SendBufferToSocket(m.first, std::move(m.second),
                        sizeof(uint16_t) + message_size);
   }
