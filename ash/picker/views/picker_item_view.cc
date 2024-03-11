@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/picker/views/picker_focus_indicator.h"
-#include "ash/picker/views/picker_preview_bubble.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/style/style_util.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -71,7 +71,18 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
 }
 
 PickerItemView::~PickerItemView() {
-  ClosePreviewBubble();
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->CloseBubble();
+  }
+}
+
+void PickerItemView::SetPreview(
+    PickerPreviewBubbleController* preview_bubble_controller) {
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->CloseBubble();
+  }
+
+  preview_bubble_controller_ = preview_bubble_controller;
 }
 
 void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
@@ -90,31 +101,16 @@ void PickerItemView::SelectItem() {
   select_item_callback_.Run();
 }
 
-void PickerItemView::SetHasPreview() {
-  has_preview = true;
-}
-
 void PickerItemView::OnMouseEntered(const ui::MouseEvent&) {
-  if (!has_preview || preview_bubble_view_ != nullptr) {
-    return;
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->ShowBubble(this);
   }
-
-  // Observe the destruction of the widget to keep `preview_bubble_view_` from
-  // dangling.
-  preview_bubble_view_ = new PickerPreviewBubbleView(this);
-  preview_bubble_view_->GetWidget()->AddObserver(this);
 }
 
 void PickerItemView::OnMouseExited(const ui::MouseEvent&) {
-  if (!has_preview) {
-    return;
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->CloseBubble();
   }
-  ClosePreviewBubble();
-}
-
-void PickerItemView::OnWidgetDestroying(views::Widget* widget) {
-  widget->RemoveObserver(this);
-  preview_bubble_view_ = nullptr;
 }
 
 void PickerItemView::SetCornerRadius(int corner_radius) {
@@ -147,14 +143,6 @@ void PickerItemView::SetItemState(ItemState item_state) {
       SchedulePaint();
       break;
   }
-}
-
-void PickerItemView::ClosePreviewBubble() {
-  if (preview_bubble_view_ == nullptr) {
-    return;
-  }
-  preview_bubble_view_->Close();
-  preview_bubble_view_ = nullptr;
 }
 
 BEGIN_METADATA(PickerItemView)

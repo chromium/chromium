@@ -259,7 +259,7 @@ void PickerSearchResultsView::AddResultToSection(
           [&](const PickerSearchResult::FileData& data) {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetHasPreview();
+            item_view->SetPreview(&preview_bubble_controller_);
             item_view->SetPrimaryText(data.title);
             section_view->AddListItem(std::move(item_view));
           },

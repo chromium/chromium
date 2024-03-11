@@ -6,7 +6,6 @@
 #define ASH_PICKER_VIEWS_PICKER_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/picker/views/picker_preview_bubble.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -14,9 +13,10 @@
 
 namespace ash {
 
+class PickerPreviewBubbleController;
+
 // View for a Picker item which can be selected.
-class ASH_EXPORT PickerItemView : public views::Button,
-                                  public views::WidgetObserver {
+class ASH_EXPORT PickerItemView : public views::Button {
   METADATA_HEADER(PickerItemView, views::Button)
 
  public:
@@ -50,17 +50,14 @@ class ASH_EXPORT PickerItemView : public views::Button,
   PickerItemView& operator=(const PickerItemView&) = delete;
   ~PickerItemView() override;
 
+  void SetPreview(PickerPreviewBubbleController* preview_bubble_controller);
+
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
   void SelectItem();
-
-  void SetHasPreview();
 
   void SetCornerRadius(int corner_radius);
 
@@ -68,11 +65,7 @@ class ASH_EXPORT PickerItemView : public views::Button,
   void SetItemState(ItemState item_state);
 
  private:
-  void ClosePreviewBubble();
-
   SelectItemCallback select_item_callback_;
-
-  bool has_preview = false;
 
   ItemState item_state_ = ItemState::kNormal;
 
@@ -81,8 +74,7 @@ class ASH_EXPORT PickerItemView : public views::Button,
   // Corner radius of the item background and highlight.
   int corner_radius_ = 0;
 
-  // Owned by the bubble widget.
-  raw_ptr<PickerPreviewBubbleView> preview_bubble_view_;
+  raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
 };
 
 }  // namespace ash
