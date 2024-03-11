@@ -110,13 +110,6 @@ declare_args() {
 
   # When true, sanitizer warnings will cause test case failures.
   fail_on_san_warnings = false
-
-  # The fuzztest library builds only on some platforms, so for now,
-  # all targets depending on fuzztest need to be configured according
-  # to this.
-  # TODO(crbug.com/1494445): remove this when all build permutations
-  # work
-  fuzztest_supported = true
 }
 
 declare_args() {

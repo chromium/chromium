@@ -148,7 +148,7 @@ buildflag_header("buildflags") {
   ]
 }
 
-if (enable_extractors && fuzztest_supported) {
+if (enable_extractors) {
   test("single_file_tar_reader_fuzzer") {
     sources = [ "single_file_tar_reader_fuzzer.cc" ]
 

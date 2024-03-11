@@ -11,10 +11,7 @@ import("//testing/test.gni")
 # Basic smoke tests for fuzzing
 group("tests") {
   testonly = true
-  deps = []
-  if (fuzztest_supported) {
-    deps += [ ":fuzztest_tests" ]
-  }
+  deps = [ ":fuzztest_tests" ]
   if (use_fuzzing_engine && !is_win) {
     deps += [ ":libfuzzer_tests" ]
   }
@@ -117,10 +114,8 @@ copy("check_seed_corpus_archive") {
 #   arguments
 # * on libfuzzer and centipede builders this will enable different
 #   options again.
-if (fuzztest_supported) {
-  test("fuzztest_tests") {
-    fuzztests = [ "FuzzTestSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
-    deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
-    sources = [ "fuzztest_smoketest.cc" ]
-  }
+test("fuzztest_tests") {
+  fuzztests = [ "FuzzTestSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
+  deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
+  sources = [ "fuzztest_smoketest.cc" ]
 }

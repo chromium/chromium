@@ -2458,7 +2458,7 @@ if (is_ios) {
   }
 }
 
-if (fuzztest_supported && !is_cronet_build) {
+if (!is_cronet_build) {
   test("net_fuzztests") {
     sources = [ "cert/x509_certificate_fuzztest.cc" ]
 
