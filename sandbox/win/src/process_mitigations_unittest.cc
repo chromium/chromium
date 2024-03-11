@@ -19,6 +19,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
+#include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -78,6 +79,8 @@ void TestWin10NonSystemFont(bool is_success_test) {
   std::wstring test_command = L"CheckWin10FontLoad \"";
   test_command += font_path.value().c_str();
   test_command += L"\"";
+
+  runner.SetTestState(sandbox::EVERY_STATE);
 
   EXPECT_EQ((is_success_test ? sandbox::SBOX_TEST_SUCCEEDED
                              : sandbox::SBOX_TEST_FAILED),
@@ -159,6 +162,19 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     // MITIGATION_WIN32K_DISABLE
     //--------------------------------------------------
     case (TESTPOLICY_WIN32K): {
+      // When the test is run with SetTestState(EVERY_STATE), the return value
+      // is ignored for the first two states (before InitCalled and before
+      // RevertedToSelf).
+      if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
+        return 0;
+      } else if (!SandboxFactory::GetTargetServices()
+                      ->GetState()
+                      ->RevertedToSelf()) {
+        // Need to warm up user32.dll for the test.
+        CHECK(::LoadLibrary(L"user32.dll"));
+        return 0;
+      }
+
       PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
       if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
                                         ProcessSystemCallDisablePolicy, &policy,
@@ -171,6 +187,27 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
       // Check if we can call a Win32k API. Fail if it succeeds.
       if (::GetDC(nullptr))
         return SBOX_TEST_SECOND_ERROR;
+
+      break;
+    }
+    //--------------------------------------------------
+    // MITIGATION_WIN32K_DISABLE
+    //--------------------------------------------------
+    case (TESTPOLICY_WIN32K_NOFAKEGDI): {
+      PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
+      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                        ProcessSystemCallDisablePolicy, &policy,
+                                        sizeof(policy))) {
+        return SBOX_TEST_NOT_FOUND;
+      }
+      if (!policy.DisallowWin32kSystemCalls) {
+        return SBOX_TEST_FIRST_ERROR;
+      }
+
+      // Check if we can load gdi32.dll. Fail if it succeeds.
+      if (::LoadLibrary(L"gdi32.dll")) {
+        return SBOX_TEST_SECOND_ERROR;
+      }
 
       break;
     }
@@ -433,6 +470,19 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
 SBOX_TESTS_COMMAND int CheckWin10FontLoad(int argc, wchar_t** argv) {
   if (argc < 1)
     return SBOX_TEST_INVALID_PARAMETER;
+
+  // When the test is run with SetTestState(EVERY_STATE), the return value
+  // is ignored for the first two states (before InitCalled and before
+  // RevertedToSelf).
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
+    return 0;
+  } else if (!SandboxFactory::GetTargetServices()
+                  ->GetState()
+                  ->RevertedToSelf()) {
+    // Need to warm up gdi32.dll for the test.
+    CHECK(::LoadLibrary(L"gdi32.dll"));
+    return 0;
+  }
 
   // Open font file passed in as an argument.
   base::File file(base::FilePath(argv[0]),

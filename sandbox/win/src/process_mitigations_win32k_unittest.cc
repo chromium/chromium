@@ -45,10 +45,28 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
   TestRunner runner;
+  runner.SetTestState(sandbox::EVERY_STATE);
+
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
             SBOX_ALL_OK);
   EXPECT_EQ(config->SetFakeGdiInit(), sandbox::SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
+}
+
+// This test validates the MITIGATION_WIN32K_DISABLE works without the
+// SetFakeGdiInit() interceptions that allow gdi32.dll and user32.dll to load.
+TEST(ProcessMitigationsWin32kTest,
+     CheckWin32kLockDownSuccessWithoutFakeGdiInit) {
+  std::wstring test_policy_command = L"CheckPolicy ";
+  test_policy_command += std::to_wstring(TESTPOLICY_WIN32K_NOFAKEGDI);
+
+  TestRunner runner;
+  runner.SetTestState(sandbox::EVERY_STATE);
+
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
+            SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
 }
 
