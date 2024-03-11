@@ -42,8 +42,7 @@ void AXMainNodeAnnotator::CancelAnnotations() {
 }
 
 uint32_t AXMainNodeAnnotator::GetAXModeToEnableAnnotations() {
-  // TODO: Change to the AXMode for main node.
-  return ui::AXMode::kLabelImages;
+  return ui::AXMode::kAnnotateMainNode;
 }
 
 ax::mojom::Action AXMainNodeAnnotator::GetAXActionToEnableAnnotations() {

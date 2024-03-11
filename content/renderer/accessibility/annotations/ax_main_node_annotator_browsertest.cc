@@ -73,8 +73,7 @@ class AXMainNodeAnnotatorTest : public RenderAccessibilityImplTest {
     scoped_feature_list_.InitAndEnableFeature(features::kMainNodeAnnotations);
     RenderAccessibilityImplTest::SetUp();
     ui::AXMode mode = ui::kAXModeComplete;
-    // TODO: Change to the AXMode for main node.
-    mode.set_mode(ui::AXMode::kLabelImages, true);
+    mode.set_mode(ui::AXMode::kAnnotateMainNode, true);
     SetMode(mode);
     auto annotator =
         std::make_unique<AXMainNodeAnnotator>(GetRenderAccessibilityImpl());

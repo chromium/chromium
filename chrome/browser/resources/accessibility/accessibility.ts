@@ -21,6 +21,7 @@ enum AxMode {
   LABEL_IMAGES = 1 << 6,
   PDF_PRINTING = 1 << 7,
   PDF_OCR = 1 << 8,
+  ANNOTATE_MAIN_NODE = 1 << 9,
 }
 
 interface Data {
@@ -369,6 +370,9 @@ function formatRow(
     row.appendChild(createModeElement(
         AxMode.LABEL_IMAGES, pageData, 'screenreader',
         /*readonly=*/ true));
+    row.appendChild(createModeElement(
+        AxMode.ANNOTATE_MAIN_NODE, pageData, 'screenreader',
+        /* readOnly= */ true));
   } else {
     const siteInfo = document.createElement('span');
     siteInfo.appendChild(formatValue(data, 'name'));
@@ -472,6 +476,8 @@ function getNameForAccessibilityMode(mode: AxMode): string {
       return 'PDF printing';
     case AxMode.PDF_OCR:
       return 'PDF OCR';
+    case AxMode.ANNOTATE_MAIN_NODE:
+      return 'Annotate main node';
     default:
       assertNotReached();
   }

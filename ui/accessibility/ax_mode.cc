@@ -60,6 +60,9 @@ std::string AXMode::ToString() const {
       case AXMode::kHTMLMetadata:
         flag_name = "kHTMLMetadata";
         break;
+      case AXMode::kAnnotateMainNode:
+        flag_name = "kAnnotateMainNode";
+        break;
     }
 
     DCHECK(!flag_name.empty());
