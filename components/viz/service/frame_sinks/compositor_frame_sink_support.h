@@ -336,10 +336,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // into OnBeginFrame.
   bool ShouldMergeBeginFrameWithAcks() const;
 
-  // Returns true if the begin frame arguments should be adjusted with
-  // any existing throttling.
-  bool ShouldAdjustBeginFrameArgs() const;
-
   // When throttling is requested by a client, a BeginFrame will not be sent
   // until the time elapsed has passed the requested throttle interval since the
   // last sent BeginFrame. This function returns true if such interval has

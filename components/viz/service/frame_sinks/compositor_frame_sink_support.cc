@@ -1026,8 +1026,7 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
   // consumers will assume that the default vsync interval was the target and
   // that the frames are presented too late when in fact, this is intentional.
   if (begin_frame_interval_.is_positive() &&
-      details.presentation_feedback.interval.is_positive() &&
-      ShouldAdjustBeginFrameArgs()) {
+      details.presentation_feedback.interval.is_positive()) {
     details.presentation_feedback.interval = begin_frame_interval_;
   }
   pending_received_frame_times_.erase(received_frame_timestamp);
@@ -1089,7 +1088,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
 
   BeginFrameArgs adjusted_args = args;
   adjusted_args.dispatch_time = base::TimeTicks::Now();
-  if (begin_frame_interval_.is_positive() && ShouldAdjustBeginFrameArgs()) {
+  if (begin_frame_interval_.is_positive()) {
     adjusted_args.interval = begin_frame_interval_;
     // Deadline is not necessarily frame_time + interval. For example, it may
     // incorporate an estimate for the frame's draw/swap time, so it's
@@ -1497,11 +1496,6 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
 
 bool CompositorFrameSinkSupport::ShouldMergeBeginFrameWithAcks() const {
   return features::IsOnBeginFrameAcksEnabled() && wants_begin_frame_acks_;
-}
-
-bool CompositorFrameSinkSupport::ShouldAdjustBeginFrameArgs() const {
-  return features::ShouldOverrideThrottledFrameRateParams() ||
-         features::ShouldOnBeginFrameThrottleVideo();
 }
 
 bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(

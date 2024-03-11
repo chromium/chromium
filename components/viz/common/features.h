@@ -69,7 +69,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAllowForceMergeRenderPassWithRequireOverlayQuads);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAggressiveFrameCulling);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEagerSurfaceGarbageCollection);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOverrideThrottledFrameRateParams);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRendererAllocatesImages);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBufferQueueImageSetPurgeable);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameAcks);
@@ -125,7 +124,6 @@ VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForDraw();
 VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForClients();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 VIZ_COMMON_EXPORT bool ShouldVideoDetectorIgnoreNonVideoFrames();
-VIZ_COMMON_EXPORT bool ShouldOverrideThrottledFrameRateParams();
 VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 VIZ_COMMON_EXPORT bool ShouldRendererAllocateImages();
 VIZ_COMMON_EXPORT bool IsOnBeginFrameAcksEnabled();

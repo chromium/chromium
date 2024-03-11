@@ -117,17 +117,12 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
 
 class CompositorFrameSinkSupportTest : public testing::Test {
  public:
-  explicit CompositorFrameSinkSupportTest(
-      bool override_throttled_frame_rate_params = false)
+  CompositorFrameSinkSupportTest()
       : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         begin_frame_source_(0.f, false),
         local_surface_id_(3, kArbitraryToken),
         frame_sync_token_(GenTestSyncToken(4)),
         consumer_sync_token_(GenTestSyncToken(5)) {
-    if (override_throttled_frame_rate_params) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kOverrideThrottledFrameRateParams);
-    }
     manager_.SetLocalClient(&frame_sink_manager_client_);
     now_src_ = std::make_unique<base::SimpleTestTickClock>();
     manager_.surface_manager()->SetTickClockForTesting(now_src_.get());
@@ -283,7 +278,6 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
@@ -311,8 +305,7 @@ class OnBeginFrameAcksCompositorFrameSinkSupportTest
     : public CompositorFrameSinkSupportTest,
       public testing::WithParamInterface<bool> {
  public:
-  explicit OnBeginFrameAcksCompositorFrameSinkSupportTest(
-      bool override_throttled_frame_rate_params = false);
+  OnBeginFrameAcksCompositorFrameSinkSupportTest();
   ~OnBeginFrameAcksCompositorFrameSinkSupportTest() override = default;
 
   // When features::OnBeginFrameAcks is enabled resources are only returned
@@ -341,9 +334,7 @@ class OnBeginFrameAcksCompositorFrameSinkSupportTest
 };
 
 OnBeginFrameAcksCompositorFrameSinkSupportTest::
-    OnBeginFrameAcksCompositorFrameSinkSupportTest(
-        bool override_throttled_frame_rate_params)
-    : CompositorFrameSinkSupportTest(override_throttled_frame_rate_params) {
+    OnBeginFrameAcksCompositorFrameSinkSupportTest() {
   if (BeginFrameAcksEnabled()) {
     scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
     support_->SetWantsBeginFrameAcks();
@@ -369,14 +360,6 @@ void OnBeginFrameAcksCompositorFrameSinkSupportTest::MaybeTestOnBeginFrame(
       CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, sequence_number);
   begin_frame_source_.TestOnBeginFrame(args);
 }
-
-class ThrottledBeginFrameCompositorFrameSinkSupportTest
-    : public OnBeginFrameAcksCompositorFrameSinkSupportTest {
- protected:
-  ThrottledBeginFrameCompositorFrameSinkSupportTest()
-      : OnBeginFrameAcksCompositorFrameSinkSupportTest(
-            /*override_throttled_frame_rate_params=*/true) {}
-};
 
 // Tests submitting a frame with resources followed by one with no resources
 // with no resource provider action in between.
@@ -1824,7 +1807,7 @@ TEST_F(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
 // Verifies that when CompositorFrameSinkSupport has its
 // |begin_frame_interval_| set, any BeginFrame would be sent only after this
 // interval has passed from the time when the last BeginFrame was sent.
-TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
+TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   FakeExternalBeginFrameSource begin_frame_source(0.f, false);
 
   testing::NiceMock<MockCompositorFrameSinkClient> mock_client;
@@ -1917,8 +1900,7 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   support->SetNeedsBeginFrame(false);
 }
 
-TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest,
-       HandlesSmallErrorInBeginFrameTimes) {
+TEST_F(CompositorFrameSinkSupportTest, HandlesSmallErrorInBeginFrameTimes) {
   FakeExternalBeginFrameSource begin_frame_source(0.f, false);
 
   testing::NiceMock<MockCompositorFrameSinkClient> mock_client;
@@ -1984,7 +1966,7 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest,
   support->SetNeedsBeginFrame(false);
 }
 
-TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest,
+TEST_F(CompositorFrameSinkSupportTest,
        UsesThrottledIntervalInPresentationFeedback) {
   static constexpr base::TimeDelta kThrottledFrameInterval = base::Hertz(5);
   // Request BeginFrames.
@@ -2240,11 +2222,6 @@ TEST_F(CompositorFrameSinkSupportTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          OnBeginFrameAcksCompositorFrameSinkSupportTest,
-                         testing::Bool(),
-                         &PostTestCaseName);
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ThrottledBeginFrameCompositorFrameSinkSupportTest,
                          testing::Bool(),
                          &PostTestCaseName);
 }  // namespace viz
