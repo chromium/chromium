@@ -319,6 +319,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @DisabledTest(message = "https://crbug.com/329064612")
     public void testHideKeyboardWhenOpeningWindow() throws Exception {
         // Open a new tab and click an editable node.
         ChromeTabUtils.fullyLoadUrlInNewTab(
