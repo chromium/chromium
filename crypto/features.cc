@@ -10,10 +10,10 @@
 namespace crypto {
 
 #if BUILDFLAG(IS_MAC)
-// Not yet enabled by default.
+// Enabled in M124. Remove in or after M127.
 BASE_FEATURE(kEnableMacUnexportableKeys,
              "EnableMacUnexportableKeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace crypto
