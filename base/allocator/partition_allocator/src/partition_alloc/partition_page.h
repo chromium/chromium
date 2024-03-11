@@ -104,9 +104,8 @@ struct SlotSpanMetadata {
   // If |in_empty_cache_|==1, |empty_cache_index| is undefined and mustn't be
   // used.
   uint16_t in_empty_cache_ : 1;
-  uint16_t empty_cache_index_
-      : kMaxEmptyCacheIndexBits;  // < kMaxFreeableSpans.
-  uint16_t unused2_ : (16 - 1 - kMaxEmptyCacheIndexBits);
+  uint16_t empty_cache_index_ : kEmptyCacheIndexBits;  // < kMaxFreeableSpans.
+  uint16_t unused2_ : (16 - 1 - kEmptyCacheIndexBits);
   // Can use only 48 bits (6B) in this bitfield, as this structure is embedded
   // in PartitionPage which has 2B worth of fields and must fit in 32B.
 

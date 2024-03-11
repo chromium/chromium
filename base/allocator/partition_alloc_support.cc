@@ -1415,36 +1415,34 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 }
 
 void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     base::AutoLock scoped_lock(lock_);
     if (established_process_type_ != switches::kRendererProcess) {
       return;
     }
   }
-#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
+
   if (!base::FeatureList::IsEnabled(
           features::kLowerPAMemoryLimitForNonMainRenderers) ||
       has_main_frame) {
     ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
   }
-#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(
-          features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    allocator_shim::AdjustDefaultAllocatorForForeground();
-  }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void PartitionAllocSupport::OnBackgrounded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     base::AutoLock scoped_lock(lock_);
     if (established_process_type_ != switches::kRendererProcess) {
       return;
     }
   }
-#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
+
   // Performance matters less for background renderers, don't pay the memory
   // cost.
   ::partition_alloc::ThreadCache::SetLargestCachedSize(
@@ -1464,12 +1462,8 @@ void PartitionAllocSupport::OnBackgrounded() {
       }),
       base::Seconds(10));
 
-#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(
-          features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    allocator_shim::AdjustDefaultAllocatorForBackground();
-  }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)

@@ -842,12 +842,6 @@ void PartitionRoot::DecommitEmptySlotSpans() {
   PA_DCHECK(empty_slot_spans_dirty_bytes == 0);
 }
 
-void PartitionRoot::DecommitEmptySlotSpansForTesting() {
-  ::partition_alloc::internal::ScopedGuard guard{
-      internal::PartitionRootLock(this)};
-  DecommitEmptySlotSpans();
-}
-
 void PartitionRoot::DestructForTesting() {
   // We need to destruct the thread cache before we unreserve any of the super
   // pages below, which we currently are not doing. So, we should only call
