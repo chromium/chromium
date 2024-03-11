@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION_TESTING_FAKE_NEARBY_CONNECTIONS_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -50,14 +51,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
     final_file_payload_status_ = final_file_payload_status;
   }
 
-  // The `register_payload_file_result_generator` is invoked for each call to
-  // `RegisterPayloadFile()` and returns the `Status` of the operation.
-  // By default, the generator is null and `RegisterPayloadFile()` succeeds.
-  void set_register_payload_file_result_generator(
-      base::RepeatingCallback<Status()>
-          register_payload_file_result_generator) {
-    register_payload_file_result_generator_ =
-        std::move(register_payload_file_result_generator);
+  // Sets the return value of the next call to `RegisterPayloadFile()`. After
+  // the next call, the return value returns to the default (`kSuccess`).
+  void set_next_register_payload_file_result(
+      Status next_register_payload_file_result) {
+    next_register_payload_file_result_ = next_register_payload_file_result;
   }
 
  private:
@@ -172,7 +170,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
       registered_files_;
   ::nearby::connections::mojom::PayloadStatus final_file_payload_status_ =
       ::nearby::connections::mojom::PayloadStatus::kSuccess;
-  base::RepeatingCallback<Status()> register_payload_file_result_generator_;
+  std::optional<Status> next_register_payload_file_result_;
 };
 
 }  // namespace data_migration
