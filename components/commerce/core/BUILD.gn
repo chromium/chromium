@@ -301,6 +301,7 @@ source_set("shopping_service_test_support") {
 
   # Expose all deps for test support.
   public_deps = [
+    ":commerce_info_cache",
     ":feature_list",
     ":pref_names",
     ":shopping_service",

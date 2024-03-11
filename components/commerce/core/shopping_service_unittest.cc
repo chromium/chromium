@@ -156,6 +156,63 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
   run_loop.Run();
 }
 
+// Test that product info is fetched on demand if there is no web page open but
+// the cache has an entry for the queried URL.
+TEST_P(ShoppingServiceTest, TestProductInfoResponse_FallbackToOnDemand) {
+  // Ensure a feature that uses product info is enabled. This doesn't
+  // necessarily need to be the shopping list.
+  test_features_.InitWithFeatures(
+      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle);
+  opt_guide_->AddOnDemandShoppingResponse(
+      GURL(kProductUrl), OptimizationGuideDecision::kTrue, meta);
+
+  // If the URL is not in the cache, we should not expect a response.
+  base::RunLoop run_loop;
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                const std::optional<const ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               ASSERT_FALSE(info.has_value());
+                               run_loop->Quit();
+                             },
+                             &run_loop));
+  run_loop.Run();
+
+  // When the URL is referenced by the cache, we should successfully use the
+  // on-demand api.
+  GetCache().AddRef(GURL(kProductUrl));
+
+  base::RunLoop run_loop_after_cache;
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                const std::optional<const ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               ASSERT_TRUE(info.has_value());
+
+                               ASSERT_EQ(kTitle, info->title);
+                               ASSERT_EQ(kGpcTitle,
+                                         info->product_cluster_title);
+                               ASSERT_EQ(kImageUrl, info->image_url);
+                               ASSERT_EQ(kOfferId, info->offer_id);
+                               ASSERT_EQ(kClusterId, info->product_cluster_id);
+                               ASSERT_EQ(kCountryCode, info->country_code);
+
+                               ASSERT_EQ(kCurrencyCode, info->currency_code);
+                               ASSERT_EQ(kPrice, info->amount_micros);
+                               run_loop->Quit();
+                             },
+                             &run_loop_after_cache));
+  run_loop_after_cache.Run();
+
+  GetCache().RemoveRef(GURL(kProductUrl));
+}
+
 // Test that the product info api fails gracefully (callback run with nullopt)
 // if it is disabled.
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {

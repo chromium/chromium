@@ -567,10 +567,10 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
   opt_guide_->CanApplyOptimizationOnDemand(
       urls, {optimization_guide::proto::OptimizationType::PRICE_TRACKING},
       optimization_guide::proto::RequestContext::CONTEXT_BOOKMARKS,
-      base::BindRepeating(&ShoppingService::OnProductInfoUpdatedOnDemand,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(info_updated_callback),
-                          std::move(url_to_id_map)));
+      base::BindRepeating(
+          &ShoppingService::HandleOnDemandProductInfoResponseForBookmarks,
+          weak_ptr_factory_.GetWeakPtr(), std::move(info_updated_callback),
+          std::move(url_to_id_map)));
 }
 
 size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
@@ -778,7 +778,35 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   // If optimization guide returns negative, return a negative signal with an
   // empty data object.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    std::move(callback).Run(url, std::nullopt);
+    // Receiving a negative signal could simply mean that opt guide no longer
+    // has the information available, it doesn't mean the backend doesn't know.
+    // We may be allowed to fetch information on-demand if we're referencing
+    // the URL in the cache. Only do this for explicit requests from a feature
+    // rather than populating as a result of navigation (signified by the lack
+    // of a web wrapper).
+    if (commerce_info_cache_.IsUrlReferenced(url) && !web) {
+      // We're wrapping this in a repeating callback but it should only ever be
+      // called once. This is necessary because the on-demand api requires a
+      // repeating callback but we primarily use once callbacks in the shopping
+      // service.
+      RepeatingProductInfoCallback repeating = base::BindRepeating(
+          [](ProductInfoCallback& callback, const GURL& url,
+             const std::optional<const ProductInfo>& info) {
+            // THIS SHOULD ONLY EVER BE CALLED ONCE (see above).
+            CHECK(callback);
+            std::move(callback).Run(url, info);
+          },
+          base::OwnedRef(std::move(callback)));
+
+      opt_guide_->CanApplyOptimizationOnDemand(
+          {url}, {optimization_guide::proto::OptimizationType::PRICE_TRACKING},
+          optimization_guide::proto::RequestContext::CONTEXT_SHOPPING,
+          base::BindRepeating(
+              &ShoppingService::HandleOnDemandProductInfoResponse,
+              weak_ptr_factory_.GetWeakPtr(), std::move(repeating)));
+    } else {
+      std::move(callback).Run(url, std::nullopt);
+    }
 
     // If doing local PDP detection, we might still want to run this.
     if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
@@ -887,7 +915,7 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
   return info;
 }
 
-void ShoppingService::OnProductInfoUpdatedOnDemand(
+void ShoppingService::HandleOnDemandProductInfoResponseForBookmarks(
     BookmarkProductInfoUpdatedCallback callback,
     std::unordered_map<std::string, int64_t> url_to_id_map,
     const GURL& url,
@@ -912,12 +940,53 @@ void ShoppingService::OnProductInfoUpdatedOnDemand(
   std::unique_ptr<ProductInfo> info =
       OptGuideResultToProductInfo(decision.metadata);
 
-  std::optional<ProductInfo> optional_info;
   if (info) {
+    std::optional<ProductInfo> optional_info;
     optional_info.emplace(*info);
     UpdateProductInfoCache(url, false, std::move(info));
 
     std::move(callback).Run(url_to_id_map[url.spec()], url, optional_info);
+  }
+}
+
+void ShoppingService::HandleOnDemandProductInfoResponse(
+    RepeatingProductInfoCallback callback,
+    const GURL& url,
+    const base::flat_map<
+        optimization_guide::proto::OptimizationType,
+        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
+  auto iter = decisions.find(
+      optimization_guide::proto::OptimizationType::PRICE_TRACKING);
+
+  if (iter == decisions.cend()) {
+    std::move(callback).Run(url, std::nullopt);
+    return;
+  }
+
+  optimization_guide::OptimizationGuideDecisionWithMetadata decision =
+      iter->second;
+
+  if (decision.decision !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    std::move(callback).Run(url, std::nullopt);
+    return;
+  }
+
+  std::unique_ptr<ProductInfo> info =
+      OptGuideResultToProductInfo(decision.metadata);
+
+  if (info) {
+    std::optional<ProductInfo> optional_info;
+    optional_info.emplace(*info);
+
+    // We're passing |false| for needs js here as we can't guarantee that
+    // there is an alive tab for this URL (since this is the result of an
+    // on-demand request).
+    UpdateProductInfoCache(url, false, std::move(info));
+
+    std::move(callback).Run(url, optional_info);
+  } else {
+    std::move(callback).Run(url, std::nullopt);
   }
 }
 

@@ -503,4 +503,8 @@ const ProductInfo* ShoppingServiceTestBase::GetFromProductInfoCache(
   return shopping_service_->GetFromProductInfoCache(url);
 }
 
+CommerceInfoCache& ShoppingServiceTestBase::GetCache() {
+  return shopping_service_->commerce_info_cache_;
+}
+
 }  // namespace commerce

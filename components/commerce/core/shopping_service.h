@@ -174,6 +174,9 @@ enum class ShoppingPageType {
 
 using DiscountsPair = std::pair<GURL, std::vector<DiscountInfo>>;
 using DiscountsOptGuideCallback = base::OnceCallback<void(DiscountsPair)>;
+using RepeatingProductInfoCallback =
+    base::RepeatingCallback<void(const GURL&,
+                                 const std::optional<const ProductInfo>&)>;
 
 // A callback for getting updated ProductInfo for a bookmark. This provides the
 // bookmark ID being updated, the URL, and the product info.
@@ -521,10 +524,20 @@ class ShoppingService : public KeyedService,
       const optimization_guide::OptimizationMetadata& metadata);
 
   // Handle a response from the optimization guide on-demand API for product
-  // info.
-  void OnProductInfoUpdatedOnDemand(
+  // info, specifically dealing with batch updates for bookmarks.
+  void HandleOnDemandProductInfoResponseForBookmarks(
       BookmarkProductInfoUpdatedCallback callback,
       std::unordered_map<std::string, int64_t> url_to_id_map,
+      const GURL& url,
+      const base::flat_map<
+          optimization_guide::proto::OptimizationType,
+          optimization_guide::OptimizationGuideDecisionWithMetadata>&
+          decisions);
+
+  // Handle a generic on-demand request for product info. While this method
+  // accepts a repeating callback, it should only ever be called once.
+  void HandleOnDemandProductInfoResponse(
+      RepeatingProductInfoCallback callback,
       const GURL& url,
       const base::flat_map<
           optimization_guide::proto::OptimizationType,
