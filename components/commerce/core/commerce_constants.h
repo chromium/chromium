@@ -55,6 +55,10 @@ extern const char kOgTypeProductItem[];
 // Http POST method.
 extern const char kPostHttpMethod[];
 
+// A means of specifying the URL for the product specifications backend from
+// the command line.
+extern const char kProductSpecificationsUrlKey[];
+
 // The conversion multiplier to go from standard currency units to
 // micro-currency units.
 extern const long kToMicroCurrency;

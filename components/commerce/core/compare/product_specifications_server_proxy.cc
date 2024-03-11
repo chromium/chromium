@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -121,7 +122,11 @@ void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
   }
   std::string post_data;
   base::JSONWriter::Write(product_id_list, &post_data);
-  auto fetcher = CreateEndpointFetcher(GURL(), kGetHttpMethod, post_data);
+
+  auto fetcher = CreateEndpointFetcher(
+      GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kProductSpecificationsUrlKey)),
+      kGetHttpMethod, post_data);
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(

@@ -42,6 +42,8 @@ const char kOgTypeProductItem[] = "product.item";
 
 const char kPostHttpMethod[] = "POST";
 
+const char kProductSpecificationsUrlKey[] = "product-specifications-url";
+
 const long kToMicroCurrency = 1e6;
 
 const char kUTMCampaignLabel[] = "utm_campaign";
