@@ -1209,5 +1209,10 @@ public class BottomSheetControllerTest {
 
         @Override
         public void unregisterObserver(ChangeObserver changeObserver) {}
+
+        @Override
+        public boolean isToEdge() {
+            return bottomInset != 0;
+        }
     }
 }

@@ -170,6 +170,11 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     }
 
     @Override
+    public boolean isToEdge() {
+        return mIsActivityToEdge;
+    }
+
+    @Override
     public boolean isEdgeToEdgeActive() {
         return mDidSetDecorAndListener;
     }
@@ -365,11 +370,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
             mInsetObserver.removeInsetsConsumer(mWindowInsetsConsumer);
             mInsetObserver = null;
         }
-    }
-
-    @VisibleForTesting
-    public boolean isToEdge() {
-        return mIsActivityToEdge;
     }
 
     public void setOsWrapperForTesting(EdgeToEdgeOSWrapper testOsWrapper) {

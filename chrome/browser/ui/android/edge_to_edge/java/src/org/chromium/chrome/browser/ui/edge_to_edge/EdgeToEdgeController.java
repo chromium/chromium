@@ -22,7 +22,13 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
     /**
      * By "active", it means the activity has set the decor to fit system windows.
      *
-     * @return True if edge to edge is active now.
+     * @return True if the current activity/window is eligible for edge to edge. This does NOT mean
+     *     the current tab page is being drawn E2E. For the latter, use 'isToEdge' instead.
      */
     boolean isEdgeToEdgeActive();
+
+    /**
+     * @return whether the UI is being drawn edge to edge.
+     */
+    boolean isToEdge();
 }

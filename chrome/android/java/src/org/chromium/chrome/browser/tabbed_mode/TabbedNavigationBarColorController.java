@@ -231,6 +231,11 @@ class TabbedNavigationBarColorController {
      * @param fraction The scrim fraction in range [0, 1].
      */
     public void setNavigationBarScrimFraction(float fraction) {
+        if (mEdgeToEdgeControllerSupplier.get() != null
+                && mEdgeToEdgeControllerSupplier.get().isToEdge()) {
+            return;
+        }
+
         mNavigationBarScrimFraction = fraction;
         mWindow.setNavigationBarColor(
                 applyCurrentScrimToColor(getNavigationBarColor(mForceDarkNavigationBarColor)));
