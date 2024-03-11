@@ -324,10 +324,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // Registrar for pref changes notifications to the local state.
   PrefChangeRegistrar _localStatePrefChangeRegistrar;
 
-  // Updates data about the current default search engine to be accessed in
-  // extensions.
-  std::unique_ptr<ExtensionSearchEngineDataUpdater>
-      _extensionSearchEngineDataUpdater;
+  // Vector updating search engine data (to be accessed in extensions)
+  // for all loaded browserStates.
+  std::vector<std::unique_ptr<ExtensionSearchEngineDataUpdater>>
+      _extensionSearchEngineDataUpdaters;
 
   // The class in charge of showing/hiding the memory debugger when the
   // appropriate pref changes.
@@ -866,7 +866,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
   [_spotlightManagers removeAllObjects];
 
-  _extensionSearchEngineDataUpdater = nullptr;
+  _extensionSearchEngineDataUpdaters.clear();
 
   // _localStatePrefChangeRegistrar is observing the PrefService, which is owned
   // indirectly by _chromeMain (through the ChromeBrowserState).
@@ -1014,13 +1014,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     [self onPreferenceChanged:metrics::prefs::kMetricsReportingEnabled];
   }
 
-  // Track changes to default search engine.
-  // TODO(crbug.com/325611886): Update this for multiple browser states.
-  TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.appState.mainBrowserState);
-  _extensionSearchEngineDataUpdater =
-      std::make_unique<ExtensionSearchEngineDataUpdater>(service);
+  // Track changes to default search engine for all laoded browserStates.
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    TemplateURLService* service =
+        ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+    _extensionSearchEngineDataUpdaters.push_back(
+        std::make_unique<ExtensionSearchEngineDataUpdater>(service));
+  }
 }
 
 - (void)scheduleAppDistributionPings {
