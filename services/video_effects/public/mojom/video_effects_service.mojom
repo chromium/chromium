@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module video_effects.mojom;
+
+import "media/capture/mojom/video_effects_manager.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/video_effects/public/mojom/video_effects_processor.mojom";
+
+// Entry point to the Video Effects Service API.
+// This interface is intended to be hosted in the Video Effects utility
+// process. The Browser process uses this to create video effect processors
+// and broker the created processors to the Video Capture Service.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface VideoEffectsService {
+  // Creates a Video Effects Processor whose effects configuration will be
+  // managed by the passed in `manager`. Note that the created processor will
+  // be bound to `processor`, i.e. it is not going to be returned in `result`.
+  // This is done so that the caller can create both ends of the pipe for
+  // `VideoEffectsProcessor` & send the receiver to Video Effects Service, and
+  // the remote to Video Capture Service.
+  // In case of failure, the remote end of the `processor` will eventually
+  // return `false` from the calls to its `.is_connected()` method.
+  CreateEffectsProcessor(
+    pending_remote<media.mojom.VideoEffectsManager> manager,
+    pending_receiver<VideoEffectsProcessor> processor);
+};
