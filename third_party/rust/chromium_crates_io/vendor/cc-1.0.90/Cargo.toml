@@ -10,9 +10,10 @@
 
 [package]
 name = "cc"
-version = "1.0.88"
+version = "1.0.90"
 
 [features]
+"jobserver" = []
 "libc" = []
 "parallel" = []
 
