@@ -264,8 +264,7 @@ SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(
           rfh->GetOutermostMainFrame()->GetLastCommittedOrigin()),
       main_frame_id_(
           static_cast<RenderFrameHostImpl*>(rfh->GetOutermostMainFrame())
-              ->devtools_frame_token()
-              .ToString()) {}
+              ->GetGlobalId()) {}
 
 storage::SharedStorageManager*
 SharedStorageDocumentServiceImpl::GetSharedStorageManager() {

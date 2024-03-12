@@ -7,6 +7,7 @@
 
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/public/browser/global_routing_id.h"
 
 class GURL;
 
@@ -20,7 +21,7 @@ class TestSelectURLFencedFrameConfigObserverImpl
 
   void OnSharedStorageAccessed(const base::Time& access_time,
                                AccessType type,
-                               const std::string& main_frame_id,
+                               const GlobalRenderFrameHostId& main_frame_id,
                                const std::string& owner_origin,
                                const SharedStorageEventParams& params) override;
   void OnUrnUuidGenerated(const GURL& urn_uuid) override;

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
 
@@ -60,7 +61,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
     virtual void OnSharedStorageAccessed(
         const base::Time& access_time,
         AccessType type,
-        const std::string& main_frame_id,
+        const GlobalRenderFrameHostId& main_frame_id,
         const std::string& owner_origin,
         const SharedStorageEventParams& params) = 0;
 
@@ -95,7 +96,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
 
   void NotifySharedStorageAccessed(
       SharedStorageObserverInterface::AccessType type,
-      const std::string& main_frame_id,
+      const GlobalRenderFrameHostId& main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
 

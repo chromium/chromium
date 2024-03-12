@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -592,13 +593,15 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
 class TestSharedStorageObserver
     : public SharedStorageWorkletHostManager::SharedStorageObserverInterface {
  public:
-  using Access = std::
-      tuple<AccessType, std::string, std::string, SharedStorageEventParams>;
+  using Access = std::tuple<AccessType,
+                            GlobalRenderFrameHostId,
+                            std::string,
+                            SharedStorageEventParams>;
 
   void OnSharedStorageAccessed(
       const base::Time& access_time,
       AccessType type,
-      const std::string& main_frame_id,
+      const GlobalRenderFrameHostId& main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params) override {
     accesses_.emplace_back(type, main_frame_id, owner_origin, params);
@@ -932,11 +935,8 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
         .root();
   }
 
-  std::string MainFrameId() {
-    return PrimaryFrameTreeNodeRoot()
-        ->current_frame_host()
-        ->devtools_frame_token()
-        .ToString();
+  GlobalRenderFrameHostId MainFrameId() {
+    return PrimaryFrameTreeNodeRoot()->current_frame_host()->GetGlobalId();
   }
 
   SharedStorageBudgetMetadata* GetSharedStorageBudgetMetadata(
@@ -4379,6 +4379,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
+  // Cache the initial main frame ID, as this will change the main frame
+  // renavigates.
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
+
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.set('key0', 'value0');
     )"));
@@ -4402,7 +4406,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessType::kDocumentSet, MainFrameId(), origin_str,
+      {{AccessType::kDocumentSet, initial_main_frame_id, origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
@@ -4417,6 +4421,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        AccessStorageInDifferentOriginDocument) {
   GURL url1 = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // Cache the initial main frame ID, as this will change the main frame
+  // renavigates.
+  GlobalRenderFrameHostId initial_main_frame_id = MainFrameId();
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.set('key0', 'value0');
@@ -4441,7 +4449,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   std::string origin2_str = url::Origin::Create(url2).Serialize();
   ExpectAccessObserved(
-      {{AccessType::kDocumentSet, MainFrameId(),
+      {{AccessType::kDocumentSet, initial_main_frame_id,
         url::Origin::Create(url1).Serialize(),
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessType::kDocumentAddModule, MainFrameId(), origin2_str,

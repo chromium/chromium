@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "storage/browser/quota/quota_manager.h"
 
 namespace storage {
@@ -211,7 +212,7 @@ class StorageHandler
       const base::Time& access_time,
       SharedStorageWorkletHostManager::SharedStorageObserverInterface::
           AccessType type,
-      const std::string& main_frame_id,
+      const GlobalRenderFrameHostId& main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
 
