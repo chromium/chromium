@@ -2096,10 +2096,6 @@ BASE_FEATURE(kSmallScriptStreaming,
              "SmallScriptStreaming",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSpeculationRulesHeaderEnableThirdPartyOriginTrial,
-             "SpeculationRulesHeaderEnableThirdPartyOriginTrial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSpeculationRulesPrefetchFuture,
              "SpeculationRulesPrefetchFuture",
              base::FEATURE_ENABLED_BY_DEFAULT);
