@@ -133,8 +133,7 @@ void OnPrinterAuthenticated(
   // previously installed, be autoconf compatible, or have a valid PPD
   // reference. If necessary, the printer is queried to determine its autoconf
   // compatibility.
-  if (ash::features::IsPrintPreviewDiscoveredPrintersEnabled() &&
-      !printers_manager->IsPrinterInstalled(printer)) {
+  if (!printers_manager->IsPrinterInstalled(printer)) {
     if (!printer.HasUri()) {
       std::move(callback).Run(nullptr);
       return;
@@ -209,13 +208,7 @@ std::vector<chromeos::Printer> GetLocalPrinters(Profile* profile) {
   CHECK(profile);
   std::vector<chromeos::PrinterClass> printer_classes_to_fetch = {
       chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
-      chromeos::PrinterClass::kAutomatic};
-  // TODO(b/278621575): Add chromeos::PrinterClass::kDiscovered to
-  // `printer_classes_to_fetch` once the feature flag is removed.
-  if (ash::features::IsPrintPreviewDiscoveredPrintersEnabled()) {
-    printer_classes_to_fetch.push_back(chromeos::PrinterClass::kDiscovered);
-  }
-
+      chromeos::PrinterClass::kAutomatic, chromeos::PrinterClass::kDiscovered};
   // Printing is not allowed during OOBE.
   DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
   ash::CupsPrintersManager* printers_manager =

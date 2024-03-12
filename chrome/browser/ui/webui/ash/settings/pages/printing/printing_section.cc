@@ -139,7 +139,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"viewPrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_VIEW},
       {"removePrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_REMOVE},
       {"cupsPrintersViewPpd", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_VIEW_PPD},
-      {"setupPrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTER_SETUP_BUTTON},
       {"savePrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTER_SAVE_BUTTON},
       {"searchLabel", IDS_SETTINGS_PRINTING_CUPS_SEARCH_LABEL},
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
@@ -324,8 +323,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
-  html_source->AddBoolean("isPrintPreviewDiscoveredPrintersEnabled",
-                          features::IsPrintPreviewDiscoveredPrintersEnabled());
   html_source->AddBoolean(
       "isLocalPrinterObservingEnabled",
       base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));

@@ -4162,10 +4162,6 @@ bool IsPrinterPreviewCrosAppEnabled() {
   return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
 }
 
-bool IsPrintPreviewDiscoveredPrintersEnabled() {
-  return true;
-}
-
 // TODO(b/305749608): Remove this function and only use
 // `IsVideoConferenceEnabled()`.
 bool IsPrivacyIndicatorsEnabled() {

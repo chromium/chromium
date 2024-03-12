@@ -67,19 +67,6 @@ export class SettingsCupsPrintersEntryElement extends
 
       /** Number of printers in the respective list this row is part of. */
       numPrinters: Number,
-
-      /**
-       * True when the "print-preview-discovered-printers" feature flag is
-       * enabled.
-       */
-      isPrintPreviewDiscoveredPrintersEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrintPreviewDiscoveredPrintersEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -89,7 +76,6 @@ export class SettingsCupsPrintersEntryElement extends
   printerStatusReasonCache: Map<string, PrinterStatusReason>;
   numPrinters: number;
   private hasHighSeverityError_: boolean;
-  private isPrintPreviewDiscoveredPrintersEnabled_: boolean;
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details of
@@ -242,15 +228,6 @@ export class SettingsCupsPrintersEntryElement extends
         'printerEntryAriaLabel', this.printerEntry.printerInfo.printerName,
         this.getStatusReasonString_().toString(), this.focusRowIndex + 1,
         this.numPrinters);
-  }
-
-  // When the "print-preview-discovered-printers" flag is enabled, discovered
-  // printers should be treated like automatic printers. So show "Save" button
-  // instead of "Setup".
-  private getSetupButtonLabel_(): string {
-    return this.i18n(
-        this.isPrintPreviewDiscoveredPrintersEnabled_ ? 'savePrinter' :
-                                                        'setupPrinter');
   }
 }
 

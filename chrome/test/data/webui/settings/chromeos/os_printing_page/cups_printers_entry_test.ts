@@ -265,29 +265,8 @@ suite('<settings-cups-printers-entry>', () => {
             .querySelector<HTMLElement>('#entry')!.ariaLabel!.trim());
   });
 
-  // Verify the correct button label is shown for discovered printers when the
-  // "print-preview-discovered-printers" flag is disabled.
-  test('discoveredPrintersButtonLabel_flagOff', () => {
-    loadTimeData.overrideValues({
-      isPrintPreviewDiscoveredPrintersEnabled: false,
-    });
-    initializePrinterEntryTestElement();
-    printerEntryTestElement.printerEntry =
-        createPrinterEntry(PrinterType.DISCOVERED);
-    flush();
-    assertEquals(
-        loadTimeData.getString('setupPrinter'),
-        printerEntryTestElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#setupPrinterButton')!.textContent!.trim());
-  });
-
-  // Verify the correct button label is shown for discovered printers when the
-  // "print-preview-discovered-printers" flag is enabled.
-  test('discoveredPrintersButtonLabel_flagOn', () => {
-    loadTimeData.overrideValues({
-      isPrintPreviewDiscoveredPrintersEnabled: true,
-    });
+  // Verify the correct button label is shown for discovered printers.
+  test('discoveredPrintersButtonLabel', () => {
     initializePrinterEntryTestElement();
 
     printerEntryTestElement.printerEntry =
