@@ -517,6 +517,8 @@ void ArcAuthService::HandleAddAccountRequest() {
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
+  // TODO(b/326488045) Update Settings path to kPeopleSectionPath when Settings
+  // revamp is launched.
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
 }

@@ -20,6 +20,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -57,6 +58,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -101,6 +104,20 @@ std::unique_ptr<KeyedService> CreateCertificateProviderService(
 }
 
 }  // namespace
+
+class TestSettingsWindowManager : public chrome::SettingsWindowManager {
+ public:
+  void ShowChromePageForProfile(Profile* profile,
+                                const GURL& gurl,
+                                int64_t display_id) override {
+    last_url_ = gurl;
+  }
+
+  const GURL& last_url() const { return last_url_; }
+
+ private:
+  GURL last_url_;
+};
 
 namespace arc {
 
@@ -309,6 +326,10 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
     ExpandPropertyFilesForTesting(ArcSessionManager::Get());
+
+    settings_window_manager_ = std::make_unique<TestSettingsWindowManager>();
+    chrome::SettingsWindowManager::SetInstanceForTesting(
+        settings_window_manager_.get());
   }
 
   void TearDownOnMainThread() override {
@@ -338,6 +359,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     fake_user_manager_.Reset();
+
+    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
+    settings_window_manager_.reset();
   }
 
   void EnableRemovalOfExtendedAccountInfo() {
@@ -555,6 +579,10 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     return arc_google_accounts_callback_called_;
   }
 
+  TestSettingsWindowManager& settings_window_manager() {
+    return *settings_window_manager_;
+  }
+
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
@@ -570,6 +598,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   bool arc_google_accounts_callback_called_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<AccountAppsAvailabilitySetter> arc_availability_setter_;
+  std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
   base::test::ScopedFeatureList feature_list_;
 
   // Not owned.
@@ -1389,6 +1418,15 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
     // 2 calls: 1 for the Primary Account and 1 for the Secondary Account.
     EXPECT_EQ(2, auth_instance().num_account_upserted_calls());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, HandleRemoveAccountRequest) {
+  SetAccountAndProfile(user_manager::UserType::kRegular);
+  auth_service().HandleRemoveAccountRequest("dummyemail@google.com");
+
+  EXPECT_EQ(chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kMyAccountsSubpagePath),
+            settings_window_manager().last_url());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ArcRobotAccountAuthServiceTest, testing::Bool());
