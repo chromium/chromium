@@ -694,10 +694,6 @@ void DownloadBubbleSecurityView::UpdatePasswordPrompt() {
   if (!IsInitialized()) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningEncryptedArchives)) {
-    return;
-  }
 
   bool should_show = info_->danger_type() ==
                          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
@@ -842,15 +838,13 @@ bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
   if (!IsInitialized()) {
     return true;
   }
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kDeepScanningEncryptedArchives)) {
-    password = base::UTF16ToUTF8(password_prompt_->GetText());
-    if (delegate_->IsEncryptedArchive(content_id()) && password->empty()) {
-      password_prompt_->SetState(
-          DownloadBubblePasswordPromptView::State::kInvalidEmpty);
-      bubble_delegate_->SizeToContents();
-      return false;
-    }
+
+  password = base::UTF16ToUTF8(password_prompt_->GetText());
+  if (delegate_->IsEncryptedArchive(content_id()) && password->empty()) {
+    password_prompt_->SetState(
+        DownloadBubblePasswordPromptView::State::kInvalidEmpty);
+    bubble_delegate_->SizeToContents();
+    return false;
   }
 
   delegate_->ProcessDeepScanPress(content_id(), password);

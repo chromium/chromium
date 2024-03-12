@@ -40,10 +40,6 @@ BASE_DECLARE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports);
 // Creates and sends CSBRRs when warnings are first shown to users.
 BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
 
-// Controls whether we prompt encrypted archive deep scans to provide a
-// password.
-BASE_DECLARE_FEATURE(kDeepScanningEncryptedArchives);
-
 // Controls whether we prompt the user on unencrypted deep scans.
 BASE_DECLARE_FEATURE(kDeepScanningPromptRemoval);
 

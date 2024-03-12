@@ -1180,9 +1180,6 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 }
 
 TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kDeepScanningEncryptedArchives);
-
   base::RunLoop run_loop;
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
@@ -1224,9 +1221,6 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
 }
 
 TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kDeepScanningEncryptedArchives);
-
   base::RunLoop run_loop;
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
@@ -1271,9 +1265,6 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
 }
 
 TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kDeepScanningEncryptedArchives);
-
   base::RunLoop run_loop;
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,

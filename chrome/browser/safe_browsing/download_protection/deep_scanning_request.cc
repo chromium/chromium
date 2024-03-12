@@ -79,8 +79,9 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
       DownloadCheckResult::DEEP_SCANNED_SAFE};
 
   for (DownloadCheckResult result : kDownloadCheckResultPrecedence) {
-    if (result_1 == result || result_2 == result)
+    if (result_1 == result || result_2 == result) {
       return result;
+    }
   }
 
   NOTREACHED();
@@ -333,8 +334,9 @@ bool HasDecryptionFailedResult(
 std::optional<enterprise_connectors::AnalysisSettings>
 DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
   // Files already on the disk shouldn't be uploaded for scanning.
-  if (item->GetURL().SchemeIsFile())
+  if (item->GetURL().SchemeIsFile()) {
     return std::nullopt;
+  }
 
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
@@ -429,10 +431,11 @@ void DeepScanningRequest::Start() {
   }
 
   callback_.Run(DownloadCheckResult::ASYNC_SCANNING);
-  if (save_package_files_.empty())
+  if (save_package_files_.empty()) {
     StartSingleFileScan();
-  else
+  } else {
     StartSavePackageScan();
+  }
 }
 
 void DeepScanningRequest::StartSingleFileScan() {
@@ -525,19 +528,22 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);
   request->set_email(GetProfileEmail(profile));
 
-  if (item_->GetURL().is_valid())
+  if (item_->GetURL().is_valid()) {
     request->set_url(item_->GetURL().spec());
+  }
 
-  if (item_->GetTabUrl().is_valid())
+  if (item_->GetTabUrl().is_valid()) {
     request->set_tab_url(item_->GetTabUrl());
+  }
 
   if (file_metadata_.count(path) &&
       !file_metadata_.at(path).mime_type.empty()) {
     request->set_content_type(file_metadata_.at(path).mime_type);
   }
 
-  for (const auto& tag : analysis_settings_.tags)
+  for (const auto& tag : analysis_settings_.tags) {
     request->add_tag(tag.first);
+  }
 }
 
 void DeepScanningRequest::PrepareClientDownloadRequest(
@@ -634,8 +640,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
     LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
 
-    if (base::FeatureList::IsEnabled(kDeepScanningEncryptedArchives) &&
-        is_invalid_password) {
+    if (is_invalid_password) {
       // Since we now prompt the user for a password, FILE_ENCRYPTED indicates
       // the password was not correct. Instead of failing, ask the user to
       // correct the issue.
@@ -712,10 +717,11 @@ void DeepScanningRequest::OnDownloadUpdated(download::DownloadItem* download) {
       !scanning_started_) {
     // Now that the download is complete in non-blocking mode, scanning can
     // start since the files have moved to their final destination.
-    if (save_package_files_.empty())
+    if (save_package_files_.empty()) {
       StartSingleFileScan();
-    else
+    } else {
       StartSavePackageScan();
+    }
   }
 }
 
@@ -741,8 +747,9 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
       GetHighestPrecedenceResult(download_check_result_, result);
   DecrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
 
-  if ((--pending_scan_requests_) == 0)
+  if ((--pending_scan_requests_) == 0) {
     FinishRequest(download_check_result_);
+  }
 }
 
 void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
@@ -780,13 +787,15 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
     result = pre_scan_download_check_result_;
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnFinish(this);
+  }
 
   AcknowledgeRequest(event_result);
 
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     callback_.Run(result);
+  }
   weak_ptr_factory_.InvalidateWeakPtrs();
   item_->RemoveObserver(this);
   download_service_->RequestFinished(this);
@@ -806,8 +815,9 @@ void DeepScanningRequest::AcknowledgeRequest(EventResult event_result) {
       content::DownloadItemUtils::GetBrowserContext(item_));
   BinaryUploadService* binary_upload_service =
       download_service_->GetBinaryUploadService(profile, analysis_settings_);
-  if (!binary_upload_service)
+  if (!binary_upload_service) {
     return;
+  }
 
   // Calculate final action applied to all requests.
   auto final_action = GetFinalAction(event_result);
