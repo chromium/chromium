@@ -27,7 +27,7 @@
 // Fake consumer to get the passed value in tests.
 @interface FakeTabStripConsumer : NSObject <TabStripConsumer>
 
-@property(nonatomic, copy) NSArray<TabSwitcherItem*>* items;
+@property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
 @property(nonatomic, strong) TabSwitcherItem* selectedItem;
 @property(nonatomic, strong) TabSwitcherItem* reloadedItem;
 
@@ -37,7 +37,7 @@
 
 - (void)populateWithItems:(NSArray<TabSwitcherItem*>*)items
              selectedItem:(TabSwitcherItem*)selectedItem {
-  self.items = items;
+  self.items = [items mutableCopy];
   self.selectedItem = selectedItem;
 }
 
@@ -47,6 +47,16 @@
 
 - (void)reloadItem:(TabSwitcherItem*)item {
   self.reloadedItem = item;
+}
+
+- (void)moveItem:(TabSwitcherItem*)item
+       afterItem:(TabSwitcherItem*)destinationItem {
+  [self.items removeObject:item];
+  NSInteger destinationIndex = 0;
+  if (destinationItem) {
+    destinationIndex = [self.items indexOfObject:destinationItem] + 1;
+  }
+  [self.items insertObject:item atIndex:destinationIndex];
 }
 
 - (void)replaceItem:(TabSwitcherItem*)oldItem
@@ -398,4 +408,47 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
   // Check that the currently selected item is the WebState at index 2.
   EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
             consumer_.selectedItem.identifier);
+}
+
+// Tests that moving web states works.
+TEST_F(TabStripMediatorTest, MoveWebStates) {
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  AddWebState();
+
+  InitializeMediator();
+
+  web_state_list_->MoveWebStateAt(1, 4);
+  for (int index = 0; index < web_state_list_->count(); index++) {
+    EXPECT_EQ(consumer_.items[index].identifier,
+              web_state_list_->GetWebStateAt(index)->GetUniqueIdentifier());
+  }
+
+  web_state_list_->MoveWebStateAt(0, 3);
+  for (int index = 0; index < web_state_list_->count(); index++) {
+    EXPECT_EQ(consumer_.items[index].identifier,
+              web_state_list_->GetWebStateAt(index)->GetUniqueIdentifier());
+  }
+
+  web_state_list_->MoveWebStateAt(2, 6);
+  for (int index = 0; index < web_state_list_->count(); index++) {
+    EXPECT_EQ(consumer_.items[index].identifier,
+              web_state_list_->GetWebStateAt(index)->GetUniqueIdentifier());
+  }
+
+  web_state_list_->MoveWebStateAt(4, 1);
+  for (int index = 0; index < web_state_list_->count(); index++) {
+    EXPECT_EQ(consumer_.items[index].identifier,
+              web_state_list_->GetWebStateAt(index)->GetUniqueIdentifier());
+  }
+
+  web_state_list_->MoveWebStateAt(5, 0);
+  for (int index = 0; index < web_state_list_->count(); index++) {
+    EXPECT_EQ(consumer_.items[index].identifier,
+              web_state_list_->GetWebStateAt(index)->GetUniqueIdentifier());
+  }
 }

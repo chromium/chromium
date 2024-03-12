@@ -326,6 +326,7 @@ UIImage* DefaultFavicon() {
   _titleLabel.text = nil;
   self.selected = NO;
   [self setFaviconImage:nil];
+  self.item = nil;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {

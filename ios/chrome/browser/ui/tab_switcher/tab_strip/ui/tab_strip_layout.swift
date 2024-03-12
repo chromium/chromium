@@ -6,8 +6,8 @@ import UIKit
 
 /// Layout used for the TabStrip.
 class TabStripLayout: UICollectionViewFlowLayout {
-  /// Wether the flow layout needs to be updated.
-  public var needsUpdate: Bool = true
+  /// Wether the size of the items in the flow layout needs to be updated.
+  public var needsSizeUpdate: Bool = true
 
   /// Static decoration views that border the collection view.
   public var leftStaticSeparator: TabStripDecorationView?
@@ -100,7 +100,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override func prepare() {
     /// Only recalculate the `tabCellSize` when needed to avoid extra
     /// computation.
-    if needsUpdate {
+    if needsSizeUpdate {
       calculateTabCellSize()
     }
     super.prepare()

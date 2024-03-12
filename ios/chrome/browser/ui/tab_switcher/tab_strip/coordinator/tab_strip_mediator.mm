@@ -137,9 +137,22 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
     case WebStateListChange::Type::kInsert:
       [self populateConsumerItems];
       break;
-    case WebStateListChange::Type::kMove:
-      [self populateConsumerItems];
+    case WebStateListChange::Type::kMove: {
+      const WebStateListChangeMove& moveChange =
+          change.As<WebStateListChangeMove>();
+      TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
+          initWithWebState:moveChange.moved_web_state()];
+      if (moveChange.moved_to_index() == 0) {
+        [_consumer moveItem:item afterItem:nil];
+      } else {
+        web::WebState* destinationWebState =
+            _webStateList->GetWebStateAt(moveChange.moved_to_index() - 1);
+        TabSwitcherItem* destinationItem = [[WebStateTabSwitcherItem alloc]
+            initWithWebState:destinationWebState];
+        [_consumer moveItem:item afterItem:destinationItem];
+      }
       break;
+    }
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replaceChange =
           change.As<WebStateListChangeReplace>();

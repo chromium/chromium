@@ -214,7 +214,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     // present in the collection view.
     selectItem(selectedItem)
     applySnapshot(
-      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true,
+      numberOfItemChanged: true)
     selectItem(selectedItem)
 
     /// Scroll to the end of the collection view if a new tab has been opened.
@@ -258,8 +259,26 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
     var snapshot = diffableDataSource.snapshot()
     snapshot.reconfigureItems([item])
+    applySnapshot(diffableDataSource: diffableDataSource, snapshot: snapshot)
+  }
+
+  func moveItem(
+    _ item: TabSwitcherItem, afterItem destinationItem: TabSwitcherItem?
+  ) {
+    guard let diffableDataSource = diffableDataSource else { return }
+    var snapshot = diffableDataSource.snapshot()
+    if let destinationItem = destinationItem {
+      snapshot.moveItem(item, afterItem: destinationItem)
+    } else {
+      guard let sectionIndex = snapshot.indexOfSection(.tabs),
+        let firstItem = diffableDataSource.itemIdentifier(
+          for: IndexPath(item: 0, section: sectionIndex))
+      else { return }
+      snapshot.moveItem(item, beforeItem: firstItem)
+    }
     applySnapshot(
-      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: false)
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
+    layout.invalidateLayout()
   }
 
   func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?) {
@@ -271,14 +290,13 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     var snapshot = diffableDataSource.snapshot()
     snapshot.insertItems([newItem], beforeItem: oldItem)
     snapshot.deleteItems([oldItem])
-    applySnapshot(
-      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: false)
+    applySnapshot(diffableDataSource: diffableDataSource, snapshot: snapshot)
   }
 
   // MARK: - TabStripCommands
 
-  func setNewTabButtonOnTabStripIPHHighlighted(_ IPHHighlighted: Bool) {
-    newTabButton.IPHHighlighted = IPHHighlighted
+  func setNewTabButtonOnTabStripIPHHighlighted(_ iphHighlighted: Bool) {
+    newTabButton.IPHHighlighted = iphHighlighted
   }
 
   // MARK: - TabStripTabCellDelegate
@@ -311,11 +329,14 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   private func applySnapshot(
     diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>?,
     snapshot: NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>,
-    animatingDifferences: Bool = false
+    animatingDifferences: Bool = false,
+    numberOfItemChanged: Bool = false
   ) {
-    layout.needsUpdate = true
+    if numberOfItemChanged {
+      layout.needsSizeUpdate = true
+    }
     diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
-    layout.needsUpdate = false
+    layout.needsSizeUpdate = false
 
     updateVisibleCellIdentifiers()
   }
@@ -328,18 +349,10 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       cell.loading = item.showsActivity
       cell.delegate = self
       cell.accessibilityIdentifier = self.tabTripCellAccessibilityIdentifier(index: indexPath.item)
+      cell.item = item
 
-      weak var weakSelf = self
       item.fetchFavicon { (item: TabSwitcherItem?, image: UIImage?) -> Void in
-        guard let item = item,
-          let diffableDataSource = weakSelf?.diffableDataSource,
-          let indexPath = weakSelf?.collectionView.indexPath(for: cell)
-        else {
-          // If the cell is not visible, nothing is needed.
-          return
-        }
-        let innerItem = diffableDataSource.itemIdentifier(for: indexPath)
-        if innerItem == item {
+        if let item = item, item == cell.item {
           cell.setFaviconImage(image)
         }
       }
@@ -406,8 +419,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     }
   }
 
-  // Returns the accessibility identifier to set on a TabStripTabCell when
-  // positioned at the given index.
+  /// Returns the accessibility identifier to set on a TabStripTabCell when positioned at the given index.
   func tabTripCellAccessibilityIdentifier(index: Int) -> String {
     return String(
       format: "%@%ld", TabStripConstants.CollectionView.tabStripCellPrefixIdentifier, index)
@@ -652,7 +664,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
       if item.dragItem.localObject != nil {
         weak var weakSelf = self
         coordinator.drop(item.dragItem, toItemAt: dropIndexPah).addCompletion {
-          UIViewAnimatingPosition in
+          _ in
           weakSelf?.dropAnimationInProgress = false
         }
         // The sourceIndexPath is non-nil if the drop item is from this same

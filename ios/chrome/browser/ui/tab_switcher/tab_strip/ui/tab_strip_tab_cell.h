@@ -46,6 +46,10 @@
 // Preview parameters of the cell when dragged.
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 
+// The item associated with this cell. Passed as an opaque NSObject to use the
+// isEqual method on it.
+@property(nonatomic, weak) NSObject* item;
+
 // Sets the title of the cell.
 - (void)setTitle:(NSString*)title;
 // Sets the favicon for the page. Passing nil sets the default image.

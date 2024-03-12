@@ -15,6 +15,10 @@
   /// Reloads `item`'s content.
   func reloadItem(_ item: TabSwitcherItem?)
 
+  /// Moves `item`  after `destinationItem`. Pass nil to insert at the beginning.
+  func moveItem(
+    _ item: TabSwitcherItem, afterItem destinationItem: TabSwitcherItem?)
+
   /// Replaces `oldItem` by `newItem`.
   /// The nullability is here for Objective-C compatibility. If one of them is nil, the consumer will do nothing.
   func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?)
