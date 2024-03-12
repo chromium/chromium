@@ -299,6 +299,16 @@ BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
              "AutofillEnableXHRSubmissionDetectionIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Implements a model that suppresses suggestions after N times the user ignores
+// the popup (i.e. doesn't select a suggestion from the popup).
+// N depends on the parametrization of the feature.
+BASE_FEATURE(kAutofillSuggestionNStrikeModel,
+             "AutofillSuggestionNStrikeModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kSuggestionStrikeLimit{
+    &kAutofillSuggestionNStrikeModel, "strike-limit", 5};
+
 // Changes the mechanisms of FormTracker and the requirements for firing
 // submission on formless elements.
 BASE_FEATURE(kAutofillImproveSubmissionDetection,
