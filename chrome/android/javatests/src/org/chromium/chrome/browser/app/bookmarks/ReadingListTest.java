@@ -432,7 +432,7 @@ public class ReadingListTest {
 
                                     @Override
                                     public boolean matchesSafely(View view) {
-                                        return ((View) view.getParent().getParent())
+                                        return ((View) view.getParent().getParent().getParent())
                                                         .findViewById(R.id.more)
                                                         .getVisibility()
                                                 == View.GONE;

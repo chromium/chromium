@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -142,11 +143,11 @@ public class TabGroupCreationDialogManager implements Destroyable {
                     // Handles the tab selection editor group action, longpressing a link for a
                     // context menu to create a group and the drag and dropping of single tabs.
                     @Override
-                    public void didCreateNewGroup(int newRootId, TabGroupModelFilter filter) {
+                    public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                         // TODO(crbug.com/1517346): Consider removing the cancel button for
                         // longpress add as the undo flow does not exist there.
                         mShowDialogDelegate.showDialog(
-                                filter.getRelatedTabCountForRootId(newRootId),
+                                filter.getRelatedTabCountForRootId(destinationTab.getRootId()),
                                 filter.isIncognito());
                     }
                 };

@@ -126,6 +126,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
@@ -2371,6 +2372,71 @@ public class TabListMediatorUnitTest {
         mMediatorTabGroupModelFilterObserver.didMoveTabOutOfGroup(mTab2, POSITION1);
         assertEquals(mTab1Domain, mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         assertEquals(mTab2Domain, mModel.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testTabGroupCreation_listMode() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.LIST);
+
+        TabListMediator mMediatorSpy = spy(mMediator);
+        doReturn(true).when(mMediatorSpy).isPseudoTabInTabGroup(any());
+
+        mMediatorSpy.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        initAndAssertAllProperties(mMediatorSpy);
+
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        // Get the next suggested color id to mock the setting of a color on tab group creation.
+        int nextSuggestedColorId = TabGroupColorUtils.getNextSuggestedColorId(mTabGroupModelFilter);
+
+        // Assert that the next suggested color was assigned to that group.
+        assertEquals(
+                nextSuggestedColorId,
+                mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
+
+        // Fake a different color on the group to check that the color was set properly on group
+        // creation.
+        mModel.get(POSITION1).model.set(TabProperties.TAB_GROUP_COLOR_ID, COLOR_2);
+
+        mMediatorTabGroupModelFilterObserver.didCreateNewGroup(mTab1, mTabGroupModelFilter);
+        assertEquals(
+                nextSuggestedColorId,
+                mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testRefreshTabList_colorIcon() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.LIST);
+
+        TabListMediator mMediatorSpy = spy(mMediator);
+        doReturn(true).when(mMediatorSpy).isPseudoTabInTabGroup(any());
+
+        mMediatorSpy.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        initAndAssertAllProperties(mMediatorSpy);
+
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        // Get the next suggested color id to mock the setting of a color on tab group creation.
+        int nextSuggestedColorId = TabGroupColorUtils.getNextSuggestedColorId(mTabGroupModelFilter);
+
+        // Assert that the next suggested color was assigned to that group.
+        assertEquals(
+                nextSuggestedColorId,
+                mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
+
+        // Fake a different color on the group to check that the color was set properly on refresh.
+        mModel.get(POSITION1).model.set(TabProperties.TAB_GROUP_COLOR_ID, COLOR_2);
+
+        // Pass in a mocked newly created tab group.
+        mMediatorSpy.resetWithListOfTabs(
+                PseudoTab.getListOfPseudoTab(tabs), /* quickMode= */ false);
+        assertEquals(
+                nextSuggestedColorId,
+                mModel.get(POSITION1).model.get(TabProperties.TAB_GROUP_COLOR_ID));
     }
 
     @Test

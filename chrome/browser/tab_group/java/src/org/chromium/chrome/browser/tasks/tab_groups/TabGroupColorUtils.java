@@ -64,7 +64,8 @@ public class TabGroupColorUtils {
      * @param filter The {@link TabGroupModelFilter} used to fetch the next suggested color.
      * @return The stored or newly created color for the target tab group.
      */
-    public static int getOrCreateTabGroupColor(int tabRootId, TabGroupModelFilter filter) {
+    public static @TabGroupColorId int getOrCreateTabGroupColor(
+            int tabRootId, TabGroupModelFilter filter) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         int color = getTabGroupColor(tabRootId);
 

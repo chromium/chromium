@@ -88,6 +88,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.ListObservable;
@@ -329,6 +330,7 @@ class TabListMediator {
     }
 
     private static final String TAG = "TabListMediator";
+    private static final int INVALID_COLOR_ID = -1;
     private static Map<Integer, Integer> sTabClosedFromMapTabClosedFromMap = new HashMap<>();
     private static Set<Integer> sViewedTabIds = new HashSet<>();
 
@@ -752,6 +754,26 @@ class TabListMediator {
                     if (!isValidMovePosition(newPosition)) return;
 
                     mModel.move(curPosition, newPosition);
+                }
+
+                @Override
+                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                        // On new group creation for the tab group representation in the GTS, update
+                        // the tab group color icon.
+                        if (mMode == TabListMode.LIST) {
+                            int groupIndex = filter.indexOf(destinationTab);
+                            Tab groupTab = filter.getTabAt(groupIndex);
+                            PropertyModel model = getModelFromId(groupTab.getId());
+
+                            if (model != null) {
+                                final @TabGroupColorId int colorId =
+                                        TabGroupColorUtils.getOrCreateTabGroupColor(
+                                                destinationTab.getRootId(), filter);
+                                model.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
+                            }
+                        }
+                    }
                 }
             };
 
@@ -1448,6 +1470,20 @@ class TabListMediator {
             }
         }
 
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            // If the tab to update is in ListMode, update it with the most recent stored color.
+            if (mMode == TabListMode.LIST && isInTabGroup) {
+                final @TabGroupColorId int tabGroupColorId =
+                        TabGroupColorUtils.getOrCreateTabGroupColor(
+                                pseudoTab.getRootId(),
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get());
+                PropertyModel model = getModelFromId(pseudoTab.getId());
+                if (model != null) {
+                    model.set(TabProperties.TAB_GROUP_COLOR_ID, tabGroupColorId);
+                }
+            }
+        }
+
         mModel.get(index).model.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
@@ -1710,6 +1746,20 @@ class TabListMediator {
             }
         }
 
+        int colorId = INVALID_COLOR_ID;
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+
+            // While groups always have a color, only set it here when it should be shown next to
+            // the title. In GRID mode this is not the case, as the color replaces the favicon.
+            // Rather it's LIST mode where we do this, and additionally not when we've opened a
+            // dialog for a particular group, checked by isParentComponentTabSwitcher().
+            if (mMode == TabListMode.LIST && isInTabGroup && isParentComponentTabSwitcher()) {
+                colorId =
+                        TabGroupColorUtils.getOrCreateTabGroupColor(pseudoTab.getRootId(), filter);
+            }
+        }
+
         int selectedTabBackgroundDrawableId =
                 pseudoTab.isIncognito()
                         ? R.drawable.selected_tab_background_incognito
@@ -1750,6 +1800,7 @@ class TabListMediator {
                         .with(
                                 TabProperties.QUICK_DELETE_ANIMATION_STATUS,
                                 ClosableTabGridView.QuickDeleteAnimationStatus.TAB_RESTORE)
+                        .with(TabProperties.TAB_GROUP_COLOR_ID, colorId)
                         .build();
 
         if (!mActionsOnAllRelatedTabs || !isPseudoTabInTabGroup(pseudoTab)) {
@@ -1988,12 +2039,12 @@ class TabListMediator {
                 if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    int color =
+                    final @TabGroupColorId int colorId =
                             TabGroupColorUtils.getOrCreateTabGroupColor(
                                     pseudoTab.getRootId(), filter);
                     faviconFetcher =
                             mTabListFaviconProvider.getFaviconFromTabGroupColorFetcher(
-                                    color, filter.getTabModel().isIncognito());
+                                    colorId, filter.getTabModel().isIncognito());
                 }
 
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, faviconFetcher);
@@ -2384,5 +2435,15 @@ class TabListMediator {
                     .model
                     .set(TabProperties.QUICK_DELETE_ANIMATION_STATUS, animationStatus);
         }
+    }
+
+    private PropertyModel getModelFromId(int tabId) {
+        int modelIndex = mModel.indexFromId(tabId);
+        if (modelIndex == TabModel.INVALID_TAB_INDEX) return null;
+        return mModel.get(modelIndex).model;
+    }
+
+    private boolean isParentComponentTabSwitcher() {
+        return TabSwitcherCoordinator.COMPONENT_NAME.equals(mComponentName);
     }
 }

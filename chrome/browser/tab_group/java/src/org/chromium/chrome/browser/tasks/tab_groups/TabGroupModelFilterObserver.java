@@ -87,8 +87,8 @@ public interface TabGroupModelFilterObserver {
      * This method is called after a new tab group is created, either through drag and drop, the tab
      * selection editor, or by longpressing a link on a tab and using the context menu.
      *
-     * @param newRootId The new root id of the group after merge.
+     * @param destinationTab The destination tab of the group after merge.
      * @param filter The {@link TabGroupModelFilter} that the new group event triggers on.
      */
-    default void didCreateNewGroup(int newRootId, TabGroupModelFilter filter) {}
+    default void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {}
 }

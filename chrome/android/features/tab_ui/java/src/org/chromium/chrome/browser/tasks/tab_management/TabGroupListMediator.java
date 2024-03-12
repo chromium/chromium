@@ -76,7 +76,7 @@ public class TabGroupListMediator {
                 }
 
                 @Override
-                public void didCreateNewGroup(int newRootId, TabGroupModelFilter filter) {
+                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                     mPendingRefresh.post();
                 }
             };

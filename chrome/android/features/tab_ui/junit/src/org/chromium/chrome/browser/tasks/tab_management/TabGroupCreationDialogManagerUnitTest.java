@@ -25,6 +25,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -40,6 +41,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class TabGroupCreationDialogManagerUnitTest {
     private static final int TAB_COUNT = 3;
+    private static final String TAB1_TITLE = "Tab1";
+    private static final int TAB1_ID = 456;
 
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabModelSelector mTabModelSelector;
@@ -52,10 +55,12 @@ public class TabGroupCreationDialogManagerUnitTest {
 
     private Activity mActivity;
     private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
+    private Tab mTab1;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelFilterProvider.getTabModelFilter(false))
@@ -79,10 +84,9 @@ public class TabGroupCreationDialogManagerUnitTest {
         verify(mRegularTabGroupModelFilter).addTabGroupObserver(mObserverCaptor.capture());
         TabGroupModelFilterObserver observer = mObserverCaptor.getValue();
 
-        int rootId = 1;
         int tabCount = 5;
-        when(mRegularTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(tabCount);
-        observer.didCreateNewGroup(rootId, mRegularTabGroupModelFilter);
+        when(mRegularTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(tabCount);
+        observer.didCreateNewGroup(mTab1, mRegularTabGroupModelFilter);
 
         verify(mShowDialogDelegate).showDialog(tabCount, false);
     }

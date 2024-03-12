@@ -260,7 +260,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .didCreateNewGroup(TAB1_ID, mTabGroupModelFilter);
+                .didCreateNewGroup(mTab1, mTabGroupModelFilter);
 
         // Verify that a default color was stored.
         verify(mEditorColor).putInt(eq(String.valueOf(TAB1_ID)), eq(COLOR1_ID));

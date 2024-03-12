@@ -125,7 +125,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         mActualGroupCount++;
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didCreateNewGroup(tab.getRootId(), this);
+            observer.didCreateNewGroup(tab, this);
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -234,7 +234,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                         tabsToMerge.get(tabsToMerge.size() - 1), group.getLastShownTabId());
 
                 if (didCreateNewGroup) {
-                    observer.didCreateNewGroup(destinationRootId, this);
+                    observer.didCreateNewGroup(destinationTab, this);
                 }
 
                 // Since the undo group merge logic is unsupported when called from the tab strip,
@@ -354,7 +354,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             if (didCreateNewGroup) {
-                observer.didCreateNewGroup(destinationRootId, this);
+                observer.didCreateNewGroup(destinationTab, this);
             }
 
             if (notify) {
@@ -650,7 +650,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
                     // When creating a tab group with the context menu longpress, this action runs.
                     for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                        observer.didCreateNewGroup(rootId, this);
+                        observer.didCreateNewGroup(tab, this);
                     }
                 }
             }

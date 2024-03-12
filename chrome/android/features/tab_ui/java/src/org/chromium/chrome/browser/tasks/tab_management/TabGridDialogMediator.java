@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -505,7 +506,8 @@ public class TabGridDialogMediator
                 TabGroupTitleEditor.getDefaultTitle(mContext, tabsCount));
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            int color = TabGroupColorUtils.getOrCreateTabGroupColor(currentTab.getRootId(), filter);
+            final @TabGroupColorId int color =
+                    TabGroupColorUtils.getOrCreateTabGroupColor(currentTab.getRootId(), filter);
             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
         }
     }

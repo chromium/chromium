@@ -56,13 +56,14 @@ public class TabGroupVisualDataManager {
         mFilterObserver =
                 new TabGroupModelFilterObserver() {
                     @Override
-                    public void didCreateNewGroup(int newRootId, TabGroupModelFilter filter) {
+                    public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                         // TODO(b/41490324): Store a default color as none will exist, but this
                         // should be enforced later on with the intro of TabGroupCreationDialog.
                         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                             final @TabGroupColorId int colorId =
                                     TabGroupColorUtils.getNextSuggestedColorId(filter);
-                            TabGroupColorUtils.storeTabGroupColor(newRootId, colorId);
+                            TabGroupColorUtils.storeTabGroupColor(
+                                    destinationTab.getRootId(), colorId);
                         }
                     }
 

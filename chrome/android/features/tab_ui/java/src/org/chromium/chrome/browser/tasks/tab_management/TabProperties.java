@@ -132,6 +132,10 @@ public class TabProperties {
     public static final PropertyModel.WritableIntPropertyKey QUICK_DELETE_ANIMATION_STATUS =
             new PropertyModel.WritableIntPropertyKey();
 
+    /** The {@link TabGroupColorId} for a tab group representation's color in TabListMode only. */
+    public static final PropertyModel.WritableIntPropertyKey TAB_GROUP_COLOR_ID =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS_TAB_GRID =
             new PropertyKey[] {
                 TAB_ID,
@@ -162,7 +166,8 @@ public class TabProperties {
                 CLOSE_BUTTON_DESCRIPTION_STRING,
                 SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                 SHOULD_SHOW_PRICE_DROP_TOOLTIP,
-                QUICK_DELETE_ANIMATION_STATUS
+                QUICK_DELETE_ANIMATION_STATUS,
+                TAB_GROUP_COLOR_ID
             };
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =

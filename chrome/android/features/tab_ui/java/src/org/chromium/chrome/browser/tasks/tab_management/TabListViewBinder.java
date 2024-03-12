@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,12 +24,16 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab List. */
 class TabListViewBinder {
+    private static final int INVALID_COLOR_ID = -1;
+    private static final int TAB_GROUP_ICON_COLOR_LEVEL = 1;
+
     // TODO(1023557): Merge with TabGridViewBinder for shared properties.
     private static void bindListTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
@@ -64,6 +71,8 @@ class TabListViewBinder {
         } else if (TabProperties.URL_DOMAIN == propertyKey) {
             String domain = model.get(TabProperties.URL_DOMAIN);
             ((TextView) view.findViewById(R.id.description)).setText(domain);
+        } else if (TabProperties.TAB_GROUP_COLOR_ID == propertyKey) {
+            setTabGroupColorIcon(view, model);
         }
     }
 
@@ -213,5 +222,48 @@ class TabListViewBinder {
     private static void setFavicon(View view, Drawable favicon) {
         ImageView faviconView = (ImageView) view.findViewById(R.id.start_icon);
         faviconView.setImageDrawable(favicon);
+    }
+
+    private static void setTabGroupColorIcon(ViewGroup view, PropertyModel model) {
+        ImageView colorIconView = (ImageView) view.findViewById(R.id.icon);
+
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            colorIconView.setVisibility(View.VISIBLE);
+
+            // If the tab is a single tab item, a tab that is part of a group but shown in the
+            // TabGridDialogView list representation, or an invalid case, do not set/show.
+            if (model.get(TabProperties.TAB_GROUP_COLOR_ID) == INVALID_COLOR_ID) {
+                colorIconView.setVisibility(View.GONE);
+                return;
+            }
+
+            Context context = view.getContext();
+            final @ColorInt int color =
+                    ColorPickerUtils.getTabGroupColorPickerItemColor(
+                            context,
+                            model.get(TabProperties.TAB_GROUP_COLOR_ID),
+                            model.get(TabProperties.IS_INCOGNITO));
+
+            // If the icon already exists, just apply the color to the existing drawable.
+            LayerDrawable bgDrawable = (LayerDrawable) colorIconView.getBackground();
+            if (bgDrawable == null) {
+                LayerDrawable tabGroupColorIcon =
+                        (LayerDrawable)
+                                ResourcesCompat.getDrawable(
+                                        context.getResources(),
+                                        R.drawable.tab_group_color_icon,
+                                        context.getTheme());
+                ((GradientDrawable) tabGroupColorIcon.getDrawable(TAB_GROUP_ICON_COLOR_LEVEL))
+                        .setColor(color);
+                colorIconView.setBackground(tabGroupColorIcon);
+            } else {
+                bgDrawable.mutate();
+                ((GradientDrawable) bgDrawable.getDrawable(TAB_GROUP_ICON_COLOR_LEVEL))
+                        .setColor(color);
+            }
+
+        } else {
+            colorIconView.setVisibility(View.GONE);
+        }
     }
 }

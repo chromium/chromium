@@ -7,19 +7,38 @@ found in the LICENSE file.
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:orientation="vertical"
     android:layout_gravity="center_vertical" >
 
-    <TextView
-        android:id="@+id/title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        android:layout_gravity="start"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables" >
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_marginEnd="6dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="2dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:contentDescription="@null"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/description"
