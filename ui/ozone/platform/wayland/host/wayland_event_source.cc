@@ -483,6 +483,12 @@ void WaylandEventSource::DumpState(std::ostream& out) const {
   }
 }
 
+void WaylandEventSource::ResetStateForTesting() {
+  event_watcher_->Flush();
+  event_watcher_->RoundTripQueue();
+  event_watcher_->StopProcessingEvents();
+}
+
 const gfx::PointF& WaylandEventSource::GetPointerLocation() const {
   return pointer_location_;
 }

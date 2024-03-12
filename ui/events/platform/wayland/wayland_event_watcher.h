@@ -53,6 +53,12 @@ class WaylandEventWatcher {
   // are already bound and properly initialized.
   void StartProcessingEvents();
 
+  // Stops polling for events from input devices.
+  void StopProcessingEvents();
+
+  // Calls wl_display_flush.
+  void Flush();
+
   // Calls wl_display_roundtrip_queue. Might be required during initialization
   // of some objects that should block until they are initialized.
   void RoundTripQueue();
@@ -61,9 +67,6 @@ class WaylandEventWatcher {
   WaylandEventWatcher(wl_display* display,
                       wl_event_queue* event_queue,
                       bool use_threaded_polling);
-
-  // Stops polling for events from input devices.
-  void StopProcessingEvents();
 
   // Starts watching the fd. Returns true on success
   virtual bool StartWatchingFD(int fd) = 0;

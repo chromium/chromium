@@ -95,6 +95,8 @@ class WaylandEventSource : public PlatformEventSource,
 
   void DumpState(std::ostream& out) const;
 
+  void ResetStateForTesting() override;
+
  protected:
   // WaylandKeyboard::Delegate
   void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) override;

@@ -241,6 +241,11 @@ void WaylandEventWatcher::StopProcessingEventsInternal() {
   watching_ = false;
 }
 
+void WaylandEventWatcher::Flush() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  wl_display_flush(display_);
+}
+
 bool WaylandEventWatcher::WlDisplayPrepareToRead() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (prepared_) {
@@ -256,7 +261,7 @@ bool WaylandEventWatcher::WlDisplayPrepareToRead() {
   prepared_ = true;
 
   // Automatic flush.
-  wl_display_flush(display_);
+  Flush();
 
   return true;
 }
