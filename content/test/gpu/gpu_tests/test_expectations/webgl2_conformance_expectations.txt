@@ -386,6 +386,10 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
+# Can cause subsequent tests to fail.
+crbug.com/329130354 [ mac amd-0x679e ] conformance2/textures/canvas_sub_rectangle/tex-3d-rgba4-rgba-unsigned_short_4_4_4_4.html [ Skip ]
+crbug.com/329130354 [ mac amd-0x679e ] deqp/functional/gles3/fborender/resize_03.html [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
