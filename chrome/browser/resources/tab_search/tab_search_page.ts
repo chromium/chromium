@@ -157,7 +157,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private metricsReporter_: MetricsReporter|null;
-  private useMetricsReporter_: boolean;
   private listenerIds_: number[] = [];
   private tabGroupsMap_: Map<string, TabGroup> = new Map();
   private recentlyClosedTabGroups_: TabGroupData[] = [];
@@ -234,8 +233,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         },
       ],
     });
-
-    this.useMetricsReporter_ = loadTimeData.getBoolean('useMetricsReporter');
   }
 
   override connectedCallback() {
@@ -330,35 +327,25 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   }
 
   private updateTabs_() {
-    const getTabsStartTimestamp = Date.now();
-
-    if (this.useMetricsReporter_) {
-      const isMarkOverlap =
-          this.metricsReporter.hasLocalMark('TabListDataReceived');
-      chrome.metricsPrivate.recordBoolean(
-          'Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap', isMarkOverlap);
-      if (!isMarkOverlap) {
-        this.metricsReporter.mark('TabListDataReceived');
-      }
+    const isMarkOverlap =
+        this.metricsReporter.hasLocalMark('TabListDataReceived');
+    chrome.metricsPrivate.recordBoolean(
+        'Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap', isMarkOverlap);
+    if (!isMarkOverlap) {
+      this.metricsReporter.mark('TabListDataReceived');
     }
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
-      chrome.metricsPrivate.recordTime(
-          'Tabs.TabSearch.WebUI.TabListDataReceived',
-          Math.round(Date.now() - getTabsStartTimestamp));
+      // TODO(crbug.com/1269417): this is a side-by-side comparison of metrics
+      // reporter histogram vs. old histogram. Cleanup when the experiment ends.
+      this.metricsReporter.measure('TabListDataReceived')
+          .then(
+              e => this.metricsReporter.umaReportTime(
+                  'Tabs.TabSearch.WebUI.TabListDataReceived2', e))
+          .then(() => this.metricsReporter.clearMark('TabListDataReceived'))
+          // Ignore silently if mark 'TabListDataReceived' is missing.
+          .catch(() => {});
 
-      if (this.useMetricsReporter_) {
-        // TODO(crbug.com/1269417): this is a side-by-side comparison of
-        // metrics reporter histogram vs. old histogram. Cleanup when the
-        // experiment ends.
-        this.metricsReporter.measure('TabListDataReceived')
-            .then(
-                e => this.metricsReporter.umaReportTime(
-                    'Tabs.TabSearch.WebUI.TabListDataReceived2', e))
-            .then(() => this.metricsReporter.clearMark('TabListDataReceived'))
-            // Ignore silently if mark 'TabListDataReceived' is missing.
-            .catch(() => {});
-      }
       // The infinite-list produces viewport-filled events whenever a data or
       // scroll position change triggers the the viewport fill logic.
       listenOnce(this.$.tabsList, 'viewport-filled', () => {
@@ -398,15 +385,13 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       this.updateFilteredTabs_();
     }
 
-    if (this.useMetricsReporter_) {
-      this.metricsReporter.measure('TabUpdated')
-          .then(
-              e => this.metricsReporter.umaReportTime(
-                  'Tabs.TabSearch.Mojo.TabUpdated', e))
-          .then(() => this.metricsReporter.clearMark('TabUpdated'))
-          // Ignore silently if mark 'TabUpdated' is missing.
-          .catch(() => {});
-    }
+    this.metricsReporter.measure('TabUpdated')
+        .then(
+            e => this.metricsReporter.umaReportTime(
+                'Tabs.TabSearch.Mojo.TabUpdated', e))
+        .then(() => this.metricsReporter.clearMark('TabUpdated'))
+        // Ignore silently if mark 'TabUpdated' is missing.
+        .catch(() => {});
   }
 
   private onTabsRemoved_(tabsRemovedInfo: TabsRemovedInfo) {
@@ -494,14 +479,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     let action;
     switch (itemData.type) {
       case TabItemType.OPEN_TAB:
-        if (this.useMetricsReporter_) {
-          const isMarkOverlap =
-              this.metricsReporter.hasLocalMark('SwitchToTab');
-          chrome.metricsPrivate.recordBoolean(
-              'Tabs.TabSearch.Mojo.SwitchToTab.IsOverlap', isMarkOverlap);
-          if (!isMarkOverlap) {
-            this.metricsReporter.mark('SwitchToTab');
-          }
+        const isMarkOverlap = this.metricsReporter.hasLocalMark('SwitchToTab');
+        chrome.metricsPrivate.recordBoolean(
+            'Tabs.TabSearch.Mojo.SwitchToTab.IsOverlap', isMarkOverlap);
+        if (!isMarkOverlap) {
+          this.metricsReporter.mark('SwitchToTab');
         }
 
         this.recordMetricsForAction('SwitchTab', tabIndex);

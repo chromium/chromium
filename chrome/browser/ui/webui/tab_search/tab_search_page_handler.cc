@@ -402,17 +402,15 @@ void TabSearchPageHandler::SwitchToTab(
   const TabDetails& details = optional_details.value();
   details.tab_strip_model->ActivateTabAt(details.index);
   details.browser->window()->Activate();
-  if (base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter)) {
-    metrics_reporter_->Measure(
-        "SwitchToTab",
-        base::BindOnce(
-            [](MetricsReporter* metrics_reporter, base::TimeDelta duration) {
-              base::UmaHistogramTimes("Tabs.TabSearch.Mojo.SwitchToTab",
-                                      duration);
-              metrics_reporter->ClearMark("SwitchToTab");
-            },
-            metrics_reporter_));
-  }
+  metrics_reporter_->Measure(
+      "SwitchToTab",
+      base::BindOnce(
+          [](MetricsReporter* metrics_reporter, base::TimeDelta duration) {
+            base::UmaHistogramTimes("Tabs.TabSearch.Mojo.SwitchToTab",
+                                    duration);
+            metrics_reporter->ClearMark("SwitchToTab");
+          },
+          metrics_reporter_));
 }
 
 void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
@@ -1019,12 +1017,11 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   Browser* active_browser = chrome::FindLastActive();
   TRACE_EVENT0("browser", "TabSearchPageHandler:TabChangedAt");
 
-  if (base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter)) {
-    bool is_mark_overlap = metrics_reporter_->HasLocalMark("TabUpdated");
-    base::UmaHistogramBoolean("Tabs.TabSearch.Mojo.TabUpdated.IsOverlap",
-                              is_mark_overlap);
-    if (!is_mark_overlap)
-      metrics_reporter_->Mark("TabUpdated");
+  const bool is_mark_overlap = metrics_reporter_->HasLocalMark("TabUpdated");
+  base::UmaHistogramBoolean("Tabs.TabSearch.Mojo.TabUpdated.IsOverlap",
+                            is_mark_overlap);
+  if (!is_mark_overlap) {
+    metrics_reporter_->Mark("TabUpdated");
   }
 
   auto tab_update_info = tab_search::mojom::TabUpdateInfo::New();

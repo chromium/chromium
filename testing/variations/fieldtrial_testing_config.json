@@ -17874,26 +17874,6 @@
             ]
         }
     ],
-    "TabSearchMetricsReporter": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TabSearchMetricsReporter",
-                    "enable_features": [
-                        "TabSearchUseMetricsReporter"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabStripLayoutOptimization": [
         {
             "platforms": [

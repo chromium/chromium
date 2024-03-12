@@ -1360,15 +1360,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,
                                          TabSearchUI>(map);
-  if (base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter)) {
-    RegisterWebUIControllerInterfaceBinder<
-        metrics_reporter::mojom::PageMetricsHost, TabSearchUI, NewTabPageUI,
-        OmniboxPopupUI>(map);
-  } else {
-    RegisterWebUIControllerInterfaceBinder<
-        metrics_reporter::mojom::PageMetricsHost, NewTabPageUI, OmniboxPopupUI>(
-        map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      metrics_reporter::mojom::PageMetricsHost, TabSearchUI, NewTabPageUI,
+      OmniboxPopupUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::user_education_internals::UserEducationInternalsPageHandler,
