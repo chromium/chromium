@@ -1909,15 +1909,13 @@ void OmniboxViewViews::PerformDrop(
 
   const ui::OSExchangeData& data = event.data();
   std::u16string text;
-  if (data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
-    GURL url;
-    std::u16string title;
-    if (data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES, &url,
-                            &title)) {
-      text = StripJavascriptSchemas(base::UTF8ToUTF16(url.spec()));
-    }
-  } else if (data.HasString() && data.GetString(&text)) {
-    text = StripJavascriptSchemas(base::CollapseWhitespace(text, true));
+  if (std::optional<ui::OSExchangeData::UrlInfo> url_result =
+          data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+      url_result.has_value()) {
+    text = StripJavascriptSchemas(base::UTF8ToUTF16(url_result->url.spec()));
+  } else if (std::optional<std::u16string> text_result = data.GetString();
+             text_result.has_value()) {
+    text = StripJavascriptSchemas(base::CollapseWhitespace(*text_result, true));
   } else {
     output_drag_op = DragOperation::kNone;
     return;

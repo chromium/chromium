@@ -63,10 +63,13 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual void SetPickledData(const ClipboardFormatType& format,
                               const base::Pickle& data) = 0;
 
-  virtual bool GetString(std::u16string* data) const = 0;
-  virtual bool GetURLAndTitle(FilenameToURLPolicy policy,
-                              GURL* url,
-                              std::u16string* title) const = 0;
+  virtual std::optional<std::u16string> GetString() const = 0;
+  struct UrlInfo {
+    GURL url;
+    std::u16string title;
+  };
+  virtual std::optional<UrlInfo> GetURLAndTitle(
+      FilenameToURLPolicy policy) const = 0;
   virtual bool GetFilenames(std::vector<FileInfo>* file_names) const = 0;
   virtual bool GetPickledData(const ClipboardFormatType& format,
                               base::Pickle* data) const = 0;

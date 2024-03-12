@@ -199,7 +199,7 @@ class TestDragDropController : public DragDropController {
     num_drag_updates_ = 0;
     drop_received_ = false;
     drag_canceled_ = false;
-    drag_string_.clear();
+    drag_string_.reset();
   }
 
   DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
@@ -209,7 +209,7 @@ class TestDragDropController : public DragDropController {
                                  int allowed_operations,
                                  ui::mojom::DragEventSource source) override {
     drag_start_received_ = true;
-    data->GetString(&drag_string_);
+    drag_string_ = data->GetString();
     return DragDropController::StartDragAndDrop(std::move(data), root_window,
                                                 source_window, location,
                                                 allowed_operations, source);
@@ -251,7 +251,7 @@ class TestDragDropController : public DragDropController {
   int num_drag_updates_;
   bool drop_received_;
   bool drag_canceled_;
-  std::u16string drag_string_;
+  std::optional<std::u16string> drag_string_;
 };
 
 class TestObserver : public aura::client::DragDropClientObserver {

@@ -3002,8 +3002,7 @@ void Textfield::DropDraggedText(
 
   gfx::SelectionModel drop_destination_model =
       render_text->FindCursorPosition(event.location());
-  std::u16string new_text;
-  event.data().GetString(&new_text);
+  std::u16string new_text = event.data().GetString().value_or(std::u16string());
 
   // Delete the current selection for a drag and drop within this view.
   const bool move = initiating_drag_ && !event.IsControlDown() &&

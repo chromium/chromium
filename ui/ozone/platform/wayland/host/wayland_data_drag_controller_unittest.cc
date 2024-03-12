@@ -415,10 +415,11 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
 
   ASSERT_EQ(drag_controller(), data_device()->drag_delegate_);
 
-  std::u16string str16;
   EXPECT_TRUE(drop_handler_->dropped_data()->HasString());
-  EXPECT_TRUE(drop_handler_->dropped_data()->GetString(&str16));
-  EXPECT_EQ(kSampleTextForDragAndDrop16, str16);
+  std::optional<std::u16string> result =
+      drop_handler_->dropped_data()->GetString();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(kSampleTextForDragAndDrop16, result.value());
 
   // In 2x window scale, we expect received coordinates still be in DIP.
   EXPECT_CALL(*drop_handler_,
@@ -673,12 +674,11 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
       EXPECT_FALSE(dropped_data->HasURL(kFilenameToURLPolicy));
     } else {
       EXPECT_TRUE(dropped_data->HasURL(kFilenameToURLPolicy));
-      GURL url;
-      std::u16string title;
-      EXPECT_TRUE(
-          dropped_data->GetURLAndTitle(kFilenameToURLPolicy, &url, &title));
-      EXPECT_EQ(url.spec(), kCase.expected_url);
-      EXPECT_EQ(title, kCase.expected_title);
+      std::optional<ui::OSExchangeData::UrlInfo> url_info =
+          dropped_data->GetURLAndTitle(kFilenameToURLPolicy);
+      EXPECT_TRUE(url_info.has_value());
+      EXPECT_EQ(url_info->url.spec(), kCase.expected_url);
+      EXPECT_EQ(url_info->title, kCase.expected_title);
     }
 
     EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(AtMost(1));

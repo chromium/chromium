@@ -706,18 +706,16 @@ void WebContentsViewAura::PrepareDropData(
 #endif
   drop_data->is_from_privileged = data.IsFromPrivileged();
 
-  std::u16string plain_text;
-  data.GetString(&plain_text);
-  if (!plain_text.empty())
-    drop_data->text = plain_text;
+  if (std::optional<std::u16string> result = data.GetString();
+      result.has_value() && !result->empty()) {
+    drop_data->text = std::move(*result);
+  }
 
-  GURL url;
-  std::u16string url_title;
-  data.GetURLAndTitle(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url,
-                      &url_title);
-  if (url.is_valid()) {
-    drop_data->url = url;
-    drop_data->url_title = url_title;
+  if (std::optional<ui::OSExchangeData::UrlInfo> result = data.GetURLAndTitle(
+          ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      result.has_value() && result->url.is_valid()) {
+    drop_data->url = std::move(result->url);
+    drop_data->url_title = std::move(result->title);
   }
 
   std::optional<ui::OSExchangeData::HtmlInfo> html_content = data.GetHtml();

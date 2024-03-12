@@ -470,12 +470,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
           std::unique_ptr<ui::OSExchangeData> drag_data,
           gfx::NativeView native_view, ui::mojom::DragEventSource source,
           gfx::Point point, int operation) {
-        GURL url;
-        std::u16string title;
-        EXPECT_TRUE(drag_data->provider().GetURLAndTitle(
-            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
-        EXPECT_EQ(page_url, url);
-        EXPECT_EQ(page_title, title);
+        std::optional<ui::OSExchangeData::UrlInfo> url_info =
+            drag_data->GetURLAndTitle(
+                ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+        ASSERT_TRUE(url_info.has_value());
+        EXPECT_EQ(page_url, url_info->url);
+        EXPECT_EQ(page_title, url_info->title);
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, FaviconChangeDuringBookmarkDrag) {
 // generation for dragging multiple bookmarks.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
-  const std::u16string page_title(u"foo");
+  const std::u16string page_title = u"foo";
   const GURL page_url("http://www.google.com");
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node1 = model->AddURL(root, 0, page_title, page_url);
@@ -550,35 +550,36 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   auto run_loop = std::make_unique<base::RunLoop>();
 
   chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
-      [&run_loop, expected_point](std::unique_ptr<ui::OSExchangeData> drag_data,
-                                  gfx::NativeView native_view,
-                                  ui::mojom::DragEventSource source,
-                                  gfx::Point point, int operation) {
-        GURL url;
-        std::u16string title;
-        // The platform difference here is due to platform capabilities. On the
-        // Mac, the clipboard can hold multiple items, each with different
-        // representations. Therefore, in `bookmark_node_data_mac.mm`'s version
-        // of `BookmarkNodeData::Read`/`Write`, a full-fledged array of objects
-        // and types are written to the clipboard, providing rich
-        // interoperability with the rest of the OS and other apps. Then, when
-        // `GetURLAndTitle` is called, it looks at the clipboard, sees URL and
-        // title data, and returns true. On the other hand, in
-        // `bookmark_node_data_views.cc`'s version used on other platforms,
-        // because other platforms don't have the concept of multiple items on
-        // the clipboard, single URLs are added as a URL, but multiple URLs are
-        // added as a data blob opaque to the outside world. Then, when
-        // `GetURLAndTitle` is called, it's unable to extract any single URL,
-        // and returns false. This is a core difference in the capabilities of
-        // the platform. Because interoperability and a good user experience
-        // outweigh strict platform consistency, expect different behaviors on
-        // different platforms.
+      [&run_loop, expected_point, page_title, page_url](
+          std::unique_ptr<ui::OSExchangeData> drag_data,
+          gfx::NativeView native_view, ui::mojom::DragEventSource source,
+          gfx::Point point, int operation) {
 #if BUILDFLAG(IS_MAC)
-        EXPECT_TRUE(drag_data->provider().GetURLAndTitle(
-            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
+        // On the Mac, the clipboard can hold multiple items, each with
+        // different representations. Therefore, when the "write multiple URLs"
+        // call is made, a full-fledged array of objects and types are written
+        // to the clipboard, providing rich interoperability with the rest of
+        // the OS and other apps. Then, when `GetURLAndTitle` is called, it
+        // looks at the clipboard, sees URL and title data, and returns true.
+        std::optional<ui::OSExchangeData::UrlInfo> url_info =
+            drag_data->GetURLAndTitle(
+                ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+        ASSERT_TRUE(url_info.has_value());
+
+        // The bookmarks are added in order, and the first is retrieved, so
+        // expect the values from the first bookmark.
+        EXPECT_EQ(page_title, url_info->title);
+        EXPECT_EQ(page_url, url_info->url);
 #else
-        EXPECT_FALSE(drag_data->provider().GetURLAndTitle(
-            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
+        // On other platforms, because they don't have the concept of multiple
+        // items on the clipboard, single URLs are added as a URL, but multiple
+        // URLs are added as a data blob opaque to the outside world. Then, when
+        // `GetURLAndTitle` is called, it's unable to extract any single URL,
+        // and returns false.
+        EXPECT_FALSE(drag_data
+                         ->GetURLAndTitle(
+                             ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES)
+                         .has_value());
 #endif
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows

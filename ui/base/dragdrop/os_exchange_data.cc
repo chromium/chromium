@@ -69,14 +69,13 @@ void OSExchangeData::SetPickledData(const ClipboardFormatType& format,
   provider_->SetPickledData(format, data);
 }
 
-bool OSExchangeData::GetString(std::u16string* data) const {
-  return provider_->GetString(data);
+std::optional<std::u16string> OSExchangeData::GetString() const {
+  return provider_->GetString();
 }
 
-bool OSExchangeData::GetURLAndTitle(FilenameToURLPolicy policy,
-                                    GURL* url,
-                                    std::u16string* title) const {
-  return provider_->GetURLAndTitle(policy, url, title);
+std::optional<OSExchangeData::UrlInfo> OSExchangeData::GetURLAndTitle(
+    FilenameToURLPolicy policy) const {
+  return provider_->GetURLAndTitle(policy);
 }
 
 bool OSExchangeData::GetFilenames(std::vector<FileInfo>* filenames) const {

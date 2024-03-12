@@ -223,12 +223,12 @@ void XOSExchangeDataProvider::SetPickledData(const ClipboardFormatType& format,
   format_map_.Insert(x11::GetAtom(format.GetName().c_str()), mem);
 }
 
-bool XOSExchangeDataProvider::GetString(std::u16string* result) const {
+std::optional<std::u16string> XOSExchangeDataProvider::GetString() const {
   if (HasFile()) {
     // Various Linux file managers both pass a list of file:// URIs and set the
     // string representation to the URI. We explicitly don't want to return use
     // this representation.
-    return false;
+    return std::nullopt;
   }
 
   std::vector<x11::Atom> text_atoms = ui::GetTextAtomsFrom();
@@ -237,17 +237,14 @@ bool XOSExchangeDataProvider::GetString(std::u16string* result) const {
 
   ui::SelectionData data(format_map_.GetFirstOf(requested_types));
   if (data.IsValid()) {
-    std::string text = data.GetText();
-    *result = base::UTF8ToUTF16(text);
-    return true;
+    return base::UTF8ToUTF16(data.GetText());
   }
 
-  return false;
+  return std::nullopt;
 }
 
-bool XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy,
-                                             GURL* url,
-                                             std::u16string* title) const {
+std::optional<OSExchangeDataProvider::UrlInfo>
+XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy) const {
   std::vector<x11::Atom> url_atoms = ui::GetURLAtomsFrom();
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
@@ -266,30 +263,29 @@ bool XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy,
       std::vector<std::u16string> tokens = base::SplitString(
           unparsed, u"\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (tokens.size() > 0) {
-        if (tokens.size() > 1) {
-          *title = tokens[1];
-        } else {
-          *title = std::u16string();
+        GURL url = GURL(tokens[0]);
+        if (!url.is_valid()) {
+          return std::nullopt;
         }
-
-        *url = GURL(tokens[0]);
-        return true;
+        return UrlInfo{std::move(url), tokens.size() > 1 ? std::move(tokens[1])
+                                                         : std::u16string()};
       }
     } else if (data.GetType() == x11::GetAtom(kMimeTypeURIList)) {
       std::vector<std::string> tokens = ui::ParseURIList(data);
       for (const std::string& token : tokens) {
         GURL test_url(token);
+        if (!test_url.is_valid()) {
+          continue;
+        }
         if (!test_url.SchemeIsFile() ||
             policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
-          *url = test_url;
-          *title = std::u16string();
-          return true;
+          return UrlInfo{std::move(test_url), std::u16string()};
         }
       }
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
 bool XOSExchangeDataProvider::GetFilenames(
@@ -520,19 +516,6 @@ gfx::ImageSkia XOSExchangeDataProvider::GetDragImage() const {
 
 gfx::Vector2d XOSExchangeDataProvider::GetDragImageOffset() const {
   return drag_image_offset_;
-}
-
-bool XOSExchangeDataProvider::GetPlainTextURL(GURL* url) const {
-  std::u16string text;
-  if (GetString(&text)) {
-    GURL test_url(text);
-    if (test_url.is_valid()) {
-      *url = test_url;
-      return true;
-    }
-  }
-
-  return false;
 }
 
 std::vector<x11::Atom> XOSExchangeDataProvider::GetTargets() const {

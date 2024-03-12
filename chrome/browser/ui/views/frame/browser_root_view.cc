@@ -98,10 +98,14 @@ void OnFindURLMimeType(const GURL& url,
 
 bool GetURLForDrop(const ui::DropTargetEvent& event, GURL* url) {
   DCHECK(url);
-  std::u16string title;
-  return event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
-                                     url, &title) &&
-         url->is_valid();
+  std::optional<ui::OSExchangeData::UrlInfo> url_info =
+      event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  if (!url_info.has_value()) {
+    return false;
+  }
+  *url = std::move(url_info->url);
+  DCHECK(url->is_valid());
+  return true;
 }
 
 DragOperation GetDropEffect(const ui::DropTargetEvent& event, const GURL& url) {
@@ -448,13 +452,11 @@ void BrowserRootView::OnFileSupported(const GURL& url, bool supported) {
 
 bool BrowserRootView::GetPasteAndGoURL(const ui::OSExchangeData& data,
                                        GURL* url) {
-  if (!data.HasString())
+  std::optional<std::u16string> text_result = data.GetString();
+  if (!text_result.has_value() || text_result->empty()) {
     return false;
-
-  std::u16string text;
-  if (!data.GetString(&text) || text.empty())
-    return false;
-  text = AutocompleteMatch::SanitizeString(text);
+  }
+  std::u16string text = AutocompleteMatch::SanitizeString(*text_result);
 
   AutocompleteMatch match;
   AutocompleteClassifierFactory::GetForProfile(

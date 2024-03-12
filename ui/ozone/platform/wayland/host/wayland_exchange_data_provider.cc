@@ -299,11 +299,10 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
   DCHECK(out_content);
   DCHECK(IsMimeTypeSupported(mime_type));
-  if (mime_type == ui::kMimeTypeMozillaURL && HasURL(kFilenameToURLPolicy)) {
-    GURL url;
-    std::u16string title;
-    GetURLAndTitle(kFilenameToURLPolicy, &url, &title);
-    out_content->append(url.spec());
+  if (std::optional<ui::OSExchangeData::UrlInfo> url_info;
+      mime_type == ui::kMimeTypeMozillaURL &&
+      (url_info = GetURLAndTitle(kFilenameToURLPolicy)).has_value()) {
+    out_content->append(url_info->url.spec());
     return true;
   }
   if ((mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) &&
@@ -340,10 +339,8 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   // condition otherwise, for data maps that contain both string and custom
   // data, for example, it may result in subtle issues, such as,
   // https://crbug.com/1271311.
-  if (HasString()) {
-    std::u16string data;
-    GetString(&data);
-    out_content->append(base::UTF16ToUTF8(data));
+  if (std::optional<std::u16string> data = GetString(); data.has_value()) {
+    out_content->append(base::UTF16ToUTF8(*data));
     return true;
   }
   return false;

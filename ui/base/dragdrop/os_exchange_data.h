@@ -122,10 +122,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // NULL.
   // GetString() returns the plain text representation of the pasteboard
   // contents.
-  bool GetString(std::u16string* data) const;
-  bool GetURLAndTitle(FilenameToURLPolicy policy,
-                      GURL* url,
-                      std::u16string* title) const;
+  std::optional<std::u16string> GetString() const;
+  using UrlInfo = OSExchangeDataProvider::UrlInfo;
+  std::optional<UrlInfo> GetURLAndTitle(FilenameToURLPolicy policy) const;
   // Return information about the contained files, if any.
   bool GetFilenames(std::vector<FileInfo>* file_names) const;
   bool GetPickledData(const ClipboardFormatType& format,

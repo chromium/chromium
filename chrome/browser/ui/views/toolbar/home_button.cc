@@ -172,15 +172,13 @@ void HomeButton::UpdateHomePage(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  GURL new_homepage_url;
-  std::u16string title;
-  if (event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
-                                  &new_homepage_url, &title) &&
-      new_homepage_url.is_valid() && prefs_) {
+  std::optional<ui::OSExchangeData::UrlInfo> url_info =
+      event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  if (url_info.has_value() && url_info->url.is_valid() && prefs_) {
     GURL old_homepage(prefs_->GetString(prefs::kHomePage));
     bool old_is_ntp = prefs_->GetBoolean(prefs::kHomePageIsNewTabPage);
 
-    prefs_->SetString(prefs::kHomePage, new_homepage_url.spec());
+    prefs_->SetString(prefs::kHomePage, url_info->url.spec());
     prefs_->SetBoolean(prefs::kHomePageIsNewTabPage, false);
 
     coordinator_.Show(old_homepage, old_is_ntp);

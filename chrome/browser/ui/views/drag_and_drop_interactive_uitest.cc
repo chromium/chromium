@@ -408,9 +408,9 @@ class DragStartWaiter : public aura::client::DragDropClient {
       message_loop_runner_->Quit();
 
       source_origin_ = data->GetRendererTaintedOrigin();
-      std::u16string text;
-      if (data->GetString(&text)) {
-        text_ = base::UTF16ToUTF8(text);
+      std::optional<std::u16string> text = data->GetString();
+      if (text) {
+        text_ = base::UTF16ToUTF8(*text);
       } else {
         text_ = "<no text>";
       }

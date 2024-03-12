@@ -302,15 +302,15 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     delegate_->OnOffer(mime_type);
   }
 
-  std::u16string string_content;
-  if (data.HasString() && data.GetString(&string_content)) {
+  if (std::optional<std::u16string> string_content = data.GetString();
+      string_content.has_value()) {
     const std::string utf8_mime_type = std::string(ui::kMimeTypeTextUtf8);
     data_callbacks_.emplace(
-        utf8_mime_type, AsyncEncodeAsRefCountedString(string_content, kUTF8));
+        utf8_mime_type, AsyncEncodeAsRefCountedString(*string_content, kUTF8));
     delegate_->OnOffer(utf8_mime_type);
     const std::string utf16_mime_type = std::string(kTextMimeTypeUtf16);
-    data_callbacks_.emplace(
-        utf16_mime_type, AsyncEncodeAsRefCountedString(string_content, kUTF16));
+    data_callbacks_.emplace(utf16_mime_type, AsyncEncodeAsRefCountedString(
+                                                 *string_content, kUTF16));
     delegate_->OnOffer(utf16_mime_type);
     const std::string text_plain_mime_type = std::string(ui::kMimeTypeText);
     // The MIME type standard says that new text/ subtypes should default to a
@@ -318,7 +318,7 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     // the default. Nonetheless, we use UTF8 here because it is a superset of
     // ASCII and the defacto standard text encoding.
     data_callbacks_.emplace(text_plain_mime_type, AsyncEncodeAsRefCountedString(
-                                                      string_content, kUTF8));
+                                                      *string_content, kUTF8));
     delegate_->OnOffer(text_plain_mime_type);
   }
 

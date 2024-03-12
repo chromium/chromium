@@ -14,6 +14,7 @@
 
 #include <iterator>
 #include <optional>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
@@ -565,28 +566,29 @@ void OSExchangeDataProviderWin::SetHtml(const std::u16string& html,
       ClipboardFormatType::TextHtmlType().ToFormatEtc(), storage_plain));
 }
 
-bool OSExchangeDataProviderWin::GetString(std::u16string* data) const {
-  return clipboard_util::GetPlainText(source_object_.Get(), data);
+std::optional<std::u16string> OSExchangeDataProviderWin::GetString() const {
+  std::u16string data;
+  if (clipboard_util::GetPlainText(source_object_.Get(), &data)) {
+    return std::move(data);
+  }
+  return std::nullopt;
 }
 
-bool OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy,
-                                               GURL* url,
-                                               std::u16string* title) const {
-  std::u16string url_str;
-  bool success = clipboard_util::GetUrl(
-      source_object_.Get(), url, title,
-      policy == FilenameToURLPolicy::CONVERT_FILENAMES ? true : false);
-  if (success) {
-    DCHECK(url->is_valid());
-    return true;
-  } else if (GetPlainTextURL(source_object_.Get(), url)) {
-    if (url->is_valid())
-      *title = net::GetSuggestedFilename(*url, "", "", "", "", std::string());
-    else
-      title->clear();
-    return true;
+std::optional<OSExchangeDataProvider::UrlInfo>
+OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy) const {
+  GURL url;
+  std::u16string title;
+  if (clipboard_util::GetUrl(
+          source_object_.Get(), &url, &title,
+          policy == FilenameToURLPolicy::CONVERT_FILENAMES ? true : false)) {
+    DCHECK(url.is_valid());
+    return UrlInfo{std::move(url), std::move(title)};
+  } else if (GetPlainTextURL(source_object_.Get(), &url)) {
+    DCHECK(url.is_valid());
+    title = net::GetSuggestedFilename(url, "", "", "", "", std::string());
+    return UrlInfo{std::move(url), std::move(title)};
   }
-  return false;
+  return std::nullopt;
 }
 
 bool OSExchangeDataProviderWin::GetFilenames(

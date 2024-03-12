@@ -158,12 +158,11 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
               nullptr);
 
   // Writing should also put the URL and title on the clipboard.
-  GURL read_url;
-  std::u16string read_title;
-  EXPECT_TRUE(data2.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
-                                   &read_url, &read_title));
-  EXPECT_EQ(url, read_url);
-  EXPECT_EQ(title, read_title);
+  std::optional<ui::OSExchangeData::UrlInfo> url_info =
+      data2.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_TRUE(url_info.has_value());
+  EXPECT_EQ(url, url_info->url);
+  EXPECT_EQ(title, url_info->title);
 }
 
 // Tests writing a folder to the clipboard.

@@ -204,41 +204,34 @@ void OSExchangeDataProviderMac::SetPickledData(
   [GetPasteboard() setData:ns_data forType:format.ToNSString()];
 }
 
-bool OSExchangeDataProviderMac::GetString(std::u16string* data) const {
-  DCHECK(data);
+std::optional<std::u16string> OSExchangeDataProviderMac::GetString() const {
   NSString* item = [GetPasteboard() stringForType:NSPasteboardTypeString];
   if (item) {
-    *data = base::SysNSStringToUTF16(item);
-    return true;
+    return base::SysNSStringToUTF16(item);
   }
 
   // There was no NSString, check for an NSURL.
-  GURL url;
-  std::u16string title;
-  bool result = GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
-                               &url, &title);
-  if (result)
-    *data = base::UTF8ToUTF16(url.spec());
+  if (std::optional<UrlInfo> url_info =
+          GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      url_info.has_value()) {
+    return base::UTF8ToUTF16(url_info->url.spec());
+  }
 
-  return result;
+  return std::nullopt;
 }
 
-bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
-                                               GURL* url,
-                                               std::u16string* title) const {
-  DCHECK(url);
-  DCHECK(title);
-
+std::optional<OSExchangeDataProvider::UrlInfo>
+OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy) const {
   NSArray<URLAndTitle*>* urls_and_titles =
       clipboard_util::URLsAndTitlesFromPasteboard(
           GetPasteboard(), policy == FilenameToURLPolicy::CONVERT_FILENAMES);
   if (!urls_and_titles.count) {
-    return false;
+    return std::nullopt;
   }
 
-  *url = GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
-  *title = base::SysNSStringToUTF16(urls_and_titles.firstObject.title);
-  return true;
+  GURL url(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
+  return UrlInfo{std::move(url),
+                 base::SysNSStringToUTF16(urls_and_titles.firstObject.title)};
 }
 
 bool OSExchangeDataProviderMac::GetFilenames(
@@ -264,14 +257,11 @@ bool OSExchangeDataProviderMac::GetPickledData(
 }
 
 bool OSExchangeDataProviderMac::HasString() const {
-  std::u16string string;
-  return GetString(&string);
+  return GetString().has_value();
 }
 
 bool OSExchangeDataProviderMac::HasURL(FilenameToURLPolicy policy) const {
-  GURL url;
-  std::u16string title;
-  return GetURLAndTitle(policy, &url, &title);
+  return GetURLAndTitle(policy).has_value();
 }
 
 bool OSExchangeDataProviderMac::HasFile() const {

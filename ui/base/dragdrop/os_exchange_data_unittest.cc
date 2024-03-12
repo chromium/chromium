@@ -41,17 +41,13 @@ TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
     return data.provider().Clone();
   }());
 
-  std::u16string output;
   EXPECT_TRUE(copy.HasString());
-  EXPECT_TRUE(copy.GetString(&output));
-  EXPECT_EQ(u"I can has cheezburger?", output);
-  std::string url_spec = "https://www.example.com/";
-  GURL url(url_spec);
-  std::u16string title;
-  EXPECT_FALSE(copy.GetURLAndTitle(
-      FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
-  // No URLs in |data|, so url should be untouched.
-  EXPECT_EQ(url_spec, url.spec());
+  std::optional<std::u16string> string = copy.GetString();
+  EXPECT_EQ(u"I can has cheezburger?", string);
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  // No URLs in `data` so no URLs should be read out.
+  EXPECT_FALSE(url_info.has_value());
 }
 
 TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
@@ -64,18 +60,17 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
   }());
 
   // URL spec and title should match
-  GURL output_url;
-  std::u16string output_title;
   EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-  EXPECT_TRUE(copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
-                                  &output_url, &output_title));
-  EXPECT_EQ("https://www.google.com/", output_url.spec());
-  EXPECT_EQ(u"www.google.com", output_title);
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_TRUE(url_info.has_value());
+  EXPECT_EQ("https://www.google.com/", url_info->url.spec());
+  EXPECT_EQ(u"www.google.com", url_info->title);
 
-  // URL should be the raw text response
-  std::u16string output_string;
-  EXPECT_TRUE(copy.GetString(&output_string));
-  EXPECT_EQ("https://www.google.com/", base::UTF16ToUTF8(output_string));
+  // URL should be the raw text response, even though no text was explicitly
+  // set.
+  std::optional<std::u16string> string = copy.GetString();
+  EXPECT_EQ(u"https://www.google.com/", string);
 }
 
 // Test that setting the URL does not overwrite a previously set custom string
@@ -88,16 +83,14 @@ TEST_F(OSExchangeDataTest, URLStringFileContents) {
     return data.provider().Clone();
   }());
 
-  std::u16string output_string;
-  EXPECT_TRUE(copy.GetString(&output_string));
-  EXPECT_EQ(u"I can has cheezburger?", output_string);
+  std::optional<std::u16string> string = copy.GetString();
+  EXPECT_EQ(u"I can has cheezburger?", string);
 
-  GURL output_url;
-  std::u16string output_title;
-  EXPECT_TRUE(copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
-                                  &output_url, &output_title));
-  EXPECT_EQ("https://www.google.com/", output_url.spec());
-  EXPECT_EQ(u"www.google.com", output_title);
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_TRUE(url_info.has_value());
+  EXPECT_EQ("https://www.google.com/", url_info->url.spec());
+  EXPECT_EQ(u"www.google.com", url_info->title);
 
   // HasFileContents() should be false, and GetFileContents() should be empty
   // (https://crbug.com/1274395).
@@ -126,23 +119,18 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
 
   {
     EXPECT_FALSE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-    GURL actual_url;
-    std::u16string actual_title;
-    EXPECT_FALSE(
-        copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
-                            &actual_url, &actual_title));
-    EXPECT_EQ(GURL(), actual_url);
-    EXPECT_EQ(std::u16string(), actual_title);
+    std::optional<OSExchangeData::UrlInfo> no_converted_filenames_url_info =
+        copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    EXPECT_FALSE(no_converted_filenames_url_info.has_value());
   }
 
   {
     EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-    GURL actual_url;
-    std::u16string actual_title;
-    EXPECT_TRUE(copy.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
-                                    &actual_url, &actual_title));
-    EXPECT_EQ(net::FilePathToFileURL(file_path), actual_url);
-    EXPECT_EQ(std::u16string(), actual_title);
+    std::optional<OSExchangeData::UrlInfo> converted_url_info =
+        copy.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
+    ASSERT_TRUE(converted_url_info.has_value());
+    EXPECT_EQ(net::FilePathToFileURL(file_path), converted_url_info->url);
+    EXPECT_EQ(std::u16string(), converted_url_info->title);
   }
   EXPECT_TRUE(copy.HasFile());
   std::vector<FileInfo> actual_files;

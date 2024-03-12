@@ -50,16 +50,14 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   original.SetSource(std::make_unique<DataTransferEndpoint>(url));
 
   std::unique_ptr<OSExchangeDataProvider> copy = original.Clone();
-  std::u16string copy_string;
-  EXPECT_TRUE(copy->GetString(&copy_string));
+  std::optional<std::u16string> copy_string = copy->GetString();
   EXPECT_EQ(kTestString, copy_string);
 
-  GURL copy_url;
-  std::u16string copy_title;
-  EXPECT_TRUE(copy->GetURLAndTitle(
-      FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &copy_url, &copy_title));
-  EXPECT_EQ(GURL(kUrl), copy_url);
-  EXPECT_EQ(kUrlTitle, copy_title);
+  std::optional<OSExchangeDataProvider::UrlInfo> url_info =
+      copy->GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_TRUE(url_info.has_value());
+  EXPECT_EQ(GURL(kUrl), url_info->url);
+  EXPECT_EQ(kUrlTitle, url_info->title);
 
   base::Pickle copy_pickle;
   copy->GetPickledData(ClipboardFormatType::PlainTextType(), &copy_pickle);

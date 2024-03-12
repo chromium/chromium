@@ -95,39 +95,41 @@ void OSExchangeDataProviderNonBacked::SetPickledData(
   formats_ |= OSExchangeData::PICKLED_DATA;
 }
 
-bool OSExchangeDataProviderNonBacked::GetString(std::u16string* data) const {
+std::optional<std::u16string> OSExchangeDataProviderNonBacked::GetString()
+    const {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (HasFile()) {
     // Various Linux file managers both pass a list of file:// URIs and set the
     // string representation to the URI. We explicitly don't want to return use
     // this representation.
-    return false;
+    return std::nullopt;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if ((formats_ & OSExchangeData::STRING) == 0)
-    return false;
-  *data = string_;
-  return true;
+    return std::nullopt;
+  return string_;
 }
 
-bool OSExchangeDataProviderNonBacked::GetURLAndTitle(
-    FilenameToURLPolicy policy,
-    GURL* url,
-    std::u16string* title) const {
+std::optional<OSExchangeDataProvider::UrlInfo>
+OSExchangeDataProviderNonBacked::GetURLAndTitle(
+    FilenameToURLPolicy policy) const {
   if ((formats_ & OSExchangeData::URL) == 0) {
-    title->clear();
-    return GetPlainTextURL(url) ||
-           (policy == FilenameToURLPolicy::CONVERT_FILENAMES &&
-            GetFileURL(url));
+    GURL url;
+    if (GetPlainTextURL(&url) ||
+        (policy == FilenameToURLPolicy::CONVERT_FILENAMES &&
+         GetFileURL(&url))) {
+      DCHECK(url.is_valid());
+      return UrlInfo{url, std::u16string()};
+    }
+    return std::nullopt;
   }
 
-  if (!url_.is_valid())
-    return false;
+  if (!url_.is_valid()) {
+    return std::nullopt;
+  }
 
-  *url = url_;
-  *title = title_;
-  return true;
+  return UrlInfo{url_, title_};
 }
 
 bool OSExchangeDataProviderNonBacked::GetFilenames(

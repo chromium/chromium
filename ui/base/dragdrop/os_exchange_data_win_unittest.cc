@@ -206,12 +206,11 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   // APIs.
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-  GURL url_from_data;
-  std::u16string title;
-  EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
-                                   &url_from_data, &title));
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_TRUE(url_info.has_value());
   GURL reference_url(base::AsStringPiece16(input));
-  EXPECT_EQ(reference_url.spec(), url_from_data.spec());
+  EXPECT_EQ(reference_url, url_info->url);
 }
 
 // Verifies SetData invoked twice with the same data clobbers existing data.
@@ -254,11 +253,10 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
   // APIs.
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-  GURL url_from_data;
-  std::u16string title;
-  EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
-                                   &url_from_data, &title));
-  EXPECT_EQ(GURL(base::AsStringPiece16(input2)).spec(), url_from_data.spec());
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_TRUE(url_info.has_value());
+  EXPECT_EQ(GURL(base::AsStringPiece16(input2)), url_info->url);
 }
 
 TEST_F(OSExchangeDataWinTest, URLDataAccessViaCOM) {
@@ -972,11 +970,10 @@ TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
 
   OSExchangeData data2(data.provider().Clone());
   ASSERT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-  GURL read_url;
-  std::u16string title;
-  EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
-                                   &read_url, &title));
-  EXPECT_EQ(GURL("http://google.com"), read_url);
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_TRUE(url_info.has_value());
+  EXPECT_EQ(GURL("http://google.com"), url_info->url);
 }
 
 class MockDownloadFileProvider : public DownloadFileProvider {

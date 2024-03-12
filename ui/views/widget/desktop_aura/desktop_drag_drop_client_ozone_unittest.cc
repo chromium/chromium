@@ -382,8 +382,8 @@ TEST_F(DesktopDragDropClientOzoneTest, ReceiveDrag) {
   // 'ui::DragDropTypes::DRAG_MOVE'.
   EXPECT_EQ(static_cast<int>(operation), updated_operation);
 
-  std::u16string string_data;
-  dragdrop_delegate_->received_data()->GetString(&string_data);
+  std::optional<std::u16string> string_data =
+      dragdrop_delegate_->received_data()->GetString();
   EXPECT_EQ(sample_data, string_data);
 
   EXPECT_EQ(1, dragdrop_delegate_->num_enters());
@@ -516,8 +516,8 @@ TEST_F(DesktopDragDropClientOzoneTest, DataLeakPreventionAllowDrop) {
   // The |operation| decided through negotiation should be 'DRAG_COPY'.
   EXPECT_EQ(DragOperation::kCopy, operation);
 
-  std::u16string string_data;
-  dragdrop_delegate_->received_data()->GetString(&string_data);
+  std::optional<std::u16string> string_data =
+      dragdrop_delegate_->received_data()->GetString();
   EXPECT_EQ(u"Test", string_data);
 
   EXPECT_EQ(1, dragdrop_delegate_->num_enters());

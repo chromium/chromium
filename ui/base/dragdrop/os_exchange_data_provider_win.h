@@ -169,10 +169,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
                        const std::string& file_contents) override;
   void SetHtml(const std::u16string& html, const GURL& base_url) override;
 
-  bool GetString(std::u16string* data) const override;
-  bool GetURLAndTitle(FilenameToURLPolicy policy,
-                      GURL* url,
-                      std::u16string* title) const override;
+  std::optional<std::u16string> GetString() const override;
+  std::optional<UrlInfo> GetURLAndTitle(
+      FilenameToURLPolicy policy) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool HasVirtualFilenames() const override;
   std::optional<std::vector<FileInfo>> GetVirtualFilenames() const override;
