@@ -745,6 +745,12 @@ void DebugDrawFrameVisible(const AggregatedFrame& frame) {
 void VisualDebuggerSync(gfx::OverlayTransform current_display_transform,
                         gfx::Size current_surface_size,
                         int64_t last_presented_trace_id) {
+  bool is_debugger_connected = false;
+  DBG_CONNECTED_OR_TRACING(is_debugger_connected);
+  if (!is_debugger_connected) {
+    return;
+  }
+
   const gfx::Transform display_transform = gfx::OverlayTransformToTransform(
       current_display_transform, gfx::SizeF(current_surface_size));
   current_surface_size =
