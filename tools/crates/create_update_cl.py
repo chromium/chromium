@@ -34,7 +34,7 @@ BRANCH_BASENAME += f"--{timestamp.year}{timestamp.month:02}{timestamp.day:02}"
 BRANCH_BASENAME += f"-{timestamp.hour:02}{timestamp.minute:02}"
 
 
-def RunCommandAndCheckForErrors(args):
+def RunCommandAndCheckForErrors(args, check_stdout: bool):
     """Runs a command and returns its output."""
     args = list(args)
     assert args
@@ -48,8 +48,9 @@ def RunCommandAndCheckForErrors(args):
                             shell=is_win)
 
     success = result.returncode == 0
-    success &= re.search(r'\bwarning\b', result.stdout.lower()) is None
-    success &= re.search(r'\berror\b', result.stdout.lower()) is None
+    if check_stdout:
+        success &= re.search(r'\bwarning\b', result.stdout.lower()) is None
+        success &= re.search(r'\berror\b', result.stdout.lower()) is None
     if not success:
         print(f"ERROR: Failure when running: {' '.join(args)}")
         print(result.stdout)
@@ -59,12 +60,12 @@ def RunCommandAndCheckForErrors(args):
 
 def Git(*args):
     """Runs a git command."""
-    return RunCommandAndCheckForErrors(['git'] + list(args))
+    return RunCommandAndCheckForErrors(['git'] + list(args), False)
 
 
 def Gnrt(*args):
     """Runs a gnrt command."""
-    return RunCommandAndCheckForErrors([RUN_GNRT] + list(args))
+    return RunCommandAndCheckForErrors([RUN_GNRT] + list(args), True)
 
 
 def GetCurrentCrateVersions():
@@ -163,14 +164,16 @@ process and other details can be found at
         description += f"\nRemoved crates:\n\n{removed_crate_descriptions}\n"
 
     vet_config = toml.load(open(VET_CONFIG))
-    criteria = vet_config["policy"][crate_id.replace("@", ":")]["criteria"]
+    criteria_list = vet_config["policy"][crate_id.replace("@", ":")]["criteria"]
     if criteria:
-        criteria = ", ".join(criteria)
-    else:
-        criteria = "<no applicable cargo vet audit criteria (unused crate?)>"
-    criteria = f"""
+        criteria = f"""
 The following `cargo vet` audit criteria are required for {crate_id}:
-{criteria}
+{'', ''.join(criteria_list)}
+"""
+    else:
+        criteria = """
+No audit criteria found. Crates with no audit criteria can be submitted
+without an update to audits.toml.
 """
     description += "\n"
     description += textwrap.fill(criteria,
@@ -224,6 +227,7 @@ def UpdateCrate(crate_id, upstream_branch):
     Git("cl", "upload", "--bypass-hooks", "--force",
         "--hashtag=cratesio-autoupdate",
         "--cc=chrome-rust-experiments+autoupdate@google.com")
+    issue = Git("cl", "issue")
 
     # git mv <vendor/old version> <vendor/new version>
     print(f"  Running `git mv <vendor/old version> <vendor/new version>`...")
@@ -249,7 +253,7 @@ def UpdateCrate(crate_id, upstream_branch):
     print(f"  Running `gnrt vendor`...")
     Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
     Gnrt("vendor")
-    new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT])
+    new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT], False)
     with open(INCLUSIVE_LANG_CONFIG, "w") as f:
         f.write(new_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
@@ -269,16 +273,20 @@ def UpdateCrate(crate_id, upstream_branch):
         print(f"  Running `git cl upload ...` ...")
         Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt gen")
 
+    print(f"  {issue}")
+
     return new_branch
 
 
 def main():
-    # Checkout `origin/main` branch.
-    print("Checking out the `origin/main` branch...")
+    upstream_branch = "origin/main"
+
+    # Checkout `upstream_branch` branch.
+    print(f"Checking out the `{upstream_branch}` branch...")
     if Git("status", "--porcelain"):
         raise RuntimeError("Dirty `git status` - save you local changes "\
                            "before rerunning the script")
-    Git("checkout", "origin/main")
+    Git("checkout", upstream_branch)
     if Git("status", "--porcelain"):
         raise RuntimeError("Dirty `git status` - save you local changes "\
                            "before rerunning the script")
@@ -293,7 +301,8 @@ def main():
         update_sizes[crate_id] = FindSizeOfCrateUpdate(crate_id)
 
     crate_ids = sorted(crate_ids, key=lambda crate_id: update_sizes[crate_id])
-    upstream_branch = "origin/main"
+    print(f"** Updating {len(crate_ids)} crates! "
+          f"Expect this to take about {len(crate_ids) * 2} minutes.")
     for crate_id in crate_ids:
         upstream_branch = UpdateCrate(crate_id, upstream_branch)
 
