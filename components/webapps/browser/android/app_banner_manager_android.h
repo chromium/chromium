@@ -198,8 +198,6 @@ class AppBannerManagerAndroid
       const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
-  bool ShouldAllowWebAppReplacementInstall(
-      const ManifestId& manifest_id) const override;
   void MaybeShowAmbientBadge() override;
   void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
                              std::string result_label) override;

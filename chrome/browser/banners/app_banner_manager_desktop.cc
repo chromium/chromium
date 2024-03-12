@@ -166,24 +166,6 @@ web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() const {
   return provider->registrar_unsafe();
 }
 
-bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall(
-    const ManifestId& manifest_id) const {
-  // Only allow replacement install if this specific app is already installed.
-  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
-  if (!registrar().IsLocallyInstalled(app_id))
-    return false;
-
-  // We prompt the user to re-install if the site wants to be in a standalone
-  // window but the user has opted for opening in browser tab. This is to
-  // support the situation where a site is not a PWA, users have installed it
-  // via Create Shortcut action, the site becomes a standalone PWA later and we
-  // want to prompt them to "install" the new PWA experience.
-  // TODO(crbug.com/1205529): Showing an install button when it's already
-  // installed is confusing.
-  auto display_mode = registrar().GetAppUserDisplayMode(app_id);
-  return display_mode == web_app::mojom::UserDisplayMode::kBrowser;
-}
-
 void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
   RecordDidShowBanner();
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);

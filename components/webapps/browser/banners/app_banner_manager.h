@@ -298,11 +298,6 @@ class AppBannerManager : public content::WebContentsObserver,
   virtual bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const = 0;
 
-  // Returns whether the installed web app at the current page can be
-  // overwritten with a new app install for the current page.
-  virtual bool ShouldAllowWebAppReplacementInstall(
-      const ManifestId& manifest_id) const = 0;
-
   // Callback invoked by the InstallableManager once it has fetched the page's
   // manifest.
   virtual void OnDidGetManifest(const InstallableData& data);

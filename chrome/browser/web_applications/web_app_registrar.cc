@@ -478,7 +478,8 @@ std::vector<webapps::AppId> WebAppRegistrar::FindAppsInScope(
 
 std::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
     const GURL& url,
-    bool window_only) const {
+    bool window_only,
+    bool exclude_diy_apps) const {
   const std::string url_spec = url.spec();
 
   std::optional<webapps::AppId> best_app_id;
@@ -498,6 +499,10 @@ std::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
 
     if (window_only &&
         GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
+      continue;
+    }
+
+    if (exclude_diy_apps && IsDiyApp(app_id)) {
       continue;
     }
 

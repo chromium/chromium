@@ -31,7 +31,7 @@ class WebappsClientAndroid : public ChromeWebappsClient {
       content::WebContents* web_contents) override;
 
   // Non-locally installed apps do not exist on Android.
-  bool IsWebAppConsideredFullyInstalled(
+  bool DoesNewWebAppConflictWithExistingInstallation(
       content::BrowserContext* browsing_context,
       const GURL& start_url,
       const ManifestId& manifest_id) const override;

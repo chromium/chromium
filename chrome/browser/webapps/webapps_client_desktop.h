@@ -29,8 +29,13 @@ class WebappsClientDesktop : public ChromeWebappsClient {
                                        InstallTrigger trigger) override;
   AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) override;
-
-  bool IsWebAppConsideredFullyInstalled(
+  // Allows installation if there is no app controlling the start_url. If there
+  // is, will still allow installation if:
+  // - The manifest_id matches the existing installation, and the existing
+  //   installation has the user display mode as kBrowser. (this allows us to
+  //   upgrade to a standalone experience through a reinstall).
+  // - The controlling app is a DIY app.
+  bool DoesNewWebAppConflictWithExistingInstallation(
       content::BrowserContext* browsing_context,
       const GURL& start_url,
       const ManifestId& manifest_id) const override;

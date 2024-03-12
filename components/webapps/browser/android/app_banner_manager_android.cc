@@ -628,11 +628,6 @@ bool AppBannerManagerAndroid::IsRelatedNonWebAppInstalled(
   return Java_AppBannerManager_isRelatedNonWebAppInstalled(env, java_id);
 }
 
-bool AppBannerManagerAndroid::ShouldAllowWebAppReplacementInstall(
-    const ManifestId& manifest_id) const {
-  return false;
-}
-
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
   if (delegate_->MaybeShowInProductHelpShouldAvoidAmbientBadge(
           validated_url_)) {

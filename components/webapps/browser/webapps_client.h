@@ -68,13 +68,11 @@ class WebappsClient {
   virtual AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) = 0;
 
-  // Returns whether the current page is already installed as a web app, or
-  // should be considered as installed. Returns true if there is an installed
-  // web app within the BrowserContext of |web_contents()| that contains |url|
-  // within its scope, and false otherwise. For example, the URL
-  // https://example.com/a/b/c/d.html is contained within a web app with scope
-  // https://example.com/a/b/.
-  virtual bool IsWebAppConsideredFullyInstalled(
+  // Returns if any current installations conflict with a new web app with the
+  // given start_url and manifest_id. See the implementing class for more
+  // details on their behavior. Returning true here signifies that an app is
+  // already installed here.
+  virtual bool DoesNewWebAppConflictWithExistingInstallation(
       content::BrowserContext* browsing_context,
       const GURL& start_url,
       const ManifestId& manifest_id) const = 0;
@@ -90,9 +88,10 @@ class WebappsClient {
       const GURL& site_url) const = 0;
 
   // Tracks whether the current site URL obtained from the web_contents is fully
-  // installed. The only difference from IsWebAppConsideredFullyInstalled() is
-  // that the former considers the scope obtained from a manifest as check for
-  // if an app is already installed.
+  // installed. The only difference from
+  // DoesNewWebAppConflictWithExistingInstallation() is that the former
+  // considers the scope obtained from a manifest as check for if an app is
+  // already installed.
   virtual bool IsAppFullyInstalledForSiteUrl(
       content::BrowserContext* browsing_context,
       const GURL& site_url) const = 0;

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/browser/banners/app_banner_manager.h"
-
 #include <map>
 #include <memory>
 #include <optional>
@@ -21,12 +19,14 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
@@ -53,6 +53,8 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #endif
 
 namespace webapps {
@@ -62,6 +64,8 @@ using State = AppBannerManager::State;
 // Browser tests for web app banners.
 // NOTE: this test relies on service workers; failures and flakiness may be due
 // to changes in SW code.
+// TODO(http://crbug.com/329145718): Use AppBannerManagerNoFakeBrowserTest style
+// instead of overriding like this.
 class AppBannerManagerTest : public AppBannerManager {
  public:
   explicit AppBannerManagerTest(content::WebContents* web_contents)
@@ -167,11 +171,6 @@ class AppBannerManagerTest : public AppBannerManager {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(on_banner_prompt_reply_));
     }
-  }
-
-  bool ShouldAllowWebAppReplacementInstall(
-      const ManifestId& manifest_id) const override {
-    return false;
   }
 
   base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override {
@@ -1138,6 +1137,205 @@ INSTANTIATE_TEST_SUITE_P(
         InstallableCriteriaType::kValidManifestWithIcons,
         InstallableCriteriaType::kImplicitManifestFields,
         InstallableCriteriaType::kUniversalInstallRootScopeNoManifest));
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(http://crbug.com/329255543): Add the config data after the struct is
+// converted to a class w/o const members (this makes it hard to work with
+// TestFuture).
+using AppBannerInstallableCallback =
+    base::RepeatingCallback<void(std::optional<ManifestId>)>;
+class AppBannerManagerObserverAdapter : public AppBannerManager::Observer {
+ public:
+  AppBannerManagerObserverAdapter(AppBannerManager* source,
+                                  AppBannerInstallableCallback callback,
+                                  InstallableWebAppCheckResult filter)
+      : callback_(std::move(callback)), filter_(filter) {
+    observation_.Observe(source);
+  }
+
+  void OnInstallableWebAppStatusUpdated(
+      InstallableWebAppCheckResult result,
+      const std::optional<WebAppBannerData>& data) override {
+    if (result != filter_) {
+      LOG(WARNING) << "Filtered result: " << base::ToString(result);
+      return;
+    }
+    callback_.Run(data.has_value() ? std::make_optional(data->manifest_id)
+                                   : std::nullopt);
+  }
+
+ private:
+  AppBannerInstallableCallback callback_;
+  InstallableWebAppCheckResult filter_;
+  base::ScopedObservation<AppBannerManager, AppBannerManager::Observer>
+      observation_{this};
+};
+
+// Test class that doesn't do complex faking of the AppBannerManager.
+class AppBannerManagerNoFakeBrowserTest
+    : public AppBannerManagerBrowserTestBase {
+ public:
+  AppBannerManagerNoFakeBrowserTest()
+      : total_engagement_(
+            AppBannerSettingsHelper::ScopeTotalEngagementForTesting(0)) {}
+
+ private:
+  // Disable the banners in the browser so it won't interfere with the test.
+  base::AutoReset<double> total_engagement_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest, Prompts) {
+  const GURL kAppUrl =
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+
+  AppBannerManager* app_banner_manager =
+      AppBannerManager::FromWebContents(web_contents());
+  base::test::TestFuture<std::optional<ManifestId>> future;
+  AppBannerManagerObserverAdapter observer(
+      app_banner_manager, future.GetRepeatingCallback(),
+      InstallableWebAppCheckResult::kYes_Promotable);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kAppUrl));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(kAppUrl, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
+                       PromptsForInnerCraftedOuterDiy) {
+  const GURL kDiyAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/index.html");
+  const GURL kInnerAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/nested/index.html");
+
+  // Install a DIY app.
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kDiyAppUrl);
+  web_app_info->is_diy_app = true;
+  web_app_info->title = u"test web app";
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  AppBannerManager* app_banner_manager =
+      AppBannerManager::FromWebContents(web_contents());
+  base::test::TestFuture<std::optional<ManifestId>> future;
+  AppBannerManagerObserverAdapter observer(
+      app_banner_manager, future.GetRepeatingCallback(),
+      InstallableWebAppCheckResult::kYes_Promotable);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(kInnerAppUrl, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
+                       NoPromptsForInnerDiyOuterDiy) {
+  const GURL kDiyAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/index.html");
+  const GURL kInnerDiyAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/nested/diy.html");
+
+  // Install a DIY app.
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kDiyAppUrl);
+  web_app_info->is_diy_app = true;
+  web_app_info->title = u"test web app";
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  AppBannerManager* app_banner_manager =
+      AppBannerManager::FromWebContents(web_contents());
+  base::test::TestFuture<std::optional<ManifestId>> future;
+  AppBannerManagerObserverAdapter observer(app_banner_manager,
+                                           future.GetRepeatingCallback(),
+                                           InstallableWebAppCheckResult::kNo);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerDiyAppUrl));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(kInnerDiyAppUrl, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
+                       NoPromptForOuterCraftedDisplayBrowserInnerCrafted) {
+  const GURL kOuterAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/index.html");
+  const GURL kInnerAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/nested/index.html");
+
+  // Even if the outer crafted app opens in a browser tab, it should still block
+  // any nested installations.
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kOuterAppUrl);
+  web_app_info->title = u"test web app";
+  web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  AppBannerManager* app_banner_manager =
+      AppBannerManager::FromWebContents(web_contents());
+  base::test::TestFuture<std::optional<ManifestId>> future;
+  AppBannerManagerObserverAdapter observer(
+      app_banner_manager, future.GetRepeatingCallback(),
+      InstallableWebAppCheckResult::kNo_AlreadyInstalled);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(kInnerAppUrl, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
+                       NoPromptForOuterCraftedDisplayStandaloneInnerCrafted) {
+  const GURL kOuterAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/index.html");
+  const GURL kInnerAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/nested/index.html");
+
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kOuterAppUrl);
+  web_app_info->title = u"test web app";
+  web_app_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  AppBannerManager* app_banner_manager =
+      AppBannerManager::FromWebContents(web_contents());
+  base::test::TestFuture<std::optional<ManifestId>> future;
+  AppBannerManagerObserverAdapter observer(
+      app_banner_manager, future.GetRepeatingCallback(),
+      InstallableWebAppCheckResult::kNo_AlreadyInstalled);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(kInnerAppUrl, future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
+                       NoPromptForOuterCraftedDisplayBrowserInnerDiy) {
+  const GURL kOuterAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/index.html");
+  const GURL kInnerAppUrl =
+      embedded_test_server()->GetURL("/web_apps/nesting/nested/diy.html");
+
+  // Install a DIY app.
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kOuterAppUrl);
+  web_app_info->title = u"test web app";
+  web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  AppBannerManager* app_banner_manager =
+      AppBannerManager::FromWebContents(web_contents());
+  base::test::TestFuture<std::optional<ManifestId>> future;
+  AppBannerManagerObserverAdapter observer(app_banner_manager,
+                                           future.GetRepeatingCallback(),
+                                           InstallableWebAppCheckResult::kNo);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(kInnerAppUrl, future.Get());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace webapps

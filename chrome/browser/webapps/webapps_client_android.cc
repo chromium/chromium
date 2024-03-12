@@ -68,7 +68,7 @@ AppBannerManager* WebappsClientAndroid::GetAppBannerManager(
   return AppBannerManagerAndroid::FromWebContents(web_contents);
 }
 
-bool WebappsClientAndroid::IsWebAppConsideredFullyInstalled(
+bool WebappsClientAndroid::DoesNewWebAppConflictWithExistingInstallation(
     content::BrowserContext* browsing_context,
     const GURL& start_url,
     const ManifestId& manifest_id) const {

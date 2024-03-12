@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -54,14 +55,45 @@ AppBannerManager* WebappsClientDesktop::GetAppBannerManager(
   return AppBannerManagerDesktop::FromWebContents(web_contents);
 }
 
-bool WebappsClientDesktop::IsWebAppConsideredFullyInstalled(
+bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
     content::BrowserContext* browser_context,
     const GURL& start_url,
     const ManifestId& manifest_id) const {
   CHECK(browser_context);
-  return web_app::FindInstalledAppWithUrlInScope(
-             Profile::FromBrowserContext(browser_context), start_url)
-      .has_value();
+
+  // We prompt the user to re-install if the site wants to be in a
+  // standalone window but the user has opted for opening in browser tab. This
+  // is to support the situation where a site is not a PWA, users have installed
+  // it via Create Shortcut action, the site becomes a standalone PWA later and
+  // we want to prompt them to "install" the new PWA experience.
+  // TODO(crbug.com/1205529): Showing an install button when it's already
+  // installed is confusing. Perhaps different UX would be best.
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+
+  // We can install if it's not installed, or this is crafted app and already
+  // installed but opens in a tab.
+  std::optional<web_app::mojom::UserDisplayMode> user_display_mode =
+      provider->registrar_unsafe().GetAppUserDisplayMode(
+          web_app::GenerateAppIdFromManifestId(manifest_id));
+  if (user_display_mode == web_app::mojom::UserDisplayMode::kBrowser) {
+    return false;
+  }
+
+  // We cannot install if we are in scope of an installed crafted app, no matter
+  // the user display type.
+  std::optional<AppId> non_diy_app_id =
+      provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
+          start_url,
+          /*window_only=*/false, /*exclude_diy_apps=*/true);
+  if (non_diy_app_id) {
+    return true;
+  }
+  // Otherwise there is no app installed here, or there is a DIY app that
+  // controls this URL but that's fine.
+  return false;
 }
 
 bool WebappsClientDesktop::IsInAppBrowsingContext(
@@ -74,9 +106,7 @@ bool WebappsClientDesktop::IsInAppBrowsingContext(
   if (!provider) {
     return false;
   }
-  return web_app::WebAppProvider::GetForWebApps(profile)
-      ->ui_manager()
-      .IsInAppWindow(web_contents);
+  return provider->ui_manager().IsInAppWindow(web_contents);
 }
 
 bool WebappsClientDesktop::IsAppPartiallyInstalledForSiteUrl(

@@ -348,10 +348,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the app id of an installed app in the registry with the longest
   // scope that is a prefix of |url|, if any. If |window_only| is specified,
-  // only apps that open in app windows will be considered.
+  // only apps that open in app windows will be considered. If
+  // |exclude_diy_apps| is true, then DIY apps will not be taken into account
+  // while looking for installed apps whose url is in scope.
   std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
       const GURL& url,
-      bool window_only = false) const;
+      bool window_only = false,
+      bool exclude_diy_apps = false) const;
 
   // Returns true if there is an app that is not locally installed that has
   // a scope which is a prefix of |url|.
