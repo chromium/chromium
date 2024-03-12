@@ -1704,7 +1704,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.iOS.HandleSubmittedFormStatus"
+<histogram name="PasswordManager.iOS.HandleFormSubmitEvent"
     enum="HandleSubmittedFormStatus" expires_after="2024-07-01">
   <owner>vincb@google.com</owner>
   <owner>bling-transactions@google.com</owner>
