@@ -1,0 +1,4 @@
+team_email: "chrome-build-team@google.com"
+buganizer: {
+  component_id: 1241816
+}
