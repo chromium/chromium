@@ -427,7 +427,7 @@ gl::ScopedEGLImage EGLImageBacking::GenEGLImageSibling(
   // time before we create `egl_images_` from it. If pixel data is
   // empty we only allocate memory for the texture object which is
   // required to create EGLImage.
-  if (format_info.supports_storage) {
+  if (format_info.supports_storage && IsTexStorage2DAvailable()) {
     api->glTexStorage2DEXTFn(target, 1,
                              format_info.adjusted_storage_internal_format,
                              plane_size.width(), plane_size.height());
