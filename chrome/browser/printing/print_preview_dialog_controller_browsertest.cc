@@ -360,11 +360,16 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        PrintPreviewPdfAccessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL("data:text/html,HelloWorld")));
+  // Put a DIV after the text we're going to search for. The last node in the
+  // tree will not have a newline appended, but all the others will. Avoid
+  // making assumptions about whether it's the last node or not. There may be
+  // nodes for headers and footers following the document contents.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,HelloWorld<div>next</div>")));
   PrintPreview();
   WebContents* preview_dialog = GetPrintPreviewDialog();
-  WaitForAccessibilityTreeToContainNodeWithName(preview_dialog, "HelloWorld");
+  WaitForAccessibilityTreeToContainNodeWithName(preview_dialog,
+                                                "HelloWorld\r\n");
 
   PrintPreviewDone();
 }

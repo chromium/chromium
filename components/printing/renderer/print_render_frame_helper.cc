@@ -2510,15 +2510,19 @@ void PrintRenderFrameHelper::PrintPageInternal(
 
   canvas->SetPrintingMetafile(metafile);
 
+  RenderPageContent(frame, page_index, canvas_area, content_area,
+                    layout.fit_to_page_scale_factor, canvas);
+
+  // Render headers and footers after the page content, as suggested in the spec
+  // (the term "page margin boxes" is a generalization of headers and footers):
+  // https://drafts.csswg.org/css-page-3/#painting
+
   CHECK_EQ(params.display_header_footer, !!header_footer_frame);
   if (header_footer_frame) {
     PrintHeaderAndFooter(canvas, *header_footer_frame, page_index, page_count,
                          *frame, layout.fit_to_page_scale_factor,
                          *page_layout_in_css_pixels, params);
   }
-
-  RenderPageContent(frame, page_index, canvas_area, content_area,
-                    layout.fit_to_page_scale_factor, canvas);
 
   // Done printing. Close the canvas to retrieve the compiled metafile.
   bool ret = metafile->FinishPage();
