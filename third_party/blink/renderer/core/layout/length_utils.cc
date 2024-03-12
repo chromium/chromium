@@ -704,21 +704,33 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
 
   const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   Length logical_height = style.LogicalHeight();
+  const bool has_implicit_stretch =
+      logical_height.IsAuto() &&
+      space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit;
+
+  if (logical_height.IsAuto()) {
+    logical_height = (space.IsBlockAutoBehaviorStretch() &&
+                      space.AvailableSize().block_size != kIndefiniteSize)
+                         ? Length::FillAvailable()
+                         : Length::FitContent();
+  }
 
   LayoutUnit extent = kIndefiniteSize;
   if (has_aspect_ratio && inline_size != kIndefiniteSize) {
     DCHECK_GE(inline_size, LayoutUnit());
-    const bool has_explicit_stretch =
-        logical_height.IsAuto() &&
-        space.BlockAutoBehavior() == AutoSizeBehavior::kStretchExplicit &&
-        space.AvailableSize().block_size != kIndefiniteSize;
-    if (BlockLengthUnresolvable(space, logical_height) &&
-        !has_explicit_stretch) {
+
+    if (!has_implicit_stretch) {
+      extent =
+          ResolveMainBlockLength(space, style, border_padding, logical_height,
+                                 kIndefiniteSize, override_available_size);
+    }
+
+    if (extent == kIndefiniteSize) {
       extent = BlockSizeFromAspectRatio(
           border_padding, style.LogicalAspectRatio(),
           style.BoxSizingForAspectRatio(), inline_size);
-      DCHECK_NE(extent, kIndefiniteSize);
 
+      DCHECK_NE(extent, kIndefiniteSize);
       // Apply the automatic minimum size for aspect ratio:
       // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
       // We also check for LayoutUnit::Max() because flexbox uses that as a
@@ -733,13 +745,6 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   }
 
   if (extent == kIndefiniteSize) {
-    if (logical_height.IsAuto()) {
-      logical_height = (space.IsBlockAutoBehaviorStretch() &&
-                        space.AvailableSize().block_size != kIndefiniteSize)
-                           ? Length::FillAvailable()
-                           : Length::FitContent();
-    }
-
     // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether
     // they need to respect aspect ratio.
     extent =
