@@ -82,7 +82,20 @@ struct Transaction : base::RefCounted<Transaction> {
         }
 
         FIDO_LOG(ERROR) << "-> " << cbor::DiagnosticWriter::Write(*response);
-        std::move(callback_).Run(std::move(*response));
+        if (!response->is_map()) {
+          std::move(callback_).Run(std::nullopt);
+          break;
+        }
+
+        const cbor::Value::MapValue& map = response->GetMap();
+        const cbor::Value::MapValue::const_iterator ok_it =
+            map.find(cbor::Value("ok"));
+        if (ok_it == map.end()) {
+          std::move(callback_).Run(std::nullopt);
+          break;
+        }
+
+        std::move(callback_).Run(ok_it->second.Clone());
       } while (false);
 
       client_.reset();
