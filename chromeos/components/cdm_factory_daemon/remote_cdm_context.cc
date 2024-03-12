@@ -115,6 +115,10 @@ std::unique_ptr<media::CallbackRegistration> RemoteCdmContext::RegisterEventCB(
 
 RemoteCdmContext::~RemoteCdmContext() {}
 
+media::Decryptor* RemoteCdmContext::GetDecryptor() {
+  return this;
+}
+
 ChromeOsCdmContext* RemoteCdmContext::GetChromeOsCdmContext() {
   return this;
 }
@@ -161,6 +165,76 @@ bool RemoteCdmContext::UsingArcCdm() const {
 
 bool RemoteCdmContext::IsRemoteCdm() const {
   return true;
+}
+
+void RemoteCdmContext::Decrypt(StreamType stream_type,
+                               scoped_refptr<media::DecoderBuffer> encrypted,
+                               DecryptCB decrypt_cb) {
+  DCHECK_EQ(stream_type, Decryptor::kVideo);
+  mojo_sequence_state_->GetStableCdmContext()->DecryptVideoBuffer(
+      encrypted,
+      std::vector<uint8_t>(encrypted->data(),
+                           encrypted->data() + encrypted->data_size()),
+      base::BindOnce(&RemoteCdmContext::OnDecryptVideoBufferDone,
+                     base::Unretained(this), std::move(decrypt_cb)));
+}
+
+void RemoteCdmContext::OnDecryptVideoBufferDone(
+    DecryptCB decrypt_cb,
+    media::Decryptor::Status status,
+    const scoped_refptr<media::DecoderBuffer>& decoder_buffer,
+    const std::vector<uint8_t>& bytes) {
+  if (decoder_buffer) {
+    CHECK_EQ(bytes.size(), decoder_buffer->data_size());
+    memcpy(decoder_buffer->writable_data(), bytes.data(), bytes.size());
+  }
+  std::move(decrypt_cb).Run(status, decoder_buffer);
+}
+
+void RemoteCdmContext::CancelDecrypt(StreamType stream_type) {
+  // This method is racey since decryption is on another thread, so don't do
+  // anything special for cancellation since the caller needs to handle the case
+  // where the normal callback occurs even after calling CancelDecrypt anyways.
+}
+
+void RemoteCdmContext::InitializeAudioDecoder(
+    const media::AudioDecoderConfig& config,
+    DecoderInitCB init_cb) {
+  // RemoteCdmContext does not support audio decoding.
+  std::move(init_cb).Run(false);
+}
+
+void RemoteCdmContext::InitializeVideoDecoder(
+    const media::VideoDecoderConfig& config,
+    DecoderInitCB init_cb) {
+  // RemoteCdmContext does not support video decoding.
+  std::move(init_cb).Run(false);
+}
+
+void RemoteCdmContext::DecryptAndDecodeAudio(
+    scoped_refptr<media::DecoderBuffer> encrypted,
+    AudioDecodeCB audio_decode_cb) {
+  NOTREACHED() << "RemoteCdmContext does not support audio decoding";
+}
+
+void RemoteCdmContext::DecryptAndDecodeVideo(
+    scoped_refptr<media::DecoderBuffer> encrypted,
+    VideoDecodeCB video_decode_cb) {
+  NOTREACHED() << "RemoteCdmContext does not support video decoding";
+}
+
+void RemoteCdmContext::ResetDecoder(StreamType stream_type) {
+  NOTREACHED() << "RemoteCdmContext does not support decoding";
+}
+
+void RemoteCdmContext::DeinitializeDecoder(StreamType stream_type) {
+  // We do not support audio/video decoding, but since this can be called any
+  // time after InitializeAudioDecoder/InitializeVideoDecoder, nothing to be
+  // done here.
+}
+
+bool RemoteCdmContext::CanAlwaysDecrypt() {
+  return false;
 }
 
 }  // namespace chromeos

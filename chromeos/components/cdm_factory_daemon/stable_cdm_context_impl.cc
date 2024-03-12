@@ -83,10 +83,38 @@ void StableCdmContextImpl::ParseEncryptedSliceHeader(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
+void StableCdmContextImpl::DecryptVideoBuffer(
+    const scoped_refptr<media::DecoderBuffer>& decoder_buffer,
+    const std::vector<uint8_t>& bytes,
+    DecryptVideoBufferCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(cdm_context_->GetDecryptor());
+  CHECK_EQ(decoder_buffer->data_size(), bytes.size());
+  memcpy(decoder_buffer->writable_data(), bytes.data(), bytes.size());
+  cdm_context_->GetDecryptor()->Decrypt(
+      media::Decryptor::StreamType::kVideo, decoder_buffer,
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&StableCdmContextImpl::OnDecryptDone,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+}
+
 void StableCdmContextImpl::CdmEventCallback(media::CdmContext::Event event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& cb : remote_event_callbacks_)
     cb->EventCallback(event);
+}
+
+void StableCdmContextImpl::OnDecryptDone(
+    DecryptVideoBufferCallback decrypt_video_buffer_cb,
+    media::Decryptor::Status status,
+    scoped_refptr<media::DecoderBuffer> decoder_buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<uint8_t> bytes;
+  if (decoder_buffer) {
+    bytes.insert(bytes.begin(), decoder_buffer->data(),
+                 decoder_buffer->data() + decoder_buffer->data_size());
+  }
+  std::move(decrypt_video_buffer_cb).Run(status, decoder_buffer, bytes);
 }
 
 }  // namespace chromeos
