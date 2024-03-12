@@ -19,7 +19,8 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isInAshFolder, isDependencyAllowed, isMappingAllowed, getTargetPath, validateDefinitionDeps
+from path_utils import isInAshFolder, getTargetPath
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isDependencyAllowed, isMappingAllowed, validateDefinitionDeps
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):

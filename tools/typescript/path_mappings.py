@@ -2,8 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from os import path
-
+import argparse
+import collections
+import sys
+import json
+import io
+import os
+from path_utils import isInAshFolder, getTargetPath
 
 def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
   # Calculate mappings for ui/webui/resources/ sub-folders that have a dedicated
@@ -114,3 +119,92 @@ def GetDepToPathMappings(root_gen_dir, root_src_dir, platform):
     _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir)
 
   return path_mappings
+
+
+def _is_browser_only_dep(dep):
+  browser_only_deps = [
+      '//ui/webui/resources/cr_elements',
+      '//ui/webui/resources/cr_components/localized_link',
+      '//ui/webui/resources/cr_components/managed_footnote',
+  ]
+  return any(dep.startswith(dep_folder) for dep_folder in browser_only_deps)
+
+
+def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
+  if is_ash_target and _is_browser_only_dep(raw_dep):
+    return False
+
+  is_ash_dep = isInAshFolder(raw_dep[2:])
+  if not is_ash_dep or is_ash_target:
+    return True
+
+  exceptions = [
+      # TODO(https://crbug.com/1506299): Remove this incorrect dependency
+      'chrome/browser/resources/settings',
+  ]
+
+  return target_path in exceptions
+
+
+def _write_path_mappings_file(path_mappings, output_suffix, out_dir,
+                              pretty_print):
+  path_mappings_filename = f'path_mappings_{output_suffix}.json'
+  if not os.path.exists(out_dir):
+    os.makedirs(out_dir)
+  out_file_path = os.path.join(out_dir, path_mappings_filename)
+  with open(out_file_path, 'w', encoding='utf-8') as map_file:
+    indent = 2 if pretty_print else None
+    map_file.write(json.dumps(path_mappings, indent=indent))
+
+
+def main(argv):
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--raw_deps', nargs='*')
+  parser.add_argument('--root_gen_dir', required=True)
+  parser.add_argument('--root_src_dir', required=True)
+  parser.add_argument('--gen_dir', required=True)
+  parser.add_argument('--output_suffix', required=True)
+  parser.add_argument('--is_untrusted', action='store_true')
+  parser.add_argument('--pretty_print', action='store_true')
+  parser.add_argument('--platform',
+                      choices=['other', 'ios', 'chromeos_ash'],
+                      default='other')
+  args = parser.parse_args(argv)
+
+  dep_to_path_mappings = GetDepToPathMappings(
+      args.root_gen_dir,
+      # Sometimes root_src_dir has trailing slashes. Remove them if necessary.
+      args.root_src_dir.rstrip('/'),
+      args.platform)
+
+  target_path = getTargetPath(args.gen_dir, args.root_gen_dir)
+  is_ash_target = isInAshFolder(target_path)
+  path_mappings = collections.defaultdict(list)
+  for dep in args.raw_deps:
+    dependencyType = 'Browser-only' if is_ash_target else 'Ash-only'
+    assert _is_dependency_allowed(is_ash_target, dep, target_path), \
+        f'{target_path} should not use {dependencyType} dependency {dep}.'
+
+    if dep not in dep_to_path_mappings:
+      assert not dep.startswith("//ui/webui/resources"), \
+          f'Missing path mapping for \'{dep}\'. Update ' \
+          '//tools/typescript/path_mappings.py accordingly.'
+
+      # Path mappings outside of //ui/webui/resources are not inferred from
+      # |args.deps| yet.
+      continue
+
+    mappings = dep_to_path_mappings[dep]
+    scheme = 'chrome-untrusted:' if args.is_untrusted else 'chrome:'
+    for (url, dir) in mappings:
+      path_mappings[url].append(os.path.join('./', dir).replace('\\', '/'))
+      if (url.startswith("//")):
+        path_mappings[scheme + url].append(
+            os.path.join('./', dir).replace('\\', '/'))
+
+  _write_path_mappings_file(path_mappings, args.output_suffix, args.gen_dir,
+                            args.pretty_print)
+
+
+if __name__ == '__main__':
+  main(sys.argv[1:])

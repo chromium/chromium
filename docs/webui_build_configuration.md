@@ -250,6 +250,23 @@ ts_library("build_ts") {
 }
 ```
 
+### **webui_path_mappings**
+
+This rule generates a path mappings .json file named
+'path_mappings_<target_name>.json' in |target_gen_dir| from a list of target
+dependencies.
+
+Note that the rule only generates mappings for dependencies that are mapped
+in path_mappings.py (e.g. //ui/webui/resources/ deps).
+
+#### **Arguments**
+```
+ts_deps: List of ts_library() dependencies to generate path mappings for.
+is_untrusted: Whether the WebUI being compiled is a chrome-untrusted:// UI.
+              Used to determine the correct URLs for path mappings, e.g.
+              chrome-untrusted:// resources vs chrome://resources.
+```
+
 ### **bundle_js**
 
 This rule is used to bundle larger user-facing WebUIs for improved performance.

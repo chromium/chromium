@@ -13,6 +13,8 @@
 import os
 import pathlib
 
+from path_utils import isInAshFolder, getTargetPath
+
 _CWD = os.getcwd().replace('\\', '/')
 _HERE_DIR = os.path.dirname(__file__)
 _SRC_DIR = os.path.normpath(os.path.join(_HERE_DIR, '..',
@@ -172,39 +174,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
   return False, 'Invalid JS file detected for input directory ' + \
       f'{source_dir} and output directory {out_dir}, all new ' + \
       'code should be added in TypeScript.'
-
-
-def getTargetPath(gen_dir, root_gen_dir):
-  root_gen_dir_from_build = os.path.normpath(os.path.join(
-      gen_dir, root_gen_dir)).replace('\\', '/')
-  return os.path.relpath(gen_dir, root_gen_dir_from_build).replace('\\', '/')
-
-
-def isInAshFolder(path):
-  nested_lacros_folders = [
-    'chrome/browser/resources/chromeos/kerberos',
-  ]
-  if any(path.startswith(folder) for folder in nested_lacros_folders):
-    return False
-
-  # TODO (https://crbug.com/1506296): Organize Ash WebUI code under fewer
-  # directories.
-  ash_folders = [
-      # Source code folders
-      'ash/webui',
-      'chrome/browser/resources/ash',
-      'chrome/browser/resources/chromeos',
-      'chrome/browser/resources/nearby_internals',
-      'chrome/browser/resources/nearby_share',
-      'ui/file_manager',
-
-      # Test folders
-      'chrome/test/data/webui/chromeos',
-      'chrome/test/data/webui/cr_components/chromeos',
-      'chrome/test/data/webui/nearby_share',
-      'chrome/test/data/webui/settings/chromeos',
-  ]
-  return any(path.startswith(folder) for folder in ash_folders)
 
 
 def isBrowserOnlyDep(dep):
