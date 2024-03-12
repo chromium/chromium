@@ -823,6 +823,9 @@ NET_ERROR(BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS, -385)
 // Content decoding failed due to the zstd window size being too big (over 8MB).
 NET_ERROR(ZSTD_WINDOW_SIZE_TOO_BIG, -386)
 
+// The compression dictionary cannot be loaded.
+NET_ERROR(DICTIONARY_LOAD_FAILED, -387)
+
 // The cache does not have the requested entry.
 NET_ERROR(CACHE_MISS, -400)
 
@@ -1035,7 +1038,8 @@ NET_ERROR(DNS_REQUEST_CANCELLED, -810)
 // alpn values of supported protocols, but did not.
 NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
 
-// The compression dictionary cannot be loaded.
-NET_ERROR(DICTIONARY_LOAD_FAILED, -812)
+// Error -812 was removed
+// Error -813 was removed
 
-// Error -813 was removed (DICTIONARY_ORIGIN_CHECK_FAILED)
+// CAUTION: Before adding errors here, please check the ranges of errors written
+// in the top of this file.
