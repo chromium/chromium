@@ -53,6 +53,10 @@ float CalculationValue::Evaluate(float max_value,
 }
 
 bool CalculationValue::operator==(const CalculationValue& other) const {
+  if (IsNonNegative() != other.IsNonNegative()) {
+    return false;
+  }
+
   if (IsExpression())
     return other.IsExpression() && *data_.expression == *other.data_.expression;
   return !other.IsExpression() && Pixels() == other.Pixels() &&

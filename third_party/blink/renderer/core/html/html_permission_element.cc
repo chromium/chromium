@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -30,6 +31,9 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -177,6 +181,19 @@ String PermissionNameToString(PermissionName permission_name) {
     default:
       NOTREACHED_NORETURN() << "Not supported permission " << permission_name;
   }
+}
+
+Length AdjustedMargin(const Length& margin) {
+  if (margin.IsCalculated()) {
+    if (margin.GetCalculationValue().IsNonNegative()) {
+      return margin;
+    }
+
+    return Length(CalculationValue::CreateSimplified(
+        margin.GetCalculationValue().GetOrCreateExpression(),
+        Length::ValueRange::kNonNegative));
+  }
+  return (margin.Value() < 0) ? Length::FixedZero() : margin;
 }
 
 }  // namespace
@@ -331,22 +348,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   builder.SetOutlineOffset(builder.OutlineOffset().ClampNegativeToZero());
 
-  // TODO(crbug.com/1462930): Handle calculated Lengths.
-  if (!builder.MarginLeft().IsCalculated() &&
-      builder.MarginLeft().Value() < 0) {
-    builder.ResetMarginLeft();
-  }
-  if (!builder.MarginRight().IsCalculated() &&
-      builder.MarginRight().Value() < 0) {
-    builder.ResetMarginRight();
-  }
-  if (!builder.MarginTop().IsCalculated() && builder.MarginTop().Value() < 0) {
-    builder.ResetMarginTop();
-  }
-  if (!builder.MarginBottom().IsCalculated() &&
-      builder.MarginBottom().Value() < 0) {
-    builder.ResetMarginBottom();
-  }
+  builder.SetMarginLeft(AdjustedMargin(builder.MarginLeft()));
+  builder.SetMarginRight(AdjustedMargin(builder.MarginRight()));
+  builder.SetMarginTop(AdjustedMargin(builder.MarginTop()));
+  builder.SetMarginBottom(AdjustedMargin(builder.MarginBottom()));
 
   // Check and modify (if needed) properties related to the font.
   std::optional<FontDescription> new_font_description;
