@@ -54,6 +54,15 @@ const uint32 kURLLoadOptionAsCorsPreflight = 128;
 // default if the security state is unknown.
 const uint32 kURLLoadOptionBlockLocalRequest = 256;
 
+// Read and discard the body inside the URLLoader. If the URLLoader supports
+// this flag, then no body will be passed to
+// URLLoaderClient::OnReceiveResponse(). Not every URLLoader implementation
+// supports this flag, so the caller must be prepared to discard the body
+// itself if one is supplied.
+// This is incompatible with the kURLLoadOptionSniffMimeType option; they cannot
+// be used together.
+const uint32 kURLLoadOptionReadAndDiscardBody = 512;
+
 // URLLoaderFactory is an interface for requesting URLs. It creates URLLoader
 // instances. One URLLoader instance can load one URL.
 interface URLLoaderFactory {

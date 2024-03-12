@@ -66,9 +66,10 @@
 
 namespace net {
 class HttpResponseHeaders;
+class IOBufferWithSize;
 class IPEndPoint;
-struct RedirectInfo;
 class URLRequestContext;
+struct RedirectInfo;
 }  // namespace net
 
 namespace network {
@@ -625,6 +626,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   uint32_t pending_write_buffer_offset_ = 0;
   mojo::SimpleWatcher writable_handle_watcher_;
   mojo::SimpleWatcher peer_closed_handle_watcher_;
+
+  scoped_refptr<net::IOBufferWithSize> discard_buffer_;
 
   // True if there's a URLRequest::Read() call in progress.
   bool read_in_progress_ = false;

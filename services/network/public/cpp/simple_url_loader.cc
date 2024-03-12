@@ -53,7 +53,13 @@ namespace network {
 constexpr size_t SimpleURLLoader::kMaxBoundedStringDownloadSize;
 constexpr size_t SimpleURLLoader::kMaxUploadStringSizeToCopy;
 
+BASE_FEATURE(kSimpleURLLoaderUseReadAndDiscardBodyOption,
+             "SimpleURLLoaderUseReadAndDiscardBodyOption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
+constexpr int64_t kReceivedBodySizeUnknown = -1;
 
 // Used by tests to override the tick clock for the timeout timer.
 const base::TickClock* timeout_tick_clock_ = nullptr;
@@ -318,6 +324,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
     bool body_started = false;
     bool body_completed = false;
     // Final size of the body. Set once the body's Mojo pipe has been closed.
+    // Set to kReceivedBodySizeUnknown if we never actually read a body.
     int64_t received_body_size = 0;
 
     // Set to true when FinishWithResult() is called. Once that happens, the
@@ -654,6 +661,13 @@ class BodyHandler {
 
   virtual ~BodyHandler() = default;
 
+  // Called by SimpleURLLoader if no data pipe was received from the URLLoader.
+  // Returns whether or not a data pipe is required. In most cases a data pipe
+  // is required for a successful response, but if we don't need the body then
+  // this can return false. If there is no data pipe and this method returns
+  // false, OnStartLoadingResponseBody() will not be called.
+  virtual bool RequiresBodyDataPipe() { return true; }
+
   // Called by SimpleURLLoader with the data pipe received from the URLLoader.
   // The BodyHandler is responsible for reading from it and monitoring it for
   // closure. Should call SimpleURLLoaderImpl::OnBodyHandlerDone(), once either
@@ -783,6 +797,8 @@ class HeadersOnlyBodyHandler : public BodyHandler, public BodyReader::Delegate {
   ~HeadersOnlyBodyHandler() override = default;
 
   // BodyHandler implementation
+  bool RequiresBodyDataPipe() override { return false; }
+
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body_data_pipe) override {
     // TODO(crbug.com/871420): The request can be completed at this point
@@ -1323,6 +1339,10 @@ void SimpleURLLoaderImpl::DownloadHeadersOnly(
   on_download_progress_callback_.Reset();
   body_handler_ = std::make_unique<HeadersOnlyBodyHandler>(
       this, std::move(headers_only_callback));
+  if (base::FeatureList::IsEnabled(
+          kSimpleURLLoaderUseReadAndDiscardBodyOption)) {
+    url_loader_factory_options_ |= mojom::kURLLoadOptionReadAndDiscardBody;
+  }
   Start(url_loader_factory);
 }
 
@@ -1781,8 +1801,19 @@ void SimpleURLLoaderImpl::OnReceiveResponse(
     return;
   }
 
-  if (!weak_this || !body)
+  if (!weak_this) {
     return;
+  }
+
+  if (!body) {
+    if (!body_handler_->RequiresBodyDataPipe()) {
+      // Fix up our state as if a body was read.
+      request_state_->body_started = true;
+      request_state_->body_completed = true;
+      request_state_->received_body_size = kReceivedBodySizeUnknown;
+    }
+    return;
+  }
 
   if (request_state_->body_started || !request_state_->response_info) {
     // If this was already called, or the headers have not been received,
@@ -1911,6 +1942,16 @@ void SimpleURLLoaderImpl::MaybeComplete() {
       remaining_retries_ > 0 && (retry_mode_ & RETRY_ON_NETWORK_CHANGE)) {
     Retry();
     return;
+  }
+
+  // If the URLLoader didn't supply a data pipe because we set the
+  // ReadAndDiscardBody option, then we don't yet have a value for
+  // `received_body_size`, so just set it to the size reported by URLLoader.
+  if (request_state_->received_body_size == kReceivedBodySizeUnknown) {
+    request_state_->received_body_size =
+        request_state_->completion_status
+            ? request_state_->completion_status->decoded_body_length
+            : 0;
   }
 
   // When OnCompleted sees a success result, still need to report an error if

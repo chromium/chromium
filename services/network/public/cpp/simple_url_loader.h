@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -43,6 +44,9 @@ class URLLoaderFactory;
 }  // namespace network
 
 namespace network {
+
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kSimpleURLLoaderUseReadAndDiscardBodyOption);
 
 class SimpleURLLoaderStreamConsumer;
 

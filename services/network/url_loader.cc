@@ -115,6 +115,9 @@ namespace {
 // mojo::core::Core::CreateDataPipe
 constexpr size_t kBlockedBodyAllocationSize = 1;
 
+// Size to allocate for `discard_buffer_`.
+constexpr size_t kDiscardBufferSize = 128 * 1024;
+
 // A subclass of net::UploadBytesElementReader which owns
 // ResourceRequestBody.
 class BytesElementReader : public net::UploadBytesElementReader {
@@ -584,6 +587,20 @@ URLLoader::URLLoader(
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()) {
   DCHECK(delete_callback_);
+
+  if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
+    CHECK(!(options_ & mojom::kURLLoadOptionSniffMimeType))
+        << "options ReadAndDiscardBody and SniffMimeType cannot be used "
+           "together";
+    if (factory_params_->is_orb_enabled) {
+      // TODO(ricea): Make ReadAndDiscardBody and ORB work together.
+      LOG(WARNING) << "Disabling ReadAndDiscardBody because ORB is enabled";
+      options_ &= ~mojom::kURLLoadOptionReadAndDiscardBody;
+    } else {
+      discard_buffer_ =
+          base::MakeRefCounted<net::IOBufferWithSize>(kDiscardBufferSize);
+    }
+  }
 
   mojom::TrustedURLLoaderHeaderClient* url_loader_header_client =
       context.GetUrlLoaderHeaderClient();
@@ -1703,22 +1720,6 @@ void URLLoader::MaybeSendTrustTokenOperationResultToDevTools() {
 }
 
 void URLLoader::ContinueOnResponseStarted() {
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  options.capacity_num_bytes =
-      network::features::GetDataPipeDefaultAllocationSize(
-          features::DataPipeAllocationSize::kLargerSizeIfPossible);
-  MojoResult result =
-      mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
-  if (result != MOJO_RESULT_OK) {
-    NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
-    return;
-  }
-  DCHECK(response_body_stream_.is_valid());
-  DCHECK(consumer_handle_.is_valid());
-
   // Do not account header bytes when reporting received body bytes to client.
   reported_total_encoded_bytes_ = url_request_->GetTotalReceivedBytes();
 
@@ -1727,16 +1728,33 @@ void URLLoader::ContinueOnResponseStarted() {
     upload_progress_tracker_ = nullptr;
   }
 
-  peer_closed_handle_watcher_.Watch(
-      response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
-                          base::Unretained(this)));
-  peer_closed_handle_watcher_.ArmOrNotify();
+  if (!(options_ & mojom::kURLLoadOptionReadAndDiscardBody)) {
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes =
+        network::features::GetDataPipeDefaultAllocationSize(
+            features::DataPipeAllocationSize::kLargerSizeIfPossible);
+    MojoResult result =
+        mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
+    if (result != MOJO_RESULT_OK) {
+      NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+      return;
+    }
+    CHECK(response_body_stream_.is_valid());
+    CHECK(consumer_handle_.is_valid());
+    peer_closed_handle_watcher_.Watch(
+        response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+        base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
+                            base::Unretained(this)));
+    peer_closed_handle_watcher_.ArmOrNotify();
 
-  writable_handle_watcher_.Watch(
-      response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      base::BindRepeating(&URLLoader::OnResponseBodyStreamReady,
-                          base::Unretained(this)));
+    writable_handle_watcher_.Watch(
+        response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+        base::BindRepeating(&URLLoader::OnResponseBodyStreamReady,
+                            base::Unretained(this)));
+  }
 
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
   const CrossOriginEmbedderPolicy kEmpty;
@@ -1781,6 +1799,9 @@ void URLLoader::ContinueOnResponseStarted() {
   // Figure out if we need to sniff (for MIME type detection or for Opaque
   // Response Blocking / ORB).
   if (factory_params_->is_orb_enabled) {
+    // TODO(ricea): Make ORB and ReadAndDiscardBody work together if necessary.
+    CHECK(!(options_ & mojom::kURLLoadOptionReadAndDiscardBody))
+        << "ORB is incompatible with the ReadAndDiscardBody option";
     orb_analyzer_ = orb::ResponseAnalyzer::Create(*per_factory_orb_state_);
     is_more_orb_sniffing_needed_ = true;
     auto decision =
@@ -1816,6 +1837,19 @@ void URLLoader::ReadMore() {
 
   if (should_pause_reading_body_) {
     paused_reading_body_ = true;
+    return;
+  }
+
+  // TODO(ricea): Refactor this method and DidRead() to reduce duplication.
+  if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
+    read_in_progress_ = true;
+    int bytes_read =
+        url_request_->Read(discard_buffer_.get(), discard_buffer_->size());
+    if (bytes_read != net::ERR_IO_PENDING) {
+      DidRead(bytes_read, /*completed_synchronously=*/true,
+              /*into_slop_bucket=*/false);
+      // `this` may have been deleted.
+    }
     return;
   }
 
@@ -1923,6 +1957,7 @@ void URLLoader::DidRead(int num_bytes,
 
   if (memory_cache_writer_ && pending_write_ && num_bytes > 0) {
     CHECK(!into_slop_bucket);
+    CHECK(!discard_buffer_);
     if (!memory_cache_writer_->OnDataRead(
             pending_write_->buffer() + pending_write_buffer_offset_,
             num_bytes)) {
@@ -2323,7 +2358,7 @@ void URLLoader::SendResponseToClient() {
 }
 
 void URLLoader::CompletePendingWrite(bool success) {
-  if (success) {
+  if (success && pending_write_) {
     // The write can only be completed immediately in case of a success, since
     // doing so invalidates memory of any attached NetToMojoIOBuffer's; but in
     // case of an abort, particularly one caused by a suspend, the failure may
@@ -2583,8 +2618,9 @@ void URLLoader::CompleteBlockedResponse(
   if (has_received_response_) {
     // The response headers and body shouldn't yet be sent to the
     // URLLoaderClient.
-    DCHECK(response_);
-    DCHECK(consumer_handle_.is_valid());
+    CHECK(response_);
+    CHECK(consumer_handle_.is_valid() ||
+          (options_ & mojom::kURLLoadOptionReadAndDiscardBody));
   }
 
   // Tell the URLLoaderClient that the response has been completed.
