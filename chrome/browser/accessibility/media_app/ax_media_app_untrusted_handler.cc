@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -106,10 +107,12 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
   service_router->BindScreenAIAnnotator(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
   OcrNextDirtyPageIfAny();
-  if (media_app_) {
+  if (UNLIKELY(media_app_)) {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     media_app_->OcrServiceEnabledChanged(true);
+  } else {
+    // TODO(b/301007305): Implement `OcrServiceEnabledChanged` in the Media App.
   }
 }
 
@@ -142,10 +145,12 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollYMin));
       viewport_box_.set_y(
           std::max(viewport_box_.y() - viewport_box_.height(), y_min));
-      if (media_app_) {
+      if (UNLIKELY(media_app_)) {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
+      } else {
+        media_app_page_->SetViewport(viewport_box_);
       }
       return;
     }
@@ -155,10 +160,12 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollYMax));
       viewport_box_.set_y(
           std::min(viewport_box_.y() + viewport_box_.height(), y_max));
-      if (media_app_) {
+      if (UNLIKELY(media_app_)) {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
+      } else {
+        media_app_page_->SetViewport(viewport_box_);
       }
       return;
     }
@@ -167,10 +174,12 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollXMin));
       viewport_box_.set_x(
           std::max(viewport_box_.x() - viewport_box_.width(), x_min));
-      if (media_app_) {
+      if (UNLIKELY(media_app_)) {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
+      } else {
+        media_app_page_->SetViewport(viewport_box_);
       }
       return;
     }
@@ -179,10 +188,12 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollXMax));
       viewport_box_.set_x(
           std::min(viewport_box_.x() + viewport_box_.width(), x_max));
-      if (media_app_) {
+      if (UNLIKELY(media_app_)) {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
+      } else {
+        media_app_page_->SetViewport(viewport_box_);
       }
       return;
     }
@@ -230,10 +241,12 @@ void AXMediaAppUntrustedHandler::PerformAction(
         }
         break;
       }
-      if (media_app_) {
+      if (UNLIKELY(media_app_)) {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
+      } else {
+        media_app_page_->SetViewport(viewport_box_);
       }
       return;
     }
@@ -270,11 +283,14 @@ void AXMediaAppUntrustedHandler::PerformAction(
 }
 
 void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
-  if (media_app_) {
+  if (UNLIKELY(media_app_)) {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     media_app_->AccessibilityEnabledChanged(
         accessibility_state_utils::IsScreenReaderEnabled());
+  } else {
+    // TODO(b/301007305): Implement `AccessibilityEnabledChanged` in the Media
+    // App.
   }
 }
 
@@ -642,7 +658,7 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   auto dirty_page_id = PopDirtyPage();
   // TODO(b/289012145): Refactor this code to support things happening
   // asynchronously - i.e. `RequestBitmap` will be async.
-  if (media_app_) {
+  if (UNLIKELY(media_app_)) {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     // TODO(b/303133098): Change this as soon as `RequestBitmap` becomes
@@ -652,6 +668,8 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
         page_bitmap,
         base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
                        weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
+  } else {
+    // TODO(b/301007305): Implement `RequestBitmap` in the Media App.
   }
 }
 
