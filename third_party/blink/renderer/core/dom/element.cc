@@ -4782,6 +4782,7 @@ void Element::SetTargetedSnapAreaIdsForSnapContainers() {
       if (box->IsScrollContainer() && !style->GetScrollSnapType().is_none) {
         if (auto* scrollable_area = box->GetScrollableArea()) {
           scrollable_area->SetTargetedSnapAreaId(targeted_area_id);
+          GetDocument().View()->AddPendingSnapUpdate(scrollable_area);
         }
         targeted_area_id.reset();
       }

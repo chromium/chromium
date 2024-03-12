@@ -377,7 +377,8 @@ class CC_EXPORT SnapContainerData {
            (other.proximity_range_ == proximity_range_) &&
            (other.snap_area_list_ == snap_area_list_) &&
            (other.target_snap_area_element_ids_ ==
-            target_snap_area_element_ids_);
+            target_snap_area_element_ids_) &&
+           (other.targeted_area_id_ == targeted_area_id_);
   }
 
   bool operator!=(const SnapContainerData& other) const {
