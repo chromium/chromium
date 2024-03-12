@@ -601,6 +601,10 @@ void TestRenderFrameHost::CreateWebUsbServiceForTesting(
   RenderFrameHostImpl::CreateWebUsbService(std::move(receiver));
 }
 
+void TestRenderFrameHost::ResetLocalFrame() {
+  local_frame_.reset();
+}
+
 void TestRenderFrameHost::SendCommitNavigation(
     mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,

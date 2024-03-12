@@ -76,7 +76,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   // Flushes mojo messages on `local_frame_`.
   void FlushLocalFrameMessages();
-  void ResetLocalFrame() { local_frame_.reset(); }
 
   // RenderFrameHostImpl overrides (same values, but in Test*/Mock* types)
   TestRenderViewHost* GetRenderViewHost() const override;
@@ -115,6 +114,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   TestRenderFrameHost* AppendFencedFrame() override;
   void CreateWebUsbServiceForTesting(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override;
+  void ResetLocalFrame() override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void CreateHidServiceForTesting(
