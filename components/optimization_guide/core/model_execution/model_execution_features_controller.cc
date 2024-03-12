@@ -69,8 +69,11 @@ enum class FeatureCurrentlyEnabledResult {
   // Returned result as not enabled because model execution capability was
   // disabled for the user account.
   kNotEnabledModelExecutionCapability = 5,
+  // Returned result as enabled because the feature has graduated from
+  // experimental AI settings.
+  kEnabledByGraduation = 6,
   // Updates should match with FeatureCurrentlyEnabledResult enum in enums.xml.
-  kMaxValue = kNotEnabledModelExecutionCapability
+  kMaxValue = kEnabledByGraduation
 };
 
 // Util class for recording the construction and validation of Settings
@@ -166,6 +169,31 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   ScopedFeatureCurrentlyEnabledHistogramRecorder metrics_recorder;
+
+  if (features::internal::IsGraduatedFeature(feature)) {
+    UserValidityResult user_validity = GetCurrentUserValidityResult(feature);
+    // TODO(b/328523679): also report the FeatureCurrentlyEnabledResult values
+    // below for non-graduated features.
+    FeatureCurrentlyEnabledResult fcer;
+    switch (user_validity) {
+      case UserValidityResult::kValid:
+        fcer = FeatureCurrentlyEnabledResult::kEnabledByGraduation;
+        break;
+      case UserValidityResult::kInvalidUnsignedUser:
+        fcer = FeatureCurrentlyEnabledResult::kNotEnabledUnsignedUser;
+        break;
+      case UserValidityResult::kInvalidEnterprisePolicy:
+        fcer = FeatureCurrentlyEnabledResult::kNotEnabledEnterprisePolicy;
+        break;
+      case UserValidityResult::kInvalidModelExecutionCapability:
+        fcer =
+            FeatureCurrentlyEnabledResult::kNotEnabledModelExecutionCapability;
+        break;
+    };
+    metrics_recorder.SetResult(feature, fcer);
+    return user_validity == UserValidityResult::kValid;
+  }
+
   bool is_enabled = GetPrefState(feature) == prefs::FeatureOptInState::kEnabled;
   metrics_recorder.SetResult(
       feature, is_enabled
@@ -218,6 +246,10 @@ ModelExecutionFeaturesController::GetCurrentUserValidityResult(
         kInvalidModelExecutionCapability;
   }
 
+  DCHECK(!is_signed_in_ || can_use_model_execution_features_)
+      << "At this point, the user must be either signed out or allowed to use "
+         "MES";
+
   if (GetEnterprisePolicyValue(feature) ==
       model_execution::prefs::ModelExecutionEnterprisePolicyValue::kDisable) {
     return ModelExecutionFeaturesController::UserValidityResult::
@@ -252,6 +284,13 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
       return false;
     case ModelExecutionFeaturesController::UserValidityResult::kValid:
       break;
+  }
+
+  // Graduated feature should never be visible in settings.
+  if (features::internal::IsGraduatedFeature(feature)) {
+    metrics_recorder.SetResult(
+        feature, SettingsVisibilityResult::kNotVisibleGraduatedFeature);
+    return false;
   }
 
   // If the setting is currently enabled by user, then we should show the

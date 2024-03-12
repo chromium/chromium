@@ -43,9 +43,11 @@ class ModelExecutionFeaturesController
     // Not visible because model execution capability was disabled for the user
     // account.
     kNotVisibleModelExecutionCapability = 6,
+    // Not visible because the feature is already graduated.
+    kNotVisibleGraduatedFeature = 7,
     // Updates should match with FeaturesSettingsVisibilityResult enum in
     // enums.xml.
-    kMaxValue = kNotVisibleModelExecutionCapability
+    kMaxValue = kNotVisibleGraduatedFeature
   };
 
   // Must be created only for non-incognito browser contexts.

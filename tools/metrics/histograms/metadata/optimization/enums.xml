@@ -52,6 +52,9 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="Returned result as not enabled because model execution
              capability was disabled for the user account"/>
+  <int value="6"
+      label="Returned result as enabled because the feature has graduated
+             from experimental AI settings"/>
 </enum>
 
 <enum name="FeaturesSettingsVisibilityResult">
@@ -66,6 +69,7 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Not visible because model execution capability was disabled for
              the user account"/>
+  <int value="7" label="Not visible because the feature is already graduated"/>
 </enum>
 
 <enum name="HintCacheStoreEntryType">

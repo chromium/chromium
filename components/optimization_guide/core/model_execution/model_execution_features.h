@@ -13,9 +13,19 @@ namespace optimization_guide {
 namespace features {
 namespace internal {
 
+// Features that control the visibility of whether a feature setting is visible
+// to the user. Should only be enabled for experimental features that have not
+// graduated yet.
 BASE_DECLARE_FEATURE(kComposeSettingsVisibility);
 BASE_DECLARE_FEATURE(kTabOrganizationSettingsVisibility);
 BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
+
+// Features that determine when a feature has graduated from experimental. These
+// should not be enabled at the same time as their respective settings
+// visibility features.
+BASE_DECLARE_FEATURE(kComposeGraduatedFromSettings);
+BASE_DECLARE_FEATURE(kTabOrganizationGraduatedFromSettings);
+BASE_DECLARE_FEATURE(kWallpaperSearchGraduatedFromSettings);
 
 // Feature for controlling the users who are eligible to see the IPH promo for
 // experimental AI.
@@ -23,6 +33,9 @@ BASE_DECLARE_FEATURE(kExperimentalAIIPHPromoRampUp);
 
 // Feature for disabling the model execution user account capability check.
 BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
+
+// Checks if the provided `feature` is graduated from experimental AI settings.
+bool IsGraduatedFeature(proto::ModelExecutionFeature feature);
 
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     proto::ModelExecutionFeature feature);

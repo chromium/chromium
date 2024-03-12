@@ -267,4 +267,48 @@ TEST_F(ModelExecutionFeaturesControllerTest,
                                     MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
 }
 
+TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::internal::kComposeGraduatedFromSettings,
+       features::internal::kWallpaperSearchSettingsVisibility},
+      /*disabled_features=*/
+      {features::internal::kComposeSettingsVisibility});
+  CreateModelExecutionFeaturesController();
+
+  EnableSignIn();
+  // IsSettingVisible
+  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  // ShouldFeatureBeCurrentlyEnabledForUser
+  EXPECT_TRUE(
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyEnabledForUser(
+              proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyEnabledForUser(
+                       proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(model_execution_features_controller()
+                   ->ShouldFeatureBeCurrentlyEnabledForUser(
+                       proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
+      1);
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "TabOrganization",
+      false, 1);
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "WallpaperSearch",
+      false, 1);
+}
+
 }  // namespace optimization_guide

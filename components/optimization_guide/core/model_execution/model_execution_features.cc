@@ -13,8 +13,7 @@ namespace optimization_guide {
 namespace features {
 namespace internal {
 
-// Features that control the visibility of whether a feature setting is visible
-// to the user.
+// Settings visibility features.
 BASE_FEATURE(kComposeSettingsVisibility,
              "ComposeSettingsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -25,6 +24,17 @@ BASE_FEATURE(kWallpaperSearchSettingsVisibility,
              "WallpaperSearchSettingsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Graduation features.
+BASE_FEATURE(kComposeGraduatedFromSettings,
+             "ComposeGraduated",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabOrganizationGraduatedFromSettings,
+             "TabOrganizationGraduated",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWallpaperSearchGraduatedFromSettings,
+             "WallpaperSearchGraduated",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExperimentalAIIPHPromoRampUp,
              "ExperimentalAIIPHPromoRampUp",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -32,6 +42,36 @@ BASE_FEATURE(kExperimentalAIIPHPromoRampUp,
 BASE_FEATURE(kModelExecutionCapabilityDisable,
              "ModelExecutionCapabilityDisable",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGraduatedFeature(proto::ModelExecutionFeature feature) {
+  bool is_graduated = false;
+  switch (feature) {
+    // Actual features.
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+      is_graduated =
+          base::FeatureList::IsEnabled(kComposeGraduatedFromSettings);
+      break;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+      is_graduated =
+          base::FeatureList::IsEnabled(kTabOrganizationGraduatedFromSettings);
+      break;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+      is_graduated =
+          base::FeatureList::IsEnabled(kWallpaperSearchGraduatedFromSettings);
+      break;
+    // Non-features.
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+      NOTREACHED();
+      return false;
+  }
+  DCHECK(!is_graduated ||
+         !base::FeatureList::IsEnabled(
+             *GetFeatureToUseToCheckSettingsVisibility(feature)))
+      << "Feature should not be both graduated and visible in settings: "
+      << GetFeatureToUseToCheckSettingsVisibility(feature)->name;
+  return is_graduated;
+}
 
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     proto::ModelExecutionFeature feature) {
