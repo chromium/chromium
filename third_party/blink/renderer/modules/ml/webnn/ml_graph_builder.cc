@@ -1140,9 +1140,7 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
       ConvertToComponentOperand(input), ConvertToComponentOperand(indices),
       options->axis());
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
 
@@ -1154,8 +1152,7 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), gather);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
 
