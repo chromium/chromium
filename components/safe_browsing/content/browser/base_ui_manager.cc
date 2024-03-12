@@ -164,6 +164,10 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
     case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
     case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
     case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
       return 2;
     case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
     case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
@@ -172,6 +176,9 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
       return 4;
     case safe_browsing::SB_THREAT_TYPE_BILLING:
       return 15;
+    case safe_browsing::SB_THREAT_TYPE_UNUSED:
+    case safe_browsing::SB_THREAT_TYPE_SAFE:
+      return std::numeric_limits<ThreatSeverity>::max();
     default:
       NOTREACHED();
       break;
@@ -216,20 +223,43 @@ bool BaseUIManager::IsUrlAllowlistedOrPendingForWebContents(
     SBThreatType* threat_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  GURL lookup_url = GetAllowlistUrl(url, is_subresource, entry);
-  if (lookup_url.is_empty())
-    return false;
-
   AllowlistUrlSet* site_list = AllowlistUrlSet::FromWebContents(web_contents);
   if (!site_list)
     return false;
 
-  bool allowlisted = site_list->Contains(lookup_url, threat_type);
-  if (allowlist_only) {
-    return allowlisted;
-  } else {
-    return allowlisted || site_list->ContainsPending(lookup_url, threat_type);
+  // To cover the case of redirect urls, we set the threat type to the most
+  // severe one in the current navigation chain.
+  bool any_allowlisted = false;
+  ThreatSeverity min_severity = std::numeric_limits<ThreatSeverity>::max();
+
+  for (const auto& redirect : entry && !entry->GetRedirectChain().empty()
+                                  ? entry->GetRedirectChain()
+                                  : std::vector<GURL>{url}) {
+    GURL lookup_url = GetAllowlistUrl(redirect, is_subresource, entry);
+    if (lookup_url.is_empty()) {
+      continue;
+    }
+
+    SBThreatType url_threat_type = SB_THREAT_TYPE_SAFE;
+    bool allowlisted = site_list->Contains(lookup_url, &url_threat_type);
+    // We only check if the url is in the non-pending allowlist if
+    // allowlist_only is true.
+    if (!allowlist_only) {
+      allowlisted |= site_list->ContainsPending(lookup_url, &url_threat_type);
+    }
+    if (allowlisted) {
+      any_allowlisted = true;
+      ThreatSeverity severity = url_threat_type == SB_THREAT_TYPE_SAFE
+                                    ? std::numeric_limits<ThreatSeverity>::max()
+                                    : GetThreatSeverity(url_threat_type);
+      if (severity > min_severity) {
+        continue;
+      }
+      min_severity = severity;
+      *threat_type = std::move(url_threat_type);
+    }
   }
+  return any_allowlisted;
 }
 
 void BaseUIManager::OnBlockingPageDone(
