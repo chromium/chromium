@@ -123,7 +123,7 @@ std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
                 }
               },
               is_thumbs_up))
-          .SetType(IconButton::Type::kSmall)
+          .SetType(IconButton::Type::kSmallFloating)
           .SetVectorIcon(is_thumbs_up ? &kMahiThumbsUpIcon
                                       : &kMahiThumbsDownIcon)
           // TODO(http://b/319264190): Replace the string IDs used here with the
@@ -133,7 +133,6 @@ std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
                            : IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN)
           .SetViewId(is_thumbs_up ? mahi_constants::ViewId::kThumbsUpButton
                                   : mahi_constants::ViewId::kThumbsDownButton)
-          .SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated)
           .Build();
   button->SetImageHorizontalAlignment(
       IconButton::HorizontalAlignment::ALIGN_RIGHT);
@@ -337,7 +336,7 @@ MahiPanelView::MahiPanelView() {
   header_row->AddChildView(
       IconButton::Builder()
           .SetViewId(mahi_constants::ViewId::kCloseButton)
-          .SetType(IconButton::Type::kMedium)
+          .SetType(IconButton::Type::kMediumFloating)
           .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
           // TODO(b/319264190): Replace the string used here with the
           // correct string ID.
