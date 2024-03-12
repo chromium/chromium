@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -206,10 +207,17 @@ void ParseProcStat(const std::string& contents, ProcStatMap* output) {
 int64_t GetProcStatsFieldAsInt64(const std::vector<std::string>& proc_stats,
                                  ProcStatsFields field_num) {
   DCHECK_GE(field_num, VM_PPID);
-  CHECK_LT(static_cast<size_t>(field_num), proc_stats.size());
+  return GetProcStatsFieldAsOptionalInt64(proc_stats, field_num).value_or(0);
+}
 
+std::optional<int64_t> GetProcStatsFieldAsOptionalInt64(
+    base::span<const std::string> proc_stats,
+    ProcStatsFields field_num) {
   int64_t value;
-  return StringToInt64(proc_stats[field_num], &value) ? value : 0;
+  if (StringToInt64(proc_stats[size_t{field_num}], &value)) {
+    return value;
+  }
+  return std::nullopt;
 }
 
 size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,
@@ -242,8 +250,7 @@ int64_t ReadProcSelfStatsAndGetFieldAsInt64(ProcStatsFields field_num) {
   return ReadStatFileAndGetFieldAsInt64(stat_file, field_num);
 }
 
-size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid,
-                                       ProcStatsFields field_num) {
+size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num) {
   std::string stats_data;
   if (!ReadProcStats(pid, &stats_data))
     return 0;

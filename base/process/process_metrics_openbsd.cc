@@ -8,10 +8,34 @@
 #include <stdint.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 
 namespace base {
+
+namespace {
+
+static std::optional<int> GetProcessCPU(pid_t pid) {
+  struct kinfo_proc info;
+  size_t length;
+  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid,
+                sizeof(struct kinfo_proc), 0 };
+
+  if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0) {
+    return std::nullopt;
+  }
+
+  mib[5] = (length / sizeof(struct kinfo_proc));
+
+  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0) {
+    return std::nullopt;
+  }
+
+  return std::optional(info.p_pctcpu);
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
@@ -19,43 +43,27 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-static int GetProcessCPU(pid_t pid) {
-  struct kinfo_proc info;
-  size_t length;
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid,
-                sizeof(struct kinfo_proc), 0 };
-
-  if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0)
-    return -1;
-
-  mib[5] = (length / sizeof(struct kinfo_proc));
-
-  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0)
-    return 0;
-
-  return info.p_pctcpu;
-}
-
-double ProcessMetrics::GetPlatformIndependentCPUUsage() {
+std::optional<double> ProcessMetrics::GetPlatformIndependentCPUUsage() {
   TimeTicks time = TimeTicks::Now();
 
   if (last_cpu_time_.is_zero()) {
     // First call, just set the last values.
     last_cpu_time_ = time;
-    return 0;
+    return std::optional(0.0);
   }
 
-  int cpu = GetProcessCPU(process_);
+  const std::optional<int> cpu = GetProcessCPU(process_);
+  if (!cpu.has_value()) {
+    return std::nullopt;
+  }
 
   last_cpu_time_ = time;
-  double percentage = static_cast<double>((cpu * 100.0) / FSCALE);
-
-  return percentage;
+  return std::optional(double{cpu.value()} / FSCALE * 100.0);
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
   NOTREACHED();
-  return TimeDelta();
+  return std::nullopt;
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process)

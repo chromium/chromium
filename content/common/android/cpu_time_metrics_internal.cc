@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -223,13 +224,12 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
       return;
     }
 
-    // GetCumulativeCPUUsage() may return a negative value if sampling failed.
-    base::TimeDelta cumulative_cpu_time =
+    const std::optional<base::TimeDelta> cumulative_cpu_time =
         process_metrics_->GetCumulativeCPUUsage();
-    base::TimeDelta process_cpu_time_delta =
-        cumulative_cpu_time - reported_cpu_time_;
-    if (process_cpu_time_delta.is_positive()) {
-      reported_cpu_time_ = cumulative_cpu_time;
+    base::TimeDelta process_cpu_time_delta;
+    if (cumulative_cpu_time.has_value()) {
+      process_cpu_time_delta = cumulative_cpu_time.value() - reported_cpu_time_;
+      reported_cpu_time_ = cumulative_cpu_time.value();
     }
 
     // Also report a breakdown by thread type.
@@ -282,6 +282,9 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
     // Report the difference of the process's total CPU time and all thread's
     // CPU time as unattributed time (e.g. time consumed by threads that died).
+    // `unattributed_delta` can be negative if GetCumulativeCPUUsagePerThread()
+    // reported more time than GetCumulativeCPUUsage() did, or if
+    // GetCumulativeCPUUsage() failed so `unattributed_delta` started at 0.
     if (unattributed_delta.is_positive()) {
       ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType::kUnattributedThread,
                                unattributed_delta);
@@ -425,12 +428,16 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
     return;
   }
 
-  // GetCumulativeCPUUsage() may return a negative value if sampling failed.
-  base::TimeDelta cumulative_cpu_time =
+  const std::optional<base::TimeDelta> cumulative_cpu_usage =
       process_metrics_->GetCumulativeCPUUsage();
-  base::TimeDelta process_cpu_time_delta =
-      cumulative_cpu_time - reported_cpu_time_;
+  base::TimeDelta process_cpu_time_delta;
+  if (cumulative_cpu_usage.has_value()) {
+    process_cpu_time_delta = cumulative_cpu_usage.value() - reported_cpu_time_;
+  }
+  // Don't report anything if GetCumulativeCPUUsage() failed or the delta is 0.
   if (process_cpu_time_delta.is_positive()) {
+    const base::TimeDelta cumulative_cpu_time = cumulative_cpu_usage.value();
+
     UMA_HISTOGRAM_SCALED_ENUMERATION("Power.CpuTimeSecondsPerProcessType",
                                      process_type_,
                                      process_cpu_time_delta.InMicroseconds(),

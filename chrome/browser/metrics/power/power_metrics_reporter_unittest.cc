@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -319,7 +320,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kCPUTimeMsName,
       kLongPowerMetricsIntervalDuration.InSeconds() * 1000 *
-          fake_metrics.cpu_usage);
+          fake_metrics.cpu_usage.value());
 #if BUILDFLAG(IS_MAC)
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kIdleWakeUpsName,
                                        fake_metrics.idle_wakeups);

@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <sys/sysctl.h>
 
+#include <optional>
+
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
@@ -93,10 +95,10 @@ mach_port_t ProcessMetrics::TaskForHandle(ProcessHandle process_handle) const {
   return task;
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
   mach_port_t task = TaskForHandle(process_);
   if (task == MACH_PORT_NULL) {
-    return TimeDelta();
+    return std::nullopt;
   }
 
   // Libtop explicitly loops over the threads (libtop_pinfo_update_cpu_usage()
@@ -108,12 +110,12 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
                                &thread_info_count);
   if (kr != KERN_SUCCESS) {
     // Most likely cause: |task| is a zombie.
-    return TimeDelta();
+    return std::nullopt;
   }
 
   task_basic_info_64 task_info_data;
   if (!GetTaskInfo(task, &task_info_data)) {
-    return TimeDelta();
+    return std::nullopt;
   }
 
   /* Set total_time. */
@@ -137,10 +139,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
     // a lag before it shows up in the terminated thread times returned by
     // GetTaskInfo(). Make sure CPU usage doesn't appear to go backwards if
     // GetCumulativeCPUUsage() is called in the interval.
-    return last_measured_cpu_;
+    return std::optional(last_measured_cpu_);
   }
   last_measured_cpu_ = measured_cpu;
-  return measured_cpu;
+  return std::optional(measured_cpu);
 }
 
 int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {

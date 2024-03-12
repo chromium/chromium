@@ -5,6 +5,7 @@
 #include "chrome/browser/task_manager/sampling/task_group_sampler.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -118,14 +119,18 @@ TaskGroupSampler::~TaskGroupSampler() {
 
 double TaskGroupSampler::RefreshCpuUsage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
-  double cpu_usage = process_metrics_->GetPlatformIndependentCPUUsage();
+  const std::optional<double> cpu_usage =
+      process_metrics_->GetPlatformIndependentCPUUsage();
+  if (!cpu_usage.has_value()) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
   if (!cpu_usage_calculated_) {
-    // First call to GetPlatformIndependentCPUUsage returns 0. Ignore it,
-    // and return NaN.
+    // First successful call to GetPlatformIndependentCPUUsage returns 0. Ignore
+    // it, and return NaN.
     cpu_usage_calculated_ = true;
     return std::numeric_limits<double>::quiet_NaN();
   }
-  return cpu_usage;
+  return cpu_usage.value();
 }
 
 int64_t TaskGroupSampler::RefreshSwappedMem() {

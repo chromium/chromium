@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
@@ -124,14 +125,16 @@ class BASE_EXPORT ProcessMetrics {
   [[nodiscard]] double GetPlatformIndependentCPUUsage(TimeDelta cumulative_cpu);
 
   // Same as the above, but automatically calls GetCumulativeCPUUsage() to
-  // determine the current cumulative CPU.
-  [[nodiscard]] double GetPlatformIndependentCPUUsage();
+  // determine the current cumulative CPU. Returns nullopt if
+  // GetCumulativeCPUUsage() fails.
+  [[nodiscard]] std::optional<double> GetPlatformIndependentCPUUsage();
 
   // Returns the cumulative CPU usage across all threads of the process since
-  // process start. In case of multi-core processors, a process can consume CPU
-  // at a rate higher than wall-clock time, e.g. two cores at full utilization
-  // will result in a time delta of 2 seconds/per 1 wall-clock second.
-  [[nodiscard]] TimeDelta GetCumulativeCPUUsage();
+  // process start, or nullopt on error. In case of multi-core processors, a
+  // process can consume CPU at a rate higher than wall-clock time, e.g. two
+  // cores at full utilization will result in a time delta of 2 seconds/per 1
+  // wall-clock second.
+  [[nodiscard]] std::optional<TimeDelta> GetCumulativeCPUUsage();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)

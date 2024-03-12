@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -375,7 +376,8 @@ std::unique_ptr<protocol::SystemInfo::ProcessInfo> MakeProcessInfo(
     const String& process_type) {
   std::unique_ptr<base::ProcessMetrics> pm =
       CreateProcessMetrics(process.Handle());
-  base::TimeDelta cpu_usage = pm->GetCumulativeCPUUsage();
+  const base::TimeDelta cpu_usage =
+      pm->GetCumulativeCPUUsage().value_or(base::TimeDelta());
 
   return SystemInfo::ProcessInfo::Create()
       .SetId(process.Pid())

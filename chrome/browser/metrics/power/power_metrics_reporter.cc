@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -254,7 +255,10 @@ void PowerMetricsReporter::ReportBatteryUKMs(
     DCHECK(battery_discharge.rate_relative.has_value());
     builder.SetBatteryDischargeRate(*battery_discharge.rate_relative);
   }
-  builder.SetCPUTimeMs(metrics.cpu_usage * interval_duration.InMilliseconds());
+  if (metrics.cpu_usage.has_value()) {
+    builder.SetCPUTimeMs(metrics.cpu_usage.value() *
+                         interval_duration.InMilliseconds());
+  }
 #if BUILDFLAG(IS_MAC)
   builder.SetIdleWakeUps(metrics.idle_wakeups);
   builder.SetPackageExits(metrics.package_idle_wakeups);

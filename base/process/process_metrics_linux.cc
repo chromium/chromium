@@ -17,6 +17,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
@@ -57,24 +58,26 @@ uint64_t ReadFileToUint64(const FilePath& file) {
 }
 #endif
 
-// Get the total CPU from a proc stat buffer.  Return value is number of jiffies
-// on success or 0 if parsing failed.
-int64_t ParseTotalCPUTimeFromStats(const std::vector<std::string>& proc_stats) {
-  return internal::GetProcStatsFieldAsInt64(proc_stats, internal::VM_UTIME) +
-         internal::GetProcStatsFieldAsInt64(proc_stats, internal::VM_STIME);
-}
-
-// Get the total CPU of a single process.  Return value is number of jiffies
-// on success or -1 on error.
-int64_t GetProcessCPU(pid_t pid) {
-  std::string buffer;
-  std::vector<std::string> proc_stats;
-  if (!internal::ReadProcStats(pid, &buffer) ||
-      !internal::ParseProcStats(buffer, &proc_stats)) {
-    return -1;
+// Get the total CPU from a proc stat buffer.  Return value is a TimeDelta
+// converted from a number of jiffies on success or nullopt if parsing failed.
+std::optional<TimeDelta> ParseTotalCPUTimeFromStats(
+    base::span<const std::string> proc_stats) {
+  const std::optional<int64_t> utime =
+      internal::GetProcStatsFieldAsOptionalInt64(proc_stats,
+                                                 internal::VM_UTIME);
+  if (utime.value_or(-1) < 0) {
+    return std::nullopt;
   }
-
-  return ParseTotalCPUTimeFromStats(proc_stats);
+  const std::optional<int64_t> stime =
+      internal::GetProcStatsFieldAsOptionalInt64(proc_stats,
+                                                 internal::VM_UTIME);
+  if (stime.value_or(-1) < 0) {
+    return std::nullopt;
+  }
+  const TimeDelta cpu_time = internal::ClockTicksToTimeDelta(
+      base::ClampAdd(utime.value(), stime.value()));
+  CHECK(!cpu_time.is_negative());
+  return std::optional(cpu_time);
 }
 
 }  // namespace
@@ -90,8 +93,15 @@ size_t ProcessMetrics::GetResidentSetSize() const {
          checked_cast<size_t>(getpagesize());
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
-  return internal::ClockTicksToTimeDelta(GetProcessCPU(process_));
+std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
+  std::string buffer;
+  std::vector<std::string> proc_stats;
+  if (!internal::ReadProcStats(process_, &buffer) ||
+      !internal::ParseProcStats(buffer, &proc_stats)) {
+    return std::nullopt;
+  }
+
+  return ParseTotalCPUTimeFromStats(proc_stats);
 }
 
 bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
@@ -110,9 +120,11 @@ bool ProcessMetrics::GetCumulativeCPUUsagePerThread(
           return;
         }
 
-        TimeDelta thread_time = internal::ClockTicksToTimeDelta(
-            ParseTotalCPUTimeFromStats(proc_stats));
-        cpu_per_thread.emplace_back(tid, thread_time);
+        const std::optional<TimeDelta> thread_time =
+            ParseTotalCPUTimeFromStats(proc_stats);
+        if (thread_time.has_value()) {
+          cpu_per_thread.emplace_back(tid, thread_time.value());
+        }
       });
 
   return !cpu_per_thread.empty();

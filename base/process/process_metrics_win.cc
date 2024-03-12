@@ -120,25 +120,26 @@ struct SYSTEM_PERFORMANCE_INFORMATION {
   ULONG SystemCalls;
 };
 
-TimeDelta GetImpreciseCumulativeCPUUsage(const win::ScopedHandle& process) {
+std::optional<TimeDelta> GetImpreciseCumulativeCPUUsage(
+    const win::ScopedHandle& process) {
   FILETIME creation_time;
   FILETIME exit_time;
   FILETIME kernel_time;
   FILETIME user_time;
 
   if (!process.is_valid()) {
-    return TimeDelta();
+    return std::nullopt;
   }
 
   if (!GetProcessTimes(process.get(), &creation_time, &exit_time, &kernel_time,
                        &user_time)) {
     // This should never fail when the handle is valid.
     NOTREACHED(NotFatalUntil::M125);
-    return TimeDelta();
+    return std::nullopt;
   }
 
-  return TimeDelta::FromFileTime(kernel_time) +
-         TimeDelta::FromFileTime(user_time);
+  return std::optional(TimeDelta::FromFileTime(kernel_time) +
+                       TimeDelta::FromFileTime(user_time));
 }
 
 }  // namespace
@@ -160,7 +161,7 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
 #if defined(ARCH_CPU_ARM64)
   // Precise CPU usage is not available on Arm CPUs because they don't support
   // constant rate TSC.
@@ -180,18 +181,18 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   }
 
   if (!process_.is_valid()) {
-    return TimeDelta();
+    return std::nullopt;
   }
 
   ULONG64 process_cycle_time = 0;
   if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
     // This should never fail when the handle is valid.
     NOTREACHED(NotFatalUntil::M125);
-    return TimeDelta();
+    return std::nullopt;
   }
 
   const double process_time_seconds = process_cycle_time / tsc_ticks_per_second;
-  return Seconds(process_time_seconds);
+  return std::optional(Seconds(process_time_seconds));
 #endif  // !defined(ARCH_CPU_ARM64)
 }
 

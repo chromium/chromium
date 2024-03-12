@@ -35,14 +35,16 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return base::WrapUnique(new ProcessMetrics(process));
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+std::optional<TimeDelta> ProcessMetrics::GetCumulativeCPUUsage() {
   zx_info_task_runtime_t stats;
 
   zx_status_t status = zx::unowned_process(process_)->get_info(
       ZX_INFO_TASK_RUNTIME, &stats, sizeof(stats), nullptr, nullptr);
-  ZX_CHECK(status == ZX_OK, status);
+  if (status != ZX_OK) {
+    return std::nullopt;
+  }
 
-  return TimeDelta::FromZxDuration(stats.cpu_time);
+  return std::optional(TimeDelta::FromZxDuration(stats.cpu_time));
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {

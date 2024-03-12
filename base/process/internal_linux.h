@@ -11,9 +11,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
 #include "base/process/process_handle.h"
@@ -99,6 +101,13 @@ enum ProcStatsFields {
 // simply |pid|, and the next two values are strings.
 int64_t GetProcStatsFieldAsInt64(const std::vector<std::string>& proc_stats,
                                  ProcStatsFields field_num);
+
+// Reads the `field_num`th field from `proc_stats`. Asserts that `field_num` is
+// a valid index into `proc_stats`. Returns nullopt if the field doesn't contain
+// a valid integer.
+std::optional<int64_t> GetProcStatsFieldAsOptionalInt64(
+    base::span<const std::string> proc_stats,
+    ProcStatsFields field_num);
 
 // Same as GetProcStatsFieldAsInt64(), but for size_t values.
 size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,

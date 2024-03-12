@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_performance_agent.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/process/process.h"
@@ -50,8 +51,7 @@ std::unique_ptr<base::ProcessMetrics> GetCurrentProcessMetrics() {
 base::TimeDelta GetCurrentProcessTime() {
   std::unique_ptr<base::ProcessMetrics> process_metrics =
       GetCurrentProcessMetrics();
-  base::TimeDelta process_time = process_metrics->GetCumulativeCPUUsage();
-  return process_time;
+  return process_metrics->GetCumulativeCPUUsage().value_or(base::TimeDelta());
 }
 
 }  // namespace

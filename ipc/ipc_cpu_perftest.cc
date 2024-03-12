@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -73,7 +74,7 @@ class PerfCpuLogger {
         process_metrics_(base::ProcessMetrics::CreateCurrentProcessMetrics()) {
     // Query the CPU usage once to start the recording interval.
     const double inital_cpu_usage =
-        process_metrics_->GetPlatformIndependentCPUUsage();
+        process_metrics_->GetPlatformIndependentCPUUsage().value_or(-1.0);
     // This should have been the first call so the reported cpu usage should be
     // exactly zero.
     DCHECK_EQ(inital_cpu_usage, 0.0);
@@ -83,7 +84,8 @@ class PerfCpuLogger {
   PerfCpuLogger& operator=(const PerfCpuLogger&) = delete;
 
   ~PerfCpuLogger() {
-    double result = process_metrics_->GetPlatformIndependentCPUUsage();
+    const double result =
+        process_metrics_->GetPlatformIndependentCPUUsage().value_or(-1.0);
     base::LogPerfResult(test_name_.c_str(), result, "%");
   }
 
