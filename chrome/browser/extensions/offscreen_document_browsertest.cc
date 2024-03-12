@@ -142,8 +142,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
     // TODO(https://crbug.com/1339382): The following check should be:
     //   EXPECT_EQ(mojom::ContextType::kOffscreenExtension, context_type);
     // However, currently the ProcessMap can't differentiate between a
-    // blessed extension context and an offscreen document, as both run in the
-    // primary extension process and have committed to the extension origin.
+    // privileged extension context and an offscreen document, as both run in
+    // the primary extension process and have committed to the extension origin.
     // This is okay (this boundary isn't a security boundary), but is
     // technically incorrect.
     // See also comment in ProcessMap::GetMostLikelyContextType().

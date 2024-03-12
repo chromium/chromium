@@ -165,8 +165,8 @@ void ExtensionKeybindingRegistry::CommandExecuted(
 
     if (web_contents) {
       // The action APIs (browserAction, pageAction, action) are only available
-      // to blessed extension contexts. As such, we deterministically know that
-      // the right context type here is blessed.
+      // to privileged extension contexts. As such, we deterministically know
+      // that the right context type here is privileged.
       constexpr mojom::ContextType context_type =
           mojom::ContextType::kPrivilegedExtension;
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =

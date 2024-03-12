@@ -128,12 +128,12 @@ class ProcessMap : public KeyedService {
   //   should never, ever share a process with an extension or with webui.
   // - Multiple context types (with some difference in privilege levels) may be
   //   valid for a given process and extension pairing. For instance, a
-  //   privileged extension process could host any of blessed extension
+  //   privileged extension process could host any of privileged extension
   //   contexts, offscreen document contexts, and content script contexts. Thus,
   //   a compromised renderer could, in theory, claim a more privileged context
-  //   (such as claiming to be a blessed extension context from an offscreen
+  //   (such as claiming to be a privileged extension context from an offscreen
   //   document context). This *is not* a security bug; if the renderer is
-  //   compromised and could host blessed extension contexts, it could simply
+  //   compromised and could host privileged extension contexts, it could simply
   //   create (or hijack) one.
   // - This only looks at process-level guarantees. Thus, for contexts like
   //   untrusted webui (chrome-untrusted:// pages), the caller is responsible
@@ -176,19 +176,19 @@ class ProcessMap : public KeyedService {
   // iframes lauch, it won't be an issue.
   //
   // Anyhow, the expected behaviour is:
-  //   - For hosted app processes, this will be blessed_web_page.
+  //   - For hosted app processes, this will be `kPrivilegedWebPage`.
   //   - For processes of platform apps running on lock screen, this will be
-  //     lock_screen_extension.
-  //   - For other extension processes, this will be blessed_extension.
-  //   - For WebUI processes, this will be a webui.
-  //   - For chrome-untrusted:// URLs, this will be a webui_untrusted_context.
-  //   - For any other extension we have the choice of unblessed_extension or
-  //     content_script. Since content scripts are more common, guess that.
+  //     `kLockscreenExtension`.
+  //   - For other extension processes, this will be `kPrivilegedExtension`.
+  //   - For WebUI processes, this will be `kWebUi`.
+  //   - For chrome-untrusted:// URLs, this will be a `kUntrustedWebUi`.
+  //   - For any other extension we have the choice of `kUnprivilegedExtension`
+  //     or `kContentScript`. Since content scripts are more common, guess that.
   //     We *could* in theory track which web processes have extension frames
-  //     in them, and those would be unblessed_extension, but we don't at the
-  //     moment, and once OOP iframes exist then there won't even be such a
-  //     thing as an unblessed_extension context.
-  //   - For anything else, web_page.
+  //     in them, and those would be `kUnprivilegedExtension`, but we don't at
+  //     the moment, and once OOP iframes exist then there won't even be such a
+  //     thing as a `kUnprivilegedExtension` context.
+  //   - For anything else, `kWebPage`.
   virtual mojom::ContextType GetMostLikelyContextType(
       const Extension* extension,
       int process_id,

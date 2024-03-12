@@ -423,7 +423,7 @@ void Dispatcher::DidCreateScriptContext(
     case mojom::ContextType::kUserScript:
       // We don't really care about offscreen extension context or user script
       // context initialization time at the moment. Offscreen extension context
-      // initialization is a strict subset (and very similar to) blessed
+      // initialization is a strict subset (and very similar to) privileged
       // extension context time, while user script context initialization is
       // very similar to content script initialization.
       break;

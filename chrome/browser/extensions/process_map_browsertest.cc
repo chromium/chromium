@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
   ASSERT_TRUE(webview);
 
   // The embedder (the app window) can host any kind of extension context
-  // except an unblessed extension context (which is only available to
+  // except an unprivileged extension context (which is only available to
   // webviews).
   RunCanProcessHostContextTypeChecks(
       extension, *embedder->GetPrimaryMainFrame()->GetProcess(),
@@ -883,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
       "embedder process");
 
   // The webview can only host content scripts, user scripts, and
-  // unblessed extension contexts (accessible resources).
+  // unprivileged extension contexts (accessible resources).
   RunCanProcessHostContextTypeChecks(
       extension, *webview->GetPrimaryMainFrame()->GetProcess(),
       {mojom::ContextType::kContentScript,

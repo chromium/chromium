@@ -132,14 +132,14 @@ bool ProcessMap::CanProcessHostContextType(
              ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
                  process, extension->id());
     case mojom::ContextType::kLockscreenExtension:
-      // Lock screen contexts are essentially blessed contexts that run on the
-      // lock screen profile. We don't run component hosted apps there, so no
-      // need to allow those.
+      // Lock screen contexts are essentially privileged contexts that run on
+      // the lock screen profile. We don't run component hosted apps there, so
+      // no need to allow those.
       return is_lock_screen_context_ && extension &&
              !extension->is_hosted_app() &&
              Contains(extension->id(), process_id);
     case mojom::ContextType::kPrivilegedWebPage:
-      // A blessed web page is a (non-component) hosted app process.
+      // A privileged web page is a (non-component) hosted app process.
       return extension && extension->is_hosted_app() &&
              extension->location() != mojom::ManifestLocation::kComponent &&
              Contains(extension->id(), process_id);
@@ -188,7 +188,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
     // If the process map doesn't contain the process, it might be an extension
     // frame in a webview.
     // We (deliberately) don't add webview-hosted frames to the process map and
-    // don't classify them as BLESSED_EXTENSION_CONTEXTs.
+    // don't classify them as kPrivilegedExtension contexts.
     if (url && extension->origin().IsSameOriginWith(*url) &&
         IsWebViewProcessForExtension(process_id, extension->id())) {
       // Yep, it's an extension frame in a webview.
@@ -206,7 +206,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
   }
 
   // TODO(https://crbug.com/1339382): Currently, offscreen document contexts
-  // are misclassified as BLESSED_EXTENSION_CONTEXTs. This is not ideal
+  // are misclassified as kPrivilegedExtension contexts. This is not ideal
   // because there is a mismatch between the browser and the renderer), but it's
   // not a security issue because, while offscreen documents have fewer
   // capabilities, this is an API distinction, and not a security enforcement.
@@ -215,7 +215,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
   // access all the same features.
   // Even so, we should fix this to properly classify offscreen documents (and
   // this would be a problem if offscreen documents ever have access to APIs
-  // that BLESSED_EXTENSION_CONTEXTs don't).
+  // that kPrivilegedExtension contexts don't).
 
   return is_lock_screen_context_ ? mojom::ContextType::kLockscreenExtension
                                  : mojom::ContextType::kPrivilegedExtension;

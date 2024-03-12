@@ -100,7 +100,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(!!chrome.storage.local.setAccessLevel);
     // TODO(crbug.com/1227410): `setAccessLevel` is exposed to `session` but
     // cannot be accessed from a content script. This will change once we only
-    // expose `setAccessLevel` in unblessed contexts.
+    // expose `setAccessLevel` in unprivileged contexts.
     chrome.test.assertTrue(!!chrome.storage.session.setAccessLevel);
     chrome.storage.session.setAccessLevel(
         {accessLevel: 'TRUSTED_CONTEXTS'}, () => {

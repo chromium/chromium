@@ -207,7 +207,7 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   // Allow component extensions to access chrome://theme/.
   //
   // We don't want to grant these permissions to inactive component extensions,
-  // to avoid granting them in "unblessed" (non-extension) processes.  If a
+  // to avoid granting them in "unprivileged" (non-extension) processes.  If a
   // component extension somehow starts as inactive and becomes active later,
   // we'll re-init the origin permissions, so there's no danger in being
   // conservative. Components shouldn't be subject to enterprise policy controls

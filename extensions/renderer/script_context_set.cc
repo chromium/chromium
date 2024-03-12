@@ -296,9 +296,9 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
   if (extension && active_extension_ids_->count(extension->id()) > 0) {
     // |extension| is active in this process, but it could be either a true
     // extension process or within the extent of a hosted app. In the latter
-    // case this would usually be considered a (blessed) web page context,
+    // case this would usually be considered a (privileged) web page context,
     // unless the extension in question is a component extension, in which case
-    // we cheat and call it blessed.
+    // we cheat and call it privileged.
     if (extension->is_hosted_app() &&
         extension->location() != mojom::ManifestLocation::kComponent) {
       return mojom::ContextType::kPrivilegedWebPage;

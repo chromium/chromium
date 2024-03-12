@@ -255,7 +255,7 @@ bool SettingsFunction::IsAccessToStorageAllowed() {
   api::storage::AccessLevel access_level =
       GetSessionAccessLevel(extension()->id(), *browser_context());
 
-  // Only a blessed extension context is considered trusted.
+  // Only a privileged extension context is considered trusted.
   if (access_level == api::storage::AccessLevel::kTrustedContexts) {
     return source_context_type() == mojom::ContextType::kPrivilegedExtension;
   }

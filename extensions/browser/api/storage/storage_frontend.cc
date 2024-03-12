@@ -203,7 +203,7 @@ void StorageFrontend::OnSettingsChanged(
   bool has_area_changed_event_listener =
       event_router->ExtensionHasEventListener(extension_id, area_event_name);
 
-  // Restrict event to blessed context if session access level is set only to
+  // Restrict event to privileged context if session access level is set only to
   // trusted contexts.
   std::optional<mojom::ContextType> restrict_to_context_type = std::nullopt;
   if (storage_area == StorageAreaNamespace::kSession) {

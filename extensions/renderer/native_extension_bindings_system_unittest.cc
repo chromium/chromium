@@ -679,17 +679,17 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   RegisterExtension(connectable_extension);
 
   v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> blessed_context = MainContext();
+  v8::Local<v8::Context> privileged_context = MainContext();
   v8::Local<v8::Context> connectable_webpage_context = AddContext();
   v8::Local<v8::Context> nonconnectable_webpage_context = AddContext();
 
-  // Create two contexts - a blessed extension context and a normal web page
+  // Create two contexts - a privileged extension context and a normal web page
   // context.
-  ScriptContext* blessed_script_context =
-      CreateScriptContext(blessed_context, connectable_extension.get(),
+  ScriptContext* privileged_script_context =
+      CreateScriptContext(privileged_context, connectable_extension.get(),
                           mojom::ContextType::kPrivilegedExtension);
-  blessed_script_context->set_url(connectable_extension->url());
-  bindings_system()->UpdateBindingsForContext(blessed_script_context);
+  privileged_script_context->set_url(connectable_extension->url());
+  bindings_system()->UpdateBindingsForContext(privileged_script_context);
 
   ScriptContext* connectable_webpage_script_context = CreateScriptContext(
       connectable_webpage_context, nullptr, mojom::ContextType::kWebPage);
@@ -703,18 +703,18 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   bindings_system()->UpdateBindingsForContext(
       nonconnectable_webpage_script_context);
 
-  // Check that properties are correctly restricted. The blessed context should
-  // have access to the whole runtime API, the connectable webpage should only
-  // have access to sendMessage, and the nonconnectable webpage should not have
-  // access to any of the API.
+  // Check that properties are correctly restricted. The privileged context
+  // should have access to the whole runtime API, the connectable webpage should
+  // only have access to sendMessage, and the nonconnectable webpage should not
+  // have access to any of the API.
   const char kRuntime[] = "chrome.runtime";
   const char kSendMessage[] = "chrome.runtime.sendMessage";
   const char kGetUrl[] = "chrome.runtime.getURL";
   const char kOnMessage[] = "chrome.runtime.onMessage";
-  ASSERT_TRUE(PropertyExists(blessed_context, kRuntime));
-  EXPECT_TRUE(PropertyExists(blessed_context, kSendMessage));
-  EXPECT_TRUE(PropertyExists(blessed_context, kGetUrl));
-  EXPECT_TRUE(PropertyExists(blessed_context, kOnMessage));
+  ASSERT_TRUE(PropertyExists(privileged_context, kRuntime));
+  EXPECT_TRUE(PropertyExists(privileged_context, kSendMessage));
+  EXPECT_TRUE(PropertyExists(privileged_context, kGetUrl));
+  EXPECT_TRUE(PropertyExists(privileged_context, kOnMessage));
 
   ASSERT_TRUE(PropertyExists(connectable_webpage_context, kRuntime));
   EXPECT_TRUE(PropertyExists(connectable_webpage_context, kSendMessage));

@@ -83,7 +83,7 @@ bool LazyEventDispatcher::QueueEventDispatch(
             dispatch_context.browser_context(),
             // The only lazy listeners belong to an extension's background
             // context (either an event page or a service worker), which are
-            // always BLESSED_EXTENSION_CONTEXTs
+            // always kPrivilegedExtension contexts
             extensions::mojom::ContextType::kPrivilegedExtension, extension,
             listener_filter, modified_event_args, modified_event_filter_info)) {
       // The event has been canceled.

@@ -57,7 +57,7 @@ bool ShouldSuppressFatalErrors() {
 
 // Logs an error for the calling context in preparation for potentially
 // crashing the renderer, with some added metadata about the context:
-//  - Its type (blessed, unblessed, etc).
+//  - Its type (privileged, unprivileged, etc).
 //  - Whether it's valid.
 //  - The extension ID, if one exists.
 // Crashing won't happen in stable/beta releases, but is encouraged to happen

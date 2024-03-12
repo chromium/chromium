@@ -21,7 +21,7 @@ namespace base {
 class TaskRunner;
 }
 
-// WARNING: WebViewInternal could be loaded in an unblessed context, thus any
+// WARNING: WebViewInternal could be loaded in an unprivileged context, thus any
 // new APIs must extend WebViewInternalExtensionFunction or
 // WebViewInternalExecuteCodeFunction which do a process ID check to prevent
 // abuse by normal renderer processes.
