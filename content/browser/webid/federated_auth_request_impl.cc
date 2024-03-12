@@ -1583,6 +1583,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // immediately (for instance on Android when we cannot create a BottomSheet),
   // so invocations after this method should assume that the members may have
   // been cleaned up.
+  // TODO(crbug.com/329261790): Make ShowAccountsDialog() return a boolean and
+  // use that to know when to bail out early from this method.
   request_dialog_controller_->ShowAccountsDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
@@ -1730,6 +1732,8 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   dialog_type_ = kConfirmIdpLogin;
   config_url_ = idp_info->provider->config->config_url;
   login_url_ = idp_info->metadata.idp_login_url;
+  // TODO(crbug.com/329261790): Make ShowFailureDialog() return boolean and use
+  // the value to know when to bail out of this method.
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
@@ -1739,6 +1743,13 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*can_append_hints=*/true));
+
+  // ShowFailureDialog() may have completed the request synchronously, in which
+  // case `fedcm_metrics_` is reset, and hence we did not really show any
+  // failure dialog. Thus, we skip the remaining steps.
+  if (!fedcm_metrics_) {
+    return;
+  }
   fedcm_metrics_->RecordMismatchDialogShown(
       has_shown_mismatch_, !idp_info->provider->login_hint.empty() ||
                                !idp_info->provider->domain_hint.empty());
