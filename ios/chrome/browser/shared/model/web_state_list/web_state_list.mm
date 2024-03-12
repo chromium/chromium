@@ -373,6 +373,15 @@ WebStateList::Range WebStateList::GetWebStates(const TabGroup* group) const {
   return groups_.find(group)->second;
 }
 
+std::set<const TabGroup*> WebStateList::GetGroups() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::set<const TabGroup*> groups;
+  for (const auto& group : groups_) {
+    groups.insert(group.first.get());
+  }
+  return groups;
+}
+
 const TabGroup* WebStateList::CreateGroup(
     const std::set<int>& indices,
     const tab_groups::TabGroupVisualData& visual_data) {

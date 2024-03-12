@@ -2392,6 +2392,26 @@ TEST_F(WebStateListTest, SetWebStatePinnedAt_UnpinningDoesntGroup) {
   EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group));
 }
 
+// Tests that getting groups returns the groups of the web state list.
+TEST_F(WebStateListTest, GetGroups) {
+  EXPECT_TRUE(web_state_list_.GetGroups().empty());
+
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a b c ] d* e"));
+  const TabGroup* group_0 = web_state_list_.GetGroupOfWebStateAt(0);
+  EXPECT_EQ(1u, web_state_list_.GetGroups().size());
+  EXPECT_EQ(group_0, *(web_state_list_.GetGroups().begin()));
+
+  TabGroupVisualData visual_data =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kPink);
+  const TabGroup* group_1 = web_state_list_.CreateGroup({2}, visual_data);
+
+  EXPECT_EQ(2u, web_state_list_.GetGroups().size());
+  EXPECT_TRUE(web_state_list_.GetGroups().contains(group_0));
+  EXPECT_TRUE(web_state_list_.GetGroups().contains(group_1));
+}
+
 // Tests creating a group with one tab that doesn't move.
 TEST_F(WebStateListTest, CreateGroup_OneTab_NotMoving) {
   WebStateListBuilderFromDescription builder;

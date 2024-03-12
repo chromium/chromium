@@ -355,6 +355,9 @@ class WebStateList {
   // be valid and belong to this WebStateList.
   Range GetWebStates(const TabGroup* group) const;
 
+  // Returns the list of all groups.
+  std::set<const TabGroup*> GetGroups() const;
+
   // Creates a new tab group and moves the set of WebStates at `indices` to
   // it.
   // -   This unpins pinned WebState.
