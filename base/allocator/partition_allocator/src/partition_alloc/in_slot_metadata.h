@@ -6,8 +6,10 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_IN_SLOT_METADATA_H_
 
 #include <atomic>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 
 #include "build/build_config.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
@@ -49,12 +51,33 @@ AlignUpInSlotMetadataSizeForApple(size_t in_slot_metadata_size) {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
+namespace {
+// Utility functions to define a bit field.
+template <typename CountType>
+static constexpr CountType SafeShift(CountType lhs, int rhs) {
+  return rhs >= std::numeric_limits<CountType>::digits ? 0 : lhs << rhs;
+}
+template <typename CountType>
+struct BitField {
+  static constexpr CountType None() { return CountType(0); }
+  static constexpr CountType Bit(int n_th) {
+    return SafeShift<CountType>(1, n_th);
+  }
+  // Mask with bits between `lo` and `hi` (both inclusive) set.
+  static constexpr CountType Mask(int lo, int hi) {
+    return (SafeShift<CountType>(1, hi + 1) - 1) &
+           ~(SafeShift<CountType>(1, lo) - 1);
+  }
+};
+}  // namespace
+
 // Special-purpose atomic bit field class mainly used by RawPtrBackupRefImpl.
 // Formerly known as `PartitionRefCount`, but renamed to support usage that is
 // unrelated to BRP.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
  public:
-  // This class holds an atomic 32 bits field: `count_`. It holds 3 values:
+  // This class holds an atomic 32 bits field: `count_`. It holds following
+  // values:
   //
   // bits   name                   description
   // -----  ---------------------  ----------------------------------------
@@ -73,8 +96,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // 31     needs_mac11_malloc_    Whether malloc_size() return value needs to
   //          size_hack            be adjusted for this allocation.
   //
-  // On `BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)` builds, this holds 5 values
-  // in 64 bits.
+  // On `BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)` builds, this holds two more
+  // entries in total of 64 bits.
   //
   // bits   name                   description
   // -----  ---------------------  ----------------------------------------
@@ -100,28 +123,39 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // |dangling_detected| is set and the error is reported via
   // DanglingRawPtrDetected(id). The matching DanglingRawPtrReleased(id) will be
   // called when the last raw_ptr<> is released.
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  using CountType = uint64_t;
-  static constexpr CountType kMemoryHeldByAllocatorBit = 0x0000'0000'0000'0001;
-  static constexpr CountType kPtrCountMask = 0x0000'0000'FFFF'FFFE;
-  static constexpr CountType kUnprotectedPtrCountMask = 0xFFFF'FFFC'0000'0000;
-  static constexpr CountType kDanglingRawPtrDetectedBit = 0x0000'0001'0000'0000;
-  static constexpr CountType kNeedsMac11MallocSizeHackBit =
-      0x0000'0002'0000'0000;
-
-  static constexpr CountType kPtrInc = 0x0000'0000'0000'0002;
-  static constexpr CountType kUnprotectedPtrInc = 0x0000'0004'0000'0000;
-#else   // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   using CountType = uint32_t;
-  static constexpr CountType kMemoryHeldByAllocatorBit = 0x0000'0001;
+  static constexpr CountType kMemoryHeldByAllocatorBit =
+      BitField<CountType>::Bit(0);
+  static constexpr CountType kPtrCountMask = BitField<CountType>::Mask(1, 30);
+  static constexpr CountType kNeedsMac11MallocSizeHackBit =
+      BitField<CountType>::Bit(31);
+  static constexpr CountType kDanglingRawPtrDetectedBit =
+      BitField<CountType>::None();
+  static constexpr CountType kUnprotectedPtrCountMask =
+      BitField<CountType>::None();
+#else   // !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  using CountType = uint64_t;
+  static constexpr auto kMemoryHeldByAllocatorBit = BitField<CountType>::Bit(0);
+  static constexpr auto kPtrCountMask = BitField<CountType>::Mask(1, 31);
+  static constexpr auto kDanglingRawPtrDetectedBit =
+      BitField<CountType>::Bit(32);
+  static constexpr auto kNeedsMac11MallocSizeHackBit =
+      BitField<CountType>::Bit(33);
+  static constexpr auto kUnprotectedPtrCountMask =
+      BitField<CountType>::Mask(34, 63);
+#endif  // !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
-  static constexpr CountType kPtrCountMask = 0x7FFF'FFFE;
-  static constexpr CountType kUnprotectedPtrCountMask = 0x0000'0000;
-  static constexpr CountType kDanglingRawPtrDetectedBit = 0x0000'0000;
-  static constexpr CountType kNeedsMac11MallocSizeHackBit = 0x8000'0000;
+  // Quick check to assert these masks do not overlap.
+  static_assert((kMemoryHeldByAllocatorBit + kPtrCountMask +
+                 kUnprotectedPtrCountMask + kDanglingRawPtrDetectedBit +
+                 kNeedsMac11MallocSizeHackBit) ==
+                std::numeric_limits<CountType>::max());
 
-  static constexpr CountType kPtrInc = 0x0000'0002;
-#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  static constexpr auto kPtrInc =
+      SafeShift<CountType>(1, std::countr_zero(kPtrCountMask));
+  static constexpr auto kUnprotectedPtrInc =
+      SafeShift<CountType>(1, std::countr_zero(kUnprotectedPtrCountMask));
 
   PA_ALWAYS_INLINE explicit InSlotMetadata(bool needs_mac11_malloc_size_hack);
 
