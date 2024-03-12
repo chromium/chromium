@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -20,7 +21,6 @@ import android.text.TextUtils;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +28,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
@@ -76,6 +77,7 @@ public class TabPersistentStoreUnitTest {
     private static final String RESTORE_TAB_STRING_2 = "https://quux.com/";
     private static final String RESTORE_TAB_STRING_3 = "https://quuz.com/";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private TabPersistencePolicy mPersistencePolicy;
@@ -83,19 +85,16 @@ public class TabPersistentStoreUnitTest {
     @Mock private TabModel mNormalTabModel;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    private TabModelFilter mNormalTabModelFilter;
-    private TabModelFilter mIncognitoTabModelFilter;
-
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mNormalTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
 
+    private TabModelFilter mNormalTabModelFilter;
+    private TabModelFilter mIncognitoTabModelFilter;
     private TabPersistentStore mPersistentStore;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
@@ -122,12 +121,7 @@ public class TabPersistentStoreUnitTest {
         // Flush pending PersistentStore tasks.
         final AtomicBoolean flushed = new AtomicBoolean(false);
         if (mPersistentStore != null) {
-            mPersistentStore
-                    .getTaskRunnerForTests()
-                    .postTask(
-                            () -> {
-                                flushed.set(true);
-                            });
+            mPersistentStore.getTaskRunnerForTests().postTask(() -> flushed.set(true));
             CriteriaHelper.pollUiThread(() -> flushed.get());
         }
     }
@@ -192,7 +186,7 @@ public class TabPersistentStoreUnitTest {
                 .createNewTab(
                         argThat(new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL)),
                         eq(TabLaunchType.FROM_RESTORE),
-                        (Tab) isNull(),
+                        isNull(),
                         eq(0));
     }
 
@@ -210,7 +204,7 @@ public class TabPersistentStoreUnitTest {
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
         Tab emptyNtp = mock(Tab.class);
         when(mNormalTabCreator.createNewTab(
-                        argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), (Tab) isNull()))
+                        argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
                 .thenReturn(emptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
@@ -221,7 +215,7 @@ public class TabPersistentStoreUnitTest {
                 .createNewTab(
                         argThat(new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL)),
                         eq(TabLaunchType.FROM_RESTORE),
-                        (Tab) isNull(),
+                        isNull(),
                         eq(0));
     }
 
@@ -239,7 +233,7 @@ public class TabPersistentStoreUnitTest {
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
         Tab emptyNtp = mock(Tab.class);
         when(mNormalTabCreator.createNewTab(
-                        argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), (Tab) isNull()))
+                        argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
                 .thenReturn(emptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
@@ -249,7 +243,7 @@ public class TabPersistentStoreUnitTest {
                 .createNewTab(
                         argThat(new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL)),
                         eq(TabLaunchType.FROM_RESTORE),
-                        (Tab) isNull(),
+                        isNull(),
                         eq(0));
 
         TabRestoreDetails emptyIncognitoNtpDetails =
@@ -259,7 +253,7 @@ public class TabPersistentStoreUnitTest {
                 .createNewTab(
                         argThat(new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL)),
                         eq(TabLaunchType.FROM_RESTORE),
-                        (Tab) isNull(),
+                        isNull(),
                         eq(0));
     }
 
@@ -293,7 +287,7 @@ public class TabPersistentStoreUnitTest {
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
         Tab emptyNtp = mock(Tab.class);
         when(mIncognitoTabCreator.createNewTab(
-                        argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), (Tab) isNull()))
+                        argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), isNull()))
                 .thenReturn(emptyNtp);
 
         TabRestoreDetails emptyNtpDetails =
@@ -304,7 +298,7 @@ public class TabPersistentStoreUnitTest {
                 .createNewTab(
                         argThat(new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL)),
                         eq(TabLaunchType.FROM_RESTORE),
-                        (Tab) isNull(),
+                        isNull(),
                         eq(0));
     }
 
@@ -347,39 +341,38 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, false);
 
-        Assert.assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in regular", 2, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 UrlConstants.NTP_URL,
                 metadata.normalModelMetadata.urls.get(1));
 
-        Assert.assertEquals(
-                "Incorrect index for incognito", 1, metadata.incognitoModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for incognito", 1, metadata.incognitoModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in incognito",
                 2,
                 metadata.incognitoModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for first incognito tab.",
                 INCOGNITO_TAB_STRING_1,
                 metadata.incognitoModelMetadata.urls.get(0));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for second incognito tab.",
                 INCOGNITO_TAB_STRING_2,
                 metadata.incognitoModelMetadata.urls.get(1));
 
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of cached normal tab count.",
                 2,
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.REGULAR_TAB_COUNT));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of cached incognito tab count.",
                 2,
                 ChromeSharedPreferences.getInstance()
@@ -395,19 +388,19 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, false);
 
-        Assert.assertEquals("Incorrect index for regular", 1, metadata.normalModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for regular", 1, metadata.normalModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in regular", 2, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 UrlConstants.NTP_URL,
                 metadata.normalModelMetadata.urls.get(0));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(1));
 
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of cached normal tab count.",
                 2,
                 ChromeSharedPreferences.getInstance()
@@ -423,15 +416,15 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
 
-        Assert.assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in regular", 1, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
 
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of cached normal tab count.",
                 1,
                 ChromeSharedPreferences.getInstance()
@@ -447,15 +440,15 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
 
-        Assert.assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in regular", 1, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
 
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of cached normal tab count.",
                 1,
                 ChromeSharedPreferences.getInstance()
@@ -473,15 +466,15 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
 
-        Assert.assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in regular", 1, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
 
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of cached normal tab count.",
                 1,
                 ChromeSharedPreferences.getInstance()
@@ -499,23 +492,23 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
 
-        Assert.assertEquals("Incorrect index for regular", 1, metadata.normalModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for regular", 1, metadata.normalModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in regular", 2, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for first NTP.",
                 UrlConstants.NTP_URL,
                 metadata.normalModelMetadata.urls.get(0));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect id for first NTP.",
                 1,
                 metadata.normalModelMetadata.ids.get(0).intValue());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(1));
 
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of cached normal tab count.",
                 2,
                 ChromeSharedPreferences.getInstance()
@@ -534,7 +527,7 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(RESTORE_TAB_ID_2, 3, true, RESTORE_TAB_STRING_2, false);
         TabRestoreDetails unknownTabRestoreDetails =
                 new TabRestoreDetails(RESTORE_TAB_ID_3, 4, null, RESTORE_TAB_STRING_3, false);
-        ArrayList<TabRestoreDetails> tabRestoreDetails = new ArrayList<TabRestoreDetails>() {};
+        ArrayList<TabRestoreDetails> tabRestoreDetails = new ArrayList<>() {};
         tabRestoreDetails.add(regularTabRestoreDetails);
         tabRestoreDetails.add(incognitoTabRestoreDetails);
         tabRestoreDetails.add(unknownTabRestoreDetails);
@@ -542,38 +535,37 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(
                         mTabModelSelector, tabRestoreDetails, true);
-        Assert.assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in regular", 2, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for first regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for first second tab.",
                 RESTORE_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(1));
 
         // TabRestoreDetails with unknown isIncognito should be appended to incognito list.
-        Assert.assertEquals(
-                "Incorrect index for incognito", 1, metadata.incognitoModelMetadata.index);
-        Assert.assertEquals(
+        assertEquals("Incorrect index for incognito", 1, metadata.incognitoModelMetadata.index);
+        assertEquals(
                 "Incorrect number of tabs in incognito",
                 4,
                 metadata.incognitoModelMetadata.ids.size());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for first incognito tab.",
                 INCOGNITO_TAB_STRING_1,
                 metadata.incognitoModelMetadata.urls.get(0));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for second incognito tab.",
                 INCOGNITO_TAB_STRING_2,
                 metadata.incognitoModelMetadata.urls.get(1));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for third incognito tab.",
                 RESTORE_TAB_STRING_2,
                 metadata.incognitoModelMetadata.urls.get(2));
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for fourth \"incognito\" tab.",
                 RESTORE_TAB_STRING_3,
                 metadata.incognitoModelMetadata.urls.get(3));
@@ -601,11 +593,11 @@ public class TabPersistentStoreUnitTest {
         TabModelSelectorMetadata metadata =
                 TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, false);
 
-        Assert.assertEquals(1, metadata.normalModelMetadata.ids.size());
-        Assert.assertEquals(1, metadata.normalModelMetadata.urls.size());
-        Assert.assertEquals(0, metadata.normalModelMetadata.index);
-        Assert.assertEquals(11, metadata.normalModelMetadata.ids.get(0).intValue());
-        Assert.assertEquals(REGULAR_TAB_STRING_1, metadata.normalModelMetadata.urls.get(0));
+        assertEquals(1, metadata.normalModelMetadata.ids.size());
+        assertEquals(1, metadata.normalModelMetadata.urls.size());
+        assertEquals(0, metadata.normalModelMetadata.index);
+        assertEquals(11, metadata.normalModelMetadata.ids.get(0).intValue());
+        assertEquals(REGULAR_TAB_STRING_1, metadata.normalModelMetadata.urls.get(0));
     }
 
     private void setupSerializationTestMocks() {
