@@ -60,7 +60,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   // using an inspection tool, e.g. chrome://accessibility.
   BrowserAccessibilityManager::AlwaysFailFast();
 
-  NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
+  DUMP_WILL_BE_NOTREACHED_NORETURN()
+      << "Unsupported API type " << static_cast<std::string>(type);
   return nullptr;
 }
 

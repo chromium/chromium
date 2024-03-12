@@ -37,7 +37,7 @@ ui::InputDeviceType GetInputDeviceType(
     return ui::INPUT_DEVICE_BLUETOOTH;
   // On Chrome OS emulated on Linux, the keyboard is always "UNKNOWN".
   if (base::SysInfo::IsRunningOnChromeOS())
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
   return ui::INPUT_DEVICE_UNKNOWN;
 }
 }  // namespace

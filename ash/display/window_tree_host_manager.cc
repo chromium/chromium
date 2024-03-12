@@ -864,7 +864,7 @@ void WindowTreeHostManager::CreateOrUpdateMirroringDisplay(
     mirror_window_controller_->UpdateWindow(info_list);
     cursor_window_controller_->UpdateContainer();
   } else {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
   }
 }
 
