@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill;
+package org.chromium.chrome.browser.autofill.save_card;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -25,6 +25,7 @@ import androidx.annotation.IdRes;
 
 import com.google.common.collect.ImmutableList;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.autofill.AutofillSaveCardBottomSheetContent.Delegate;
+import org.chromium.chrome.browser.autofill.save_card.AutofillSaveCardBottomSheetContent.Delegate;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -50,7 +51,7 @@ import java.util.List;
 /** Unit tests for {@link AutofillSaveCardBottomSheetContent} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveCardBottomSheetContentTest {
-    @DrawableRes private static final int EXAMPLE_DRAWABLE_RES = R.drawable.arrow_up;
+    @DrawableRes private static final int EXAMPLE_DRAWABLE_RES = org.chromium.chrome.browser.autofill.R.drawable.arrow_up;
 
     private static final String HTTPS_EXAMPLE_COM = "https://example.com";
 
@@ -72,7 +73,7 @@ public class AutofillSaveCardBottomSheetContentTest {
     @Test
     public void testConfirmButtonClick_callsDelegateDidClickConfirm() {
         Button button =
-                mContent.getContentView().findViewById(R.id.autofill_save_card_confirm_button);
+                mContent.getContentView().findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button);
 
         button.callOnClick();
 
@@ -82,7 +83,7 @@ public class AutofillSaveCardBottomSheetContentTest {
     @Test
     public void testCancelButtonClick_callsDelegateDidClickCancel() {
         Button button =
-                mContent.getContentView().findViewById(R.id.autofill_save_card_cancel_button);
+                mContent.getContentView().findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button);
 
         button.callOnClick();
 
@@ -110,22 +111,22 @@ public class AutofillSaveCardBottomSheetContentTest {
         mContent.setUiInfo(uiInfo);
         View contentView = mContent.getContentView();
 
-        ImageView logoImageView = contentView.findViewById(R.id.autofill_save_card_icon);
+        ImageView logoImageView = contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_icon);
         assertEquals(View.GONE, logoImageView.getVisibility());
-        assertEquals("Title Text", getTextViewText(R.id.autofill_save_card_title_text));
-        assertEquals("Description Text", getTextViewText(R.id.autofill_save_card_description_text));
+        assertEquals("Title Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_title_text));
+        assertEquals("Description Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_description_text));
         ImageView issuerImageView =
-                contentView.findViewById(R.id.autofill_save_card_credit_card_icon);
+                contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_icon);
         assertThat(issuerImageView.getDrawable(), notNullValue());
-        assertEquals("CardLabel Text", getTextViewText(R.id.autofill_save_card_credit_card_label));
+        assertEquals("CardLabel Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_label));
         assertEquals(
-                "CardSubLabel Text", getTextViewText(R.id.autofill_save_card_credit_card_sublabel));
+                "CardSubLabel Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_sublabel));
         assertEquals(
                 "Card Description",
-                contentView.findViewById(R.id.autofill_credit_card_chip).getContentDescription());
-        Button confirmButton = contentView.findViewById(R.id.autofill_save_card_confirm_button);
+                contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_credit_card_chip).getContentDescription());
+        Button confirmButton = contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button);
         assertEquals("Confirm Text", confirmButton.getText());
-        Button cancelButton = contentView.findViewById(R.id.autofill_save_card_cancel_button);
+        Button cancelButton = contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button);
         assertEquals("Cancel Text", cancelButton.getText());
     }
 
@@ -144,8 +145,8 @@ public class AutofillSaveCardBottomSheetContentTest {
         View contentView = mContent.getContentView();
         assertEquals(
                 View.GONE,
-                contentView.findViewById(R.id.autofill_save_card_description_text).getVisibility());
-        assertEquals(View.GONE, contentView.findViewById(R.id.legal_message).getVisibility());
+                contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_description_text).getVisibility());
+        assertEquals(View.GONE, contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.legal_message).getVisibility());
     }
 
     private CharSequence getTextViewText(@IdRes int resourceId) {
@@ -162,7 +163,8 @@ public class AutofillSaveCardBottomSheetContentTest {
 
         mContent.setUiInfo(uiInfo);
 
-        ImageView imageView = mContent.getContentView().findViewById(R.id.autofill_save_card_icon);
+        ImageView imageView = mContent.getContentView().findViewById(
+            org.chromium.chrome.browser.autofill.R.id.autofill_save_card_icon);
         assertThat(imageView.getDrawable(), notNullValue());
         assertEquals(View.VISIBLE, imageView.getVisibility());
     }
@@ -180,7 +182,8 @@ public class AutofillSaveCardBottomSheetContentTest {
 
         mContent.setUiInfo(uiInfo);
 
-        TextView view = mContent.getContentView().findViewById(R.id.legal_message);
+        TextView view = mContent.getContentView().findViewById(
+            org.chromium.chrome.browser.autofill.R.id.legal_message);
         List<ClickableSpan> spans = getClickableSpans((Spannable) view.getText());
         assertEquals(1, spans.size());
         spans.get(0).onClick(view);
@@ -196,7 +199,8 @@ public class AutofillSaveCardBottomSheetContentTest {
                                                 "abc",
                                                 Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
                         .build());
-        TextView view = mContent.getContentView().findViewById(R.id.legal_message);
+        TextView view = mContent.getContentView().findViewById(
+            org.chromium.chrome.browser.autofill.R.id.legal_message);
         List<ClickableSpan> spans = getClickableSpans((Spannable) view.getText());
 
         spans.get(0).onClick(view);
@@ -217,7 +221,8 @@ public class AutofillSaveCardBottomSheetContentTest {
                                                 Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
                         .build());
         content.setDelegate(mDelegate);
-        TextView view = content.getContentView().findViewById(R.id.legal_message);
+        TextView view = content.getContentView().findViewById(
+            org.chromium.chrome.browser.autofill.R.id.legal_message);
         List<ClickableSpan> spans = getClickableSpans((Spannable) view.getText());
 
         spans.get(0).onClick(view);
@@ -230,8 +235,8 @@ public class AutofillSaveCardBottomSheetContentTest {
     public void testGetContentView_returnsViewContainingSubviews() {
         View view = mContent.getContentView();
 
-        assertThat(view.findViewById(R.id.autofill_save_card_icon), notNullValue());
-        assertThat(view.findViewById(R.id.autofill_credit_card_chip), notNullValue());
+        assertThat(view.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_icon), notNullValue());
+        assertThat(view.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_credit_card_chip), notNullValue());
     }
 
     @Test
@@ -243,7 +248,7 @@ public class AutofillSaveCardBottomSheetContentTest {
     public void testVerticalScrollOffset_returnsScrollViewOffset() {
         // Provide our scroll view's position for the bottom sheet know when to scroll itself.
         ScrollView scrollView =
-                mContent.getContentView().findViewById(R.id.autofill_save_card_scroll_view);
+                mContent.getContentView().findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_scroll_view);
         scrollView.setScrollY(1234);
 
         assertEquals(1234, mContent.getVerticalScrollOffset());
@@ -283,22 +288,22 @@ public class AutofillSaveCardBottomSheetContentTest {
 
     @Test
     public void testGetSheetContentDescriptionStringId() {
-        assertEquals(
-                R.string.autofill_save_card_prompt_bottom_sheet_content_description,
+        Assert.assertEquals(
+                org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_content_description,
                 mContent.getSheetContentDescriptionStringId());
     }
 
     @Test
     public void testGetSheetFullHeightAccessibilityStringId() {
-        assertEquals(
-                R.string.autofill_save_card_prompt_bottom_sheet_full_height,
+        Assert.assertEquals(
+                org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_full_height,
                 mContent.getSheetFullHeightAccessibilityStringId());
     }
 
     @Test
     public void testGetSheetClosedAccessibilityStringId() {
-        assertEquals(
-                R.string.autofill_save_card_prompt_bottom_sheet_closed,
+        Assert.assertEquals(
+                org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_closed,
                 mContent.getSheetClosedAccessibilityStringId());
     }
 

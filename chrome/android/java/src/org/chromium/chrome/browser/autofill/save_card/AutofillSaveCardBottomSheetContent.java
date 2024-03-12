@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill;
+package org.chromium.chrome.browser.autofill.save_card;
 
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
@@ -17,6 +17,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -49,10 +50,10 @@ import java.util.function.Consumer;
     /*package*/ AutofillSaveCardBottomSheetContent(Context context) {
         mView =
                 LayoutInflater.from(context)
-                        .inflate(R.layout.autofill_save_card_bottom_sheet, /* root= */ null);
-        setButtonDelegateAction(R.id.autofill_save_card_confirm_button, Delegate::didClickConfirm);
-        setButtonDelegateAction(R.id.autofill_save_card_cancel_button, Delegate::didClickCancel);
-        setLinkMovementMethod(R.id.legal_message);
+                        .inflate(org.chromium.chrome.browser.autofill.R.layout.autofill_save_card_bottom_sheet, /* root= */ null);
+        setButtonDelegateAction(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button, Delegate::didClickConfirm);
+        setButtonDelegateAction(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button, Delegate::didClickCancel);
+        setLinkMovementMethod(org.chromium.chrome.browser.autofill.R.id.legal_message);
     }
 
     private void setButtonDelegateAction(@IdRes int id, Consumer<Delegate> delegateAction) {
@@ -91,24 +92,24 @@ import java.util.function.Consumer;
         } else {
             setLogoIconId(0);
         }
-        mView.<ImageView>findViewById(R.id.autofill_save_card_credit_card_icon)
+        mView.<ImageView>findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_icon)
                 .setImageResource(uiInfo.getCardDetail().issuerIconDrawableId);
-        setTextViewText(R.id.autofill_save_card_credit_card_label, uiInfo.getCardDetail().label);
+        setTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_label, uiInfo.getCardDetail().label);
         setTextViewText(
-                R.id.autofill_save_card_credit_card_sublabel, uiInfo.getCardDetail().subLabel);
-        mView.findViewById(R.id.autofill_credit_card_chip)
+                org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_sublabel, uiInfo.getCardDetail().subLabel);
+        mView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_credit_card_chip)
                 .setContentDescription(uiInfo.getCardDescription());
         setLegalMessage(uiInfo.getLegalMessageLines());
-        setTextViewText(R.id.autofill_save_card_title_text, uiInfo.getTitleText());
-        mView.<Button>findViewById(R.id.autofill_save_card_confirm_button)
+        setTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_title_text, uiInfo.getTitleText());
+        mView.<Button>findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button)
                 .setText(uiInfo.getConfirmText());
-        mView.<Button>findViewById(R.id.autofill_save_card_cancel_button)
+        mView.<Button>findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button)
                 .setText(uiInfo.getCancelText());
-        setTextViewText(R.id.autofill_save_card_description_text, uiInfo.getDescriptionText());
+        setTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_description_text, uiInfo.getDescriptionText());
     }
 
     private void setLogoIconId(@DrawableRes int iconId) {
-        ImageView imageView = mView.findViewById(R.id.autofill_save_card_icon);
+        ImageView imageView = mView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_icon);
         if (iconId == 0) {
             imageView.setVisibility(View.GONE);
             return;
@@ -129,7 +130,7 @@ import java.util.function.Consumer;
 
     private void setLegalMessage(List<LegalMessageLine> legalMessageLines) {
         setTextViewText(
-                R.id.legal_message,
+                org.chromium.chrome.browser.autofill.R.id.legal_message,
                 AutofillUiUtils.getSpannableStringForLegalMessageLines(
                         mView.getContext(),
                         legalMessageLines,
@@ -158,7 +159,7 @@ import java.util.function.Consumer;
 
     @Override
     public int getVerticalScrollOffset() {
-        return mView.findViewById(R.id.autofill_save_card_scroll_view).getScrollY();
+        return mView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_scroll_view).getScrollY();
     }
 
     @Override
@@ -199,7 +200,7 @@ import java.util.function.Consumer;
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.autofill_save_card_prompt_bottom_sheet_content_description;
+        return org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_content_description;
     }
 
     @Override
@@ -210,11 +211,11 @@ import java.util.function.Consumer;
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.autofill_save_card_prompt_bottom_sheet_full_height;
+        return org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.autofill_save_card_prompt_bottom_sheet_closed;
+        return org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_closed;
     }
 }
