@@ -193,8 +193,8 @@ void PersonalDataManager::Init(
   AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
       address_data_manager_->IsAutofillProfileEnabled());
   AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
-      IsAutofillPaymentMethodsEnabled());
-  if (IsAutofillPaymentMethodsEnabled()) {
+      payments_data_manager_->IsAutofillPaymentMethodsEnabled());
+  if (payments_data_manager_->IsAutofillPaymentMethodsEnabled()) {
     autofill_metrics::LogIsAutofillPaymentsCvcStorageEnabledAtStartup(
         IsPaymentCvcStorageEnabled());
   }
@@ -468,20 +468,6 @@ void PersonalDataManager::MigrateProfileToAccount(
 }
 
 std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
-  CHECK_EQ(iban.record_type(), Iban::kUnknown);
-  // IBAN shares the same pref with payment methods enablement toggle.
-  if (!IsAutofillPaymentMethodsEnabled()) {
-    return std::string();
-  }
-
-  // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
-  // added an IBAN via Chrome payment settings page or accepted the save-IBAN
-  // prompt, which indicates that the user is familiar with IBANs as a concept.
-  // We set the pref so that even if the user travels to a country where IBAN
-  // functionality is not typically used, they will still be able to save new
-  // IBANs from the settings page using this pref.
-  SetAutofillHasSeenIban();
-
   return payments_data_manager_->AddAsLocalIban(std::move(iban));
 }
 
@@ -490,9 +476,6 @@ std::string PersonalDataManager::UpdateIban(const Iban& iban) {
 }
 
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
-  if (!IsAutofillPaymentMethodsEnabled()) {
-    return;
-  }
   payments_data_manager_->AddCreditCard(credit_card);
 }
 
@@ -666,7 +649,7 @@ PersonalDataManager::GetCreditCardCloudTokenData() const {
 }
 
 std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
   return payments_data_manager_->GetAutofillOffers();
@@ -675,7 +658,7 @@ std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
 std::vector<const AutofillOfferData*>
 PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     GURL origin) const {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
   return payments_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
@@ -700,7 +683,7 @@ gfx::Image* PersonalDataManager::GetCachedCardArtImageForUrl(
 
 std::vector<VirtualCardUsageData*>
 PersonalDataManager::GetVirtualCardUsageData() const {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
+  if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
   return payments_data_manager_->GetVirtualCardUsageData();
@@ -723,37 +706,17 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
   return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
-const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
-    const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
-    return std::vector<CreditCard*>{};
-  }
+std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {
   return payments_data_manager_->GetCreditCardsToSuggest();
 }
 
-const std::vector<BankAccount> PersonalDataManager::GetMaskedBankAccounts()
-    const {
-  if (!IsAutofillPaymentMethodsEnabled()) {
-    return std::vector<BankAccount>{};
-  }
+std::vector<BankAccount> PersonalDataManager::GetMaskedBankAccounts() const {
   return payments_data_manager_->GetMaskedBankAccounts();
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {
   return address_data_manager_->IsAutofillProfileEnabled() ||
-         IsAutofillPaymentMethodsEnabled();
-}
-
-bool PersonalDataManager::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
-}
-
-bool PersonalDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
-  return prefs::HasSeenIban(pref_service_);
-}
-
-void PersonalDataManager::SetAutofillHasSeenIban() {
-  prefs::SetAutofillHasSeenIban(pref_service_);
+         payments_data_manager_->IsAutofillPaymentMethodsEnabled();
 }
 
 bool PersonalDataManager::IsAutofillWalletImportEnabled() const {
@@ -797,17 +760,9 @@ bool PersonalDataManager::ShouldSuggestServerPaymentMethods() const {
 }
 
 void PersonalDataManager::SetPrefService(PrefService* pref_service) {
-  address_data_manager_->SetPrefService(pref_service);
-  credit_card_enabled_pref_ = std::make_unique<BooleanPrefMember>();
   pref_service_ = pref_service;
-  // |pref_service_| can be nullptr in tests. Using base::Unretained(this) is
-  // safe because observer instances are destroyed once |this| is destroyed.
-  if (pref_service_) {
-    credit_card_enabled_pref_->Init(
-        prefs::kAutofillCreditCardEnabled, pref_service_,
-        base::BindRepeating(&PersonalDataManager::EnableAutofillPrefChanged,
-                            base::Unretained(this)));
-  }
+  address_data_manager_->SetPrefService(pref_service);
+  payments_data_manager_->SetPrefService(pref_service);
 }
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
@@ -1302,11 +1257,6 @@ std::string PersonalDataManager::SaveImportedCreditCard(
   OnCreditCardSaved(/*is_local_card=*/true);
 
   return guid;
-}
-
-void PersonalDataManager::EnableAutofillPrefChanged() {
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
 }
 
 bool PersonalDataManager::IsKnownCard(const CreditCard& credit_card) const {

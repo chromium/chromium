@@ -259,19 +259,10 @@ PaymentsDataManager::PaymentsDataManager(
     : pdm_(pdm),
       image_fetcher_(image_fetcher),
       shared_storage_handler_(std::move(shared_storage_handler)),
-      app_locale_(app_locale),
-      pref_service_(pref_service) {
+      app_locale_(app_locale) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
-  // `pref_service_` can be nullptr in tests.
-  if (pref_service) {
-    pref_registrar_.Init(pref_service);
-    pref_registrar_.Add(
-        prefs::kAutofillPaymentCardBenefits,
-        base::BindRepeating(
-            &PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange,
-            base::Unretained(this)));
-  }
+  SetPrefService(pref_service);
 }
 
 PaymentsDataManager::~PaymentsDataManager() {
@@ -490,7 +481,7 @@ std::optional<T> PaymentsDataManager::GetCreditCardBenefitByInstrumentId(
     CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     base::FunctionRef<bool(const T&)> filter) const {
   if (!pdm_->IsAutofillWalletImportEnabled() ||
-      !pdm_->IsAutofillPaymentMethodsEnabled()) {
+      !IsAutofillPaymentMethodsEnabled()) {
     return std::nullopt;
   }
   base::Time now = AutofillClock::Now();
@@ -612,8 +603,10 @@ std::vector<const Iban*> PaymentsDataManager::GetIbansToSuggest() const {
   return ibans_to_suggest;
 }
 
-const std::vector<BankAccount> PaymentsDataManager::GetMaskedBankAccounts()
-    const {
+std::vector<BankAccount> PaymentsDataManager::GetMaskedBankAccounts() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   std::vector<BankAccount> bank_accounts;
   bank_accounts.reserve(masked_bank_accounts_.size());
   for (const std::unique_ptr<BankAccount>& bank_account :
@@ -638,6 +631,9 @@ PaymentsDataManager::GetCreditCardCloudTokenData() const {
 }
 
 std::vector<AutofillOfferData*> PaymentsDataManager::GetAutofillOffers() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   std::vector<AutofillOfferData*> result;
   result.reserve(autofill_offer_data_.size());
   for (const auto& data : autofill_offer_data_) {
@@ -649,6 +645,9 @@ std::vector<AutofillOfferData*> PaymentsDataManager::GetAutofillOffers() const {
 std::vector<const AutofillOfferData*>
 PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
     GURL origin) const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
   base::ranges::for_each(
       autofill_offer_data_,
@@ -712,8 +711,41 @@ gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
   return nullptr;
 }
 
+void PaymentsDataManager::SetPrefService(PrefService* pref_service) {
+  pref_registrar_.Reset();
+  pref_service_ = pref_service;
+  // `pref_service_` can be nullptr in tests.
+  if (!pref_service_) {
+    return;
+  }
+  pref_registrar_.Init(pref_service);
+  pref_registrar_.Add(prefs::kAutofillCreditCardEnabled,
+                      base::BindRepeating(&PaymentsDataManager::Refresh,
+                                          base::Unretained(this)));
+  pref_registrar_.Add(
+      prefs::kAutofillPaymentCardBenefits,
+      base::BindRepeating(
+          &PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange,
+          base::Unretained(this)));
+}
+
+bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
+}
+
+bool PaymentsDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
+  return prefs::HasSeenIban(pref_service_);
+}
+
+void PaymentsDataManager::SetAutofillHasSeenIban() {
+  prefs::SetAutofillHasSeenIban(pref_service_);
+}
+
 std::vector<VirtualCardUsageData*>
 PaymentsDataManager::GetVirtualCardUsageData() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   std::vector<VirtualCardUsageData*> result;
   result.reserve(autofill_virtual_card_usage_data_.size());
   for (const auto& data : autofill_virtual_card_usage_data_) {
@@ -722,8 +754,10 @@ PaymentsDataManager::GetVirtualCardUsageData() const {
   return result;
 }
 
-const std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest()
-    const {
+std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   std::vector<CreditCard*> credit_cards;
   if (pdm_->ShouldSuggestServerPaymentMethods()) {
     credit_cards = GetCreditCards();
@@ -759,6 +793,20 @@ const std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest()
 }
 
 std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
+  CHECK_EQ(iban.record_type(), Iban::kUnknown);
+  // IBAN shares the same pref with payment methods enablement toggle.
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return std::string();
+  }
+
+  // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
+  // added an IBAN via Chrome payment settings page or accepted the save-IBAN
+  // prompt, which indicates that the user is familiar with IBANs as a concept.
+  // We set the pref so that even if the user travels to a country where IBAN
+  // functionality is not typically used, they will still be able to save new
+  // IBANs from the settings page using this pref.
+  SetAutofillHasSeenIban();
+
   if (!GetLocalDatabase()) {
     return std::string();
   }
@@ -800,6 +848,10 @@ std::string PaymentsDataManager::UpdateIban(const Iban& iban) {
 }
 
 void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return;
+  }
+
   if (credit_card.IsEmpty(app_locale_)) {
     return;
   }

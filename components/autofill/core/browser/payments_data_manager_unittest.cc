@@ -353,6 +353,20 @@ TEST_F(PaymentsDataManagerTest, AddLocalIbans) {
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 }
 
+TEST_F(PaymentsDataManagerTest, AddingIbanUpdatesPref) {
+  // The pref should always start disabled.
+  ASSERT_FALSE(personal_data_->payments_data_manager()
+                   .IsAutofillHasSeenIbanPrefEnabled());
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+
+  personal_data_->AddAsLocalIban(iban);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  // Adding an IBAN permanently enables the pref.
+  EXPECT_TRUE(personal_data_->payments_data_manager()
+                  .IsAutofillHasSeenIbanPrefEnabled());
+}
+
 TEST_F(PaymentsDataManagerTest, UpdateLocalIbans) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
@@ -1357,7 +1371,8 @@ TEST_F(PaymentsDataManagerTest, GetActiveCreditCardBenefits) {
   personal_data_->AddCreditCardBenefitForTest(std::move(merchant_benefit));
 
   // Match getter results with the search criteria.
-  EXPECT_TRUE(personal_data_->IsAutofillPaymentMethodsEnabled());
+  EXPECT_TRUE(personal_data_->payments_data_manager()
+                  .IsAutofillPaymentMethodsEnabled());
   EXPECT_EQ(
       personal_data_->payments_data_manager()
           .GetFlatRateBenefitByInstrumentId(instrument_id_for_flat_rate_benefit)

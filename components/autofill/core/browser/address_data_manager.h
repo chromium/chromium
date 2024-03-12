@@ -124,8 +124,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
     CancelPendingQuery(pending_account_profiles_query_);
   }
 
-  void SetPrefService(PrefService* pref_service);
-
   // Returns the value of the AutofillProfileEnabled pref.
   virtual bool IsAutofillProfileEnabled() const;
 
@@ -141,6 +139,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
     return const_cast<std::vector<std::unique_ptr<AutofillProfile>>&>(
         const_cast<const AddressDataManager*>(this)->GetProfileStorage(source));
   }
+
+  void SetPrefService(PrefService* pref_service);
 
   // TODO(b/322170538): Remove once the PDM observer is split.
   base::RepeatingClosure notify_pdm_observers_;

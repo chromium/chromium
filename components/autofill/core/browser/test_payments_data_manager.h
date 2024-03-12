@@ -27,16 +27,26 @@ class TestPaymentsDataManager : public PaymentsDataManager {
 
   ~TestPaymentsDataManager() override;
 
+  using PaymentsDataManager::SetPrefService;
+
   // PaymentsDataManager:
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
   void LoadIbans() override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
   void ClearCreditCards();
 
   // Clears |autofill_offer_data_|.
   void ClearCreditCardOfferData();
+
+  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
+    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+  }
+
+ private:
+  std::optional<bool> autofill_payment_methods_enabled_;
 };
 
 }  // namespace autofill

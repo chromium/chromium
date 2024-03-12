@@ -40,7 +40,8 @@ bool IbanManager::OnGetSingleFieldSuggestions(
   }
 
   if (!personal_data_manager_ ||
-      !personal_data_manager_->IsAutofillPaymentMethodsEnabled()) {
+      !personal_data_manager_->payments_data_manager()
+           .IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 

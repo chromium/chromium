@@ -156,15 +156,6 @@ const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
   return default_country_code_;
 }
 
-bool TestPersonalDataManager::IsAutofillPaymentMethodsEnabled() const {
-  // Return the value of autofill_payment_methods_enabled_ if it has been set,
-  // otherwise fall back to the normal behavior of checking the pref_service.
-  if (autofill_payment_methods_enabled_.has_value()) {
-    return autofill_payment_methods_enabled_.value();
-  }
-  return PersonalDataManager::IsAutofillPaymentMethodsEnabled();
-}
-
 bool TestPersonalDataManager::IsAutofillWalletImportEnabled() const {
   // Return the value of autofill_wallet_import_enabled_ if it has been set,
   // otherwise fall back to the normal behavior of checking the pref_service.
@@ -174,7 +165,8 @@ bool TestPersonalDataManager::IsAutofillWalletImportEnabled() const {
 }
 
 bool TestPersonalDataManager::ShouldSuggestServerPaymentMethods() const {
-  return IsAutofillPaymentMethodsEnabled() && IsAutofillWalletImportEnabled();
+  return payments_data_manager().IsAutofillPaymentMethodsEnabled() &&
+         IsAutofillWalletImportEnabled();
 }
 
 void TestPersonalDataManager::ClearAllLocalData() {
@@ -262,8 +254,7 @@ void TestPersonalDataManager::ClearLocalCvcs() {
 }
 
 void TestPersonalDataManager::ClearProfiles() {
-  static_cast<TestAddressDataManager*>(address_data_manager_.get())
-      ->ClearProfiles();
+  test_address_data_manager().ClearProfiles();
 }
 
 void TestPersonalDataManager::AddServerCreditCard(

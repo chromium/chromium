@@ -75,6 +75,15 @@ void TestPaymentsDataManager::LoadIbans() {
   }
 }
 
+bool TestPaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
+  // Return the value of autofill_payment_methods_enabled_ if it has been set,
+  // otherwise fall back to the normal behavior of checking the pref_service.
+  if (autofill_payment_methods_enabled_.has_value()) {
+    return autofill_payment_methods_enabled_.value();
+  }
+  return PaymentsDataManager::IsAutofillPaymentMethodsEnabled();
+}
+
 void TestPaymentsDataManager::ClearCreditCards() {
   local_credit_cards_.clear();
   server_credit_cards_.clear();

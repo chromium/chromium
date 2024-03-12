@@ -3119,7 +3119,8 @@ TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_NoIban) {
 
 TEST_F(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
   // The pref should always start disabled.
-  ASSERT_FALSE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
+  ASSERT_FALSE(personal_data_manager_->payments_data_manager()
+                   .IsAutofillHasSeenIbanPrefEnabled());
 
   // Simulate a form submission with a new IBAN.
   FormStructure form_structure(CreateTestIbanFormData());
@@ -3130,12 +3131,14 @@ TEST_F(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
       /*payment_methods_autofill_enabled=*/true);
 
   // Submitting the IBAN form permanently enables the pref.
-  EXPECT_TRUE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
+  EXPECT_TRUE(personal_data_manager_->payments_data_manager()
+                  .IsAutofillHasSeenIbanPrefEnabled());
 }
 
 TEST_F(FormDataImporterTest,
        ExtractFormData_SubmittingCreditCardFormDoesNotUpdateIbanPref) {
-  ASSERT_FALSE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
+  ASSERT_FALSE(personal_data_manager_->payments_data_manager()
+                   .IsAutofillHasSeenIbanPrefEnabled());
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   ExtractFormDataAndProcessAddressCandidates(
@@ -3144,7 +3147,8 @@ TEST_F(FormDataImporterTest,
 
   // Submitting the credit card form won't enable the pref, even if the flag is
   // on.
-  EXPECT_FALSE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
+  EXPECT_FALSE(personal_data_manager_->payments_data_manager()
+                   .IsAutofillHasSeenIbanPrefEnabled());
 }
 
 TEST_F(FormDataImporterTest,

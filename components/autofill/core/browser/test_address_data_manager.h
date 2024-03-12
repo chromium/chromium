@@ -16,6 +16,8 @@ class TestAddressDataManager : public AddressDataManager {
   explicit TestAddressDataManager(base::RepeatingClosure notify_pdm_observers);
   ~TestAddressDataManager() override;
 
+  using AddressDataManager::SetPrefService;
+
   // AddressDataManager overrides:
   void AddProfile(const AutofillProfile& profile) override;
   void UpdateProfile(const AutofillProfile& profile) override;

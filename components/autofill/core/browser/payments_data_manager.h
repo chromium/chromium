@@ -129,7 +129,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   virtual std::vector<const Iban*> GetIbansToSuggest() const;
 
   // Returns the masked bank accounts that can be suggested to the user.
-  const std::vector<BankAccount> GetMaskedBankAccounts() const;
+  std::vector<BankAccount> GetMaskedBankAccounts() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -161,7 +161,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
   // vector.
-  const std::vector<CreditCard*> GetCreditCardsToSuggest() const;
+  std::vector<CreditCard*> GetCreditCardsToSuggest() const;
 
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
@@ -236,6 +236,15 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // present in the cache, this function will return a nullptr.
   gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
 
+  // Returns the value of the AutofillPaymentMethodsEnabled pref.
+  virtual bool IsAutofillPaymentMethodsEnabled() const;
+
+  // Returns the value of the kAutofillHasSeenIban pref.
+  bool IsAutofillHasSeenIbanPrefEnabled() const;
+
+  // Sets the value of the kAutofillHasSeenIban pref to true.
+  void SetAutofillHasSeenIban();
+
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
@@ -290,6 +299,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // The first time this is called, logs a UMA metrics about the user's credit
   // card, offer and IBAN.
   void LogStoredPaymentsDataMetrics() const;
+
+  void SetPrefService(PrefService* pref_service);
 
   // Stores the PaymentsCustomerData obtained from the database.
   std::unique_ptr<PaymentsCustomerData> payments_customer_data_;
@@ -396,12 +407,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
 
-  // Pref registrar for managing the change observers.
-  PrefChangeRegistrar pref_registrar_;
-
   // The PrefService that this instance uses to read and write preferences.
   // Must outlive this instance.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // Pref registrar for managing the change observers.
+  PrefChangeRegistrar pref_registrar_;
 
   base::WeakPtrFactory<PaymentsDataManager> weak_factory_{this};
 };

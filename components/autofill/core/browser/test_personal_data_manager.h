@@ -67,7 +67,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
-  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;
   bool ShouldSuggestServerPaymentMethods() const override;
   void ClearAllLocalData() override;
@@ -125,8 +124,10 @@ class TestPersonalDataManager : public PersonalDataManager {
     return num_times_save_imported_credit_card_called_;
   }
 
+  // TODO(b/322170538): Remove function from TestPDM.
   void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
-    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+    test_payments_data_manager().SetAutofillPaymentMethodsEnabled(
+        autofill_payment_methods_enabled);
   }
 
   // TODO(b/322170538): Remove function from TestPDM.
@@ -171,7 +172,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   std::string default_country_code_;
   int num_times_save_imported_credit_card_called_ = 0;
-  std::optional<bool> autofill_payment_methods_enabled_;
   std::optional<bool> autofill_wallet_import_enabled_;
   std::optional<bool> eligible_for_account_storage_;
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;

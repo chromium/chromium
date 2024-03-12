@@ -446,10 +446,10 @@ class PersonalDataManager : public KeyedService,
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
   // vector.
-  const std::vector<CreditCard*> GetCreditCardsToSuggest() const;
+  std::vector<CreditCard*> GetCreditCardsToSuggest() const;
 
   // Returns the masked bank accounts that can be suggested to the user.
-  const std::vector<BankAccount> GetMaskedBankAccounts() const;
+  std::vector<BankAccount> GetMaskedBankAccounts() const;
 
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create
@@ -549,15 +549,6 @@ class PersonalDataManager : public KeyedService,
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const;
-
-  // Returns the value of the AutofillPaymentMethodsEnabled pref.
-  virtual bool IsAutofillPaymentMethodsEnabled() const;
-
-  // Returns the value of the kAutofillHasSeenIban pref.
-  bool IsAutofillHasSeenIbanPrefEnabled() const;
-
-  // Sets the value of the kAutofillHasSeenIban pref to true.
-  void SetAutofillHasSeenIban();
 
   // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
@@ -768,6 +759,9 @@ class PersonalDataManager : public KeyedService,
   std::unique_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_;
 
+  // The PrefService that this instance uses. Must outlive this instance.
+  raw_ptr<PrefService> pref_service_ = nullptr;
+
  private:
   // Sets (or resets) the Sync service, which may not have started yet
   // but its preferences can already be queried. Can also be a nullptr
@@ -778,10 +772,6 @@ class PersonalDataManager : public KeyedService,
   // the new or updated card, or the empty string if no card was saved.
   virtual std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card);
-
-  // Called when the value of prefs::kAutofillCreditCardEnabled or
-  // prefs::kAutofillProfileEnabled changes.
-  void EnableAutofillPrefChanged();
 
   // Returns the database that is used for storing local data.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
@@ -801,9 +791,6 @@ class PersonalDataManager : public KeyedService,
   // |variations_country_code_| if it exists but falls back to other methods if
   // necessary to ensure it always has a value.
   mutable std::string experiment_country_code_;
-
-  // The PrefService that this instance uses. Must outlive this instance.
-  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // The HistoryService to be observed by the personal data manager. Must
   // outlive this instance. This unowned pointer is retained so the PDM can
@@ -826,9 +813,6 @@ class PersonalDataManager : public KeyedService,
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-
-  // An observer to listen for changes to prefs::kAutofillCreditCardEnabled.
-  std::unique_ptr<BooleanPrefMember> credit_card_enabled_pref_;
 
   // The database that is used to count guid-keyed strikes to suppress the
   // migration-prompt of new profiles.

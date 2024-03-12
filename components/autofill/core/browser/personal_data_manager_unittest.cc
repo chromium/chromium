@@ -450,18 +450,6 @@ TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
   EXPECT_EQ(0U, personal_data_->GetLocalIbans().size());
 }
 
-TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
-  // The pref should always start disabled.
-  ASSERT_FALSE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
-  Iban iban;
-  iban.set_value(std::u16string(test::kIbanValue16));
-
-  personal_data_->AddAsLocalIban(iban);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-  // Adding an IBAN permanently enables the pref.
-  EXPECT_TRUE(personal_data_->IsAutofillHasSeenIbanPrefEnabled());
-}
-
 // Ensure that new IBANs can be updated and saved via
 // `OnAcceptedLocalIbanSave()`.
 TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {

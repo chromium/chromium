@@ -975,7 +975,7 @@ std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
   // with IBANs as a concept. We set the pref so that even if the user travels
   // to a country where IBAN functionality is not typically used, they will
   // still be able to save new IBANs from the settings page using this pref.
-  personal_data_manager_->SetAutofillHasSeenIban();
+  personal_data_manager_->payments_data_manager().SetAutofillHasSeenIban();
 
   return candidate_iban;
 }
