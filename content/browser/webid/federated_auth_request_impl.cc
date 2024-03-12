@@ -1326,10 +1326,6 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   MaybeShowAccountsDialog();
 }
 
-// TODO(crbug.com/326275666): In the button flow we should inform users that
-// their sign-in attempt has failed instead of failing silently. We should delay
-// the promise rejection until the user acknowledged the failure. e.g. by
-// closing the loading modal.
 void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
     const std::unique_ptr<IdentityProviderInfo> idp_info,
     blink::mojom::FederatedAuthRequestResult result,
