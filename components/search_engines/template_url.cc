@@ -796,11 +796,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:sessionToken") {
     replacements->push_back(Replacement(GOOGLE_SESSION_TOKEN, start));
   } else if (parameter == "google:sourceId") {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    url->insert(start, "sourceid=chrome-mobile&");
-#else
-    url->insert(start, "sourceid=chrome&");
-#endif
+    replacements->push_back(Replacement(GOOGLE_SEARCH_SOURCE_ID, start));
   } else if (parameter == "google:suggestAPIKeyParameter") {
     url->insert(start,
                 base::EscapeQueryParamValue(google_apis::GetAPIKey(), false));
@@ -1288,6 +1284,16 @@ std::string TemplateURLRef::HandleReplacements(
         // url.  If we do, then we'd have some conditional insert such as:
         // url.insert(replacement.index, used_www ? "gcx=w&" : "gcx=c&");
         break;
+
+      case GOOGLE_SEARCH_SOURCE_ID: {
+        DCHECK(!replacement.is_post_param);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+        HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
+#else
+        HandleReplacement("sourceid", "chrome", replacement, &url);
+#endif
+        break;
+      }
 
       case GOOGLE_SEARCH_VERSION:
         HandleReplacement("gs_rn", "42", replacement, &url);
