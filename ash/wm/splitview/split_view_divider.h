@@ -133,6 +133,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void OnTransientChildRemoved(aura::Window* window,
                                aura::Window* transient) override;
 
+  SplitViewDividerView* divider_view_for_testing() { return divider_view_; }
+
  private:
   friend class SplitViewController;
 

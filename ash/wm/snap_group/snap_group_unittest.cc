@@ -19,11 +19,13 @@
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/style/close_button.h"
 #include "ash/style/system_toast_style.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
@@ -1414,7 +1416,7 @@ TEST_F(FasterSplitScreenTest, NoCrashWhenDoubleTapAfterTransition) {
   SwitchToTabletMode();
   EXPECT_TRUE(split_view_divider()->divider_widget());
 
-  // Double tap on the divider-> This will start a drag and notify
+  // Double tap on the divider. This will start a drag and notify
   // SplitViewOverviewSession.
   const gfx::Point divider_center =
       split_view_divider()
@@ -2211,7 +2213,7 @@ TEST_F(SnapGroupTest, RemoveDisplay) {
 }
 
 // Tests the snap ratio is updated correctly when resizing the windows in a snap
-// group with the split view divider->
+// group with the split view divider.
 TEST_F(SnapGroupTest, SnapRatioTest) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
@@ -2234,7 +2236,7 @@ TEST_F(SnapGroupTest, SnapRatioTest) {
 }
 
 // Tests that the windows in a snap group can be resized to an arbitrary
-// location with the split view divider->
+// location with the split view divider.
 TEST_F(SnapGroupTest, ResizeWithSplitViewDividerToArbitraryLocations) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
@@ -3956,11 +3958,41 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionGetClosestFixedRatio) {
   }
 }
 
+TEST_F(SnapGroupTest, FeedbackButtonTest) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+
+  SplitViewDividerView* divider_view =
+      split_view_divider()->divider_view_for_testing();
+  auto* feedback_button = divider_view->feedback_button_for_testing();
+  EXPECT_TRUE(feedback_button);
+
+  // Verify that the feedback button is insivible by default.
+  EXPECT_FALSE(feedback_button->GetVisible());
+
+  // Test that the feedback button becomes visible upon hover on the divider.
+  gfx::Point hover_location =
+      split_view_divider_bounds_in_screen().CenterPoint();
+  hover_location.Offset(0, -10);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(hover_location);
+  EXPECT_TRUE(feedback_button->GetVisible());
+
+  // Test that open feedback dialog callback will be triggered.
+  event_generator->MoveMouseTo(
+      feedback_button->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(1, static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate())
+                   ->open_feedback_dialog_call_count());
+}
+
 // Tests that the cursor type gets updated to be resize cursor on mouse hovering
-// on the split view divider->
+// on the split view divider excluding the feedback button.
 TEST_F(SnapGroupTest, CursorUpdateTest) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
   auto* divider = split_view_divider();
   ASSERT_TRUE(divider->divider_widget());
@@ -3974,7 +4006,7 @@ TEST_F(SnapGroupTest, CursorUpdateTest) {
   cursor_manager->SetCursor(CursorType::kPointer);
 
   // Test that the default cursor type when mouse is not hovered over the split
-  // view divider->
+  // view divider.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(outside_point);
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
@@ -3982,7 +4014,7 @@ TEST_F(SnapGroupTest, CursorUpdateTest) {
   EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 
   // Test that the cursor changed to resize cursor while hovering over the split
-  // view divider->
+  // view divider.
   const auto delta_vector = gfx::Vector2d(0, -10);
   const gfx::Point cached_hover_point =
       divider_bounds.CenterPoint() + delta_vector;
@@ -3997,6 +4029,17 @@ TEST_F(SnapGroupTest, CursorUpdateTest) {
   EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
   EXPECT_EQ(split_view_divider_bounds_in_screen().CenterPoint() + delta_vector,
             cached_hover_point + move_vector);
+
+  // Test that when hovering over the feedback button, the cursor type changed
+  // back to the default type.
+  SplitViewDividerView* divider_view =
+      split_view_divider()->divider_view_for_testing();
+  auto* feedback_button = divider_view->feedback_button_for_testing();
+  EXPECT_TRUE(feedback_button);
+  event_generator->MoveMouseTo(divider_view->feedback_button_for_testing()
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 }
 
 // -----------------------------------------------------------------------------

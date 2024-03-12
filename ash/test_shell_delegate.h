@@ -29,6 +29,10 @@ class TestShellDelegate : public ShellDelegate {
 
   ~TestShellDelegate() override;
 
+  int open_feedback_dialog_call_count() const {
+    return open_feedback_dialog_call_count_;
+  }
+
   // Allows tests to override the MultiDeviceSetup binding behavior for this
   // TestShellDelegate.
   using MultiDeviceSetupBinder = base::RepeatingCallback<void(
@@ -102,7 +106,7 @@ class TestShellDelegate : public ShellDelegate {
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackDialog(FeedbackSource source,
                           const std::string& description_template,
-                          const std::string& category_tag) override {}
+                          const std::string& category_tag) override;
   void OpenProfileManager() override {}
   void SetLastCommittedURLForWindow(const GURL& url);
   version_info::Channel GetChannel() override;
@@ -143,6 +147,8 @@ class TestShellDelegate : public ShellDelegate {
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 
   std::string version_string_;
+
+  int open_feedback_dialog_call_count_ = 0;
 };
 
 }  // namespace ash

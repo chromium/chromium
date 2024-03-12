@@ -130,6 +130,8 @@ chrome::FeedbackSource ToChromeFeedbackSource(
       return chrome::FeedbackSource::kFeedbackSourceGameDashboard;
     case ash::ShellDelegate::FeedbackSource::kOverview:
       return chrome::FeedbackSource::kFeedbackSourceOverview;
+    case ash::ShellDelegate::FeedbackSource::kSnapGroups:
+      return chrome::FeedbackSource::kFeedbackSourceSnapGroups;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
       return chrome::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
   }

@@ -180,6 +180,13 @@ base::FilePath TestShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
+void TestShellDelegate::OpenFeedbackDialog(
+    ShellDelegate::FeedbackSource source,
+    const std::string& description_template,
+    const std::string& category_tag) {
+  ++open_feedback_dialog_call_count_;
+}
+
 const GURL& TestShellDelegate::GetLastCommittedURLForWindowIfAny(
     aura::Window* window) {
   return last_committed_url_;

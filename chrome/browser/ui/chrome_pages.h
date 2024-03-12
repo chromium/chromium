@@ -128,6 +128,7 @@ enum FeedbackSource {
   kFeedbackSourceAI,
   kFeedbackSourceFocusMode,
   kFeedbackSourceOverview,
+  kFeedbackSourceSnapGroups,
 
   // ATTENTION: Before making any changes or adding to feedback collection,
   // please ensure the teams that operationalize feedback are aware and

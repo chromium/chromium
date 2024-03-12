@@ -49,6 +49,8 @@ class SplitViewDividerView : public views::View,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
+  IconButton* feedback_button_for_testing() const { return feedback_button_; }
+
  private:
   void SwapWindows();
 
@@ -79,6 +81,7 @@ class SplitViewDividerView : public views::View,
   raw_ptr<SplitViewDivider, DanglingUntriaged> divider_;
 
   // Securely updates the cursor.
+  // TODO(michelefan): Consider overriding `View::GetCursor`.
   CursorSetter cursor_setter_;
 
   raw_ptr<IconButton> feedback_button_ = nullptr;

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/utility/cursor_setter.h"
@@ -133,12 +134,14 @@ void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
   gfx::Point screen_location = event.location();
   ConvertPointToScreen(this, &screen_location);
 
-  // Set cursor type as the resize cursor when it's on the split view divider.
-  cursor_setter_.UpdateCursor(GetWidget()->GetNativeWindow()->GetRootWindow(),
-                              ui::mojom::CursorType::kColumnResize);
-
-  // Show `feedback_button_` on mouse entered.
-  RefreshFeedbackButton(/*visible=*/true);
+  if (!feedback_button_ ||
+      !feedback_button_->GetBoundsInScreen().Contains(screen_location)) {
+    // Set cursor type as the resize cursor when it's on the split view divider.
+    cursor_setter_.UpdateCursor(GetWidget()->GetNativeWindow()->GetRootWindow(),
+                                ui::mojom::CursorType::kColumnResize);
+    // Show `feedback_button_` on mouse entered.
+    RefreshFeedbackButton(/*visible=*/true);
+  }
 }
 
 void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
@@ -146,8 +149,13 @@ void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
   // exit `this` the cursor will be reset.
   cursor_setter_.ResetCursor();
 
+  gfx::Point screen_location = event.location();
+  ConvertPointToScreen(this, &screen_location);
   // Hide `feedback_button_` on mouse exited.
-  RefreshFeedbackButton(/*visible=*/false);
+  if (feedback_button_ &&
+      !feedback_button_->GetBoundsInScreen().Contains(screen_location)) {
+    RefreshFeedbackButton(/*visible=*/false);
+  }
 }
 
 bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
@@ -284,8 +292,7 @@ void SplitViewDividerView::RefreshFeedbackButton(bool visible) {
     feedback_button_->SetPaintToLayer();
     feedback_button_->layer()->SetFillsBoundsOpaquely(false);
     feedback_button_->SetPreferredSize(kFeedbackButtonSize);
-    // TODO(michelefan): Apply `cros.sys.inverse-whiteblack` as the icon color
-    // currently it's not available in the system yet.
+    feedback_button_->SetIconColor(cros_tokens::kCrosSysInverseWhiteblack);
     feedback_button_->SetVisible(true);
     feedback_button_->SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemBaseElevated,
@@ -311,8 +318,10 @@ void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {
 }
 
 void SplitViewDividerView::OnFeedbackButtonPressed() {
-  // TODO(michelefan): Implement the callback for the feedback button.
-  base::DoNothing();
+  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+      /*source=*/ShellDelegate::FeedbackSource::kSnapGroups,
+      /*description_template=*/std::string(),
+      /*category_tag=*/"FromSnapGroups");
 }
 
 BEGIN_METADATA(SplitViewDividerView)
