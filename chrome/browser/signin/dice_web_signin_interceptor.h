@@ -64,8 +64,27 @@ enum class ShouldShowChromeSigninBubbleWithReason {
   // Deprecated: kShouldNotShowSecondaryAccount = 3,
   kShouldNotShowUnknownAccessPoint = 4,
   kShouldNotShowNotFromWebSignin = 5,
+  kShouldNotShowUserChoice = 6,
 
-  kMaxValue = kShouldNotShowNotFromWebSignin,
+  kMaxValue = kShouldNotShowUserChoice,
+};
+
+// Value of the user choice for the Chrome Signin bubble effect.
+// Theses values are persisted to disk through prefs, they should not be
+// renumbered or reused.
+// - `kNoChoice` is the default value, it is applied when the user made no
+// explicit choice yet (on the bubble or the settings).
+// - The user can made a choice through the Chrome Signin bubble by accepting or
+// declining the bubble leading to `kSignin` and `kDoNotSignin` respectively.
+// - Dismissing the bubble multiple times will be treated as `kDoNotSignin` as
+// long as the user is in `kNoChoice` mode.
+// - There is no way to go back to `kNoChoice` after a choice has been taken or
+// applied.
+enum class ChromeSigninUserChoice {
+  kNoChoice = 0,
+  kAlwaysAsk = 1,
+  kSignin = 2,
+  kDoNotSignin = 3,
 };
 
 // Called after web signed in, after a successful token exchange through Dice.
@@ -114,6 +133,16 @@ class DiceWebSigninInterceptor : public KeyedService,
                                        signin_metrics::AccessPoint access_point,
                                        bool is_new_account,
                                        bool is_sync_signin);
+
+  // Gets the Chrome Signin user choice pref based on the profile/account.
+  static ChromeSigninUserChoice GetChromeSigninUserChoice(
+      const PrefService& pref_service,
+      const std::string& email);
+
+  // Sets the Chrome Signin user choice pref based on the profile/account.
+  static void SetChromeSigninUserChoice(PrefService& pref_service,
+                                        const std::string& email,
+                                        ChromeSigninUserChoice choice);
 
   // Called after the new profile was created during a signin interception.
   // The token has been moved to the new profile, but the account is not yet in
@@ -258,6 +287,15 @@ class DiceWebSigninInterceptor : public KeyedService,
   void OnChromeSigninChoice(const AccountInfo& account_info,
                             SigninInterceptionResult result);
 
+  // Processes the intercept result:
+  // - counting dismissals, after 5 dismissals the result is transformed to a
+  // decline.
+  // - saving the accept/decline result in a pref.
+  // - returns the processed result.
+  SigninInterceptionResult ProcessChromeSigninUserChoice(
+      SigninInterceptionResult result,
+      const std::string& email);
+
   // A non `std::nullopt` `profile_presets` will be applied to the
   // `new_profile` when the function is called.
   void OnNewSignedInProfileCreated(
@@ -286,13 +324,21 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Only a hash of the email is saved, as Chrome does not need to store the
   // actual email, but only need to compare emails. The hash has low entropy to
   // ensure it cannot be reversed.
-  void IncrementEmailToCountDictionaryPref(const char* pref_name,
-                                           const std::string& email);
+  // Returns the incremented value of the pref.
+  size_t IncrementEmailToCountDictionaryPref(const char* pref_name,
+                                             const std::string& email);
 
-  // Records the number of times the user previously declined the Chrome Signin
-  // bubble when accepting it. Also resets the value in the prefs.
-  void RecordAndResetChromeSigninNumberOfAttemptsBeforeAccept(
-      const std::string& email);
+  // In the experiment phase, the number of attempts is the number of declines.
+  // Also only records on accept and resets the decline count when recorded.
+  // In the full phase, since the choice is remembered, the number of attempts
+  // is the number of dimisses - this value is not reset. Records the number of
+  // times the user previously dismissed the Chrome Signin bubble when
+  // accepting/declining it. Result is expected to be either
+  // `SigninInterceptionResult::kAccepted` or
+  // `SigninInterceptionResult::kDeclined`.
+  void RecordChromeSigninNumberOfAttemptsBeforeExplicitUserAction(
+      const std::string& email,
+      SigninInterceptionResult result);
 
   // Checks if the user previously declined 2 times creating a new profile for
   // this account.

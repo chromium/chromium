@@ -51,20 +51,39 @@ void AttemptChromeSignin(CoreAccountId account_id,
     return;
   }
 
-  // Do not signin to chrome if we are accessing through WebSignin, the Chrome
-  // Signin Bubble Intercept should be shown and the choice given to the user.
-  // Also if the access point is unknown.
-  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN ||
-      access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+  // Do not sign in if the access point is unknown.
+  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
     return;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile);
+  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+            switches::ExplicitBrowserSigninPhase::kFull)) {
+      AccountInfo account_info =
+          identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+      // If the user did not choose the signin choice, do not proceed with a
+      // sign in from a Web Signin.
+      if (DiceWebSigninInterceptor::GetChromeSigninUserChoice(
+              *profile.GetPrefs(), account_info.email) !=
+          ChromeSigninUserChoice::kSignin) {
+        return;
+      }
+    } else {
+      CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental));
+      // Do not signin to chrome if we are accessing through WebSignin, the
+      // Chrome Signin Bubble Intercept should be shown and the choice given to
+      // the user.
+      return;
+    }
   }
 
   // This access point should only be used as a result of a non Uno flow.
   CHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER,
            access_point);
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(&profile);
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     base::UmaHistogramEnumeration(
         "Signin.SigninManager.SigninAccessPoint", access_point,

@@ -913,3 +913,42 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
   // The explicit sign in pref should be cleared.
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 }
+
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
+  // Web signin can trigger automatic sign in if the user previously enabled
+  // automatic sign in. Signing in thgouh WEB_SIGNIN should have no effect on
+  // the `prefs::kExplicitBrowserSignin` pref.
+  base::test::ScopedFeatureList feature{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+
+  bool explicit_browser_signin =
+      prefs()->GetBoolean(prefs::kExplicitBrowserSignin);
+  EXPECT_TRUE(explicit_browser_signin);
+
+  // Creating a second account.
+  CoreAccountId account_id2 =
+      AddToAccountTracker("account_id2", "user2@gmail.com");
+
+  // Simulating an sign in from a web signin access point without prior sign
+  // out.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id2),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+
+  // The explicit sign in pref should remain.
+  EXPECT_EQ(prefs()->GetBoolean(prefs::kExplicitBrowserSignin),
+            explicit_browser_signin);
+}

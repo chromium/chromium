@@ -1009,6 +1009,15 @@ prefs when the profile is loaded.  -->
     Records the number of times the user declines the Chrome Signin Intercept
     Bubble before accepting it. The value is recorded when the user accepts the
     Chrome Signin intercept bubble.
+
+    This histogram is only recorded for the experiment phase, where `UnoDesktop`
+    flag is enabled and where the user could potentially accept/decline the
+    bubble multiple times. The gathered data from the experiment is used to
+    better understand user behavior.
+
+    The behavior for the non experimental implementation records the value in
+    `Signin.Intercept.ChromeSignin.DismissesBeforeAccept` where it records a
+    more accurate value based on the difference in implementation.
   </summary>
 </histogram>
 
@@ -1023,6 +1032,22 @@ prefs when the profile is loaded.  -->
     Account the user signs in with, up to the maximum allowed number. Each
     Chrome profile tracks these numbers separately.
   </summary>
+</histogram>
+
+<histogram name="Signin.Intercept.ChromeSignin.DismissesBefore{Action}"
+    units="attempts" expires_after="2024-08-18">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of times the user dismisses the Chrome Signin Intercept
+    Bubble before {Action} it. The value is recorded when the user is {Action}
+    the Chrome Signin intercept bubble. No value is recorded when the bubble is
+    dismissed/ignored.
+  </summary>
+  <token key="Action">
+    <variant name="Accept" summary="accepting"/>
+    <variant name="Decline" summary="declining"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.Intercept.ChromeSignin.ResponseTime{Result}" units="ms"

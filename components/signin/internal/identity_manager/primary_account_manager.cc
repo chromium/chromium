@@ -700,9 +700,18 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
           event_details.GetAccessPoint().value();
 
       if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN ||
-          access_point ==
-              signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+          (access_point ==
+               signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
+           !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+               switches::ExplicitBrowserSigninPhase::kFull))) {
         scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+      } else if (access_point ==
+                     signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
+                 switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                     switches::ExplicitBrowserSigninPhase::kFull)) {
+        // If a web sign in occurs, we do not want to clear the explicit signin
+        // pref, since it might be a result of previously accepting the bubble.
+        // Therefore we just keep the value as is.
       } else {
         // All others access points are explicit sign ins except the Web
         // Signin event.
