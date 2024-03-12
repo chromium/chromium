@@ -318,6 +318,11 @@ void AutofillAgent::Reset() {
           ? std::make_unique<FormCache>(unsafe_render_frame()->GetWebFrame())
           : nullptr;
   is_dom_content_loaded_ = false;
+  select_or_selectlist_option_change_batch_timer_.Stop();
+  datalist_option_change_batch_timer_.Stop();
+  process_forms_after_dynamic_change_timer_.Stop();
+  process_forms_form_extraction_timer_.Stop();
+  process_forms_form_extraction_with_response_timer_.Stop();
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
 }
@@ -597,7 +602,7 @@ void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
   datalist_option_change_batch_timer_.Start(
       FROM_HERE, kWaitTimeForOptionsChanges,
       base::BindRepeating(&AutofillAgent::BatchDataListOptionChange,
-                          weak_ptr_factory_.GetWeakPtr(),
+                          base::Unretained(this),
                           form_util::GetFieldRendererId(element)));
 }
 
@@ -1193,8 +1198,7 @@ void AutofillAgent::ExtractFormsUnthrottled(
   }
   FormCache::UpdateFormCacheResult cache =
       form_cache_->UpdateFormCache(field_data_manager());
-  content::RenderFrame* render_frame = unsafe_render_frame();
-  if (render_frame) {
+  if (content::RenderFrame* render_frame = unsafe_render_frame()) {
     form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
                                                cache.updated_forms);
   }
@@ -1303,7 +1307,7 @@ void AutofillAgent::SelectOrSelectListFieldOptionsChanged(
   select_or_selectlist_option_change_batch_timer_.Start(
       FROM_HERE, kWaitTimeForOptionsChanges,
       base::BindRepeating(&AutofillAgent::BatchSelectOrSelectListOptionChange,
-                          weak_ptr_factory_.GetWeakPtr(),
+                          base::Unretained(this),
                           form_util::GetFieldRendererId(element)));
 }
 
