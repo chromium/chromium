@@ -5,5 +5,10 @@ per-file enums.xml=*
 
 # The top-level histograms.xml file is deprecated and should not be modified.
 # It's temporarily still present because some tools have the filename hardcoded.
-per-file histograms.xml=file://base/metrics/OWNERS
+per-file histograms.xml=chromium-metrics-reviews@google.com
+per-file histograms.xml=file://base/metrics/METRICS_OWNERS
 per-file histograms.xml=set noparent
+
+# Everything else in this directory is metrics infrastructure.
+# (prefer to send to chromium-metrics-reviews@google.com)
+file://base/metrics/OWNERS

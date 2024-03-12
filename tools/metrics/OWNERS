@@ -1,7 +1,2 @@
-# Note: Please send CLs to chromium-metrics-reviews@google.com rather than to
-# specific individuals. These CLs will be automatically reassigned to a reviewer
-# within about 5 minutes. This approach helps our team to load-balance incoming
-# reviews. Googlers can read more about this at go/gwsq-gerrit.
-chromium-metrics-reviews@google.com
-
-file://base/metrics/OWNERS #{LAST_RESORT_SUGGESTION}
+# Send reviews to chromium-metrics-reviews@google.com
+file://base/metrics/OWNERS

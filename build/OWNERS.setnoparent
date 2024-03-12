@@ -22,7 +22,7 @@ file://third_party/blink/SECURITY_OWNERS
 # Privacy reviews
 file://tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS
 file://tools/metrics/ukm/PRIVACY_OWNERS
-file://base/metrics/OWNERS
+file://base/metrics/METRICS_OWNERS
 
 # Blink API owners are responsible for decisions about what APIs Blink should
 # expose to the open web.
