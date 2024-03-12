@@ -19,6 +19,8 @@ test_support_sources = [
   "src/crypto/test/abi_test.h",
   "src/crypto/test/file_test.cc",
   "src/crypto/test/file_test.h",
+  "src/crypto/test/file_util.cc",
+  "src/crypto/test/file_util.h",
   "src/crypto/test/gtest_main.h",
   "src/crypto/test/test_util.cc",
   "src/crypto/test/test_util.h",
