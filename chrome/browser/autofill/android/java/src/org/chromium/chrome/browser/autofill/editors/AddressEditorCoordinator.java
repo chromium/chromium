@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.autofill.AutofillAddress;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -118,6 +119,7 @@ public class AddressEditorCoordinator {
                         delegate,
                         IdentityServicesProvider.get().getIdentityManager(profile),
                         SyncServiceFactory.getForProfile(profile),
+                        PersonalDataManagerFactory.getForProfile(profile),
                         addressToEdit,
                         userFlow,
                         saveToDisk);
