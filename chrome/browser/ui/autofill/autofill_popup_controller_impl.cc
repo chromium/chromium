@@ -242,9 +242,11 @@ void AutofillPopupControllerImpl::Show(
     }
 
 #if BUILDFLAG(IS_ANDROID)
-    ManualFillingController::GetOrCreate(web_contents_.get())
-        ->UpdateSourceAvailability(FillingSource::AUTOFILL,
-                                   !suggestions_.empty());
+    if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+            ManualFillingController::GetOrCreate(web_contents_.get())) {
+      manual_filling_controller->UpdateSourceAvailability(
+          FillingSource::AUTOFILL, !suggestions_.empty());
+    }
 #endif
     if (!view_ || !view_->Show(autoselect_first_suggestion)) {
       return;
@@ -384,9 +386,12 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 #if BUILDFLAG(IS_ANDROID)
   // Assume that suggestions are (still) available. If this is wrong, the method
   // |HideViewAndDie| will be called soon after and will hide all suggestions.
-  ManualFillingController::GetOrCreate(web_contents_.get())
-      ->UpdateSourceAvailability(FillingSource::AUTOFILL,
-                                 /*has_suggestions=*/true);
+  if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+          ManualFillingController::GetOrCreate(web_contents_.get())) {
+    manual_filling_controller->UpdateSourceAvailability(
+        FillingSource::AUTOFILL,
+        /*has_suggestions=*/true);
+  }
 #endif
 
   if (view_) {
@@ -442,15 +447,17 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // reference.
   Suggestion suggestion = suggestions_[index];
 #if BUILDFLAG(IS_ANDROID)
-  auto mf_controller =
-      ManualFillingController::GetOrCreate(web_contents_.get());
-  // Accepting a suggestion should hide all suggestions. To prevent them from
-  // coming up in Multi-Window mode, mark the source as unavailable.
-  mf_controller->UpdateSourceAvailability(FillingSource::AUTOFILL,
-                                          /*has_suggestions=*/false);
-  mf_controller->Hide();
-
+  if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+          ManualFillingController::GetOrCreate(web_contents_.get())) {
+    // Accepting a suggestion should hide all suggestions. To prevent them from
+    // coming up in Multi-Window mode, mark the source as unavailable.
+    manual_filling_controller->UpdateSourceAvailability(
+        FillingSource::AUTOFILL,
+        /*has_suggestions=*/false);
+    manual_filling_controller->Hide();
+  }
 #endif
+
   if (suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
     std::string event_name =
         suggestion.feature_for_iph ==
@@ -776,9 +783,12 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   // Note: We don't invoke ManualFillingController::Hide() here, as we might
   // switch between text input fields.
   if (web_contents_) {
-    ManualFillingController::GetOrCreate(web_contents_.get())
-        ->UpdateSourceAvailability(FillingSource::AUTOFILL,
-                                   /*has_suggestions=*/false);
+    if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+            ManualFillingController::GetOrCreate(web_contents_.get())) {
+      manual_filling_controller->UpdateSourceAvailability(
+          FillingSource::AUTOFILL,
+          /*has_suggestions=*/false);
+    }
   }
 #endif
 
