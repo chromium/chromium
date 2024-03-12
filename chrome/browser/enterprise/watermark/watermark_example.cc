@@ -205,7 +205,7 @@ WatermarkTextArea::WatermarkTextArea(enterprise_watermark::WatermarkView* view)
 
 void WatermarkTextArea::OnTextChanged() {
   Textfield::OnTextChanged();
-  watermark_view_->SetString(base::UTF16ToASCII(GetText()));
+  watermark_view_->SetString(base::UTF16ToUTF8(GetText()));
 }
 
 BEGIN_METADATA(WatermarkTextArea)

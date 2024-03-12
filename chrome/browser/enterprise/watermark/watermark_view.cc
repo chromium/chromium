@@ -6,15 +6,14 @@
 
 #include <math.h>
 #include <algorithm>
+#include <string>
 
 #include "cc/paint/paint_canvas.h"
-#include "skia/ext/font_utils.h"
-#include "third_party/skia/include/core/SkFont.h"
-#include "third_party/skia/include/core/SkFontMgr.h"
-#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/render_text.h"
 
 namespace enterprise_watermark {
 
@@ -24,16 +23,57 @@ constexpr float kTextSize = 30.0f;
 constexpr int kWatermarkBlockSpacing = 80;
 constexpr double kRotationAngle = 45;
 
-const SkFont& WatermarkFont() {
-  static SkFont font = []() {
-    sk_sp<SkFontMgr> font_mgr = skia::DefaultFontMgr();
-    sk_sp<SkTypeface> typeface = font_mgr->legacyMakeTypeface(
-        "Arial",
-        SkFontStyle(SkFontStyle::kExtraBold_Weight, SkFontStyle::kNormal_Width,
-                    SkFontStyle::kUpright_Slant));
-    return SkFont(typeface, kTextSize, 1.0f, 0.0f);
-  }();
+constexpr SkColor kFillColor = SkColorSetARGB(0x20, 0x00, 0x00, 0x00);
+constexpr SkColor kOutlineColor = SkColorSetARGB(0x25, 0xff, 0xff, 0xff);
+
+const gfx::Font& WatermarkFont() {
+  static gfx::Font font("Arial", kTextSize);
   return font;
+}
+
+const gfx::FontList& WatermarkFontList() {
+  static gfx::FontList font_list(WatermarkFont());
+  return font_list;
+}
+
+std::unique_ptr<gfx::RenderText> CreateRenderText(const gfx::Rect& display_rect,
+                                                  const std::u16string& text) {
+  auto render_text = gfx::RenderText::CreateRenderText();
+  render_text->set_clip_to_display_rect(false);
+  render_text->SetFontList(WatermarkFontList());
+  render_text->SetDisplayOffset(gfx::Vector2d(0, 0));
+  render_text->SetDisplayRect(display_rect);
+  render_text->SetText(text);
+  return render_text;
+}
+
+std::unique_ptr<gfx::RenderText> CreateFillRenderText(
+    const gfx::Rect& display_rect,
+    const std::u16string& text) {
+  auto render_text = CreateRenderText(display_rect, text);
+  render_text->SetFillStyle(cc::PaintFlags::kFill_Style);
+  render_text->SetColor(kFillColor);
+  return render_text;
+}
+
+std::unique_ptr<gfx::RenderText> CreateOutlineRenderText(
+    const gfx::Rect& display_rect,
+    const std::u16string& text) {
+  auto render_text = CreateRenderText(display_rect, text);
+  render_text->SetFillStyle(cc::PaintFlags::kStroke_Style);
+  render_text->SetColor(kOutlineColor);
+  return render_text;
+}
+
+std::vector<std::u16string> ExtractUTF16Lines(const std::string& text) {
+  std::vector<std::string> utf8_text_lines = base::SplitString(
+      text, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  std::vector<std::u16string> utf16_text_lines;
+  for (const std::string& utf8 : utf8_text_lines) {
+    utf16_text_lines.push_back(base::UTF8ToUTF16(std::move(utf8)));
+  }
+  return utf16_text_lines;
 }
 
 }  // namespace
@@ -51,21 +91,36 @@ WatermarkView::WatermarkView(std::string text)
 WatermarkView::~WatermarkView() = default;
 
 void WatermarkView::SetString(const std::string& text) {
-  text_blocks_.clear();
-  std::vector<std::string> text_lines = base::SplitString(
-      text, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  DCHECK(base::IsStringUTF8(text));
 
-  // Block size calculation is only required when text is changed.
+  text_fill_.clear();
+  text_outline_.clear();
+
+  std::vector<std::u16string> utf16_text_lines = ExtractUTF16Lines(text);
+
+  // `block_width_` will be set to the maximum required width, while
+  // `block_height_` is going to be the max required height for a single line
+  // times the number of line.
   block_width_ = 0;
-  for (const auto& line : text_lines) {
-    block_width_ =
-        std::max(SkScalar(block_width_),
-                 WatermarkFont().measureText(line.c_str(), line.size(),
-                                             SkTextEncoding::kUTF8));
-    text_blocks_.push_back(
-        SkTextBlob::MakeFromString(line.c_str(), WatermarkFont()));
+  block_height_ = 0;
+  single_line_height_ = 0;
+  for (const auto& line : utf16_text_lines) {
+    int w = 0;
+    int h = 0;
+    gfx::Canvas::SizeStringInt(line, WatermarkFontList(), &w, &h, kTextSize,
+                               gfx::Canvas::NO_ELLIPSIS);
+    block_width_ = std::max(block_width_, w);
+    single_line_height_ = std::max(single_line_height_, h);
   }
-  block_height_ = kTextSize * text_lines.size();
+  block_height_ = single_line_height_ * utf16_text_lines.size();
+
+  for (const auto& line : utf16_text_lines) {
+    // The coordinates here do not matter as the display rect will change for
+    // each drawn block.
+    gfx::Rect display_rect(0, 0, 0, 0);
+    text_fill_.push_back(CreateFillRenderText(display_rect, line));
+    text_outline_.push_back(CreateOutlineRenderText(display_rect, line));
+  }
 
   // Invalidate the state of the view.
   SchedulePaint();
@@ -74,13 +129,12 @@ void WatermarkView::SetString(const std::string& text) {
 void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   // Trying to render an empty string in Skia will fail. A string is required
   // to create the command buffer for the renderer.
-  if (text_blocks_.empty()) {
+  if (text_fill_.empty()) {
+    DCHECK(text_outline_.empty());
     return;
   }
 
-  // Get ptr to Skia canvas.
-  cc::PaintCanvas* sk_canvas = canvas->sk_canvas();
-  sk_canvas->rotate(360 - kRotationAngle);
+  canvas->sk_canvas()->rotate(360 - kRotationAngle);
 
   // Get contents are in order to center the text inside it.
   gfx::Rect bounds = GetContentsBounds();
@@ -97,7 +151,7 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
       int stagger = apply_stagger ? block_width_offset() / 2 : 0;
       apply_stagger = !apply_stagger;
 
-      DrawTextBlock(sk_canvas, x - stagger, y);
+      DrawTextBlock(canvas, x - stagger, y);
     }
   }
 
@@ -113,26 +167,19 @@ void WatermarkView::SetBackgroundColor(SkColor background_color) {
   SchedulePaint();
 }
 
-void WatermarkView::DrawTextBlock(cc::PaintCanvas* canvas, int x, int y) {
-  static SkColor kOutlineColor = SkColorSetARGB(0x25, 0xff, 0xff, 0xff);
-  static float kOutlineThickness = 1.0f;
-  static SkColor kFillColor = SkColorSetARGB(0x20, 0x00, 0x00, 0x00);
+void WatermarkView::DrawTextBlock(gfx::Canvas* canvas, int x, int y) {
+  DCHECK_EQ(text_fill_.size(), text_outline_.size());
 
-  for (const sk_sp<SkTextBlob>& text_block : text_blocks_) {
-    // Draw a stroke for the light-colored outline of the text.
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setColor(kOutlineColor);
-    flags.setStrokeWidth(kOutlineThickness);
-    canvas->drawTextBlob(text_block, x, y, flags);
+  for (size_t i = 0; i < text_fill_.size(); ++i) {
+    gfx::Rect display_rect(x, y, block_width_, single_line_height_);
 
-    // Draw the dark-colored fill of the text.
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(kFillColor);
-    canvas->drawTextBlob(text_block, x, y, flags);
+    text_fill_[i]->SetDisplayRect(display_rect);
+    text_fill_[i]->Draw(canvas);
 
-    // Re-calculate `y` every loop so the next line is below the previous one.
-    y += kTextSize;
+    text_outline_[i]->SetDisplayRect(display_rect);
+    text_outline_[i]->Draw(canvas);
+
+    y += single_line_height_;
   }
 }
 
@@ -198,9 +245,10 @@ int WatermarkView::max_x(double angle, const gfx::Rect& bounds) const {
 }
 
 int WatermarkView::min_y(double angle, const gfx::Rect& bounds) const {
-  // Instead of starting at Y=0, starting at `kTextSize` lets the first line of
-  // text be in frame as text is drawn with (0,0) as the bottom-left corner.
-  return kTextSize;
+  // Instead of starting at Y=0, starting at `single_line_height_` lets the
+  // first line of text be in frame as text is drawn with (0,0) as the
+  // bottom-left corner.
+  return single_line_height_;
 }
 
 int WatermarkView::max_y(double angle, const gfx::Rect& bounds) const {

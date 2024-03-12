@@ -5,16 +5,12 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_
 #define CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_VIEW_H_
 
-#include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-namespace cc {
-class PaintCanvas;
-}
-
 namespace gfx {
 class Canvas;
+class RenderText;
 }
 
 namespace enterprise_watermark {
@@ -34,6 +30,7 @@ class WatermarkView : public views::View {
   // view's bounds when performing transformations.
   void SetBackgroundColor(SkColor color);
 
+  // `text` must be UTF-8 encoded.
   void SetString(const std::string& text);
 
   // views::View
@@ -41,8 +38,8 @@ class WatermarkView : public views::View {
 
  private:
   // Helper function to draw a single block of text with the data in
-  // `text_blocks_` at the provided coordinates.
-  void DrawTextBlock(cc::PaintCanvas* canvas, int x, int y);
+  // `text_fill_` and `text_outline_` at the provided coordinates.
+  void DrawTextBlock(gfx::Canvas* canvas, int x, int y);
 
   // The width/height of individual blocks of text, including spacing.
   int block_width_offset() const;
@@ -55,10 +52,26 @@ class WatermarkView : public views::View {
   int min_y(double angle, const gfx::Rect& bounds) const;
   int max_y(double angle, const gfx::Rect& bounds) const;
 
-  std::vector<sk_sp<SkTextBlob>> text_blocks_;
+  // Background color of the whole `WatermarkView`. This is normally
+  // transparent, but can be an arbitrary color for testing with the
+  // "watermark_app" target.
   SkColor background_color_;
-  int block_width_;
-  int block_height_;
+
+  // Height/width required to draw all the lines in `text_fill_`/`text_outline_`
+  // in a single block.
+  int block_width_ = 0;
+  int block_height_ = 0;
+
+  // Height of a single line of `text_fill_` and `text_fill_`.
+  int single_line_height_ = 0;
+
+  // Containers for the fill/outline representations of each line in a single
+  // text block. This is done to avoid calling methods like
+  // `RenderText::SetText` as much as possible as that would invalidate that
+  // object's layout cache, and to avoid running into multiline issues for mixed
+  // character set cases.
+  std::vector<std::unique_ptr<gfx::RenderText>> text_fill_;
+  std::vector<std::unique_ptr<gfx::RenderText>> text_outline_;
 };
 
 }  // namespace enterprise_watermark
