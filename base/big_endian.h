@@ -22,39 +22,6 @@
 
 namespace base {
 
-namespace internal {
-
-// ByteSwapIfLittleEndian performs ByteSwap if this platform is little-endian,
-// otherwise it is a no-op.
-
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-
-template <typename T>
-inline auto ByteSwapIfLittleEndian(T val) -> decltype(ByteSwap(val)) {
-  return ByteSwap(val);
-}
-
-#else
-
-// The use of decltype ensures this is only enabled for types for which
-// ByteSwap() is defined, so the same set of overloads will work on both
-// little-endian and big-endian platforms.
-
-template <typename T>
-inline auto ByteSwapIfLittleEndian(T val) -> decltype(ByteSwap(val)) {
-  return val;
-}
-
-#endif
-
-// We never need to byte-swap a single-byte value, but it's convenient to have
-// this overload to avoid a special case.
-inline uint8_t ByteSwapIfLittleEndian(uint8_t val) {
-  return val;
-}
-
-}  // namespace internal
-
 // Allows reading integers in network order (big endian) while iterating over
 // an underlying buffer. All the reading functions advance the internal pointer.
 class BASE_EXPORT BigEndianReader {
