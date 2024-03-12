@@ -26,6 +26,7 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       "//media/gpu/chromeos:common",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/gl:test_support",
     ]
 
     if (use_vaapi) {

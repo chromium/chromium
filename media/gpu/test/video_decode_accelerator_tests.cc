@@ -36,10 +36,15 @@
 #include "media/gpu/test/video_test_helpers.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace media {
 namespace test {
@@ -879,6 +884,20 @@ int main(int argc, char** argv) {
 
   media::test::g_env = static_cast<media::test::VideoPlayerTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
+
+// TODO(b/316374371) Try to remove Ozone and replace with EGL and GL.
+#if BUILDFLAG(IS_OZONE)
+  ui::OzonePlatform::InitParams ozone_param;
+  ozone_param.single_process = true;
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(USE_V4L2_CODEC)
+  ui::OzonePlatform::InitializeForUI(ozone_param);
+#endif
+  ui::OzonePlatform::InitializeForGPU(ozone_param);
+#endif
+
+  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      /*fallback_to_software_gl=*/false);
 
   return RUN_ALL_TESTS();
 }
