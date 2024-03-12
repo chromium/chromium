@@ -51,11 +51,10 @@ class MediaController::ImageObserverHolder {
     // Flush the observer with the latest state.
     if (type == mojom::MediaSessionImageType::kChapter) {
       CHECK(std::holds_alternative<ChapterMap>(current_images));
+      UpdateChapterSize(std::get<ChapterMap>(current_images));
       for (auto& chapter_images : std::get<ChapterMap>(current_images)) {
         ImagesChanged(chapter_images.second, chapter_images.first);
       }
-      chapter_size_ =
-          static_cast<int>(std::get<ChapterMap>(current_images).size());
     } else {
       CHECK(std::holds_alternative<std::vector<MediaImage>>(current_images));
       ImagesChanged(std::get<std::vector<MediaImage>>(current_images),
@@ -71,6 +70,10 @@ class MediaController::ImageObserverHolder {
   bool is_valid() const { return observer_.is_connected(); }
 
   mojom::MediaSessionImageType type() const { return type_; }
+
+  void UpdateChapterSize(const ChapterMap& images) {
+    chapter_size_ = static_cast<int>(images.size());
+  }
 
   void ImagesChanged(const std::vector<MediaImage>& images,
                      const std::optional<int>& chapter_index) {
@@ -247,6 +250,9 @@ void MediaController::MediaSessionMetadataChanged(
     return;
   }
 
+  // Removes the chapter image metadata from the last media and sets the new
+  // ones.
+  chapter_images_.clear();
   for (int index = 0;
        index < static_cast<int>(metadata.value().chapters.size()); index++) {
     chapter_images_[index] = metadata.value().chapters[index].artwork();
@@ -256,6 +262,8 @@ void MediaController::MediaSessionMetadataChanged(
     if (holder->type() != mojom::MediaSessionImageType::kChapter) {
       continue;
     }
+
+    holder->UpdateChapterSize(chapter_images_);
     for (int index = 0;
          index < static_cast<int>(metadata.value().chapters.size()); index++) {
       auto it = chapter_images_.find(index);

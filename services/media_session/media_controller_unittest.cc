@@ -1468,13 +1468,47 @@ TEST_F(MediaControllerTest, ActiveController_SimulateChapterChanged) {
     // By default, the image is empty but no notification should be received.
     EXPECT_TRUE(media_session.last_image_src().is_empty());
 
-    // Check that we receive the correct image and that it was requested from
+    // Checks that we receive the correct image and that it was requested from
     // `media_session` by the controller.
     media_session.SimulateMetadataChanged(test_metadata);
     base::RunLoop().RunUntilIdle();
-    observer.WaitForExpectedChapterImage(0, false);
-    observer.WaitForExpectedChapterImage(1, false);
+    observer.WaitForExpectedChapterImage(0, /*expect_null_image=*/false);
+    observer.WaitForExpectedChapterImage(1, /*expect_null_image=*/false);
     EXPECT_EQ(test_image_2.src, media_session.last_image_src());
+
+    MediaMetadata metadata1;
+    metadata1.title = u"title1";
+    metadata1.artist = u"artist1";
+    metadata1.album = u"album1";
+    std::optional<MediaMetadata> test_metadata1(metadata1);
+
+    // Checks that we receive the correct image and that it was requested from
+    // `media_session` by the controller after a media change with no chapter.
+    media_session.SimulateMetadataChanged(test_metadata1);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(test_image_2.src, media_session.last_image_src());
+
+    media_session::MediaImage test_image_3;
+    test_image_3.src = GURL("https://www.chrome.com");
+    media_session::ChapterInformation test_chapter_3(
+        /*title=*/u"chapter3", /*start_time=*/base::Seconds(30),
+        /*artwork=*/{test_image_3});
+
+    MediaMetadata metadata2;
+    metadata2.title = u"title2";
+    metadata2.artist = u"artist2";
+    metadata2.album = u"album2";
+    metadata2.chapters = {test_chapter_1, test_chapter_2, test_chapter_3};
+    std::optional<MediaMetadata> test_metadata2(metadata2);
+
+    // Checks that we receive the correct image and that it was requested from
+    // `media_session` by the controller after a media change with 3 chapters.
+    media_session.SimulateMetadataChanged(test_metadata2);
+    base::RunLoop().RunUntilIdle();
+    observer.WaitForExpectedChapterImage(0, /*expect_null_image=*/false);
+    observer.WaitForExpectedChapterImage(1, /*expect_null_image=*/false);
+    observer.WaitForExpectedChapterImage(2, /*expect_null_image=*/false);
+    EXPECT_EQ(test_image_3.src, media_session.last_image_src());
   }
 }
 
