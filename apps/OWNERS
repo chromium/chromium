@@ -1,4 +1,10 @@
 set noparent
+
+# Temporary owners until reorg is finished
+brettw@chromium.org
+tbarzic@chromium.org
+skuhne@chromium.org
+
 # Apps team members
 benwells@chromium.org
 tapted@chromium.org
