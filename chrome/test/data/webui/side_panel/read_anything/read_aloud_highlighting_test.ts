@@ -4,6 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
+import {NEXT_GRANULARITY_EVENT, PREVIOUS_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
@@ -42,11 +43,11 @@ suite('ReadAloudHighlight', () => {
   };
 
   function emitNextGranularity(): void {
-    emitEvent(app, 'next-granularity-click');
+    emitEvent(app, NEXT_GRANULARITY_EVENT);
   }
 
   function emitPreviousGranularity(): void {
-    emitEvent(app, 'previous-granularity-click');
+    emitEvent(app, PREVIOUS_GRANULARITY_EVENT);
   }
 
   setup(() => {

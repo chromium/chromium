@@ -5,6 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {RATE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -32,7 +33,7 @@ suite('RateSelection', () => {
     rateButton =
         toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#rate')!;
     rateEmitted = -1;
-    document.addEventListener('rate-change', event => {
+    document.addEventListener(RATE_EVENT, event => {
       rateEmitted = (event as CustomEvent).detail.rate;
     });
   });

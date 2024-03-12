@@ -7,6 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {defaultFontName} from 'chrome-untrusted://read-anything-side-panel.top-chrome/common.js';
+import {FONT_EVENT, FONT_SIZE_EVENT, HIGHLIGHT_TOGGLE_EVENT, NEXT_GRANULARITY_EVENT, PLAY_PAUSE_EVENT, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
@@ -36,7 +37,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitFontSize(): void {
-      emitEvent(app, 'font-size-change');
+      emitEvent(app, FONT_SIZE_EVENT);
     }
 
     test('container font size updated', () => {
@@ -64,7 +65,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitFont(fontName: string): void {
-      emitEvent(app, 'font-change', {detail: {fontName}});
+      emitEvent(app, FONT_EVENT, {detail: {fontName}});
     }
 
     function assertFontsEqual(actual: string, expected: string): void {
@@ -106,7 +107,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('on speech rate change', () => {
     function emitRate(rate: number): void {
-      emitEvent(app, 'rate-change', {detail: {rate}});
+      emitEvent(app, RATE_EVENT, {detail: {rate}});
     }
 
     test('speech rate updated', () => {
@@ -130,7 +131,7 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     function emitPlayPause(): void {
-      emitEvent(app, 'play-pause-click');
+      emitEvent(app, PLAY_PAUSE_EVENT);
     }
 
     suite('by default', () => {
@@ -191,7 +192,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitHighlight(highlightOn: boolean): void {
-      emitEvent(app, 'highlight-toggle', {detail: {highlightOn}});
+      emitEvent(app, HIGHLIGHT_TOGGLE_EVENT, {detail: {highlightOn}});
     }
 
     setup(() => {
@@ -217,11 +218,11 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     function emitNextGranularity(): void {
-      emitEvent(app, 'next-granularity-click');
+      emitEvent(app, NEXT_GRANULARITY_EVENT);
     }
 
     function emitPreviousGranularity(): void {
-      emitEvent(app, 'previous-granularity-click');
+      emitEvent(app, PREVIOUS_GRANULARITY_EVENT);
     }
 
     suite('next', () => {

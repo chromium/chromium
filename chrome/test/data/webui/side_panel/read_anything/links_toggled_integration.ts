@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
-import {LINK_TOGGLE_BUTTON_ID} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
+import {LINK_TOGGLE_BUTTON_ID, NEXT_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 
@@ -110,7 +110,7 @@ suite('LinksToggledIntegration', () => {
     suite('and after speech finishes', () => {
       setup(() => {
         for (let i = 0; i < axTree.nodes.length + 1; i++) {
-          emitEvent(app, 'next-granularity-click');
+          emitEvent(app, NEXT_GRANULARITY_EVENT);
         }
       });
 

@@ -89,6 +89,13 @@ export const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
 export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 
 // Events emitted from the toolbar to the app
+export const FONT_SIZE_EVENT = 'font-size-change';
+export const FONT_EVENT = 'font-change';
+export const RATE_EVENT = 'rate-change';
+export const PLAY_PAUSE_EVENT = 'play-pause-click';
+export const HIGHLIGHT_TOGGLE_EVENT = 'highlight-toggle';
+export const NEXT_GRANULARITY_EVENT = 'next-granularity-click';
+export const PREVIOUS_GRANULARITY_EVENT = 'previous-granularity-click';
 export const LINKS_EVENT = 'links-toggle';
 
 const ReadAnythingToolbarElementBase = WebUiListenerMixin(PolymerElement);
@@ -484,11 +491,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onNextGranularityClick_() {
-    this.emitEvent_('next-granularity-click');
+    this.emitEvent_(NEXT_GRANULARITY_EVENT);
   }
 
   private onPreviousGranularityClick_() {
-    this.emitEvent_('previous-granularity-click');
+    this.emitEvent_(PREVIOUS_GRANULARITY_EVENT);
   }
 
   private onTextStyleMenuButtonClick_(event: DomRepeatEvent<MenuButton>) {
@@ -561,7 +568,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
     }
 
-    this.emitEvent_('highlight-toggle', {
+    this.emitEvent_(HIGHLIGHT_TOGGLE_EVENT, {
       highlightOn: this.isHighlightOn_,
     });
   }
@@ -619,7 +626,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private propagateFontChange_(fontName: string) {
     chrome.readingMode.onFontChange(fontName);
-    this.emitEvent_('font-change', {
+    this.emitEvent_(FONT_EVENT, {
       fontName,
     });
     this.style.fontFamily = validatedFontName(fontName);
@@ -627,7 +634,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onRateClick_(event: DomRepeatEvent<number>) {
     chrome.readingMode.onSpeechRateChange(event.model.item);
-    this.emitEvent_('rate-change', {
+    this.emitEvent_(RATE_EVENT, {
       rate: event.model.item,
     });
     this.setRateIcon_(event.model.item);
@@ -699,7 +706,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeChanged(increase);
-    this.emitEvent_('font-size-change');
+    this.emitEvent_(FONT_SIZE_EVENT);
     // Don't close the menu
   }
 
@@ -708,11 +715,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeReset();
-    this.emitEvent_('font-size-change');
+    this.emitEvent_(FONT_SIZE_EVENT);
   }
 
   private onPlayPauseClick_() {
-    this.emitEvent_('play-pause-click');
+    this.emitEvent_(PLAY_PAUSE_EVENT);
   }
 
   private onToolbarKeyDown_(e: KeyboardEvent) {

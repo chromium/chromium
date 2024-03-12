@@ -5,6 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {FONT_SIZE_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -25,7 +26,7 @@ suite('FontSize', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
     fontSizeEmitted = false;
-    document.addEventListener('font-size-change', () => fontSizeEmitted = true);
+    document.addEventListener(FONT_SIZE_EVENT, () => fontSizeEmitted = true);
   });
 
   function createToolbar(): void {
