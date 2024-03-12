@@ -81,6 +81,7 @@ UNNotificationContent* ContentForTipsNotificationType(
   content.title = l10n_util::GetNSString(content_ids.title);
   content.body = l10n_util::GetNSString(content_ids.body);
   content.userInfo = UserInfoForTipsNotificationType(type);
+  content.sound = UNNotificationSound.defaultSound;
   return content;
 }
 
