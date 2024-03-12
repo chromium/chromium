@@ -10,14 +10,11 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class Profile;
 
@@ -206,41 +203,6 @@ class WebAppTestInstallWithOsHooksObserver final
 
   webapps::AppId BeginListeningAndWait(
       const std::set<webapps::AppId>& app_ids = {});
-};
-
-class WebAppTestLaunchedObserver final : public BrowserListObserver,
-                                         public TabStripModelObserver,
-                                         public content::WebContentsObserver {
- public:
-  explicit WebAppTestLaunchedObserver(webapps::AppId app_id);
-  ~WebAppTestLaunchedObserver() final;
-
-  // Wait until a web app window for `app_id_` has launched and finished
-  // loading. Early exits if such a window is already open.
-  void WaitUntilLaunched();
-
- private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
-  void CheckWebContents(content::WebContents* web_contents);
-
-  // content::WebContentsObserver:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-  void WebContentsDestroyed() override;
-
-  webapps::AppId app_id_;
-
-  base::RunLoop run_loop_;
-
-  base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
 };
 
 class WebAppTestManifestUpdatedObserver final
