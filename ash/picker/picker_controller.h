@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -102,6 +103,9 @@ class ASH_EXPORT PickerController
   // Periodically records usage metrics based on the Standard Feature Usage
   // Logging (SFUL) framework.
   PickerFeatureUsageMetrics feature_usage_metrics_;
+
+  // Records metrics related to a session.
+  std::unique_ptr<PickerSessionMetrics> session_metrics_;
 
   base::ScopedObservation<ash::input_method::ImeKeyboard,
                           ash::input_method::ImeKeyboard::Observer>

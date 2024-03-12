@@ -5842,6 +5842,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Picker.Session.Outcome" enum="PickerSessionOutcome"
+    expires_after="2025-01-31">
+  <owner>shend@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The outcome of a Picker session to record how a user finished a session.
+    Recorded when the Picker widget is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Picker.Session.PresentationLatency.SearchField" units="ms"
     expires_after="2024-12-31">
   <owner>shend@chromium.org</owner>

@@ -200,6 +200,8 @@ void PickerController::ToggleWidget(
   CHECK(client_);
 
   if (widget_) {
+    session_metrics_->RecordOutcome(
+        PickerSessionMetrics::SessionOutcome::kAbandoned);
     widget_->Close();
   } else {
     widget_ = PickerWidget::Create(
@@ -210,6 +212,7 @@ void PickerController::ToggleWidget(
     widget_->Show();
 
     feature_usage_metrics_.StartUsage();
+    session_metrics_ = std::make_unique<PickerSessionMetrics>();
     widget_observation_.Observe(widget_.get());
   }
 }
@@ -276,6 +279,9 @@ void PickerController::InsertResultOnNextFocus(
   insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
       input_method, *media_to_insert, kInsertMediaTimeout,
       base::BindOnce(&CopyMediaToClipboard, *media_to_insert));
+
+  session_metrics_->RecordOutcome(
+      PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 
 void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
@@ -293,6 +299,7 @@ void PickerController::OnCapsLockChanged(bool enabled) {
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {
   feature_usage_metrics_.StopUsage();
+  session_metrics_.reset();
   widget_observation_.Reset();
 }
 
