@@ -306,8 +306,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   // the row, which can then be used to apply different layout/styling.
   OmniboxSuggestionRowButton* first_button = nullptr;
 
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-      match().HasInstantKeyword(
+  if (match().HasInstantKeyword(
           popup_view_->controller()->client()->GetTemplateURLService())) {
     keyword_button_->SetVisible(false);
   } else {

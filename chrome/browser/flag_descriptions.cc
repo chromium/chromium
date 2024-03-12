@@ -2454,10 +2454,6 @@ const char kOmniboxCR23SuggestionHoverFillShapeDescription[] =
     "Updates Omnibox suggestion hover fill shape to comply with CR23 "
     "guidelines.";
 
-const char kOmniboxKeywordModeRefreshName[] = "Omnibox Keyword Mode Refresh";
-const char kOmniboxKeywordModeRefreshDescription[] =
-    "Changes suggestion behavior for keyword mode/site search/starter pack.";
-
 const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
 const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "

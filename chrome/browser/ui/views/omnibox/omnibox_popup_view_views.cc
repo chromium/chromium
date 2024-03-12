@@ -194,8 +194,7 @@ gfx::Image OmniboxPopupViewViews::GetMatchIcon(
 void OmniboxPopupViewViews::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
 
-  if (!OmniboxFieldTrial::IsKeywordModeRefreshEnabled() ||
-      index != model()->GetPopupSelection().line) {
+  if (index != model()->GetPopupSelection().line) {
     OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
     model()->SetPopupSelection(OmniboxPopupSelection(index, line_state));
     OnPropertyChanged(model(), views::kPropertyEffectsNone);

@@ -288,9 +288,6 @@ bool HUPSearchDatabase();
 // ---------------------------------------------------------
 // For UI experiments.
 
-// Returns true if the OmniboxKeywordModeRefresh feature is enabled.
-bool IsKeywordModeRefreshEnabled();
-
 // Returns true if the fuzzy URL suggestions feature is enabled.
 bool IsFuzzyUrlSuggestionsEnabled();
 // Indicates whether fuzzy match behavior is counterfactual.

@@ -11,6 +11,8 @@
 
 #include <algorithm>
 
+constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+
 const size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
 bool OmniboxPopupSelection::operator==(const OmniboxPopupSelection& b) const {
@@ -183,10 +185,8 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
   std::vector<LineState> all_states;
   if (step == kWholeLine || step == kAllLines) {
     all_states.push_back(NORMAL);
-    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
-      // Whole line stepping can go straight into keyword mode.
-      all_states.push_back(KEYWORD_MODE);
-    }
+    // Whole line stepping can go straight into keyword mode.
+    all_states.push_back(KEYWORD_MODE);
   } else {
     // Arrow keys should never reach the header controls.
     if (step == kStateOrLine) {
@@ -220,8 +220,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
             break;
           }
         }
-      } else if (line_state == KEYWORD_MODE &&
-                 OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+      } else if (line_state == KEYWORD_MODE && kIsDesktop) {
         OmniboxPopupSelection selection(line_number, line_state);
         if (selection.IsControlPresentOnMatch(result, pref_service)) {
           if (result.match_at(line_number)

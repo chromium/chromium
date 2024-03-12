@@ -5894,11 +5894,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-    {"omnibox-keyword-mode-refresh",
-     flag_descriptions::kOmniboxKeywordModeRefreshName,
-     flag_descriptions::kOmniboxKeywordModeRefreshDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxKeywordModeRefresh)},
-
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,

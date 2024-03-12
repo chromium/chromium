@@ -359,8 +359,7 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
   bool is_journeys_suggestion_row =
       match.type == AutocompleteMatchType::HISTORY_CLUSTER;
   bool is_instant_keyword_row =
-      match.type == AutocompleteMatchType::STARTER_PACK &&
-      OmniboxFieldTrial::IsKeywordModeRefreshEnabled();
+      match.type == AutocompleteMatchType::STARTER_PACK;
   if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
       is_instant_keyword_row ||
       OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {

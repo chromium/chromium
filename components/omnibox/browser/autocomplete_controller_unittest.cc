@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -329,10 +330,9 @@ TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_MostAggressive) {
               metrics::OmniboxEventProto_Feature_COMPANY_ENTITY_ADJUSTMENT));
 }
 
+// Desktop has some special handling for bare '@' inputs.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(AutocompleteControllerTest, FilterMatchesForInstantKeywordWithBareAt) {
-  base::test::ScopedFeatureList feature_list(
-      omnibox::kOmniboxKeywordModeRefresh);
-
   SetAutocompleteMatches({
       CreateSearchMatch(u"@"),
       CreateCompanyEntityMatch("https://example.com"),
@@ -355,6 +355,7 @@ TEST_F(AutocompleteControllerTest, FilterMatchesForInstantKeywordWithBareAt) {
                            match.contents == u"@";
                   }));
 }
+#endif
 
 TEST_F(AutocompleteControllerTest, UpdateResult_SyncAnd2Async) {
   auto sync_match = CreateSearchMatch("sync", true, 1300);

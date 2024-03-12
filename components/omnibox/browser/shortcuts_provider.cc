@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/autocomplete_i18n.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -52,6 +53,8 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/history_clusters/core/config.h"
 #endif  // !BUILDFLAG(IS_IOS)
+
+constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 namespace {
 
@@ -308,7 +311,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
     if (shortcut_match.relevance == 0)
       continue;
 
-    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+    if (kIsDesktop) {
       // Let builtin provider win for starter pack shortcuts; they should not
       // allow default or inline autocomplete for the keyword mode refresh.
       if (shortcut_match.type == AutocompleteMatch::Type::STARTER_PACK) {
@@ -550,7 +553,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
   const bool is_search_type = AutocompleteMatch::IsSearchType(match.type);
 
   const bool is_starter_pack = AutocompleteMatch::IsStarterPackType(match.type);
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+  if (kIsDesktop) {
     DCHECK(!is_starter_pack);
     DCHECK(is_search_type != match.keyword.empty())
         << "type: " << match.type << ", keyword: " << match.keyword;

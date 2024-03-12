@@ -280,7 +280,6 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
 }
 
 TEST_F(OmniboxResultViewTest, StarterPackMatch) {
-  base::test::ScopedFeatureList features(omnibox::kOmniboxKeywordModeRefresh);
   AutocompleteMatch match(nullptr, 1350, false,
                           AutocompleteMatchType::STARTER_PACK);
   result_view()->SetMatch(match);

@@ -312,11 +312,6 @@ BASE_FEATURE(kNtpRealboxPedals,
              "NtpRealboxPedals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature used to enable the new keyword mode behavior.
-BASE_FEATURE(kOmniboxKeywordModeRefresh,
-             "OmniboxKeywordModeRefresh",
-             enabled_by_default_desktop_only);
-
 // Feature used to synchronize the toolbar's and status bar's color.
 BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",

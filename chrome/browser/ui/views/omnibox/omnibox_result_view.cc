@@ -421,8 +421,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 
   // The selection indicator indicates when the suggestion is focused. Do not
   // show the selection indicator if an auxiliary button is selected.
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-      match_.HasInstantKeyword(
+  if (match_.HasInstantKeyword(
           popup_view_->controller()->client()->GetTemplateURLService())) {
     const OmniboxPopupSelection::LineState line_state =
         popup_view_->GetSelection().state;
@@ -552,8 +551,7 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-      match_.type == AutocompleteMatchType::STARTER_PACK) {
+  if (match_.type == AutocompleteMatchType::STARTER_PACK) {
     // Starter pack matches in the keyword mode refresh are a special case that
     // does not commit the omnibox by opening a selected match.
     OmniboxEditModel* model = popup_view_->model();

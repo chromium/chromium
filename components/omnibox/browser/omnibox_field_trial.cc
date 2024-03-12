@@ -550,10 +550,6 @@ bool OmniboxFieldTrial::HUPSearchDatabase() {
   return value.empty() || (value == "true");
 }
 
-bool OmniboxFieldTrial::IsKeywordModeRefreshEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxKeywordModeRefresh);
-}
-
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForIncognito() {
   return base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderIncognito);
 }

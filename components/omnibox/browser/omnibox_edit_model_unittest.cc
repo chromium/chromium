@@ -781,6 +781,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
   }
 }
 
+#if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   ACMatches matches;
   for (size_t i = 0; i < 6; ++i) {
@@ -884,6 +885,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   model()->OnUpOrDownPressed(true, true);
   EXPECT_EQ(Selection(5, Selection::NORMAL), model()->GetPopupSelection());
 }
+#endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   ACMatches matches;

@@ -50,6 +50,8 @@
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
 
+constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+
 namespace {
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
@@ -130,8 +132,7 @@ int GetDeduplicationProviderPreferenceScore(
       {AutocompleteProvider::TYPE_BOOKMARK, 1},
       // Don't let bookmarks override builtins, as that interferes with
       // starter pack matches when user has bookmarked their destination.
-      {AutocompleteProvider::TYPE_BUILTIN,
-       OmniboxFieldTrial::IsKeywordModeRefreshEnabled() ? 1 : 0},
+      {AutocompleteProvider::TYPE_BUILTIN, kIsDesktop ? 1 : 0},
       // Prefer non-shorcut matches over shortcuts, the latter of which may
       // have stale or missing URL titles (the latter from what-you-typed
       // matches).
@@ -654,7 +655,7 @@ bool AutocompleteMatch::MoreRelevant(const AutocompleteMatch& match1,
 // static
 bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
                                         const AutocompleteMatch& match2) {
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+  if (kIsDesktop) {
     // Prefer starter pack matches.
     if (match1.type == AutocompleteMatchType::STARTER_PACK &&
         match2.type != AutocompleteMatchType::STARTER_PACK) {

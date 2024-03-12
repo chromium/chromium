@@ -84,6 +84,8 @@
 #include "components/vector_icons/vector_icons.h"  // nogncheck
 #endif
 
+constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+
 using bookmarks::CoreBookmarkModel;
 using metrics::OmniboxEventProto;
 using omnibox::mojom::NavigationPredictor;
@@ -847,7 +849,7 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   } else {
     // Mark instant keyword as used if we're in keyword mode for a
     // starter pack keyword with its original '@' prefix intact.
-    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() && !keyword_.empty()) {
+    if (kIsDesktop && !keyword_.empty()) {
       PrefService* prefs = GetPrefService();
       TemplateURL* turl = controller_->client()
                               ->GetTemplateURLService()
@@ -1233,7 +1235,7 @@ void OmniboxEditModel::OnTabPressed(bool shift) {
 }
 
 bool OmniboxEditModel::OnSpacePressed() {
-  if (!OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+  if (!kIsDesktop) {
     return false;
   }
   if (!GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled)) {
@@ -2098,7 +2100,7 @@ void OmniboxEditModel::StepPopupSelection(
   OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
       autocomplete_controller()->result(), GetPrefService(),
       controller_->client()->GetTemplateURLService(), direction, step);
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+  if (kIsDesktop) {
     if (old_selection.IsChangeToKeyword(new_selection)) {
       ClearKeyword();
       SetPopupSelection(new_selection);

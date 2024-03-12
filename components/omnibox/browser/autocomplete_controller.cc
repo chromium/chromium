@@ -103,6 +103,8 @@
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #endif
 
+constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+
 namespace {
 
 using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
@@ -1298,8 +1300,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // Prevent starter-pack keywords from attaching to non-starter-pack
       // matches. Those will have a dedicated UI with an explicit match
       // selection to enter keyword mode.
-      if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-          match.type != AutocompleteMatchType::STARTER_PACK) {
+      if (kIsDesktop && match.type != AutocompleteMatchType::STARTER_PACK) {
         TemplateURL* turl =
             template_url_service_->GetTemplateURLForKeyword(exact_keyword);
         // Note, starter pack matches that removed the '@' from the beginning of
@@ -1332,8 +1333,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
     if (!keyword.empty()) {
       // Prevent starter-pack keywords from attaching to non-starter-pack
       // matches.
-      if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-          match.type != AutocompleteMatchType::STARTER_PACK) {
+      if (kIsDesktop && match.type != AutocompleteMatchType::STARTER_PACK) {
         TemplateURL* turl =
             template_url_service_->GetTemplateURLForKeyword(keyword);
         if (turl && turl->starter_pack_id() != 0 &&
@@ -1345,8 +1345,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // Only add the keyword if the match does not have a duplicate keyword
       // with a more relevant match.
       if (!keywords.count(keyword) ||
-          (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-           match.type == AutocompleteMatchType::STARTER_PACK)) {
+          (kIsDesktop && match.type == AutocompleteMatchType::STARTER_PACK)) {
         keywords.insert(keyword);
         match.associated_keyword = std::make_unique<AutocompleteMatch>(
             keyword_provider_->CreateVerbatimMatch(match.fill_into_edit,
@@ -2203,8 +2202,7 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     // Realbox doesn't support keyword mode yet, so keep original list intact.
     return;
   }
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
-      input.text().starts_with(u'@')) {
+  if (kIsDesktop && input.text().starts_with(u'@')) {
     // When the input is '@' exactly, some special filtering rules are applied.
     // Note: the rule preserving other matches with `associated_keyword` is
     // not currently necessary, but is intended to make it easy to coexist

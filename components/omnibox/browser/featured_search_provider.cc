@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -22,6 +23,8 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+
+constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 // Scored higher than history URL provider suggestions since inputs like '@b'
 // would default 'bing.com' instead (history URL provider seems to ignore '@'
@@ -100,7 +103,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
       match.fill_into_edit.substr(input.text().length());
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+  if (kIsDesktop &&
       input.current_page_classification() !=
           metrics::OmniboxEventProto::NTP_REALBOX &&
       template_url.keyword().starts_with(u'@')) {

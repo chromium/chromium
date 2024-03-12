@@ -11,6 +11,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -25,15 +26,14 @@ using Step = OmniboxPopupSelection::Step;
 
 class OmniboxPopupSelectionTest : public testing::Test {
  protected:
-  void SetUp() override {
-    features_.InitAndEnableFeature(omnibox::kOmniboxKeywordModeRefresh);
-  }
+  void SetUp() override {}
 
  private:
-  base::test::ScopedFeatureList features_;
   base::test::TaskEnvironment task_environment_;
 };
 
+// Desktop has special selection handling for starter pack keyword mode.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
   const std::u16string test_keyword = u"@bookmarks";
   TestOmniboxClient client;
@@ -52,7 +52,7 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
       nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   result.match_at(1u)->associated_keyword->keyword = test_keyword;
 
-  OmniboxPopupSelection next = OmniboxPopupSelection(0).GetNextSelection(
+  OmniboxPopupSelection next = OmniboxPopupSelection(0u).GetNextSelection(
       result, &pref_service, client.GetTemplateURLService(),
       Direction::kForward, Step::kWholeLine);
   EXPECT_EQ(next.line, 1u);
@@ -78,3 +78,4 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
   EXPECT_EQ(next.line, 0u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 }
+#endif
