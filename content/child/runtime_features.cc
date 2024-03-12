@@ -508,8 +508,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
        switches::kEnableWebGPUDeveloperFeatures, true},
       {wrf::EnableWebGPUExperimentalFeatures, switches::kEnableUnsafeWebGPU,
        true},
-      {wrf::EnableDirectSockets, switches::kEnableIsolatedWebAppsInRenderer,
-       true},
   };
 
   for (const auto& mapping : switchToFeatureMapping) {
