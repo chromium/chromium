@@ -32,7 +32,7 @@ namespace file_manager::file_tasks {
 
 struct TaskDescriptor;
 
-constexpr char kActionIdQuickOffice[] = "qo_documents";
+constexpr char kActionIdQuickOffice[] = "/views/app.html";
 constexpr char kActionIdWebDriveOfficeWord[] = "open-web-drive-office-word";
 constexpr char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
 constexpr char kActionIdWebDriveOfficePowerPoint[] =
