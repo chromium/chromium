@@ -10,18 +10,23 @@ TestLayoutManager::TestLayoutManager() = default;
 
 TestLayoutManager::~TestLayoutManager() = default;
 
-void TestLayoutManager::Layout(View* host) {}
-
-gfx::Size TestLayoutManager::GetPreferredSize(const View* host) const {
-  return preferred_size_;
+views::ProposedLayout TestLayoutManager::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layout;
+  if (!size_bounds.height().is_bounded()) {
+    layout.host_size = preferred_size_;
+    if (size_bounds.width().is_bounded()) {
+      layout.host_size.set_height(preferred_height_for_width_);
+    }
+  } else {
+    layout.host_size =
+        gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+  }
+  return layout;
 }
 
-int TestLayoutManager::GetPreferredHeightForWidth(const View* host,
-                                                  int width) const {
-  return preferred_height_for_width_;
-}
-
-void TestLayoutManager::InvalidateLayout() {
+void TestLayoutManager::OnLayoutChanged() {
+  views::LayoutManagerBase::OnLayoutChanged();
   ++invalidate_count_;
 }
 
