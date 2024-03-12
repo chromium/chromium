@@ -2490,6 +2490,9 @@ extern const char kMobilePWAInstallPromptMlDescription[];
 extern const char kMouseAndTrackpadDropdownMenuName[];
 extern const char kMouseAndTrackpadDropdownMenuDescription[];
 
+extern const char kNavBarColorMatchesTabBackgroundName[];
+extern const char kNavBarColorMatchesTabBackgroundDescription[];
+
 extern const char kNewTabSearchEngineUrlAndroidName[];
 extern const char kNewTabSearchEngineUrlAndroidDescription[];
 

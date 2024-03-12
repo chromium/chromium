@@ -222,6 +222,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLogoPolish,
     &kMagicStackAndroid,
     &kMultiInstanceApplicationStatusCleanup,
+    &kNavBarColorMatchesTabBackground,
     &kNewTabSearchEngineUrlAndroid,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
@@ -681,6 +682,10 @@ BASE_FEATURE(kMagicStackAndroid,
 
 BASE_FEATURE(kMultiInstanceApplicationStatusCleanup,
              "MultiInstanceApplicationStatusCleanup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNavBarColorMatchesTabBackground,
+             "NavBarColorMatchesTabBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabSearchEngineUrlAndroid,

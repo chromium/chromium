@@ -6904,6 +6904,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-nav-bar-matches-tab-android",
+     flag_descriptions::kNavBarColorMatchesTabBackgroundName,
+     flag_descriptions::kNavBarColorMatchesTabBackgroundDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNavBarColorMatchesTabBackground)},
+
     {"enable-new-tab-search-engine-url-android",
      flag_descriptions::kNewTabSearchEngineUrlAndroidName,
      flag_descriptions::kNewTabSearchEngineUrlAndroidDescription, kOsAndroid,

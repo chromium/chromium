@@ -203,6 +203,7 @@ class TabImpl implements Tab {
     private boolean mIsDestroyed;
 
     private int mThemeColor;
+    private int mBackgroundColor;
     private boolean mIsWebContentObscured;
     private long mTimestampMillis;
     private int mParentId = INVALID_TAB_ID;
@@ -476,6 +477,11 @@ class TabImpl implements Tab {
     @Override
     public int getThemeColor() {
         return mThemeColor;
+    }
+
+    @Override
+    public int getBackgroundColor() {
+        return mBackgroundColor;
     }
 
     @Override
@@ -1414,6 +1420,8 @@ class TabImpl implements Tab {
      * @param color The current for the background.
      */
     void onBackgroundColorChanged(int color) {
+        // TODO(https://crbug.com/329287585): Account for native pages.
+        mBackgroundColor = color;
         for (TabObserver observer : mObservers) observer.onBackgroundColorChanged(this, color);
     }
 

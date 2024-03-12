@@ -325,6 +325,8 @@ public abstract class ChromeFeatureList {
             "MigrateAccountManagementSettingsToCapabilities";
     public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
+    public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
+            "NavBarColorMatchesTabBackground";
     public static final String NEW_TAB_SEARCH_ENGINE_URL_ANDROID = "NewTabSearchEngineUrlAndroid";
     public static final String NOTIFICATION_ONE_TAP_UNSUBSCRIBE = "NotificationOneTapUnsubscribe";
     public static final String NOTIFICATION_PERMISSION_VARIANT = "NotificationPermissionVariant";
@@ -587,6 +589,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
+    public static final CachedFlag sNavBarColorMatchesTabBackground =
+            newCachedFlag(NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, false);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
             newCachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, false);
@@ -713,6 +717,7 @@ public abstract class ChromeFeatureList {
                     sLogoPolish,
                     sMagicStackAndroid,
                     sMultiInstanceApplicationStatusCleanup,
+                    sNavBarColorMatchesTabBackground,
                     sNewTabSearchEngineUrlAndroid,
                     sPaintPreviewNewColdStartHeuristic,
                     sPriceChangeModule,

@@ -4225,6 +4225,12 @@ const char kMouseAndTrackpadDropdownMenuDescription[] =
     "When enabled, shows a dropdown menu for mouse and trackpad secondary "
     "clicks (i.e. right click) with respect to text selection.";
 
+const char kNavBarColorMatchesTabBackgroundName[] =
+    "Nav bar color matches tab background";
+const char kNavBarColorMatchesTabBackgroundDescription[] =
+    "Matches the OS navigation bar color to the background color of the "
+    "active tab.";
+
 const char kNewTabSearchEngineUrlAndroidName[] =
     "Enable new Tab Urls of customized search engines";
 const char kNewTabSearchEngineUrlAndroidDescription[] =

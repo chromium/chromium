@@ -197,6 +197,11 @@ public interface Tab extends TabLifecycle {
     int getThemeColor();
 
     /**
+     * @return The background color for the current webpage.
+     */
+    int getBackgroundColor();
+
+    /**
      * @return {@code true} if the theme color from contents is valid and can be used for theming.
      */
     boolean isThemingAllowed();
