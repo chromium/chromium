@@ -393,15 +393,8 @@ bool AllowedToRequestFullscreen(Document& document) {
   // waiving the user gesture requirement.
   if (!document.GetSettings()
            ->GetRequireTransientActivationForHtmlFullscreen()) {
-    // The supplement may be null before the window ever enters fullscreen.
-    Fullscreen* fullscreen =
-        Supplement<LocalDOMWindow>::From<Fullscreen>(*document.domWindow());
-    if (!fullscreen || base::TimeTicks::Now() >
-                           fullscreen->block_automatic_fullscreen_until()) {
-      UseCounter::Count(document,
-                        WebFeature::kFullscreenAllowedByContentSetting);
-      return true;
-    }
+    UseCounter::Count(document, WebFeature::kFullscreenAllowedByContentSetting);
+    return true;
   }
 
   String message = ExceptionMessages::FailedToExecute(
@@ -1085,14 +1078,9 @@ ScriptPromiseTyped<IDLUndefined> Fullscreen::ExitFullscreen(
 }
 
 void Fullscreen::DidExitFullscreen(Document& document) {
-  Fullscreen& fullscreen = From(*document.domWindow());
-
-  // Block automatic fullscreen temporarily, e.g. match kActivationLifespan.
-  fullscreen.block_automatic_fullscreen_until_ =
-      base::TimeTicks::Now() + base::Seconds(5);
-
   // If this is a response to an ExitFullscreen call then
   // continue exiting. Otherwise call FullyExitFullscreen.
+  Fullscreen& fullscreen = From(*document.domWindow());
   PendingExits exits;
   exits.swap(fullscreen.pending_exits_);
   if (exits.empty()) {

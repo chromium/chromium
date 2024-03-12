@@ -2144,9 +2144,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // The number of active fullscreen blockers.
   int fullscreen_blocker_count_ = 0;
 
-  // Blocks fullscreen without a user gesture temporarily after a related exit.
-  base::TimeTicks block_automatic_fullscreen_until_;
-
   // Minimum/maximum zoom percent.
   const int minimum_zoom_percent_;
   const int maximum_zoom_percent_;
