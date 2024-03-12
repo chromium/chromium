@@ -3580,6 +3580,9 @@ extern const char kEnableAssistantRoutinesDescription[];
 extern const char kEnableBackgroundBlurName[];
 extern const char kEnableBackgroundBlurDescription[];
 
+extern const char kEnableBrightnessControlInSettingsName[];
+extern const char kEnableBrightnessControlInSettingsDescription[];
+
 extern const char kEnableDisplayPerformanceModeName[];
 extern const char kEnableDisplayPerformanceModeDescription[];
 

@@ -2307,6 +2307,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "enable-brightness-control-in-settings",
+    "owners": [ "cambickel@google.com", "zentaro@chromium.org", "cros-peripherals@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-builtin-hls",
     "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
     "expiry_milestone": 125

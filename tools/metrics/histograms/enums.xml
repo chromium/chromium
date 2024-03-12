@@ -21409,6 +21409,7 @@ from previous Chrome versions.
   <int value="282692100" label="SubframeShutdownDelay:disabled"/>
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
   <int value="283232244" label="OmniboxUIExperimentNarrowDropdown:enabled"/>
+  <int value="284631756" label="EnableBrightnessControlInSettings:disabled"/>
   <int value="284756778"
       label="SearchCustomizableShortcutsInLauncher:disabled"/>
   <int value="285387302" label="AvatarToolbarButton:enabled"/>
@@ -21865,6 +21866,7 @@ from previous Chrome versions.
   <int value="477796416" label="ReleaseNotes:enabled"/>
   <int value="477967119" label="enable-unified-media-pipeline"/>
   <int value="478380451" label="BlockMigratedDefaultChromeAppSync:disabled"/>
+  <int value="478622074" label="EnableBrightnessControlInSettings:enabled"/>
   <int value="479906041" label="RunAllFlashInAllowMode:disabled"/>
   <int value="480386627" label="OmniboxPedalsBatch3:enabled"/>
   <int value="480481070" label="FilesInlineSyncStatus:disabled"/>

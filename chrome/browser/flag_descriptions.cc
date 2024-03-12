@@ -6214,6 +6214,12 @@ const char kEnableBackgroundBlurName[] = "Enable background blur.";
 const char kEnableBackgroundBlurDescription[] =
     "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";
 
+const char kEnableBrightnessControlInSettingsName[] =
+    "Enable brightness controls in Settings";
+const char kEnableBrightnessControlInSettingsDescription[] =
+    "Enables brightness slider and auto-brightness toggle for internal display "
+    "in Settings";
+
 const char kEnableDisplayPerformanceModeName[] =
     "Enable Display Performance Mode";
 const char kEnableDisplayPerformanceModeDescription[] =

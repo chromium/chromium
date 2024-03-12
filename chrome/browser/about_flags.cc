@@ -4128,6 +4128,13 @@ const FeatureEntry kFeatureEntries[] = {
         kOsCrOS,
         FEATURE_VALUE_TYPE(ash::features::kEnableBackgroundBlur),
     },
+    {
+        "enable-brightness-control-in-settings",
+        flag_descriptions::kEnableBrightnessControlInSettingsName,
+        flag_descriptions::kEnableBrightnessControlInSettingsDescription,
+        kOsCrOS,
+        FEATURE_VALUE_TYPE(ash::features::kEnableBrightnessControlInSettings),
+    },
     {kEnableSuspendToDiskInternalName, flag_descriptions::kEnableSuspendToDisk,
      flag_descriptions::kEnableSuspendToDiskDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSuspendToDisk,
