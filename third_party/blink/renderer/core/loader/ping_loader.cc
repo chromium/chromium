@@ -92,6 +92,10 @@ bool SendBeaconCommon(const ScriptState& state,
       fetch_initiator_type_names::kBeacon;
 
   frame->Client()->DidDispatchPingLoader(url);
+
+  FetchUtils::LogFetchKeepAliveRequestMetric(
+      params.GetResourceRequest().GetRequestContext(),
+      FetchUtils::FetchKeepAliveRequestState::kTotal);
   Resource* resource =
       RawResource::Fetch(params, frame->DomWindow()->Fetcher(), nullptr);
   return resource->GetStatus() != ResourceStatus::kLoadError;
@@ -134,6 +138,9 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
       fetch_initiator_type_names::kPing;
 
   frame->Client()->DidDispatchPingLoader(ping_url);
+  FetchUtils::LogFetchKeepAliveRequestMetric(
+      params.GetResourceRequest().GetRequestContext(),
+      FetchUtils::FetchKeepAliveRequestState::kTotal);
   RawResource::Fetch(params, frame->DomWindow()->Fetcher(), nullptr);
 }
 
@@ -160,6 +167,9 @@ void PingLoader::SendViolationReport(ExecutionContext* execution_context,
   if (window && window->GetFrame())
     window->GetFrame()->Client()->DidDispatchPingLoader(report_url);
 
+  FetchUtils::LogFetchKeepAliveRequestMetric(
+      params.GetResourceRequest().GetRequestContext(),
+      FetchUtils::FetchKeepAliveRequestState::kTotal);
   RawResource::Fetch(params, execution_context->Fetcher(), nullptr);
 }
 

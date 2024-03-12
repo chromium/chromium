@@ -264,6 +264,7 @@ network::ResourceRequest CreateFetchLaterResourceRequest(const GURL& url) {
   request.url = url;
   request.keepalive = true;
   request.is_fetch_later_api = true;
+  request.resource_type = static_cast<int>(blink::mojom::ResourceType::kXhr);
   return request;
 }
 
@@ -275,6 +276,7 @@ network::ResourceRequest CreateResourceRequest(
   network::ResourceRequest request;
   request.url = url;
   request.keepalive = keepalive;
+  request.resource_type = static_cast<int>(blink::mojom::ResourceType::kXhr);
   if (is_trusted) {
     request.trusted_params = network::ResourceRequest::TrustedParams();
   }

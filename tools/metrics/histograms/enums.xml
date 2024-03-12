@@ -11699,88 +11699,15 @@ Called by update_permissions_policy_enum.py.-->
  third_party/feed_library/src/src/main/java/com/google/android/libraries/feed/api/host/logging/InternalFeedError.java
  -->
 
-<enum name="FetchKeepAliveBrowserMetricType">
-  <int value="0"
-      label="kLoadingSuceeded: Fetch keepalive request has succeeded toloaded">
-    Recorded once every time a created Fetch keepalive request loading succeeds
-    to load in the browser.
-
-    This number should be compared with `kAbortedByUser` in
-    `FetchKeepAlive.Renderer.Metrics`.
-  </int>
-  <int value="1"
-      label="kLoadingFailed: Fetch keepalive request has failed to load">
-    Recorded once every time a created Fetch keepalive request fails to load in
-    the browser.
-
-    This number should be compared with `kAbortedByUser` in
-    `FetchKeepAlive.Renderer.Metrics`.
-  </int>
+<enum name="FetchKeepAliveRequestMetricType">
+  <int value="0" label="kFetch"/>
+  <int value="1" label="kBeacon"/>
   <int value="2"
-      label="kForwardingCompleted: Fetch keepalive response has been forward
-             to renderer">
-    Recorded once every time the all redirect/response/failure of a Fetch
-    keepalive request has been forwarded to renderer from the browser.
-
-    Note that the forwarding may fail in between, so `kForwardingCompleted`
-    &lt;= `kLoadingSuceeded` + `kLoadingFailed`
-
-    This number should be compared with `kAbortedByUser` in
-    `FetchKeepAlive.Renderer.Metrics`.
-  </int>
-  <int value="3"
-      label="kCancelledAfterTimeLimit: Fetch keepalive request is cancelled
-             after internal time limit">
-    Recorded once every time a FetchLater request is cancelled/aborted by the
-    browser after some internal time limit.
-  </int>
-  <int value="4"
-      label="kAbortedByInitiator: Fetch keepalive request is aborted by its
-             initiator">
-    Recorded once every time a Fetch keepalive request is aborted in the
-    browser. It happens when JavaScript code explicitly aborts a Fetch keepalive
-    request, and gets propagated to the browser process.
-
-    This number should be compared with `kAbortedByUser` in
-    `FetchKeepAlive.Renderer.Metrics`.
-  </int>
-</enum>
-
-<enum name="FetchKeepAliveRendererMetricType">
-  <int value="0"
-      label="kLoadingSuceeded: Fetch keepalive request has succeeded to load">
-    Recorded once every time a created Fetch keepalive request loading succeeds
-    to load in a renderer process.
-
-    This number should is generally &lt;= `kLoadingSuceeded` in
-    `FetchKeepAlive.Browser.Metrics`.
-  </int>
-  <int value="1"
-      label="kLoadingFailed: Fetch keepalive request has failed to load">
-    Recorded once every time a created Fetch keepalive request fails to load in
-    a renderer process.
-
-    This number should is generally &lt;= `kLoadingFailed` in
-    `FetchKeepAlive.Browser.Metrics`.
-  </int>
-  <int value="2"
-      label="kAbortedByUser: Fetch keepalive request is aborted by user">
-    Recorded once every time a Fetch keepalive request is aborted in a renderer
-    process. It happens when JavaScript code explicitly aborts it.
-
-    This number should be compared with
-    `FetchKeepAlive.Browser.Metrics.AbortedByInitiator`.
-  </int>
-  <int value="3"
-      label="kContextDestroyed: Fetch context is destroyed (implying no
-             further fowarding back to renderer)">
-    Recorded once every time a Fetch keepalive request is dropped by a renderer
-    process due to its context being destroyed.
-
-    This number should be compared with `kForwardingCompleted` in
-    `FetchKeepAlive.Browser.Metrics`, where `kContextDestroyed` +
-    `kForwardingCompleted` &lt;= `FetchKeepAlive.Browser.Total.Started`.
-  </int>
+      label="kPing: Includes both kBeacon and kAttribution when used in
+             browser process"/>
+  <int value="3" label="kReporting"/>
+  <int value="4" label="kAttribution"/>
+  <int value="5" label="kBackgroundFetchIcon"/>
 </enum>
 
 <enum name="FetchLaterBrowserMetricType">

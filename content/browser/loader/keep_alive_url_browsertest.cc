@@ -145,7 +145,14 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
     https_test_server_->AddDefaultHandlers(GetTestDataFilePath());
     https_test_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
 
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+
     ContentBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    histogram_tester_.reset();
+    ContentBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -217,6 +224,71 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
                                                target_url.spec().c_str()));
   }
 
+  using FetchKeepAliveRequestMetricType =
+      KeepAliveURLLoader::FetchKeepAliveRequestMetricType;
+
+  struct ExpectedRequestHistogram {
+    int browser = 0;
+    int renderer = 0;
+  };
+  void ExpectFetchKeepAliveHistogram(
+      const FetchKeepAliveRequestMetricType& expected_sample,
+      const ExpectedRequestHistogram& total,
+      const ExpectedRequestHistogram& started_count,
+      const ExpectedRequestHistogram& succeeded_count,
+      const ExpectedRequestHistogram& failed_count) {
+    // Collect metrics recorded in the renderer processes, if expecting any.
+    while ((total.renderer > 0 &&
+            histogram_tester()
+                .GetAllSamples("FetchKeepAlive.Requests.Total.Renderer")
+                .empty()) ||
+           (started_count.renderer > 0 &&
+            histogram_tester()
+                .GetAllSamples("FetchKeepAlive.Requests.Started.Renderer")
+                .empty()) ||
+           (succeeded_count.renderer > 0 &&
+            histogram_tester()
+                .GetAllSamples("FetchKeepAlive.Requests.Succeeded.Renderer")
+                .empty()) ||
+           (failed_count.renderer > 0 &&
+            histogram_tester()
+                .GetAllSamples("FetchKeepAlive.Requests.Failed.Renderer")
+                .empty())) {
+      FetchHistogramsFromChildProcesses();
+    }
+
+    const int renderer_sample = static_cast<int>(expected_sample);
+    const int browser_sample =
+        (expected_sample == FetchKeepAliveRequestMetricType::kBeacon ||
+         expected_sample == FetchKeepAliveRequestMetricType::kPing ||
+         expected_sample == FetchKeepAliveRequestMetricType::kAttribution)
+            ? static_cast<int>(FetchKeepAliveRequestMetricType::kPing)
+            : static_cast<int>(expected_sample);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Total.Browser", browser_sample, total.browser);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Total.Renderer", renderer_sample,
+        total.renderer);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Started.Browser", browser_sample,
+        started_count.browser);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Started.Renderer", renderer_sample,
+        started_count.renderer);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Succeeded.Browser", browser_sample,
+        succeeded_count.browser);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Succeeded.Renderer", renderer_sample,
+        succeeded_count.renderer);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Failed.Browser", browser_sample,
+        failed_count.browser);
+    histogram_tester().ExpectUniqueSample(
+        "FetchKeepAlive.Requests.Failed.Renderer", renderer_sample,
+        failed_count.renderer);
+  }
+
   WebContentsImpl* web_contents() const {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
@@ -230,10 +302,12 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
                    ->GetDefaultStoragePartition())
         ->GetKeepAliveURLLoaderService();
   }
+
   void DisableBackForwardCache(WebContents* web_contents) {
     DisableBackForwardCacheForTesting(
         web_contents, BackForwardCache::TEST_REQUIRES_NO_CACHING);
   }
+
   KeepAliveURLLoadersTestObserver& loaders_observer() {
     return *loaders_observer_;
   }
@@ -245,11 +319,14 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
     return use_https_ ? https_test_server_.get() : embedded_test_server();
   }
 
+  const base::HistogramTester& histogram_tester() { return *histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<KeepAliveURLLoadersTestObserver> loaders_observer_;
   bool use_https_ = false;
   const std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Contains the integration tests for loading fetch(url, {keepalive: true})
@@ -282,6 +359,8 @@ class KeepAliveURLBrowserTest
     // Ensure the keepalive request is sent before leaving the current page.
     keepalive_request_handler->WaitForRequest();
     ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+    // Collects any potential histogram before the process is gone.
+    FetchHistogramsFromChildProcesses();
 
     // Navigate to cross-origin page to ensure the 1st page can be unloaded.
     ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
@@ -366,6 +445,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, OneRequest) {
   loaders_observer().WaitForTotalOnReceiveResponseForwarded(1);
   loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
 }
 
 // Verify keepalive request loading works given 2 concurrent requests to the
@@ -489,6 +575,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
   // `KeepAliveURLLoader::OnComplete` may not be called, as renderer is dead.
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
 }
 
 // Delays response to a keepalive ping until after the page making the keepalive
@@ -506,6 +599,8 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Ensure the keepalive request is sent before leaving the current page.
   request_handler->WaitForRequest();
   ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  // Collects any potential histogram before the process is gone.
+  FetchHistogramsFromChildProcesses();
 
   // Navigate to cross-origin page.
   ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
@@ -529,6 +624,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   request_handler->Done();
   loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
 }
 
 // Tests fetch(..., {keepalive: true}) with a cross-origin & CORS-safelisted
@@ -586,6 +688,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, MultipleRedirectsRequest) {
   // After forwarding, the loader should all be gone.
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
 }
 
 // Tests fetch(..., {keepalive: true}) with a cross-origin & CORS-safelisted
@@ -635,6 +744,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // After forwarding, the loader should all be gone.
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
 }
 
 // Tests fetch(..., {keepalive: true}) with a cross-origin & CORS-safelisted
@@ -691,6 +807,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // After forwarding, the loader should all be gone.
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
 }
 
 // Delays handling redirect for a keepalive ping until after the page making the
@@ -725,6 +848,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // `KeepAliveURLLoader::OnComplete` will not be called but the loader must
   // still be terminated, as renderer is dead.
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
 }
 
 // Delays handling an unsafe redirect for a keepalive ping until after the page
@@ -749,6 +879,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   loaders_observer().WaitForTotalOnCompleteProcessed(
       {net::ERR_UNSAFE_REDIRECT});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0));
 }
 
 // Delays handling an violating CSP redirect for a keepalive ping until after
@@ -777,6 +914,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // terminated.
   loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_BLOCKED_BY_CSP});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0));
 }
 
 // Verifies a redirect to mixed content target URL is not loaded.
@@ -812,6 +956,14 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, ReceiveMixedContentRedirect) {
   // The loader in browser is only terminated after renderer terminates its
   // loader. There is no way to wait for such disconnection mojo message
   // forwarded to browser at this moment.
+
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
 }
 
 // Verifies a redirect to mixed content target URL is allowed by
@@ -860,6 +1012,13 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
 }
 
 // Ensures that a keepalive request in a child frame use its RFH's data instead
@@ -947,6 +1106,15 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // TODO(crbug.com/1356128): the order of calls to OnComplete is not stable.
   // Update KeepAliveURLLoadersTestObserver::WaitForTotalOnComplete to
   // accommodate this situation before asserting net::ERR_BLOCKED_BY_CSP.
+
+  // Total 2 requests, and of them 1 fails.
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/2, /*renderer=*/2),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/2, /*renderer=*/2),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
 }
 
 class SendBeaconBrowserTestBase : public KeepAliveURLBrowserTestBase {
@@ -1190,6 +1358,13 @@ IN_PROC_BROWSER_TEST_F(SendBeaconBlobBrowserTest,
   // After in-browser processing, the loader should all be gone.
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kBeacon,
+      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
+      /*succeeded_count=*/
+      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
+      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
 }
 
 // A base class to help testing JS fetchLater() API behaviors.

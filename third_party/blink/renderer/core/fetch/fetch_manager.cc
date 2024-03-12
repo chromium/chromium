@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -157,19 +158,6 @@ constexpr net::NetworkTrafficAnnotationTag kFetchLaterTrafficAnnotationTag =
       policy_exception_justification: "The policy for Background sync is not "
       "yet implemented."
     })");
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Must remain in sync with FetchKeepAliveRendererMetricType in
-// tools/metrics/histograms/enums.xml.
-enum class FetchKeepAliveRendererMetricType {
-  kLoadingSuceeded = 0,
-  kLoadingFailed = 1,
-  kAbortedByUser = 2,
-  kContextDestroyed = 3,
-  kMaxValue = kContextDestroyed,
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -361,8 +349,7 @@ class FetchManager::Loader final
 
   void Dispose() override;
 
-  void LogIfKeepalive(const FetchKeepAliveRendererMetricType& type) const;
-  void LogIfKeepalive(const std::string& metric) const;
+  void LogIfKeepalive(std::string_view request_state) const;
 
   // ThreadableLoaderClient implementation.
   bool WillFollowRedirect(uint64_t,
@@ -542,7 +529,6 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
       V8ThrowException::CreateTypeError(isolate, "Failed to fetch");
   exception_.Reset(isolate, exception);
   SendHistogram(FetchManagerLoaderCheckPoint::kConstructor);
-  LogIfKeepalive("FetchKeepAlive.Renderer.Total");
 }
 
 FetchManager::Loader::~Loader() {
@@ -611,7 +597,7 @@ void FetchManager::Loader::DidReceiveResponse(
   auto response_type = response.GetType();
   DCHECK_NE(response_type, FetchResponseType::kError);
 
-  LogIfKeepalive(FetchKeepAliveRendererMetricType::kLoadingSuceeded);
+  LogIfKeepalive("Succeeded");
 
   ScriptState::Scope scope(GetScriptState());
 
@@ -901,7 +887,6 @@ void FetchManager::Loader::Abort() {
     threadable_loader_ = nullptr;
     loader->Cancel();
   }
-  LogIfKeepalive(FetchKeepAliveRendererMetricType::kAbortedByUser);
   NotifyFinished();
 }
 
@@ -1095,6 +1080,11 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
             std::move(factory_clone));
   }
 
+  if (fetch_request_data_->Keepalive() && !request.IsFetchLaterAPI()) {
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        request.GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kTotal);
+  }
   CreateLoader(std::move(request), resource_loader_options);
 }
 
@@ -1192,14 +1182,13 @@ void FetchManager::Loader::Failed(
       }
       resolver_->Reject(value);
       SendHistogram(FetchManagerLoaderCheckPoint::kFailed);
-      LogIfKeepalive(FetchKeepAliveRendererMetricType::kLoadingFailed);
+      LogIfKeepalive("Failed");
     }
   }
   NotifyFinished();
 }
 
 void FetchManager::Loader::NotifyFinished() {
-  LogIfKeepalive("FetchKeepAlive.Renderer.Total.Finished");
   if (fetch_manager_)
     fetch_manager_->OnLoaderFinished(this);
 }
@@ -1209,34 +1198,18 @@ bool FetchManager::Loader::IsDeferred() const {
 }
 
 void FetchManager::Loader::LogIfKeepalive(
-    const FetchKeepAliveRendererMetricType& type) const {
+    std::string_view request_state) const {
+  return;
+  CHECK(request_state == "Succeeded" || request_state == "Failed");
   if (!GetFetchRequestData()->Keepalive()) {
     return;
   }
-
-  base::UmaHistogramEnumeration("FetchKeepAlive.Renderer.Metrics", type);
 
   base::TimeDelta duration = base::TimeTicks::Now() - request_started_time_;
-  if (type == FetchKeepAliveRendererMetricType::kLoadingSuceeded ||
-      type == FetchKeepAliveRendererMetricType::kLoadingFailed) {
-    base::UmaHistogramMediumTimes("FetchKeepAlive.Renderer.Duration", duration);
-
-    if (type == FetchKeepAliveRendererMetricType::kLoadingSuceeded) {
-      base::UmaHistogramMediumTimes(
-          "FetchKeepAlive.Renderer.Duration.Succeeded", duration);
-    } else {
-      base::UmaHistogramMediumTimes("FetchKeepAlive.Renderer.Duration.Failed",
-                                    duration);
-    }
-  }
-}
-
-void FetchManager::Loader::LogIfKeepalive(const std::string& metric) const {
-  if (!GetFetchRequestData()->Keepalive()) {
-    return;
-  }
-
-  base::UmaHistogramBoolean(metric, true);
+  base::UmaHistogramMediumTimes("FetchKeepAlive.RequestDuration", duration);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"FetchKeepAlive.RequestDuration.", request_state}),
+      duration);
 }
 
 // A subtype of FetchLoader to handle the deferred fetching algorithm [1].
@@ -1635,7 +1608,6 @@ void FetchManager::ContextDestroyed() {
   // controller is non-null and record’s done flag is unset and keepalive is
   // false, terminate the fetch record’s controller .
   for (auto& loader : loaders_) {
-    loader->LogIfKeepalive(FetchKeepAliveRendererMetricType::kContextDestroyed);
     loader->Dispose();
   }
 }

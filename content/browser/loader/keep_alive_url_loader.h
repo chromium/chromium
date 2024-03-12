@@ -9,6 +9,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -42,6 +43,7 @@ namespace content {
 
 class BrowserContext;
 class KeepAliveAttributionRequestHelper;
+class KeepAliveURLBrowserTestBase;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
 class RenderFrameHostImpl;
@@ -256,6 +258,28 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void OnDisconnectedLoaderTimerFired();
 
   void DeleteSelf();
+
+  friend class KeepAliveURLBrowserTestBase;
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // Must remain in sync with FetchKeepAliveRequestMetricType in
+  // tools/metrics/histograms/enums.xml.
+  // LINT.IfChange
+  enum class FetchKeepAliveRequestMetricType {
+    kFetch = 0,
+    kBeacon = 1,  // not used here.
+    kPing = 2,
+    kReporting = 3,
+    kAttribution = 4,  // not used here.
+    kBackgroundFetchIcon = 5,
+    kMaxValue = kBackgroundFetchIcon,
+  };
+  // LINT.ThenChange(//third_party/blink/renderer/platform/loader/fetch/fetch_utils.cc)
+  // Logs in-browser keepalive request related metrics.
+  // Note that fetchLater requests will be skipped by this method.
+  // https://docs.google.com/document/d/15MHmkf_SN2S9WYra060yEChgjs3pgZW--aHUuiG8Y1Q/edit
+  void LogFetchKeepAliveRequestMetric(std::string_view request_state_name);
 
   // The ID to identify the request being loaded by this loader.
   const int32_t request_id_;

@@ -583,6 +583,9 @@ bool AttributionSrcLoader::DoRegistration(
     params.MutableOptions().initiator_info.name =
         fetch_initiator_type_names::kAttributionsrc;
 
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        params.GetResourceRequest().GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kTotal);
     RawResource::Fetch(
         params, local_frame_->DomWindow()->Fetcher(),
         MakeGarbageCollected<ResourceClient>(this, eligibility, source_type,

@@ -5673,119 +5673,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FetchKeepAlive.Browser.Metrics"
-    enum="FetchKeepAliveBrowserMetricType" expires_after="2024-07-10">
+<histogram name="FetchKeepAlive.RequestDuration{RequestState}" units="ms"
+    expires_after="2024-06-07">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
-    Recorded once every time a Fetch keepalive request is either aborted, failed
-    to load, or succeed to load in browser.
-  </summary>
-</histogram>
+    Recorded the duration of a fetch keepalive request between when such request
+    is constructed by a blink::FetchManager and when the blink::FetchManager
+    {RequestState}
 
-<histogram name="FetchKeepAlive.Browser.Total{LoaderStatus}" enum="Boolean"
-    expires_after="2024-07-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>
-    Recorded true every time a Fetch keepalive request loader in browser has
-    {LoaderStatus}
+    This does not log for non-fetch types of keepalive request, meaning that
+    beacons or pings are all excluded. Note that as this is from the view of a
+    renderer, it contains only partial metrics when fetch keepalive in-browser
+    is enabled.
   </summary>
-  <token key="LoaderStatus">
+  <token key="RequestState">
     <variant name=""
-        summary="been created. It does NOT equal to the total number of
-                 JavaScript Fetch keepalive call, as the latter can be
-                 immediately rejected with various JavaScript exceptions.
-                 This number should be compared with
-                 `FetchKeepAlive.Renderer.Total`."/>
-    <variant name=".Finished"
-        summary="finished loading. A finished loading can be either suceeded
-                 or failed. This number may be &lt;=
-                 `FetchKeepAlive.Browser.Total.Started`, as a request may be
-                 dropped for other undocumented reasons like browser killed
-                 or crashes. Also, this number is ~= `kLoadingSuceeded` +
-                 `kLoadingFailed` in `FetchKeepAlive.Browser.Metrics`."/>
-    <variant name=".ReceivedResponse"
-        summary="received a response. This number should be compared with
-                 `FetchKeepAlive.Renderer.Total.ReceivedResponse`."/>
-    <variant name=".Redirected"
-        summary="received a redirect. This number should be compared with
-                 `FetchKeepAlive.Renderer.Total.Redirected`."/>
-    <variant name=".Started"
-        summary="started to load. This number should be the same as
-                 `FetchKeepAlive.Browser.Total`, but logging to figure out if
-                 any differneces exist."/>
+        summary="receives a response (succeeded) or fails to load/receive a
+                 response. If multiple errors happen, the duration logging
+                 ends at the first error. Refer to
+                 FetchManager::Loader::Failed() for details."/>
+    <variant name=".Failed"
+        summary="fails to load/receive a response. If multiple errors happen,
+                 the duration logging ends with the first error. Refer to
+                 FetchManager::Loader::Failed() for details."/>
+    <variant name=".Succeeded" summary="receives a response (succeeded)."/>
   </token>
 </histogram>
 
-<histogram name="FetchKeepAlive.Renderer.Metrics"
-    enum="FetchKeepAliveRendererMetricType" expires_after="2024-07-10">
+<histogram name="FetchKeepAlive.RequestOutliveDuration" units="ms"
+    expires_after="2024-06-07">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
-    Recorded once every time a Fetch keepalive request is either aborted or
-    dropped in renderer.
+    Recorded the time a fetch keepalive request stays alive after its renderer
+    has detached, starting from when a blink::ThreadableLoader::Detach() of the
+    keepalive request is called, and ending with when such ThreadableLoader is
+    cleared.
+
+    This does not log for non-fetch types of keepalive request, meaning that
+    beacons or pings are all excluded.
+
+    This is to measure how much time the keepalive in-browser migration is able
+    to save.
   </summary>
 </histogram>
 
-<histogram name="FetchKeepAlive.Renderer.Total{LoaderStatus}" enum="Boolean"
-    expires_after="2024-07-10">
+<histogram name="FetchKeepAlive.Requests.{RequestState}.{Process}"
+    enum="FetchKeepAliveRequestMetricType" expires_after="2024-06-07">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>
   <summary>
-    Recorded true every time a Fetch keepalive request loader in a renderer
-    {LoaderStatus}
+    Recorded a Fetch keepalive request type every time a request loader of such
+    request in the {Process} {RequestState}
   </summary>
-  <token key="LoaderStatus">
-    <variant name=""
+  <token key="RequestState">
+    <variant name="Failed"
+        summary="fails to load. A failure can be caused by either server
+                 response or browser checking the request/response. In the
+                 case of multiple errors, only the first encountered is
+                 recorded. Refer to where
+                 FetchUtils::LogFetchKeepAliveRequestMetric(...,kFailed) is
+                 called for details."/>
+    <variant name="Started" summary="starts to load."/>
+    <variant name="Succeeded" summary="succeeds to load."/>
+    <variant name="Total"
         summary="is created. It does NOT equal to the total number of
                  JavaScript Fetch API call, as the latter can be immediately
                  rejected with various JavaScript exceptions. This metric is
                  recorded to compare whether different behavior happens
-                 between renderer and browser. This number should be compared
-                 with `FetchKeepAlive.Browser.Total`."/>
-    <variant name=".Finished"
-        summary="is finished loading. A finished loading can be either
-                 suceeded or failed. This number may be &lt;=
-                 `FetchKeepAlive.Renderer.Total.Started`, as a request may be
-                 dropped for other undocumented reasons like browser killed
-                 or crashes. Also, this number is &lt;=
-                 `FetchKeepAlive.Browser.Total.Finished`."/>
-    <variant name=".ReceivedResponse"
-        summary="has received a response. This number should be compared with
-                 `FetchKeepAlive.Renderer.Total.ReceivedResponse`."/>
-    <variant name=".Redirected"
-        summary="has received a redirect. This number should be compared with
-                 `FetchKeepAlive.Browser.Total.Redirected`."/>
-    <variant name=".Started"
-        summary="is started to load. This number may be &lt;=
-                 `FetchKeepAlive.Renderer.Total`, as a created request may
-                 not be started at all."/>
+                 between renderer and browser."/>
   </token>
-</histogram>
-
-<histogram name="FetchKeepAlive.Renderer.{DurationType}{RequestStatus}"
-    units="ms" expires_after="2024-07-10">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-bfcache@google.com</owner>
-  <summary>Recorded the time {DurationType} {RequestStatus}</summary>
-  <token key="DurationType">
-    <variant name="Duration"
-        summary="taken to complete a fetch keepalive request in a renderer
-                 process"/>
-    <variant name="DurationAfterDetached"
-        summary="between a fetch context is &quot;detached&quot; and
-                 completing a fetch keepalive request"/>
-  </token>
-  <token key="RequestStatus">
-    <variant name=""
-        summary=", no matter a request succeeds or fails. As this is from the
-                 view of a renderer, it should not be used if in-browser
-                 migration is enabled, as renderer will not be able to
-                 outlive even if any of fetch keepalive request is still
-                 pending."/>
-    <variant name=".Failed" summary=", where the request has failed."/>
-    <variant name=".Succeeded" summary=", where the request has succeeded."/>
+  <token key="Process">
+    <variant name="Browser" summary="browser process"/>
+    <variant name="Renderer" summary="renderer process"/>
   </token>
 </histogram>
 

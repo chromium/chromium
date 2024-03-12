@@ -76,15 +76,15 @@ class DetachedClient final : public GarbageCollected<DetachedClient>,
   ~DetachedClient() override = default;
 
   void DidFinishLoading(uint64_t identifier) override {
-    LogKeepAliveDuration("Succeeded");
+    LogKeepAliveDuration();
     self_keep_alive_.Clear();
   }
   void DidFail(uint64_t identifier, const ResourceError&) override {
-    LogKeepAliveDuration("Failed");
+    LogKeepAliveDuration();
     self_keep_alive_.Clear();
   }
   void DidFailRedirectCheck(uint64_t identifier) override {
-    LogKeepAliveDuration("Failed");
+    LogKeepAliveDuration();
     self_keep_alive_.Clear();
   }
   void Trace(Visitor* visitor) const override {
@@ -93,16 +93,12 @@ class DetachedClient final : public GarbageCollected<DetachedClient>,
   }
 
  private:
-  void LogKeepAliveDuration(const std::string& name) {
-    CHECK(name == "Succeeded" || name == "Failed");
+  void LogKeepAliveDuration() {
     base::TimeDelta duration_after_detached =
         base::TimeTicks::Now() - detached_time_;
-    base::UmaHistogramMediumTimes(
-        "FetchKeepAlive.Renderer.DurationAfterDetached",
-        duration_after_detached);
-    base::UmaHistogramMediumTimes(
-        "FetchKeepAlive.Renderer.DurationAfterDetached." + name,
-        duration_after_detached);
+    // kKeepaliveLoadersTimeout > 10 sec, so UmaHistogramTimes can't be used.
+    base::UmaHistogramMediumTimes("FetchKeepAlive.RequestOutliveDuration",
+                                  duration_after_detached);
   }
 
   SelfKeepAlive<DetachedClient> self_keep_alive_{this};
