@@ -2624,7 +2624,6 @@ crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removin
 crbug.com/626703 external/wpt/css/css-values/viewport-units-scrollbars-auto-vhw-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-values/viewport-units-scrollbars-scroll-vhw-001.html [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-button-mode-priority.tentative.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-use-other-account-button-flow.tentative.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribution-disabled.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child.tentative.sub.window.html [ Timeout ]
@@ -5978,6 +5977,8 @@ crbug.com/40284123 external/wpt/credential-management/fedcm-identity-assertion-n
 crbug.com/1404951 [ Win ] external/wpt/credential-management/fedcm-nonce-is-optional.https.html [ Pass Timeout ]
 
 crbug.com/1480054 [ Win ] external/wpt/credential-management/fedcm-loginhint.https.html [ Pass Timeout ]
+
+crbug.com/328129675 virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-button-mode-priority.tentative.https.html [ Pass Timeout ]
 
 # We skip these tests in the base test suite in NeverFixTests, but we do want
 # to run them in the virtual test suite.
