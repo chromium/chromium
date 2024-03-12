@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -97,9 +96,8 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
 class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    hats_service_ = static_cast<MockHatsService*>(
-        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+    HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser()->profile(), base::BindRepeating(&BuildMockHatsService));
   }
 
   // Open a blank tab in the main browser, inspect it, and return the devtools
@@ -113,7 +111,10 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
     return devtools_window->browser_;
   }
 
-  MockHatsService* hats_service() { return hats_service_; }
+  MockHatsService* hats_service() {
+    return static_cast<MockHatsService*>(HatsServiceFactory::GetForProfile(
+        browser()->profile(), /*create_if_necessary=*/false));
+  }
 
   base::OnceClosure GetSuccessClosure() {
     return base::BindLambdaForTesting([&]() { ++success_count; });
@@ -125,9 +126,6 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
 
   int success_count = 0;
   int failure_count = 0;
-
- private:
-  raw_ptr<MockHatsService, DanglingUntriaged> hats_service_;
 };
 
 // Test that the web dialog correctly receives change to history state that
