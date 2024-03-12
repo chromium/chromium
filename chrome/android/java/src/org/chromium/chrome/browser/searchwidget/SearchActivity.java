@@ -164,12 +164,14 @@ public class SearchActivity extends AsyncInitializationActivity
     LocationBarCoordinator mLocationBarCoordinator;
 
     private SnackbarManager mSnackbarManager;
-    private SearchBoxDataProvider mSearchBoxDataProvider;
     private Tab mTab;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     protected final UnownedUserDataSupplier<InsetObserver> mInsetObserverViewSupplier =
             new InsetObserverSupplier();
 
+    // SearchBoxDataProvider is passed to several child components upon construction. Ensure we
+    // don't accidentally introduce disconnection by keeping one live instance here.
+    private final SearchBoxDataProvider mSearchBoxDataProvider = new SearchBoxDataProvider();
     private final UmaActivityObserver mUmaActivityObserver;
 
     public SearchActivity() {
@@ -211,8 +213,7 @@ public class SearchActivity extends AsyncInitializationActivity
     protected void triggerLayoutInflation() {
         enableHardwareAcceleration();
         mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
-        mSearchBoxDataProvider = new SearchBoxDataProvider(this);
-        mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(isFromQuickActionSearchWidget());
+        mSearchBoxDataProvider.initialize(this);
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
         // Setting fitsSystemWindows to false ensures that the root view doesn't consume the

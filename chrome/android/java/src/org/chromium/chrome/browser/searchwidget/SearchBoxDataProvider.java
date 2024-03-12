@@ -21,18 +21,13 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
 
 class SearchBoxDataProvider implements LocationBarDataProvider {
-    private final @ColorInt int mPrimaryColor;
     private boolean mIsFromQuickActionSearchWidget;
+    private @ColorInt int mPrimaryColor;
     private Tab mTab;
     private GURL mGurl;
 
-    /**
-     * @param context The {@link Context} for accessing colors.
-     * @param isFromQuickActionSearchWidget
-     */
-    SearchBoxDataProvider(Context context) {
+    SearchBoxDataProvider() {
         mIsFromQuickActionSearchWidget = false;
-        mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito());
     }
 
     /**
@@ -43,6 +38,18 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     public void onNativeLibraryReady(Tab tab) {
         assert LibraryLoader.getInstance().isInitialized();
         mTab = tab;
+    }
+
+    /**
+     * Initialize this instance of the SearchBoxDataProvider.
+     *
+     * <p>Note: this is called only once during the lifetime of the SearchActivity, and is not
+     * invoked when SearchActivity receives a new Intent.
+     *
+     * @param context current context
+     */
+    /* package */ void initialize(Context context) {
+        mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito());
     }
 
     @Override
