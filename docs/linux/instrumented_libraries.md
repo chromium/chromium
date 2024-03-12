@@ -79,6 +79,11 @@ exit
 schroot -c focal_amd64 -u `whoami` --directory /home/dev/chromium/src
 ```
 
+On your host, mount `/dev/shm/`.  Replace `<uuid>` with the actual path.
+```shell
+sudo mount --bind /dev/shm /run/schroot/mount/focal_amd64-<uuid>/dev/shm
+```
+
 Add `depot_tools` to your `PATH`. For example, I have it in `~/dev/depot_tools`,
 so I use:
 
