@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -17,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -64,10 +67,14 @@ namespace ash::onc {
 namespace {
 
 // Scheme strings for supported |net::ProxyServer::SCHEME_*| enum values.
-constexpr char kQuicScheme[] = "quic";
 constexpr char kSocksScheme[] = "socks";
 constexpr char kSocks4Scheme[] = "socks4";
 constexpr char kSocks5Scheme[] = "socks5";
+
+// The QUIC scheme is no longer supported and if specified by policy should be
+// treated as if the policy specified HTTPS. When no customers are setting it in
+// enterprise policy anymore, it can be fully removed.
+constexpr std::string_view kLegacyQuicScheme = "quic";
 
 std::string GetString(const base::Value::Dict& dict, const char* key) {
   const std::string* value = dict.FindString(key);
@@ -80,10 +87,27 @@ int GetInt(const base::Value::Dict& dict, const char* key, int default_value) {
   return dict.FindInt(key).value_or(default_value);
 }
 
+// Re-map the legacy "quic://" proxy protocol scheme to "https://", because
+// that's how it's actually treated. See
+// https://issues.chromium.org/issues/40141686. It should be OK to remove this
+// re-mapping when no customer is setting a quic:// proxy in ONC anymore (see
+// b/323878666).
+std::string RemapQuicSchemeToHttps(std::string host) {
+  std::string_view host_view = host;
+
+  if (!base::StartsWith(host_view, kLegacyQuicScheme)) {
+    return host;
+  }
+  std::string_view host_after_protocol =
+      host_view.substr(kLegacyQuicScheme.size());
+  return base::StrCat({url::kHttpsScheme, host_after_protocol});
+}
+
 net::ProxyServer ConvertOncProxyLocationToHostPort(
     net::ProxyServer::Scheme default_proxy_scheme,
     const base::Value::Dict& onc_proxy_location) {
-  std::string host = GetString(onc_proxy_location, ::onc::proxy::kHost);
+  std::string host = RemapQuicSchemeToHttps(
+      GetString(onc_proxy_location, ::onc::proxy::kHost));
   // Parse |host| according to the format [<scheme>"://"]<server>[":"<port>].
   net::ProxyServer proxy_server =
       net::ProxyUriToProxyServer(host, default_proxy_scheme);
@@ -149,7 +173,10 @@ std::string SchemeToString(net::ProxyServer::Scheme scheme) {
     case net::ProxyServer::SCHEME_HTTPS:
       return url::kHttpsScheme;
     case net::ProxyServer::SCHEME_QUIC:
-      return kQuicScheme;
+      // Re-map the legacy "quic://" proxy protocol scheme to "https://",
+      // because that's how it's actually treated. See
+      // https://issues.chromium.org/issues/40141686.
+      return url::kHttpsScheme;
     case net::ProxyServer::SCHEME_INVALID:
       break;
   }

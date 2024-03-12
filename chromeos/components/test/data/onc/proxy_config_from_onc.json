@@ -19,4 +19,42 @@
       "pac_url":"http://proxycfg.my.domain.com/proxy.dat"
     }
   },
+  { "ONC_ProxySettings": {
+      "Manual": {
+        "HTTPProxy": {
+          "Host": "quic://somehost",
+          "Port": 8889
+        },
+        "SecureHTTPProxy": {
+          "Host": "quic://somehost",
+          "Port": 8889
+        }
+      },
+      "Type": "Manual"
+    },
+    "ProxyConfig": {
+      "mode":"fixed_servers",
+      "server":"http=https://somehost:8889;https=https://somehost:8889"
+    },
+    "comment": "re-mapping quic:// to https:// for https://issues.chromium.org/issues/40141686."
+  },
+  { "ONC_ProxySettings": {
+      "Manual": {
+        "HTTPProxy": {
+          "Host": "quic://quichost",
+          "Port": 8889
+        },
+        "SecureHTTPProxy": {
+          "Host": "https://quichost",
+          "Port": 8889
+        }
+      },
+      "Type": "Manual"
+    },
+    "ProxyConfig": {
+      "mode":"fixed_servers",
+      "server":"http=https://quichost:8889;https=https://quichost:8889"
+    },
+    "comment": "No remapping happens if the word quic appears after the protocol"
+  },
 ]
