@@ -32,9 +32,9 @@ EditAddressProfileDialogControllerImpl::
 
 void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
-    const AutofillProfile* original_profile,
     const std::u16string& footer_message,
     AutofillClient::AddressProfileSavePromptCallback on_user_decision_callback,
+    bool is_editing_existing_address,
     bool is_migration_to_account) {
   // Don't show the editor if it's already visible, and inform the backend.
   if (dialog_view_) {
@@ -43,9 +43,9 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
     return;
   }
   address_profile_to_edit_ = profile;
-  original_profile_ = base::OptionalFromPtr(original_profile);
   footer_message_ = footer_message;
   on_user_decision_callback_ = std::move(on_user_decision_callback);
+  is_editing_existing_address_ = is_editing_existing_address;
   is_migration_to_account_ = is_migration_to_account;
 
   if (view_factory_for_test_) {
@@ -68,7 +68,7 @@ const std::u16string& EditAddressProfileDialogControllerImpl::GetFooterMessage()
 std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
-      original_profile_.has_value()
+      is_editing_existing_address_
           ? IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE
           : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
 }

@@ -37,8 +37,9 @@ class EditAddressProfileDialogControllerImplTest
     controller()->SetViewFactoryForTest(base::BindRepeating(
         &EditAddressProfileDialogControllerImplTest::GetAutofillBubbleBase,
         base::Unretained(this)));
-    controller()->OfferEdit(profile_, /*original_profile=*/nullptr,
+    controller()->OfferEdit(profile_,
                             /*footer_message=*/u"", save_callback_.Get(),
+                            /*is_editing_existing_address*/ false,
                             /*is_migration_to_account=*/false);
   }
 
