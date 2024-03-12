@@ -517,17 +517,25 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
   const GURL kChromiumOrg("https://chromium.org");
 
   // Add a web contents to the browser.
-  std::unique_ptr<content::WebContents> contents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  content::WebContents* raw_contents = contents.get();
-  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  content::WebContents* raw_contents;
+  {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    raw_contents = contents.get();
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  }
 
   // contents used to test active state by taking active state first.
-  std::unique_ptr<content::WebContents> non_updated_contents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  content::WebContents* raw_non_updated_contents = non_updated_contents.get();
-  browser()->tab_strip_model()->AppendWebContents(
-      std::move(non_updated_contents), false);
+  content::WebContents* raw_non_updated_contents;
+  {
+    std::unique_ptr<content::WebContents> non_updated_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    raw_non_updated_contents = non_updated_contents.get();
+    browser()->tab_strip_model()->AppendWebContents(
+        std::move(non_updated_contents), false);
+  }
+  ASSERT_NE(raw_contents, nullptr);
+  ASSERT_NE(raw_non_updated_contents, nullptr);
 
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
   CreateSessionServiceTabHelper(raw_contents);
@@ -636,7 +644,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
         ExtensionBuilder("UpdateTest").Build();
     auto function = base::MakeRefCounted<TabsUpdateFunction>();
     function->set_extension(extension);
-    static constexpr char kFormatArgs[] = R"([%d, {"opener_tab_id": "%d"}])";
+    static constexpr char kFormatArgs[] = R"([%d, {"openerTabId": %d}])";
     const std::string args =
         base::StringPrintf(kFormatArgs, tab_id, non_updated_tab_id);
     EXPECT_TRUE(api_test_utils::RunFunction(
@@ -648,7 +656,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
         ExtensionBuilder("UpdateTest").Build();
     auto function = base::MakeRefCounted<TabsUpdateFunction>();
     function->set_extension(extension);
-    static constexpr char kFormatArgs[] = R"([%d, {"auto_discardable": true}])";
+    static constexpr char kFormatArgs[] = R"([%d, {"autoDiscardable": true}])";
     const std::string args = base::StringPrintf(kFormatArgs, tab_id);
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
