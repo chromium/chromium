@@ -73,4 +73,7 @@ class GpuExpectations(expectations.Expectations):
     # 2015 Macbook Pros w/ dual GPUs.
     if {'amd-0x6821', 'intel-0xd26'} <= typ_tags:
       typ_tags -= {'intel', 'intel-0xd26'}
+    # 2019 Macbook Pros w/ dual GPUs.
+    elif {'amd-0x67ef', 'intel-0x3e9b'} <= typ_tags:
+      typ_tags -= {'intel', 'intel-0x3e9b'}
     return frozenset(typ_tags)
