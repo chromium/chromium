@@ -308,8 +308,10 @@ def _print_starting_url(url):
     print('No startingURL found in file for "%s"' % url, file=sys.stderr)
     return
   print('%s test starts at:' % url, file=sys.stderr)
-  print(data['startingURL'])
+  startURL = data['startingURL']
+  print(startURL)
   print('')
+  return startURL
 
 
 def _retrieve_cert_info(cert_type):
@@ -329,8 +331,11 @@ def _retrieve_cert_info(cert_type):
 
 
 def _launch_chrome(options, forward_args):
+  final_command_args = []
   if options.start_url:
-    _print_starting_url(options.start_url)
+    startURL = _print_starting_url(options.start_url)
+    if startURL:
+      final_command_args.append(startURL)
 
   if not os.path.isdir(_USER_DATA_DIR_PATH):
     print('Required CAPTURED_SITES_USER_DATA_DIR "%s" cannot be found' %
@@ -348,7 +353,8 @@ def _launch_chrome(options, forward_args):
   ]
   if options.wpr_selection:
     command_args.append(_HOOK_CHROME_TO_WPR)
-  _make_process_call(command_args + forward_args, options.print_only)
+  _make_process_call(command_args + forward_args + final_command_args,
+                     options.print_only)
 
 
 def _launch_wpr(options, forward_args):
