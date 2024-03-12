@@ -56,7 +56,9 @@ void ScreenOrientationProvider::LockOrientation(
                            SCREEN_ORIENTATION_LOCK_RESULT_ERROR_CANCELED);
       return;
     }
-    if (!static_cast<WebContentsImpl*>(web_contents())->IsFullscreen()) {
+    if (!static_cast<WebContentsImpl*>(web_contents())->IsFullscreen() &&
+        static_cast<WebContentsImpl*>(web_contents())->GetDisplayMode() !=
+            blink::mojom::DisplayMode::kFullscreen) {
       NotifyLockResult(
           ScreenOrientationLockResult::
               SCREEN_ORIENTATION_LOCK_RESULT_ERROR_FULLSCREEN_REQUIRED);
