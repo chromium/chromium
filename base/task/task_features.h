@@ -26,7 +26,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);
 BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);
 
 // This feature controls whether ThreadPool WorkerThreads should hold off waking
-// up to purge partition alloc within the first minute of their lifetime. See
+// up to purge PartitionAlloc within the first minute of their lifetime. See
 // base::internal::GetSleepDurationBeforePurge.
 BASE_EXPORT BASE_DECLARE_FEATURE(kDelayFirstWorkerWake);
 
