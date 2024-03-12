@@ -193,15 +193,23 @@ SyncTest::SyncTest(TestType test_type)
     }
   }
 
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
   if (num_clients_ > 1) {
     // Workaround to turn off single client optimization for sync standalone
     // invalidations in tests.
-    // TODO(crbug.com/1438806): remove once resolved.
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{switches::
-                                   kSyncFilterOutInactiveDevicesForSingleClient,
-                               {{"SyncActiveDeviceMargin", "-2d"}}}},
-        /*disabled_features=*/{});
+    // TODO(crbug.com/1438806): Remove once resolved.
+    enabled_features.push_back(
+        {switches::kSyncFilterOutInactiveDevicesForSingleClient,
+         {{switches::kSyncActiveDeviceMargin.name, "-2d"}}});
+  }
+  std::vector<base::test::FeatureRef> disabled_features;
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/328252586): Re-enable the feature after fixing the flakes.
+  disabled_features.push_back(switches::kSeedAccountsRevamp);
+#endif
+  if (!enabled_features.empty() || !disabled_features.empty()) {
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
