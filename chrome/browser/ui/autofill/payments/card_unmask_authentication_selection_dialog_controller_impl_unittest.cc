@@ -23,8 +23,13 @@ class CardUnmaskAuthenticationSelectionDialogControllerImplTest
       delete;
 
   void SetUp() override {
-    card_unmask_authentication_selection_dialog_controller_ = std::make_unique<
-        CardUnmaskAuthenticationSelectionDialogControllerImpl>();
+    card_unmask_authentication_selection_dialog_controller_ =
+        std::make_unique<CardUnmaskAuthenticationSelectionDialogControllerImpl>(
+            /*challenge_options=*/test::GetCardUnmaskChallengeOptions(
+                {CardUnmaskChallengeOptionType::
+                     kSmsOtp}),  // `challenge_options` must not be empty.
+            /*confirm_unmasking_method_callback=*/base::DoNothing(),
+            /*cancel_unmasking_callback=*/base::DoNothing());
   }
 
   CardUnmaskAuthenticationSelectionDialogControllerImpl* controller() {

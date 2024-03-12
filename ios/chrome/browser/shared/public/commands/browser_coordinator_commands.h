@@ -101,6 +101,9 @@ class GURL;
 // Dismiss the payments suggestions.
 - (void)dismissPaymentSuggestions;
 
+// Dismiss the card unmask authentication prompt.
+- (void)dismissCardUnmaskAuthentication;
+
 // Dismiss the plus address bottom sheet.
 - (void)dismissPlusAddressBottomSheet;
 

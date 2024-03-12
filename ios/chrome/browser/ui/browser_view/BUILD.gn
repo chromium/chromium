@@ -132,6 +132,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
     "//ios/chrome/browser/ui/autofill:autofill",
+    "//ios/chrome/browser/ui/autofill/authentication:card_unmask_authentication_coordinator",
     "//ios/chrome/browser/ui/autofill/bottom_sheet",
     "//ios/chrome/browser/ui/autofill/bottom_sheet:virtual_card_enrollment_bottom_sheet_coordinator",
     "//ios/chrome/browser/ui/autofill/error_dialog",

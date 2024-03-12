@@ -18,7 +18,17 @@
 namespace autofill {
 
 CardUnmaskAuthenticationSelectionDialogControllerImpl::
-    CardUnmaskAuthenticationSelectionDialogControllerImpl() = default;
+    CardUnmaskAuthenticationSelectionDialogControllerImpl(
+        const std::vector<CardUnmaskChallengeOption>& challenge_options,
+        base::OnceCallback<void(const std::string&)>
+            confirm_unmasking_method_callback,
+        base::OnceClosure cancel_unmasking_closure)
+    : challenge_options_(challenge_options),
+      confirm_unmasking_method_callback_(
+          std::move(confirm_unmasking_method_callback)),
+      cancel_unmasking_closure_(std::move(cancel_unmasking_closure)) {
+  CHECK(!challenge_options_.empty());
+}
 
 CardUnmaskAuthenticationSelectionDialogControllerImpl::
     ~CardUnmaskAuthenticationSelectionDialogControllerImpl() {
@@ -35,25 +45,9 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
 }
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
-    const std::vector<CardUnmaskChallengeOption>& challenge_options,
-    base::OnceCallback<void(const std::string&)>
-        confirm_unmasking_method_callback,
-    base::OnceClosure cancel_unmasking_closure,
     CardUnmaskAuthenticationSelectionDialogControllerImpl::CreateAndShowCallback
         create_and_show_callback) {
-  if (dialog_view_) {
-    return;
-  }
-
-  CHECK(!challenge_options.empty());
-  challenge_options_ = challenge_options;
-
-  confirm_unmasking_method_callback_ =
-      std::move(confirm_unmasking_method_callback);
-  cancel_unmasking_closure_ = std::move(cancel_unmasking_closure);
-
-  dialog_view_ =
-      std::move(create_and_show_callback).Run(this);
+  dialog_view_ = std::move(create_and_show_callback).Run(this);
 
   DCHECK(dialog_view_);
   AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown(

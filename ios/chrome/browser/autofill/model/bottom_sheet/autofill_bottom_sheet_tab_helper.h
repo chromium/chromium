@@ -19,6 +19,7 @@
 
 namespace autofill {
 class AutofillBottomSheetObserver;
+class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct FormActivityParams;
 struct VirtualCardEnrollUiModel;
 }  // namespace autofill
@@ -59,6 +60,14 @@ class AutofillBottomSheetTabHelper
   // Observer registration methods.
   void AddObserver(autofill::AutofillBottomSheetObserver* observer);
   void RemoveObserver(autofill::AutofillBottomSheetObserver* observer);
+
+  // Shows the card unmask authentication selection bottom sheet. The
+  // `model_controller` are stored and retrieved later by the appropriate
+  // coordinator.
+  void ShowCardUnmaskAuthenticationSelection(
+      std::unique_ptr<
+          autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
+          model_controller);
 
   // Shows the plus address bottom sheet, taken in response to choosing a
   // `kCreateNewPlusAddress` autofill suggestion. Also stores `callback` for
@@ -113,6 +122,14 @@ class AutofillBottomSheetTabHelper
   void OnFieldTypesDetermined(autofill::AutofillManager& manager,
                               autofill::FormGlobalId form_id,
                               FieldTypeSource source) override;
+
+  // Returns the controller for authentication selection.
+  // The caller takes ownership and subsequent calls will return nullptr until
+  // another instance of the dialog is shown again by calling
+  // ShowCardUnmaskAuthenticationSelection().
+  std::unique_ptr<
+      autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
+  GetCardUnmaskAuthenticationSelectionDialogController();
 
   // Used to get the callback to be run on completion of the plus_address UI.
   plus_addresses::PlusAddressCallback GetPendingPlusAddressFillCallback();
@@ -185,6 +202,12 @@ class AutofillBottomSheetTabHelper
 
   base::ObserverList<autofill::AutofillBottomSheetObserver>::Unchecked
       observers_;
+
+  // A controller for the authentication selection. This will be reset once
+  // GetCardUnmaskAuthenticationSelectionDialogController is called.
+  std::unique_ptr<
+      autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
+      card_unmask_authentication_selection_controller_;
 
   // A callback to be run on completion of the plus address bottom sheet UI
   // flow.

@@ -15,3 +15,28 @@ source_set("authentication") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("card_unmask_authentication_coordinator") {
+  sources = [
+    "card_unmask_authentication_coordinator.h",
+    "card_unmask_authentication_coordinator.mm",
+  ]
+  deps = [
+    ":card_unmask_authentication_selection_coordinator",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}
+
+source_set("card_unmask_authentication_selection_coordinator") {
+  sources = [
+    "card_unmask_authentication_selection_coordinator.h",
+    "card_unmask_authentication_selection_coordinator.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+}

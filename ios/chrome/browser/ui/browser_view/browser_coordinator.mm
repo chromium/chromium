@@ -131,6 +131,7 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/error_dialog/autofill_error_dialog_coordinator.h"
@@ -364,6 +365,10 @@ enum class ToolbarKind {
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) PaymentsSuggestionBottomSheetCoordinator*
     paymentsSuggestionBottomSheetCoordinator;
+
+// Coordinator for the authentication when unmasking card during autofill.
+@property(nonatomic, strong)
+    CardUnmaskAuthenticationCoordinator* cardUnmaskAuthenticationCoordinator;
 
 @property(nonatomic, strong)
     PlusAddressBottomSheetCoordinator* plusAddressBottomSheetCoordinator;
@@ -1376,6 +1381,9 @@ enum class ToolbarKind {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
 
+  [self.cardUnmaskAuthenticationCoordinator stop];
+  self.cardUnmaskAuthenticationCoordinator = nil;
+
   [self.plusAddressBottomSheetCoordinator stop];
   self.plusAddressBottomSheetCoordinator = nil;
 
@@ -1656,6 +1664,14 @@ enum class ToolbarKind {
   [self.paymentsSuggestionBottomSheetCoordinator start];
 }
 
+- (void)showCardUnmaskAuthentication {
+  self.cardUnmaskAuthenticationCoordinator =
+      [[CardUnmaskAuthenticationCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.cardUnmaskAuthenticationCoordinator start];
+}
+
 - (void)showPlusAddressesBottomSheet {
   self.plusAddressBottomSheetCoordinator =
       [[PlusAddressBottomSheetCoordinator alloc]
@@ -1910,6 +1926,11 @@ enum class ToolbarKind {
 - (void)dismissPaymentSuggestions {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
+}
+
+- (void)dismissCardUnmaskAuthentication {
+  [self.cardUnmaskAuthenticationCoordinator stop];
+  self.cardUnmaskAuthenticationCoordinator = nil;
 }
 
 - (void)dismissPlusAddressBottomSheet {

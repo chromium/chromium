@@ -16,6 +16,9 @@ struct VirtualCardEnrollUiModel;
 // Commands related to the Autofill flows (passwords, addresses, payments etc).
 @protocol AutofillCommands
 
+// Shows the card unmask authentication flow.
+- (void)showCardUnmaskAuthentication;
+
 // Shows the password suggestion view controller.
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params;
 
