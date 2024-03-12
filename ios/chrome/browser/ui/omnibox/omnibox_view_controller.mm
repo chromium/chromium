@@ -13,7 +13,6 @@
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
@@ -695,18 +694,12 @@ using base::UserMetricsAction;
 }
 
 - (void)visitCopiedLink:(id)sender {
-  // A search using clipboard link is activity that should indicate a user
-  // that would be interested in setting Chrome as the default browser.
-  LogCopyPasteInOmniboxForDefaultBrowserPromo();
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
   self.omniboxInteractedWhileFocused = YES;
   [self.pasteDelegate didTapVisitCopiedLink];
 }
 
 - (void)searchCopiedText:(id)sender {
-  // A search using clipboard text is activity that should indicate a user
-  // that would be interested in setting Chrome as the default browser.
-  LogCopyPasteInOmniboxForDefaultBrowserPromo();
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   self.omniboxInteractedWhileFocused = YES;
   [self.pasteDelegate didTapSearchCopiedText];

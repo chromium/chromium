@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
@@ -165,10 +165,8 @@ void ChromeOmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {
   base::RecordAction(
       base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
 
-  if (!browser_state_->IsOffTheRecord() &&
-      HasRecentValidURLPastesAndRecordsCurrentPaste()) {
-    engagement_tracker_->NotifyEvent(
-        feature_engagement::events::kBlueDotPromoCriterionMet);
+  if (!browser_state_->IsOffTheRecord()) {
+    default_browser::NotifyOmniboxURLCopyPaste(engagement_tracker_);
   }
 }
 

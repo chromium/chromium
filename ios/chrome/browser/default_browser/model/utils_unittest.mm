@@ -740,7 +740,7 @@ TEST_F(DefaultBrowserUtilsTest,
   }
 
   // Adding current timestamp should be counted.
-  LogCopyPasteInOmniboxForDefaultBrowserPromo();
+  LogCopyPasteInOmniboxForCriteriaExperiment();
 
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();

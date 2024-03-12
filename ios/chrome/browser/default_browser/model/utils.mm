@@ -510,20 +510,6 @@ void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker) {
   tracker->NotifyEvent(feature_engagement::events::kDefaultBrowserPromoShown);
 }
 
-void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker) {
-  base::RecordAction(
-      base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
-
-  // OTR browsers can sometimes pass a null tracker, check for that here.
-  if (!tracker) {
-    return;
-  }
-
-  if (HasRecentValidURLPastesAndRecordsCurrentPaste()) {
-    tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-  }
-}
-
 bool ShouldTriggerDefaultBrowserHighlightFeature(
     const base::Feature& feature,
     feature_engagement::Tracker* tracker,
@@ -711,10 +697,14 @@ void CleanupStorageForTriggerExperiment() {
   [defaults removeObjectForKey:kAllTimestampsAppLaunchIndirectStart];
   [defaults removeObjectForKey:kAutofillUseCount];
   [defaults removeObjectForKey:kSpecialTabsUseCount];
+  [defaults removeObjectForKey:kOmniboxUseCount];
 }
 
-void LogCopyPasteInOmniboxForDefaultBrowserPromo() {
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+void LogCopyPasteInOmniboxForCriteriaExperiment() {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    CleanupStorageForTriggerExperiment();
+    return;
+  }
   StoreCurrentTimestampForKey(kOmniboxUseCount);
 }
 

@@ -11,12 +11,11 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
-#import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -336,7 +335,7 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   auto textCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        LogCopyPasteInOmniboxForDefaultBrowserPromo();
+        default_browser::NotifyOmniboxTextCopyPasteAndNavigate();
         dispatch_async(dispatch_get_main_queue(), ^{
           NSString* text = static_cast<NSString*>(providedItem);
           if (text) {
@@ -383,7 +382,8 @@ using base::UserMetricsAction;
     } else if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
       RecordAction(
           UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedLink"));
-      [self logUserPasted];
+      default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
+          self.isIncognito, self.tracker, self.sceneState);
       // Load URL as a NSString to avoid further conversion.
       [itemProvider loadObjectOfClass:[NSString class]
                     completionHandler:textCompletion];
@@ -399,7 +399,8 @@ using base::UserMetricsAction;
 }
 
 - (void)didTapVisitCopiedLink {
-  [self logUserPasted];
+  default_browser::NotifyOmniboxURLCopyPasteAndNavigate(
+      self.isIncognito, self.tracker, self.sceneState);
   __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
       base::BindOnce(^(std::optional<GURL> optionalURL) {
@@ -415,6 +416,7 @@ using base::UserMetricsAction;
 }
 
 - (void)didTapSearchCopiedText {
+  default_browser::NotifyOmniboxTextCopyPasteAndNavigate();
   __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
       base::BindOnce(^(std::optional<std::u16string> optionalText) {
@@ -455,17 +457,6 @@ using base::UserMetricsAction;
 }
 
 #pragma mark - Private methods
-
-// Logs that user pasted a link into the omnibox.
-- (void)logUserPasted {
-  // Don't log pastes in incognito.
-  if (self.isIncognito) {
-    return;
-  }
-
-  NotifyDefaultBrowserPromoUserPastedInOmnibox(self.sceneState);
-  LogToFETUserPastedURLIntoOmnibox(self.tracker);
-}
 
 // Loads an image-search query with `image`.
 - (void)loadImageQuery:(UIImage*)image {

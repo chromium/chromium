@@ -19,7 +19,6 @@
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -103,14 +102,9 @@ void OmniboxPopupViewIOS::OnMatchSelected(
   // make sure it stays alive until the call completes.
   AutocompleteMatch match = selectedMatch;
 
-  if (match.type == AutocompleteMatchType::CLIPBOARD_URL ||
-      match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
-    // A search using clipboard link or text is activity that should indicate a
-    // user that would be interested in setting Chrome as the default browser.
-    LogCopyPasteInOmniboxForDefaultBrowserPromo();
-  }
-
   if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+    // TODO(crbug.com/326989399): MobileOmniboxClipboardToURL action is not
+    // defined in actions.xml
     base::RecordAction(UserMetricsAction("MobileOmniboxClipboardToURL"));
     UMA_HISTOGRAM_LONG_TIMES_100(
         "MobileOmnibox.PressedClipboardSuggestionAge",

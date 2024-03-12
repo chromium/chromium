@@ -128,10 +128,6 @@ void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 // Logs to the FET that a default browser promo has been shown.
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
 
-// Logs to the FET that the user has pasted a URL into the omnibox if certain
-// conditions are met.
-void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker);
-
 // Returns true if the passed default browser badge `feature` should be shown.
 // Also makes the necessary calls to the FET for keeping track of usage, as well
 // as checking that the correct preconditions are met.
@@ -217,7 +213,7 @@ void LogUserInteractionWithNonModalPromo(
 void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
 
 // Logs in NSUserDefaults that user copy-pasted in the omnibox.
-void LogCopyPasteInOmniboxForDefaultBrowserPromo();
+void LogCopyPasteInOmniboxForCriteriaExperiment();
 
 // Logs in NSUserDefaults that user used bookmarks or bookmark manager.
 void LogBookmarkUseForCriteriaExperiment();
