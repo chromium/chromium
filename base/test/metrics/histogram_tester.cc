@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/metrics_hashes.h"
@@ -30,7 +32,7 @@ HistogramTester::HistogramTester() {
 HistogramTester::~HistogramTester() = default;
 
 void HistogramTester::ExpectUniqueSample(
-    StringPiece name,
+    std::string_view name,
     HistogramBase::Sample sample,
     HistogramBase::Count expected_bucket_count,
     const Location& location) const {
@@ -60,7 +62,7 @@ void HistogramTester::ExpectUniqueSample(
 }
 
 void HistogramTester::ExpectUniqueTimeSample(
-    StringPiece name,
+    std::string_view name,
     TimeDelta sample,
     HistogramBase::Count expected_bucket_count,
     const Location& location) const {
@@ -68,7 +70,7 @@ void HistogramTester::ExpectUniqueTimeSample(
                      location);
 }
 
-void HistogramTester::ExpectBucketCount(StringPiece name,
+void HistogramTester::ExpectBucketCount(std::string_view name,
                                         HistogramBase::Sample sample,
                                         HistogramBase::Count expected_count,
                                         const Location& location) const {
@@ -93,7 +95,7 @@ void HistogramTester::ExpectBucketCount(StringPiece name,
   }
 }
 
-void HistogramTester::ExpectTotalCount(StringPiece name,
+void HistogramTester::ExpectTotalCount(std::string_view name,
                                        HistogramBase::Count expected_count,
                                        const Location& location) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
@@ -114,14 +116,14 @@ void HistogramTester::ExpectTotalCount(StringPiece name,
   }
 }
 
-void HistogramTester::ExpectTimeBucketCount(StringPiece name,
+void HistogramTester::ExpectTimeBucketCount(std::string_view name,
                                             TimeDelta sample,
                                             HistogramBase::Count count,
                                             const Location& location) const {
   ExpectBucketCount(name, sample.InMilliseconds(), count, location);
 }
 
-int64_t HistogramTester::GetTotalSum(StringPiece name) const {
+int64_t HistogramTester::GetTotalSum(std::string_view name) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (!histogram)
     return 0;
@@ -135,7 +137,8 @@ int64_t HistogramTester::GetTotalSum(StringPiece name) const {
   return samples->sum() - original_sum;
 }
 
-std::vector<Bucket> HistogramTester::GetAllSamples(StringPiece name) const {
+std::vector<Bucket> HistogramTester::GetAllSamples(
+    std::string_view name) const {
   std::vector<Bucket> samples;
   std::unique_ptr<HistogramSamples> snapshot =
       GetHistogramSamplesSinceCreation(name);
@@ -152,7 +155,7 @@ std::vector<Bucket> HistogramTester::GetAllSamples(StringPiece name) const {
 }
 
 HistogramBase::Count HistogramTester::GetBucketCount(
-    StringPiece name,
+    std::string_view name,
     HistogramBase::Sample sample) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   HistogramBase::Count count = 0;
@@ -181,7 +184,7 @@ void HistogramTester::GetBucketCountForSamples(
 }
 
 HistogramTester::CountsMap HistogramTester::GetTotalCountsForPrefix(
-    StringPiece prefix) const {
+    std::string_view prefix) const {
   EXPECT_TRUE(prefix.find('.') != StringPiece::npos)
       << "|prefix| ought to contain at least one period, to avoid matching too"
       << " many histograms.";
@@ -206,7 +209,7 @@ HistogramTester::CountsMap HistogramTester::GetTotalCountsForPrefix(
 
 std::unique_ptr<HistogramSamples>
 HistogramTester::GetHistogramSamplesSinceCreation(
-    StringPiece histogram_name) const {
+    std::string_view histogram_name) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(histogram_name);
   // Whether the histogram exists or not may not depend on the current test
   // calling this method, but rather on which tests ran before and possibly

@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 
 #include <atomic>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -78,12 +78,12 @@ struct ScopedFeatureList::FeatureWithStudyGroup {
     return ":" + params;
   }
 
-  static bool IsValidFeatureOrFieldTrialName(const StringPiece& name) {
+  static bool IsValidFeatureOrFieldTrialName(std::string_view name) {
     return IsStringASCII(name) &&
            name.find_first_of(",<*") == std::string::npos;
   }
 
-  static bool IsValidFeatureName(const StringPiece& feature_name) {
+  static bool IsValidFeatureName(std::string_view feature_name) {
     return IsValidFeatureOrFieldTrialName(
         StartsWith(feature_name, "*") ? feature_name.substr(1) : feature_name);
   }
@@ -163,8 +163,8 @@ std::string EscapeValue(const std::string& value) {
 
 // Extracts a feature name from a feature state string. For example, given
 // the input "*MyLovelyFeature<SomeFieldTrial", returns "MyLovelyFeature".
-StringPiece GetFeatureName(StringPiece feature) {
-  StringPiece feature_name = feature;
+std::string_view GetFeatureName(std::string_view feature) {
+  std::string_view feature_name = feature;
 
   // Remove default info.
   if (StartsWith(feature_name, "*"))
@@ -184,7 +184,7 @@ StringPiece GetFeatureName(StringPiece feature) {
 // with GetFeatureName() and also could be without parameters.
 bool ContainsFeature(
     const std::vector<ScopedFeatureList::FeatureWithStudyGroup>& feature_vector,
-    StringPiece feature_name) {
+    std::string_view feature_name) {
   return Contains(feature_vector, feature_name,
                   [](const ScopedFeatureList::FeatureWithStudyGroup& a) {
                     return a.feature_name;
@@ -201,7 +201,7 @@ void OverrideFeatures(
     FeatureList::OverrideState override_state,
     ScopedFeatureList::Features* merged_features) {
   for (const auto& feature : features_list) {
-    StringPiece feature_name = GetFeatureName(feature.feature_name);
+    std::string_view feature_name = GetFeatureName(feature.feature_name);
 
     if (ContainsFeature(merged_features->enabled_feature_list, feature_name) ||
         ContainsFeature(merged_features->disabled_feature_list, feature_name)) {

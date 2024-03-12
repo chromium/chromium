@@ -4,6 +4,8 @@
 
 #include "media/base/amplitude_peak_detector.h"
 
+#include <string_view>
+
 #include "base/location.h"
 #include "base/test/bind.h"
 #include "media/base/audio_sample_types.h"
@@ -70,7 +72,7 @@ class AmplitudePeakDetectorTest : public testing::TestWithParam<int> {
 
   void RunSimpleDetectionTest(float value,
                               bool expect_peak,
-                              base::StringPiece message) {
+                              std::string_view message) {
     const SampleLocation kTestSampleLocations[] = {
         {0, 0},
         {0, kFrames / 2},
@@ -218,7 +220,7 @@ class FixedSampleAmplitudePeakDetector : public AmplitudePeakDetectorTest {
   template <typename SampleType>
   void RunSimpleDetectionTest_Fixed(float value,
                                     bool expect_peak,
-                                    base::StringPiece message) {
+                                    std::string_view message) {
     std::vector<SampleType> samples(
         kFrames, FixedSampleTypeTraits<SampleType>::kZeroPointValue);
 
@@ -238,7 +240,7 @@ class FixedSampleAmplitudePeakDetector : public AmplitudePeakDetectorTest {
 
   void VerifyFindPeaks(const void* data,
                        bool expect_peak,
-                       base::StringPiece message) {
+                       std::string_view message) {
     CreateDetector(
         expect_peak
             ? base::MakeExpectedRunAtLeastOnceClosure(FROM_HERE, message)

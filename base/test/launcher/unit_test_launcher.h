@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -190,7 +191,7 @@ class MergeTestFilterSwitchHandler : public DuplicateSwitchHandler {
  public:
   ~MergeTestFilterSwitchHandler() override;
 
-  void ResolveDuplicate(base::StringPiece key,
+  void ResolveDuplicate(std::string_view key,
                         CommandLine::StringPieceType new_value,
                         CommandLine::StringType& out_value) override;
 };

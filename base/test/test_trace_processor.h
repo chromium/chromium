@@ -11,6 +11,8 @@
 #ifndef BASE_TEST_TEST_TRACE_PROCESSOR_H_
 #define BASE_TEST_TEST_TRACE_PROCESSOR_H_
 
+#include <string_view>
+
 #include "base/test/test_trace_processor_impl.h"
 #include "base/test/trace_test_utils.h"
 #include "base/types/expected.h"
@@ -26,7 +28,7 @@ namespace base::test {
 
 using perfetto::protos::gen::TraceConfig;
 
-TraceConfig DefaultTraceConfig(const StringPiece& category_filter_string,
+TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
                                bool privacy_filtering);
 
 // Use TestTraceProcessor to record Perfetto traces in unit and browser tests.
@@ -56,7 +58,7 @@ class TestTraceProcessor {
   TestTraceProcessor();
   ~TestTraceProcessor();
 
-  void StartTrace(const StringPiece& category_filter_string,
+  void StartTrace(std::string_view category_filter_string,
                   bool privacy_filtering = false);
   void StartTrace(
       const TraceConfig& config,

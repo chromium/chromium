@@ -5,11 +5,11 @@
 #ifndef BASE_TEST_BIND_H_
 #define BASE_TEST_BIND_H_
 
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -84,15 +84,17 @@ auto BindLambdaForTesting(Lambda&& lambda) {
 }
 
 // Returns a closure that fails on destruction if it hasn't been run.
-OnceClosure MakeExpectedRunClosure(const Location& location,
-                                   StringPiece message = StringPiece());
+OnceClosure MakeExpectedRunClosure(
+    const Location& location,
+    std::string_view message = std::string_view());
 RepeatingClosure MakeExpectedRunAtLeastOnceClosure(
     const Location& location,
-    StringPiece message = StringPiece());
+    std::string_view message = std::string_view());
 
 // Returns a closure that fails the test if run.
-RepeatingClosure MakeExpectedNotRunClosure(const Location& location,
-                                           StringPiece message = StringPiece());
+RepeatingClosure MakeExpectedNotRunClosure(
+    const Location& location,
+    std::string_view message = std::string_view());
 
 }  // namespace base
 

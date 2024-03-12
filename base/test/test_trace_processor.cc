@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/test/test_trace_processor.h"
+
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/test/chrome_track_event.descriptor.h"
@@ -59,7 +62,7 @@ TestTraceProcessorImpl::PerfettoSQLModule GetChromeStdlib() {
 }
 }  // namespace
 
-TraceConfig DefaultTraceConfig(const StringPiece& category_filter_string,
+TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
                                bool privacy_filtering) {
   TraceConfig trace_config;
   auto* buffer_config = trace_config.add_buffers();
@@ -113,7 +116,7 @@ TestTraceProcessor::TestTraceProcessor() {
 
 TestTraceProcessor::~TestTraceProcessor() = default;
 
-void TestTraceProcessor::StartTrace(const StringPiece& category_filter_string,
+void TestTraceProcessor::StartTrace(std::string_view category_filter_string,
                                     bool privacy_filtering) {
   StartTrace(DefaultTraceConfig(category_filter_string, privacy_filtering));
 }

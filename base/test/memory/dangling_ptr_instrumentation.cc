@@ -4,6 +4,7 @@
 #include "base/test/memory/dangling_ptr_instrumentation.h"
 
 #include <cstdint>
+#include <string_view>
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
@@ -15,7 +16,7 @@
 namespace base::test {
 
 // static
-base::expected<DanglingPtrInstrumentation, base::StringPiece>
+base::expected<DanglingPtrInstrumentation, std::string_view>
 DanglingPtrInstrumentation::Create() {
   if (!FeatureList::IsEnabled(features::kPartitionAllocBackupRefPtr)) {
     return base::unexpected(

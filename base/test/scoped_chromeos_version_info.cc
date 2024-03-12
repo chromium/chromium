@@ -4,14 +4,16 @@
 
 #include "base/test/scoped_chromeos_version_info.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/system/sys_info.h"
 
 namespace base {
 namespace test {
 
-ScopedChromeOSVersionInfo::ScopedChromeOSVersionInfo(StringPiece lsb_release,
-                                                     Time lsb_release_time) {
+ScopedChromeOSVersionInfo::ScopedChromeOSVersionInfo(
+    std::string_view lsb_release,
+    Time lsb_release_time) {
   SysInfo::SetChromeOSVersionInfoForTest(std::string(lsb_release),
                                          lsb_release_time);
 }

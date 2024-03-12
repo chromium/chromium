@@ -5,11 +5,11 @@
 #include "base/test/bind.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -22,7 +22,7 @@ namespace {
 class RunChecker {
  public:
   explicit RunChecker(const Location& location,
-                      StringPiece message,
+                      std::string_view message,
                       bool is_repeating)
       : location_(location), message_(message), is_repeating_(is_repeating) {}
 
@@ -48,21 +48,21 @@ class RunChecker {
 }  // namespace
 
 OnceClosure MakeExpectedRunClosure(const Location& location,
-                                   StringPiece message) {
+                                   std::string_view message) {
   return BindOnce(&RunChecker::Run,
                   Owned(new RunChecker(location, message, false)));
 }
 
 RepeatingClosure MakeExpectedRunAtLeastOnceClosure(const Location& location,
-                                                   StringPiece message) {
+                                                   std::string_view message) {
   return BindRepeating(&RunChecker::Run,
                        Owned(new RunChecker(location, message, true)));
 }
 
 RepeatingClosure MakeExpectedNotRunClosure(const Location& location,
-                                           StringPiece message) {
+                                           std::string_view message) {
   return BindRepeating(
-      [](const Location& location, StringPiece message) {
+      [](const Location& location, std::string_view message) {
         ADD_FAILURE_AT(location.file_name(), location.line_number()) << message;
       },
       location, std::string(message));
