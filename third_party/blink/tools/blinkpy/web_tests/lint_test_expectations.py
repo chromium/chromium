@@ -68,6 +68,7 @@ def lint(host, options):
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend([
         finder.path_from_web_tests('ChromeTestExpectations'),
+        finder.path_from_web_tests('MobileTestExpectations'),
         finder.path_from_web_tests('WebGPUExpectations'),
     ])
     port = host.port_factory.get(options=options)

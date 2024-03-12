@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: detected_pointertypes is not defined
+Harness: the test ran to completion.

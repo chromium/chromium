@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection
+[TIMEOUT] pointerId of an active pointer is the same across iframes
+  Test timed out
+Harness: the test ran to completion.

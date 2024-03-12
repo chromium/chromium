@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Capturing boundary event handler at DIV
+  assert_equals: received events with phases expected "pointerover-2,pointerenter-2,pointerout-2,pointerleave-2" but got ""
+Harness: the test ran to completion.

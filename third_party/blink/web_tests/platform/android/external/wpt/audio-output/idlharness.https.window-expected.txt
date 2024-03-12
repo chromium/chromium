@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+[FAIL] MediaDevices interface: operation selectAudioOutput(optional AudioOutputOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "selectAudioOutput" missing
+[FAIL] MediaDevices interface: navigator.mediaDevices must inherit property "selectAudioOutput(optional AudioOutputOptions)" with the proper type
+  assert_inherits: property "selectAudioOutput" not found in prototype chain
+[FAIL] MediaDevices interface: calling selectAudioOutput(optional AudioOutputOptions) on navigator.mediaDevices with too few arguments must throw TypeError
+  assert_inherits: property "selectAudioOutput" not found in prototype chain
+[FAIL] HTMLMediaElement interface: attribute sinkId
+  assert_true: The prototype object must have a property "sinkId" expected true got false
+[FAIL] HTMLMediaElement interface: operation setSinkId(DOMString)
+  assert_own_property: interface prototype object missing non-static operation expected property "setSinkId" missing
+Harness: the test ran to completion.

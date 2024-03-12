@@ -134,6 +134,7 @@ class WPTAdapter:
     PORT_NAME_BY_PRODUCT = {
         'android_webview': 'webview',
         'chrome': 'chrome',
+        'chrome_android': 'android',
     }
 
     def __init__(self, product, port, options, paths):

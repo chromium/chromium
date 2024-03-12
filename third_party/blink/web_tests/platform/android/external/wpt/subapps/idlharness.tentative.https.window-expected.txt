@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: object "Error fetching /interfaces/sub-apps.tentative.idl."
+Harness: the test ran to completion.

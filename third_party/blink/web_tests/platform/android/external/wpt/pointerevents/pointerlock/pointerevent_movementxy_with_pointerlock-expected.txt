@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] mouse pointerevent movementX/Y with pointerlock test
+  assert_equals: expected 5 but got 4.4554595947265625
+Harness: the test ran to completion.
