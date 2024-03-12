@@ -13,6 +13,7 @@ namespace autofill {
 TestAddressDataManager::TestAddressDataManager(
     base::RepeatingClosure notify_pdm_observers)
     : AddressDataManager(/*webdata_service=*/nullptr,
+                         /*pref_service=*/nullptr,
                          notify_pdm_observers,
                          "en-US") {}
 
@@ -54,6 +55,15 @@ void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
   if (AutofillProfile* adm_profile = GetProfileByGUID(profile.guid())) {
     adm_profile->RecordAndLogUse();
   }
+}
+
+bool TestAddressDataManager::IsAutofillProfileEnabled() const {
+  // Return the value of autofill_profile_enabled_ if it has been set,
+  // otherwise fall back to the normal behavior of checking the pref_service.
+  if (autofill_profile_enabled_.has_value()) {
+    return autofill_profile_enabled_.value();
+  }
+  return AddressDataManager::IsAutofillProfileEnabled();
 }
 
 void TestAddressDataManager::ClearProfiles() {

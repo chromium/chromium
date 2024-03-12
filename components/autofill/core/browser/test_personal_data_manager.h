@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
+#include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -40,9 +41,13 @@ class TestPersonalDataManager : public PersonalDataManager {
   using PersonalDataManager::GetProfileUpdateStrikeDatabase;
   using PersonalDataManager::SetPrefService;
 
+  TestAddressDataManager& test_address_data_manager() {
+    AddressDataManager& manager = address_data_manager();
+    return static_cast<TestAddressDataManager&>(manager);
+  }
   TestPaymentsDataManager& test_payments_data_manager() {
     PaymentsDataManager& manager = payments_data_manager();
-    return *static_cast<TestPaymentsDataManager*>(&manager);
+    return static_cast<TestPaymentsDataManager&>(manager);
   }
 
   // PersonalDataManager overrides.  These functions are overridden as needed
@@ -54,7 +59,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void RecordUseOfIban(Iban& iban) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
-  void AddProfile(const AutofillProfile& profile) override;
   void RemoveByGUID(const std::string& guid) override;
   bool IsEligibleForAddressAccountStorage() const override;
   void AddCreditCard(const CreditCard& credit_card) override;
@@ -63,7 +67,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
-  bool IsAutofillProfileEnabled() const override;
   bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;
   bool ShouldSuggestServerPaymentMethods() const override;
@@ -126,8 +129,10 @@ class TestPersonalDataManager : public PersonalDataManager {
     autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
   }
 
+  // TODO(b/322170538): Remove function from TestPDM.
   void SetAutofillProfileEnabled(bool autofill_profile_enabled) {
-    autofill_profile_enabled_ = autofill_profile_enabled;
+    test_address_data_manager().SetAutofillProfileEnabled(
+        autofill_profile_enabled);
   }
 
   void SetAutofillWalletImportEnabled(bool autofill_wallet_import_enabled) {
@@ -166,7 +171,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   std::string default_country_code_;
   int num_times_save_imported_credit_card_called_ = 0;
-  std::optional<bool> autofill_profile_enabled_;
   std::optional<bool> autofill_payment_methods_enabled_;
   std::optional<bool> autofill_wallet_import_enabled_;
   std::optional<bool> eligible_for_account_storage_;

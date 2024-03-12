@@ -16,6 +16,8 @@
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/webdata/common/web_data_results.h"
 
@@ -52,6 +54,7 @@ void OrderProfiles(std::vector<AutofillProfile*>& profiles,
 
 AddressDataManager::AddressDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
+    PrefService* pref_service,
     base::RepeatingClosure notify_pdm_observers,
     const std::string& app_locale)
     : notify_pdm_observers_(notify_pdm_observers),
@@ -64,6 +67,7 @@ AddressDataManager::AddressDataManager(
                             weak_factory_.GetWeakPtr()));
     webdata_service_observer_.Observe(webdata_service_.get());
   }
+  SetPrefService(pref_service);
 }
 
 AddressDataManager::~AddressDataManager() {
@@ -151,7 +155,7 @@ AutofillProfile* AddressDataManager::GetProfileByGUID(
 }
 
 void AddressDataManager::AddProfile(const AutofillProfile& profile) {
-  if (!webdata_service_) {
+  if (!webdata_service_ || !IsAutofillProfileEnabled()) {
     return;
   }
   if (profile.IsEmpty(app_locale_)) {
@@ -260,6 +264,26 @@ void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
   AutofillProfile updated_profile = *adm_profile;
   updated_profile.RecordAndLogUse();
   UpdateProfile(updated_profile);
+}
+
+void AddressDataManager::SetPrefService(PrefService* pref_service) {
+  pref_service_ = pref_service;
+  profile_enabled_pref_ = std::make_unique<BooleanPrefMember>();
+  // `pref_service_` can be nullptr in tests. Using base::Unretained(this) is
+  // safe because observer instances are destroyed once `this` is destroyed.
+  if (pref_service_) {
+    profile_enabled_pref_->Init(prefs::kAutofillProfileEnabled, pref_service_,
+                                base::BindRepeating(
+                                    [](AddressDataManager* self) {
+                                      self->most_common_country_code_.clear();
+                                      self->LoadProfiles();
+                                    },
+                                    this));
+  }
+}
+
+bool AddressDataManager::IsAutofillProfileEnabled() const {
+  return prefs::IsAutofillProfileEnabled(pref_service_);
 }
 
 void AddressDataManager::CancelPendingQuery(
@@ -420,7 +444,13 @@ void AddressDataManager::OnProfileChangeDone(const std::string& guid) {
   HandleNextProfileChange(guid);
 }
 
-std::string AddressDataManager::MostCommonCountryCodeFromProfiles() const {
+const std::string& AddressDataManager::MostCommonCountryCodeFromProfiles()
+    const {
+  // When `!IsAutofillProfileEnabled()`, `most_common_country_code_` is empty,
+  // since it is reset by a pref observer. See `SetPrefService()`.
+  if (!most_common_country_code_.empty() || !IsAutofillProfileEnabled()) {
+    return most_common_country_code_;
+  }
   // Count up country codes from existing profiles.
   std::map<std::string, int> votes;
   const std::vector<AutofillProfile*>& profiles = GetProfiles();
@@ -436,12 +466,13 @@ std::string AddressDataManager::MostCommonCountryCodeFromProfiles() const {
 
   // Take the most common country code.
   if (!votes.empty()) {
-    return base::ranges::max_element(
-               votes, [](auto& a, auto& b) { return a.second < b.second; })
-        ->first;
+    most_common_country_code_ =
+        base::ranges::max_element(votes, [](auto& a, auto& b) {
+          return a.second < b.second;
+        })->first;
   }
 
-  return std::string();
+  return most_common_country_code_;
 }
 
 void AddressDataManager::LogStoredDataMetrics() const {

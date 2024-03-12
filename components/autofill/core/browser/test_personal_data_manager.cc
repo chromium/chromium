@@ -74,13 +74,6 @@ std::string TestPersonalDataManager::SaveImportedCreditCard(
   return imported_credit_card.guid();
 }
 
-void TestPersonalDataManager::AddProfile(const AutofillProfile& profile) {
-  // TODO(b/322170538): The PDM implementation checks if Autofill is enabled,
-  // which doesn't work without a pref service. Once the pref service moves into
-  // the `AddressDataManager`, the override here can be removed.
-  address_data_manager_->AddProfile(profile);
-}
-
 void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
   RemoveByGuidWithoutNotifications(guid);
   NotifyPersonalDataObserver();
@@ -161,14 +154,6 @@ const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
     return PersonalDataManager::GetDefaultCountryCodeForNewAddress();
 
   return default_country_code_;
-}
-
-bool TestPersonalDataManager::IsAutofillProfileEnabled() const {
-  // Return the value of autofill_profile_enabled_ if it has been set,
-  // otherwise fall back to the normal behavior of checking the pref_service.
-  if (autofill_profile_enabled_.has_value())
-    return autofill_profile_enabled_.value();
-  return PersonalDataManager::IsAutofillProfileEnabled();
 }
 
 bool TestPersonalDataManager::IsAutofillPaymentMethodsEnabled() const {

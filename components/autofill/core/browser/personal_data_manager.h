@@ -50,7 +50,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -551,9 +550,6 @@ class PersonalDataManager : public KeyedService,
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const;
 
-  // Returns the value of the AutofillProfileEnabled pref.
-  virtual bool IsAutofillProfileEnabled() const;
-
   // Returns the value of the AutofillPaymentMethodsEnabled pref.
   virtual bool IsAutofillPaymentMethodsEnabled() const;
 
@@ -801,9 +797,6 @@ class PersonalDataManager : public KeyedService,
   // Only to be used for testing.
   bool auto_accept_address_imports_for_testing_ = false;
 
-  // The default country code for new addresses.
-  mutable std::string default_country_code_;
-
   // The determined country code for experiment group purposes. Uses
   // |variations_country_code_| if it exists but falls back to other methods if
   // necessary to ensure it always has a value.
@@ -816,9 +809,6 @@ class PersonalDataManager : public KeyedService,
   // outlive this instance. This unowned pointer is retained so the PDM can
   // remove itself from the history service's observer list on shutdown.
   raw_ptr<history::HistoryService> history_service_ = nullptr;
-
-  // Pref registrar for managing the change observers.
-  PrefChangeRegistrar pref_registrar_;
 
   // The AddressDataCleaner is used to apply various cleanups (e.g.
   // deduplication, disused address removal) at browser startup or when the sync
@@ -839,9 +829,6 @@ class PersonalDataManager : public KeyedService,
 
   // An observer to listen for changes to prefs::kAutofillCreditCardEnabled.
   std::unique_ptr<BooleanPrefMember> credit_card_enabled_pref_;
-
-  // An observer to listen for changes to prefs::kAutofillProfileEnabled.
-  std::unique_ptr<BooleanPrefMember> profile_enabled_pref_;
 
   // The database that is used to count guid-keyed strikes to suppress the
   // migration-prompt of new profiles.

@@ -832,7 +832,7 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
   personal_data_->set_variations_country_code_for_testing(
       expected_country_code);
 
-  // Since there are no profiles set, the country code supplied buy variations
+  // Since there are no profiles set, the country code supplied by variations
   // should be used get get a default country code.
   ASSERT_EQ(0u, personal_data_->GetProfiles().size());
   std::string actual_country_code =
@@ -845,12 +845,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
       unexpected_country_code);
   actual_country_code = personal_data_->GetDefaultCountryCodeForNewAddress();
   EXPECT_EQ(expected_country_code, actual_country_code);
-
-  // Now a profile is set and the correct caching of the country code is
-  // verified once more.
-  AddProfileToPersonalDataManager(test::GetFullProfile());
-  actual_country_code = personal_data_->GetDefaultCountryCodeForNewAddress();
-  EXPECT_EQ(actual_country_code, expected_country_code);
 }
 
 // Test that profiles are not shown if |kAutofillProfileEnabled| is set to

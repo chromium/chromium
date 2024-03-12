@@ -161,7 +161,7 @@ void PersonalDataManager::Init(
   // effectively overwriting the test data manager with a real one.
   if (!address_data_manager_) {
     address_data_manager_ = std::make_unique<AddressDataManager>(
-        profile_database,
+        profile_database, pref_service,
         base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
                             base::Unretained(this)),
         app_locale_);
@@ -173,9 +173,6 @@ void PersonalDataManager::Init(
   }
 
   SetPrefService(pref_service);
-
-  // Listen for the preference changes.
-  pref_registrar_.Init(pref_service);
 
   alternative_state_name_map_updater_ =
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
@@ -194,7 +191,7 @@ void PersonalDataManager::Init(
 
   AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
   AutofillMetrics::LogIsAutofillProfileEnabledAtStartup(
-      IsAutofillProfileEnabled());
+      address_data_manager_->IsAutofillProfileEnabled());
   AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(
       IsAutofillPaymentMethodsEnabled());
   if (IsAutofillPaymentMethodsEnabled()) {
@@ -439,9 +436,7 @@ void PersonalDataManager::RecordUseOfIban(Iban& iban) {
 }
 
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
-  if (IsAutofillProfileEnabled()) {
-    address_data_manager_->AddProfile(profile);
-  }
+  address_data_manager_->AddProfile(profile);
 }
 
 void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
@@ -718,7 +713,7 @@ void PersonalDataManager::Refresh() {
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
     const {
-  return IsAutofillProfileEnabled()
+  return address_data_manager_->IsAutofillProfileEnabled()
              ? GetProfiles(ProfileOrder::kHighestFrecencyDesc)
              : std::vector<AutofillProfile*>{};
 }
@@ -745,11 +740,8 @@ const std::vector<BankAccount> PersonalDataManager::GetMaskedBankAccounts()
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
-}
-
-bool PersonalDataManager::IsAutofillProfileEnabled() const {
-  return prefs::IsAutofillProfileEnabled(pref_service_);
+  return address_data_manager_->IsAutofillProfileEnabled() ||
+         IsAutofillPaymentMethodsEnabled();
 }
 
 bool PersonalDataManager::IsAutofillPaymentMethodsEnabled() const {
@@ -805,7 +797,7 @@ bool PersonalDataManager::ShouldSuggestServerPaymentMethods() const {
 }
 
 void PersonalDataManager::SetPrefService(PrefService* pref_service) {
-  profile_enabled_pref_ = std::make_unique<BooleanPrefMember>();
+  address_data_manager_->SetPrefService(pref_service);
   credit_card_enabled_pref_ = std::make_unique<BooleanPrefMember>();
   pref_service_ = pref_service;
   // |pref_service_| can be nullptr in tests. Using base::Unretained(this) is
@@ -815,25 +807,18 @@ void PersonalDataManager::SetPrefService(PrefService* pref_service) {
         prefs::kAutofillCreditCardEnabled, pref_service_,
         base::BindRepeating(&PersonalDataManager::EnableAutofillPrefChanged,
                             base::Unretained(this)));
-    profile_enabled_pref_->Init(
-        prefs::kAutofillProfileEnabled, pref_service_,
-        base::BindRepeating(&PersonalDataManager::EnableAutofillPrefChanged,
-                            base::Unretained(this)));
   }
 }
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
     const {
-  if (default_country_code_.empty() && IsAutofillEnabled()) {
-    default_country_code_ =
-        address_data_manager_->MostCommonCountryCodeFromProfiles();
+  const std::string& most_common_country =
+      address_data_manager_->MostCommonCountryCodeFromProfiles();
+  if (!most_common_country.empty()) {
+    return most_common_country;
   }
-
   // Failing that, use the country code determined for experiment groups.
-  if (default_country_code_.empty())
-    default_country_code_ = GetCountryCodeForExperimentGroup();
-
-  return default_country_code_;
+  return GetCountryCodeForExperimentGroup();
 }
 
 const std::string& PersonalDataManager::GetCountryCodeForExperimentGroup()
@@ -1320,8 +1305,6 @@ std::string PersonalDataManager::SaveImportedCreditCard(
 }
 
 void PersonalDataManager::EnableAutofillPrefChanged() {
-  default_country_code_.clear();
-
   // Refresh our local cache and send notifications to observers.
   Refresh();
 }

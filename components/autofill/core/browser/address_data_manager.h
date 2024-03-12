@@ -18,7 +18,10 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/prefs/pref_member.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+
+class PrefService;
 
 namespace autofill {
 
@@ -45,6 +48,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   };
 
   AddressDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
+                     PrefService* pref_service,
                      base::RepeatingClosure notify_pdm_observers,
                      const std::string& app_locale);
 
@@ -120,6 +124,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
     CancelPendingQuery(pending_account_profiles_query_);
   }
 
+  void SetPrefService(PrefService* pref_service);
+
+  // Returns the value of the AutofillProfileEnabled pref.
+  virtual bool IsAutofillProfileEnabled() const;
+
  protected:
   // Profiles of different sources are stored in different vectors.
   // Several function need to read/write from the correct vector, depending
@@ -178,7 +187,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Finds the country code that occurs most frequently among all profiles.
   // Prefers verified profiles over unverified ones.
-  std::string MostCommonCountryCodeFromProfiles() const;
+  const std::string& MostCommonCountryCodeFromProfiles() const;
 
   // Logs metrics around the number of stored profiles after the initial load
   // has finished.
@@ -199,6 +208,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // The WebDataService used to schedule tasks on the `AddressAutofillTable`.
   scoped_refptr<AutofillWebDataService> webdata_service_;
 
+  // Used to check whether address Autofill is enabled. May be null in tests,
+  // but must otherwise outlive this instance.
+  raw_ptr<PrefService> pref_service_ = nullptr;
+
   // Make sure to get notified about changes to `AddressAutofillTable` via sync.
   base::ScopedObservation<AutofillWebDataService,
                           AutofillWebDataServiceObserverOnUISequence>
@@ -207,6 +220,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<QueuedAutofillProfileChange>>
       ongoing_profile_changes_;
+
+  // An observer to listen for changes to prefs::kAutofillProfileEnabled.
+  std::unique_ptr<BooleanPrefMember> profile_enabled_pref_;
+
+  // The cached result of `MostCommonCountryCodeFromProfiles()`.
+  mutable std::string most_common_country_code_;
 
   const std::string app_locale_;
 

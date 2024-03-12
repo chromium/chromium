@@ -22,8 +22,16 @@ class TestAddressDataManager : public AddressDataManager {
   void RemoveProfile(const std::string& guid) override;
   void LoadProfiles() override;
   void RecordUseOf(const AutofillProfile& profile) override;
+  bool IsAutofillProfileEnabled() const override;
 
   void ClearProfiles();
+
+  void SetAutofillProfileEnabled(bool autofill_profile_enabled) {
+    autofill_profile_enabled_ = autofill_profile_enabled;
+  }
+
+ private:
+  std::optional<bool> autofill_profile_enabled_;
 };
 
 }  // namespace autofill

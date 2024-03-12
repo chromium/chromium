@@ -122,7 +122,7 @@ FastCheckoutTriggerOutcome
 FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
   autofill::PersonalDataManager* pdm =
       personal_data_helper_->GetPersonalDataManager();
-  if (!pdm->IsAutofillProfileEnabled()) {
+  if (!pdm->address_data_manager().IsAutofillProfileEnabled()) {
     LogAutofillInternals("not triggered because Autofill profile is disabled.");
     return FastCheckoutTriggerOutcome::kFailureAutofillProfileDisabled;
   }
