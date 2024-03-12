@@ -36,6 +36,8 @@ class AttestationCertificateGeneratorImpl
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AttestationCertificateGeneratorImplTest,
+                           RegenerateAfterExpiration);
+  FRIEND_TEST_ALL_PREFIXES(AttestationCertificateGeneratorImplTest,
                            RetrieveCertificateWithoutCache);
 
   bool ShouldRegenerateAttestationCertificate();

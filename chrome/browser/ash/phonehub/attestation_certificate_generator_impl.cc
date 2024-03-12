@@ -56,7 +56,7 @@ bool AttestationCertificateGeneratorImpl::
     return true;
   }
 
-  if ((last_attestation_completed_time_ - base::Time::NowFromSystemTime()) >
+  if ((base::Time::NowFromSystemTime() - last_attestation_completed_time_) >
       base::Hours(24)) {
     return true;
   }
