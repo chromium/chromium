@@ -317,7 +317,7 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       if (pic->nal_ref_idc == 0 && abs_frame_num > 0)
         --abs_frame_num;
 
-      int expected_pic_order_cnt = 0;
+      base::CheckedNumeric<int> expected_pic_order_cnt = 0;
       if (abs_frame_num > 0) {
         if (sps->num_ref_frames_in_pic_order_cnt_cycle == 0) {
           DVLOG(1) << "Invalid num_ref_frames_in_pic_order_cnt_cycle "
@@ -330,8 +330,10 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
         int frame_num_in_pic_order_cnt_cycle =
             (abs_frame_num - 1) % sps->num_ref_frames_in_pic_order_cnt_cycle;
 
-        expected_pic_order_cnt = pic_order_cnt_cycle_cnt *
-                                 sps->expected_delta_per_pic_order_cnt_cycle;
+        expected_pic_order_cnt =
+            base::CheckedNumeric<int>(pic_order_cnt_cycle_cnt) *
+            base::CheckedNumeric<int>(
+                sps->expected_delta_per_pic_order_cnt_cycle);
         // frame_num_in_pic_order_cnt_cycle is verified < 255 in parser
         for (int i = 0; i <= frame_num_in_pic_order_cnt_cycle; ++i)
           expected_pic_order_cnt += sps->offset_for_ref_frame[i];
@@ -340,8 +342,15 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       if (!pic->nal_ref_idc)
         expected_pic_order_cnt += sps->offset_for_non_ref_pic;
 
+      if (!expected_pic_order_cnt.IsValid()) {
+        DVLOG(1) << "Invalid expected_pic_order_cnt for stream.";
+        return false;
+      }
+
       pic->top_field_order_cnt =
-          expected_pic_order_cnt + pic->delta_pic_order_cnt0;
+          (expected_pic_order_cnt +
+           base::CheckedNumeric<int>(pic->delta_pic_order_cnt0))
+              .ValueOrDie();
       pic->bottom_field_order_cnt = pic->top_field_order_cnt +
                                     sps->offset_for_top_to_bottom_field +
                                     pic->delta_pic_order_cnt1;
