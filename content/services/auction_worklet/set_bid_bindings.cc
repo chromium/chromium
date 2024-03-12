@@ -160,12 +160,20 @@ std::string ComponentsPrefix(const std::string& error_prefix) {
 
 }  // namespace
 
-std::vector<mojom::BidderWorkletBidPtr> SetBidBindings::TakeBids() {
+SetBidBindings::BidAndComponentTarget::BidAndComponentTarget() = default;
+SetBidBindings::BidAndComponentTarget::BidAndComponentTarget(
+    BidAndComponentTarget&&) = default;
+SetBidBindings::BidAndComponentTarget::~BidAndComponentTarget() = default;
+SetBidBindings::BidAndComponentTarget&
+SetBidBindings::BidAndComponentTarget::operator=(BidAndComponentTarget&&) =
+    default;
+
+std::vector<SetBidBindings::BidAndComponentTarget> SetBidBindings::TakeBids() {
   // Set `bid_duration` here instead of in SetBid(), so it can include the
   // entire script execution time.
   base::TimeDelta time_duration = base::TimeTicks::Now() - start_;
-  for (auto& bid : bids_) {
-    bid->bid_duration = time_duration;
+  for (auto& bid_info : bids_) {
+    bid_info.bid->bid_duration = time_duration;
   }
   return std::move(bids_);
 }
@@ -188,11 +196,15 @@ struct SetBidBindings::GenerateBidOutput {
   std::optional<std::vector<AdRender>> ad_components;
   std::optional<double> ad_cost;
   std::optional<UnrestrictedDouble> modeling_signals;
-  std::optional<bool> allow_component_auction;
+  bool allow_component_auction = false;
+  uint32_t num_mandatory_ad_components = 0;
+  std::optional<uint32_t> target_num_ad_components;
 };
 
 SetBidBindings::SetBidBindings(AuctionV8Helper* v8_helper)
-    : v8_helper_(v8_helper) {}
+    : v8_helper_(v8_helper),
+      support_multi_bid_(
+          base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid)) {}
 
 SetBidBindings::~SetBidBindings() = default;
 
@@ -247,8 +259,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(v8::Local<v8::Value> value,
   // and if so parse as multiple bids. This will be denoted by non-null
   // `iterator_factory`.
   v8::Local<v8::Object> iterable, iterator_factory;
-  if (value->IsObject() &&
-      base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid)) {
+  if (value->IsObject() && support_multi_bid_) {
     iterable = value.As<v8::Object>();
     IdlConvert::Status seq_check_status = IdlConvert::CheckForSequence(
         v8_helper_->isolate(), error_prefix, {}, iterable, iterator_factory);
@@ -331,7 +342,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(v8::Local<v8::Value> value,
 
     // Unlike with IDL conversion, success does not imply existence of bid;
     // "no bid" is a valid outcome.
-    if (maybe_new_bid.value()) {
+    if (maybe_new_bid.value().bid) {
       bids_.push_back(std::move(maybe_new_bid).value());
     }
   }
@@ -372,15 +383,27 @@ SetBidBindings::ConvertBidToIDL(
       ref_v8_helper, std::ref(time_limit_scope), std::cref(components_prefix),
       std::ref(idl));
 
+  // Note that this happens in lexicographic order of field names, to match
+  // WebIDL behavior.
   convert_set_bid.GetOptional("ad", idl.ad);
   convert_set_bid.GetOptionalSequence(
       "adComponents", std::move(components_exist), collect_components);
   convert_set_bid.GetOptional("adCost", idl.ad_cost);
+  std::optional<bool> maybe_allow_component_auction;
   convert_set_bid.GetOptional("allowComponentAuction",
-                              idl.allow_component_auction);
+                              maybe_allow_component_auction);
+  idl.allow_component_auction = maybe_allow_component_auction.value_or(false);
   convert_set_bid.GetOptional("bid", idl.bid);
   convert_set_bid.GetOptional("bidCurrency", idl.bid_currency);
   convert_set_bid.GetOptional("modelingSignals", idl.modeling_signals);
+
+  std::optional<uint32_t> maybe_num_mandatory_ad_components;
+  if (support_multi_bid_) {
+    convert_set_bid.GetOptional("numMandatoryAdComponents",
+                                maybe_num_mandatory_ad_components);
+  }
+  idl.num_mandatory_ad_components =
+      maybe_num_mandatory_ad_components.value_or(0);
 
   std::optional<v8::Local<v8::Value>> render_value;
   if (convert_set_bid.GetOptional("render", render_value) &&
@@ -391,17 +414,19 @@ SetBidBindings::ConvertBidToIDL(
                                    render_prefix, *render_value, *idl.render));
   }
 
+  if (support_multi_bid_) {
+    convert_set_bid.GetOptional("targetNumAdComponents",
+                                idl.target_num_ad_components);
+  }
+
   if (convert_set_bid.is_failed()) {
     return base::unexpected(convert_set_bid.TakeStatus());
   }
 
-  if (!idl.allow_component_auction.has_value()) {
-    idl.allow_component_auction.emplace(false);
-  }
   return idl;
 }
 
-base::expected<mojom::BidderWorkletBidPtr, IdlConvert::Status>
+base::expected<SetBidBindings::BidAndComponentTarget, IdlConvert::Status>
 SetBidBindings::SemanticCheckBid(
     AuctionV8Helper::TimeLimitScope& time_limit_scope,
     const GenerateBidOutput& idl,
@@ -410,12 +435,13 @@ SetBidBindings::SemanticCheckBid(
     const std::string& components_prefix) {
   DCHECK(bidder_worklet_non_shared_params_)
       << "ReInitialize() must be called before each use";
+  BidAndComponentTarget bid_and_component_target;
 
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   if (!idl.bid.has_value() || *idl.bid <= 0.0) {
     // Not an error, just no bid.
-    return mojom::BidderWorkletBidPtr();
+    return bid_and_component_target;
   }
 
   if (!idl.render.has_value()) {
@@ -462,7 +488,7 @@ SetBidBindings::SemanticCheckBid(
   }
 
   if (has_top_level_seller_origin_) {
-    if (!*idl.allow_component_auction) {
+    if (!idl.allow_component_auction) {
       return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StrCat({error_prefix,
                         "bid does not have allowComponentAuction "
@@ -500,6 +526,15 @@ SetBidBindings::SemanticCheckBid(
   }
 
   std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
+  const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
+  if (idl.target_num_ad_components.has_value() &&
+      idl.target_num_ad_components.value() > kMaxAdAuctionAdComponents) {
+    return base::unexpected(IdlConvert::Status::MakeErrorMessage(
+        base::StringPrintf("%sbid targetNumAdComponents larger than "
+                           "component ad limit of %zu.",
+                           error_prefix.c_str(), kMaxAdAuctionAdComponents)));
+  }
+
   if (idl.ad_components.has_value()) {
     if (!bidder_worklet_non_shared_params_->ad_components.has_value()) {
       return base::unexpected(IdlConvert::Status::MakeErrorMessage(
@@ -513,8 +548,8 @@ SetBidBindings::SemanticCheckBid(
     static_assert(blink::kMaxAdAuctionAdComponentsConfigLimit <
                   IdlConvert::kSequenceLengthLimit);
 
-    const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
-    if (idl.ad_components->size() > kMaxAdAuctionAdComponents) {
+    if (!idl.target_num_ad_components.has_value() &&
+        idl.ad_components->size() > kMaxAdAuctionAdComponents) {
       return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StringPrintf("%sbid adComponents with over %zu items.",
                              error_prefix.c_str(), kMaxAdAuctionAdComponents)));
@@ -553,19 +588,51 @@ SetBidBindings::SemanticCheckBid(
     }
   }
 
+  if (idl.target_num_ad_components.has_value()) {
+    size_t num_ad_component_descriptors = ad_component_descriptors.has_value()
+                                              ? ad_component_descriptors->size()
+                                              : 0u;
+
+    if (num_ad_component_descriptors < *idl.target_num_ad_components) {
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
+          {error_prefix,
+           "adComponents list smaller than targetNumAdComponents."})));
+    }
+
+    if (*idl.target_num_ad_components == 0) {
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
+          {error_prefix, "targetNumAdComponents must be positive."})));
+    }
+
+    if (idl.num_mandatory_ad_components > *idl.target_num_ad_components) {
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
+          {error_prefix,
+           "numMandatoryAdComponents cannot exceed targetNumAdComponents."})));
+    }
+
+    // Must have some component ads since their number is >=
+    // `target_num_ad_components`, and that's positive.
+    DCHECK(idl.ad_components.has_value());
+    bid_and_component_target.target_num_ad_components =
+        idl.target_num_ad_components;
+    bid_and_component_target.num_mandatory_ad_components =
+        idl.num_mandatory_ad_components;
+  }
+
   // `bid_duration` needs to include the entire time the bid script took to run,
   // including the time from the last setBid() call to when the bidder worklet
   // timed out, if the worklet did time out. So `bid_duration` is calculated
   // when ownership of the bid is taken by the caller, instead of here.
   //
   // Similarly it's easier for BidderWorklet to compute the proper role.
-  return mojom::BidderWorkletBid::New(
+  bid_and_component_target.bid = mojom::BidderWorkletBid::New(
       auction_worklet::mojom::BidRole::kUnenforcedKAnon, std::move(ad_json),
       *idl.bid, std::move(bid_currency), std::move(idl.ad_cost),
       blink::AdDescriptor(render_url, render_size),
       std::move(ad_component_descriptors),
       static_cast<std::optional<uint16_t>>(modeling_signals),
       /*bid_duration=*/base::TimeDelta());
+  return bid_and_component_target;
 }
 
 // static

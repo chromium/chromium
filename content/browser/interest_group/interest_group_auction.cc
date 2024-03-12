@@ -245,61 +245,34 @@ bool IsValidMultiBid(
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     const std::vector<auction_worklet::mojom::BidderWorkletBidPtr>& mojo_bids,
     uint16_t multi_bid_limit) {
-  if (mojo_bids.size() > multi_bid_limit) {
-    return false;
-  }
+  unsigned kanon_bids = 0;
+  unsigned non_kanon_bids = 0;
 
-  // Normal multi-bid run should only have things that are targeting both
-  // auctions or the only-non-k-anon one.
   for (const auto& bid : mojo_bids) {
-    if (bid->bid_role == auction_worklet::mojom::BidRole::kEnforcedKAnon) {
-      return false;
-    }
-    // If not doing k-anon, bids should be labeled appropriately.
-    if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone &&
-        bid->bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon) {
-      return false;
+    switch (bid->bid_role) {
+      case auction_worklet::mojom::BidRole::kEnforcedKAnon:
+        ++kanon_bids;
+        break;
+
+      case auction_worklet::mojom::BidRole::kUnenforcedKAnon:
+        ++non_kanon_bids;
+        break;
+
+      case auction_worklet::mojom::BidRole::kBothKAnonModes:
+        ++kanon_bids;
+        ++non_kanon_bids;
+        break;
     }
   }
-  return true;
-}
 
-bool IsValidKAnonReRun(
-    auction_worklet::mojom::KAnonymityBidMode kanon_mode,
-    const std::vector<auction_worklet::mojom::BidderWorkletBidPtr>& mojo_bids,
-    uint16_t multi_bid_limit) {
-  if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone) {
-    // No k-anon re-run if no k-anon.
+  // There shouldn't be any k-anon bids if we're not dealing with it.
+  if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone &&
+      kanon_bids != 0) {
     return false;
   }
 
-  // This case can't actually happen since IsValidMultiBid() will return true
-  // first, but it makes IsValidKAnonReRun() make sense on its own.
-  if (mojo_bids.empty()) {
-    return true;
-  }
-
-  // The re-run may exceed `multi_bid_limit` by one.
-  //
-  // Doing math on mojo_bids.size() here to avoid worrying about overflow.
-  DCHECK_GE(multi_bid_limit, 1);  // Ensured by GetBuyerMultiBidLimit()
-  if (mojo_bids.size() - 1 > multi_bid_limit) {
-    return false;
-  }
-
-  size_t pos = 0;
-  while (pos < mojo_bids.size() &&
-         mojo_bids[pos]->bid_role ==
-             auction_worklet::mojom::BidRole::kUnenforcedKAnon) {
-    ++pos;
-  }
-
-  // Either the entire thing must be kUnenforcedKAnon, or one last entry can be
-  // kEnforcedKAnon.
-  return (pos == mojo_bids.size()) ||
-         ((pos == mojo_bids.size() - 1) &&
-          mojo_bids[pos]->bid_role ==
-              auction_worklet::mojom::BidRole::kEnforcedKAnon);
+  // Shouldn't make more than `multi_bid_limit` bids in either auction.
+  return (kanon_bids <= multi_bid_limit) && (non_kanon_bids <= multi_bid_limit);
 }
 
 struct BidStatesDescByPriority {
@@ -1894,8 +1867,7 @@ class InterestGroupAuction::BuyerHelper
     // Validate that we did not get too many bids and that the k-anon roles
     // aren't weird.
     auto kanon_mode = auction_->kanon_mode_;
-    if (!IsValidMultiBid(kanon_mode, mojo_bids, multi_bid_limit_) &&
-        !IsValidKAnonReRun(kanon_mode, mojo_bids, multi_bid_limit_)) {
+    if (!IsValidMultiBid(kanon_mode, mojo_bids, multi_bid_limit_)) {
       mojo_bids.clear();
       generate_bid_client_receiver_set_.ReportBadMessage(
           "Too many bids or wrong roles");

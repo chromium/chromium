@@ -21050,24 +21050,27 @@ TEST_P(AuctionRunnerKAnonTest, FailureHandling) {
 TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
   all_buyers_multi_bid_limit_ = 3;
 
+  const GURL kKAnonUrl("https://ad1.com");
+  const GURL kNonKAnonUrl("https://ad2.com");
+
   auto both_bid = auction_worklet::mojom::BidderWorkletBid::New(
       auction_worklet::mojom::BidRole::kBothKAnonModes, "ad", 5.0,
       /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt, blink::AdDescriptor(GURL("https://ad1.com")),
+      /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
       /*ad_component_urls=*/std::nullopt,
       /*modeling_signals=*/std::nullopt, base::TimeDelta());
 
   auto enforced_bid = auction_worklet::mojom::BidderWorkletBid::New(
       auction_worklet::mojom::BidRole::kEnforcedKAnon, "ad", 5.0,
       /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt, blink::AdDescriptor(GURL("https://ad1.com")),
+      /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
       /*ad_component_urls=*/std::nullopt,
       /*modeling_signals=*/std::nullopt, base::TimeDelta());
 
   auto non_kanon_bid = auction_worklet::mojom::BidderWorkletBid::New(
       auction_worklet::mojom::BidRole::kUnenforcedKAnon, "ad", 5.0,
       /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt, blink::AdDescriptor(GURL("https://ad2.com")),
+      /*ad_cost=*/std::nullopt, blink::AdDescriptor(kNonKAnonUrl),
       /*ad_component_urls=*/std::nullopt,
       /*modeling_signals=*/std::nullopt, base::TimeDelta());
 
@@ -21076,72 +21079,56 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
     const char* expected_error_message;
     blink::AdDescriptor ad_descriptor;
     auction_worklet::mojom::BidRole bid_role;
-    auction_worklet::mojom::BidderWorkletBidPtr further_bid;
-    auction_worklet::mojom::BidderWorkletBidPtr further_bid2;
-    auction_worklet::mojom::BidderWorkletBidPtr further_bid3;
-    auction_worklet::mojom::BidderWorkletBidPtr further_bid4;
+    int further_both_bid = 0;
+    int further_enforced_bid = 0;
+    int further_non_kanon_bid = 0;
   } kTestCases[] = {
-      // A non-k-anon bid as k-anon one.
+      // A non-k-anon bid claiming it's k-anon.
       {
           {KAnonMode::kEnforce, KAnonMode::kSimulate},
           "Bid render ad must have a valid URL and size (if specified)",
-          blink::AdDescriptor(GURL("https://ad2.com")),
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          auction_worklet::mojom::BidderWorkletBid::New(
-              auction_worklet::mojom::BidRole::kEnforcedKAnon, "ad", 5.0,
-              /*bid_currency=*/std::nullopt,
-              /*ad_cost=*/std::nullopt,
-              blink::AdDescriptor(GURL("https://ad2.com")),
-              /*ad_component_urls=*/std::nullopt,
-              /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+          blink::AdDescriptor(kNonKAnonUrl),
+          auction_worklet::mojom::BidRole::kEnforcedKAnon,
       },
       // Sending k-anon data when it's not even on.
       {
           {KAnonMode::kNone},
           "Too many bids or wrong roles",
-          blink::AdDescriptor(GURL("https://ad1.com")),
+          blink::AdDescriptor(kKAnonUrl),
           auction_worklet::mojom::BidRole::kBothKAnonModes,
-          /*further_bid=*/auction_worklet::mojom::BidderWorkletBidPtr(),
       },
       // Too many bids --- passing in 4 where limit is 3.
       {{KAnonMode::kNone, KAnonMode::kEnforce, KAnonMode::kSimulate},
        "Too many bids or wrong roles",
-       blink::AdDescriptor(GURL("https://ad1.com")),
+       blink::AdDescriptor(kKAnonUrl),
        auction_worklet::mojom::BidRole::kBothKAnonModes,
-       both_bid.Clone(),
-       both_bid.Clone(),
-       both_bid.Clone()},
-      // Not a valid re-run if not doing anything with k-anon.
+       /*further_both_bid=*/3},
+      // Shouldn't see anything k-anon related if we're not dealing with that.
       {{KAnonMode::kNone},
        "Too many bids or wrong roles",
-       blink::AdDescriptor(GURL("https://ad2.com")),
+       blink::AdDescriptor(kNonKAnonUrl),
        auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-       enforced_bid.Clone()},
-      // Not a valid re-run if one of the things afterwards isn't enforced
-      // k-anon.
+       /*further_both_bid=*/1},
+      // 4 k-anon bids (2 both, 2 enforced), with limit = 3.
       {
           {KAnonMode::kEnforce, KAnonMode::kSimulate},
           "Too many bids or wrong roles",
-          blink::AdDescriptor(GURL("https://ad2.com")),
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          enforced_bid.Clone(),
-          both_bid.Clone(),
+          blink::AdDescriptor(kKAnonUrl),
+          auction_worklet::mojom::BidRole::kBothKAnonModes,
+          /*further_both_bid=*/1,
+          /*further_enforced_bid=*/2,
       },
-      // Not a valid re-run with two enforced ones, either.
+      // 4 non-k-anon bids (1 both, 3 non-k-anon), with limit = 3.
       {
           {KAnonMode::kEnforce, KAnonMode::kSimulate},
           "Too many bids or wrong roles",
-          blink::AdDescriptor(GURL("https://ad2.com")),
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          enforced_bid.Clone(),
-          enforced_bid.Clone(),
+          blink::AdDescriptor(kKAnonUrl),
+          auction_worklet::mojom::BidRole::kBothKAnonModes,
+          /*further_both_bid=*/0,
+          /*further_enforced_bid=*/0,
+          /*further_non_kanon_bid=*/3,
       },
-      // Shouldn't have k-anon enforced in normal multibid.
-      {{KAnonMode::kNone, KAnonMode::kEnforce, KAnonMode::kSimulate},
-       "Too many bids or wrong roles",
-       blink::AdDescriptor(GURL("https://ad1.com")),
-       auction_worklet::mojom::BidRole::kBothKAnonModes,
-       enforced_bid.Clone()}};
+  };
 
   std::vector<StorageInterestGroup> bidders;
   bidders.emplace_back(MakeInterestGroup(
@@ -21169,17 +21156,14 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
     auto bidder1_worklet =
         mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
     std::vector<auction_worklet::mojom::BidderWorkletBidPtr> further_bids;
-    if (test_case.further_bid) {
-      further_bids.push_back(test_case.further_bid.Clone());
+    for (int i = 0; i < test_case.further_both_bid; ++i) {
+      further_bids.push_back(both_bid.Clone());
     }
-    if (test_case.further_bid2) {
-      further_bids.push_back(test_case.further_bid2.Clone());
+    for (int i = 0; i < test_case.further_enforced_bid; ++i) {
+      further_bids.push_back(enforced_bid.Clone());
     }
-    if (test_case.further_bid3) {
-      further_bids.push_back(test_case.further_bid3.Clone());
-    }
-    if (test_case.further_bid4) {
-      further_bids.push_back(test_case.further_bid4.Clone());
+    for (int i = 0; i < test_case.further_non_kanon_bid; ++i) {
+      further_bids.push_back(non_kanon_bid.Clone());
     }
     bidder1_worklet->InvokeGenerateBidCallback(
         1.0, /*bid_currency=*/std::nullopt, test_case.ad_descriptor,

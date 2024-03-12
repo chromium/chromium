@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -203,6 +204,133 @@ std::optional<base::TimeDelta> NullOptIfZero(base::TimeDelta delta) {
   return delta;
 }
 
+// Adjust `bid` to meet `target_num_ad_components`, if any.
+void TrimExtraAdComponents(mojom::BidderWorkletBid& bid,
+                           std::optional<size_t> target_num_ad_components) {
+  if (!target_num_ad_components.has_value()) {
+    return;
+  }
+  // SetBidBindings should have enforced that there are enough adComponents,
+  // as should have HandleComponentsKAnon() when bifurcating bids,
+  // which also implies they exist.
+  DCHECK(bid.ad_component_descriptors.has_value());
+  DCHECK_LE(*target_num_ad_components, bid.ad_component_descriptors->size());
+  bid.ad_component_descriptors->resize(*target_num_ad_components);
+}
+
+// Applies `target_num_ad_components` to `bid` and appends it to `out`.
+void TrimAndCollectBid(mojom::BidderWorkletBidPtr bid,
+                       std::optional<size_t> target_num_ad_components,
+                       std::vector<mojom::BidderWorkletBidPtr>& out) {
+  TrimExtraAdComponents(*bid, target_num_ad_components);
+  out.push_back(std::move(bid));
+}
+
+// Given `bid` that has k-anonymous main ad and some component ads, handles the
+// k-anon check on its components, possibly dropping some if allowed. Appends
+// the resulting bid (and perhaps a non-k-anon alternative) to `out`.
+void HandleComponentsKAnon(
+    const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
+    mojom::BidderWorkletBidPtr bid,
+    std::optional<size_t> target_num_ad_components,
+    size_t num_mandatory_ad_components,
+    std::vector<mojom::BidderWorkletBidPtr>& out) {
+  size_t num_required_components =
+      target_num_ad_components.value_or(bid->ad_component_descriptors->size());
+  // Go through the ad component list and try to collect
+  // `num_required_components` k-anonymous ones into
+  // `usable_ad_component_indices`. Gives up if a mandatory ad component isn't
+  // k-anonymous.  Sets `saw_non_k_anon` to true if it needed to skip over any
+  // non-k-anonymous ones.
+  std::vector<size_t> usable_ad_component_indices;
+  usable_ad_component_indices.reserve(num_required_components);
+  bool saw_non_k_anon = false;
+  for (size_t i = 0; i < bid->ad_component_descriptors->size(); ++i) {
+    const blink::AdDescriptor& ad_component_descriptor =
+        bid->ad_component_descriptors.value()[i];
+    if (BidderWorklet::IsComponentAdKAnon(bidder_worklet_non_shared_params,
+                                          ad_component_descriptor)) {
+      usable_ad_component_indices.push_back(i);
+      if (usable_ad_component_indices.size() == num_required_components) {
+        break;
+      }
+    } else {
+      saw_non_k_anon = true;
+      if (i < num_mandatory_ad_components) {
+        // One of the required component ads is not k-anon, so have to give up
+        // on this.
+        break;
+      }
+    }
+  }
+
+  DCHECK_LE(usable_ad_component_indices.size(), num_required_components);
+  if (usable_ad_component_indices.size() == num_required_components) {
+    if (!saw_non_k_anon) {
+      // The bid was actually completely fine without getting fancy.
+      bid->bid_role = mojom::BidRole::kBothKAnonModes;
+      TrimAndCollectBid(std::move(bid), target_num_ad_components, out);
+    } else {
+      // Split the bid into two, with one having just the usable ad components.
+      mojom::BidderWorkletBidPtr non_kanon_alternative = bid->Clone();
+      DCHECK_EQ(non_kanon_alternative->bid_role,
+                mojom::BidRole::kUnenforcedKAnon);
+
+      bid->bid_role = mojom::BidRole::kEnforcedKAnon;
+      std::vector<blink::AdDescriptor> usable_ad_components;
+      usable_ad_components.reserve(num_required_components);
+      for (size_t index : usable_ad_component_indices) {
+        usable_ad_components.push_back(
+            std::move(bid->ad_component_descriptors.value()[index]));
+      }
+      bid->ad_component_descriptors = std::move(usable_ad_components);
+
+      TrimAndCollectBid(std::move(bid), target_num_ad_components, out);
+      TrimAndCollectBid(std::move(non_kanon_alternative),
+                        target_num_ad_components, out);
+    }
+  } else {
+    // Could not salvage the bid; just drop any extra component ads and mark it
+    // as non-k-anon.
+    DCHECK_EQ(bid->bid_role, mojom::BidRole::kUnenforcedKAnon);
+    TrimAndCollectBid(std::move(bid), target_num_ad_components, out);
+  }
+}
+
+std::vector<mojom::BidderWorkletBidPtr> ClassifyBidsAndApplyComponentAdLimits(
+    mojom::KAnonymityBidMode kanon_mode,
+    const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
+    const GURL& script_source_url,
+    std::vector<SetBidBindings::BidAndComponentTarget> bid_info) {
+  std::vector<mojom::BidderWorkletBidPtr> bids;
+  for (auto& candidate : bid_info) {
+    if (kanon_mode == mojom::KAnonymityBidMode::kNone ||
+        !BidderWorklet::IsMainAdKAnon(bidder_worklet_non_shared_params,
+                                      script_source_url, candidate.bid)) {
+      DCHECK_EQ(candidate.bid->bid_role, mojom::BidRole::kUnenforcedKAnon);
+      TrimAndCollectBid(std::move(candidate.bid),
+                        candidate.target_num_ad_components, bids);
+    } else {
+      // We care about k-anonymity, and whether the bid is k-anonymous or not
+      // depends on whether component ads are k-anonymous; we also may be able
+      // to salvage the bid by throwing out some components while trying to get
+      // it to the target.
+      if (!candidate.bid->ad_component_descriptors.has_value() ||
+          candidate.bid->ad_component_descriptors->empty()) {
+        // There are no components to worry about, so it's k-anon.
+        candidate.bid->bid_role = mojom::BidRole::kBothKAnonModes;
+        bids.push_back(std::move(candidate.bid));
+      } else {
+        HandleComponentsKAnon(bidder_worklet_non_shared_params,
+                              std::move(candidate.bid),
+                              candidate.target_num_ad_components,
+                              candidate.num_mandatory_ad_components, bids);
+      }
+    }
+  }
+  return bids;
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -279,7 +407,7 @@ bool BidderWorklet::IsKAnon(
 }
 
 // static
-bool BidderWorklet::IsKAnon(
+bool BidderWorklet::IsMainAdKAnon(
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const GURL& script_source_url,
     const mojom::BidderWorkletBidPtr& bid) {
@@ -292,17 +420,15 @@ bool BidderWorklet::IsKAnon(
                                   script_source_url, bid->ad_descriptor))) {
     return false;
   }
-  if (bid->ad_component_descriptors.has_value()) {
-    for (const auto& ad_component_descriptor :
-         bid->ad_component_descriptors.value()) {
-      if (!BidderWorklet::IsKAnon(
-              bidder_worklet_non_shared_params,
-              blink::KAnonKeyForAdComponentBid(ad_component_descriptor))) {
-        return false;
-      }
-    }
-  }
   return true;
+}
+
+// static
+bool BidderWorklet::IsComponentAdKAnon(
+    const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
+    const blink::AdDescriptor& ad_component_descriptor) {
+  return IsKAnon(bidder_worklet_non_shared_params,
+                 blink::KAnonKeyForAdComponentBid(ad_component_descriptor));
 }
 
 void BidderWorklet::BeginGenerateBid(
@@ -597,7 +723,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult() =
     default;
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
-    std::vector<mojom::BidderWorkletBidPtr> bids,
+    std::vector<SetBidBindings::BidAndComponentTarget> bids,
     std::optional<uint32_t> bidding_signals_data_version,
     std::optional<GURL> debug_loss_report_url,
     std::optional<GURL> debug_win_report_url,
@@ -943,16 +1069,17 @@ void BidderWorklet::V8State::GenerateBid(
     return;
   }
 
-  std::vector<mojom::BidderWorkletBidPtr> bids = std::move(result->bids);
+  std::vector<mojom::BidderWorkletBidPtr> bids =
+      ClassifyBidsAndApplyComponentAdLimits(
+          kanon_mode, bidder_worklet_non_shared_params.get(),
+          script_source_url_, std::move(result->bids));
 
   if (kanon_mode != mojom::KAnonymityBidMode::kNone) {
     // Go through and see which bids are actually k-anon appropriate.
     bool found_kanon = false;
     for (const auto& bid : bids) {
-      if (IsKAnon(bidder_worklet_non_shared_params.get(), script_source_url_,
-                  bid)) {
+      if (bid->bid_role != mojom::BidRole::kUnenforcedKAnon) {
         found_kanon = true;
-        bid->bid_role = auction_worklet::mojom::BidRole::kBothKAnonModes;
       }
     }
 
@@ -980,14 +1107,14 @@ void BidderWorklet::V8State::GenerateBid(
               std::move(result->context_recycler_for_rerun),
               /*restrict_to_kanon_ads=*/true);
       if (restricted_result.has_value()) {
-        // All the bids from the re-run will be k-anon enforced.
-        for (const auto& bid : restricted_result->bids) {
-          bid->bid_role = auction_worklet::mojom::BidRole::kEnforcedKAnon;
+        // All the bids from the re-run will be k-anon enforced; we need to make
+        // sure to apply the component ad reduction, too.
+        for (auto& candidate : restricted_result->bids) {
+          candidate.bid->bid_role =
+              auction_worklet::mojom::BidRole::kEnforcedKAnon;
+          TrimAndCollectBid(std::move(candidate.bid),
+                            candidate.target_num_ad_components, bids);
         }
-
-        bids.insert(bids.end(),
-                    std::make_move_iterator(restricted_result->bids.begin()),
-                    std::make_move_iterator(restricted_result->bids.end()));
       }
 
       // Figure out which of `restricted_result` or `result` we actually want
@@ -1072,7 +1199,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     errors_out.push_back("generateBid() aborted due to zero timeout.");
     return std::make_optional(SingleGenerateBidResult(
         std::unique_ptr<ContextRecycler>(),
-        std::vector<mojom::BidderWorkletBidPtr>(),
+        std::vector<SetBidBindings::BidAndComponentTarget>(),
         /*bidding_signals_data_version=*/std::nullopt,
         /*debug_loss_report_url=*/std::nullopt,
         /*debug_win_report_url=*/std::nullopt,
@@ -1147,7 +1274,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     if (!fresh_context_recycler) {
       return std::make_optional(SingleGenerateBidResult(
           std::unique_ptr<ContextRecycler>(),
-          std::vector<mojom::BidderWorkletBidPtr>(),
+          std::vector<SetBidBindings::BidAndComponentTarget>(),
           /*bidding_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt,
@@ -1389,7 +1516,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     // re-run.
     return std::make_optional(SingleGenerateBidResult(
         std::unique_ptr<ContextRecycler>(),
-        std::vector<mojom::BidderWorkletBidPtr>(),
+        std::vector<SetBidBindings::BidAndComponentTarget>(),
         /*bidding_signals_data_version=*/std::nullopt,
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         /*debug_win_report_url=*/std::nullopt,

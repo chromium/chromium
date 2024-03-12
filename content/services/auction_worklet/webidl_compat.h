@@ -175,6 +175,13 @@ class CONTENT_EXPORT IdlConvert {
                         v8::Local<v8::Value> value,
                         int32_t& out);
 
+  // For values that should be converted to WebIDL "unsigned long" type.
+  static Status Convert(v8::Isolate* isolate,
+                        std::string_view error_prefix,
+                        std::initializer_list<std::string_view> error_subject,
+                        v8::Local<v8::Value> value,
+                        uint32_t& out);
+
   // For values that should be converted to WebIDL "(bigint or long)" type.
   static Status Convert(v8::Isolate* isolate,
                         std::string_view error_prefix,

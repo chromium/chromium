@@ -30,6 +30,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
+#include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
@@ -122,10 +123,17 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   static bool IsKAnon(const mojom::BidderWorkletNonSharedParams*
                           bidder_worklet_non_shared_params,
                       const std::string& key);
-  static bool IsKAnon(const mojom::BidderWorkletNonSharedParams*
-                          bidder_worklet_non_shared_params,
-                      const GURL& script_source_url,
-                      const mojom::BidderWorkletBidPtr& bid);
+
+  // This doesn't look at the component ads.
+  static bool IsMainAdKAnon(const mojom::BidderWorkletNonSharedParams*
+                                bidder_worklet_non_shared_params,
+                            const GURL& script_source_url,
+                            const mojom::BidderWorkletBidPtr& bid);
+
+  static bool IsComponentAdKAnon(
+      const mojom::BidderWorkletNonSharedParams*
+          bidder_worklet_non_shared_params,
+      const blink::AdDescriptor& ad_component_descriptor);
 
   // mojom::BidderWorklet implementation:
   void BeginGenerateBid(
@@ -380,7 +388,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       SingleGenerateBidResult();
       SingleGenerateBidResult(
           std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
-          std::vector<mojom::BidderWorkletBidPtr> bids,
+          std::vector<SetBidBindings::BidAndComponentTarget> bids,
           std::optional<uint32_t> bidding_signals_data_version,
           std::optional<GURL> debug_loss_report_url,
           std::optional<GURL> debug_win_report_url,
@@ -403,7 +411,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       // it's returned here to be available for any re-run for k-anonymity.
       std::unique_ptr<ContextRecycler> context_recycler_for_rerun;
 
-      std::vector<mojom::BidderWorkletBidPtr> bids;
+      std::vector<SetBidBindings::BidAndComponentTarget> bids;
       std::optional<uint32_t> bidding_signals_data_version;
       std::optional<GURL> debug_loss_report_url;
       std::optional<GURL> debug_win_report_url;

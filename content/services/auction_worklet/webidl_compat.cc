@@ -247,6 +247,24 @@ IdlConvert::Status IdlConvert::Convert(
     std::string_view error_prefix,
     std::initializer_list<std::string_view> error_subject,
     v8::Local<v8::Value> value,
+    uint32_t& out) {
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Uint32> uint32_value;
+  if (!value->ToUint32(isolate->GetCurrentContext()).ToLocal(&uint32_value)) {
+    return MakeConversionFailure(try_catch, error_prefix, error_subject,
+                                 "ToUint32");
+  }
+
+  out = uint32_value->Value();
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
     absl::variant<int32_t, v8::Local<v8::BigInt>>& out) {
   // A union that has both a BigInt and a normal number follows special rules
   // to disambiguate.

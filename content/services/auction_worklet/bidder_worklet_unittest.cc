@@ -850,6 +850,7 @@ class BidderWorkletTest : public testing::Test {
   void OnDisconnectWithReason(uint32_t custom_reason,
                               const std::string& description) {
     DCHECK(!disconnect_reason_);
+    LOG(WARNING) << "Worklet disconnect with reason: " << description;
 
     disconnect_reason_ = description;
     if (disconnect_run_loop_) {
@@ -2626,6 +2627,507 @@ TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
       R"([{ad: "ad", bid: 1,
           render: "https://response.test/"}])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
+}
+
+// Make sure that fields that are only available with multibid on aren't
+// read when its off.
+TEST_F(BidderWorkletTest, ComponentTargetFieldsOnlyMultiBid) {
+  auto expected_bid = mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*ad_component_descriptors=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          get numMandatoryAdComponents() {
+            throw 'used numMandatoryAdComponents';
+          }
+      })",
+      expected_bid->Clone());
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          get targetNumAdComponents() {
+            throw 'used targetNumAdComponents';
+          }
+      })",
+      expected_bid->Clone());
+}
+
+// Make sure that fields that are only available with multibid on are read
+// when it's on. This is mostly meant to validate the multibid=off
+// version of the testcase; the actual functionality of the fields is tested
+// separately.
+TEST_F(BidderWorkletMultiBidTest, ComponentTargetFieldsOnlyMultiBid) {
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          get numMandatoryAdComponents() {
+            throw 'used numMandatoryAdComponents';
+          }
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/:9 Uncaught used numMandatoryAdComponents."});
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          get targetNumAdComponents() {
+            throw 'used targetNumAdComponents';
+          }
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/:9 Uncaught used targetNumAdComponents."});
+}
+
+TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component2.test/"), /*metadata=*/std::nullopt);
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component3.test/"), /*metadata=*/std::nullopt);
+
+  // Can't target 0 component ads (just don't return any).
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          targetNumAdComponents: 0
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() targetNumAdComponents must be "
+       "positive."});
+
+  // Still an error if some are included.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          adComponents: [
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+          ],
+          targetNumAdComponents: 0
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() targetNumAdComponents must be "
+       "positive."});
+
+  // Can't target more than permitted.
+  const char kLotsProvidedAndTargeted[] = R"(
+    let componentsArray = [];
+    componentsArray.length = 60;
+    componentsArray.fill("https://ad_component.test", 0);
+
+    function generateBid() {
+      return {
+          ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          targetNumAdComponents: 50,
+          adComponents: componentsArray
+      }
+    }
+  )";
+  RunGenerateBidWithJavascriptExpectingResult(
+      kLotsProvidedAndTargeted,
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid targetNumAdComponents larger than "
+       "component ad limit of 20."});
+
+  // Must provide at least as much as target.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          targetNumAdComponents: 1
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() adComponents list smaller than "
+       "targetNumAdComponents."});
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          targetNumAdComponents: 2,
+          adComponents: [
+            "https://ad_component.test",
+          ]
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() adComponents list smaller than "
+       "targetNumAdComponents."});
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          adComponents: [
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+          ],
+          targetNumAdComponents: 5
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() adComponents list smaller than "
+       "targetNumAdComponents."});
+
+  // Provided exactly what's targeted.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          adComponents: [
+            "https://ad_component.test",
+            "https://ad_component2.test",
+            "https://ad_component3.test",
+          ],
+          targetNumAdComponents: 3,
+          numMandatoryAdComponents: 2
+      })",
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
+          /*bid_currency=*/std::nullopt,
+          /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/")),
+              blink::AdDescriptor(GURL("https://ad_component2.test/")),
+              blink::AdDescriptor(GURL("https://ad_component3.test/"))},
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+
+  // Can't say that more is mandatory than target.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          adComponents: [
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+          ],
+          targetNumAdComponents: 5,
+          numMandatoryAdComponents: 6
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() numMandatoryAdComponents cannot exceed "
+       "targetNumAdComponents."});
+
+  // Providing invalid (as opposed to non-k-anon) component ads
+  // beyond the limit is still an error.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          adComponents: [
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://ad_component.test",
+            "https://not_ad_component.test",
+          ],
+          targetNumAdComponents: 5,
+      })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents URL "
+       "'https://not_ad_component.test/' isn't one of the registered creative "
+       "URLs."});
+
+  // It's actually OK to provide more adComponents than limit as long as the
+  // target is below it. It will get reduced to the target.
+  const char kLotsProvided[] = R"(
+    let componentsArray = [];
+    componentsArray.length = 50;
+    componentsArray[0] = "https://ad_component.test/";
+    componentsArray[1] = "https://ad_component2.test/";
+    componentsArray.fill("https://ad_component3.test", 2);
+
+    function generateBid() {
+      return {
+          ad: "ad", bid: 5,
+          render: {url: "https://response.test/"},
+          targetNumAdComponents: 2,
+          adComponents: componentsArray
+      }
+    }
+  )";
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      kLotsProvided,
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
+          /*bid_currency=*/std::nullopt,
+          /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/
+          std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/")),
+              blink::AdDescriptor(GURL("https://ad_component2.test/"))},
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponentsKAnon) {
+  const char kBid[] = R"({
+    ad: "ad",
+    bid: 5,
+    render: "https://response.test/",
+    targetNumAdComponents: 2,
+    adComponents: [
+      "https://ad_component.test",
+      "https://ad_component2.test",
+      "https://ad_component3.test",
+      "https://ad_component4.test",
+    ]
+  })";
+
+  auto non_k_anon_bid = mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*ad_component_descriptors=*/
+      std::vector<blink::AdDescriptor>{
+          blink::AdDescriptor(GURL("https://ad_component.test/")),
+          blink::AdDescriptor(GURL("https://ad_component2.test/"))},
+      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component2.test/"), /*metadata=*/std::nullopt);
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component3.test/"), /*metadata=*/std::nullopt);
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component4.test/"), /*metadata=*/std::nullopt);
+
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
+
+  // With no k-anon enforcement, the requested 2 component ads are just the
+  // first two component ads.
+  RunGenerateBidWithReturnValueExpectingResult(kBid, non_k_anon_bid->Clone());
+  EXPECT_EQ(1u, bids_.size());
+
+  // Turn on enforcement, but don't authorize anything. This is still going to
+  // be a non-k-anon bid only; there will be an error-message from a failed
+  // re-run, though.
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, non_k_anon_bid->Clone(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid render URL "
+       "'https://response.test/' isn't one of the registered creative URLs."});
+  EXPECT_EQ(1u, bids_.size());
+
+  // Just authorizing the main bid still produces the same effect, but the
+  // reason for re-run failure is different.
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdBid(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_bidding_url_, GURL("https://response.test/"))),
+      true);
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, non_k_anon_bid->Clone(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents URL "
+       "'https://ad_component.test/' isn't one of the registered creative "
+       "URLs."});
+  EXPECT_EQ(1u, bids_.size());
+
+  // Authorizing ad components 2 and 4, they should be used for k-anon bid but
+  // there should still be the non-k-anon bid.
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdComponentBid(
+          GURL("https://ad_component2.test/"))),
+      true);
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdComponentBid(
+          GURL("https://ad_component4.test/"))),
+      true);
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, mojom::BidderWorkletBid::New(
+                auction_worklet::mojom::BidRole::kEnforcedKAnon, "\"ad\"", 5,
+                /*bid_currency=*/std::nullopt,
+                /*ad_cost=*/std::nullopt,
+                blink::AdDescriptor(GURL("https://response.test/")),
+                /*ad_component_descriptors=*/
+                std::vector<blink::AdDescriptor>{
+                    blink::AdDescriptor(GURL("https://ad_component2.test/")),
+                    blink::AdDescriptor(GURL("https://ad_component4.test/"))},
+                /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  ASSERT_EQ(2u, bids_.size());
+  bids_[1]->bid_duration = base::TimeDelta();
+  EXPECT_TRUE(bids_[1]->Equals(*non_k_anon_bid));
+
+  // Authorizing 1 as well makes the bid suitable for both auctions.
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(
+          blink::KAnonKeyForAdComponentBid(GURL("https://ad_component.test/"))),
+      true);
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, mojom::BidderWorkletBid::New(
+                auction_worklet::mojom::BidRole::kBothKAnonModes, "\"ad\"", 5,
+                /*bid_currency=*/std::nullopt,
+                /*ad_cost=*/std::nullopt,
+                blink::AdDescriptor(GURL("https://response.test/")),
+                /*ad_component_descriptors=*/
+                std::vector<blink::AdDescriptor>{
+                    blink::AdDescriptor(GURL("https://ad_component.test/")),
+                    blink::AdDescriptor(GURL("https://ad_component2.test/"))},
+                /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  EXPECT_EQ(1u, bids_.size());
+}
+
+TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
+  const char kBid[] = R"({
+    ad: "ad",
+    bid: 5,
+    render: "https://response.test/",
+    targetNumAdComponents: 2,
+    numMandatoryAdComponents: 1,
+    adComponents: [
+      "https://ad_component.test",
+      "https://ad_component2.test",
+      {url: "https://ad_component3.test", requiredComponent: true},
+      "https://ad_component4.test",
+    ]
+  })";
+
+  auto non_k_anon_bid = mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*ad_component_descriptors=*/
+      std::vector<blink::AdDescriptor>{
+          blink::AdDescriptor(GURL("https://ad_component.test/")),
+          blink::AdDescriptor(GURL("https://ad_component2.test/"))},
+      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component2.test/"), /*metadata=*/std::nullopt);
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component3.test/"), /*metadata=*/std::nullopt);
+  interest_group_ad_components_->emplace_back(
+      GURL("https://ad_component4.test/"), /*metadata=*/std::nullopt);
+
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
+
+  // With no k-anon enforcement, the requested 2 component ads are just the
+  // first two component ads.
+  RunGenerateBidWithReturnValueExpectingResult(kBid, non_k_anon_bid->Clone());
+  EXPECT_EQ(1u, bids_.size());
+
+  // Turn on enforcement, but don't authorize anything. This is still going to
+  // be a non-k-anon bid only; there will be an error-message from a failed
+  // re-run, though.
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, non_k_anon_bid->Clone(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid render URL "
+       "'https://response.test/' isn't one of the registered creative URLs."});
+  EXPECT_EQ(1u, bids_.size());
+
+  // Just authorizing the main bid still produces the same effect, but the
+  // reason for re-run failure is different.
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdBid(
+          url::Origin::Create(interest_group_bidding_url_),
+          interest_group_bidding_url_, GURL("https://response.test/"))),
+      true);
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, non_k_anon_bid->Clone(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents URL "
+       "'https://ad_component.test/' isn't one of the registered creative "
+       "URLs."});
+  EXPECT_EQ(1u, bids_.size());
+
+  // Authorizing ad components 3 and 4 isn't enough since absence of 1 prevents
+  // it from being accepted.
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdComponentBid(
+          GURL("https://ad_component3.test/"))),
+      true);
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdComponentBid(
+          GURL("https://ad_component4.test/"))),
+      true);
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, non_k_anon_bid->Clone(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid adComponents URL "
+       "'https://ad_component.test/' isn't one of the registered creative "
+       "URLs."});
+  EXPECT_EQ(1u, bids_.size());
+
+  // Now authorize 1 as well. Should get 1 and 3 as k-anon bid.
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(
+          blink::KAnonKeyForAdComponentBid(GURL("https://ad_component.test/"))),
+      true);
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, mojom::BidderWorkletBid::New(
+                auction_worklet::mojom::BidRole::kEnforcedKAnon, "\"ad\"", 5,
+                /*bid_currency=*/std::nullopt,
+                /*ad_cost=*/std::nullopt,
+                blink::AdDescriptor(GURL("https://response.test/")),
+                /*ad_component_descriptors=*/
+                std::vector<blink::AdDescriptor>{
+                    blink::AdDescriptor(GURL("https://ad_component.test/")),
+                    blink::AdDescriptor(GURL("https://ad_component3.test/"))},
+                /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  ASSERT_EQ(2u, bids_.size());
+  bids_[1]->bid_duration = base::TimeDelta();
+  EXPECT_TRUE(bids_[1]->Equals(*non_k_anon_bid));
+
+  // Authorizing 2 as well makes the bid suitable for both auctions.
+  kanon_keys_.emplace(
+      auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdComponentBid(
+          GURL("https://ad_component2.test/"))),
+      true);
+  RunGenerateBidWithReturnValueExpectingResult(
+      kBid, mojom::BidderWorkletBid::New(
+                auction_worklet::mojom::BidRole::kBothKAnonModes, "\"ad\"", 5,
+                /*bid_currency=*/std::nullopt,
+                /*ad_cost=*/std::nullopt,
+                blink::AdDescriptor(GURL("https://response.test/")),
+                /*ad_component_descriptors=*/
+                std::vector<blink::AdDescriptor>{
+                    blink::AdDescriptor(GURL("https://ad_component.test/")),
+                    blink::AdDescriptor(GURL("https://ad_component2.test/"))},
+                /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  EXPECT_EQ(1u, bids_.size());
 }
 
 TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
@@ -9765,25 +10267,33 @@ TEST_F(BidderWorkletTest, IsKAnonResult) {
 
   // k-anon ad URL.
   bid->ad_descriptor.url = kUrl1;
-  EXPECT_TRUE(
-      BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(params.get(),
+                                           interest_group_bidding_url_, bid));
 
   // k-anon ad URL and component.
   bid->ad_component_descriptors.emplace();
   bid->ad_component_descriptors->emplace_back(kUrl2);
-  EXPECT_TRUE(
-      BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(params.get(),
+                                           interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsComponentAdKAnon(
+      params.get(), bid->ad_component_descriptors.value()[0]));
 
   // Non k-anon ad URL, k-anon component.
   bid->ad_descriptor.url = kUrl4;
-  EXPECT_FALSE(
-      BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
+  EXPECT_FALSE(BidderWorklet::IsMainAdKAnon(params.get(),
+                                            interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsComponentAdKAnon(
+      params.get(), bid->ad_component_descriptors.value()[0]));
 
   // k-anon ad URL, one of the components non-k-anon.
   bid->ad_descriptor.url = kUrl1;
   bid->ad_component_descriptors->emplace_back(kUrl3);
-  EXPECT_FALSE(
-      BidderWorklet::IsKAnon(params.get(), interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsMainAdKAnon(params.get(),
+                                           interest_group_bidding_url_, bid));
+  EXPECT_TRUE(BidderWorklet::IsComponentAdKAnon(
+      params.get(), bid->ad_component_descriptors.value()[0]));
+  EXPECT_FALSE(BidderWorklet::IsComponentAdKAnon(
+      params.get(), bid->ad_component_descriptors.value()[1]));
 }
 
 // Test of handling of FinalizeGenerateBid that comes in after the trusted
