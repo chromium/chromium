@@ -116,10 +116,33 @@ class GraphBuilder final {
   OperatorOffset SerializeCastOperation(uint64_t input_operand_id,
                                         uint64_t output_operand_id);
 
+  // This function is called by `SerializeTranspose` to serialize WebNN
+  // transpose operator or used to insert a tempary operator to transpose
+  // different layout.
+  OperatorOffset SerializeTransposeOperation(
+      int32_t input_tensor_index,
+      int32_t output_tensor_index,
+      base::span<const uint32_t> permutation);
+
+  // Insert a tempary pad operation if the `paddings` can't be converted to
+  // tflite padding mode.
+  base::expected<int32_t, std::string> InsertPadOperation(
+      const mojom::Operand& input_operand,
+      int32_t input_tensor_index,
+      base::span<const uint32_t> paddings);
+
+  // Insert a tempary transpose operation for input operand with calling
+  // `SerializeTransposeOperation`.
+  int32_t InsertTransposeOperation(const mojom::Operand& input_operand,
+                                   int32_t input_tensor_index,
+                                   base::span<const uint32_t> permutation);
+
   // Serialize functions for members of the mojom::Operation union. Keep these
   // functions in the same order as in webnn_graph.mojom.
   base::expected<OperatorOffset, std::string> SerializeClamp(
       const mojom::Clamp& clamp);
+  base::expected<OperatorOffset, std::string> SerializeConv2d(
+      const mojom::Conv2d& conv2d);
   OperatorOffset SerializeConcat(const mojom::Concat& concat);
   base::expected<OperatorOffset, std::string> SerializeElementWiseBinary(
       const mojom::ElementWiseBinary& op);

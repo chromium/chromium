@@ -108,6 +108,133 @@ base::expected<ClampRange, std::string> GetClampRange(
       "The range of clamp is not supported in tflite schema.");
 }
 
+struct PaddingSizes {
+  uint32_t begin;
+  uint32_t end;
+};
+
+// Helper to calculate the explicit padding for tflite::Padding_SAME mode with
+// https://www.tensorflow.org/versions/r2.14/api_docs/python/tf/nn#notes_on_padding_2.
+std::optional<PaddingSizes> CalculateExplicitPaddingForSamePaddingMode(
+    uint32_t input_size,
+    uint32_t filter_size,
+    uint32_t stride,
+    uint32_t dilation) {
+  auto checked_output_size =
+      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
+  auto checked_dilated_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  auto checked_needed_input_size =
+      (checked_output_size - 1) * stride + checked_dilated_filter_size;
+  if (!checked_needed_input_size.IsValid()) {
+    return std::nullopt;
+  }
+  auto checked_total_padding =
+      checked_needed_input_size.ValueOrDie() > input_size
+          ? checked_needed_input_size - input_size
+          : base::MakeCheckedNum<uint32_t>(0);
+  // Same upper padding.
+  auto checked_padding_begin = checked_total_padding / 2;
+  auto checked_padding_end = (checked_total_padding + 1) / 2;
+  uint32_t padding_begin, padding_end;
+  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
+      !checked_padding_end.AssignIfValid(&padding_end)) {
+    return std::nullopt;
+  }
+  return PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+struct TfLitePadding {
+  ::tflite::Padding mode;
+  // The explicit paddings are used to create TfLite Pad operator.
+  std::optional<std::array<uint32_t, 4>> paddings;
+};
+
+// Helper to get tflite padding mode for convolution 2d or pooling 2d.
+base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
+    const mojom::Padding2d& padding2d,
+    const webnn::Size2d<uint32_t>& input,
+    const webnn::Size2d<uint32_t>& filter,
+    const mojom::Size2d& stride,
+    const mojom::Size2d& dilation) {
+  // WebNN explicit padding is in [beginning_height, ending_height,
+  // beginning_width, ending_width] sequence.
+  std::array<uint32_t, 4> explicit_padding = {
+      padding2d.beginning->height, padding2d.ending->height,
+      padding2d.beginning->width, padding2d.ending->width};
+  std::array<uint32_t, 4> no_padding = {0, 0, 0, 0};
+  if (explicit_padding == no_padding) {
+    return TfLitePadding{.mode = ::tflite::Padding_VALID};
+  }
+
+  // Convert the explicit padding to tflite same padding mode, The TFLite PAD
+  // operator need to be inserted if the calculated padding are not the same as
+  // explicit padding.
+  const auto padding_height = CalculateExplicitPaddingForSamePaddingMode(
+      input.height, filter.height, stride.height, dilation.height);
+  const auto padding_width = CalculateExplicitPaddingForSamePaddingMode(
+      input.width, filter.width, stride.width, dilation.width);
+  if (!padding_height || !padding_width) {
+    return base::unexpected("Failed to calculate explicit padding.");
+  }
+  std::array<uint32_t, 4> upper_padding = {
+      padding_height->begin, padding_height->end, padding_width->begin,
+      padding_width->end};
+  if (explicit_padding == upper_padding) {
+    return TfLitePadding{.mode = ::tflite::Padding_SAME};
+  }
+
+  // The explicit padding are used to insert a TfLite PAD operator.
+  return TfLitePadding{.mode = ::tflite::Padding_VALID,
+                       .paddings = explicit_padding};
+}
+
+base::expected<::tflite::ActivationFunctionType, std::string>
+GetActivationTypeForClamp(const mojom::Clamp& clamp) {
+  const auto range_result = GetClampRange(clamp);
+  RETURN_IF_ERROR(range_result);
+  switch (range_result.value()) {
+    case ClampRange::kRelu:
+      return ::tflite::ActivationFunctionType_RELU;
+    case ClampRange::kRelu1:
+      return ::tflite::ActivationFunctionType_RELU_N1_TO_1;
+    case ClampRange::kRelu6:
+      return ::tflite::ActivationFunctionType_RELU6;
+  }
+}
+
+base::expected<::tflite::ActivationFunctionType, std::string>
+GetActivationFunctionType(const mojom::Activation& activation) {
+  switch (activation.which()) {
+    case mojom::Activation::Tag::kClamp: {
+      const auto activation_result =
+          GetActivationTypeForClamp(*activation.get_clamp());
+      RETURN_IF_ERROR(activation_result);
+      return activation_result.value();
+    }
+    case mojom::Activation::Tag::kRelu:
+      return ::tflite::ActivationFunctionType_RELU;
+    case mojom::Activation::Tag::kElu:
+      return base::unexpected("Elu activation is not supported.");
+    case mojom::Activation::Tag::kHardSigmoid:
+      return base::unexpected("HardSigmoid activation is not supported.");
+    case mojom::Activation::Tag::kLeakyRelu:
+      return base::unexpected("LeakyRelu activation is not supported.");
+    case mojom::Activation::Tag::kLinear:
+      return base::unexpected("Linear activation is not supported.");
+    case mojom::Activation::Tag::kSigmoid:
+      return base::unexpected("Sigmoid activation is not supported.");
+    case mojom::Activation::Tag::kSoftmax:
+      return base::unexpected("Softmax activation is not supported.");
+    case mojom::Activation::Tag::kSoftplus:
+      return base::unexpected("Softplus activation is not supported.");
+    case mojom::Activation::Tag::kSoftsign:
+      return base::unexpected("Softsign activation is not supported.");
+    case mojom::Activation::Tag::kTanh:
+      return base::unexpected("Tanh activation is not supported.");
+  }
+}
+
 }  // namespace
 
 // static
@@ -180,6 +307,12 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = clamp_result.value();
       break;
     }
+    case mojom::Operation::Tag::kConv2d: {
+      const auto conv2d_result = SerializeConv2d(*op.get_conv2d());
+      RETURN_IF_ERROR(conv2d_result);
+      operator_offset = conv2d_result.value();
+      break;
+    }
     case mojom::Operation::Tag::kConcat:
       operator_offset = SerializeConcat(*op.get_concat());
       break;
@@ -237,8 +370,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("argMinMax is not implemented");
     case mojom::Operation::Tag::kBatchNormalization:
       return base::unexpected("batchNormalization is not implemented");
-    case mojom::Operation::Tag::kConv2d:
-      return base::unexpected("conv2d is not implemented");
     case mojom::Operation::Tag::kExpand:
       return base::unexpected("expand is not implemented");
     case mojom::Operation::Tag::kGather:
@@ -415,6 +546,122 @@ auto GraphBuilder::SerializeCastOperation(uint64_t input_operand_id,
       ::tflite::BuiltinOptions_CastOptions, cast_options.Union());
 }
 
+auto GraphBuilder::SerializeTransposeOperation(
+    int32_t input_tensor_index,
+    int32_t output_tensor_index,
+    base::span<const uint32_t> permutation) -> OperatorOffset {
+  const std::array<int32_t, 1> permutation_shape = {
+      base::checked_cast<int32_t>(permutation.size())};
+  const int32_t permutation_tensor_index =
+      SerializeTensorWithBuffer<uint32_t>(permutation, permutation_shape);
+
+  const auto operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_TRANSPOSE);
+  const std::array<int32_t, 2> op_inputs = {input_tensor_index,
+                                            permutation_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
+}
+
+auto GraphBuilder::InsertPadOperation(const mojom::Operand& input_operand,
+                                      int32_t input_tensor_index,
+                                      base::span<const uint32_t> paddings)
+    -> base::expected<int32_t, std::string> {
+  // WebNN explicit padding is in [beginning_height, ending_height,
+  // beginning_width, ending_width] sequence.
+  const auto padding_rank = paddings.size();
+  CHECK_EQ(padding_rank, 4u);
+
+  // TfLite padding is an integer tensor array filled with pre and post padding.
+  // For NHWC input layout, the sequence will be [[0, 0], [beginning_height,
+  // ending_height], [beginning_width, ending_width], [0, 0]].
+  std::array<uint32_t, 8> tflite_paddings;
+  base::ranges::copy(paddings, tflite_paddings.begin() + 2);
+
+  // The shape of padding is [n, 2], where n is the rank of input as described
+  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
+  std::array<int32_t, 2> paddings_shape = {
+      base::checked_cast<int32_t>(padding_rank), 2};
+  const int32_t padding_tensor_index = SerializeTensorWithBuffer<uint32_t>(
+      std::move(tflite_paddings), std::move(paddings_shape));
+
+  // Create `tflite::Tensor` for the output operand of explicit padding operator
+  // with the dimensions and data type.
+  const std::vector<uint32_t>& input_shape = input_operand.dimensions;
+  CHECK_EQ(input_shape.size(), 4u);
+  std::vector<int32_t> output_shape;
+  output_shape.reserve(padding_rank);
+  for (size_t i = 0; i < padding_rank; ++i) {
+    auto checked_dimension = base::MakeCheckedNum<int32_t>(input_shape[i]);
+    // Calculate output height with padding beginning and ending height.
+    if (i == 1) {
+      checked_dimension +=
+          base::MakeCheckedNum<int32_t>(paddings[0]) + paddings[1];
+    } else if (i == 2) {
+      // Calculate output width with padding beginning and ending width.
+      checked_dimension +=
+          base::MakeCheckedNum<int32_t>(paddings[2]) + paddings[3];
+    }
+    if (!checked_dimension.IsValid()) {
+      return base::unexpected("The input dimension or padding is too large.");
+    }
+    output_shape.push_back(checked_dimension.ValueOrDie());
+  }
+
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  const int32_t output_tensor_index =
+      base::checked_cast<int32_t>(tensors_.size());
+  tensors_.emplace_back(::tflite::CreateTensor(
+      builder_, builder_.CreateVector<int32_t>(output_shape),
+      input_tensor_type));
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_PAD);
+  std::array<int32_t, 2> op_inputs = {input_tensor_index, padding_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  operators_.emplace_back(::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs)));
+
+  return output_tensor_index;
+}
+
+int32_t GraphBuilder::InsertTransposeOperation(
+    const mojom::Operand& input_operand,
+    int32_t input_tensor_index,
+    base::span<const uint32_t> permutation) {
+  // Create `tflite::Tensor` for the output operand of Transpose operator with
+  // the dimensions and tensor data type.
+  const std::vector<uint32_t>& input_shape = input_operand.dimensions;
+  const size_t input_rank = input_shape.size();
+  CHECK_EQ(permutation.size(), input_rank);
+  std::vector<int32_t> output_shape;
+  output_shape.reserve(input_rank);
+  for (size_t i = 0; i < input_rank; ++i) {
+    // The input shape has been validated the overflow before creating tensor.
+    output_shape.push_back(
+        base::checked_cast<int32_t>(input_shape[permutation[i]]));
+  }
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  const int32_t output_tensor_index =
+      base::checked_cast<int32_t>(tensors_.size());
+  tensors_.emplace_back(::tflite::CreateTensor(
+      builder_, builder_.CreateVector<int32_t>(output_shape),
+      input_tensor_type));
+
+  operators_.emplace_back(SerializeTransposeOperation(
+      input_tensor_index, output_tensor_index, permutation));
+
+  return output_tensor_index;
+}
+
 auto GraphBuilder::SerializeClamp(const mojom::Clamp& clamp)
     -> base::expected<OperatorOffset, std::string> {
   const auto range_result = GetClampRange(clamp);
@@ -462,6 +709,139 @@ auto GraphBuilder::SerializeConcat(const mojom::Concat& concat)
       builder_, operator_code_index, operator_inputs_index,
       builder_.CreateVector<int32_t>(operator_outputs),
       ::tflite::BuiltinOptions_ConcatenationOptions, concat_options.Union());
+}
+
+auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
+    -> base::expected<OperatorOffset, std::string> {
+  if (conv2d.type != mojom::Conv2d::Type::kDirect) {
+    return base::unexpected("convTranspose2d is not implemented.");
+  }
+  // TODO(crbug.com/327941466): Transpose input operand to support other layouts
+  // because tflite only support nhwc layout.
+  if (conv2d.input_layout != mojom::InputOperandLayout::kChannelsLast) {
+    return base::unexpected("The channel first input layout is not supported.");
+  }
+
+  const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
+  const auto& input_shape = input_operand.dimensions;
+  CHECK_EQ(input_shape.size(), 4u);
+  const uint32_t input_channels = input_shape[3];
+  const mojom::Operand& output_operand = GetOperand(conv2d.output_operand_id);
+  const auto& output_shape = output_operand.dimensions;
+  CHECK_EQ(output_shape.size(), 4u);
+  const uint32_t output_channels = output_shape[3];
+  const bool depthwise =
+      webnn::IsDepthwiseConv2d(input_channels, output_channels, conv2d.groups);
+
+  int32_t filter_index = operand_to_index_map_.at(conv2d.filter_operand_id);
+  const mojom::Operand& filter_operand = GetOperand(conv2d.filter_operand_id);
+  CHECK_EQ(filter_operand.dimensions.size(), 4u);
+  if (!depthwise) {
+    // For regular conv2d, NHWC input layout expects weights layout in ohwi that
+    // is [output_channels, height, width, input_channels], but the mojo
+    // definition only supports oihw [output_channels, input_channels, height,
+    // width] filter layout at current stage, so the Transpose tflite operator
+    // need to be used for converting oihw to ohwi filter layout.
+    //
+    // TODO(crbug.com/327969294): support ohwi filter layout in mojo definition.
+    const std::array<uint32_t, 4> oihw_to_ohwi_permutation = {0, 2, 3, 1};
+    filter_index = InsertTransposeOperation(filter_operand, filter_index,
+                                            oihw_to_ohwi_permutation);
+  } else {
+    // For depthwise conv2d, NHWC input layout expects weights layout in ihwo
+    // that is [1, kernel_height, kernel_width, input_channels *
+    // depth_multiplier], so the Transpose tflite operator need to be used for
+    // converting oihw to ihwo filter layout.
+    //
+    // TODO(crbug.com/327969294): support ihwo filter layout in mojo definition.
+    const std::array<uint32_t, 4> oihw_to_ihwo_permutation = {1, 2, 3, 0};
+    filter_index = InsertTransposeOperation(filter_operand, filter_index,
+                                            oihw_to_ihwo_permutation);
+  }
+
+  // Validate activation operator that is partial supported in tflite schema and
+  // convert to tflite function type.
+  ::tflite::ActivationFunctionType activation =
+      ::tflite::ActivationFunctionType_NONE;
+  if (conv2d.activation) {
+    const auto activation_result =
+        GetActivationFunctionType(*conv2d.activation);
+    RETURN_IF_ERROR(activation_result);
+    activation = activation_result.value();
+  }
+
+  // Get tflite padding mode with the size2d of input, filter, dilation.
+  const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
+                                                .width = input_shape[2]};
+  const auto& filter_shape = filter_operand.dimensions;
+  CHECK_EQ(filter_shape.size(), 4u);
+  const webnn::Size2d<uint32_t> filter_size2d = {.height = filter_shape[2],
+                                                 .width = filter_shape[3]};
+  const auto padding_mode =
+      GetTfLitePaddingMode(*conv2d.padding, input_size2d, filter_size2d,
+                           *conv2d.strides, *conv2d.dilations);
+  RETURN_IF_ERROR(padding_mode);
+  const int32_t input_index = operand_to_index_map_.at(conv2d.input_operand_id);
+  // Insert a Pad operator before TfLite Conv2d if needed for explicit padding.
+  std::optional<int32_t> explicit_pad_index;
+  if (padding_mode->paddings) {
+    const auto serialization_result = InsertPadOperation(
+        input_operand, input_index, padding_mode->paddings.value());
+    RETURN_IF_ERROR(serialization_result);
+    explicit_pad_index = serialization_result.value();
+  }
+
+  ::tflite::BuiltinOperator operator_kind;
+  ::tflite::BuiltinOptions builtin_options_type;
+  flatbuffers::Offset<void> builtin_options;
+  if (depthwise) {
+    const uint32_t depth_multiplier = 1;
+    operator_kind = ::tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
+    builtin_options = ::tflite::CreateDepthwiseConv2DOptions(
+                          builder_, padding_mode->mode, conv2d.strides->width,
+                          conv2d.strides->height, depth_multiplier, activation,
+                          conv2d.dilations->width, conv2d.dilations->height)
+                          .Union();
+    builtin_options_type = ::tflite::BuiltinOptions_DepthwiseConv2DOptions;
+  } else {
+    operator_kind = ::tflite::BuiltinOperator_CONV_2D;
+    builtin_options = ::tflite::CreateConv2DOptions(
+                          builder_, padding_mode->mode, conv2d.strides->width,
+                          conv2d.strides->height, activation,
+                          conv2d.dilations->width, conv2d.dilations->height)
+                          .Union();
+    builtin_options_type = ::tflite::BuiltinOptions_Conv2DOptions;
+  }
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index = GetOperatorCodeIndex(operator_kind);
+  // If there is no bias operand, serialize a empty buffer with the size of
+  // output channel.
+  int32_t bias_index;
+  if (conv2d.bias_operand_id) {
+    bias_index = operand_to_index_map_.at(conv2d.bias_operand_id.value());
+  } else {
+    // TODO(crbug.com/328733319): Support other tensor data type.
+    if (input_operand.data_type != mojom::Operand::DataType::kFloat32) {
+      return base::unexpected("The data type of input is not supported.");
+    }
+    const std::array<int32_t, 1> bias_shape = {
+        base::checked_cast<int32_t>(output_channels)};
+    bias_index = SerializeTensorWithBuffer<float>(
+        std::vector<float>(output_channels), std::move(bias_shape));
+  }
+
+  const std::array<int32_t, 3> op_inputs = {
+      explicit_pad_index ? explicit_pad_index.value() : input_index,
+      filter_index, bias_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(conv2d.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs),
+                                  builtin_options_type, builtin_options);
 }
 
 auto GraphBuilder::SerializeElementWiseBinary(
@@ -712,21 +1092,10 @@ auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
 
 auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
     -> OperatorOffset {
-  const std::array<int32_t, 1> permutation_shape = {
-      base::checked_cast<int32_t>(transpose.permutation.size())};
-  const int32_t permutation_tensor_index = SerializeTensorWithBuffer<uint32_t>(
-      transpose.permutation, permutation_shape);
-
-  const uint32_t operator_code_index =
-      GetOperatorCodeIndex(::tflite::BuiltinOperator_TRANSPOSE);
-  const std::array<int32_t, 2> op_inputs = {
+  return SerializeTransposeOperation(
       operand_to_index_map_.at(transpose.input_operand_id),
-      permutation_tensor_index};
-  const std::array<int32_t, 1> op_outputs = {
-      operand_to_index_map_.at(transpose.output_operand_id)};
-  return ::tflite::CreateOperator(builder_, operator_code_index,
-                                  builder_.CreateVector<int32_t>(op_inputs),
-                                  builder_.CreateVector<int32_t>(op_outputs));
+      operand_to_index_map_.at(transpose.output_operand_id),
+      transpose.permutation);
 }
 
 }  // namespace webnn::tflite

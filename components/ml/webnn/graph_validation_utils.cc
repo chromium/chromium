@@ -1903,4 +1903,10 @@ bool IsFloatingPointType(Operand::DataType data_type) {
   return DataTypeConstraint::kFloat.Has(data_type);
 }
 
+bool IsDepthwiseConv2d(uint32_t input_channels,
+                       uint32_t output_channels,
+                       uint32_t groups) {
+  return groups == input_channels && groups == output_channels && groups != 1;
+}
+
 }  // namespace webnn

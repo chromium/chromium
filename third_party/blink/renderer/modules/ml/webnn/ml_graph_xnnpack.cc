@@ -678,7 +678,8 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
     DCHECK(output);
     output_channels = output->Dimensions()[3];
 
-    depthwise = IsDepthwiseConv2d(input_channels, output_channels, groups);
+    depthwise =
+        webnn::IsDepthwiseConv2d(input_channels, output_channels, groups);
     auto validation_result = ValidateFilterLayout(
         depthwise, options->inputLayout(), options->filterLayout());
     if (!validation_result.has_value()) {

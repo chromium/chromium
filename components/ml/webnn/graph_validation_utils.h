@@ -583,6 +583,13 @@ base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
 
 bool IsFloatingPointType(Operand::DataType data_type);
 
+// A depthwise conv2d operation is a variant of grouped convolution where the
+// options.groups == input_channels == output_channels according to WebNN conv2d
+// spec: https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d.
+bool IsDepthwiseConv2d(uint32_t input_channels,
+                       uint32_t output_channels,
+                       uint32_t groups);
+
 }  // namespace webnn
 
 #endif  // COMPONENTS_ML_WEBNN_GRAPH_VALIDATION_UTILS_H_

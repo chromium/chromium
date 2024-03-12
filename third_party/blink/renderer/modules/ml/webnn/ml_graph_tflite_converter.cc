@@ -397,7 +397,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
   const uint32_t output_channels = output_shape[3];
   const uint32_t groups = base::checked_cast<uint32_t>(options->groups());
   const bool depthwise =
-      IsDepthwiseConv2d(input_channels, output_channels, groups);
+      webnn::IsDepthwiseConv2d(input_channels, output_channels, groups);
 
   // Validate filter layout for nhwc input layout that is being discussed to
   // simplify other variants in WebNN working group

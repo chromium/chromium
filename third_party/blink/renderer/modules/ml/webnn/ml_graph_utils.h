@@ -89,13 +89,6 @@ Vector<uint32_t> CreateAllAxes(const wtf_size_t rank);
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
 Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank);
 
-// A depthwise conv2d operation is a variant of grouped convolution where the
-// options.groups == input_channels == output_channels according to WebNN conv2d
-// spec: https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d.
-bool IsDepthwiseConv2d(uint32_t input_channels,
-                       uint32_t output_channels,
-                       uint32_t groups);
-
 // Helper to validate filer layout for Nhwc input layout.
 base::expected<void, String> ValidateFilterLayout(
     bool depthwise,

@@ -227,12 +227,6 @@ Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank) {
   return default_axes;
 }
 
-bool IsDepthwiseConv2d(uint32_t input_channels,
-                       uint32_t output_channels,
-                       uint32_t groups) {
-  return groups == input_channels && groups == output_channels && groups != 1;
-}
-
 base::expected<void, String> ValidateFilterLayout(
     bool depthwise,
     V8MLInputOperandLayout input_layout,
