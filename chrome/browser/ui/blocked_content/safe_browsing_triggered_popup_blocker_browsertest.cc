@@ -725,8 +725,9 @@ class SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest
 
 // Tests that the console logs for SafeBrowsingTriggeredPopupBlocker are from
 // correct source frames.
+// TODO: crbug.com/329145811 - The test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
-                       ConsoleLogWithSourceFrame) {
+                       DISABLED_ConsoleLogWithSourceFrame) {
   // Load a primary page.
   {
     GURL initial_url(embedded_test_server()->GetURL("/empty.html"));
