@@ -972,7 +972,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
       result.depends_on_block_constraints;
 
   if (!Style().AspectRatio().IsAuto() &&
-      BlockLengthUnresolvable(constraint_space, Style().LogicalHeight())) {
+      initial_block_size == kIndefiniteSize) {
     // If the block size will be computed from the aspect ratio, we need
     // to take the max-block-size into account.
     // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
