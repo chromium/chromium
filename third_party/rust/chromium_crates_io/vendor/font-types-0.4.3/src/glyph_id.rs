@@ -22,6 +22,11 @@ impl GlyphId {
         self.0
     }
 
+    /// The identifier as a u32.
+    pub const fn to_u32(self) -> u32 {
+        self.0 as u32
+    }
+
     pub const fn to_be_bytes(self) -> [u8; 2] {
         self.0.to_be_bytes()
     }

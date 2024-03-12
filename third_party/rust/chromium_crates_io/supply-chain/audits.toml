@@ -391,6 +391,12 @@ https://source.chromium.org/chromium/chromium/src/+/a59c3c448941f92f870d0c18c6d5
 The CL description contains a link to a Google-internal document with audit details.
 """
 
+[[audits.font-types]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.4.2 -> 0.4.3"
+notes = "Reviewed in https://crrev.com/c/5362378. No new use of unsafe."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
