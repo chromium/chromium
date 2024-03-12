@@ -29,6 +29,8 @@
 #include "remoting/protocol/fake_authenticator.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/network_settings.h"
+#include "remoting/protocol/protocol_mock_objects.h"
+#include "remoting/protocol/session_observer.h"
 #include "remoting/protocol/session_plugin.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
@@ -661,6 +663,36 @@ TEST_F(JingleSessionTest, AuthenticatorRejectedAfterAccepted) {
   reject_after_accepted.Notify();
   ASSERT_NE(host_session_->error(), ErrorCode::OK);
   ASSERT_NE(client_session_->error(), ErrorCode::OK);
+}
+
+TEST_F(JingleSessionTest, ObserverIsNotified) {
+  MockSessionObserver observer;
+  const Session* accepted_session = nullptr;
+  EXPECT_CALL(observer, OnSessionStateChange(_, _))
+      .WillRepeatedly([&](const Session& session, Session::State state) {
+        if (state == Session::State::ACCEPTED) {
+          accepted_session = &session;
+        }
+      });
+  FakeAuthenticator::Config auth_config(FakeAuthenticator::ACCEPT);
+
+  CreateSessionManagers(auth_config);
+  auto subscription = host_server_->AddSessionObserver(&observer);
+  InitiateConnection(auth_config, false);
+
+  ASSERT_EQ(accepted_session, host_session_.get());
+}
+
+TEST_F(JingleSessionTest, ObserverIsNotNotifiedAfterSubscriptionIsDestroyed) {
+  MockSessionObserver observer;
+  EXPECT_CALL(observer, OnSessionStateChange(_, _)).Times(0);
+  FakeAuthenticator::Config auth_config(FakeAuthenticator::ACCEPT);
+
+  CreateSessionManagers(auth_config);
+  auto subscription = std::make_unique<SessionObserver::Subscription>(
+      host_server_->AddSessionObserver(&observer));
+  subscription.reset();
+  InitiateConnection(auth_config, false);
 }
 
 }  // namespace remoting::protocol

@@ -45,6 +45,8 @@ class PairingAuthenticatorBase : public Authenticator {
   ~PairingAuthenticatorBase() override;
 
   // Authenticator interface.
+  CredentialsType credentials_type() const override;
+  const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;

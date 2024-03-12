@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/credentials_type.h"
 
 namespace remoting::protocol {
 
@@ -63,6 +64,7 @@ class FakeAuthenticator : public Authenticator {
     Action action = Action::ACCEPT;
     bool async = true;
     raw_ptr<base::RepeatingClosureList> reject_after_accepted;
+    CredentialsType credentials_type = CredentialsType::SHARED_SECRET;
   };
 
   FakeAuthenticator(Type type,
@@ -96,6 +98,8 @@ class FakeAuthenticator : public Authenticator {
   void Resume();
 
   // Authenticator interface.
+  CredentialsType credentials_type() const override;
+  const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;

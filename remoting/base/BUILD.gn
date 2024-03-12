@@ -43,6 +43,8 @@ source_set("base") {
     "compound_buffer.h",
     "constants.cc",
     "constants.h",
+    "corp_auth_util.cc",
+    "corp_auth_util.h",
     "corp_logging_service_client.cc",
     "corp_logging_service_client.h",
     "corp_service_client.cc",

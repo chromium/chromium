@@ -135,6 +135,14 @@ Spake2Authenticator::~Spake2Authenticator() {
   SPAKE2_CTX_free(spake2_context_);
 }
 
+CredentialsType Spake2Authenticator::credentials_type() const {
+  return CredentialsType::SHARED_SECRET;
+}
+
+const Authenticator& Spake2Authenticator::implementing_authenticator() const {
+  return *this;
+}
+
 Authenticator::State Spake2Authenticator::state() const {
   if (state_ == ACCEPTED && !outgoing_verification_hash_.empty()) {
     return MESSAGE_READY;

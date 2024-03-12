@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/fake_authenticator.h"
 #include "remoting/protocol/session_plugin.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -58,7 +59,7 @@ void FakeSession::SetEventHandler(EventHandler* event_handler) {
   event_handler_ = event_handler;
 }
 
-ErrorCode FakeSession::error() {
+ErrorCode FakeSession::error() const {
   return error_;
 }
 
@@ -68,6 +69,10 @@ const std::string& FakeSession::jid() {
 
 const SessionConfig& FakeSession::config() {
   return *config_;
+}
+
+const Authenticator& FakeSession::authenticator() const {
+  return *authenticator_;
 }
 
 void FakeSession::SetTransport(Transport* transport) {

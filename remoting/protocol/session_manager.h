@@ -57,6 +57,7 @@
 
 #include "base/functional/callback.h"
 #include "remoting/protocol/session.h"
+#include "remoting/protocol/session_observer.h"
 
 namespace remoting {
 
@@ -126,6 +127,11 @@ class SessionManager {
   // factory before all authenticators it created are deleted.
   virtual void set_authenticator_factory(
       std::unique_ptr<AuthenticatorFactory> authenticator_factory) = 0;
+
+  // Adds a session observer. Discarding the returned subscription will result
+  // in the removal of the observer.
+  [[nodiscard]] virtual SessionObserver::Subscription AddSessionObserver(
+      SessionObserver* observer) = 0;
 };
 
 }  // namespace protocol

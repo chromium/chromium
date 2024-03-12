@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "remoting/protocol/credentials_type.h"
 
 namespace jingle_xmpp {
 class XmlElement;
@@ -117,6 +118,17 @@ class Authenticator {
 
   Authenticator();
   virtual ~Authenticator();
+
+  // Returns the credentials type of the authenticator.
+  virtual CredentialsType credentials_type() const = 0;
+
+  // Returns the authenticator that implements `credentials_type()`. The
+  // returned value is usually `*this`, but may be an underlying authenticator
+  // if this authenticator is a wrapper (e.g. negotiating) authenticator. Note
+  // that some authenticators may use other authenticators internally, but they
+  // will still return `*this` as long as it implements an credentials type
+  // that is not implemented by the authenticators it use.
+  virtual const Authenticator& implementing_authenticator() const = 0;
 
   // Returns current state of the authenticator.
   virtual State state() const = 0;

@@ -16,6 +16,7 @@
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/session_authz_reauthorizer.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -33,6 +34,7 @@ class SessionAuthzAuthenticator : public Authenticator {
       remoting::kChromotingXmlNamespace, "session-token"};
 
   SessionAuthzAuthenticator(
+      CredentialsType credentials_type,
       std::unique_ptr<SessionAuthzServiceClient> service_client,
       const CreateBaseAuthenticatorCallback&
           create_base_authenticator_callback);
@@ -46,7 +48,13 @@ class SessionAuthzAuthenticator : public Authenticator {
   // state until |resume_callback| is called.
   void Start(base::OnceClosure resume_callback);
 
+  const SessionAuthzReauthorizer* reauthorizer() const {
+    return reauthorizer_.get();
+  }
+
   // Authenticator implementation.
+  CredentialsType credentials_type() const override;
+  const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
@@ -56,6 +64,9 @@ class SessionAuthzAuthenticator : public Authenticator {
   const std::string& GetAuthKey() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
+
+  void SetReauthorizerForTesting(
+      std::unique_ptr<SessionAuthzReauthorizer> reauthorizer);
 
  private:
   enum class SessionAuthzState {
@@ -106,6 +117,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   void StartReauthorizerIfNecessary();
   void OnReauthorizationFailed();
 
+  CredentialsType credentials_type_;
   std::unique_ptr<SessionAuthzServiceClient> service_client_;
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
   std::unique_ptr<Authenticator> underlying_;

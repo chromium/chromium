@@ -15,20 +15,35 @@
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
+#include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/session_authz_reauthorizer.h"
 
 namespace remoting::protocol {
 
 SessionAuthzAuthenticator::SessionAuthzAuthenticator(
+    CredentialsType credentials_type,
     std::unique_ptr<SessionAuthzServiceClient> service_client,
     const CreateBaseAuthenticatorCallback& create_base_authenticator_callback)
-    : service_client_(std::move(service_client)),
-      create_base_authenticator_callback_(create_base_authenticator_callback) {}
+    : credentials_type_(credentials_type),
+      service_client_(std::move(service_client)),
+      create_base_authenticator_callback_(create_base_authenticator_callback) {
+  // CORP_SESSION_AUTHZ is currently the only supported type.
+  DCHECK_EQ(credentials_type, CredentialsType::CORP_SESSION_AUTHZ);
+}
 
 SessionAuthzAuthenticator::~SessionAuthzAuthenticator() = default;
 
 void SessionAuthzAuthenticator::Start(base::OnceClosure resume_callback) {
   GenerateHostToken(std::move(resume_callback));
+}
+
+CredentialsType SessionAuthzAuthenticator::credentials_type() const {
+  return credentials_type_;
+}
+
+const Authenticator& SessionAuthzAuthenticator::implementing_authenticator()
+    const {
+  return *this;
 }
 
 Authenticator::State SessionAuthzAuthenticator::state() const {
@@ -112,6 +127,11 @@ SessionAuthzAuthenticator::CreateChannelAuthenticator() const {
   DCHECK_EQ(state(), ACCEPTED);
 
   return underlying_->CreateChannelAuthenticator();
+}
+
+void SessionAuthzAuthenticator::SetReauthorizerForTesting(
+    std::unique_ptr<SessionAuthzReauthorizer> reauthorizer) {
+  reauthorizer_ = std::move(reauthorizer);
 }
 
 void SessionAuthzAuthenticator::GenerateHostToken(

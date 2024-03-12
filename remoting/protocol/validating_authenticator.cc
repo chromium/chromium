@@ -34,6 +34,15 @@ ValidatingAuthenticator::ValidatingAuthenticator(
 
 ValidatingAuthenticator::~ValidatingAuthenticator() = default;
 
+CredentialsType ValidatingAuthenticator::credentials_type() const {
+  return current_authenticator_->credentials_type();
+}
+
+const Authenticator& ValidatingAuthenticator::implementing_authenticator()
+    const {
+  return current_authenticator_->implementing_authenticator();
+}
+
 Authenticator::State ValidatingAuthenticator::state() const {
   return pending_auth_message_ ? MESSAGE_READY : state_;
 }

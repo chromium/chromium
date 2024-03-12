@@ -17,6 +17,15 @@ RejectingAuthenticator::RejectingAuthenticator(RejectionReason rejection_reason)
 
 RejectingAuthenticator::~RejectingAuthenticator() = default;
 
+CredentialsType RejectingAuthenticator::credentials_type() const {
+  return CredentialsType::UNKNOWN;
+}
+
+const Authenticator& RejectingAuthenticator::implementing_authenticator()
+    const {
+  return *this;
+}
+
 Authenticator::State RejectingAuthenticator::state() const {
   return state_;
 }

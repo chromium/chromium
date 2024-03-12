@@ -43,6 +43,10 @@ class SessionAuthzReauthorizer {
 
   const net::BackoffEntry* GetBackoffEntryForTest() const;
 
+  const std::string& session_reauth_token() const {
+    return session_reauth_token_;
+  }
+
  private:
   void ScheduleNextReauth();
   void Reauthorize();

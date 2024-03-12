@@ -51,9 +51,10 @@ class FakeSession : public Session {
 
   // Session interface.
   void SetEventHandler(EventHandler* event_handler) override;
-  ErrorCode error() override;
+  ErrorCode error() const override;
   const std::string& jid() override;
   const SessionConfig& config() override;
+  const Authenticator& authenticator() const override;
   void SetTransport(Transport* transport) override;
   void Close(ErrorCode error) override;
   void AddPlugin(SessionPlugin* plugin) override;

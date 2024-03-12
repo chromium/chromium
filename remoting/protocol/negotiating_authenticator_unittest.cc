@@ -16,6 +16,7 @@
 #include "remoting/protocol/authenticator_test_base.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/connection_tester.h"
+#include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/negotiating_authenticator_base.h"
 #include "remoting/protocol/negotiating_client_authenticator.h"
@@ -323,6 +324,17 @@ TEST_F(NegotiatingAuthenticatorTest, NotifyStateChangeAfterAccepted) {
             Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED);
   EXPECT_EQ(client_->rejection_reason(),
             Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED);
+}
+
+TEST_F(NegotiatingAuthenticatorTest,
+       ReturnCorrectCredentialsTypeAndImplementingAuthenticator) {
+  InitAuthenticators(kNoClientId, kNoPairedSecret, kTestPin, kTestPin);
+
+  ASSERT_EQ(host_->credentials_type(), CredentialsType::UNKNOWN);
+  ASSERT_EQ(&host_->implementing_authenticator(), host_.get());
+  VerifyAccepted();
+  ASSERT_EQ(host_->credentials_type(), CredentialsType::SHARED_SECRET);
+  ASSERT_NE(&host_->implementing_authenticator(), host_.get());
 }
 
 }  // namespace remoting::protocol

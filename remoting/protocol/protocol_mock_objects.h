@@ -28,6 +28,7 @@
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_manager.h"
+#include "remoting/protocol/session_observer.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_stub.h"
 #include "remoting/signaling/signaling_address.h"
@@ -45,6 +46,11 @@ class MockAuthenticator : public Authenticator {
 
   ~MockAuthenticator() override;
 
+  MOCK_METHOD(CredentialsType, credentials_type, (), (const, override));
+  MOCK_METHOD(const Authenticator&,
+              implementing_authenticator,
+              (),
+              (const, override));
   MOCK_CONST_METHOD0(state, Authenticator::State());
   MOCK_CONST_METHOD0(started, bool());
   MOCK_CONST_METHOD0(rejection_reason, Authenticator::RejectionReason());
@@ -217,10 +223,11 @@ class MockSession : public Session {
   ~MockSession() override;
 
   MOCK_METHOD1(SetEventHandler, void(Session::EventHandler* event_handler));
-  MOCK_METHOD0(error, ErrorCode());
+  MOCK_METHOD(ErrorCode, error, (), (const, override));
   MOCK_METHOD1(SetTransport, void(Transport*));
   MOCK_METHOD0(jid, const std::string&());
   MOCK_METHOD0(config, const SessionConfig&());
+  MOCK_METHOD(const Authenticator&, authenticator, (), (const, override));
   MOCK_METHOD1(Close, void(ErrorCode error));
   MOCK_METHOD1(AddPlugin, void(SessionPlugin* plugin));
 };
@@ -243,6 +250,9 @@ class MockSessionManager : public SessionManager {
   MOCK_METHOD0(Close, void());
   MOCK_METHOD1(set_authenticator_factory_ptr,
                void(AuthenticatorFactory* factory));
+  MOCK_METHOD(SessionObserver::Subscription,
+              AddSessionObserver,
+              (SessionObserver * observer));
   std::unique_ptr<Session> Connect(
       const SignalingAddress& peer_address,
       std::unique_ptr<Authenticator> authenticator) override {
@@ -252,6 +262,17 @@ class MockSessionManager : public SessionManager {
       std::unique_ptr<AuthenticatorFactory> authenticator_factory) override {
     set_authenticator_factory_ptr(authenticator_factory.release());
   }
+};
+
+class MockSessionObserver : public SessionObserver {
+ public:
+  MockSessionObserver();
+  ~MockSessionObserver() override;
+
+  MockSessionObserver(const MockSessionObserver&) = delete;
+  MockSessionObserver& operator=(const MockSessionObserver&) = delete;
+
+  MOCK_METHOD(void, OnSessionStateChange, (const Session&, Session::State));
 };
 
 // Simple delegate that caches information on paired clients in memory.

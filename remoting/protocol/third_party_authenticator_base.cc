@@ -31,6 +31,15 @@ ThirdPartyAuthenticatorBase::ThirdPartyAuthenticatorBase(
 
 ThirdPartyAuthenticatorBase::~ThirdPartyAuthenticatorBase() = default;
 
+CredentialsType ThirdPartyAuthenticatorBase::credentials_type() const {
+  return CredentialsType::THIRD_PARTY;
+}
+
+const Authenticator& ThirdPartyAuthenticatorBase::implementing_authenticator()
+    const {
+  return *this;
+}
+
 bool ThirdPartyAuthenticatorBase::started() const {
   return started_;
 }

@@ -24,6 +24,7 @@
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/session_config.h"
+#include "remoting/protocol/session_observer.h"
 #include "remoting/protocol/session_plugin.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/signaling/iq_sender.h"
@@ -214,7 +215,7 @@ void JingleSession::SetEventHandler(Session::EventHandler* event_handler) {
   event_handler_ = event_handler;
 }
 
-ErrorCode JingleSession::error() {
+ErrorCode JingleSession::error() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return error_;
 }
@@ -341,6 +342,11 @@ const std::string& JingleSession::jid() {
 const SessionConfig& JingleSession::config() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return *config_;
+}
+
+const Authenticator& JingleSession::authenticator() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return *authenticator_;
 }
 
 void JingleSession::SetTransport(Transport* transport) {
@@ -800,6 +806,11 @@ void JingleSession::SetState(State new_state) {
     DCHECK_NE(state_, FAILED);
 
     state_ = new_state;
+    // Observers must be called before the event handler, since the event
+    // handler may destroy the session.
+    for (SessionObserver& observer : session_manager_->observers_) {
+      observer.OnSessionStateChange(*this, new_state);
+    }
     if (event_handler_) {
       event_handler_->OnSessionStateChange(new_state);
     }

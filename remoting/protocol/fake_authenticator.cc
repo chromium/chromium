@@ -122,6 +122,14 @@ void FakeAuthenticator::Resume() {
   std::move(resume_closure_).Run();
 }
 
+CredentialsType FakeAuthenticator::credentials_type() const {
+  return config_.credentials_type;
+}
+
+const Authenticator& FakeAuthenticator::implementing_authenticator() const {
+  return *this;
+}
+
 Authenticator::State FakeAuthenticator::state() const {
   EXPECT_LE(messages_, config_.round_trips * 2);
 

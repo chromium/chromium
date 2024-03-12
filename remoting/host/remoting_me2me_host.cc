@@ -70,6 +70,7 @@
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/config_watcher.h"
+#include "remoting/host/corp_host_status_logger.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_connector.h"
@@ -474,6 +475,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::unique_ptr<HostUTMPLogger> host_utmp_logger_;
 #endif
   std::unique_ptr<HostPowerSaveBlocker> power_save_blocker_;
+
+  // Only set if |is_googler_| is true.
+  std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
 
@@ -1872,6 +1876,10 @@ void HostProcess::StartHost() {
     // externally, we don't want to apply this policy for non-Googlers.
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
+    corp_host_status_logger_ = std::make_unique<CorpHostStatusLogger>(
+        context_->url_loader_factory(), service_account_email_,
+        oauth_refresh_token_);
+    corp_host_status_logger_->StartObserving(*session_manager);
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -2002,6 +2010,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
   host_event_logger_.reset();
   host_status_logger_.reset();
   power_save_blocker_.reset();
+  corp_host_status_logger_.reset();
   ftl_host_change_notification_listener_.reset();
 
   // Before shutting down HostSignalingManager, send the |host_offline_reason|

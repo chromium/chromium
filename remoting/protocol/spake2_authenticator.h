@@ -46,6 +46,8 @@ class Spake2Authenticator : public Authenticator {
   ~Spake2Authenticator() override;
 
   // Authenticator interface.
+  CredentialsType credentials_type() const override;
+  const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;

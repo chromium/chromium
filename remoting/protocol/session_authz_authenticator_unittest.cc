@@ -26,6 +26,7 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/authenticator_test_base.h"
 #include "remoting/protocol/connection_tester.h"
+#include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/spake2_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,6 +75,8 @@ class FakeClientAuthenticator : public Authenticator {
   ~FakeClientAuthenticator() override;
 
   // Authenticator implementation.
+  CredentialsType credentials_type() const override;
+  const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
@@ -109,6 +112,15 @@ class FakeClientAuthenticator : public Authenticator {
   base::OnceClosure resume_callback_;
   bool underlying_authenticator_message_suppressed_ = false;
 };
+
+CredentialsType FakeClientAuthenticator::credentials_type() const {
+  return CredentialsType::CORP_SESSION_AUTHZ;
+}
+
+const Authenticator& FakeClientAuthenticator::implementing_authenticator()
+    const {
+  return *this;
+}
 
 Authenticator::State FakeClientAuthenticator::state() const {
   switch (session_authz_state_) {
@@ -225,7 +237,7 @@ void SessionAuthzAuthenticatorTest::SetUp() {
   auto mock_service_client = std::make_unique<MockSessionAuthzServiceClient>();
   mock_service_client_ = mock_service_client.get();
   auto host_authenticator = std::make_unique<SessionAuthzAuthenticator>(
-      std::move(mock_service_client),
+      CredentialsType::CORP_SESSION_AUTHZ, std::move(mock_service_client),
       base::BindRepeating(&Spake2Authenticator::CreateForHost, kHostId,
                           kClientId, host_cert_, key_pair_));
   host_authenticator_ = host_authenticator.get();

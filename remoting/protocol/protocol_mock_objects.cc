@@ -47,6 +47,9 @@ MockSession::~MockSession() = default;
 MockSessionManager::MockSessionManager() = default;
 MockSessionManager::~MockSessionManager() = default;
 
+MockSessionObserver::MockSessionObserver() = default;
+MockSessionObserver::~MockSessionObserver() = default;
+
 MockPairingRegistryDelegate::MockPairingRegistryDelegate() = default;
 MockPairingRegistryDelegate::~MockPairingRegistryDelegate() = default;
 
