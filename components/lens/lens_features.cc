@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/system/sys_info.h"
 
 namespace lens {
 namespace features {
@@ -47,6 +48,8 @@ BASE_FEATURE(kEnableContextMenuInLensSidePanel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlay, "LensOverlay", base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
+                                                   /*default=value=*/-1};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -176,7 +179,11 @@ bool GetShouldIssueProcessPrewarmingForLens() {
 }
 
 bool IsLensOverlayEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlay);
+  if (!base::FeatureList::IsEnabled(kLensOverlay)) {
+    return false;
+  }
+  static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  return phys_mem_mb > kLensOverlayMinRamMb.Get();
 }
 
 }  // namespace features
