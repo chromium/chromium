@@ -210,6 +210,9 @@ path_mappings: Additional non-default path mappings for absolute imports. The
                  the mapped generated directory to |extra_deps|
                - Add all source .d.ts files your target uses from the mapped
                  source directory to |definitions|.
+path_mappings_file: A .json file containing path mappings in the form
+                    {url: [ dir1, dir2, ... ] } where dir* are relative to the
+                   |target_gen_dir|.
 manifest_excludes: List of input files to exclude from the output
                    the manifest file.
 enable_source_maps: Defaults to the value of the enable_webui_inline_sourcemaps
@@ -254,7 +257,8 @@ ts_library("build_ts") {
 
 This rule generates a path mappings .json file named
 'path_mappings_<target_name>.json' in |target_gen_dir| from a list of target
-dependencies.
+dependencies. Its output can be passed to ts_library's |path_mappings_file|
+parameter.
 
 Note that the rule only generates mappings for dependencies that are mapped
 in path_mappings.py (e.g. //ui/webui/resources/ deps).
@@ -262,6 +266,23 @@ in path_mappings.py (e.g. //ui/webui/resources/ deps).
 #### **Arguments**
 ```
 ts_deps: List of ts_library() dependencies to generate path mappings for.
+is_untrusted: Whether the WebUI being compiled is a chrome-untrusted:// UI.
+              Used to determine the correct URLs for path mappings, e.g.
+              chrome-untrusted:// resources vs chrome://resources.
+```
+
+### **webui_ts_library**
+
+This rule is a thin wrapper around ts_library() that defines 2 targets:
+(1) a webui_path_mappings() ("path_mappings") target to generate a path mappings
+    file from |deps|.
+(2) a ts_library() target ("build_ts") that consumes the generated path
+    mappings file along with all remaining arguments.
+
+#### **Arguments**
+webui_ts_library uses all the same arguments as ts_library, in addition to
+the following:
+```
 is_untrusted: Whether the WebUI being compiled is a chrome-untrusted:// UI.
               Used to determine the correct URLs for path mappings, e.g.
               chrome-untrusted:// resources vs chrome://resources.
@@ -505,6 +526,7 @@ Under the cover, build_webui() defines the following targets
 * html_to_wrapper("html_wrapper_files")
 * css_to_wrapper("css_wrapper_files")
 * copy("copy_mojo")
+* webui_path_mappings("build_path_map")
 * ts_library("build_ts")
 * merge_js_source_maps("merge_source_maps")
 * bundle_js("build_bundle")
@@ -544,8 +566,8 @@ css_files: List of CSS files that hold Polymer style modules, or CSS variable
            definitions. These are passed css_to_wrapper(). Optional parameter.
 
 mojo_files: List of Mojo JS generated files. These will be copied to a temporary
-            location so that they can be passed to ts_library() along with other
-            files. Optional parameter.
+            location so that they can be passed to ts_library() along with
+            other files. Optional parameter.
 
 mojo_files_deps: List of Mojo targets that generate |mojo_files|. Must be
                  defined if |mojo_files| is defined.
@@ -563,7 +585,8 @@ ts_composite: See |composite| in ts_library(). Defaults to false, optional.
 ts_out_dir: See |out_dir| in ts_library(). Optional parameter, defaults
             '$target_gen_dir/tsc'
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
-ts_deps: See |deps| in ts_library(). Optional parameter.
+ts_deps: See |deps| in ts_library(). Also used for webui_path_mappings().
+         Optional parameter.
 ts_extra_deps: See |extra_deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
 ts_tsconfig_base: The tsconfig file to use for ts_library(). Optional, defaults
@@ -586,7 +609,9 @@ optimize: Specifies whether any optimization steps will be used. Defaults to the
 optimize_webui_excludes: See |excludes| in bundle_js(). Optional.
 optimize_webui_external_paths: See |external_paths| in optimize_webui().
                                Optional.
-optimize_webui_host: See |host| in bundle_js().
+optimize_webui_host: See |host| in bundle_js(). Also used to determine whether
+                     the UI is untrusted, to set |is_untrusted| for
+                     webui_path_mappings().
 optimize_webui_in_files: See |in_files| in bundle_js().
 
 Other params:
@@ -678,7 +703,7 @@ chrome://webui-test/<webui_name>/
 Under the cover, build_webui_tests() defines the following targets
 
 * preprocess_if_expr("preprocess")
-* ts_library("build_ts")
+* webui_ts_library("build_ts")
 * generate_grd("build_grdp")
 
 The parameters passed to build_webui_tests() are forwarded as needed to
@@ -690,7 +715,8 @@ to from other parts of the build.
 is_chrome_untrusted: Set to true if testing a chrome-untrusted:// UI. Optional
                      parameter. Allows importing shared test files from
                      chrome-untrusted://webui-test/ instead of
-                     chrome://webui-test.
+                     chrome://webui-test. Also passed as |is_untrusted| to
+                     webui_ts_library().
 
 List of files params:
 files: Required parameter. List of all test related files.

@@ -15,6 +15,7 @@ template("ts_library") {
                              "extra_deps",
                              "in_files",
                              "tsconfig_base",
+                             "path_mappings_file",
                              "manifest_excludes",
                              "testonly",
                              "visibility",
@@ -78,6 +79,14 @@ template("ts_library") {
 
     if (defined(in_files)) {
       args += [ "--in_files" ] + in_files
+    }
+
+    if (defined(path_mappings_file)) {
+      args += [
+        "--path_mappings_file",
+        rebase_path(path_mappings_file, target_gen_dir),
+      ]
+      inputs += [ path_mappings_file ]
     }
 
     if (defined(manifest_excludes)) {

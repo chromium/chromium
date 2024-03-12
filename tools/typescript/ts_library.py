@@ -38,6 +38,7 @@ def main(argv):
   parser.add_argument('--deps', nargs='*')
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--path_mappings', nargs='*')
+  parser.add_argument('--path_mappings_file')
 
   parser.add_argument('--root_gen_dir', required=True)
   parser.add_argument('--root_src_dir', required=True)
@@ -155,15 +156,25 @@ def main(argv):
           '.d.ts'), f'Invalid definition \'{d}\'. Should end with \'.d.ts\''
     tsconfig['files'].extend(args.definitions)
 
-  # Handle path mappings, for example chrome://resources/ URLs.
-  path_mappings = collections.defaultdict(list)
-
   target_path = getTargetPath(args.gen_dir, args.root_gen_dir)
   is_ash_target = isInAshFolder(target_path)
 
   if args.deps is not None:
     tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
+  # Handle path mappings, for example chrome://resources/ URLs.
+  path_mappings = collections.defaultdict(list)
+  # Load all mappings from the input file, if one exists.
+  if (args.path_mappings_file is not None):
+    path_mappings_path = os.path.join(args.gen_dir, args.path_mappings_file)
+    with open(path_mappings_path, 'r', encoding='utf-8') as f:
+      file_mappings = json.loads(f.read())
+      for url in file_mappings:
+        path_mappings[url] = file_mappings[url]
+  # Automatically add mappings for certain dependencies.
+  # TODO (crbug.com/328733315): Remove this logic from ts_library() and use
+  # webui_path_mappings() to generate the mappings instead.
+  elif args.deps is not None:
     assert args.raw_deps is not None
     dep_to_path_mappings = GetDepToPathMappings(
         args.root_gen_dir,
@@ -191,6 +202,7 @@ def main(argv):
         if (url.startswith("//")):
           path_mappings['chrome:' + url].append(os.path.join('./', dir))
 
+  # Add target-specified mappings.
   if args.path_mappings is not None:
     for m in args.path_mappings:
       mapping = m.split('|')
