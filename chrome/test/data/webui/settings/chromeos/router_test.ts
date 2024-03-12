@@ -33,6 +33,10 @@ suite('Router', () => {
           routesMojom.DATE_AND_TIME_SECTION_PATH,
           routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
         ],
+        [
+          routesMojom.FILES_SECTION_PATH,
+          routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
+        ],
       ];
       redirectPairs.forEach(([path, redirectPath]) => {
         test(
