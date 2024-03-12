@@ -40,12 +40,12 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetching = true;
+        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = true;
     }
 
     @After
     public void tearDown() {
-        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetching = false;
+        PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = false;
     }
 
     private void onInstallCalled() {}

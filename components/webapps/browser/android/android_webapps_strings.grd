@@ -232,6 +232,9 @@
       <message name="IDS_PWA_UNI_INSTALL_OPTION_SHORTCUT_EXPLANATION" desc="The label describing how shortcuts, created in the Universal Install sheet, open.">
          Shortcuts open in Chrome
       </message>
+      <message name="IDS_PWA_UNI_INSTALL_TOAST_PLEASE_WAIT_MSG" desc="The text message shown in a toast while waiting for the Universal Install bottom sheet is waiting for the installability check.">
+         Just a moment\u2026
+      </message>
 
       <message name="IDS_PWA_UNI_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
          Choose how to add the app to the home screen

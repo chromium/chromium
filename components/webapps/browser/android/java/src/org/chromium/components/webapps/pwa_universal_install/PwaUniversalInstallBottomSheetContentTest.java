@@ -46,7 +46,8 @@ public final class PwaUniversalInstallBottomSheetContentTest {
                                 .defaultAnswer(Mockito.RETURNS_MOCKS));
         PwaUniversalInstallBottomSheetContent pwaUniversalInstallBottomSheetContent =
                 new PwaUniversalInstallBottomSheetContent(
-                        (PwaUniversalInstallBottomSheetView) mockedView);
+                        (PwaUniversalInstallBottomSheetView) mockedView,
+                        /* recordBackButtonCallback= */ null);
 
         Assert.assertTrue(pwaUniversalInstallBottomSheetContent.getContentView() != null);
         Assert.assertTrue(pwaUniversalInstallBottomSheetContent.getToolbarView() == null);

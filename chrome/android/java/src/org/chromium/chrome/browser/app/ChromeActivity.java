@@ -3091,12 +3091,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         R.drawable.outline_chevron_right_24dp,
                         R.drawable.down_arrow_on_circular_background,
                         R.drawable.chrome_logo_on_circular_background);
-        if (!pwaUniversalInstallBottomSheetCoordinator.show()) {
-            // Fall back to install method for the PWA.
-            return doAddToHomescreenOrInstallWebApp(
-                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
-        }
-
+        pwaUniversalInstallBottomSheetCoordinator.showBottomSheetAsync();
         return true;
     }
 

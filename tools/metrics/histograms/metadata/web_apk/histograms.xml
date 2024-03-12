@@ -283,9 +283,39 @@ chromium-metrics-reviews@google.com.
   <owner>finnur@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
-    Records for which app type the Universal Install dialog was shown. Recorded
-    once per dialog shown, after it has figured out which type app it is.
+    Records which app type the Universal Install dialog was shown. Recorded once
+    per dialog shown, after we've figured out which type app it is.
   </summary>
+</histogram>
+
+<histogram name="WebApk.UniversalInstall.TimeoutWithAppType"
+    enum="WebApkAppType" expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records which app types were detected when the Universal Install dialog was
+    shown after timing out. Recorded once per dialog shown, but only if a
+    timeout has occured before figuring out which type app it is.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.UniversalInstall.{AppType}.AppDataFetchTime" units="ms"
+    expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records how long it takes (in milliseconds per {AppType}), from the time the
+    dialog is requested until the application data has been fetched. Note that
+    this does not reflect actual time it takes the installability check to
+    finish, because it will run in the background before the dialog starts, and
+    might even have completed before the dialog is requested. Recorded once per
+    dialog (right after the application data becomes available).
+  </summary>
+  <token key="AppType">
+    <variant name="Homebrew"/>
+    <variant name="Shortcut"/>
+    <variant name="WebApk"/>
+  </token>
 </histogram>
 
 <histogram name="WebApk.Update.GooglePlayUpdateResult"
