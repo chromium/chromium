@@ -12,12 +12,73 @@ import argparse
 from multiprocessing import Process, Manager, cpu_count, Pool
 import os
 import subprocess
+from typing import Mapping, Sequence
 
 WHOLE_CORPUS_RETRIES = 2
 WHOLE_CORPUS_TIMEOUT_SECS = 1200
 INDIVIDUAL_TESTCASE_TIMEOUT_SECS = 60
 INDIVIDUAL_TESTCASES_MAX_TO_TRY = 500
 INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED = 100
+
+
+def _profdata_merge(inputs: Sequence[str], output: str) -> bool:
+  """Merges the given profraw files into a single file.
+
+  Deletes any inputs, whether or not it succeeded.
+
+  Args:
+    inputs: paths to input files.
+    output: output file path.
+
+  Returns:
+    True if it worked.
+  """
+  llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse'
+                       ] + inputs + ['-o', output]
+  try:
+    subprocess.check_call(llvm_profdata_cmd)
+    return True
+  except Exception as e:
+    # TODO(crbug.com/328849489: investigate failures
+    print("profdata merge failed, treating this target as failed")
+  finally:
+    for f in inputs:
+      if os.path.exists(f):
+        os.unlink(f)
+  return False
+
+
+def _run_and_log(cmd: Sequence[str], env: Mapping[str, str], timeout: float,
+                 annotation: str) -> bool:
+  """Runs a given command and logs output in case of failure.
+
+  Args:
+    cmd: the command and its arguments.
+    env: environment variables to apply.
+    timeout: the timeout to apply, in seconds.
+    annotation: annotation to add to logging.
+
+  Returns:
+    True iff the command ran successfully.
+  """
+  print(f"Trying command: {cmd} ({annotation})")
+  try:
+    subprocess.run(cmd,
+                   env=env,
+                   timeout=timeout,
+                   capture_output=True,
+                   check=True)
+    return True
+  except Exception as e:
+    if type(e) == subprocess.TimeoutExpired:
+      print(
+          f"Command {cmd!s} ({annotation}) timed out after {e.timeout!s} seconds"
+      )
+    else:
+      print(
+          f"Command {cmd!s} ({annotation}) return code: {e.returncode!s}\nStdout:\n{e.output}\nStderr:\n{e.stderr}"
+      )
+  return False
 
 
 def _run_fuzzer_target(args):
@@ -35,6 +96,7 @@ def _run_fuzzer_target(args):
         This function will append corpus entries.
     args[1]: A multiprocessing.Manager.list for names of successful fuzzers.
     args[2]: A multiprocessing.Manager.list for names of failed fuzzers.
+    args[3]: The number of targets (for logging purposes only)
 
   Returns:
     None.
@@ -42,49 +104,34 @@ def _run_fuzzer_target(args):
   target_details = args[0]
   verified_fuzzer_targets = args[1]
   failed_targets = args[2]
+  num_targets = args[3]
   target = target_details['name']
   cmd = target_details['cmd']
   env = target_details['env']
   corpus_dir = target_details['corpus']
   profraw_dir = target_details['profraw_dir']
   target_profdata = target_details['profdata_file']
+
+  print("Starting target %s (completed %d/%d, of which %d succeeded)" %
+        (target, len(verified_fuzzer_targets) + len(failed_targets),
+         num_targets, len(verified_fuzzer_targets)))
+
   fullcorpus_profraw = os.path.join(profraw_dir, target + ".profraw")
   env['LLVM_PROFILE_FILE'] = fullcorpus_profraw
   fullcorpus_cmd = cmd.copy()
   if corpus_dir is not None:
     fullcorpus_cmd.append(corpus_dir)
   for i in range(WHOLE_CORPUS_RETRIES):
-    print("Trying command with full corpus %s" % str(fullcorpus_cmd))
-    try:
-      subprocess.run(fullcorpus_cmd,
-                     env=env,
-                     timeout=WHOLE_CORPUS_TIMEOUT_SECS,
-                     capture_output=True,
-                     check=True)
+    ok = _run_and_log(fullcorpus_cmd, env, WHOLE_CORPUS_TIMEOUT_SECS,
+                      f"full corpus attempt {i}")
+    if ok:
       break
-    except Exception as e:
-      print(
-          "Command %s exited with non-zero return code, failing on iteration %d"
-          % (fullcorpus_cmd, i))
-      if type(e) == subprocess.TimeoutExpired:
-        print("Timed out after %d seconds" % e.timeout)
-      else:
-        print("Return code: " + str(e.returncode))
-        print("**** FULL FUZZING OUTPUT BELOW ***")
-        print(e.output)
-        print(e.stderr)
-        print("*** FULL FUZZING OUTPUT ABOVE ***")
   valid_profiles = 0
   if os.path.exists(
       fullcorpus_profraw) and os.path.getsize(fullcorpus_profraw) > 0:
-    llvm_profdata_cmd = [llvm_profdata, 'merge', '-sparse', fullcorpus_profraw,
-      '-o', target_profdata]
-    try:
-      subprocess.check_call(llvm_profdata_cmd)
+    ok = _profdata_merge([fullcorpus_profraw], target_profdata)
+    if ok:
       valid_profiles = 1
-    except Exception as e:
-      # TODO(crbug.com/328849489: investigate failures
-      print("profdata merge failed, treating this target as failed")
   else:
     # We failed to run the fuzzer with the whole corpus in one go. That probably
     # means one of the test cases caused a crash. Let's run each test
@@ -97,25 +144,9 @@ def _run_fuzzer_target(args):
       test_case = os.path.join(corpus_dir, corpus_entry)
       specific_test_case_cmd = cmd + [test_case]
       env['LLVM_PROFILE_FILE'] = specific_test_case_profraw
-      print("Trying command with specific test case %d (%s)" %
-            (count, str(specific_test_case_cmd)))
-      try:
-        subprocess.run(specific_test_case_cmd,
-                       env=env,
-                       timeout=INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
-                       capture_output=True,
-                       check=True)
-      except Exception as e:
-        print("Command %s exited with non-zero return code" %
-              (specific_test_case_cmd))
-        if type(e) == subprocess.TimeoutExpired:
-          print("Timed out after %d seconds" % e.timeout)
-        else:
-          print("Return code: " + str(e.returncode))
-          print("**** FULL FUZZING OUTPUT BELOW ***")
-          print(e.output)
-          print(e.stderr)
-          print("*** FULL FUZZING OUTPUT ABOVE ***")
+      _run_and_log(specific_test_case_cmd, env,
+                   INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
+                   f"specific test case {count}")
       if os.path.exists(specific_test_case_profraw
                         ) and os.path.getsize(specific_test_case_profraw) > 0:
         # We recorded valid profraw, let's merge this into
@@ -127,24 +158,15 @@ def _run_fuzzer_target(args):
         if os.path.exists(target_profdata):
           os.rename(target_profdata, temp_profdata)
           prof_files_to_merge.append(temp_profdata)
-        try:
-          llvm_profdata_cmd = [
-              llvm_profdata, 'merge', '-sparse'
-          ] + prof_files_to_merge + ['-o', target_profdata]
-          subprocess.check_call(llvm_profdata_cmd)
-        except Exception as e:
-          # TODO(crbug.com/328849489: investigate failures
-          print("profdata merge failed, treating this target as failed")
+        ok = _profdata_merge(prof_files_to_merge, target_profdata)
+        if not ok:
           valid_profiles = 0
           break
-        finally:
-          os.unlink(specific_test_case_profraw)
-          if os.path.exists(temp_profdata):
-            os.unlink(temp_profdata)
       # The corpus may be huge - don't keep going forever.
       if count > INDIVIDUAL_TESTCASES_MAX_TO_TRY:
-        print("Skipping remaining test cases - >%d tried" %
-              INDIVIDUAL_TESTCASES_MAX_TO_TRY)
+        print(
+            f"Skipping remaining test cases for {target} - >{INDIVIDUAL_TESTCASES_MAX_TO_TRY} tried"
+        )
         break
       # And if we've got enough valid coverage files, assume this is a
       # reasonable approximation of the total coverage. This is partly
@@ -152,13 +174,18 @@ def _run_fuzzer_target(args):
       # to reduce processing time to something reasonable, and partly
       # because profraw files are huge and can fill up bot disk space.
       if valid_profiles > INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED:
-        print("Skipping remaining test cases, >%d valid profiles recorded." %
-              INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED)
+        print(
+            f"Skipping remaining test cases for {target}, >%{INDIVIDUAL_TESTCASES_SUCCESSES_NEEDED} valid profiles recorded."
+        )
         break
   if valid_profiles == 0:
     failed_targets.append(target)
     return
   verified_fuzzer_targets.append(target)
+  print("Finishing target %s (completed %d/%d, of which %d succeeded)" %
+        (target, len(verified_fuzzer_targets) + len(failed_targets),
+         num_targets, len(verified_fuzzer_targets)))
+
 
 
 def _ParseCommandArguments():
@@ -271,10 +298,13 @@ else:
 
 # Run the fuzzers in parallel.
 cpu_count = int(cpu_count())
+num_targets = len(all_target_details)
+print("Running %d fuzzers across %d CPUs" % (num_targets, cpu_count))
 with Pool(cpu_count) as p:
-  results = p.map(_run_fuzzer_target,
-                  [(target_details, verified_fuzzer_targets, failed_targets)
-                   for target_details in all_target_details])
+  results = p.map(
+      _run_fuzzer_target,
+      [(target_details, verified_fuzzer_targets, failed_targets, num_targets)
+       for target_details in all_target_details])
 
 print("Successful targets: %s" % verified_fuzzer_targets)
 print("Failed targets: %s" % failed_targets)
