@@ -115,11 +115,10 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
-  <!--TODO(crbug.com/1493361): Align with writers about related strings and remove translateable=false-->
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY" desc="Screen reader announcement used for non-expandable Autofill popup entries." translateable="false">
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY" desc="Screen reader announcement used for non-expandable Autofill popup entries.">
     You are currently on a menu
   </message>
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY" desc="Screen reader announcement used for virtual credit card suggestions that do not fill the web form." translateable="false">
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY" desc="Screen reader announcement used for virtual credit card suggestions that do not fill the web form.">
     Dialog with credit card details was shown
   </message>
 
