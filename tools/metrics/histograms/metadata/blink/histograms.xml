@@ -1222,7 +1222,7 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records whether an IDP returns an approved clients list in the response.
-    Records at most one sample per API call.
+    Records at most one sample per IDP when the accounts response is parsed.
   </summary>
 </histogram>
 
@@ -1232,7 +1232,8 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the size of the approved clients list returned by IDP if applicable.
-    Records at most one sample per API call.
+    Records at most one sample per IDP when the IDP includes `approved_clients`
+    in the accounts response.
   </summary>
 </histogram>
 

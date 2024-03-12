@@ -507,15 +507,11 @@ void RecordPreventSilentAccess(RenderFrameHost& rfh,
 }
 
 void RecordApprovedClientsExistence(bool has_approved_clients) {
-  if (IsFedCmMultipleIdentityProvidersEnabled())
-    return;
   base::UmaHistogramBoolean("Blink.FedCm.ApprovedClientsExistence",
                             has_approved_clients);
 }
 
 void RecordApprovedClientsSize(int size) {
-  if (IsFedCmMultipleIdentityProvidersEnabled())
-    return;
   base::UmaHistogramCounts10000("Blink.FedCm.ApprovedClientsSize", size);
 }
 
