@@ -416,13 +416,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithMessages_20210831",
                     "params": {
                         "en_site_id": "78FakAwAN0tK1KeaPYj0PoiAHrrQ",
-                        "probability": "0.5"
+                        "max-number": "100",
+                        "probability": "0.5",
+                        "site-id": "78FakAwAN0tK1KeaPYj0PoiAHrrQ"
                     },
                     "enable_features": [
-                        "AndroidHatsRefactor",
                         "ChromeSurveyNextAndroid"
                     ]
                 }
