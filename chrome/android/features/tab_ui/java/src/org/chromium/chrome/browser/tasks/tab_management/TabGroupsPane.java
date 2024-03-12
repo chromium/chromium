@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -21,11 +21,13 @@ import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubLayoutConstants;
+import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 
@@ -36,10 +38,13 @@ public class TabGroupsPane implements Pane {
     private final Context mContext;
     private final LazyOneshotSupplier<TabModelFilter> mTabModelFilterSupplier;
     private final DoubleConsumer mOnToolbarAlphaChange;
+    private final FrameLayout mRootView;
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
             new ObservableSupplierImpl<>();
+
+    private TabGroupListCoordinator mTabGroupListCoordinator;
 
     /**
      * @param context Used to inflate UI.
@@ -58,6 +63,8 @@ public class TabGroupsPane implements Pane {
                         R.string.accessibility_tab_groups,
                         R.string.accessibility_tab_groups,
                         R.drawable.ic_features_24dp));
+
+        mRootView = new FrameLayout(mContext);
     }
 
     @Override
@@ -68,7 +75,7 @@ public class TabGroupsPane implements Pane {
     @NonNull
     @Override
     public ViewGroup getRootView() {
-        return new RecyclerView(mContext);
+        return mRootView;
     }
 
     @Nullable
@@ -83,13 +90,26 @@ public class TabGroupsPane implements Pane {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mTabGroupListCoordinator.destroy();
+        mTabGroupListCoordinator = null;
+        mRootView.removeAllViews();
+    }
 
     @Override
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {}
 
     @Override
-    public void notifyLoadHint(int loadHint) {}
+    public void notifyLoadHint(@LoadHint int loadHint) {
+        if (loadHint == LoadHint.HOT && mTabGroupListCoordinator == null) {
+            mTabGroupListCoordinator =
+                    new TabGroupListCoordinator(
+                            mContext, (TabGroupModelFilter) mTabModelFilterSupplier.get());
+            mRootView.addView(mTabGroupListCoordinator.getView());
+        } else if (loadHint == LoadHint.COLD && mTabGroupListCoordinator != null) {
+            destroy();
+        }
+    }
 
     @NonNull
     @Override
