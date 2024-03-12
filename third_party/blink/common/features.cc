@@ -503,16 +503,12 @@ BASE_FEATURE(kCacheStorageCodeCacheHintHeader,
 const base::FeatureParam<std::string> kCacheStorageCodeCacheHintHeaderName{
     &kCacheStorageCodeCacheHintHeader, "name", "x-CacheStorageCodeCacheHint"};
 
+// Enabled 03/2024 on macOS (and much earlier elsewhere).
+// Keeping the feature to perform a holdback experiment.
 BASE_FEATURE(
     kCanvas2DHibernation,
     "Canvas2DHibernation",
-#if BUILDFLAG(IS_MAC)
-    // Canvas hibernation is not always enabled on MacOS X due to a bug that
-    // causes content loss. TODO: Find a better fix for crbug.com/588434
-    base::FeatureState::FEATURE_DISABLED_BY_DEFAULT
-#else
     base::FeatureState::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)

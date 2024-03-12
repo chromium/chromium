@@ -2884,24 +2884,6 @@
             ]
         }
     ],
-    "Canvas2DHibernationMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BatchMainThreadReleaseCallbacks",
-                        "Canvas2DHibernation",
-                        "EvictionUnlocksResources",
-                        "ReclaimResourcesDelayedFlushInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "Canvas2DHibernationReleaseTransferMemory": [
         {
             "platforms": [
