@@ -47,7 +47,6 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
   CHECK(search_engines::IsEeaChoiceCountry(country_id) &&
         search_engines::IsChoiceScreenFlagEnabled(
             search_engines::ChoicePromo::kAny));
-  const size_t kMaxNumberOfEngines = 12;
 
   const std::vector<EngineAndTier> country_engines =
       GetPrepopulationSetFromCountryID(country_id);
@@ -101,21 +100,21 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
 
   size_t current_number_of_engines = 0;
   for (const PrepopulatedEngine* engine : top_engines) {
-    if (current_number_of_engines == kMaxNumberOfEngines) {
+    if (current_number_of_engines == kMaxEeaPrepopulatedEngines) {
       break;
     }
     t_urls.push_back(TemplateURLDataFromPrepopulatedEngine(*engine));
     current_number_of_engines++;
   }
   for (const PrepopulatedEngine* engine : tying_engines) {
-    if (current_number_of_engines == kMaxNumberOfEngines) {
+    if (current_number_of_engines == kMaxEeaPrepopulatedEngines) {
       break;
     }
     t_urls.push_back(TemplateURLDataFromPrepopulatedEngine(*engine));
     current_number_of_engines++;
   }
   for (const PrepopulatedEngine* engine : remaining_engines) {
-    if (current_number_of_engines == kMaxNumberOfEngines) {
+    if (current_number_of_engines == kMaxEeaPrepopulatedEngines) {
       break;
     }
     t_urls.push_back(TemplateURLDataFromPrepopulatedEngine(*engine));

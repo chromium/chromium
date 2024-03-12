@@ -210,15 +210,14 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
 }
 
 // Verifies that the prepopulated search engines configured by country are
-// consistent with the set of countries in EeaChoiceCountry. For example, when
-// in EEA they should have more than 5, and outside of EEA not more than 5.
+// consistent with the set of countries in EeaChoiceCountry. For example, the
+// per region limits `kMaxEeaPrepopulatedEngines` and
+// `kMaxRowPrepopulatedEngines` should apply as expected.
 TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
   feature_list_.Reset();
   feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   const size_t kMinEea = 6;
-  const size_t kMaxEea = 12;
   const size_t kMinRow = 3;
-  const size_t kMaxRow = 5;
 
   for (int country_id : kAllCountryIds) {
     OverrideCountryId(country_id);
@@ -233,14 +232,16 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
       EXPECT_GE(kNumberOfSearchEngines, kMinEea)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
-      EXPECT_LE(kNumberOfSearchEngines, kMaxEea)
+      EXPECT_LE(kNumberOfSearchEngines,
+                TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
     } else {
       EXPECT_GE(kNumberOfSearchEngines, kMinRow)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
-      EXPECT_LE(kNumberOfSearchEngines, kMaxRow)
+      EXPECT_LE(kNumberOfSearchEngines,
+                TemplateURLPrepopulateData::kMaxRowPrepopulatedEngines)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
     }

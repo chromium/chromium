@@ -31,6 +31,14 @@ struct PrepopulatedEngine;
 
 extern const int kMaxPrepopulatedEngineID;
 
+// The maximum number of prepopulated search engines that can be returned in
+// any of the EEA countries by `GetPrepopulatedEngines()`.
+inline constexpr size_t kMaxEeaPrepopulatedEngines = 8;
+
+// The maximum number of prepopulated search engines that can be returned in
+// in the rest of the world by `GetPrepopulatedEngines()`.
+inline constexpr size_t kMaxRowPrepopulatedEngines = 5;
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Returns the current version of the prepopulate data, so callers can know when
