@@ -195,6 +195,23 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
                                confirm_callback.Get());
 }
 
+// Tests that GetPlusProfiles returns all cached plus profiles.
+TEST_F(PlusAddressServiceTest, GetPlusProfiles) {
+  service().SavePlusAddress(url::Origin::Create(GURL("https://foo.com")),
+                            "plus+foo@plus.plus");
+  service().SavePlusAddress(url::Origin::Create(GURL("https://bar.com")),
+                            "plus+bar@plus.plus");
+
+  EXPECT_THAT(service().GetPlusProfiles(),
+              testing::UnorderedElementsAre(
+                  PlusProfile{.facet = "foo.com",
+                              .plus_address = "plus+foo@plus.plus",
+                              .is_confirmed = true},
+                  PlusProfile{.facet = "bar.com",
+                              .plus_address = "plus+bar@plus.plus",
+                              .is_confirmed = true}));
+}
+
 // Tests the PlusAddressService ability to make network requests.
 class PlusAddressServiceRequestsTest : public PlusAddressServiceTest {
  public:

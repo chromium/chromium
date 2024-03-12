@@ -92,6 +92,10 @@ class PlusAddressService : public KeyedService,
   // eTLD+1.
   std::optional<PlusProfile> GetPlusProfile(const url::Origin& origin) const;
 
+  // Returns all the cached plus profiles. There are no server requests
+  // triggered by this method, only the cached responses are returned.
+  std::vector<PlusProfile> GetPlusProfiles() const;
+
   // Gets a plus address, if one exists, for the passed-in origin. Note that all
   // plus address activity is scoped to eTLD+1. This class owns the conversion
   // of `origin` to its eTLD+1 form.

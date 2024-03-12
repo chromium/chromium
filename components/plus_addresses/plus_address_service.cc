@@ -44,7 +44,7 @@ using autofill::PopupItemId;
 using autofill::Suggestion;
 
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
-// equivalently.
+// equivalently. See `GetDomainAndRegistry` for concrete examples.
 std::string GetEtldPlusOne(const url::Origin origin) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -120,6 +120,17 @@ std::optional<std::string> PlusAddressService::GetPlusAddress(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<PlusProfile> profile = GetPlusProfile(origin);
   return profile ? std::make_optional(profile->plus_address) : std::nullopt;
+}
+
+std::vector<PlusProfile> PlusAddressService::GetPlusProfiles() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<PlusProfile> profiles;
+  profiles.reserve(plus_address_by_site_.size());
+  for (const auto& [facet, plus_address] : plus_address_by_site_) {
+    profiles.push_back(PlusProfile(
+        {.facet = facet, .plus_address = plus_address, .is_confirmed = true}));
+  }
+  return profiles;
 }
 
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
