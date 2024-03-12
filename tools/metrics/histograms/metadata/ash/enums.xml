@@ -47,6 +47,21 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Keyboard"/>
 </enum>
 
+<enum name="AmbientDlcError">
+<!-- This enum needs to match DlcError in
+ash/ambient/util/time_of_day_utils.h -->
+
+  <summary>List of all the error types that DLC Service returns.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="Internal"/>
+  <int value="3" label="Busy"/>
+  <int value="4" label="Need reboot"/>
+  <int value="5" label="Invalid DLC"/>
+  <int value="6" label="Allocation"/>
+  <int value="7" label="No image found"/>
+</enum>
+
 <enum name="AmbientModeAnimationTheme">
   <int value="0" label="Slide Show"/>
   <int value="1" label="Feel The Breeze"/>

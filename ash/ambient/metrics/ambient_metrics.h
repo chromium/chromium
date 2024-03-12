@@ -44,6 +44,14 @@ enum class AmbientVideoSessionStatus {
 // See summary in histograms.xml for why 15 seconds is used.
 constexpr base::TimeDelta kMetricsStartupTimeMax = base::Seconds(15);
 
+// Must be kept in sync with the `AmbientVideoDlcInstallLabels` variants
+// in tool/metrics/histograms/metadata/ash/histograms.xml.
+//
+// Install that happens when it's time to launch one of the video screen savers
+// (on demand). If a "Background" installation succeeded in the past, the
+// foreground installation will succeed and be a trivial operation.
+inline constexpr char kAmbientVideoDlcForegroundLabel[] = "Foreground";
+
 ASH_EXPORT AmbientModePhotoSource
 AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 

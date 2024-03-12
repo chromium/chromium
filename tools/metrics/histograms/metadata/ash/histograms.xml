@@ -188,6 +188,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Video.NewMexico" summary="New Mexico video"/>
 </variants>
 
+<variants name="AmbientVideoDlcInstallLabels">
+  <variant name="Foreground"
+      summary="Install that happens when it's time to launch ambient mode
+               with one of the video themes. If this install fails, ambient
+               mode will fail to render. If the background install has
+               already succeeded at some point in the past, this foreground
+               install should be very quick and always succeed."/>
+</variants>
+
 <variants name="DisplayModes">
 <!-- Should be kept in sync with variants AppDisplayModes in
   tools/metrics/histograms/metadata/apps/histograms.xml.
@@ -597,6 +606,19 @@ chromium-metrics-reviews@google.com.
     personal photo albums. Recorded once only when users make a selection on the
     personal photo albums on Settings page.
   </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.VideoDlcInstall.{Label}.Error"
+    enum="AmbientDlcError" expires_after="2024-09-08">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@google.com</owner>
+  <summary>
+    Records the type of error that is received from DLC Service when an
+    installation is requested for the ambient video package. This is emitted
+    after each ambient DLC installation attempt. See comments above
+    AmbientVideoDlcInstallLabels for when installation attempts are made.
+  </summary>
+  <token key="Label" variants="AmbientVideoDlcInstallLabels"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.VideoPlaybackStatus.{Settings}"

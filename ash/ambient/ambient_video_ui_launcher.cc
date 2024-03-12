@@ -10,6 +10,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/ui/ambient_video_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/ambient/util/time_of_day_utils.h"
@@ -57,6 +58,7 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
                            ->ambient_weather_controller()
                            ->CreateScopedRefresher();
   GetAmbientVideoHtmlPath(
+      ambient::kAmbientVideoDlcForegroundLabel,
       base::BindOnce(&AmbientVideoUiLauncher::SetVideoHtmlPath,
                      weak_factory_.GetWeakPtr(), std::move(on_done)));
 }
