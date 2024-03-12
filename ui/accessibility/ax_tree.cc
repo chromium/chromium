@@ -40,6 +40,19 @@ namespace ui {
 
 namespace {
 
+// This is the list of reverse relations that are computed.
+// This purposely does not include relations such as kRadioGroupIds where
+// the reverse relation is not interesting to consumers.
+constexpr ax::mojom::IntListAttribute kReverseRelationIntListAttributes[] = {
+    ax::mojom::IntListAttribute::kControlsIds,
+    ax::mojom::IntListAttribute::kDetailsIds,
+    ax::mojom::IntListAttribute::kDescribedbyIds,
+    ax::mojom::IntListAttribute::kErrormessageIds,
+    ax::mojom::IntListAttribute::kFlowtoIds,
+    ax::mojom::IntListAttribute::kLabelledbyIds};
+constexpr ax::mojom::IntAttribute kReverseRelationIntAttributes[] = {
+    ax::mojom::IntAttribute::kActivedescendantId};
+
 std::string TreeToStringHelper(const AXNode* node, int indent, bool verbose) {
   if (!node)
     return "";
@@ -1793,6 +1806,7 @@ bool AXTree::UpdateNode(const AXNodeData& src,
   // and this is a serious error.
   AXNode* node = GetFromId(src.id);
   if (node) {
+    // Node is changing.
     update_state->pending_node_ids.erase(node->id());
     UpdateReverseRelations(node, src);
     if (!update_state->IsCreatedNode(node) ||
@@ -1802,6 +1816,7 @@ bool AXTree::UpdateNode(const AXNodeData& src,
     }
     node->SetData(src);
   } else {
+    // Node is created.
     if (!is_new_root) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNotInTree);
@@ -1812,7 +1827,7 @@ bool AXTree::UpdateNode(const AXNodeData& src,
     }
 
     node = CreateNode(nullptr, src.id, 0, update_state);
-    UpdateReverseRelations(node, src);
+    UpdateReverseRelations(node, src, /*is_new_node*/ true);
     node->SetData(src);
   }
 
@@ -2084,83 +2099,68 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
                                std::vector<std::string>(), stringlist_callback);
 }
 
-void AXTree::UpdateReverseRelations(AXNode* node, const AXNodeData& new_data) {
+void AXTree::UpdateReverseRelations(AXNode* node,
+                                    const AXNodeData& new_data,
+                                    bool is_new_node) {
   DCHECK(GetTreeUpdateInProgressState());
   const AXNodeData& old_data = node->data();
-  int id = new_data.id;
-  auto int_callback = [this, id](ax::mojom::IntAttribute attr,
-                                 const int& old_id, const int& new_id) {
-    if (!IsNodeIdIntAttribute(attr))
-      return;
+  // This is the id of the source node, which does not change between the old
+  // and the new data.
+  int id = node->id();
 
-    // Remove old_id -> id from the map, and clear map keys if their
-    // values are now empty.
-    auto& map = int_reverse_relations_[attr];
-    if (map.find(old_id) != map.end()) {
-      map[old_id].erase(id);
-      if (map[old_id].empty())
-        map.erase(old_id);
+  for (const auto& attr : kReverseRelationIntAttributes) {
+    int32_t old_relation_target_id = old_data.GetIntAttribute(attr);
+    int32_t new_relation_target_id = new_data.GetIntAttribute(attr);
+    if (is_new_node || old_relation_target_id != new_relation_target_id) {
+      auto& map = int_reverse_relations_[attr];
+      if (!is_new_node) {
+        // Remove stale values from map.
+        if (map.find(old_relation_target_id) != map.end()) {
+          map[old_relation_target_id].erase(id);
+          if (map[old_relation_target_id].empty()) {
+            map.erase(old_relation_target_id);
+          }
+        }
+      }
+      int_reverse_relations_[attr][new_relation_target_id].insert(id);
     }
+  }
 
-    // Add new_id -> id to the map, unless new_id is zero indicating that
-    // we're only removing a relation.
-    if (new_id)
-      map[new_id].insert(id);
-  };
-  CallIfAttributeValuesChanged(old_data.int_attributes, new_data.int_attributes,
-                               0, int_callback);
-
-  auto intlist_callback = [this, id](ax::mojom::IntListAttribute attr,
-                                     const std::vector<int32_t>& old_idlist,
-                                     const std::vector<int32_t>& new_idlist) {
-    if (!IsNodeIdIntListAttribute(attr))
-      return;
-
-    auto& map = intlist_reverse_relations_[attr];
-    for (AXNodeID old_id : old_idlist) {
-      if (map.find(old_id) != map.end()) {
-        map[old_id].erase(id);
-        if (map[old_id].empty())
-          map.erase(old_id);
+  for (const auto& attr : kReverseRelationIntListAttributes) {
+    const std::vector<int32_t>& old_idlist = old_data.GetIntListAttribute(attr);
+    const std::vector<int32_t>& new_idlist = new_data.GetIntListAttribute(attr);
+    if (is_new_node || old_idlist != new_idlist) {
+      auto& map = intlist_reverse_relations_[attr];
+      if (!is_new_node) {
+        // Remove stale values from map.
+        for (AXNodeID old_relation_target_id : old_idlist) {
+          if (map.find(old_relation_target_id) != map.end()) {
+            map[old_relation_target_id].erase(id);
+            if (map[old_relation_target_id].empty()) {
+              map.erase(old_relation_target_id);
+            }
+          }
+        }
+      }
+      for (AXNodeID new_relation_target_id : new_idlist) {
+        map[new_relation_target_id].insert(id);
       }
     }
-    for (AXNodeID new_id : new_idlist)
-      intlist_reverse_relations_[attr][new_id].insert(id);
-  };
-  CallIfAttributeValuesChanged(old_data.intlist_attributes,
-                               new_data.intlist_attributes,
-                               std::vector<AXNodeID>(), intlist_callback);
+  }
 
-  auto string_callback = [this, id](ax::mojom::StringAttribute attr,
-                                    const std::string& old_string,
-                                    const std::string& new_string) {
-    if (attr == ax::mojom::StringAttribute::kChildTreeId) {
-      // Remove old_string -> id from the map, and clear map keys if
-      // their values are now empty.
-      AXTreeID old_ax_tree_id = AXTreeID::FromString(old_string);
-      const auto& iter = child_tree_id_reverse_map_.find(old_ax_tree_id);
-      // TODO(accessibility) How can there be more than one child tree owner id
-      // for a given tree id? Should we be using DCHECKs to assert that?
-      if (iter != child_tree_id_reverse_map_.end()) {
-        std::set<AXNodeID>& node_ids_for_tree_id = iter->second;
-        node_ids_for_tree_id.erase(id);
-        // Remove entry from map if there are no ids left.
-        if (node_ids_for_tree_id.empty())
-          child_tree_id_reverse_map_.erase(iter);
-      }
+  // Update child tree id reverse map.
+  std::optional<AXTreeID> old_tree_id = old_data.GetChildTreeID();
+  std::optional<AXTreeID> new_tree_id = new_data.GetChildTreeID();
+  if (old_tree_id == new_tree_id) {
+    return;
+  }
 
-      // Add new_string -> id to the map, unless new_id is zero indicating that
-      // we're only removing a relation.
-      if (!new_string.empty()) {
-        AXTreeID new_ax_tree_id = AXTreeID::FromString(new_string);
-        child_tree_id_reverse_map_[new_ax_tree_id].insert(id);
-      }
-    }
-  };
-
-  CallIfAttributeValuesChanged(old_data.string_attributes,
-                               new_data.string_attributes, std::string(),
-                               string_callback);
+  if (old_tree_id) {
+    child_tree_id_reverse_map_[*old_tree_id].erase(id);
+  }
+  if (new_tree_id) {
+    child_tree_id_reverse_map_[*new_tree_id].insert(id);
+  }
 }
 
 bool AXTree::ValidatePendingChangesComplete(
@@ -2255,9 +2255,8 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   DCHECK(!update_state || update_state->GetPendingDestroyNodeCount(id) > 0);
 
   // Clear out any reverse relations.
-  AXNodeData empty_data;
-  empty_data.id = id;
-  UpdateReverseRelations(node, empty_data);
+  static base::NoDestructor<ui::AXNodeData> empty_data;
+  UpdateReverseRelations(node, *empty_data);
 
   auto iter = id_map_.find(id);
   DCHECK(iter != id_map_.end());

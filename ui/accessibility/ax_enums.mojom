@@ -901,6 +901,9 @@ enum BoolAttribute {
 
 // Next version: 6
 // Next value: 27
+// Note: if changing an IntListAttribute property that stores a relation where
+// the reverse should be computed, be sure to also update
+// kReverseRelationIntListAttributes in AXTree.
 [Extensible, Stable, Uuid="6d1f823f-28a9-4263-bc4a-69fb19a4ef46"]
 enum IntListAttribute {
   [Default]kNone = 0,

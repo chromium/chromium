@@ -353,7 +353,10 @@ class AX_EXPORT AXTree {
       const AXTreeData* new_tree_data,
       const AXNodeData& new_data);
 
-  void UpdateReverseRelations(AXNode* node, const AXNodeData& new_data);
+  // Update maps that track which relations are pointing to |node|.
+  void UpdateReverseRelations(AXNode* node,
+                              const AXNodeData& new_data,
+                              bool is_new_node = false);
 
   // Sets a flag indicating whether the tree is currently being updated or not.
   // If the tree is being updated, then its internal pointers might be invalid

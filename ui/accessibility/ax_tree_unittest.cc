@@ -1819,11 +1819,10 @@ TEST(AXTreeTest, IntReverseRelations) {
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 1);
   ASSERT_EQ(0U, reverse_active_descendant.size());
 
+  // Member of does not compute a reverse relation.
   auto reverse_member_of =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kMemberOfId, 1);
-  ASSERT_EQ(2U, reverse_member_of.size());
-  EXPECT_TRUE(base::Contains(reverse_member_of, 3));
-  EXPECT_TRUE(base::Contains(reverse_member_of, 4));
+  ASSERT_EQ(0U, reverse_member_of.size());
 
   AXTreeUpdate update = initial_state;
   update.nodes.resize(5);
@@ -1848,9 +1847,7 @@ TEST(AXTreeTest, IntReverseRelations) {
 
   reverse_member_of =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kMemberOfId, 1);
-  ASSERT_EQ(2U, reverse_member_of.size());
-  EXPECT_TRUE(base::Contains(reverse_member_of, 4));
-  EXPECT_TRUE(base::Contains(reverse_member_of, 5));
+  ASSERT_EQ(0U, reverse_member_of.size());
 }
 
 TEST(AXTreeTest, IntListReverseRelations) {
