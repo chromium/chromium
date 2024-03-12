@@ -48,6 +48,8 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   void ShowUI() override;
   void CloseUI() override;
   void SubmitFeedback(const std::string& description) override;
+  void OnTrigger(orca::mojom::TriggerContextPtr trigger_context) override;
+  void EmitMetricEvent(orca::mojom::MetricEvent metric_event) override;
 
   // Relevant input events
   void OnFocus(int context_id);

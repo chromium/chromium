@@ -18,6 +18,11 @@ EditorStates ToEditorStatesMetric(EditorBlockedReason reason);
 
 EditorStates ToEditorStatesMetric(orca::mojom::TextQueryErrorCode error_code);
 
+std::optional<EditorStates> ToEditorStatesMetric(
+    orca::mojom::MetricEvent metric_event);
+
+EditorTone ToEditorMetricTone(orca::mojom::TriggerContextPtr trigger_context);
+
 class EditorMetricsRecorder {
  public:
   explicit EditorMetricsRecorder(EditorOpportunityMode mode);

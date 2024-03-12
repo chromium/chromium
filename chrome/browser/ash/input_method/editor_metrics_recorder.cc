@@ -111,6 +111,46 @@ EditorStates ToEditorStatesMetric(orca::mojom::TextQueryErrorCode error_code) {
   }
 }
 
+std::optional<EditorStates> ToEditorStatesMetric(
+    orca::mojom::MetricEvent metric_event) {
+  switch (metric_event) {
+    case orca::mojom::MetricEvent::kRefineRequest:
+      return EditorStates::kRefineRequest;
+    case orca::mojom::MetricEvent::kFeedbackThumbsUp:
+      return EditorStates::kThumbsUp;
+    case orca::mojom::MetricEvent::kFeedbackThumbsDown:
+      return EditorStates::kThumbsDown;
+    case orca::mojom::MetricEvent::kReturnToPreviousSuggestions:
+      return EditorStates::kReturnToPreviousSuggestions;
+    case orca::mojom::MetricEvent::kWebUIRequest:
+      return EditorStates::kWebUIRequest;
+    case orca::mojom::MetricEvent::kUnknown:
+      return std::nullopt;
+  }
+}
+
+EditorTone ToEditorMetricTone(orca::mojom::TriggerContextPtr trigger_context) {
+  if (trigger_context->freeform_selected) {
+    return EditorTone::kFreeformRewrite;
+  }
+  switch (trigger_context->preset_type_selected) {
+    case orca::mojom::PresetTextQueryType::kShorten:
+      return EditorTone::kShorten;
+    case orca::mojom::PresetTextQueryType::kElaborate:
+      return EditorTone::kElaborate;
+    case orca::mojom::PresetTextQueryType::kRephrase:
+      return EditorTone::kRephrase;
+    case orca::mojom::PresetTextQueryType::kFormalize:
+      return EditorTone::kFormalize;
+    case orca::mojom::PresetTextQueryType::kEmojify:
+      return EditorTone::kEmojify;
+    // TODO: b:329164491 - support metrics for proofread
+    case orca::mojom::PresetTextQueryType::kProofread:
+    case orca::mojom::PresetTextQueryType::kUnknown:
+      return EditorTone::kUnknown;
+  }
+}
+
 EditorMetricsRecorder::EditorMetricsRecorder(EditorOpportunityMode mode)
     : mode_(mode) {}
 

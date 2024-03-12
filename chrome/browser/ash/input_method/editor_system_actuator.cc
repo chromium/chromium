@@ -88,6 +88,23 @@ void EditorSystemActuator::SubmitFeedback(const std::string& description) {
   system_->Announce(kAnnouncementForFeedback);
 }
 
+void EditorSystemActuator::OnTrigger(
+    orca::mojom::TriggerContextPtr trigger_context) {
+  EditorMetricsRecorder* logger = system_->GetMetricsRecorder();
+  logger->SetTone(ToEditorMetricTone(std::move(trigger_context)));
+}
+
+void EditorSystemActuator::EmitMetricEvent(
+    orca::mojom::MetricEvent metric_event) {
+  EditorMetricsRecorder* logger = system_->GetMetricsRecorder();
+  std::optional<EditorStates> editor_state_metric =
+      ToEditorStatesMetric(metric_event);
+
+  if (editor_state_metric.has_value()) {
+    logger->LogEditorState(editor_state_metric.value());
+  }
+}
+
 void EditorSystemActuator::OnFocus(int context_id) {
   if (queued_text_insertion_ == nullptr) {
     return;
