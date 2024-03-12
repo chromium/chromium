@@ -300,6 +300,14 @@ class ASH_EXPORT RootWindowController {
                                 const char* name,
                                 aura::Window* parent);
 
+  // Build a menu model adapter to configure birch bar in Overview.
+  std::unique_ptr<AppMenuModelAdapter> BuildBirchMenuModelAdapter(
+      ui::MenuSourceType source_type);
+
+  // Build a menu model adapter to configure shelf.
+  std::unique_ptr<AppMenuModelAdapter> BuildShelfMenuModelAdapter(
+      ui::MenuSourceType source_type);
+
   // Callback for MenuRunner.
   void OnMenuClosed();
 
