@@ -12,6 +12,8 @@
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -153,30 +155,38 @@ void MahiManagerImpl::OnGetPageContent(
   }
   mahi_provider_->Summarize(
       base::UTF16ToUTF8(mahi_content_ptr->page_content),
-      base::BindOnce(
-          [](MahiSummaryCallback summary_callback, base::Value::Dict dict,
-             manta::MantaStatus status) {
-            if (status.status_code != manta::MantaStatusCode::kOk) {
-              std::move(summary_callback)
-                  .Run(u"Couldn't get summary",
-                       MahiResponseStatus::kUnknownError);
-              return;
-            }
+      base::BindOnce(&MahiManagerImpl::OnMahiProviderResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
-            if (auto* text = dict.FindString("outputData")) {
-              std::move(summary_callback)
-                  .Run(base::UTF8ToUTF16(*text), MahiResponseStatus::kSuccess);
-            } else {
-              std::move(summary_callback)
-                  .Run(u"Cannot find outputdata",
-                       MahiResponseStatus::kCantFindOutputData);
-            }
-          },
-          std::move(callback)));
+void MahiManagerImpl::OnMahiProviderResponse(
+    MahiSummaryCallback summary_callback,
+    base::Value::Dict dict,
+    manta::MantaStatus status) {
+  latest_summary_ = u"...";
+  if (status.status_code != manta::MantaStatusCode::kOk) {
+    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    std::move(summary_callback)
+        .Run(u"Couldn't get summary", latest_response_status_);
+    return;
+  }
+
+  if (auto* text = dict.FindString("outputData")) {
+    latest_response_status_ = MahiResponseStatus::kSuccess;
+    latest_summary_ = base::UTF8ToUTF16(*text);
+    std::move(summary_callback).Run(latest_summary_, latest_response_status_);
+  } else {
+    latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
+    std::move(summary_callback)
+        .Run(u"Cannot find outputdata", latest_response_status_);
+  }
 }
 
 void MahiManagerImpl::OpenFeedbackDialog() {
-  const std::string description_template = "#Mahi: ";
+  const std::string description_template = base::StringPrintf(
+      "#Mahi\nlatest status code: %d\nlatest summary: %s\nuser feedback:",
+      static_cast<int>(latest_response_status_),
+      base::UTF16ToUTF8(latest_summary_).c_str());
 
   base::Value::Dict ai_metadata;
   ai_metadata.Set("from_chromeos", "true");

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
@@ -49,10 +50,18 @@ class MahiManagerImpl : public chromeos::MahiManager {
   void OnGetPageContent(MahiSummaryCallback callback,
                         crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
 
+  void OnMahiProviderResponse(MahiSummaryCallback summary_callback,
+                              base::Value::Dict dict,
+                              manta::MantaStatus status);
+
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
 
   std::unique_ptr<manta::MahiProvider> mahi_provider_;
+
+  // Keeps track of the latest result and code, used for feedback.
+  std::u16string latest_summary_;
+  chromeos::MahiResponseStatus latest_response_status_;
 
   // The widget contains the Mahi main panel.
   views::UniqueWidgetPtr mahi_panel_widget_;
