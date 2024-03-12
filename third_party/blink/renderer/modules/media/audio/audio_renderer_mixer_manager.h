@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_MANAGER_H_
 
 #include <bitset>
-#include <map>
+#include <list>
 #include <memory>
 #include <string>
 
@@ -171,8 +171,9 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   AudioRendererMixerMap mixers_;
 
   // Mixers which encountered errors, but can't yet be destroyed since they are
-  // still owned by an input.
-  AudioRendererMixerMap dead_mixers_;
+  // still owned by an input. This must be a list since the same mixer key may
+  // end up associated with multiple mixers with errors.
+  std::list<AudioRendererMixerReference> dead_mixers_;
 
   base::Lock mixers_lock_;
 };

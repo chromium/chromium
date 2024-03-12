@@ -238,6 +238,8 @@ TEST_F(AudioRendererMixerManagerTest, ReturnMixerWithError) {
   EXPECT_EQ(1u, dead_mixer_count());
 
   // Using the same params should create a new mixer due to the error.
+  mock_sink_ = CreateNormalSink();
+  local_sink = mock_sink_.get();
   media::AudioRendererMixer* mixer2 =
       GetMixer(kFrameToken, params1, AudioLatency::Type::kPlayback,
                kDefaultDeviceId, SinkUseState::kNewSink);
@@ -246,10 +248,24 @@ TEST_F(AudioRendererMixerManagerTest, ReturnMixerWithError) {
   EXPECT_EQ(1u, dead_mixer_count());
   EXPECT_NE(mixer1, mixer2);
 
-  // Return both outstanding mixers.
+  // Trigger an error in mixer2 now.
+  local_sink->callback()->OnRenderError();
+
+  // Ensure we end up with two dead mixers and not just one in this case.
+  media::AudioRendererMixer* mixer3 =
+      GetMixer(kFrameToken, params1, AudioLatency::Type::kPlayback,
+               kDefaultDeviceId, SinkUseState::kNewSink);
+  ASSERT_TRUE(mixer3);
+  EXPECT_EQ(1u, mixer_count());
+  EXPECT_EQ(2u, dead_mixer_count());
+  EXPECT_NE(mixer1, mixer2);
+
+  // Return all outstanding mixers.
   ReturnMixer(mixer1);
-  EXPECT_EQ(0u, dead_mixer_count());
+  EXPECT_EQ(1u, dead_mixer_count());
   ReturnMixer(mixer2);
+  EXPECT_EQ(0u, dead_mixer_count());
+  ReturnMixer(mixer3);
   EXPECT_EQ(0u, mixer_count());
 }
 
