@@ -2669,7 +2669,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Internal.SoftNavigationFromReferenceInvalidTiming"
     enum="SoftNavigationFromReferenceInvalidTimingReasons"
-    expires_after="2024-04-23">
+    expires_after="2024-08-23">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3189,7 +3189,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadEndLessThanLoadStart"
-    enum="Boolean" expires_after="2024-04-24">
+    enum="Boolean" expires_after="2024-08-24">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
