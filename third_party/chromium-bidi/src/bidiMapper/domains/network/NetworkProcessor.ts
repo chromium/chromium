@@ -319,7 +319,7 @@ export class NetworkProcessor {
               throw new InvalidArgumentException('Forbidden characters');
             }
           } else if (urlPattern.pathname === '') {
-            urlPattern.pathname = '*';
+            urlPattern.pathname = '/';
           }
 
           if (urlPattern.search) {
