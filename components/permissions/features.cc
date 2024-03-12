@@ -66,11 +66,11 @@ BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
 
 BASE_FEATURE(kPermissionDedicatedCpssSetting,
              "PermissionDedicatedCpssSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPermissionPredictionsV2,
              "PermissionPredictionsV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to trigger showing a HaTS survey, with the given
 // `probability` and `trigger_id`. The `probability` parameter is defined and

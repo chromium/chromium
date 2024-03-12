@@ -2731,28 +2731,6 @@
             ]
         }
     ],
-    "CPSS-V2": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230926",
-                    "params": {
-                        "holdback_chance": "0.3"
-                    },
-                    "enable_features": [
-                        "PermissionDedicatedCpssSettings",
-                        "PermissionPredictionsV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPUInterventionEvaluationLogging": [
         {
             "platforms": [

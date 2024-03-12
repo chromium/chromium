@@ -478,7 +478,7 @@
           <div class="content-settings-header secondary">
             $i18n{siteSettingsLocationDescription}
           </div>
-          <div class="radio-group">
+          <div id="locationRadioGroup" class="radio-group">
             <template is="dom-if" if="[[!showDedicatedCpssSetting_]]">
               <settings-category-default-radio-group
                   category="[[contentSettingsTypesEnum_.GEOLOCATION]]"
