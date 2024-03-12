@@ -37,9 +37,29 @@ div[slot='panel']>div>div {
   flex: 1;
 }
 
+label {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.input-dirty {
+  background: #ff8;
+}
+
+.row-sep > *:not(:first-child) {
+  margin-left: 5px;
+}
+
 .dump {
   font-family: monospace;
   white-space: pre-wrap;
+}
+
+#log-message-filter-stats {
+  font-weight: normal;
 }
 
 .event-logs-time {

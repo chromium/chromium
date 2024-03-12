@@ -34,14 +34,20 @@ found in the LICENSE file.
       <div slot="panel" id="tabpanel-event-logs">
         <div>
           <div>
-            <h2>Event Logs <button id="log-messages-dump">Dump</button></h2>
+            <h2 class="row-sep">
+              <span>Event Logs</span>
+              <button id="log-messages-dump">Dump</button>
+              <label>Include: <input id="log-message-include"></label>
+              <label>Exclude: <input id="log-message-exclude"></label>
+              <span id="log-message-filter-stats"></span>
+            </h2>
             <table id="log-message-container">
               <thead>
                 <tr>
                   <th class="event-logs-time">Time</th>
-                  <th class="event-logs-log-source">Log source</th>
-                  <th class="event-logs-source-location">Source Location</th>
-                  <th class="event-logs-message">Log Message</th>
+                  <th class="event-logs-log-source filterable">Log source</th>
+                  <th class="event-logs-source-location filterable">Source Location</th>
+                  <th class="event-logs-message filterable">Log Message</th>
                 </tr>
               </thead>
               <tbody></tbody>
