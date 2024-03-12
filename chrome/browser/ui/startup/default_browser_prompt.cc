@@ -7,6 +7,7 @@
 #include <limits>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -79,11 +80,12 @@ void ShowPrompt() {
 // Returns true if the default browser prompt should be shown if Chrome is not
 // the user's default browser.
 bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
+  PrefService* local_state = g_browser_process->local_state();
+
   // Do not show the prompt if "suppress_default_browser_prompt_for_version" in
   // the initial preferences is set to the current version.
   const std::string disable_version_string =
-      g_browser_process->local_state()->GetString(
-          prefs::kBrowserSuppressDefaultBrowserPrompt);
+      local_state->GetString(prefs::kBrowserSuppressDefaultBrowserPrompt);
   const base::Version disable_version(disable_version_string);
   DCHECK(disable_version_string.empty() || disable_version.IsValid());
   if (disable_version.IsValid() &&
@@ -91,8 +93,33 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
     return false;
   }
 
-  MigrateDefaultBrowserLastDeclinedPref(profile->GetPrefs());
+  if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh)) {
+    const int declined_count =
+        local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
+    const base::Time last_declined_time =
+        local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime);
+    const int max_prompt_count = features::kMaxPromptCount.Get();
 
+    // A negative value for the max prompt count indicates that the prompt
+    // should be shown indefinitely. Otherwise, don't show the prompt if
+    // declined count equals or exceeds the max prompt count. A max prompt count
+    // of zero should mean that the prompt is never shown.
+    if (max_prompt_count >= 0 && declined_count >= max_prompt_count) {
+      return false;
+    }
+
+    // Show if the user has never declined the prompt.
+    if (declined_count == 0) {
+      return true;
+    }
+
+    // Show if it has been long enough since the last declined time
+    base::TimeDelta reprompt_duration =
+        features::kRepromptDuration.Get() *
+        std::pow(features::kRepromptDurationMultiplier.Get(),
+                 declined_count - 1);
+    return (base::Time::Now() - last_declined_time) > reprompt_duration;
+  }
   // Do not show if the user has previously declined the prompt.
   int64_t last_dismissed_value =
       profile->GetPrefs()->GetInt64(prefs::kDefaultBrowserLastDeclined);
@@ -130,6 +157,10 @@ void RegisterDefaultBrowserPromptPrefs(PrefRegistrySimple* registry) {
 // the old pref.
 void MigrateDefaultBrowserLastDeclinedPref(PrefService* profile_prefs) {
   PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    CHECK_IS_TEST();
+    return;
+  }
 
   const PrefService::Preference* old_last_declined_time_pref =
       profile_prefs->FindPreference(prefs::kDefaultBrowserLastDeclined);
@@ -199,4 +230,8 @@ void ResetDefaultBrowserPrompt(Profile* profile) {
 
 void ShowPromptForTesting() {
   ShowPrompt();
+}
+
+bool ShouldShowDefaultBrowserPromptForTesting(Profile* profile) {
+  return ShouldShowDefaultBrowserPrompt(profile);
 }

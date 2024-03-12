@@ -48,8 +48,8 @@ extern const base::FeatureParam<bool> kUpdatedInfoBarCopy;
 // Base duration after which the user may be remprompted.
 extern const base::FeatureParam<base::TimeDelta> kRepromptDuration;
 
-// Maximum number of times a user will be prompted. When set to -1, the user
-// will be prompted indefinitely.
+// Maximum number of times a user will be prompted. When set to a negative
+// value, the user will be prompted indefinitely.
 extern const base::FeatureParam<int> kMaxPromptCount;
 
 // Exponential backoff multiplier for the reprompt duration.

@@ -2341,6 +2341,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
     }
   }
 
+  // TODO(326079444): After experiment is over, update the deprecated date and
+  // allow this to be cleaned up.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
+#endif
+
 // Added 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kBentoBarEnabled);
