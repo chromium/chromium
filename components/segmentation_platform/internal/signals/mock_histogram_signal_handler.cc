@@ -7,7 +7,7 @@
 namespace segmentation_platform {
 
 MockHistogramSignalHandler::MockHistogramSignalHandler()
-    : HistogramSignalHandler(nullptr) {}
+    : HistogramSignalHandler("", nullptr, nullptr) {}
 
 MockHistogramSignalHandler::~MockHistogramSignalHandler() = default;
 

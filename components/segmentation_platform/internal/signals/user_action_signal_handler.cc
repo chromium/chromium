@@ -8,13 +8,20 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/ukm_database.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
 namespace segmentation_platform {
 
 UserActionSignalHandler::UserActionSignalHandler(
-    SignalDatabase* signal_database)
-    : db_(signal_database), metrics_enabled_(false) {
+    const std::string& profile_id,
+    SignalDatabase* signal_database,
+    UkmDatabase* ukm_db)
+    : profile_id_(profile_id),
+      db_(signal_database),
+      ukm_db_(ukm_db),
+      metrics_enabled_(false) {
   action_callback_ = base::BindRepeating(&UserActionSignalHandler::OnUserAction,
                                          weak_ptr_factory_.GetWeakPtr());
 }
@@ -65,6 +72,13 @@ void UserActionSignalHandler::OnUserAction(const std::string& user_action,
       proto::SignalType::USER_ACTION, user_action_hash, std::nullopt,
       base::BindOnce(&UserActionSignalHandler::OnSampleWritten,
                      weak_ptr_factory_.GetWeakPtr(), user_action, action_time));
+  if (ukm_db_) {
+    ukm_db_->AddUmaMetric(profile_id_,
+                          UmaMetricEntry{.type = proto::SignalType::USER_ACTION,
+                                         .name_hash = user_action_hash,
+                                         .time = base::Time::Now(),
+                                         .value = 0});
+  }
 }
 
 void UserActionSignalHandler::OnSampleWritten(const std::string& user_action,

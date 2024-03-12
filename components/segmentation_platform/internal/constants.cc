@@ -27,4 +27,7 @@ const char kSegmentationPlatformDisableModelExecutionDelaySwitch[] =
 const char kSegmentationLastDBCompactionTimePref[] =
     "segmentation_platform.last_db_compaction_time";
 
+const char kSegmentationUmaSqlDatabaseStartTimePref[] =
+    "segmentation_platform.uma_in_sql_start_time";
+
 }  // namespace segmentation_platform

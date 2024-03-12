@@ -7,7 +7,7 @@
 namespace segmentation_platform {
 
 MockUserActionSignalHandler::MockUserActionSignalHandler()
-    : UserActionSignalHandler(nullptr) {}
+    : UserActionSignalHandler("", nullptr, nullptr) {}
 
 MockUserActionSignalHandler::~MockUserActionSignalHandler() = default;
 
