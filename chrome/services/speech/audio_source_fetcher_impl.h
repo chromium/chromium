@@ -98,6 +98,8 @@ class AudioSourceFetcherImpl
 
   void SendAudioEndToSpeechRecognitionService();
 
+  void SendError();
+
   media::AudioCapturerSource* GetAudioCapturerSource();
 
   void DrainConverterOutput();
@@ -138,6 +140,9 @@ class AudioSourceFetcherImpl
 
   // A callback to push audio data into `converter_`.
   SendAudioToResampleCallback resample_callback_;
+
+  // Callback bound to correct thread to send errors to `audio_consumer_`.
+  base::RepeatingClosure send_error_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

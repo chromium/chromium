@@ -127,6 +127,9 @@ void AudioSourceFetcherImpl::Start(
       audio::DeadStreamDetection::kEnabled, std::move(audio_log_remote));
   DCHECK(audio_capturer_source_);
 
+  send_error_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
+      &AudioSourceFetcherImpl::SendError, weak_factory_.GetWeakPtr()));
+
   // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
   // Windows.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -199,11 +202,12 @@ void AudioSourceFetcherImpl::OnCaptureError(
     media::AudioCapturerSource::ErrorCode code,
     const std::string& message) {
   LOG(ERROR) << "Audio Capture Error" << message;
-  audio_consumer_->OnAudioCaptureError();
+  send_error_callback_.Run();
 }
 
 void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_consumer_->AddAudio(std::move(buffer));
 }
 
@@ -212,6 +216,11 @@ void AudioSourceFetcherImpl::SendAudioToResample(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   converter_->Push(std::move(audio_data));
   DrainConverterOutput();
+}
+
+void AudioSourceFetcherImpl::SendError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  audio_consumer_->OnAudioCaptureError();
 }
 
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {
