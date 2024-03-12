@@ -46,7 +46,8 @@ export class CrButtonElement extends CrButtonElementBase {
       },
 
       /**
-       * Use this property in order to configure the "tabindex" attribute.
+       * Use this property in order to configure the "tabindex" attribute when
+       * the button is not disabled. When disabled "-1" will be used regardless.
        */
       customTabIndex: {
         type: Number,
@@ -142,10 +143,9 @@ export class CrButtonElement extends CrButtonElementBase {
    * Updates the tabindex HTML attribute to the actual value.
    */
   private applyTabIndex_() {
-    let value = this.customTabIndex;
-    if (value === undefined) {
-      value = this.disabled ? -1 : 0;
-    }
+    const enabledValue =
+        this.customTabIndex !== undefined ? this.customTabIndex : 0;
+    const value = this.disabled ? -1 : enabledValue;
     this.setAttribute('tabindex', value.toString());
   }
 

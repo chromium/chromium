@@ -70,18 +70,18 @@ suite('cr-button', function() {
     button.removeEventListener('click', clickHandler);
   });
 
-  test('when tabindex is -1, it stays -1', async () => {
+  test('customTabIndex restored after disabling/re-enabling', async () => {
     document.body.innerHTML =
-        getTrustedHTML`<cr-button custom-tab-index="-1"></cr-button>`;
+        getTrustedHTML`<cr-button custom-tab-index="10"></cr-button>`;
     button = document.body.querySelector('cr-button')!;
-    assertEquals('-1', button.getAttribute('tabindex'));
+    assertEquals('10', button.getAttribute('tabindex'));
     button.disabled = true;
     assertEquals('-1', button.getAttribute('tabindex'));
     button.disabled = false;
-    assertEquals('-1', button.getAttribute('tabindex'));
+    assertEquals('10', button.getAttribute('tabindex'));
   });
 
-  test('tabindex update', async () => {
+  test('customTabIndex updates tabindex', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     button = document.createElement('cr-button');
     document.body.appendChild(button);
