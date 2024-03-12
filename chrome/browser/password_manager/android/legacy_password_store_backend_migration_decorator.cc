@@ -333,11 +333,16 @@ void LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
 
   if (act_on_password_changes) {
     // Non-syncable data needs to be migrated to the new active backend.
-    MigrationType type =
-        sync_settings_helper_.IsSyncFeatureEnabledIncludingPasswords()
-            ? MigrationType::kNonSyncableToAndroidBackend
-            : MigrationType::kNonSyncableToBuiltInBackend;
-    migrator_->StartAccountMigrationIfNecessary(type);
+    if (sync_settings_helper_.IsSyncFeatureEnabledIncludingPasswords()) {
+      migrator_->StartAccountMigrationIfNecessary(
+          MigrationType::kNonSyncableToAndroidBackend);
+    } else {
+      prefs_->SetInteger(password_manager::prefs::
+                             kCurrentMigrationVersionToGoogleMobileServices,
+                         0);
+      migrator_->StartAccountMigrationIfNecessary(
+          MigrationType::kNonSyncableToBuiltInBackend);
+    }
   }
 }
 

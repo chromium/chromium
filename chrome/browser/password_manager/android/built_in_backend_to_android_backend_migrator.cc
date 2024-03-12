@@ -91,6 +91,17 @@ std::string BackendOperationToString(
   }
 }
 
+void ResetUnenrollmentStatus(PrefService* prefs) {
+  prefs->ClearPref(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+  prefs->ClearPref(password_manager::prefs::
+                       kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
+  prefs->SetInteger(
+      prefs::kTimesReenrolledToGoogleMobileServices,
+      prefs->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) + 1);
+  prefs->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
+}
+
 }  // namespace
 
 struct BuiltInBackendToAndroidBackendMigrator::IsPasswordLess {
@@ -539,25 +550,17 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
   metrics_reporter_.reset();
 
   if (is_success) {
-    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                       kRequiredMigrationVersion);
-    // Reenroll previously evicted user into the experiment if the migration has
-    // succeeded.
     switch (migration_in_progress_type_) {
       case MigrationType::kReenrollmentAttempt:
-        prefs_->ClearPref(password_manager::prefs::
-                              kUnenrolledFromGoogleMobileServicesDueToErrors);
-        prefs_->ClearPref(
-            password_manager::prefs::
-                kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
+        ResetUnenrollmentStatus(prefs_);
         prefs_->SetInteger(
-            prefs::kTimesReenrolledToGoogleMobileServices,
-            prefs_->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) +
-                1);
-        prefs_->SetInteger(
-            prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
+            prefs::kCurrentMigrationVersionToGoogleMobileServices,
+            kRequiredMigrationVersion);
         break;
       case MigrationType::kForLocalUsers:
+        prefs_->SetInteger(
+            prefs::kCurrentMigrationVersionToGoogleMobileServices,
+            kRequiredMigrationVersion);
         prefs_->SetInteger(
             prefs::kPasswordsUseUPMLocalAndSeparateStores,
             static_cast<int>(password_manager::prefs::
@@ -565,10 +568,14 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
         prefs_->SetBoolean(
             prefs::kShouldShowPostPasswordMigrationSheetAtStartup, true);
         break;
-      case MigrationType::kNone:
       case MigrationType::kInitialForSyncUsers:
       case MigrationType::kNonSyncableToAndroidBackend:
+        prefs_->SetInteger(
+            prefs::kCurrentMigrationVersionToGoogleMobileServices,
+            kRequiredMigrationVersion);
+        break;
       case MigrationType::kNonSyncableToBuiltInBackend:
+      case MigrationType::kNone:
         break;
     }
   }

@@ -999,6 +999,8 @@ class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
                                             0.0);
     prefs()->registry()->RegisterBooleanPref(
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
+    prefs()->registry()->RegisterStringPref(
+        ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs()->registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
@@ -1125,6 +1127,32 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   // triggered.
   EXPECT_EQ(0, prefs()->GetDouble(
                    password_manager::prefs::kTimeOfLastMigrationAttempt));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
+       NonSyncDataToBuiltInBackendDoesNotWriteInitialUPMMigrationPref) {
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  // Add a form to the built-in backend to have something to migrate.
+  PasswordForm form = CreateTestPasswordForm();
+  built_in_backend().AddLoginAsync(form, base::DoNothing());
+  ON_CALL(android_backend_, GetAllLoginsForAccountAsync)
+      .WillByDefault(WithArg<1>(Invoke([&](LoginsOrErrorReply reply) -> void {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(reply), std::vector<PasswordForm>()));
+      })));
+
+  migrator()->StartAccountMigrationIfNecessary(
+      MigrationType::kNonSyncableToBuiltInBackend);
+  EXPECT_EQ(MigrationType::kNonSyncableToBuiltInBackend,
+            migrator()->migration_in_progress_type());
+  RunUntilIdle();
+
+  // Migration finished but initial migration version is still 0.
+  EXPECT_EQ(MigrationType::kNone, migrator()->migration_in_progress_type());
+  EXPECT_EQ(0, prefs()->GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
