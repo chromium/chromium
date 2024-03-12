@@ -822,27 +822,18 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
 
 #pragma mark - Cache position in table view.
 
-// Creates bookmark path for `folderId` passed in. For eg: for folderId = 76,
-// Root node(0) --> MobileBookmarks (3) --> Test1(76) will be returned as [0, 3,
-// 76]. Return nullptr if the folder is not found.
 NSArray<NSNumber*>* CreateBookmarkPath(LegacyBookmarkModel* model,
                                        int64_t folder_id) {
-  // Create an array with root node id, if folder_id == root node.
-  if (model->root_node()->id() == folder_id) {
-    return @[ [NSNumber numberWithLongLong:model->root_node()->id()] ];
-  }
-
   const BookmarkNode* bookmark = FindFolderById(model, folder_id);
-  if (!bookmark) {
+  if (!bookmark || bookmark->is_root()) {
     return nil;
   }
 
   NSMutableArray<NSNumber*>* bookmarkPath = [NSMutableArray array];
-  [bookmarkPath addObject:[NSNumber numberWithLongLong:folder_id]];
-  while (model->root_node()->id() != bookmark->id()) {
+  while (!bookmark->is_root()) {
+    [bookmarkPath addObject:[NSNumber numberWithLongLong:bookmark->id()]];
     bookmark = bookmark->parent();
     DCHECK(bookmark);
-    [bookmarkPath addObject:[NSNumber numberWithLongLong:bookmark->id()]];
   }
   return [[bookmarkPath reverseObjectEnumerator] allObjects];
 }

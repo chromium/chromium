@@ -355,8 +355,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return stack;
   }
 
-  DCHECK_EQ(folderModel->root_node()->id(), [[path firstObject] longLongValue]);
-  for (NSUInteger ii = 1; ii < [path count]; ii++) {
+  for (NSUInteger ii = 0; ii < [path count]; ii++) {
     int64_t nodeID = [[path objectAtIndex:ii] longLongValue];
     const BookmarkNode* node =
         bookmark_utils_ios::FindFolderById(folderModel.get(), nodeID);

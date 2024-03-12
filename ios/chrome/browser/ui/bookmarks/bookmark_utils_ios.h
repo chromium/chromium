@@ -228,8 +228,9 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
     const NodeVector& vector2);
 
 // Creates bookmark path for `folderId` passed in. For eg: for folderId = 76,
-// Root node(0) --> MobileBookmarks (3) --> Test1(76) will be returned as [0, 3,
-// 76].
+// MobileBookmarks (3) --> Test1(76) will be returned as [3, 76], where the
+// first element always represents a permanent folder. Returns nullptr if the
+// folder is not found or is the root node.
 NSArray<NSNumber*>* CreateBookmarkPath(LegacyBookmarkModel* model,
                                        int64_t folder_id);
 

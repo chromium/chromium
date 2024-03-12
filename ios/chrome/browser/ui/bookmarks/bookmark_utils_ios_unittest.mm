@@ -224,7 +224,6 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
   NSArray<NSNumber*>* path = bookmark_utils_ios::CreateBookmarkPath(
       local_or_syncable_bookmark_model_, f1->id());
   NSMutableArray<NSNumber*>* expectedPath = [NSMutableArray array];
-  [expectedPath addObject:@0];
   [expectedPath addObject:[NSNumber numberWithLongLong:mobileNode->id()]];
   [expectedPath addObject:[NSNumber numberWithLongLong:f1->id()]];
   EXPECT_TRUE([expectedPath isEqualToArray:path]);
