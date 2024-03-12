@@ -16,7 +16,8 @@ namespace extensions {
 ShellExtensionsRendererClient::ShellExtensionsRendererClient()
     : dispatcher_(std::make_unique<Dispatcher>(
           std::make_unique<DispatcherDelegate>(),
-          std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>>())) {
+          std::vector<
+              std::unique_ptr<const ExtensionsRendererAPIProvider>>())) {
   dispatcher_->OnRenderThreadStarted(content::RenderThread::Get());
 }
 

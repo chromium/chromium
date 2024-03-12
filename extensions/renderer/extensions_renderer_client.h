@@ -64,7 +64,8 @@ class ExtensionsRendererClient {
   static void Set(ExtensionsRendererClient* client);
 
  protected:
-  std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>> api_providers_;
+  std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
+      api_providers_;
 };
 
 }  // namespace extensions

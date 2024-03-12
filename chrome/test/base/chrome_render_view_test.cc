@@ -129,8 +129,8 @@ void ChromeRenderViewTest::InitChromeContentRendererClient(
   ext_client->SetExtensionDispatcherForTest(
       std::make_unique<extensions::Dispatcher>(
           std::make_unique<ChromeExtensionsDispatcherDelegate>(),
-          std::vector<
-              std::unique_ptr<extensions::ExtensionsRendererAPIProvider>>()));
+          std::vector<std::unique_ptr<
+              const extensions::ExtensionsRendererAPIProvider>>()));
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

@@ -31,14 +31,14 @@ class ControlledFrameExtensionsRendererAPIProvider
   void RegisterNativeHandlers(
       extensions::ModuleSystem* module_system,
       extensions::NativeExtensionBindingsSystem* bindings_system,
-      extensions::ScriptContext* context) override;
-  void AddBindingsSystemHooks(
-      extensions::Dispatcher* dispatcher,
-      extensions::NativeExtensionBindingsSystem* bindings_system) override;
+      extensions::ScriptContext* context) const override;
+  void AddBindingsSystemHooks(extensions::Dispatcher* dispatcher,
+                              extensions::NativeExtensionBindingsSystem*
+                                  bindings_system) const override;
   void PopulateSourceMap(
-      extensions::ResourceBundleSourceMap* source_map) override;
-  void EnableCustomElementAllowlist() override;
-  void RequireWebViewModules(extensions::ScriptContext* context) override;
+      extensions::ResourceBundleSourceMap* source_map) const override;
+  void EnableCustomElementAllowlist() const override;
+  void RequireWebViewModules(extensions::ScriptContext* context) const override;
 };
 
 }  // namespace controlled_frame

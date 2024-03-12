@@ -42,7 +42,7 @@ namespace extensions {
 void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
     ModuleSystem* module_system,
     NativeExtensionBindingsSystem* bindings_system,
-    ScriptContext* context) {
+    ScriptContext* context) const {
   module_system->RegisterNativeHandler(
       "sync_file_system",
       std::make_unique<SyncFileSystemCustomBindings>(context));
@@ -80,7 +80,7 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
 
 void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
     Dispatcher* dispatcher,
-    NativeExtensionBindingsSystem* bindings_system) {
+    NativeExtensionBindingsSystem* bindings_system) const {
   APIBindingsSystem* bindings = bindings_system->api_system();
   bindings->RegisterHooksDelegate(
       "app", std::make_unique<extensions::AppHooksDelegate>(
@@ -106,7 +106,7 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 }
 
 void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
-    ResourceBundleSourceMap* source_map) {
+    ResourceBundleSourceMap* source_map) const {
   // Custom bindings.
   source_map->RegisterSource("action", IDR_ACTION_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("browserAction",
@@ -215,9 +215,10 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
   source_map->RegisterSource("chromeWebView", IDR_CHROME_WEB_VIEW_JS);
 }
 
-void ChromeExtensionsRendererAPIProvider::EnableCustomElementAllowlist() {}
+void ChromeExtensionsRendererAPIProvider::EnableCustomElementAllowlist() const {
+}
 
 void ChromeExtensionsRendererAPIProvider::RequireWebViewModules(
-    ScriptContext* context) {}
+    ScriptContext* context) const {}
 
 }  // namespace extensions

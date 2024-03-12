@@ -242,7 +242,8 @@ Dispatcher::PendingServiceWorker::~PendingServiceWorker() = default;
 // is not initialized at the point we create Dispatcher.
 Dispatcher::Dispatcher(
     std::unique_ptr<DispatcherDelegate> delegate,
-    std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>> api_providers)
+    std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
+        api_providers)
     : delegate_(std::move(delegate)),
       api_providers_(std::move(api_providers)),
       content_watcher_(new ContentWatcher()),

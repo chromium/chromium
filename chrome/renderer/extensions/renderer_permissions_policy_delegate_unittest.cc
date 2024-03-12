@@ -39,7 +39,7 @@ class RendererPermissionsPolicyDelegateTest : public testing::Test {
     ExtensionsRendererClient::Set(renderer_client_.get());
     extension_dispatcher_ = std::make_unique<Dispatcher>(
         std::make_unique<ChromeExtensionsDispatcherDelegate>(),
-        std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>>());
+        std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>());
     policy_delegate_ = std::make_unique<RendererPermissionsPolicyDelegate>(
         extension_dispatcher_.get());
   }

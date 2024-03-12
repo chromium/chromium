@@ -25,13 +25,13 @@ class ChromeExtensionsRendererAPIProvider
   // ExtensionsRendererAPIProvider:
   void RegisterNativeHandlers(ModuleSystem* module_system,
                               NativeExtensionBindingsSystem* bindings_system,
-                              ScriptContext* context) override;
+                              ScriptContext* context) const override;
   void AddBindingsSystemHooks(
       Dispatcher* dispatcher,
-      NativeExtensionBindingsSystem* bindings_system) override;
-  void PopulateSourceMap(ResourceBundleSourceMap* source_map) override;
-  void EnableCustomElementAllowlist() override;
-  void RequireWebViewModules(ScriptContext* context) override;
+      NativeExtensionBindingsSystem* bindings_system) const override;
+  void PopulateSourceMap(ResourceBundleSourceMap* source_map) const override;
+  void EnableCustomElementAllowlist() const override;
+  void RequireWebViewModules(ScriptContext* context) const override;
 };
 
 }  // namespace extensions

@@ -82,7 +82,7 @@ class Dispatcher : public content::RenderThreadObserver,
                    public NativeExtensionBindingsSystem::Delegate {
  public:
   Dispatcher(std::unique_ptr<DispatcherDelegate> delegate,
-             std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>>
+             std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
                  api_providers);
 
   Dispatcher(const Dispatcher&) = delete;
@@ -332,7 +332,15 @@ class Dispatcher : public content::RenderThreadObserver,
   std::unique_ptr<DispatcherDelegate> delegate_;
 
   // The list of embedder API providers.
-  std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>> api_providers_;
+  // This list is accessed on multiple threads, since these API providers are
+  // used in the initialization of script contexts (which can be both main-
+  // thread contexts and worker-thread contexts).
+  // This is safe, since this list is established on Dispatcher construction
+  // (which happens before any access on worker threads), the Dispatcher should
+  // not be destroyed, and this list is immutable. This is enforced by the
+  // `const`s below.
+  const std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
+      api_providers_;
 
   // The IDs of extensions that failed to load, mapped to the error message
   // generated on failure.
