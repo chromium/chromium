@@ -826,7 +826,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       gpm_credentials_ = passkey_model->GetPasskeysForRelyingPartyId(rp_id);
 
       enclave_manager_ = EnclaveManagerFactory::GetForProfile(profile);
-      enclave_manager_->Start();
       enclave_manager_observer_ =
           std::make_unique<EnclaveManagerObserver>(this, enclave_manager_);
       if (gpm_credentials_->empty() &&
@@ -843,6 +842,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         DownloadAccountState();
       } else {
         FIDO_LOG(EVENT) << "Enclave state is loading";
+        enclave_manager_->Load(
+            base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
         dialog_model_->set_account_state(AccountState::kLoading);
       }
     }
@@ -1244,13 +1246,19 @@ void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
       // In this case, we were waiting for the user to create their GPM PIN
       // and the needed enclave action is to set up using that PIN.
       gpm_pin_stashed_ = dialog_model_->TakeGPMPin();
-      enclave_manager_->AddDeviceAndPINToAccount(*gpm_pin_stashed_);
+      enclave_manager_->AddDeviceAndPINToAccount(
+          *gpm_pin_stashed_,
+          base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
+                         weak_ptr_factory_.GetWeakPtr()));
       return;
     }
 
     if (dialog_model_->account_state() == AccountState::kEmpty) {
       // The user has set a PIN to create the account.
-      enclave_manager_->SetupWithPIN(dialog_model_->TakeGPMPin());
+      enclave_manager_->SetupWithPIN(
+          dialog_model_->TakeGPMPin(),
+          base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
+                         weak_ptr_factory_.GetWeakPtr()));
       return;
     }
 
@@ -1313,9 +1321,9 @@ class ChromeAuthenticatorRequestDelegate::EnclaveManagerObserver
   ~EnclaveManagerObserver() override { manager_->RemoveObserver(this); }
 
   // EnclaveManager::Observer:
-  void OnEnclaveManagerIdle() override {
+  void OnKeysStored() override {
     // `delegate_` owns this object and so `delegate_` must be valid.
-    delegate_->OnEnclaveManagerIdle();
+    delegate_->OnKeysStored();
   }
 
  private:
@@ -1345,62 +1353,62 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
   }
 }
 
-void ChromeAuthenticatorRequestDelegate::OnEnclaveManagerIdle() {
-  if (enclave_manager_->is_loaded()) {
-    if (dialog_model_->account_state() == AccountState::kLoading) {
-      if (enclave_manager_->is_ready()) {
-        FIDO_LOG(EVENT) << "Enclave is ready";
-        SetAccountStateReady();
-      } else {
-        FIDO_LOG(EVENT) << "Account state needs to be checked";
-        dialog_model_->set_account_state(AccountState::kChecking);
-        DownloadAccountState();
-      }
-    }
+void ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded() {
+  CHECK_EQ(dialog_model_->account_state(), AccountState::kLoading);
 
-    if (pending_transport_availability_info_) {
-      auto pending_transport_availability_info =
-          std::move(pending_transport_availability_info_);
-      pending_transport_availability_info_.reset();
-
-      ShowUI(std::move(*pending_transport_availability_info));
-    }
+  if (enclave_manager_->is_ready()) {
+    FIDO_LOG(EVENT) << "Enclave is ready";
+    SetAccountStateReady();
+  } else {
+    FIDO_LOG(EVENT) << "Account state needs to be checked";
+    dialog_model_->set_account_state(AccountState::kChecking);
+    DownloadAccountState();
   }
 
-  if (dialog_model_->current_step() ==
-          AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain &&
-      enclave_manager_->has_pending_keys()) {
-    CHECK(!enclave_manager_->is_ready());
-    if (serialized_wrapped_pin_.has_value()) {
-      // The account already has a GPM PIN.
-      if (!enclave_manager_->AddDeviceToAccount(serialized_wrapped_pin_)) {
-        // TODO(enclave): move the UI to a to-be-created error state.
-        NOTREACHED();
-      }
-    } else {
-      // If the user has local biometrics, and an existing recovery factor,
-      // we'll likely choose not to create a GPM PIN. For now, however, we
-      // always do:
-      dialog_model_->OnCreateGPMPin();
+  if (pending_transport_availability_info_) {
+    auto pending_transport_availability_info =
+        std::move(pending_transport_availability_info_);
+    pending_transport_availability_info_.reset();
+
+    ShowUI(std::move(*pending_transport_availability_info));
+  }
+}
+
+void ChromeAuthenticatorRequestDelegate::OnKeysStored() {
+  if (dialog_model_->current_step() !=
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain) {
+    return;
+  }
+  CHECK(enclave_manager_->has_pending_keys());
+  CHECK(!enclave_manager_->is_ready());
+
+  if (serialized_wrapped_pin_.has_value()) {
+    // The account already has a GPM PIN.
+    if (!enclave_manager_->AddDeviceToAccount(
+            serialized_wrapped_pin_,
+            base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
+                           weak_ptr_factory_.GetWeakPtr()))) {
+      // TODO(enclave): move the UI to a to-be-created error state.
+      NOTREACHED();
     }
+  } else {
+    // If the user has local biometrics, and an existing recovery factor,
+    // we'll likely choose not to create a GPM PIN. For now, however, we
+    // always do:
+    dialog_model_->OnCreateGPMPin();
+  }
+}
+
+void ChromeAuthenticatorRequestDelegate::OnDeviceAdded(bool success) {
+  if (!success) {
+    // TODO(enclave): move the UI to a to-be-created error state.
+    NOTREACHED();
     return;
   }
 
-  if (enclave_manager_->is_ready() &&
-      (dialog_model_->account_state() == AccountState::kRecoverable ||
-       dialog_model_->account_state() == AccountState::kEmpty)) {
-    SetAccountStateReady();
-
-    if (dialog_model_->current_step() ==
-        AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
-      // If the account became ready, but the UI was already waiting for the
-      // enclave, then there's some enclave action that needs to be triggered.
-      OnStepTransition();
-    }
-  }
-
-  // TODO(enclave): if the store count has increased and the UI has MagicArch
-  // showing then something failed.
+  SetAccountStateReady();
+  // Trigger the authenticator request to the enclave.
+  OnStepTransition();
 }
 
 void ChromeAuthenticatorRequestDelegate::OnAccountPreselected(

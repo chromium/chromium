@@ -78,7 +78,8 @@ struct EnclaveManager::StoreKeysArgs {
   int last_key_version;
 };
 
-struct EnclaveManager::PendingActions {
+struct EnclaveManager::PendingAction {
+  EnclaveManager::Callback callback;
   bool want_registration;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
   bool setup_account = false;
@@ -732,45 +733,26 @@ class EnclaveManager::StateMachine {
  public:
   explicit StateMachine(EnclaveManager* manager,
                         webauthn_pb::EnclaveLocalState local_state,
-                        std::unique_ptr<CoreAccountInfo> primary_account_info)
+                        std::unique_ptr<CoreAccountInfo> primary_account_info,
+                        std::unique_ptr<PendingAction> action)
       : manager_(manager),
         local_state_(std::move(local_state)),
         user_(StateForUser(&local_state_, *primary_account_info)),
-        primary_account_info_(std::move(primary_account_info)) {}
-
-  void set_want_registration() { want_registration_ = true; }
-
-  void set_store_keys_args(
-      std::unique_ptr<EnclaveManager::StoreKeysArgs> args) {
-    store_keys_args_ = std::move(args);
+        primary_account_info_(std::move(primary_account_info)),
+        action_(std::move(action)) {
+    Process(None());
   }
 
-  void setup_account() { setup_account_ = true; }
-
-  void set_pending_pin(std::string pending_pin) {
-    pending_pin_ = std::move(pending_pin);
-  }
-
-  void set_wrapped_pin(
-      std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin) {
-    wrapped_pin_ = std::move(wrapped_pin);
-  }
-
-  void Start() {
-    if (state_ == State::kInit) {
-      state_ = State::kNextAction;
-      Process(None());
+  ~StateMachine() {
+    if (action_->callback) {
+      std::move(action_->callback).Run(false);
     }
   }
 
  private:
   // This class is a state machine that uses the following states. It moves from
-  // state to state in response to `Event` values. Fields such as
-  // `want_registration_` and `identity_updated_` are set in order to record
-  // that the state machine needs to process those requests once the current
-  // processing has completed.
+  // state to state in response to `Event` values.
   enum class State {
-    kInit,
     kStop,
     kNextAction,
     kGeneratingKeys,
@@ -843,13 +825,6 @@ class EnclaveManager::StateMachine {
     const std::string event_str = ToString(event);
 
     switch (state_) {
-      case State::kInit:
-        // This state should never be observed. `Start` should set the
-        // state to `kNextAction` before starting the event Process for the
-        // first time.
-        NOTREACHED();
-        break;
-
       case State::kStop:
         // This should never be observed here as this special case is handled
         // below.
@@ -918,6 +893,7 @@ class EnclaveManager::StateMachine {
                     << ToString(state_);
 
     if (state_ == State::kStop) {
+      std::move(action_->callback).Run(success_);
       manager_->Stopped();
       // `this` has been deleted now.
       return;
@@ -935,6 +911,7 @@ class EnclaveManager::StateMachine {
     FIDO_LOG(EVENT) << ToString(prior_state) << " --> " << ToString(state_);
 
     if (state_ == State::kStop) {
+      std::move(action_->callback).Run(success_);
       manager_->Stopped();
       // `this` has been deleted now.
       return;
@@ -945,8 +922,6 @@ class EnclaveManager::StateMachine {
 
   static std::string ToString(State state) {
     switch (state) {
-      case State::kInit:
-        return "Init";
       case State::kStop:
         return "Stop";
       case State::kNextAction:
@@ -1028,17 +1003,18 @@ class EnclaveManager::StateMachine {
   void DoNextAction() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if ((want_registration_ || store_keys_args_ || !pending_pin_.empty()) &&
+    if ((action_->want_registration || action_->store_keys_args ||
+         !action_->pin.empty()) &&
         !user_->registered()) {
-      want_registration_ = false;
+      action_->want_registration = false;
       StartEnclaveRegistration();
       return;
     }
 
-    if (user_->registered() && !pending_pin_.empty()) {
-      if (setup_account_) {
-        CHECK(!store_keys_args_);
-        setup_account_ = false;
+    if (user_->registered() && !action_->pin.empty()) {
+      if (action_->setup_account) {
+        CHECK(!action_->store_keys_args);
+        action_->setup_account = false;
 
         // Create `store_keys_args_for_joining_` as if we had received the keys
         // for the security domain from an external source.
@@ -1052,8 +1028,8 @@ class EnclaveManager::StateMachine {
         // Zero is a special value that indicates that the epoch is unknown.
         store_keys_args_for_joining_->last_key_version = 0;
       } else {
-        CHECK(store_keys_args_);
-        store_keys_args_for_joining_ = std::move(store_keys_args_);
+        CHECK(action_->store_keys_args);
+        store_keys_args_for_joining_ = std::move(action_->store_keys_args);
       }
 
       state_ = State::kHashingPIN;
@@ -1080,7 +1056,7 @@ class EnclaveManager::StateMachine {
                                      sizeof(hashed->hashed)));
                 return hashed;
               },
-              std::move(pending_pin_)),
+              std::move(action_->pin)),
           base::BindOnce(
               [](base::WeakPtr<StateMachine> machine,
                  std::unique_ptr<HashedPIN> hashed) {
@@ -1093,10 +1069,10 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    if (user_->registered() && store_keys_args_) {
-      CHECK_EQ(primary_account_info_->gaia, store_keys_args_->gaia_id);
-      auto store_keys_args = std::move(store_keys_args_);
-      store_keys_args_.reset();
+    if (user_->registered() && action_->store_keys_args) {
+      CHECK_EQ(primary_account_info_->gaia, action_->store_keys_args->gaia_id);
+      auto store_keys_args = std::move(action_->store_keys_args);
+      action_->store_keys_args.reset();
 
       new_security_domain_secrets_ =
           GetNewSecretsToStore(*user_, *store_keys_args);
@@ -1110,6 +1086,7 @@ class EnclaveManager::StateMachine {
       return;
     }
 
+    success_ = true;
     state_ = State::kStop;
   }
 
@@ -1290,7 +1267,7 @@ class EnclaveManager::StateMachine {
                        ->second)) {
       FIDO_LOG(ERROR) << "Wrapped member key was invalid: "
                       << cbor::DiagnosticWriter::Write(response);
-      state_ = State::kNextAction;
+      state_ = State::kStop;
       return;
     }
 
@@ -1361,9 +1338,9 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    if (wrapped_pin_) {
-      *user_->mutable_wrapped_pin() = std::move(*wrapped_pin_);
-      wrapped_pin_.reset();
+    if (action_->wrapped_pin) {
+      *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
+      action_->wrapped_pin.reset();
     }
 
     if (!user_->joined()) {
@@ -1582,8 +1559,9 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    wrapped_pin_ = BuildWrappedPIN(*hashed_pin_, /*generation=*/0, vault_.get(),
-                                   store_keys_args_for_joining_->keys.back());
+    action_->wrapped_pin =
+        BuildWrappedPIN(*hashed_pin_, /*generation=*/0, vault_.get(),
+                        store_keys_args_for_joining_->keys.back());
     const auto secure_box_pub_key =
         trusted_vault::SecureBoxPublicKey::CreateByImport(ToSpan(
             vault_->application_keys()[0].asymmetric_key_pair().public_key()));
@@ -1592,7 +1570,7 @@ class EnclaveManager::StateMachine {
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_, store_keys_args_for_joining_->keys,
         store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
-        trusted_vault::GpmPin(wrapped_pin_->SerializeAsString()),
+        trusted_vault::GpmPin(action_->wrapped_pin->SerializeAsString()),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -1611,8 +1589,8 @@ class EnclaveManager::StateMachine {
     }
 
     store_keys_args_for_joining_->last_key_version = key_version;
-    *user_->mutable_wrapped_pin() = std::move(*wrapped_pin_);
-    wrapped_pin_.reset();
+    *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
+    action_->wrapped_pin.reset();
 
     if (!StoreWrappedSecrets(
             user_, GetNewSecretsToStore(*user_, *store_keys_args_for_joining_),
@@ -1738,13 +1716,11 @@ class EnclaveManager::StateMachine {
   const raw_ptr<EnclaveLocalState::User> user_;
   const std::unique_ptr<CoreAccountInfo> primary_account_info_;
 
-  State state_ = State::kInit;
+  bool success_ = false;
+  State state_ = State::kNextAction;
   bool processing_ = false;
 
-  std::unique_ptr<StoreKeysArgs> store_keys_args_;
-  std::string pending_pin_;
-  bool setup_account_ = false;
-  bool want_registration_ = false;
+  const std::unique_ptr<EnclaveManager::PendingAction> action_;
 
   std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
   std::unique_ptr<crypto::UserVerifyingKeyProvider>
@@ -1760,7 +1736,6 @@ class EnclaveManager::StateMachine {
   std::optional<std::string> sig_xml_;
   std::unique_ptr<HashedPIN> hashed_pin_;
   std::unique_ptr<trusted_vault_pb::Vault> vault_;
-  std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin_;
   std::optional<cbor::Value> wrapping_response_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -1811,39 +1786,52 @@ bool EnclaveManager::is_ready() const {
 }
 
 unsigned EnclaveManager::store_keys_count() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return store_keys_count_;
 }
 
-void EnclaveManager::Start() {
+void EnclaveManager::Load(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Act();
-}
 
-void EnclaveManager::RegisterIfNeeded() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (user_ && user_->registered()) {
+  if (is_loaded()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
     return;
   }
-  if (!pending_actions_) {
-    pending_actions_ = std::make_unique<PendingActions>();
-  }
-  pending_actions_->want_registration = true;
+  load_callbacks_.emplace_back(std::move(closure));
   Act();
 }
 
-void EnclaveManager::SetupWithPIN(std::string pin) {
+void EnclaveManager::RegisterIfNeeded(EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pending_actions_) {
-    pending_actions_ = std::make_unique<PendingActions>();
+
+  if (user_ && user_->registered()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
   }
-  pending_actions_->pin = std::move(pin);
-  pending_actions_->setup_account = true;
+
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->want_registration = true;
+  pending_actions_.emplace_back(std::move(action));
+  Act();
+}
+
+void EnclaveManager::SetupWithPIN(std::string pin,
+                                  EnclaveManager::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->pin = std::move(pin);
+  action->setup_account = true;
+  pending_actions_.emplace_back(std::move(action));
   Act();
 }
 
 bool EnclaveManager::AddDeviceToAccount(
-    std::optional<std::string> serialized_wrapped_pin) {
+    std::optional<std::string> serialized_wrapped_pin,
+    EnclaveManager::Callback callback) {
   CHECK(has_pending_keys());
 
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
@@ -1855,22 +1843,23 @@ bool EnclaveManager::AddDeviceToAccount(
     }
   }
 
-  if (!pending_actions_) {
-    pending_actions_ = std::make_unique<PendingActions>();
-  }
-  pending_actions_->store_keys_args = std::move(pending_keys_);
-  pending_actions_->wrapped_pin = std::move(wrapped_pin);
-
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->store_keys_args = std::move(pending_keys_);
+  action->wrapped_pin = std::move(wrapped_pin);
+  pending_actions_.emplace_back(std::move(action));
   Act();
   return true;
 }
 
-void EnclaveManager::AddDeviceAndPINToAccount(std::string pin) {
-  if (!pending_actions_) {
-    pending_actions_ = std::make_unique<PendingActions>();
-  }
-  pending_actions_->store_keys_args = std::move(pending_keys_);
-  pending_actions_->pin = std::move(pin);
+void EnclaveManager::AddDeviceAndPINToAccount(
+    std::string pin,
+    EnclaveManager::Callback callback) {
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->store_keys_args = std::move(pending_keys_);
+  action->pin = std::move(pin);
+  pending_actions_.emplace_back(std::move(action));
   Act();
 }
 
@@ -2214,14 +2203,11 @@ void EnclaveManager::StoreKeys(const std::string& gaia_id,
   pending_keys_->gaia_id = gaia_id;
   pending_keys_->keys = std::move(keys);
   pending_keys_->last_key_version = last_key_version;
+
   store_keys_count_++;
 
-  if (!state_machine_) {
-    // Since this `EnclaveManager` is the only thing that learns when MagicArch
-    // has completed, it needs to signal the higher layers of UI. The "stopped"
-    // signal is the generic "you need to do something now" signal and so is
-    // used for this.
-    Stopped();
+  for (Observer& observer : observer_list_) {
+    observer.OnKeysStored();
   }
 }
 
@@ -2346,42 +2332,34 @@ void EnclaveManager::Act() {
     return;
   }
 
-  if (!user_ || !pending_actions_) {
-    Stopped();
+  if (!load_callbacks_.empty()) {
+    std::vector<base::OnceClosure> callbacks = std::move(load_callbacks_);
+    load_callbacks_.clear();
+
+    for (auto& callback : callbacks) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
+    }
+  }
+
+  if (pending_actions_.empty() || state_machine_) {
     return;
   }
 
-  if (!state_machine_) {
-    EnclaveLocalState copy;
-    copy.CopyFrom(*local_state_);
-    state_machine_ = std::make_unique<StateMachine>(
-        this, std::move(copy),
-        std::make_unique<CoreAccountInfo>(*primary_account_info_));
+  if (!user_) {
+    CancelAllActions();
+    return;
   }
 
-  // TODO(enclave): the state machine should take a `PendingActions` rather than
-  // have all this code. We might want a queue of them in `Enclave Manager` and
-  // to have a functions like `AddDeviceToAccount` take a callback rather than
-  // depend on the idle callback.
-  if (pending_actions_->want_registration) {
-    state_machine_->set_want_registration();
-  }
-  if (pending_actions_->store_keys_args) {
-    state_machine_->set_store_keys_args(
-        std::move(pending_actions_->store_keys_args));
-  }
-  if (pending_actions_->setup_account) {
-    state_machine_->setup_account();
-  }
-  if (!pending_actions_->pin.empty()) {
-    state_machine_->set_pending_pin(std::move(pending_actions_->pin));
-  }
-  if (pending_actions_->wrapped_pin) {
-    state_machine_->set_wrapped_pin(std::move(pending_actions_->wrapped_pin));
-  }
+  std::unique_ptr<PendingAction> action = std::move(pending_actions_.front());
+  pending_actions_.pop_front();
 
-  pending_actions_.reset();
-  state_machine_->Start();
+  EnclaveLocalState copy;
+  copy.CopyFrom(*local_state_);
+  state_machine_ = std::make_unique<StateMachine>(
+      this, std::move(copy),
+      std::make_unique<CoreAccountInfo>(*primary_account_info_),
+      std::move(action));
 }
 
 void EnclaveManager::LoadComplete(std::optional<std::string> contents) {
@@ -2480,16 +2458,24 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   }
 
   if (need_to_stop && !is_post_load) {
+    CancelAllActions();
     Stopped();
   }
 }
 
 void EnclaveManager::Stopped() {
   state_machine_.reset();
-  pending_actions_.reset();
+  Act();
+}
 
-  for (Observer& observer : observer_list_) {
-    observer.OnEnclaveManagerIdle();
+void EnclaveManager::CancelAllActions() {
+  std::deque<std::unique_ptr<PendingAction>> actions =
+      std::move(pending_actions_);
+  pending_actions_.clear();
+
+  for (const auto& action : actions) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(action->callback), false));
   }
 }
 

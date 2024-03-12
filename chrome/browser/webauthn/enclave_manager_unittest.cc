@@ -30,6 +30,7 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/types.h"
+#include "device/fido/test_callback_receiver.h"
 #include "net/base/port_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/network_service.h"
@@ -50,6 +51,8 @@
 #if !defined(MEMORY_SANITIZER)
 
 namespace enclave = device::enclave;
+using NoArgCallback = device::test::TestCallbackReceiver<>;
+using BoolCallback = device::test::TestCallbackReceiver<bool>;
 
 namespace {
 
@@ -313,11 +316,6 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   }
 
  protected:
-  void RunUntilIdle() {
-    quit_closure_ = task_env_.QuitClosure();
-    task_env_.RunUntilQuit();
-  }
-
   base::flat_set<std::string> GaiaAccountsInState() const {
     const webauthn_pb::EnclaveLocalState& state =
         manager_.local_state_for_testing();
@@ -328,13 +326,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     return ret;
   }
 
-  void OnEnclaveManagerIdle() override {
-    if (manager_.is_idle() && quit_closure_.has_value()) {
-      auto quit_closure = std::move(quit_closure_.value());
-      quit_closure_.reset();
-      quit_closure.Run();
-    }
-  }
+  void OnKeysStored() override { stored_count_++; }
 
   void DoCreate(
       std::unique_ptr<enclave::ClaimedPIN> claimed_pin,
@@ -477,7 +469,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   }
 
   base::test::TaskEnvironment task_env_;
-  std::optional<base::RepeatingClosure> quit_closure_;
+  unsigned stored_count_ = 0;
   const TempDir temp_dir_;
   const std::pair<base::Process, uint16_t> process_and_port_;
   const enclave::ScopedEnclaveOverride enclave_override_;
@@ -501,17 +493,19 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
-  manager_.Start();
-  ASSERT_FALSE(manager_.is_idle());
-  RunUntilIdle();
+  NoArgCallback loaded_callback;
+  manager_.Load(loaded_callback.callback());
+  loaded_callback.WaitForCallback();
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
 
-  manager_.RegisterIfNeeded();
+  BoolCallback register_callback;
+  manager_.RegisterIfNeeded(register_callback.callback());
   ASSERT_FALSE(manager_.is_idle());
-  RunUntilIdle();
+  register_callback.WaitForCallback();
+  ASSERT_TRUE(std::get<0>(register_callback.result().value()));
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_TRUE(manager_.is_registered());
@@ -523,11 +517,14 @@ TEST_F(EnclaveManagerTest, Basic) {
                      /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
+  EXPECT_EQ(stored_count_, 1u);
 
-  ASSERT_TRUE(
-      manager_.AddDeviceToAccount(/*serialized_wrapped_pin=*/std::nullopt));
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
   ASSERT_FALSE(manager_.is_idle());
-  RunUntilIdle();
+  add_callback.WaitForCallback();
+  ASSERT_TRUE(std::get<0>(add_callback.result().value()));
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -543,7 +540,6 @@ TEST_F(EnclaveManagerTest, Basic) {
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
   security_domain_service_->pretend_there_are_members();
-  manager_.Start();
   ASSERT_FALSE(manager_.is_registered());
 
   // If secrets are provided before `RegisterIfNeeded` is called, the state
@@ -551,9 +547,10 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  ASSERT_TRUE(
-      manager_.AddDeviceToAccount(/*serialized_wrapped_pin=*/std::nullopt));
-  RunUntilIdle();
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+  add_callback.WaitForCallback();
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -563,8 +560,8 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   security_domain_service_->pretend_there_are_members();
-  manager_.Start();
-  manager_.RegisterIfNeeded();
+  BoolCallback register_callback;
+  manager_.RegisterIfNeeded(register_callback.callback());
   ASSERT_FALSE(manager_.is_registered());
 
   // Provide the domain secrets before the registration has completed. The
@@ -572,9 +569,11 @@ TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationCompleted) {
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
-  ASSERT_TRUE(
-      manager_.AddDeviceToAccount(/*serialized_wrapped_pin=*/std::nullopt));
-  RunUntilIdle();
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+  add_callback.WaitForCallback();
+  register_callback.WaitForCallback();
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -592,9 +591,10 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
   {
     device::enclave::ScopedEnclaveOverride override(
         TestEnclaveIdentity(/*port=*/100));
-    manager_.Start();
-    manager_.RegisterIfNeeded();
-    RunUntilIdle();
+    BoolCallback register_callback;
+    manager_.RegisterIfNeeded(register_callback.callback());
+    register_callback.WaitForCallback();
+    ASSERT_FALSE(std::get<0>(register_callback.result().value()));
   }
   ASSERT_FALSE(manager_.is_registered());
   const std::string public_key = manager_.local_state_for_testing()
@@ -603,9 +603,11 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
                                      ->second.hardware_public_key();
   ASSERT_FALSE(public_key.empty());
 
-  manager_.RegisterIfNeeded();
-  RunUntilIdle();
+  BoolCallback register_callback;
+  manager_.RegisterIfNeeded(register_callback.callback());
+  register_callback.WaitForCallback();
   ASSERT_TRUE(manager_.is_registered());
+  ASSERT_TRUE(std::get<0>(register_callback.result().value()));
 
   // The public key should not have changed because re-registration attempts
   // must try the same public key again in case they actually worked the first
@@ -622,9 +624,11 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
 
-  manager_.Start();
-  manager_.RegisterIfNeeded();
-  RunUntilIdle();
+  {
+    BoolCallback register_callback;
+    manager_.RegisterIfNeeded(register_callback.callback());
+    register_callback.WaitForCallback();
+  }
   ASSERT_TRUE(manager_.is_registered());
   EXPECT_THAT(GaiaAccountsInState(), testing::UnorderedElementsAre(gaia1));
 
@@ -635,8 +639,11 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
   ASSERT_FALSE(manager_.is_registered());
-  manager_.RegisterIfNeeded();
-  RunUntilIdle();
+  {
+    BoolCallback register_callback;
+    manager_.RegisterIfNeeded(register_callback.callback());
+    register_callback.WaitForCallback();
+  }
   ASSERT_TRUE(manager_.is_registered());
   EXPECT_THAT(GaiaAccountsInState(),
               testing::UnorderedElementsAre(gaia1, gaia2));
@@ -664,31 +671,40 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
 
-  manager_.Start();
-  manager_.RegisterIfNeeded();
-  RunUntilIdle();
-  ASSERT_TRUE(manager_.is_registered());
+  NoArgCallback loaded_callback;
+  manager_.Load(loaded_callback.callback());
+  loaded_callback.WaitForCallback();
 
-  manager_.StoreKeys(gaia1, {{1, 2, 3, 4}}, 100);
+  BoolCallback register_callback1;
+  manager_.RegisterIfNeeded(register_callback1.callback());
+  BoolCallback register_callback2;
+  manager_.RegisterIfNeeded(register_callback2.callback());
+
   identity_test_env_.MakePrimaryAccountAvailable("test2@gmail.com",
                                                  signin::ConsentLevel::kSignin);
-  // `MakePrimaryAccountAvailable` should have canceled any action.
+  // `MakePrimaryAccountAvailable` should have canceled any actions.
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_FALSE(manager_.has_pending_keys());
   ASSERT_FALSE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
+
+  register_callback1.WaitForCallback();
+  ASSERT_FALSE(std::get<0>(register_callback1.result().value()));
+  register_callback2.WaitForCallback();
+  ASSERT_FALSE(std::get<0>(register_callback2.result().value()));
 }
 
-TEST_F(EnclaveManagerTest, AddPINToAccount) {
+TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   security_domain_service_->pretend_there_are_members();
-  manager_.Start();
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
+  BoolCallback add_callback;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
-      /*serialized_wrapped_pin=*/GetTestWrappedPIN().SerializeAsString()));
-  RunUntilIdle();
+      /*serialized_wrapped_pin=*/GetTestWrappedPIN().SerializeAsString(),
+      add_callback.callback()));
+  add_callback.WaitForCallback();
 
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.is_loaded());
@@ -707,17 +723,19 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
 
+  BoolCallback add_callback;
   // A wrapped PIN that isn't a valid protobuf should be rejected.
-  EXPECT_FALSE(manager_.AddDeviceToAccount("nonsense wrapped PIN"));
+  EXPECT_FALSE(manager_.AddDeviceToAccount("nonsense wrapped PIN",
+                                           add_callback.callback()));
 
   // A valid protobuf, but which fails invariants, should be rejected.
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = GetTestWrappedPIN();
   wrapped_pin.set_wrapped_pin("too short");
-  EXPECT_FALSE(manager_.AddDeviceToAccount(wrapped_pin.SerializeAsString()));
+  EXPECT_FALSE(manager_.AddDeviceToAccount(wrapped_pin.SerializeAsString(),
+                                           add_callback.callback()));
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN) {
-  manager_.Start();
   const std::string pin = "123456";
 
   url_loader_factory_.AddResponse(
@@ -731,8 +749,9 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
           "?alt=proto",
       MakeVaultResponse());
 
-  manager_.SetupWithPIN(pin);
-  RunUntilIdle();
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN(pin, setup_callback.callback());
+  setup_callback.WaitForCallback();
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
   EXPECT_FALSE(manager_.wrapped_pin_is_arbitrary());
@@ -748,8 +767,6 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN_CertXMLFailure) {
-  manager_.Start();
-
   url_loader_factory_.AddResponse(
       std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
       std::string(), net::HTTP_NOT_FOUND);
@@ -757,15 +774,15 @@ TEST_F(EnclaveManagerTest, SetupWithPIN_CertXMLFailure) {
       std::string(EnclaveManager::recovery_key_store_sig_url_for_testing()),
       std::string(kSampleRecoverableKeyStoreSigXML));
 
-  manager_.SetupWithPIN("123456");
-  // This test simply shouldn't crash or hang.
-  RunUntilIdle();
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN("123456", setup_callback.callback());
+  // This test primarily shouldn't crash or hang.
+  setup_callback.WaitForCallback();
+  ASSERT_FALSE(std::get<0>(setup_callback.result().value()));
   ASSERT_FALSE(manager_.is_ready());
 }
 
 TEST_F(EnclaveManagerTest, SetupWithPIN_SigXMLFailure) {
-  manager_.Start();
-
   url_loader_factory_.AddResponse(
       std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
       std::string(kSampleRecoverableKeyStoreCertXML));
@@ -773,15 +790,16 @@ TEST_F(EnclaveManagerTest, SetupWithPIN_SigXMLFailure) {
       std::string(EnclaveManager::recovery_key_store_sig_url_for_testing()),
       std::string(), net::HTTP_NOT_FOUND);
 
-  manager_.SetupWithPIN("123456");
-  // This test simply shouldn't crash or hang.
-  RunUntilIdle();
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN("123456", setup_callback.callback());
+  // This test primarily shouldn't crash or hang.
+  setup_callback.WaitForCallback();
+  ASSERT_FALSE(std::get<0>(setup_callback.result().value()));
   ASSERT_FALSE(manager_.is_ready());
 }
 
 TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   security_domain_service_->pretend_there_are_members();
-  manager_.Start();
   const std::string pin = "pin";
 
   url_loader_factory_.AddResponse(
@@ -801,8 +819,9 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
                      /*last_key_version=*/kSecretVersion);
   ASSERT_TRUE(manager_.has_pending_keys());
 
-  manager_.AddDeviceAndPINToAccount(pin);
-  RunUntilIdle();
+  BoolCallback add_callback;
+  manager_.AddDeviceAndPINToAccount(pin, add_callback.callback());
+  add_callback.WaitForCallback();
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
   EXPECT_TRUE(manager_.wrapped_pin_is_arbitrary());

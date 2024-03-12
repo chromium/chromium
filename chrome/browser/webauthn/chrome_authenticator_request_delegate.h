@@ -261,9 +261,15 @@ class ChromeAuthenticatorRequestDelegate
 
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
-  // Called each time `enclave_manager_` has finished processing all pending
-  // actions.
-  void OnEnclaveManagerIdle();
+  // Called when the EnclaveManager has finished loading its state from the
+  // disk.
+  void OnEnclaveLoaded();
+
+  // Called when MagicArch has provided keys to the EnclaveManager.
+  void OnKeysStored();
+
+  // Called when the current device has been added to the security domain.
+  void OnDeviceAdded(bool success);
 
   // Called when the user selects an account from modal or conditional UI.
   // Stores the credential ID in `preselected_cred_id_` then forwards to the

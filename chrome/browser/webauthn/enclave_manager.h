@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_ENCLAVE_MANAGER_H_
 #define CHROME_BROWSER_WEBAUTHN_ENCLAVE_MANAGER_H_
 
+#include <deque>
 #include <optional>
 #include <string>
 #include <vector>
@@ -51,22 +52,26 @@ class EnclaveLocalState_WrappedPIN;
 // the `IdentityManager` and, when the primary account changes, the result of
 // functions like `is_registered` will suddenly change too. If an account is
 // removed from the cookie jar (and it's not primary) then state for that
-// account will be erased.
-//
-// Calling `Start` for the first time will cause the persisted state to be read
-// from the disk. Each time all requested operations have completed, the class
-// becomes "idle": `is_idle` will return true, and `OnEnclaveManagerIdle`
-// will be called for all observers.
+// account will be erased. Any pending operations will be canceled when the
+// primary account changes and their callback will be run with `false`.
 //
 // When `is_ready` is true then this class can produce wrapped security domain
 // secrets and signing callbacks to use to perform passkey operations with the
 // enclave, which is the ultimate point of this class.
 class EnclaveManager : public KeyedService {
  public:
+  // Many actions report results using a `Callback`. The boolean argument
+  // is true if the operation is successful and false otherwise.
+  // These callbacks never hairpin. (I.e. are never called before the function
+  // that they were passed to returns.)
+  using Callback = base::OnceCallback<void(bool)>;
+
   struct StoreKeysArgs;
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnEnclaveManagerIdle() = 0;
+    // OnKeyStores is called when MagicArch provides keys to the EnclaveManager
+    // by calling `StoreKeys`.
+    virtual void OnKeysStored() = 0;
   };
 
   EnclaveManager(
@@ -95,13 +100,12 @@ class EnclaveManager : public KeyedService {
   // Returns the number of times that `StoreKeys` has been called.
   unsigned store_keys_count() const;
 
-  // Start by loading the persisted state from disk. Harmless to call multiple
-  // times.
-  void Start();
+  // Load the persisted state from disk. Harmless to call if `is_loaded`.
+  void Load(base::OnceClosure closure);
   // Register with the enclave if not already registered.
-  void RegisterIfNeeded();
+  void RegisterIfNeeded(Callback callback);
   // Set up an account with a newly-created PIN.
-  void SetupWithPIN(std::string pin);
+  void SetupWithPIN(std::string pin, Callback callback);
   // Adds the current device to the security domain. Only valid to call after
   // `StoreKeys` has been called and thus `has_pending_keys` returns true. If
   // `serialized_wrapped_pin` has a value then it is taken to be the contents
@@ -110,11 +114,12 @@ class EnclaveManager : public KeyedService {
   //
   // Returns false if `serialized_wrapped_pin` fails to parse and true
   // otherwise.
-  bool AddDeviceToAccount(std::optional<std::string> serialized_wrapped_pin);
+  bool AddDeviceToAccount(std::optional<std::string> serialized_wrapped_pin,
+                          Callback callback);
   // Adds the current device, and a GPM PIN, to the security domain. Only valid
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.
-  void AddDeviceAndPINToAccount(std::string pin);
+  void AddDeviceAndPINToAccount(std::string pin, Callback callback);
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
@@ -195,7 +200,7 @@ class EnclaveManager : public KeyedService {
  private:
   class StateMachine;
   class IdentityObserver;
-  struct PendingActions;
+  struct PendingAction;
   friend class StateMachine;
 
   // Starts a `StateMachine` to process the current request.
@@ -213,6 +218,9 @@ class EnclaveManager : public KeyedService {
 
   // Called when a `StateMachine` has stopped (or needs to stop).
   void Stopped();
+
+  // Called when the primary user changes and all pending actions are stopped.
+  void CancelAllActions();
 
   // Can be called at any point to serialise the current value of `local_state_`
   // to disk. Only a single write happens at a time. If a write is already
@@ -254,7 +262,8 @@ class EnclaveManager : public KeyedService {
 
   std::unique_ptr<StoreKeysArgs> pending_keys_;
   std::unique_ptr<StateMachine> state_machine_;
-  std::unique_ptr<PendingActions> pending_actions_;
+  std::vector<base::OnceClosure> load_callbacks_;
+  std::deque<std::unique_ptr<PendingAction>> pending_actions_;
 
   // Allow keys to persist across sequences because loading them is slow.
   scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> user_verifying_key_;
