@@ -69,6 +69,8 @@
   // src/ directory.
   "C_Cpp.clang_format_path": "${workspaceFolder}/third_party/depot_tools/clang-format",
   "C_Cpp.clang_format_sortIncludes": true,
+  // Avoid conflicts with vscode-clangd extension.
+  "C_Cpp.intelliSenseEngine": "disabled",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
 
@@ -93,4 +95,6 @@
   //"workbench.editor.enablePreview": false,
   // Optional: Same for files opened from quick open (Ctrl+P).
   //"workbench.editor.enablePreviewFromQuickOpen": false,
+  // Optional: Enable Python type checking.
+  //"python.analysis.typeCheckingMode": "basic"
 }
