@@ -165,7 +165,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         getActivity().setTitle(R.string.sync_category_title);
         setHasOptionsMenu(true);
 
-        SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && !mSyncService.hasSyncConsent()) {
+            SettingsUtils.addPreferencesFromResource(
+                    this, R.xml.unified_account_settings_preferences);
+        } else {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
+        }
 
         mSyncErrorCardPreference =
                 (SyncErrorCardPreference) findPreference(PREF_SYNC_ERROR_CARD_PREFERENCE);
