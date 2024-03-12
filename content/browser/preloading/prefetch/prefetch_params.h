@@ -130,10 +130,6 @@ size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
 // Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
 bool PrefetchNIKScopeEnabled();
 
-// Returns true if the early cookie copy in `PrefetchDocumentManager` is
-// skipped. See crbug.com/1503003 for details.
-bool PrefetchDocumentManagerEarlyCookieCopySkipped();
-
 // Returns true if browser-initiated prefetch is enabled.
 // Please see crbug.com/40946257 for more details.
 bool PrefetchBrowserInitiatedTriggersEnabled();

@@ -25,7 +25,6 @@
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/cpp/features.h"
@@ -68,7 +67,6 @@ SpeculationCandidateToPrefetchUrlParams(
 
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh),
-      WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
       document_token_(
           static_cast<RenderFrameHostImpl*>(rfh)->GetDocumentToken()),
       no_vary_search_support_enabled_(
@@ -122,62 +120,6 @@ PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
     }
   }
   return nullptr;
-}
-
-void PrefetchDocumentManager::DidStartNavigation(
-    NavigationHandle* navigation_handle) {
-  if (PrefetchDocumentManagerEarlyCookieCopySkipped()) {
-    // The `DidStartNavigation` logic is for optimization, but we are not sure
-    // how much that is buying us. We are experimenting disabling it.
-    // See crbug.com/1503003 for details.
-    return;
-  }
-
-  // Ignore navigations for a different LocalFrameToken.
-  // TODO(crbug.com/1431804, crbug.com/1431387): LocalFrameToken is used here
-  // for scoping while RenderFrameHost's ID is used elsewhere. In the long term
-  // we should fix this inconsistency, but the current code is at least not
-  // worse than checking RenderFrameHostId here.
-  if (render_frame_host().GetFrameToken() !=
-      navigation_handle->GetInitiatorFrameToken()) {
-    DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
-             << navigation_handle->GetURL()
-             << ": skipped (different LocalFrameToken)";
-    return;
-  }
-
-  // Ignores any same document navigations since we can't use prefetches to
-  // speed them up.
-  if (navigation_handle->IsSameDocument()) {
-    DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
-             << navigation_handle->GetURL() << ": skipped (same document)";
-    return;
-  }
-
-  PrefetchService* prefetch_service = GetPrefetchService();
-  if (!prefetch_service) {
-    return;
-  }
-
-  base::WeakPtr<PrefetchContainer> prefetch_container =
-      prefetch_service->MatchUrl(
-          PrefetchContainer::Key(document_token_, navigation_handle->GetURL()));
-  if (!prefetch_container) {
-    return;
-  }
-
-  switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
-    case PrefetchContainer::ServableState::kServable:
-      // For prefetches that are already servable, start the process of
-      // copying cookies from the isolated network context used to make the
-      // prefetch to the default network context.
-      prefetch_service->CopyIsolatedCookies(prefetch_container->CreateReader());
-      break;
-
-    case PrefetchContainer::ServableState::kNotServable:
-    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-      break;
-  }
 }
 
 void PrefetchDocumentManager::ProcessCandidates(

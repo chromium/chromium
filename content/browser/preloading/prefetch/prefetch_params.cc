@@ -282,11 +282,6 @@ bool PrefetchNIKScopeEnabled() {
   return base::FeatureList::IsEnabled(features::kPrefetchNIKScope);
 }
 
-bool PrefetchDocumentManagerEarlyCookieCopySkipped() {
-  return base::FeatureList::IsEnabled(
-      features::kPrefetchDocumentManagerEarlyCookieCopySkipped);
-}
-
 bool PrefetchBrowserInitiatedTriggersEnabled() {
   return base::FeatureList::IsEnabled(
       features::kPrefetchBrowserInitiatedTriggers);

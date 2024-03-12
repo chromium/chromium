@@ -30,10 +30,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 // itself. See crbug.com/1502326
 BASE_DECLARE_FEATURE(kPrefetchNIKScope);
 
-// If enabled, the early cookie copy in `PrefetchDocumentManager` is
-// skipped. See crbug.com/1503003 for details.
-BASE_DECLARE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped);
-
 // If enabled, browser-initiated prefetch is become to be allowed.
 // Please see crbug.com/40946257 for more details.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchBrowserInitiatedTriggers);
