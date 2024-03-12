@@ -79,9 +79,9 @@ To use a third-party crate "bar" version 3 from first party code:
      `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`
 1. Verify if all new dependencies are already audited by running `cargo vet`:
    * Install `cargo vet` if it's not yet installed:
-      * `./tools/crates/run_cargo.py install --git https://github.com/mozilla/cargo-vet cargo-vet`
-      * We use `--git` to install cargo-vet from HEAD in order to use the `--cargo-arg` argument
-        which is not released yet.
+      * `tools/crates/run_cargo.py install cargo-vet --locked --version=0.9.1`
+      * TODO: Pre-package `cargo-vet` into `rust-toolchain`:
+        https://crrev.com/c/5366668
    * `./tools/crates/run_cargo_vet.py check`
    * If `check` fails, then there are missing audits, which need to be added to
      `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.

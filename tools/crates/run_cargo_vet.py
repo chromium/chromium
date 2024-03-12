@@ -15,10 +15,24 @@ import sys
 
 from run_cargo import (RunCargo, DEFAULT_SYSROOT)
 
+_SCRIPT_NAME = os.path.basename(__file__)
 _THIS_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROMIUM_ROOT_DIR = os.path.join(_THIS_DIR, '..', '..')
 _MANIFEST_DIR = os.path.join(_CHROMIUM_ROOT_DIR, 'third_party', 'rust',
                              'chromium_crates_io')
+_VET_DATA_DIR = os.path.join(_MANIFEST_DIR, 'supply-chain')
+_CONFIG_TOML_PATH = os.path.join(_VET_DATA_DIR, 'config.toml')
+_IMPORTS_LOCK_PATH = os.path.join(_VET_DATA_DIR, 'imports.lock')
+
+
+def AreOnlyCommentsChanged(old_contents, new_contents):
+
+    def NonCommentLines(contents):
+        lines = contents.splitlines()
+        lines = [line for line in lines if line and not line.startswith('#')]
+        return lines
+
+    return NonCommentLines(old_contents) == NonCommentLines(new_contents)
 
 
 def main():
@@ -36,10 +50,36 @@ def main():
     target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
     home_dir = os.path.abspath(os.path.join(target_dir, 'cargo_home'))
 
+    # Create an empty `imports.lock` if it doesn't already exist.
+    open(_IMPORTS_LOCK_PATH, 'a').close()
+
+    # Avoid clobbering `config.toml` - see
+    # https://github.com/mozilla/cargo-vet/issues/589 and note that `gnrt
+    # vendor` generates this file from the `vet_config.toml.hbs` template.
+    with open(_CONFIG_TOML_PATH, 'r') as f:
+        old_config_toml = f.read()
+
     _CARGO_ARGS = ['-Zunstable-options', '-C', _MANIFEST_DIR]
     _EXTRA_VET_ARGS = ['--cargo-arg=-Zbindeps', '--no-registry-suggestions']
-    return RunCargo(args.rust_sysroot, home_dir,
-                    _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)
+    exitcode = RunCargo(
+        args.rust_sysroot, home_dir,
+        _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)
+
+    # Unclober `config.toml` changes if desirable.
+    with open(_CONFIG_TOML_PATH, 'r') as f:
+        new_config_toml = f.read()
+    if new_config_toml != old_config_toml:
+        if AreOnlyCommentsChanged(old_config_toml, new_config_toml):
+            print(f"{_SCRIPT_NAME}: NOTE: Restoring `config.toml` " \
+                   "(comment-only changes detected)")
+            with open(_CONFIG_TOML_PATH, 'w') as f:
+                f.write(old_config_toml)
+        else:
+            print(f"{_SCRIPT_NAME}: WARNING: Detected non-trivial " \
+                   "`config.toml` changes. " \
+                   "Check if `vet_config.toml.hbs` needs to be updated.")
+
+    return exitcode
 
 
 if __name__ == '__main__':
