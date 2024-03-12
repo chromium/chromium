@@ -1905,6 +1905,34 @@ int32_t RTCVideoEncoder::InitEncode(
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
   }
 
+  // Fallback to SW if VEA does not support VP9 SVC encoding.
+  if (codec_settings->codecType == webrtc::kVideoCodecVP9 &&
+      (codec_settings->VP9().numberOfTemporalLayers > 1 ||
+       codec_settings->VP9().numberOfSpatialLayers > 1)) {
+    const auto vea_supported_profiles =
+        gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
+            media::VideoEncodeAccelerator::SupportedProfiles());
+    auto support_profile = base::ranges::find_if(
+        vea_supported_profiles,
+        [this](const media::VideoEncodeAccelerator::SupportedProfile&
+                   support_profile) {
+          return this->profile_ == support_profile.profile &&
+                 support_profile.scalability_modes.size() > 0;
+        });
+    if (vea_supported_profiles.end() != support_profile) {
+      media::SVCScalabilityMode scalability_mode =
+          ToSVCScalabilityMode(spatial_layers, inter_layer_pred);
+      if (support_profile->scalability_modes.end() ==
+          base::ranges::find_if(
+              support_profile->scalability_modes,
+              [scalability_mode](const media::SVCScalabilityMode& value) {
+                return value == scalability_mode;
+              })) {
+        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+      }
+    }
+  }
+
   gfx::Size input_visible_size(codec_settings->width, codec_settings->height);
   // Check that |profile| supports |input_visible_size|.
   if (base::FeatureList::IsEnabled(features::kWebRtcUseMinMaxVEADimensions)) {

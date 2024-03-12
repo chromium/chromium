@@ -798,6 +798,28 @@ TEST_P(RTCVideoEncoderEncodeTest, VP9CreateAndInitSucceedsForOddSize) {
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
+TEST_P(RTCVideoEncoderEncodeTest, VP9SoftwareFallbackForVEANotSupport) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/1);
+  CreateEncoder(tl_codec.codecType);
+  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
+      {media::VP9PROFILE_PROFILE0,
+       /*max_resolution*/ gfx::Size(1920, 1088),
+       /*max_framerate_numerator*/ 30,
+       /*max_framerate_denominator*/ 1,
+       media::VideoEncodeAccelerator::kConstantMode,
+       {media::SVCScalabilityMode::kL1T1}}};
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillOnce(Return(profiles));
+  // The mock gpu factories return |profiles| as VEA supported profiles, which
+  // only support VP9 single layer acceleration. When requesting VP9 SVC
+  // encoding, InitEncode() will fail in scalability mode check and return
+  // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+}
+
 TEST_P(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
   const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
   CreateEncoder(codec_type);
