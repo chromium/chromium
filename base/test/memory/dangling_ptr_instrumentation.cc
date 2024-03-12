@@ -35,10 +35,6 @@ DanglingPtrInstrumentation::Create() {
   return base::unexpected(
       "DanglingPtrInstrumentation requires the binary flag "
       "'enable_dangling_raw_ptr_checks' to be on.");
-#elif BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
-  return base::unexpected(
-      "DanglingPtrInstrumentation requires the binary flag "
-      "'enable_dangling_raw_ptr_perf_experiment' to be off.");
 #else
   return DanglingPtrInstrumentation();
 #endif

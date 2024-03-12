@@ -206,16 +206,6 @@ declare_args() {
   # scripts to pass command line arguments.
   enable_dangling_raw_ptr_feature_flag = false
 
-  # Enables the dangling raw_ptr checks feature for the performance experiment.
-  # Not every dangling pointers have been fixed or annotated yet. To avoid
-  # accounting for the cost of calling the PA's embedder's callbacks when a
-  # dangling pointer has been detected, this simulates the raw_ptr to be
-  # allowed to dangle.
-  #
-  # This flag is temporary, and isn't used by PA embedders, so it doesn't need
-  # to go through build_overrides
-  enable_dangling_raw_ptr_perf_experiment = false
-
   enable_backup_ref_ptr_instance_tracer = false
 
   backup_ref_ptr_extra_oob_checks = enable_backup_ref_ptr_support
@@ -267,7 +257,6 @@ if (!use_partition_alloc) {
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
   enable_dangling_raw_ptr_feature_flag = false
-  enable_dangling_raw_ptr_perf_experiment = false
   enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
   enable_backup_ref_ptr_instance_tracer = false
@@ -295,12 +284,6 @@ assert(
 # in.
 assert(enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_feature_flag,
        "Meaningless to enable DPD without it compiled.")
-
-# To run the dangling raw_ptr detector experiment, the underlying feature must
-# be enabled too.
-assert(
-    enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_perf_experiment,
-    "Missing dangling pointer checks feature for its performance experiment")
 
 # To enable extra OOB checks for BackupRefPtr, the underlying feature must be
 # enabled, too.

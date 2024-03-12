@@ -173,16 +173,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   PA_ALWAYS_INLINE void Acquire() {
     CheckCookieIfSupported();
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
-    constexpr CountType kInc = kUnprotectedPtrInc;
-    constexpr CountType kMask = kUnprotectedPtrCountMask;
-#else
-    constexpr CountType kInc = kPtrInc;
-    constexpr CountType kMask = kPtrCountMask;
-#endif
-    CountType old_count = count_.fetch_add(kInc, std::memory_order_relaxed);
+    CountType old_count = count_.fetch_add(kPtrInc, std::memory_order_relaxed);
     // Check overflow.
-    PA_CHECK((old_count & kMask) != kMask);
+    PA_CHECK((old_count & kPtrCountMask) != kPtrCountMask);
   }
 
   // Similar to |Acquire()|, but for raw_ptr<T, DisableDanglingPtrDetection>
@@ -202,18 +195,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
   // Returns true if the allocation should be reclaimed.
   PA_ALWAYS_INLINE bool Release() {
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_PERF_EXPERIMENT)
-    constexpr CountType kInc = kUnprotectedPtrInc;
-    constexpr CountType kMask = kUnprotectedPtrCountMask;
-#else
-    constexpr CountType kInc = kPtrInc;
-    constexpr CountType kMask = kPtrCountMask;
-#endif
     CheckCookieIfSupported();
 
-    CountType old_count = count_.fetch_sub(kInc, std::memory_order_release);
+    CountType old_count = count_.fetch_sub(kPtrInc, std::memory_order_release);
     // Check underflow.
-    PA_DCHECK(old_count & kMask);
+    PA_DCHECK(old_count & kPtrCountMask);
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     // If a dangling raw_ptr<> was detected, report it.
@@ -224,7 +210,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     }
 #endif
 
-    return ReleaseCommon(old_count - kInc);
+    return ReleaseCommon(old_count - kPtrInc);
   }
 
   // Similar to |Release()|, but for raw_ptr<T, DisableDanglingPtrDetection>
