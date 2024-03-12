@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "blink_perf.bindings": {
-                "end": 41,
+                "end": 38,
                 "abridged": false
             }
         }
@@ -16,14 +16,14 @@
     "1": {
         "benchmarks": {
             "blink_perf.bindings": {
-                "begin": 41,
+                "begin": 38,
                 "abridged": false
             },
             "blink_perf.css": {
                 "abridged": false
             },
             "blink_perf.dom": {
-                "end": 10,
+                "end": 9,
                 "abridged": false
             }
         }
@@ -31,7 +31,7 @@
     "2": {
         "benchmarks": {
             "blink_perf.dom": {
-                "begin": 10,
+                "begin": 9,
                 "abridged": false
             },
             "blink_perf.events": {
@@ -41,7 +41,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 64,
+                "end": 60,
                 "abridged": false
             }
         }
@@ -49,7 +49,7 @@
     "3": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 64,
+                "begin": 60,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -359,15 +359,15 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1113,
+        "num_stories": 1116,
         "predicted_min_shard_time": 906.0,
         "predicted_min_shard_index": 23,
         "predicted_max_shard_time": 1027.0,
         "predicted_max_shard_index": 18,
-        "shard #0": 950.0,
-        "shard #1": 944.0,
-        "shard #2": 957.0,
-        "shard #3": 914.0,
+        "shard #0": 953.0,
+        "shard #1": 936.0,
+        "shard #2": 954.0,
+        "shard #3": 952.0,
         "shard #4": 957.0,
         "shard #5": 955.0,
         "shard #6": 957.0,
