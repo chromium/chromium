@@ -218,11 +218,16 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
                        blink::InterestGroupSet());
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class State {
-    kLoadingGroupsPhase,
-    kBiddingAndScoringPhase,
-    kSucceeded,
-    kFailed,
+    kNotYetStarted = 0,
+    kLoadingGroupsPhase = 1,
+    kBiddingAndScoringPhase = 2,
+    kSucceeded = 3,
+    kFailed = 4,
+
+    kMaxValue = kFailed
   };
 
   AuctionRunner(
@@ -335,7 +340,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   AuctionMetricsRecorder auction_metrics_recorder_;
 
   InterestGroupAuction auction_;
-  State state_ = State::kLoadingGroupsPhase;
+  State state_ = State::kNotYetStarted;
 
   base::WeakPtrFactory<AuctionRunner> weak_ptr_factory_{this};
 };

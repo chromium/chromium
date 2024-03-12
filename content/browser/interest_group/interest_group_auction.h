@@ -490,6 +490,9 @@ class CONTENT_EXPORT InterestGroupAuction
 
   ~InterestGroupAuction() override;
 
+  // The time when this InterestGroupAuction was created; used for UMA.
+  base::TimeTicks creation_time() { return creation_time_; }
+
   // Starts loading the interest groups that can participate in an auction.
   //
   // Both seller and buyer origins are filtered by
