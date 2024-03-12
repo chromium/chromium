@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
@@ -30,7 +31,6 @@
 #include "base/pickle.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -548,7 +548,8 @@ PersistentHistogramAllocator::CreateSampleMapRecords(uint64_t id) {
   return sparse_histogram_data_manager_.CreateSampleMapRecords(id);
 }
 
-void PersistentHistogramAllocator::CreateTrackingHistograms(StringPiece name) {
+void PersistentHistogramAllocator::CreateTrackingHistograms(
+    std::string_view name) {
   memory_allocator_->CreateTrackingHistograms(name);
 }
 
@@ -746,16 +747,15 @@ void GlobalHistogramAllocator::CreateWithPersistentMemory(
     size_t size,
     size_t page_size,
     uint64_t id,
-    StringPiece name) {
+    std::string_view name) {
   Set(new GlobalHistogramAllocator(std::make_unique<PersistentMemoryAllocator>(
       base, size, page_size, id, name, PersistentMemoryAllocator::kReadWrite)));
 }
 
 // static
-void GlobalHistogramAllocator::CreateWithLocalMemory(
-    size_t size,
-    uint64_t id,
-    StringPiece name) {
+void GlobalHistogramAllocator::CreateWithLocalMemory(size_t size,
+                                                     uint64_t id,
+                                                     std::string_view name) {
   Set(new GlobalHistogramAllocator(
       std::make_unique<LocalPersistentMemoryAllocator>(size, id, name)));
 }
@@ -765,7 +765,7 @@ void GlobalHistogramAllocator::CreateWithLocalMemory(
 bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
                                               size_t size,
                                               uint64_t id,
-                                              StringPiece name,
+                                              std::string_view name,
                                               bool exclusive_write) {
   uint32_t flags = File::FLAG_OPEN_ALWAYS | File::FLAG_WIN_SHARE_DELETE |
                    File::FLAG_READ | File::FLAG_WRITE;
@@ -809,7 +809,7 @@ bool GlobalHistogramAllocator::CreateWithActiveFile(const FilePath& base_path,
                                                     const FilePath& spare_path,
                                                     size_t size,
                                                     uint64_t id,
-                                                    StringPiece name) {
+                                                    std::string_view name) {
   // Old "active" becomes "base".
   if (!base::ReplaceFile(active_path, base_path, nullptr))
     base::DeleteFile(base_path);
@@ -825,10 +825,11 @@ bool GlobalHistogramAllocator::CreateWithActiveFile(const FilePath& base_path,
 }
 
 // static
-bool GlobalHistogramAllocator::CreateWithActiveFileInDir(const FilePath& dir,
-                                                         size_t size,
-                                                         uint64_t id,
-                                                         StringPiece name) {
+bool GlobalHistogramAllocator::CreateWithActiveFileInDir(
+    const FilePath& dir,
+    size_t size,
+    uint64_t id,
+    std::string_view name) {
   FilePath base_path = ConstructFilePath(dir, name);
   FilePath active_path = ConstructFilePathForActiveFile(dir, name);
   FilePath spare_path = ConstructFilePath(dir, std::string(name) + "-spare");
@@ -838,7 +839,7 @@ bool GlobalHistogramAllocator::CreateWithActiveFileInDir(const FilePath& dir,
 
 // static
 FilePath GlobalHistogramAllocator::ConstructFilePath(const FilePath& dir,
-                                                     StringPiece name) {
+                                                     std::string_view name) {
   return dir.AppendASCII(name).AddExtension(
       PersistentMemoryAllocator::kFileExtension);
 }
@@ -846,14 +847,14 @@ FilePath GlobalHistogramAllocator::ConstructFilePath(const FilePath& dir,
 // static
 FilePath GlobalHistogramAllocator::ConstructFilePathForActiveFile(
     const FilePath& dir,
-    StringPiece name) {
+    std::string_view name) {
   return ConstructFilePath(dir, std::string(name) + "-active");
 }
 
 // static
 FilePath GlobalHistogramAllocator::ConstructFilePathForUploadDir(
     const FilePath& dir,
-    StringPiece name,
+    std::string_view name,
     base::Time stamp,
     ProcessId pid) {
   return ConstructFilePath(
@@ -865,7 +866,7 @@ FilePath GlobalHistogramAllocator::ConstructFilePathForUploadDir(
 // static
 FilePath GlobalHistogramAllocator::ConstructFilePathForUploadDir(
     const FilePath& dir,
-    StringPiece name) {
+    std::string_view name) {
   return ConstructFilePathForUploadDir(dir, name, Time::Now(),
                                        GetCurrentProcId());
 }
@@ -876,7 +877,7 @@ bool GlobalHistogramAllocator::ParseFilePath(const FilePath& path,
                                              Time* out_stamp,
                                              ProcessId* out_pid) {
   std::string filename = path.BaseName().AsUTF8Unsafe();
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       filename, "-.", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 4)
     return false;
@@ -948,7 +949,7 @@ void GlobalHistogramAllocator::CreateWithSharedMemoryRegion(
   DVLOG(1) << "Global histogram allocator initialized.";
   Set(new GlobalHistogramAllocator(
       std::make_unique<WritableSharedPersistentMemoryAllocator>(
-          std::move(mapping), 0, StringPiece())));
+          std::move(mapping), 0, std::string_view())));
 }
 
 // static
@@ -1047,7 +1048,7 @@ bool GlobalHistogramAllocator::WriteToPersistentLocation() {
     return false;
   }
 
-  StringPiece contents(static_cast<const char*>(data()), used());
+  std::string_view contents(static_cast<const char*>(data()), used());
   if (!ImportantFileWriter::WriteFileAtomically(persistent_location_,
                                                 contents)) {
     LOG(ERROR) << "Could not write \"" << Name() << "\" persistent histograms"

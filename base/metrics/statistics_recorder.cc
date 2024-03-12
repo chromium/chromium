@@ -4,6 +4,8 @@
 
 #include "base/metrics/statistics_recorder.h"
 
+#include <string_view>
+
 #include "base/at_exit.h"
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
@@ -225,7 +227,7 @@ std::vector<const BucketRanges*> StatisticsRecorder::GetBucketRanges() {
 }
 
 // static
-HistogramBase* StatisticsRecorder::FindHistogram(base::StringPiece name) {
+HistogramBase* StatisticsRecorder::FindHistogram(std::string_view name) {
   uint64_t hash = HashMetricName(name);
 
   // This must be called *before* the lock is acquired below because it may call
@@ -320,7 +322,7 @@ void StatisticsRecorder::InitLogOnShutdown() {
 
 HistogramBase* StatisticsRecorder::FindHistogramByHashInternal(
     uint64_t hash,
-    StringPiece name) const {
+    std::string_view name) const {
   AssertLockHeld();
   const HistogramMap::const_iterator it = histograms_.find(hash);
   if (it == histograms_.end()) {
@@ -457,7 +459,7 @@ size_t StatisticsRecorder::GetHistogramCount() {
 }
 
 // static
-void StatisticsRecorder::ForgetHistogramForTesting(base::StringPiece name) {
+void StatisticsRecorder::ForgetHistogramForTesting(std::string_view name) {
   const AutoLock auto_lock(GetLock());
   EnsureGlobalRecorderWhileLocked();
 

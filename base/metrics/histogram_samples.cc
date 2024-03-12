@@ -5,6 +5,7 @@
 #include "base/metrics/histogram_samples.h"
 
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -347,7 +348,7 @@ void HistogramSamples::RecordNegativeSample(NegativeSampleReason reason,
                      static_cast<int32_t>(id()));
 }
 
-base::Value::Dict HistogramSamples::ToGraphDict(StringPiece histogram_name,
+base::Value::Dict HistogramSamples::ToGraphDict(std::string_view histogram_name,
                                                 int32_t flags) const {
   base::Value::Dict dict;
   dict.Set("name", histogram_name);
@@ -356,7 +357,7 @@ base::Value::Dict HistogramSamples::ToGraphDict(StringPiece histogram_name,
   return dict;
 }
 
-std::string HistogramSamples::GetAsciiHeader(StringPiece histogram_name,
+std::string HistogramSamples::GetAsciiHeader(std::string_view histogram_name,
                                              int32_t flags) const {
   std::string output;
   StrAppend(&output, {"Histogram: ", histogram_name, " recorded ",

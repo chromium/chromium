@@ -9,6 +9,7 @@
 
 #include <atomic>
 #include <memory>
+#include <string_view>
 #include <type_traits>
 
 #include "base/atomicops.h"
@@ -21,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 namespace metrics {
@@ -331,7 +331,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
                             size_t size,
                             size_t page_size,
                             uint64_t id,
-                            base::StringPiece name,
+                            std::string_view name,
                             AccessMode access_mode);
 
   PersistentMemoryAllocator(const PersistentMemoryAllocator&) = delete;
@@ -370,7 +370,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // be updated with the following histograms for each |name| param:
   //    UMA.PersistentAllocator.name.Errors
   //    UMA.PersistentAllocator.name.UsedPct
-  void CreateTrackingHistograms(base::StringPiece name);
+  void CreateTrackingHistograms(std::string_view name);
 
   // Flushes the persistent memory to any backing store. This typically does
   // nothing but is used by the FilePersistentMemoryAllocator to inform the
@@ -678,7 +678,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
                             size_t size,
                             size_t page_size,
                             uint64_t id,
-                            base::StringPiece name,
+                            std::string_view name,
                             AccessMode access_mode);
 
   // Implementation of Flush that accepts how much to flush.
@@ -776,8 +776,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
 class BASE_EXPORT LocalPersistentMemoryAllocator
     : public PersistentMemoryAllocator {
  public:
-  LocalPersistentMemoryAllocator(size_t size, uint64_t id,
-                                 base::StringPiece name);
+  LocalPersistentMemoryAllocator(size_t size,
+                                 uint64_t id,
+                                 std::string_view name);
 
   LocalPersistentMemoryAllocator(const LocalPersistentMemoryAllocator&) =
       delete;
@@ -790,7 +791,7 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
   // Allocates a block of local memory of the specified |size|, ensuring that
   // the memory will not be physically allocated until accessed and will read
   // as zero when that happens.
-  static Memory AllocateLocalMemory(size_t size, base::StringPiece name);
+  static Memory AllocateLocalMemory(size_t size, std::string_view name);
 
   // Deallocates a block of local |memory| of the specified |size|.
   static void DeallocateLocalMemory(void* memory, size_t size, MemoryType type);
@@ -805,7 +806,7 @@ class BASE_EXPORT WritableSharedPersistentMemoryAllocator
   WritableSharedPersistentMemoryAllocator(
       base::WritableSharedMemoryMapping memory,
       uint64_t id,
-      base::StringPiece name);
+      std::string_view name);
 
   WritableSharedPersistentMemoryAllocator(
       const WritableSharedPersistentMemoryAllocator&) = delete;
@@ -833,7 +834,7 @@ class BASE_EXPORT ReadOnlySharedPersistentMemoryAllocator
   ReadOnlySharedPersistentMemoryAllocator(
       base::ReadOnlySharedMemoryMapping memory,
       uint64_t id,
-      base::StringPiece name);
+      std::string_view name);
 
   ReadOnlySharedPersistentMemoryAllocator(
       const ReadOnlySharedPersistentMemoryAllocator&) = delete;
@@ -866,7 +867,7 @@ class BASE_EXPORT FilePersistentMemoryAllocator
   FilePersistentMemoryAllocator(std::unique_ptr<MemoryMappedFile> file,
                                 size_t max_size,
                                 uint64_t id,
-                                base::StringPiece name,
+                                std::string_view name,
                                 AccessMode access_mode);
 
   FilePersistentMemoryAllocator(const FilePersistentMemoryAllocator&) = delete;

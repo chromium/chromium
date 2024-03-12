@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -402,7 +403,7 @@ size_t Histogram::bucket_count() const {
 }
 
 // static
-bool Histogram::InspectConstructionArguments(StringPiece name,
+bool Histogram::InspectConstructionArguments(std::string_view name,
                                              Sample* minimum,
                                              Sample* maximum,
                                              size_t* bucket_count) {

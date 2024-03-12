@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
@@ -186,7 +187,7 @@ class BASE_EXPORT HistogramSamples {
   // Returns ASCII representation of histograms data for histogram samples.
   // The dictionary returned will be of the form
   // {"name":<string>, "header":<string>, "body": <string>}
-  base::Value::Dict ToGraphDict(StringPiece histogram_name,
+  base::Value::Dict ToGraphDict(std::string_view histogram_name,
                                 int32_t flags) const;
 
   // Accessor functions.
@@ -257,7 +258,7 @@ class BASE_EXPORT HistogramSamples {
   virtual std::string GetAsciiBody() const;
 
   // Gets a header message describing this histogram samples.
-  virtual std::string GetAsciiHeader(StringPiece histogram_name,
+  virtual std::string GetAsciiHeader(std::string_view histogram_name,
                                      int32_t flags) const;
 
   // Returns a string description of what goes in a given bucket.

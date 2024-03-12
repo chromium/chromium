@@ -5,6 +5,7 @@
 #include "base/metrics/sample_vector.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -517,7 +518,7 @@ bool SampleVector::MountExistingCountsStorage() const {
   return counts().has_value();
 }
 
-std::string SampleVector::GetAsciiHeader(StringPiece histogram_name,
+std::string SampleVector::GetAsciiHeader(std::string_view histogram_name,
                                          int32_t flags) const {
   Count sample_count = TotalCount();
   std::string output;

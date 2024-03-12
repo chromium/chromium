@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/hash/md5.h"
@@ -33,7 +35,7 @@ inline uint32_t DigestToUInt32(const base::MD5Digest& digest) {
 
 }  // namespace
 
-uint64_t HashMetricName(base::StringPiece name) {
+uint64_t HashMetricName(std::string_view name) {
   // Corresponding Python code for quick look up:
   //
   //   import struct
@@ -45,13 +47,13 @@ uint64_t HashMetricName(base::StringPiece name) {
   return DigestToUInt64(digest);
 }
 
-uint32_t HashMetricNameAs32Bits(base::StringPiece name) {
+uint32_t HashMetricNameAs32Bits(std::string_view name) {
   base::MD5Digest digest;
   base::MD5Sum(base::as_byte_span(name), &digest);
   return DigestToUInt32(digest);
 }
 
-uint32_t HashFieldTrialName(base::StringPiece name) {
+uint32_t HashFieldTrialName(std::string_view name) {
   // SHA-1 is designed to produce a uniformly random spread in its output space,
   // even for nearly-identical inputs.
   unsigned char sha1_hash[base::kSHA1Length];

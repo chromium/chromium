@@ -70,6 +70,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -81,7 +82,6 @@
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -202,7 +202,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // function on non-dcheck builds without crashing.
   // Note. Currently it allow some bad input, e.g. 0 as minimum, but silently
   // converts it to good input: 1.
-  static bool InspectConstructionArguments(StringPiece name,
+  static bool InspectConstructionArguments(std::string_view name,
                                            Sample* minimum,
                                            Sample* maximum,
                                            size_t* bucket_count);

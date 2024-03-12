@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <atomic>
 #include <optional>
+#include <string_view>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
@@ -24,7 +25,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -311,7 +311,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(void* base,
                                                      size_t size,
                                                      size_t page_size,
                                                      uint64_t id,
-                                                     base::StringPiece name,
+                                                     std::string_view name,
                                                      AccessMode access_mode)
     : PersistentMemoryAllocator(Memory(base, MEM_EXTERNAL),
                                 size,
@@ -324,7 +324,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
                                                      size_t size,
                                                      size_t page_size,
                                                      uint64_t id,
-                                                     base::StringPiece name,
+                                                     std::string_view name,
                                                      AccessMode access_mode)
     : mem_base_(static_cast<char*>(memory.base)),
       mem_type_(memory.type),
@@ -486,7 +486,7 @@ const char* PersistentMemoryAllocator::Name() const {
 }
 
 void PersistentMemoryAllocator::CreateTrackingHistograms(
-    base::StringPiece name) {
+    std::string_view name) {
   if (name.empty() || access_mode_ == kReadOnly) {
     return;
   }
@@ -1030,7 +1030,7 @@ void PersistentMemoryAllocator::UpdateTrackingHistograms() {
 LocalPersistentMemoryAllocator::LocalPersistentMemoryAllocator(
     size_t size,
     uint64_t id,
-    base::StringPiece name)
+    std::string_view name)
     : PersistentMemoryAllocator(AllocateLocalMemory(size, name),
                                 size,
                                 0,
@@ -1045,7 +1045,7 @@ LocalPersistentMemoryAllocator::~LocalPersistentMemoryAllocator() {
 // static
 PersistentMemoryAllocator::Memory
 LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size,
-                                                    base::StringPiece name) {
+                                                    std::string_view name) {
   void* address;
 
 #if BUILDFLAG(IS_WIN)
@@ -1109,7 +1109,7 @@ WritableSharedPersistentMemoryAllocator::
     WritableSharedPersistentMemoryAllocator(
         base::WritableSharedMemoryMapping memory,
         uint64_t id,
-        base::StringPiece name)
+        std::string_view name)
     : PersistentMemoryAllocator(Memory(memory.memory(), MEM_SHARED),
                                 memory.size(),
                                 0,
@@ -1133,7 +1133,7 @@ ReadOnlySharedPersistentMemoryAllocator::
     ReadOnlySharedPersistentMemoryAllocator(
         base::ReadOnlySharedMemoryMapping memory,
         uint64_t id,
-        base::StringPiece name)
+        std::string_view name)
     : PersistentMemoryAllocator(
           Memory(const_cast<void*>(memory.memory()), MEM_SHARED),
           memory.size(),
@@ -1159,7 +1159,7 @@ FilePersistentMemoryAllocator::FilePersistentMemoryAllocator(
     std::unique_ptr<MemoryMappedFile> file,
     size_t max_size,
     uint64_t id,
-    base::StringPiece name,
+    std::string_view name,
     AccessMode access_mode)
     : PersistentMemoryAllocator(
           Memory(const_cast<uint8_t*>(file->data()), MEM_FILE),

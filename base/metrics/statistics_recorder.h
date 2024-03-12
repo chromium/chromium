@@ -15,6 +15,7 @@
 #include <atomic>  // For std::memory_order_*.
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "base/metrics/ranges_manager.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
@@ -184,7 +184,7 @@ class BASE_EXPORT StatisticsRecorder {
   // if a matching histogram is not found.
   //
   // This method is thread safe.
-  static HistogramBase* FindHistogram(base::StringPiece name);
+  static HistogramBase* FindHistogram(std::string_view name);
 
   // Imports histograms from providers. If |async| is true, the providers may do
   // the work asynchronously (though this is not guaranteed and it is up to the
@@ -259,7 +259,7 @@ class BASE_EXPORT StatisticsRecorder {
   // memory is being released.
   //
   // This method is thread safe.
-  static void ForgetHistogramForTesting(base::StringPiece name);
+  static void ForgetHistogramForTesting(std::string_view name);
 
   // Creates a temporary StatisticsRecorder object for testing purposes. All new
   // histograms will be registered in it until it is destructed or pushed aside
@@ -330,7 +330,7 @@ class BASE_EXPORT StatisticsRecorder {
   // Note: |name| is only used in DCHECK builds to assert that there was no
   // collision (i.e. different histograms with the same hash).
   HistogramBase* FindHistogramByHashInternal(uint64_t hash,
-                                             StringPiece name) const
+                                             std::string_view name) const
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
   // Adds an observer to be notified when a new sample is recorded on the

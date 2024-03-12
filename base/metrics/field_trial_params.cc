@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -68,9 +69,9 @@ bool AssociateFieldTrialParamsFromString(
     FieldTrialParamsDecodeStringFunc decode_data_func) {
   // Format: Trial1.Group1:k1/v1/k2/v2,Trial2.Group2:k1/v1/k2/v2
   std::set<std::pair<std::string, std::string>> trial_groups;
-  for (StringPiece experiment_group :
+  for (std::string_view experiment_group :
        SplitStringPiece(params_string, ",", TRIM_WHITESPACE, SPLIT_WANT_ALL)) {
-    std::vector<StringPiece> experiment = SplitStringPiece(
+    std::vector<std::string_view> experiment = SplitStringPiece(
         experiment_group, ":", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (experiment.size() != 2) {
       DLOG(ERROR) << "Experiment and params should be separated by ':'";

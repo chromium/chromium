@@ -4,6 +4,8 @@
 
 #include "base/metrics/persistent_histogram_storage.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
@@ -62,7 +64,7 @@ void* AllocateLocalMemory(size_t size) {
 namespace base {
 
 PersistentHistogramStorage::PersistentHistogramStorage(
-    StringPiece allocator_name,
+    std::string_view allocator_name,
     StorageDirManagement storage_dir_management)
     : storage_dir_management_(storage_dir_management) {
   DCHECK(!allocator_name.empty());
@@ -143,8 +145,8 @@ PersistentHistogramStorage::~PersistentHistogramStorage() {
                                     exploded.second))
           .AddExtension(PersistentMemoryAllocator::kFileExtension);
 
-  StringPiece contents(static_cast<const char*>(allocator->data()),
-                       allocator->used());
+  std::string_view contents(static_cast<const char*>(allocator->data()),
+                            allocator->used());
   if (!ImportantFileWriter::WriteFileAtomically(file_path, contents)) {
     LOG(ERROR) << "Persistent histograms fail to write to file: "
                << file_path.value();

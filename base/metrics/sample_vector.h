@@ -14,6 +14,7 @@
 #include <atomic>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -167,7 +168,7 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
 
   // HistogramSamples:
   std::string GetAsciiBody() const override;
-  std::string GetAsciiHeader(StringPiece histogram_name,
+  std::string GetAsciiHeader(std::string_view histogram_name,
                              int32_t flags) const override;
 
   // SampleVectorBase:

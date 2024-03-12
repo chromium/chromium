@@ -5,6 +5,8 @@
 #include "base/metrics/field_trial.h"
 
 #include <stddef.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -1121,8 +1123,8 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
   const FieldTrial::FieldTrialEntry* entry2 = entries[1];
 
   // Check that the trial information matches.
-  StringPiece shm_trial_name;
-  StringPiece shm_group_name;
+  std::string_view shm_trial_name;
+  std::string_view shm_group_name;
   bool overridden;
   ASSERT_TRUE(entry1->GetState(shm_trial_name, shm_group_name, overridden));
   EXPECT_EQ(trial_name, shm_trial_name);

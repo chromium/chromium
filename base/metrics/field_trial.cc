@@ -26,7 +26,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -96,8 +96,8 @@ constexpr MachPortsForRendezvous::key_type kFieldTrialRendezvousKey = 'fldt';
 
 // Writes out string1 and then string2 to pickle.
 void WriteStringPair(Pickle* pickle,
-                     const StringPiece& string1,
-                     const StringPiece& string2) {
+                     std::string_view string1,
+                     std::string_view string2) {
   pickle->WriteString(string1);
   pickle->WriteString(string2);
 }
@@ -197,8 +197,8 @@ FieldTrial::PickleState::PickleState(const PickleState& other) = default;
 
 FieldTrial::PickleState::~PickleState() = default;
 
-bool FieldTrial::FieldTrialEntry::GetState(StringPiece& trial_name,
-                                           StringPiece& group_name,
+bool FieldTrial::FieldTrialEntry::GetState(std::string_view& trial_name,
+                                           std::string_view& group_name,
                                            bool& overridden) const {
   PickleIterator iter = GetPickleIterator();
   return ReadHeader(iter, trial_name, group_name, overridden);
@@ -207,7 +207,7 @@ bool FieldTrial::FieldTrialEntry::GetState(StringPiece& trial_name,
 bool FieldTrial::FieldTrialEntry::GetParams(
     std::map<std::string, std::string>* params) const {
   PickleIterator iter = GetPickleIterator();
-  StringPiece tmp_string;
+  std::string_view tmp_string;
   bool tmp_bool;
   // Skip reading trial and group name, and overridden bit.
   if (!ReadHeader(iter, tmp_string, tmp_string, tmp_bool)) {
@@ -215,8 +215,8 @@ bool FieldTrial::FieldTrialEntry::GetParams(
   }
 
   while (true) {
-    StringPiece key;
-    StringPiece value;
+    std::string_view key;
+    std::string_view value;
     if (!ReadStringPair(&iter, &key, &value))
       return key.empty();  // Non-empty is bad: got one of a pair.
     (*params)[std::string(key)] = std::string(value);
@@ -229,8 +229,8 @@ PickleIterator FieldTrial::FieldTrialEntry::GetPickleIterator() const {
 }
 
 bool FieldTrial::FieldTrialEntry::ReadHeader(PickleIterator& iter,
-                                             StringPiece& trial_name,
-                                             StringPiece& group_name,
+                                             std::string_view& trial_name,
+                                             std::string_view& group_name,
                                              bool& overridden) const {
   return ReadStringPair(&iter, &trial_name, &group_name) &&
          iter.ReadBool(&overridden);
@@ -238,8 +238,8 @@ bool FieldTrial::FieldTrialEntry::ReadHeader(PickleIterator& iter,
 
 bool FieldTrial::FieldTrialEntry::ReadStringPair(
     PickleIterator* iter,
-    StringPiece* trial_name,
-    StringPiece* group_name) const {
+    std::string_view* trial_name,
+    std::string_view* group_name) const {
   if (!iter->ReadStringPiece(trial_name))
     return false;
   if (!iter->ReadStringPiece(group_name))
@@ -328,9 +328,9 @@ void FieldTrial::EnableBenchmarking() {
 
 // static
 FieldTrial* FieldTrial::CreateSimulatedFieldTrial(
-    StringPiece trial_name,
+    std::string_view trial_name,
     Probability total_probability,
-    StringPiece default_group_name,
+    std::string_view default_group_name,
     double entropy_value) {
   return new FieldTrial(trial_name, total_probability, default_group_name,
                         entropy_value, /*is_low_anonymity=*/false,
@@ -338,11 +338,9 @@ FieldTrial* FieldTrial::CreateSimulatedFieldTrial(
 }
 
 // static
-bool FieldTrial::ParseFieldTrialsString(const base::StringPiece trials_string,
+bool FieldTrial::ParseFieldTrialsString(std::string_view trials_string,
                                         bool override_trials,
                                         std::vector<State>& entries) {
-  const StringPiece trials_string_piece(trials_string);
-
   size_t next_item = 0;
   while (next_item < trials_string.length()) {
     // Parse one entry. Entries have the format
@@ -377,8 +375,8 @@ bool FieldTrial::ParseFieldTrialsString(const base::StringPiece trials_string,
       entry.activated = true;
     }
     entry.trial_name =
-        trials_string_piece.substr(next_item, trial_name_end - next_item);
-    entry.group_name = trials_string_piece.substr(
+        trials_string.substr(next_item, trial_name_end - next_item);
+    entry.group_name = trials_string.substr(
         trial_name_end + 1, group_name_end - trial_name_end - 1);
     entry.is_overridden = override_trials;
     // The next item starts after the delimiter, if it exists.
@@ -400,9 +398,9 @@ std::string FieldTrial::BuildFieldTrialStateString(
   return result;
 }
 
-FieldTrial::FieldTrial(StringPiece trial_name,
+FieldTrial::FieldTrial(std::string_view trial_name,
                        const Probability total_probability,
-                       StringPiece default_group_name,
+                       std::string_view default_group_name,
                        double entropy_value,
                        bool is_low_anonymity,
                        bool is_overridden)
@@ -501,9 +499,9 @@ FieldTrialList::~FieldTrialList() {
 
 // static
 FieldTrial* FieldTrialList::FactoryGetFieldTrial(
-    StringPiece trial_name,
+    std::string_view trial_name,
     FieldTrial::Probability total_probability,
-    StringPiece default_group_name,
+    std::string_view default_group_name,
     const FieldTrial::EntropyProvider& entropy_provider,
     uint32_t randomization_seed,
     bool is_low_anonymity,
@@ -526,7 +524,7 @@ FieldTrial* FieldTrialList::FactoryGetFieldTrial(
 }
 
 // static
-FieldTrial* FieldTrialList::Find(StringPiece trial_name) {
+FieldTrial* FieldTrialList::Find(std::string_view trial_name) {
   if (!global_)
     return nullptr;
   AutoLock auto_lock(global_->lock_);
@@ -534,7 +532,7 @@ FieldTrial* FieldTrialList::Find(StringPiece trial_name) {
 }
 
 // static
-std::string FieldTrialList::FindFullName(StringPiece trial_name) {
+std::string FieldTrialList::FindFullName(std::string_view trial_name) {
   FieldTrial* field_trial = Find(trial_name);
   if (field_trial)
     return field_trial->group_name();
@@ -542,12 +540,12 @@ std::string FieldTrialList::FindFullName(StringPiece trial_name) {
 }
 
 // static
-bool FieldTrialList::TrialExists(StringPiece trial_name) {
+bool FieldTrialList::TrialExists(std::string_view trial_name) {
   return Find(trial_name) != nullptr;
 }
 
 // static
-bool FieldTrialList::IsTrialActive(StringPiece trial_name) {
+bool FieldTrialList::IsTrialActive(std::string_view trial_name) {
   FieldTrial* field_trial = Find(trial_name);
   return field_trial && field_trial->group_reported_;
 }
@@ -658,8 +656,8 @@ std::set<std::string> FieldTrialList::GetActiveTrialsOfParentProcess() {
   const FieldTrial::FieldTrialEntry* entry;
   while ((entry = mem_iter.GetNextOfObject<FieldTrial::FieldTrialEntry>()) !=
          nullptr) {
-    StringPiece trial_name;
-    StringPiece group_name;
+    std::string_view trial_name;
+    std::string_view group_name;
     bool is_overridden;
     if (subtle::NoBarrier_Load(&entry->activated) &&
         entry->GetState(trial_name, group_name, is_overridden)) {
@@ -778,8 +776,8 @@ FieldTrialList::DuplicateFieldTrialSharedMemoryForTesting() {
 }
 
 // static
-FieldTrial* FieldTrialList::CreateFieldTrial(StringPiece name,
-                                             StringPiece group_name,
+FieldTrial* FieldTrialList::CreateFieldTrial(std::string_view name,
+                                             std::string_view group_name,
                                              bool is_low_anonymity,
                                              bool is_overridden) {
   DCHECK(global_);
@@ -942,8 +940,8 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     // Get the existing field trial entry in shared memory.
     const FieldTrial::FieldTrialEntry* prev_entry =
         allocator->GetAsObject<FieldTrial::FieldTrialEntry>(prev_ref);
-    StringPiece trial_name;
-    StringPiece group_name;
+    std::string_view trial_name;
+    std::string_view group_name;
     bool is_overridden;
     if (!prev_entry->GetState(trial_name, group_name, is_overridden)) {
       continue;
@@ -1090,8 +1088,8 @@ bool FieldTrialList::CreateTrialsFromSharedMemoryMapping(
   const FieldTrial::FieldTrialEntry* entry;
   while ((entry = mem_iter.GetNextOfObject<FieldTrial::FieldTrialEntry>()) !=
          nullptr) {
-    StringPiece trial_name;
-    StringPiece group_name;
+    std::string_view trial_name;
+    std::string_view group_name;
     bool is_overridden;
     if (!entry->GetState(trial_name, group_name, is_overridden)) {
       return false;
@@ -1214,7 +1212,7 @@ void FieldTrialList::ActivateFieldTrialEntryWhileLocked(
   }
 }
 
-FieldTrial* FieldTrialList::PreLockedFind(StringPiece name) {
+FieldTrial* FieldTrialList::PreLockedFind(std::string_view name) {
   auto it = registered_.find(name);
   if (registered_.end() == it)
     return nullptr;
