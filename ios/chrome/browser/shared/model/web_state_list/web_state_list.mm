@@ -290,9 +290,7 @@ int WebStateList::InsertWebState(std::unique_ptr<web::WebState> web_state,
 void WebStateList::MoveWebStateAt(int from_index, int to_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  to_index = ConstrainMoveIndex(to_index, IsWebStatePinnedAt(from_index));
-  return MoveWebStateAtImpl(from_index, to_index,
-                            /*pinned_state_changed=*/false);
+  return MoveWebStateAtImpl(from_index, to_index);
 }
 
 std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAt(
@@ -515,50 +513,44 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   return index;
 }
 
-void WebStateList::MoveWebStateAtImpl(int from_index,
-                                      int to_index,
-                                      bool pinned_state_changed) {
+void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
+
+  // Moves via `MoveWebStateAt` are constrained to keep their pinned state.
+  const bool pinned = IsWebStatePinnedAt(from_index);
+  to_index = ConstrainMoveIndex(to_index, pinned);
   DCHECK(ContainsIndex(from_index));
   DCHECK(ContainsIndex(to_index));
 
-  if (from_index == to_index) {
-    if (pinned_state_changed) {
-      // Notify the event to the observers that the pinned state is updated but
-      // the layout in WebStateList isn't updated.
-      // TODO(b/325423267): Support Tab Groups when updating the pinned state.
-      const WebStateListChangeStatusOnly status_only_change(
-          web_state_wrappers_[to_index]->web_state(), to_index,
-          /*pinned_state_changed=*/true, /*old_group=*/nullptr,
-          /*new_group=*/nullptr);
-      const WebStateListStatus status = {
-          // An active WebState doesn't change when a pinned state is updated.
-          .old_active_web_state = GetActiveWebState(),
-          .new_active_web_state = GetActiveWebState()};
-      for (auto& observer : observers_) {
-        observer.WebStateListDidChange(this, status_only_change, status);
+  // Moves via `MoveWebStateAt` should update the group to ensure contiguity.
+  const TabGroup* old_group = GetGroupOfWebStateAt(from_index);
+  const TabGroup* new_group = nullptr;
+  if (old_group && GetWebStates(old_group).contains(to_index)) {
+    // The move stays within the same group.
+    new_group = old_group;
+  } else {
+    // If the WebStates before and after are part of the same group, add to that
+    // group.
+    const TabGroup* prev_group = nullptr;
+    const TabGroup* next_group = nullptr;
+    if (from_index < to_index) {
+      prev_group = GetGroupOfWebStateAt(to_index);
+      if (ContainsIndex(to_index + 1)) {
+        next_group = GetGroupOfWebStateAt(to_index + 1);
       }
+    } else {
+      if (ContainsIndex(to_index - 1)) {
+        prev_group = GetGroupOfWebStateAt(to_index - 1);
+      }
+      next_group = GetGroupOfWebStateAt(to_index);
     }
-    return;
+    if (prev_group && prev_group == next_group) {
+      new_group = prev_group;
+    }
   }
 
-  JustMoveWebStateWrapperAt(from_index, to_index);
-
-  web::WebState* web_state = GetWebStateAt(to_index);
-  // TODO(b/325422914): Support Tab Groups when moving.
-  const WebStateListChangeMove move_change(web_state, from_index, to_index,
-                                           pinned_state_changed,
-                                           /*old_group=*/nullptr,
-                                           /*new_group=*/nullptr);
-  // Prepare the status for the observers. The moves don't change the active
-  // web state.
-  web::WebState* const active_web_state = GetActiveWebState();
-  const WebStateListStatus status = {.old_active_web_state = active_web_state,
-                                     .new_active_web_state = active_web_state};
-  for (auto& observer : observers_) {
-    observer.WebStateListDidChange(this, move_change, status);
-  }
+  MoveWebStateWrapperAt(from_index, to_index, pinned, new_group);
 }
 
 std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
