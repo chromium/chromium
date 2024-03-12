@@ -1562,31 +1562,6 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-#if BUILDFLAG(IS_WIN)
-  if (UseLanguageType() == mojom::PrinterLanguageType::kNone) {
-    // The expected events for this are:
-    // 1.  Update print settings.
-    // 2.  A print job is started.
-    // 3.  Rendering for 1 page of document of content.
-    // 4.  Completes with document done.
-    // 5.  Wait for the one print job to be destroyed, to ensure printing
-    //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/5);
-  } else {
-    // TODO(crbug.com/41492268):  Change to match the block above (language
-    // equals `kNone`) once the correct variation of EMF type is properly
-    // passed through to the Print Backend service.
-    // The expected events for this are:
-    // 1.  Update print settings.
-    // 2.  A print job is started.
-    // 3.  Rendering for 1 page of document of content, which fails.
-    // 4.  The print jobs is canceled.
-    // 5.  An error dialog is shown.
-    // 6.  Wait for the one print job to be destroyed, to ensure printing
-    //     finished cleanly before completing the test.
-    SetNumExpectedMessages(/*num=*/6);
-  }
-#else
   // The expected events for this are:
   // 1.  Update print settings.
   // 2.  A print job is started.
@@ -1595,33 +1570,20 @@ IN_PROC_BROWSER_TEST_P(
   // 5.  Wait for the one print job to be destroyed, to ensure printing
   //     finished cleanly before completing the test.
   SetNumExpectedMessages(/*num=*/5);
-#endif  // BUILDFLAG(IS_WIN)
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1008222)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
-  if (UseLanguageType() == mojom::PrinterLanguageType::kNone) {
-    EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
-    EXPECT_EQ(render_printed_page_count(), 1);
-    EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-    EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
-    EXPECT_EQ(error_dialog_shown_count(), 0u);
-  } else {
-    // TODO(crbug.com/41492268):  Update for no failures once the correct
-    // variation of EMF type is properly passed through to the Print Backend
-    // service.
-    EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kFailed);
-    EXPECT_EQ(document_done_result(), mojom::ResultCode::kFailed);
-    EXPECT_EQ(error_dialog_shown_count(), 1u);
-  }
+  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(render_printed_page_count(), 1);
 #else
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
+#endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
   EXPECT_THAT(document_done_job_id(), testing::Optional(kJobId));
   EXPECT_EQ(error_dialog_shown_count(), 0u);
-#endif
   EXPECT_EQ(print_job_destruction_count(), 1);
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)

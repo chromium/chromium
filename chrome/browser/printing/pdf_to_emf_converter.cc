@@ -42,22 +42,6 @@ namespace printing {
 
 namespace {
 
-// Emf subclass that knows how to play back PostScript data embedded as EMF
-// comment records.
-class PostScriptMetaFile : public Emf {
- public:
-  PostScriptMetaFile() = default;
-
-  PostScriptMetaFile(const PostScriptMetaFile&) = delete;
-  PostScriptMetaFile& operator=(const PostScriptMetaFile&) = delete;
-
-  ~PostScriptMetaFile() override = default;
-
- private:
-  // Emf:
-  bool SafePlayback(HDC hdc) const override;
-};
-
 // Class for converting PDF to another format for printing (Emf, Postscript).
 // Class lives on the UI thread.
 // Internal workflow is following:
@@ -185,23 +169,6 @@ std::unique_ptr<MetafilePlayer> PdfConverterImpl::GetMetaFileFromMapping(
   if (!metafile->InitFromData(mapping.GetMemoryAsSpan<const uint8_t>()))
     metafile.reset();
   return metafile;
-}
-
-bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
-  Emf::Enumerator emf_enum(*this, nullptr, nullptr);
-  for (const Emf::Record& record : emf_enum) {
-    auto* emf_record = record.record();
-    if (emf_record->iType != EMR_GDICOMMENT)
-      continue;
-
-    const EMRGDICOMMENT* comment =
-        reinterpret_cast<const EMRGDICOMMENT*>(emf_record);
-    const char* data = reinterpret_cast<const char*>(comment->Data);
-    const uint16_t* ptr = reinterpret_cast<const uint16_t*>(data);
-    int ret = ExtEscape(hdc, PASSTHROUGH, 2 + *ptr, data, 0, nullptr);
-    DCHECK_EQ(*ptr, ret);
-  }
-  return true;
 }
 
 PdfConverterImpl::PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
