@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
 namespace ash {
@@ -124,10 +125,12 @@ INSTANTIATE_TEST_SUITE_P(GlanceablesV2,
                          CalendarUpNextViewPixelTest,
                          testing::Bool());
 
-// Disabled due to pixel test failures; see https://crbug.com/328975344.
 TEST_P(CalendarUpNextViewPixelTest,
-       DISABLED_ShouldShowSingleEventTakingUpFullWidthOfParentView) {
-  // Set time override.
+       ShouldShowSingleEventTakingUpFullWidthOfParentView) {
+  // Set time and timezone override.
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(
+      "America/Los_Angeles");
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
       nullptr, nullptr);
@@ -144,13 +147,15 @@ TEST_P(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_single_upcoming_event",
-      /*revision_number=*/8, Widget()));
+      /*revision_number=*/9, Widget()));
 }
 
-// Disabled due to pixel test failures; see https://crbug.com/328975344.
 TEST_P(CalendarUpNextViewPixelTest,
-       DISABLED_ShouldShowMultipleEventsInHorizontalScrollView) {
-  // Set time override.
+       ShouldShowMultipleEventsInHorizontalScrollView) {
+  // Set time and timezone override.
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(
+      "America/Los_Angeles");
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
       nullptr, nullptr);
@@ -169,24 +174,26 @@ TEST_P(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events",
-      /*revision_number=*/8, Widget()));
+      /*revision_number=*/9, Widget()));
 }
 
-// Disabled due to pixel test failures; see https://crbug.com/328975344.
 TEST_P(
     CalendarUpNextViewPixelTest,
-    DISABLED_ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
-  // Set time override.
+    ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
+  // Set time and timezone override.
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(
+      "America/Los_Angeles");
+  ASSERT_TRUE(scoped_libc_timezone.is_success());
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
       nullptr, nullptr);
+  auto now = base::subtle::TimeNowIgnoringOverride().LocalMidnight();
 
   // Add 3 events starting in 10 mins.
   std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
-  auto start_time = base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
-                    base::Minutes(10);
-  auto end_time =
-      base::subtle::TimeNowIgnoringOverride().LocalMidnight() + base::Hours(1);
+  auto start_time = now + base::Minutes(10);
+  auto end_time = now + base::Hours(1);
   events.push_back(CreateEvent(start_time, end_time, "First event"));
   events.push_back(CreateEvent(start_time, end_time, "Second event"));
   events.push_back(CreateEvent(start_time, end_time, "Third event"));
@@ -198,12 +205,14 @@ TEST_P(
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events_press_scroll_right_button",
-      /*revision_number=*/7, Widget()));
+      /*revision_number=*/8, Widget()));
 }
 
-// Disabled due to pixel test failures; see https://crbug.com/328975344.
 TEST_P(CalendarUpNextViewPixelTest, DISABLED_ShouldShowJoinMeetingButton) {
-  // Set time override.
+  // Set time and timezone override.
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(
+      "America/Los_Angeles");
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
       nullptr, nullptr);
@@ -221,7 +230,7 @@ TEST_P(CalendarUpNextViewPixelTest, DISABLED_ShouldShowJoinMeetingButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_join_button",
-      /*revision_number=*/7, Widget()));
+      /*revision_number=*/8, Widget()));
 }
 
 }  // namespace ash
