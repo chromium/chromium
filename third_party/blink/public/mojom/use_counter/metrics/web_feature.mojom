@@ -4221,6 +4221,7 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker = 4857,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use = 4858,
   kV8PointerEvent_GetCoalescedEvents_Method = 4859,
+  kV8RTCEncodedVideoFrame_Constructor = 4860,
   kCSSFunctions = 4861,
   kCSSPageRule = 4862,
   // The items above roughly this point are available in the M123 branch.
