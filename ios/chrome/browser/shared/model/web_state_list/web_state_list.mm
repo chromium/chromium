@@ -864,6 +864,8 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
                                          const TabGroup* new_group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
+  DCHECK(ContainsIndex(from_index));
+  DCHECK(ContainsIndex(to_index));
   DCHECK(!(pinned && new_group));
 
   // Prepare info about the move.
@@ -919,7 +921,23 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
   }
 
   // Move the wrapper.
-  JustMoveWebStateWrapperAt(from_index, to_index);
+  std::unique_ptr<WebStateWrapper> web_state_wrapper =
+      std::move(web_state_wrappers_[from_index]);
+  web_state_wrappers_.erase(web_state_wrappers_.begin() + from_index);
+  web_state_wrappers_.insert(web_state_wrappers_.begin() + to_index,
+                             std::move(web_state_wrapper));
+
+  // Update the active index if needed.
+  if (active_index_ == from_index) {
+    active_index_ = to_index;
+  } else {
+    int min = std::min(from_index, to_index);
+    int max = std::max(from_index, to_index);
+    int delta = from_index < to_index ? -1 : +1;
+    if (min <= active_index_ && active_index_ <= max) {
+      active_index_ += delta;
+    }
+  }
 
   // Notify the observers of the change.
   if (index_changed) {
@@ -936,30 +954,6 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
         new_group);
     for (auto& observer : observers_) {
       observer.WebStateListDidChange(this, status_only_change, status);
-    }
-  }
-}
-
-void WebStateList::JustMoveWebStateWrapperAt(int from_index, int to_index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(locked_);
-  DCHECK(ContainsIndex(from_index));
-  DCHECK(ContainsIndex(to_index));
-
-  std::unique_ptr<WebStateWrapper> web_state_wrapper =
-      std::move(web_state_wrappers_[from_index]);
-  web_state_wrappers_.erase(web_state_wrappers_.begin() + from_index);
-  web_state_wrappers_.insert(web_state_wrappers_.begin() + to_index,
-                             std::move(web_state_wrapper));
-
-  if (active_index_ == from_index) {
-    active_index_ = to_index;
-  } else {
-    int min = std::min(from_index, to_index);
-    int max = std::max(from_index, to_index);
-    int delta = from_index < to_index ? -1 : +1;
-    if (min <= active_index_ && active_index_ <= max) {
-      active_index_ += delta;
     }
   }
 }
