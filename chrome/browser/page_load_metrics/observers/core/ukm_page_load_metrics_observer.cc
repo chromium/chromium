@@ -880,6 +880,11 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
       auto priority = cwv_lcp_timing_info.ImageRequestPriority();
       if (priority)
         builder.SetPaintTiming_LargestContentfulPaintRequestPriority(*priority);
+      bool is_cross_origin = cwv_lcp_timing_info.Type() ==
+                             (cwv_lcp_timing_info.Type() |
+                              blink::LargestContentfulPaintType::kCrossOrigin);
+      builder.SetPaintTiming_LargestContentfulPaintImageIsCrossOrigin(
+          is_cross_origin);
     }
     if (cwv_lcp_timing_info.ImageDiscoveryTime().has_value()) {
       builder.SetPaintTiming_LargestContentfulPaintImageDiscoveryTime(

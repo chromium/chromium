@@ -268,6 +268,19 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
             blink::LargestContentfulPaintType::kDataURI;
       }
 
+      // Set cross-origin flag of the image.
+      if (auto* window = window_performance_->DomWindow()) {
+        auto image_url = image_record->media_timing->Url();
+        if (!image_url.IsEmpty() && image_url.ProtocolIsInHTTPFamily() &&
+            window->GetFrame()->IsOutermostMainFrame()) {
+          auto image_origin = SecurityOrigin::Create(image_url);
+          if (!image_origin->IsSameOriginWith(window->GetSecurityOrigin())) {
+            latest_lcp_details_.largest_contentful_paint_type |=
+                blink::LargestContentfulPaintType::kCrossOrigin;
+          }
+        }
+      }
+
       latest_lcp_details_.resource_load_timings.discovery_time =
           image_record->media_timing->DiscoveryTime();
       latest_lcp_details_.resource_load_timings.load_start =

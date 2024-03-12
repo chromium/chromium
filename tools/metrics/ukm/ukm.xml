@@ -19228,6 +19228,14 @@ be describing additional metrics about the same event.
       not recorded when the LCP element is text or video.
     </summary>
   </metric>
+  <metric name="PaintTiming.LargestContentfulPaintImageIsCrossOrigin"
+      enum="Boolean">
+    <summary>
+      A bool that is set if the LCP element is an image that is cross-origin.
+      This metric is not recorded when the LCP element is not an image, or the
+      LCP element is not in the main frame.
+    </summary>
+  </metric>
   <metric name="PaintTiming.LargestContentfulPaintImageLoadEnd">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation

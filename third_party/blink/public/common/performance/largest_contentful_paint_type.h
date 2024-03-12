@@ -30,6 +30,8 @@ enum class LargestContentfulPaintType {
   kFullViewport = 1 << 11,
 
   kAfterMouseover = 1 << 12,
+  // LCP image is cross-origin with the root document.
+  kCrossOrigin = 1 << 13,
 };
 
 inline constexpr LargestContentfulPaintType operator&(
