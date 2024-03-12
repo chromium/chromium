@@ -43,10 +43,9 @@ crypto::SignatureVerifier::SignatureAlgorithm GetResponseSignatureType(
 
   switch (fetch_response.policy_data_signature_type()) {
     case enterprise_management::PolicyFetchRequest::SHA1_RSA:
-      VLOG(1) << "Response is signed with SHA1 algorithm.";
+      VLOG(1) << "Response is signed with deprecated SHA1 algorithm.";
       return crypto::SignatureVerifier::RSA_PKCS1_SHA1;
     case enterprise_management::PolicyFetchRequest::SHA256_RSA:
-      VLOG(1) << "Response is signed with SHA256 algorithm.";
       return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
     default:
       VLOG(1) << "Unrecognized signature type in response, assume SHA256.";
