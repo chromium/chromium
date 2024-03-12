@@ -352,7 +352,7 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
              {BUTTON_INDEX_META + 4,
               ABI::Windows::Gaming::Input::GamepadButtons_Paddle4}});
 
-    const auto* button_bit_mask =
+    const auto button_bit_mask =
         kCanonicalButtonBitMaskMapping.find(canonical_button_index);
     if (button_bit_mask == kCanonicalButtonBitMaskMapping.end()) {
       ADD_FAILURE() << "Unsupported CanonicalButtonIndex value: "

@@ -111,8 +111,8 @@ bool Reader::MapFile() {
 
 bool Reader::ReadMessages() {
   for (size_t i = 0; i < header_->message_count; ++i) {
-    const char* begin = file_data_.begin();
-    const char* end = file_data_.end();
+    const char* begin = file_data_.data();
+    const char* end = begin + file_data_.size();
     IPC::Message::NextMessageInfo info;
     IPC::Message::FindNext(begin, end, &info);
     if (!info.message_found) {

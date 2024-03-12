@@ -36,7 +36,7 @@ base::FilePath GetPathWithEnvironmentFallback(int key) {
           {{base::DIR_PROGRAM_FILES, L"PROGRAMFILES"},
            {base::DIR_PROGRAM_FILESX86, L"PROGRAMFILES(X86)"},
            {base::DIR_LOCAL_APP_DATA, L"LOCALAPPDATA"}});
-  if (auto* it = kKeyToVariable.find(key); it != kKeyToVariable.end()) {
+  if (auto it = kKeyToVariable.find(key); it != kKeyToVariable.end()) {
     std::array<wchar_t, MAX_PATH> value;
     value[0] = L'\0';
     if (DWORD ret = ::GetEnvironmentVariableW(it->second.data(), value.data(),

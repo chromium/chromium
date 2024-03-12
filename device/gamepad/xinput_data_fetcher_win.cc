@@ -121,7 +121,7 @@ void XInputDataFetcherWin::EnumerateDevices() {
                   {kDeviceSubTypeGuitarBass, u"GUITAR_BASS"},
                   {kDeviceSubTypeArcadePad, u"ARCADE_PAD"},
               });
-          const auto* const it = kNames.find(sub_type);
+          const auto it = kNames.find(sub_type);
           return (it == kNames.end()) ? u"<UNKNOWN>" : it->second;
         }(caps.SubType);
         pad.SetID(base::StrCat(

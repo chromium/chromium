@@ -40,7 +40,7 @@ uint16_t TlmProvider::AppendNameToMetadata(
     return static_cast<uint16_t>(-1);
   }
 
-  memcpy(metadata + index, name.begin(), cch);
+  memcpy(metadata + index, name.data(), cch);
   metadata[index + cch] = 0;
   index += static_cast<uint16_t>(cch) + 1;
   return index;

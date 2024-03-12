@@ -90,7 +90,7 @@ std::optional<DevicePostureType> DevicePostureRegistryWatcherWin::ParsePosture(
            {"MODE_LAYFLAT_LANDSCAPE", DevicePostureType::kContinuous},
            {"MODE_LAYFLAT_PORTRAIT", DevicePostureType::kContinuous},
            {"MODE_TABLETOP", DevicePostureType::kContinuous}});
-  if (auto* iter = kPostureStateToPostureType.find(posture_state);
+  if (auto iter = kPostureStateToPostureType.find(posture_state);
       iter != kPostureStateToPostureType.end()) {
     return iter->second;
   }

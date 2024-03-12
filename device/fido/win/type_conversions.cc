@@ -304,7 +304,7 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
           {u"UnknownError", CtapDeviceResponseCode::kCtap2ErrOperationDenied},
       });
-  const auto* it = kResponseCodeMap.find(error_name);
+  const auto it = kResponseCodeMap.find(error_name);
   if (it == kResponseCodeMap.end()) {
     FIDO_LOG(ERROR) << "Unexpected error name: " << error_name;
     return CtapDeviceResponseCode::kCtap2ErrOperationDenied;

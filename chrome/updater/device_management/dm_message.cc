@@ -58,7 +58,7 @@ TranslatePolicyValidationResultStatus(PolicyValidationResult::Status status) {
        Report::VALIDATION_RESULT_TYPE_VALUE_ERROR},
   });
 
-  const auto* mapped_status = kValidationStatusMap.find(status);
+  const auto mapped_status = kValidationStatusMap.find(status);
   return mapped_status == kValidationStatusMap.end()
              ? Report::VALIDATION_RESULT_TYPE_ERROR_UNSPECIFIED
              : mapped_status->second;

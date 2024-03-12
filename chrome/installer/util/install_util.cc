@@ -604,7 +604,7 @@ std::wstring InstallUtil::GetLongAppDescription() {
 std::wstring InstallUtil::GuidToSquid(std::wstring_view guid) {
   std::wstring squid;
   squid.reserve(32);
-  auto* input = guid.begin();
+  auto input = guid.begin();
   auto output = std::back_inserter(squid);
 
   // Reverse-copy relevant characters, skipping separators.
