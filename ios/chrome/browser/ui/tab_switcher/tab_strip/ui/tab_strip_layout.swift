@@ -321,22 +321,22 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
   override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]?
   {
+    let rectToConsider = CGRectInset(rect, -2 * TabStripConstants.TabItem.maxWidth, 0)
     guard
-      let collectionView = collectionView
+      let superAttributes = super.layoutAttributesForElements(in: rectToConsider)
     else { return nil }
 
-    /// To ensure the proper positioning of the selected cell and the
-    /// disappearing cells, compute the `attribute` of each cells.
-    var computedAttributes: [UICollectionViewLayoutAttributes] = []
-    for section in 0..<collectionView.numberOfSections {
-      for item in 0..<collectionView.numberOfItems(inSection: section) {
-        if let attribute = layoutAttributesForItem(at: IndexPath(item: item, section: section)) {
-          computedAttributes.append(attribute)
-        }
+    var indexPathToConsider = superAttributes.map(\.indexPath)
+    if let selectedIndexPath = selectedIndexPath {
+      if !indexPathToConsider.contains(selectedIndexPath) {
+        indexPathToConsider.append(selectedIndexPath)
       }
     }
 
-    return computedAttributes
+    return indexPathToConsider.compactMap { indexPath in
+      layoutAttributesForItem(at: indexPath)
+    }
+
   }
 
   override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
