@@ -613,12 +613,11 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
 
   std::unique_ptr<const BucketRanges> created_ranges = CreateRangesFromData(
       ranges_data, histogram_ranges_checksum, histogram_bucket_count + 1);
-  if (!created_ranges)
+  if (!created_ranges || created_ranges->size() != histogram_bucket_count + 1 ||
+      created_ranges->range(1) != histogram_minimum ||
+      created_ranges->range(histogram_bucket_count - 1) != histogram_maximum) {
     return nullptr;
-  DCHECK_EQ(created_ranges->size(), histogram_bucket_count + 1);
-  DCHECK_EQ(created_ranges->range(1), histogram_minimum);
-  DCHECK_EQ(created_ranges->range(histogram_bucket_count - 1),
-            histogram_maximum);
+  }
   const BucketRanges* ranges;
   if (ranges_manager_) {
     ranges =

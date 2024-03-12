@@ -664,7 +664,8 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
   // Round up the requested size, plus header, to the next allocation alignment.
   size_t size = bits::AlignUp(req_size + sizeof(BlockHeader), kAllocAlignment);
   if (size <= sizeof(BlockHeader) || size > mem_page_) {
-    NOTREACHED();
+    // This shouldn't be reached through normal means.
+    debug::DumpWithoutCrashing();
     return kReferenceNull;
   }
 
