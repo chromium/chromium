@@ -223,7 +223,8 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
           .SetHandlesTooltips(false)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
           .SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE)
-          .SetEnabled(cros_tokens::kCrosSysOnSurface)
+          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetAutoColorReadabilityEnabled(false)
           .Build());
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *desk_name_label_);
