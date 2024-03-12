@@ -203,10 +203,6 @@ TEST_F(ScriptPromiseResolverTest, stop) {
   }
 
   GetExecutionContext()->NotifyContextDestroyed();
-  {
-    ScriptState::Scope scope(GetScriptState());
-    EXPECT_TRUE(resolver->Promise().IsEmpty());
-  }
 
   resolver->Resolve("hello");
   PerformMicrotaskCheckpoint();

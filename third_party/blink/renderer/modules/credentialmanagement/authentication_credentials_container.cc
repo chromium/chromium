@@ -215,7 +215,9 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
 
     case RequiredOriginType::kSecureAndSameWithAncestors:
-      if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
+      if (!IsSameOriginWithAncestors(
+              To<LocalDOMWindow>(resolver->GetExecutionContext())
+                  ->GetFrame())) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The following credential operations can only occur in a document "
@@ -241,7 +243,8 @@ bool CheckSecurityRequirementsBeforeRequest(
             "Authentication capabilities to cross-origin child frames."));
         return false;
       } else if (!IsSameOriginWithAncestors(
-                     resolver->DomWindow()->GetFrame())) {
+                     To<LocalDOMWindow>(resolver->GetExecutionContext())
+                         ->GetFrame())) {
         UseCounter::Count(
             resolver->GetExecutionContext(),
             WebFeature::kCredentialManagerCrossOriginPublicKeyGetRequest);
@@ -263,7 +266,8 @@ bool CheckSecurityRequirementsBeforeRequest(
             "Authentication capabilities to cross-origin child frames."));
         return false;
       } else if (!IsSameOriginWithAncestors(
-                     resolver->DomWindow()->GetFrame())) {
+                     To<LocalDOMWindow>(resolver->GetExecutionContext())
+                         ->GetFrame())) {
         UseCounter::Count(
             resolver->GetExecutionContext(),
             WebFeature::kCredentialManagerCrossOriginPublicKeyCreateRequest);
@@ -279,7 +283,9 @@ bool CheckSecurityRequirementsBeforeRequest(
             "The 'otp-credentials` feature is not enabled in this document."));
         return false;
       }
-      if (!IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame())) {
+      if (!IsAncestorChainValidForWebOTP(
+              To<LocalDOMWindow>(resolver->GetExecutionContext())
+                  ->GetFrame())) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "More than two unique origins are detected in the origin chain."));
@@ -347,7 +353,7 @@ void AssertSecurityRequirementsBeforeResponse(
     return;
   }
 
-  SECURITY_CHECK(resolver->DomWindow());
+  SECURITY_CHECK(To<LocalDOMWindow>(resolver->GetExecutionContext()));
   SECURITY_CHECK(resolver->GetExecutionContext()->IsSecureContext());
   switch (require_origin) {
     case RequiredOriginType::kSecure:
@@ -355,8 +361,8 @@ void AssertSecurityRequirementsBeforeResponse(
       break;
 
     case RequiredOriginType::kSecureAndSameWithAncestors:
-      SECURITY_CHECK(
-          IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame()));
+      SECURITY_CHECK(IsSameOriginWithAncestors(
+          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame()));
       break;
 
     case RequiredOriginType::
@@ -376,7 +382,8 @@ void AssertSecurityRequirementsBeforeResponse(
       SECURITY_CHECK(
           resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kOTPCredentials) &&
-          IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame()));
+          IsAncestorChainValidForWebOTP(
+              To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame()));
       break;
 
     case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
@@ -1094,9 +1101,10 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   // |AuthenticationCredentialsContainer::create|, which throws a
   // NotAllowedError rather than a SecurityError like the SPC spec currently
   // requires.
-  if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
+  if (!IsSameOriginWithAncestors(
+          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame())) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
-        resolver->DomWindow()->GetFrame(),
+        To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
         UserActivationUpdateSource::kRenderer);
     if (!has_user_activation) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1463,7 +1471,7 @@ AuthenticationCredentialsContainer::get(ScriptState* script_state,
         !mojo::ConvertTo<
             std::optional<mojom::blink::UserVerificationRequirement>>(
             options->publicKey()->userVerification())) {
-      resolver->DomWindow()->AddConsoleMessage(
+      resolver->GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1805,11 +1813,12 @@ AuthenticationCredentialsContainer::create(
   // TODO(crbug.com/1512245): This check should be used for payment credentials
   // as well, but currently the SPC spec expects a SecurityError rather than
   // NotAllowedError.
-  if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame()) &&
+  if (!IsSameOriginWithAncestors(
+          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame()) &&
       (!options->publicKey()->hasExtensions() ||
        !options->publicKey()->extensions()->hasPayment())) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
-        resolver->DomWindow()->GetFrame(),
+        To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
         UserActivationUpdateSource::kRenderer);
     if (!has_user_activation) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1834,7 +1843,7 @@ AuthenticationCredentialsContainer::create(
   if (options->publicKey()->hasAttestation() &&
       !mojo::ConvertTo<std::optional<AttestationConveyancePreference>>(
           options->publicKey()->attestation())) {
-    resolver->DomWindow()->AddConsoleMessage(
+    resolver->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kJavaScript,
             mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1849,7 +1858,7 @@ AuthenticationCredentialsContainer::create(
                                            ->authenticatorSelection()
                                            ->authenticatorAttachment();
     if (!mojo::ConvertTo<std::optional<AuthenticatorAttachment>>(attachment)) {
-      resolver->DomWindow()->AddConsoleMessage(
+      resolver->GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1863,7 +1872,7 @@ AuthenticationCredentialsContainer::create(
       !mojo::ConvertTo<
           std::optional<mojom::blink::UserVerificationRequirement>>(
           options->publicKey()->authenticatorSelection()->userVerification())) {
-    resolver->DomWindow()->AddConsoleMessage(
+    resolver->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kJavaScript,
             mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1878,7 +1887,7 @@ AuthenticationCredentialsContainer::create(
         mojo::ConvertTo<std::optional<mojom::blink::ResidentKeyRequirement>>(
             options->publicKey()->authenticatorSelection()->residentKey());
     if (!rk_requirement) {
-      resolver->DomWindow()->AddConsoleMessage(
+      resolver->GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1899,7 +1908,7 @@ AuthenticationCredentialsContainer::create(
       }
     }
     if (!algorithm_set.Contains(-7) || !algorithm_set.Contains(-257)) {
-      resolver->DomWindow()->AddConsoleMessage(
+      resolver->GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
@@ -2024,7 +2033,9 @@ void AuthenticationCredentialsContainer::GetForIdentity(
 
   // Log the UseCounter only when the WebID flag is enabled.
   UseCounter::Count(context, WebFeature::kFedCm);
-  if (!resolver->DomWindow()->GetFrame()->IsMainFrame()) {
+  if (!To<LocalDOMWindow>(resolver->GetExecutionContext())
+           ->GetFrame()
+           ->IsMainFrame()) {
     UseCounter::Count(resolver->GetExecutionContext(),
                       WebFeature::kFedCmIframe);
   }
