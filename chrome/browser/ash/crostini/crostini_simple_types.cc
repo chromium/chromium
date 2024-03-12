@@ -80,6 +80,7 @@ const char* CrostiniResultString(const CrostiniResult res) {
     ENTRY(STOP_VM_NO_RESPONSE);
     ENTRY(SIGNAL_NOT_CONNECTED);
     ENTRY(INSTALL_TERMINA_CANCELLED);
+    ENTRY(START_TIMED_OUT);
   }
 #undef ENTRY
   return "unknown code";

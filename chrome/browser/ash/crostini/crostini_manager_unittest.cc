@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -985,6 +986,20 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringStartContainer) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(crostini_manager()->HasRestarterForTesting(container_id()));
   EXPECT_FALSE(fake_cicerone_client_->configure_for_arc_sideload_called());
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForRestarterStart) {
+  crostini_manager_->AddStoppingVmForTesting(container_id().vm_name);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
+  task_environment_.FastForwardBy(kLongTime);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_TIMED_OUT);
+
+  EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
+  ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoadedFirstInstall) {

@@ -474,7 +474,7 @@ void CrostiniManager::CrostiniRestarter::Timeout(mojom::InstallerState state) {
       result = CrostiniResult::CONFIGURE_CONTAINER_TIMED_OUT;
       break;
     case mojom::InstallerState::kStart:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      result = CrostiniResult::START_TIMED_OUT;
   }
   // Note: FinishRestart deletes |this|.
   FinishRestart(result);

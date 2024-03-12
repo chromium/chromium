@@ -172,6 +172,7 @@ chromium-metrics-reviews@google.com.
   <int value="76" label="STOP_VM_NO_RESPONSE"/>
   <int value="77" label="SIGNAL_NOT_CONNECTED"/>
   <int value="78" label="INSTALL_TERMINA_CANCELLED"/>
+  <int value="79" label="START_TIMED_OUT"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">

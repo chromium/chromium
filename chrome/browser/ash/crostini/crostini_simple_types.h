@@ -111,7 +111,8 @@ enum class CrostiniResult {
   STOP_VM_NO_RESPONSE = 76,
   SIGNAL_NOT_CONNECTED = 77,
   INSTALL_TERMINA_CANCELLED = 78,
-  kMaxValue = INSTALL_TERMINA_CANCELLED,
+  START_TIMED_OUT = 79,
+  kMaxValue = START_TIMED_OUT,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
