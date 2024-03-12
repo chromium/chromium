@@ -96,8 +96,8 @@ TEST_F(CompositeMatcherTest, SamePrioritySpace) {
   params.url = &google_url;
 
   // The block rule should be higher priority.
-  ActionInfo action_info =
-      composite_matcher->GetBeforeRequestAction(params, PageAccess::kAllowed);
+  ActionInfo action_info = composite_matcher->GetAction(
+      params, RulesetMatchingStage::kOnBeforeRequest, PageAccess::kAllowed);
   ASSERT_TRUE(action_info.action);
   EXPECT_EQ(action_info.action->type, RequestAction::Type::BLOCK);
 
@@ -116,8 +116,8 @@ TEST_F(CompositeMatcherTest, SamePrioritySpace) {
       std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   // The allow rule should now have higher priority.
-  action_info =
-      composite_matcher->GetBeforeRequestAction(params, PageAccess::kAllowed);
+  action_info = composite_matcher->GetAction(
+      params, RulesetMatchingStage::kOnBeforeRequest, PageAccess::kAllowed);
   ASSERT_TRUE(action_info.action);
   EXPECT_EQ(action_info.action->type, RequestAction::Type::ALLOW);
 }
@@ -167,8 +167,9 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
 
   // Call GetBeforeRequestAction first to ensure that test and production code
   // paths are consistent.
-  composite_matcher->GetBeforeRequestAction(google_params,
-                                            PageAccess::kAllowed);
+  composite_matcher->GetAction(google_params,
+                               RulesetMatchingStage::kOnBeforeRequest,
+                               PageAccess::kAllowed);
 
   std::vector<RequestAction> actions =
       composite_matcher->GetModifyHeadersActions(google_params);
@@ -217,8 +218,9 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
 
   // Call GetBeforeRequestAction first to ensure that test and production code
   // paths are consistent.
-  composite_matcher->GetBeforeRequestAction(google_params,
-                                            PageAccess::kAllowed);
+  composite_matcher->GetAction(google_params,
+                               RulesetMatchingStage::kOnBeforeRequest,
+                               PageAccess::kAllowed);
 
   // Re-create |action_1| and |action_2| with the updated rule
   // priorities. The headers modified by each action should not change.
@@ -327,8 +329,9 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
 
   // Call GetBeforeRequestAction first to ensure that test and production code
   // paths are consistent.
-  composite_matcher->GetBeforeRequestAction(google_params,
-                                            PageAccess::kAllowed);
+  composite_matcher->GetAction(google_params,
+                               RulesetMatchingStage::kOnBeforeRequest,
+                               PageAccess::kAllowed);
 
   std::vector<RequestAction> actions =
       composite_matcher->GetModifyHeadersActions(google_params);
@@ -365,8 +368,9 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
 
   // Call GetBeforeRequestAction first to ensure that test and production code
   // paths are consistent.
-  composite_matcher->GetBeforeRequestAction(google_params,
-                                            PageAccess::kAllowed);
+  composite_matcher->GetAction(google_params,
+                               RulesetMatchingStage::kOnBeforeRequest,
+                               PageAccess::kAllowed);
   actions = composite_matcher->GetModifyHeadersActions(google_params);
 
   RequestAction header_1_action = create_action_for_rule(
@@ -470,8 +474,8 @@ TEST_F(CompositeMatcherTest, NotifyWithholdFromPageAccess) {
     params.element_type = url_pattern_index::flat::ElementType_SUBDOCUMENT;
     params.is_third_party = false;
 
-    ActionInfo redirect_action_info =
-        composite_matcher->GetBeforeRequestAction(params, test_case.access);
+    ActionInfo redirect_action_info = composite_matcher->GetAction(
+        params, RulesetMatchingStage::kOnBeforeRequest, test_case.access);
 
     EXPECT_EQ(test_case.should_notify_withheld,
               redirect_action_info.notify_request_withheld);
@@ -532,8 +536,8 @@ TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
     RequestParams params;
     params.url = &url;
 
-    ActionInfo info =
-        composite_matcher->GetBeforeRequestAction(params, cases[i].access);
+    ActionInfo info = composite_matcher->GetAction(
+        params, RulesetMatchingStage::kOnBeforeRequest, cases[i].access);
     EXPECT_EQ(cases[i].expected_notify_withheld, info.notify_request_withheld);
 
     std::optional<int> rule_matched_id;
@@ -615,8 +619,8 @@ TEST_F(CompositeMatcherTest, GetRedirectUrlFromPriority) {
     params.element_type = url_pattern_index::flat::ElementType_SUBDOCUMENT;
     params.is_third_party = false;
 
-    ActionInfo redirect_action_info =
-        composite_matcher->GetBeforeRequestAction(params, PageAccess::kAllowed);
+    ActionInfo redirect_action_info = composite_matcher->GetAction(
+        params, RulesetMatchingStage::kOnBeforeRequest, PageAccess::kAllowed);
 
     if (test_case.expected_final_url) {
       ASSERT_TRUE(redirect_action_info.action);
@@ -652,21 +656,21 @@ TEST_F(CompositeMatcherTest, RulePlacement) {
     RequestParams params;
     params.url = &url;
 
-    ActionInfo info =
-        composite_matcher->GetBeforeRequestAction(params, PageAccess::kAllowed);
+    ActionInfo info = composite_matcher->GetAction(
+        params, RulesetMatchingStage::kOnBeforeRequest, PageAccess::kAllowed);
     ASSERT_TRUE(info.action);
     EXPECT_EQ(kMinValidID + 1u, info.action->rule_id);
     EXPECT_FALSE(info.notify_request_withheld);
 
     // The highest priority matching rule (`redirect_rule`) needs host
     // permissions to match.
-    info = composite_matcher->GetBeforeRequestAction(params,
-                                                     PageAccess::kWithheld);
+    info = composite_matcher->GetAction(
+        params, RulesetMatchingStage::kOnBeforeRequest, PageAccess::kWithheld);
     EXPECT_FALSE(info.action);
     EXPECT_TRUE(info.notify_request_withheld);
 
-    info =
-        composite_matcher->GetBeforeRequestAction(params, PageAccess::kDenied);
+    info = composite_matcher->GetAction(
+        params, RulesetMatchingStage::kOnBeforeRequest, PageAccess::kDenied);
     EXPECT_FALSE(info.action);
     EXPECT_FALSE(info.notify_request_withheld);
   };

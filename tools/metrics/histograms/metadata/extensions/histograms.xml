@@ -766,10 +766,23 @@ of interesting buckets, such as "internal + external".
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
-    Time taken to evaluate the before-request action for a network request for a
-    single extension ruleset. Emitted for each network request that is visible
-    to the extension. This is only emitted for users with high resolution
-    clocks.
+    Time taken to evaluate the action for a network request for a single
+    extension ruleset for rules matched before the request is sent. Emitted for
+    each network request that is visible to the extension. This is only emitted
+    for users with high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.DeclarativeNetRequest.EvaluateHeadersReceivedTime.SingleExtension2"
+    units="microseconds" expires_after="2024-06-30">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Time taken to evaluate the action for a network request for a single
+    extension ruleset for rules matched after a request's response headers have
+    been received. Emitted for each network request that is visible to the
+    extension. This is only emitted for users with high resolution clocks.
   </summary>
 </histogram>
 

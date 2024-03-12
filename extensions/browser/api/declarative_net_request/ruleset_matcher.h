@@ -94,11 +94,11 @@ class RulesetMatcher {
   // Returns the disabled rule ids for testing.
   const base::flat_set<int>& GetDisabledRuleIdsForTesting() const;
 
- private:
   // Returns the total rule count for rules within this ruleset to be matched
   // for the given request matching `stage`.
   size_t GetRulesCount(RulesetMatchingStage stage) const;
 
+ private:
   // Returns the regex rule count for rules within this ruleset to be matched
   // for the given request matching `stage`.
   size_t GetRegexRulesCount(RulesetMatchingStage stage) const;

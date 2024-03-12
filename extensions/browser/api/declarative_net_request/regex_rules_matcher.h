@@ -158,6 +158,7 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
 
   const raw_ptr<const ExtensionMetadataList> metadata_list_;
 
+  // Whether this matcher contains rules that will match on, or modify headers.
   const bool is_extra_headers_matcher_;
 };
 

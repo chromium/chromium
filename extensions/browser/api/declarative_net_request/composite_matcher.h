@@ -86,9 +86,9 @@ class CompositeMatcher {
 
   // Returns a RequestAction for the network request specified by |params|, or
   // std::nullopt if there is no matching rule.
-  ActionInfo GetBeforeRequestAction(
-      const RequestParams& params,
-      PermissionsData::PageAccess page_access) const;
+  ActionInfo GetAction(const RequestParams& params,
+                       RulesetMatchingStage stage,
+                       PermissionsData::PageAccess page_access) const;
 
   // Returns all matching RequestActions for the request corresponding to
   // modifyHeaders rules matched from this extension, sorted in descending order
@@ -102,6 +102,10 @@ class CompositeMatcher {
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
   void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
+
+  // Returns if this extension has any rulesets with rules that are matched in
+  // the corresponding matching `stage`.
+  bool HasRulesets(RulesetMatchingStage stage) const;
 
  private:
   // This must be called whenever |matchers_| are modified.

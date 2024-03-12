@@ -88,11 +88,12 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   // phase corresponding to entries in flat::IndexType.
   const std::vector<UrlPatternIndexMatcher> headers_received_matchers_;
 
-  const bool is_extra_headers_matcher_;
-
   const size_t before_request_rules_count_;
 
   const size_t headers_received_rules_count_;
+
+  // Whether this matcher contains rules that will match on, or modify headers.
+  const bool is_extra_headers_matcher_;
 
   // Disabled rule ids. The ids are passed to the matching algorithm in the
   // UrlPatternIndexMatcher so that the algorithm can skip the disabled rules.

@@ -505,6 +505,13 @@ bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
 // Returns whether a response header should be hidden from listeners.
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name);
 
+// "Redirects" a request to `new_url` after the response has started by setting
+// the appropriate headers in `override_response_headers`.
+void RedirectRequestAfterHeadersReceived(
+    const GURL& new_url,
+    net::HttpResponseHeaders& override_response_headers,
+    GURL* preserve_fragment_on_redirect_url);
+
 }  // namespace extension_web_request_api_helpers
 
 #endif  // EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_API_HELPERS_H_

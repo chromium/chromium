@@ -493,7 +493,7 @@ bool ModifyResponseHeadersForAction(
   auto create_override_headers_if_needed =
       [&original_response_headers](
           scoped_refptr<net::HttpResponseHeaders>* override_response_headers) {
-        if (override_response_headers->get() == nullptr) {
+        if (!override_response_headers->get()) {
           *override_response_headers =
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   original_response_headers->raw_headers());
@@ -1655,10 +1655,9 @@ void MergeOnHeadersReceivedResponses(
           base::MakeRefCounted<net::HttpResponseHeaders>(
               original_response_headers->raw_headers());
     }
-    (*override_response_headers)->ReplaceStatusLine("HTTP/1.1 302 Found");
-    (*override_response_headers)->SetHeader("Location", new_url.spec());
-    // Prevent the original URL's fragment from being added to the new URL.
-    *preserve_fragment_on_redirect_url = new_url;
+
+    RedirectRequestAfterHeadersReceived(new_url, **override_response_headers,
+                                        preserve_fragment_on_redirect_url);
   }
 
   // Record metrics.
@@ -1769,6 +1768,16 @@ bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {
   return !(extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) &&
          base::EqualsCaseInsensitiveASCII(name, "set-cookie");
+}
+
+void RedirectRequestAfterHeadersReceived(
+    const GURL& new_url,
+    net::HttpResponseHeaders& override_response_headers,
+    GURL* preserve_fragment_on_redirect_url) {
+  override_response_headers.ReplaceStatusLine("HTTP/1.1 302 Found");
+  override_response_headers.SetHeader("Location", new_url.spec());
+  // Prevent the original URL's fragment from being added to the new URL.
+  *preserve_fragment_on_redirect_url = new_url;
 }
 
 }  // namespace extension_web_request_api_helpers

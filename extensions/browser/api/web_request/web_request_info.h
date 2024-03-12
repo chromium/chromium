@@ -163,10 +163,10 @@ struct WebRequestInfo {
   const int web_view_rules_registry_id;
   const int web_view_embedder_process_id;
 
-  // The Declarative Net Request actions associated with this request. Mutable
-  // since this is lazily computed. Cached to avoid redundant computations.
-  // Valid when not null. In case no actions are taken, populated with an empty
-  // vector.
+  // The Declarative Net Request actions associated with this request that are
+  // matched during the onBeforeRequest stage. Mutable since this is lazily
+  // computed. Cached to avoid redundant computations. Valid when not null. In
+  // case no actions are taken, populated with an empty vector.
   mutable std::optional<std::vector<declarative_net_request::RequestAction>>
       dnr_actions;
 

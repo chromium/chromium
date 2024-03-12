@@ -81,7 +81,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
                 &redirect_url_, &should_collapse_initiator);
     // It doesn't make sense to collapse WebTransport requests since they won't
     // be associated with a DOM element.
-    DCHECK(!should_collapse_initiator);
+    CHECK(!should_collapse_initiator);
 
     if (result == net::ERR_IO_PENDING)
       return;
@@ -156,6 +156,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     pending_client_ = std::move(client);
     initial_stats_ = std::move(initial_stats);
     response_headers_ = response_headers;
+
+    bool should_collapse_initiator = false;
+
     // Since WebTransport doesn't support redirect, 'redirect_url' is ignored
     // even if extensions assigned it.
     const int result =
@@ -165,7 +168,12 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
                 base::BindOnce(
                     &WebTransportHandshakeProxy::OnHeadersReceivedCompleted,
                     base::Unretained(this)),
-                response_headers_.get(), &override_headers_, &redirect_url_);
+                response_headers_.get(), &override_headers_, &redirect_url_,
+                &should_collapse_initiator);
+
+    // It doesn't make sense to collapse WebTransport requests since they won't
+    // be associated with a DOM element.
+    CHECK(!should_collapse_initiator);
 
     if (result == net::ERR_IO_PENDING)
       return;

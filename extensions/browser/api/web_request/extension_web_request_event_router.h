@@ -207,7 +207,8 @@ class WebRequestEventRouter {
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
-      GURL* preserve_fragment_on_redirect_url);
+      GURL* preserve_fragment_on_redirect_url,
+      bool* should_collapse_initiator);
 
   // Dispatches the OnAuthRequired event to any extensions whose filters match
   // the given request. If the listener is not registered as "blocking", then

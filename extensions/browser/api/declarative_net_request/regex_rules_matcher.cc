@@ -102,9 +102,12 @@ RegexRulesMatcher::RegexRulesMatcher(
                                 this,
                                 RulesetMatchingStage::kOnHeadersReceived),
       metadata_list_(metadata_list),
+      // See comments for this field in extension_url_pattern_index_matcher.cc
+      // for why different checks are used for `before_request_regex_list` and
+      // `headers_received_regex_list`.
       is_extra_headers_matcher_(
           IsExtraHeadersMatcherInternal(before_request_regex_list) ||
-          IsExtraHeadersMatcherInternal(headers_received_regex_list)) {}
+          headers_received_regex_list->size() > 0) {}
 
 RegexRulesMatcher::~RegexRulesMatcher() = default;
 

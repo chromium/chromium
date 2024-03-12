@@ -22,6 +22,7 @@
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
+#include "extensions/browser/api/declarative_webrequest/request_stage.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -148,7 +149,7 @@ const CompositeMatcher* RulesetManager::GetMatcherForExtension(
   return iter->matcher.get();
 }
 
-const std::vector<RequestAction>& RulesetManager::EvaluateRequest(
+const std::vector<RequestAction>& RulesetManager::EvaluateBeforeRequest(
     const WebRequestInfo& request,
     bool is_incognito_context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -159,36 +160,51 @@ const std::vector<RequestAction>& RulesetManager::EvaluateRequest(
   // |is_incognito_context| will stay the same for a given |request|. This also
   // assumes that the core state of the WebRequestInfo isn't changed between the
   // different EvaluateRequest invocations.
+  // Note: Since this is called before the request is sent, `response_headers`
+  // have not been received yet and is null.
   if (!request.dnr_actions) {
-    request.dnr_actions =
-        EvaluateRequestInternal(request, is_incognito_context);
+    request.dnr_actions = EvaluateRequestInternal(
+        request, /*response_headers=*/nullptr, is_incognito_context);
   }
 
   return *request.dnr_actions;
 }
 
+std::vector<RequestAction> RulesetManager::EvaluateRequestWithHeaders(
+    const WebRequestInfo& request,
+    const net::HttpResponseHeaders* response_headers,
+    bool is_incognito_context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(response_headers);
+  return EvaluateRequestInternal(request, response_headers,
+                                 is_incognito_context);
+}
+
 bool RulesetManager::HasAnyExtraHeadersMatcher() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const auto& ruleset : rulesets_) {
-    if (ruleset.matcher->HasAnyExtraHeadersMatcher())
-      return true;
-  }
-
-  return false;
+  return base::ranges::any_of(
+      rulesets_, [](const ExtensionRulesetData& ruleset) {
+        return ruleset.matcher->HasAnyExtraHeadersMatcher();
+      });
 }
 
 bool RulesetManager::HasExtraHeadersMatcherForRequest(
     const WebRequestInfo& request,
     bool is_incognito_context) const {
   const std::vector<RequestAction>& actions =
-      EvaluateRequest(request, is_incognito_context);
+      EvaluateBeforeRequest(request, is_incognito_context);
 
   static_assert(flat::ActionType_count == 6,
                 "Modify this method to ensure HasExtraHeadersMatcherForRequest "
                 "is updated as new actions are added.");
 
-  return base::Contains(actions, RequestAction::Type::MODIFY_HEADERS,
+  // TODO(kelvinjiang): We can optimize this check for the onHeadersReceived
+  // stage by looking for particular headers required for extraHeaders or if the
+  // request would potentially match any onHeadersReceived rules based on
+  // non-header parameters.
+  return HasRulesets(RulesetMatchingStage::kOnHeadersReceived) ||
+         base::Contains(actions, RequestAction::Type::MODIFY_HEADERS,
                         &RequestAction::type);
 }
 
@@ -206,6 +222,13 @@ void RulesetManager::OnDidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   for (ExtensionRulesetData& ruleset : rulesets_)
     ruleset.matcher->OnDidFinishNavigation(navigation_handle);
+}
+
+bool RulesetManager::HasRulesets(RulesetMatchingStage stage) const {
+  return base::ranges::any_of(rulesets_,
+                              [stage](const ExtensionRulesetData& ruleset) {
+                                return ruleset.matcher->HasRulesets(stage);
+                              });
 }
 
 void RulesetManager::SetObserverForTest(TestObserver* observer) {
@@ -236,10 +259,11 @@ bool RulesetManager::ExtensionRulesetData::operator<(
          std::tie(other.extension_install_time, other.extension_id);
 }
 
-std::optional<RequestAction> RulesetManager::GetBeforeRequestAction(
+std::optional<RequestAction> RulesetManager::GetAction(
     const std::vector<RulesetAndPageAccess>& rulesets,
     const WebRequestInfo& request,
-    const RequestParams& params) const {
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   DCHECK(std::is_sorted(rulesets.begin(), rulesets.end(),
                         [](RulesetAndPageAccess a, RulesetAndPageAccess b) {
                           return *a.first < *b.first;
@@ -275,8 +299,7 @@ std::optional<RequestAction> RulesetManager::GetBeforeRequestAction(
     const ExtensionRulesetData* ruleset = ruleset_and_access.first;
 
     CompositeMatcher::ActionInfo action_info =
-        ruleset->matcher->GetBeforeRequestAction(params,
-                                                 ruleset_and_access.second);
+        ruleset->matcher->GetAction(params, stage, ruleset_and_access.second);
 
     DCHECK(!(action_info.action && action_info.notify_request_withheld));
     if (action_info.notify_request_withheld) {
@@ -340,15 +363,24 @@ std::vector<RequestAction> RulesetManager::GetModifyHeadersActions(
 
 std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
     const WebRequestInfo& request,
+    const net::HttpResponseHeaders* response_headers,
     bool is_incognito_context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!request.dnr_actions);
+
+  RulesetMatchingStage stage = response_headers
+                                   ? RulesetMatchingStage::kOnHeadersReceived
+                                   : RulesetMatchingStage::kOnBeforeRequest;
+  if (!response_headers) {
+    DCHECK(!request.dnr_actions);
+  }
 
   std::vector<RequestAction> actions;
 
   if (!ShouldEvaluateRequest(request))
     return actions;
 
+  // TODO(crbug.com/40727004): Add some context on which request stage this
+  // event took place in the observer method if/when needed for tests.
   if (test_observer_)
     test_observer_->OnEvaluateRequest(request, is_incognito_context);
 
@@ -370,15 +402,13 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
     rulesets_to_evaluate.emplace_back(&ruleset, host_permission_access);
   }
 
-  // TODO(crbug.com/1141166): Add response headers here.
-  const RequestParams params(request, /*response_headers=*/nullptr);
-  std::optional<RequestAction> before_request_action =
-      GetBeforeRequestAction(rulesets_to_evaluate, request, params);
+  const RequestParams params(request, response_headers);
+  std::optional<RequestAction> action =
+      GetAction(rulesets_to_evaluate, request, params, stage);
 
-  if (before_request_action) {
-    bool is_request_modifying_action =
-        !before_request_action->IsAllowOrAllowAllRequests();
-    actions.push_back(std::move(*before_request_action));
+  if (action) {
+    bool is_request_modifying_action = !action->IsAllowOrAllowAllRequests();
+    actions.push_back(std::move(*action));
 
     // If the request is blocked/redirected, no further modifications can
     // happen.

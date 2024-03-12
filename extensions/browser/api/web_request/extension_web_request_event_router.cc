@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
@@ -966,7 +967,8 @@ int WebRequestEventRouter::OnBeforeRequest(
       declarative_net_request::RulesMonitorService::Get(browser_context)
           ->ruleset_manager();
 
-  if (ruleset_manager->has_rulesets()) {
+  if (ruleset_manager->HasRulesets(
+          declarative_net_request::RulesetMatchingStage::kOnBeforeRequest)) {
     GetExtensionWebRequestTimeTracker().LogBeforeRequestDNRStartTime(
         request->id, base::TimeTicks::Now());
 
@@ -977,7 +979,7 @@ int WebRequestEventRouter::OnBeforeRequest(
     };
 
     const std::vector<DNRRequestAction>& actions =
-        ruleset_manager->EvaluateRequest(*request, is_incognito_context);
+        ruleset_manager->EvaluateBeforeRequest(*request, is_incognito_context);
     base::ScopedClosureRunner scoped_timer;
     if (!actions.empty()) {
       // We only record completion time if there's at least one relevant rule.
@@ -1141,12 +1143,16 @@ int WebRequestEventRouter::OnHeadersReceived(
     net::CompletionOnceCallback callback,
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
-    GURL* preserve_fragment_on_redirect_url) {
+    GURL* preserve_fragment_on_redirect_url,
+    bool* should_collapse_initiator) {
+  CHECK(should_collapse_initiator);
+
   if (ShouldHideEvent(browser_context, *request)) {
     return net::OK;
   }
 
   bool initialize_blocked_requests = false;
+  const bool is_incognito_context = browser_context->IsOffTheRecord();
 
   DCHECK(request->dnr_actions);
   initialize_blocked_requests |= base::ranges::any_of(
@@ -1174,6 +1180,64 @@ int WebRequestEventRouter::OnHeadersReceived(
         browser_context, request, listeners, std::move(event_details));
   }
 
+  declarative_net_request::RulesetManager* ruleset_manager =
+      declarative_net_request::RulesMonitorService::Get(browser_context)
+          ->ruleset_manager();
+
+  if (ruleset_manager->HasRulesets(
+          declarative_net_request::RulesetMatchingStage::kOnHeadersReceived)) {
+    std::vector<DNRRequestAction> actions =
+        ruleset_manager->EvaluateRequestWithHeaders(
+            *request, original_response_headers, is_incognito_context);
+
+    // TODO(crbug.com/40727004): This shares a lot of logic with the equivalent
+    // loop in OnBeforeRequest. Refactor into a common method once all action
+    // types are supported.
+    for (const auto& action : actions) {
+      switch (action.type) {
+        case DNRRequestAction::Type::BLOCK:
+          ClearPendingCallbacks(browser_context, *request);
+          DCHECK_EQ(1u, actions.size());
+          OnDNRActionMatched(browser_context, *request, action);
+          return net::ERR_BLOCKED_BY_CLIENT;
+        case DNRRequestAction::Type::COLLAPSE:
+          ClearPendingCallbacks(browser_context, *request);
+          DCHECK_EQ(1u, actions.size());
+          OnDNRActionMatched(browser_context, *request, action);
+          *should_collapse_initiator = true;
+          return net::ERR_BLOCKED_BY_CLIENT;
+        case DNRRequestAction::Type::ALLOW:
+          DCHECK_EQ(1u, actions.size());
+          OnDNRActionMatched(browser_context, *request, action);
+          break;
+        case DNRRequestAction::Type::REDIRECT:
+        case DNRRequestAction::Type::UPGRADE:
+          ClearPendingCallbacks(browser_context, *request);
+          DCHECK_EQ(1u, actions.size());
+          DCHECK(action.redirect_url);
+          OnDNRActionMatched(browser_context, *request, action);
+
+          if (!override_response_headers->get()) {
+            *override_response_headers =
+                base::MakeRefCounted<net::HttpResponseHeaders>(
+                    original_response_headers->raw_headers());
+          }
+
+          extension_web_request_api_helpers::
+              RedirectRequestAfterHeadersReceived(
+                  *action.redirect_url, **override_response_headers,
+                  preserve_fragment_on_redirect_url);
+          return net::OK;
+        case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
+        case DNRRequestAction::Type::MODIFY_HEADERS:
+          // TODO(crbug.com/40727004): Implement support for allow all request
+          // and modify header rules that match on response headers.
+          NOTREACHED();
+          break;
+      }
+    }
+  }
+
   if (!initialize_blocked_requests) {
     return net::OK;  // Nobody saw a reason for modifying the request.
   }
@@ -1181,7 +1245,7 @@ int WebRequestEventRouter::OnHeadersReceived(
   BlockedRequest& blocked_request =
       GetOrAddBlockedRequest(browser_context, request->id);
   blocked_request.event = kOnHeadersReceived;
-  blocked_request.is_incognito |= browser_context->IsOffTheRecord();
+  blocked_request.is_incognito |= is_incognito_context;
   blocked_request.request = request;
   blocked_request.callback = std::move(callback);
   blocked_request.override_response_headers = override_response_headers;

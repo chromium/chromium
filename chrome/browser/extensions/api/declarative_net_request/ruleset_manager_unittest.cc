@@ -172,7 +172,7 @@ TEST_P(RulesetManagerTest, MultipleRulesets) {
 
   auto should_block_request = [this](const WebRequestInfo& request, int rule_id,
                                      const ExtensionId& extension_id) {
-    manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+    manager()->EvaluateBeforeRequest(request, false /*is_incognito_context*/);
     return !request.dnr_actions->empty() &&
            ((*request.dnr_actions)[0] ==
             CreateRequestActionForTesting(
@@ -249,11 +249,12 @@ TEST_P(RulesetManagerTest, IncognitoRequests) {
   EXPECT_FALSE(util::IsIncognitoEnabled(last_loaded_extension()->id(),
                                         browser_context()));
 
-  manager()->EvaluateRequest(request_info, true /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_info, true /*is_incognito_context*/);
   EXPECT_TRUE(request_info.dnr_actions->empty());
   request_info.dnr_actions.reset();
 
-  manager()->EvaluateRequest(request_info, false /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_info,
+                                   false /*is_incognito_context*/);
   ASSERT_EQ(1u, request_info.dnr_actions->size());
   EXPECT_EQ(CreateRequestActionForTesting(
                 RequestActionType::BLOCK, *rule_one.id, kDefaultPriority,
@@ -267,7 +268,7 @@ TEST_P(RulesetManagerTest, IncognitoRequests) {
   EXPECT_TRUE(util::IsIncognitoEnabled(last_loaded_extension()->id(),
                                        browser_context()));
 
-  manager()->EvaluateRequest(request_info, true /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_info, true /*is_incognito_context*/);
   ASSERT_EQ(1u, request_info.dnr_actions->size());
   EXPECT_EQ(CreateRequestActionForTesting(
                 RequestActionType::BLOCK, *rule_one.id, kDefaultPriority,
@@ -275,7 +276,8 @@ TEST_P(RulesetManagerTest, IncognitoRequests) {
             (*request_info.dnr_actions)[0]);
   request_info.dnr_actions.reset();
 
-  manager()->EvaluateRequest(request_info, false /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_info,
+                                   false /*is_incognito_context*/);
   ASSERT_EQ(1u, request_info.dnr_actions->size());
   EXPECT_EQ(CreateRequestActionForTesting(
                 RequestActionType::BLOCK, *rule_one.id, kDefaultPriority,
@@ -307,10 +309,10 @@ TEST_P(RulesetManagerTest, EvaluationHistograms) {
   {
     base::HistogramTester tester;
 
-    manager()->EvaluateRequest(example_com_request, is_incognito_context);
+    manager()->EvaluateBeforeRequest(example_com_request, is_incognito_context);
     EXPECT_TRUE(example_com_request.dnr_actions->empty());
 
-    manager()->EvaluateRequest(google_com_request, is_incognito_context);
+    manager()->EvaluateBeforeRequest(google_com_request, is_incognito_context);
     EXPECT_TRUE(google_com_request.dnr_actions->empty());
 
     tester.ExpectTotalCount(kEvaluationTimeHistogramName, 0);
@@ -332,7 +334,7 @@ TEST_P(RulesetManagerTest, EvaluationHistograms) {
   {
     base::HistogramTester tester;
 
-    manager()->EvaluateRequest(example_com_request, is_incognito_context);
+    manager()->EvaluateBeforeRequest(example_com_request, is_incognito_context);
     ASSERT_EQ(1u, example_com_request.dnr_actions->size());
     EXPECT_EQ(CreateRequestActionForTesting(
                   RequestActionType::BLOCK, *rule.id, kDefaultPriority,
@@ -343,7 +345,7 @@ TEST_P(RulesetManagerTest, EvaluationHistograms) {
     tester.ExpectTotalCount(kBeforeRequestRegexTimeHistogramName, 1);
     tester.ExpectTotalCount(kBeforeRequestRulesetTimeHistogramName, 1);
 
-    manager()->EvaluateRequest(google_com_request, is_incognito_context);
+    manager()->EvaluateBeforeRequest(google_com_request, is_incognito_context);
     EXPECT_TRUE(google_com_request.dnr_actions->empty());
 
     tester.ExpectTotalCount(kEvaluationTimeHistogramName, 2);
@@ -379,7 +381,7 @@ TEST_P(RulesetManagerTest, Redirect) {
       kMinValidStaticRulesetID, last_loaded_extension()->id());
   expected_redirect_action.redirect_url = GURL("http://google.com");
   WebRequestInfo request_1(GetRequestParamsForURL(kExampleURL, std::nullopt));
-  manager()->EvaluateRequest(request_1, is_incognito_context);
+  manager()->EvaluateBeforeRequest(request_1, is_incognito_context);
   ASSERT_EQ(1u, request_1.dnr_actions->size());
   EXPECT_EQ(expected_redirect_action, (*request_1.dnr_actions)[0]);
 
@@ -387,21 +389,21 @@ TEST_P(RulesetManagerTest, Redirect) {
   // don't have host permissions to the request initiator.
   WebRequestInfo request_2(GetRequestParamsForURL(
       kExampleURL, url::Origin::Create(GURL("http://xyz.com"))));
-  manager()->EvaluateRequest(request_2, is_incognito_context);
+  manager()->EvaluateBeforeRequest(request_2, is_incognito_context);
   EXPECT_TRUE(request_2.dnr_actions->empty());
 
   // Change the initiator to "abc.com". It should be redirected since we have
   // the required host permissions.
   WebRequestInfo request_3(GetRequestParamsForURL(
       kExampleURL, url::Origin::Create(GURL("http://abc.com"))));
-  manager()->EvaluateRequest(request_3, is_incognito_context);
+  manager()->EvaluateBeforeRequest(request_3, is_incognito_context);
   ASSERT_EQ(1u, request_3.dnr_actions->size());
   EXPECT_EQ(expected_redirect_action, (*request_3.dnr_actions)[0]);
 
   // Ensure web-socket requests are not redirected.
   WebRequestInfo request_4(
       GetRequestParamsForURL("ws://example.com", std::nullopt));
-  manager()->EvaluateRequest(request_4, is_incognito_context);
+  manager()->EvaluateBeforeRequest(request_4, is_incognito_context);
   EXPECT_TRUE(request_4.dnr_actions->empty());
 }
 
@@ -446,7 +448,7 @@ TEST_P(RulesetManagerTest, ExtensionScheme) {
   // Ensure that "http://example.com" will be blocked (with blocking taking
   // priority over redirection).
   WebRequestInfo request_1(GetRequestParamsForURL("http://example.com"));
-  manager()->EvaluateRequest(request_1, false /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_1, false /*is_incognito_context*/);
   ASSERT_EQ(1u, request_1.dnr_actions->size());
   EXPECT_EQ(CreateRequestActionForTesting(
                 RequestActionType::BLOCK, kMinValidID, kDefaultPriority,
@@ -459,7 +461,7 @@ TEST_P(RulesetManagerTest, ExtensionScheme) {
   EXPECT_TRUE(!background_page_url_1.is_empty());
   WebRequestInfo request_2(
       GetRequestParamsForURL(background_page_url_1.spec()));
-  manager()->EvaluateRequest(request_2, false /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_2, false /*is_incognito_context*/);
   EXPECT_TRUE(request_2.dnr_actions->empty());
 
   // Ensure that the background page for |extension_2| won't be blocked or
@@ -468,14 +470,14 @@ TEST_P(RulesetManagerTest, ExtensionScheme) {
   EXPECT_TRUE(!background_page_url_2.is_empty());
   WebRequestInfo request_3(
       GetRequestParamsForURL(background_page_url_2.spec()));
-  manager()->EvaluateRequest(request_3, false /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_3, false /*is_incognito_context*/);
   EXPECT_TRUE(request_3.dnr_actions->empty());
 
   // Also ensure that an arbitrary url on the chrome extension scheme is also
   // not blocked or redirected.
   WebRequestInfo request_4(GetRequestParamsForURL(base::StringPrintf(
       "%s://%s/%s", kExtensionScheme, "extension_id", "path")));
-  manager()->EvaluateRequest(request_4, false /*is_incognito_context*/);
+  manager()->EvaluateBeforeRequest(request_4, false /*is_incognito_context*/);
   EXPECT_TRUE(request_4.dnr_actions->empty());
 }
 
@@ -522,7 +524,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
   WebRequestInfo request(GetRequestParamsForURL("http://example.com"));
 
   const std::vector<RequestAction>& actual_actions =
-      manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+      manager()->EvaluateBeforeRequest(request, false /*is_incognito_context*/);
 
   // Create the expected RequestAction for |extension_2|.
   RequestAction expected_action_1 = CreateRequestActionForTesting(
@@ -586,7 +588,8 @@ TEST_P(RulesetManagerTest, ModifyHeadersWithAllowRules) {
   {
     WebRequestInfo request(GetRequestParamsForURL("http://example.com"));
     const std::vector<RequestAction>& actions =
-        manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+        manager()->EvaluateBeforeRequest(request,
+                                         false /*is_incognito_context*/);
 
     // `rule1` and `rule2` match. `rule1` gets precedence because of priority.
     RequestAction expected_action = CreateRequestActionForTesting(
@@ -601,7 +604,8 @@ TEST_P(RulesetManagerTest, ModifyHeadersWithAllowRules) {
   {
     WebRequestInfo request(GetRequestParamsForURL("http://abc.example.com"));
     const std::vector<RequestAction>& actions =
-        manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+        manager()->EvaluateBeforeRequest(request,
+                                         false /*is_incognito_context*/);
 
     // `rule1`, `rule2` and `rule3` match. `rule3` gets precedence because of
     // priority.
@@ -635,7 +639,8 @@ TEST_P(RulesetManagerTest, ModifyHeaders_HostPermissions) {
   {
     WebRequestInfo request(GetRequestParamsForURL("http://example.com"));
     const std::vector<RequestAction>& actual_actions =
-        manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+        manager()->EvaluateBeforeRequest(request,
+                                         false /*is_incognito_context*/);
 
     RequestAction expected_action = CreateRequestActionForTesting(
         RequestActionType::MODIFY_HEADERS, kMinValidID, kDefaultPriority,
@@ -650,7 +655,8 @@ TEST_P(RulesetManagerTest, ModifyHeaders_HostPermissions) {
   {
     WebRequestInfo request(GetRequestParamsForURL("http://nopermissions.com"));
     const std::vector<RequestAction>& actual_actions =
-        manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+        manager()->EvaluateBeforeRequest(request,
+                                         false /*is_incognito_context*/);
     EXPECT_TRUE(actual_actions.empty());
   }
 
@@ -661,7 +667,8 @@ TEST_P(RulesetManagerTest, ModifyHeaders_HostPermissions) {
         "http://example.com",
         url::Origin::Create(GURL("http://nopermissions.com"))));
     const std::vector<RequestAction>& actual_actions =
-        manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+        manager()->EvaluateBeforeRequest(request,
+                                         false /*is_incognito_context*/);
     EXPECT_TRUE(actual_actions.empty());
   }
 }
@@ -733,7 +740,7 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
     WebRequestInfo request(GetRequestParamsForURL(url, initiator));
 
     bool is_incognito_context = false;
-    manager()->EvaluateRequest(request, is_incognito_context);
+    manager()->EvaluateBeforeRequest(request, is_incognito_context);
 
     if (expected_action) {
       ASSERT_EQ(1u, request.dnr_actions->size());

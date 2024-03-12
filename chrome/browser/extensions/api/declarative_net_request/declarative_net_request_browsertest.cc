@@ -7017,6 +7017,331 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestControllableResponseTest,
   EXPECT_FALSE(extension_service()->IsExtensionEnabled(extension_id));
 }
 
+class DNRMatchResponseHeadersBrowserTest
+    : public DeclarativeNetRequestBrowserTest {
+ public:
+  DNRMatchResponseHeadersBrowserTest() {
+    // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+    // flag can be removed, replace usages of this test class with just
+    // DeclarativeNetRequestBrowserTest.
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that requests matching rules' response header conditions will be
+// blocked.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, BlockRequests) {
+  struct {
+    std::string filter;
+    int id;
+    std::string type;
+    std::vector<TestHeaderCondition> response_header_condition;
+  } rules_data[] = {
+      // A rule that allows all requests to setcookie.com if the set-cookie
+      // header is present with value "cookie=oreo".
+      {"setcookie.com", 1, "allow",
+       std::vector<TestHeaderCondition>(
+           {TestHeaderCondition("set-cookie", {"cookie=oreo"}, {})})},
+      // A rule that blocks all requests to setcookie.com if the set-cookie
+      // header is present. Note that if both this and the allow rule above
+      // matches a request, the allow rule has higher priority and will override
+      // this rule due to its action type.
+      {"setcookie.com", 2, "block",
+       std::vector<TestHeaderCondition>(
+           {TestHeaderCondition("set-cookie", {}, {})})},
+  };
+
+  // Load the extension.
+  std::vector<TestRule> rules;
+  for (const auto& rule_data : rules_data) {
+    TestRule rule = CreateGenericRule(rule_data.id);
+    rule.action->type = rule_data.type;
+
+    rule.condition->url_filter = rule_data.filter;
+    rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+
+    rule.condition->response_headers = rule_data.response_header_condition;
+    rules.push_back(std::move(rule));
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(std::move(rules)));
+
+  struct {
+    std::string hostname;
+    std::string path;
+    bool expect_main_frame_loaded;
+  } test_cases[] = {
+      // First test case does not have a set-cookie header and will not match
+      // with any rules.
+      {"setcookie.com", "/pages_with_script/index.html", true},
+      // Second test case will be blocked as it matches with the block rule with
+      // id 2.
+      {"setcookie.com", "/set-cookie?cookie=sugar", false},
+      // Third test case will not be blocked since it matches with the allow
+      // rule with id 1 which has higher "priority" than the block rule due to
+      // its action type.
+      {"setcookie.com", "/set-cookie?cookie=oreo", true}};
+
+  // Verify that the extension correctly intercepts network requests.
+  for (const auto& test_case : test_cases) {
+    GURL url =
+        embedded_test_server()->GetURL(test_case.hostname, test_case.path);
+    SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
+
+    content::TestNavigationObserver nav_observer(web_contents());
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::PageType expected_page_type = test_case.expect_main_frame_loaded
+                                               ? content::PAGE_TYPE_NORMAL
+                                               : content::PAGE_TYPE_ERROR;
+    EXPECT_EQ(expected_page_type, GetPageType());
+
+    auto expected_code = test_case.expect_main_frame_loaded
+                             ? net::OK
+                             : net::ERR_BLOCKED_BY_CLIENT;
+    EXPECT_EQ(expected_code, nav_observer.last_net_error_code());
+  }
+}
+
+// Ensures that any <img> elements blocked by the API are collapsed based on
+// response header matching.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, ImageCollapsed) {
+  // Loads a page with an image and returns whether the image was collapsed.
+  auto is_image_collapsed = [this](const std::string& host_name) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(host_name, "/image.html")));
+    EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
+    const std::string script = "!!window.imageCollapsed;";
+    return content::EvalJs(web_contents(), script).ExtractBool();
+  };
+
+  // Initially the image shouldn't be collapsed.
+  EXPECT_FALSE(is_image_collapsed("matchheader.com"));
+  EXPECT_FALSE(is_image_collapsed("matchnoheader.com"));
+
+  // Load an extension which blocks all images on matchheader.com if there
+  // exists a set-cookie header, and all on matchnoheaders.com if there is no
+  // set-cookie header. Note that the image.html path will not have a set-cookie
+  // header.
+  TestRule match_header_rule = CreateGenericRule(kMinValidID);
+  match_header_rule.condition->url_filter = "matchheader.com";
+  match_header_rule.condition->resource_types =
+      std::vector<std::string>({"image"});
+  match_header_rule.condition->response_headers =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("set-cookie", {}, {})});
+
+  TestRule match_no_header_rule = CreateGenericRule(kMinValidID + 1);
+  match_no_header_rule.condition->url_filter = "matchnoheader.com";
+  match_no_header_rule.condition->resource_types =
+      std::vector<std::string>({"image"});
+  match_no_header_rule.condition->excluded_response_headers =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("set-cookie", {}, {})});
+
+  std::vector<TestRule> rules;
+  rules.push_back(std::move(match_header_rule));
+  rules.push_back(std::move(match_no_header_rule));
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(std::move(rules)));
+
+  // Verify that only `match_no_header_rule` will match the request and cause
+  // the image to be collapsed.
+  EXPECT_FALSE(is_image_collapsed("matchheader.com"));
+  EXPECT_TRUE(is_image_collapsed("matchnoheader.com"));
+}
+
+// Test that requests can be redirected and upgraded based on response headers.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, RedirectAndUpgrade) {
+  GURL match_header_url = embedded_test_server()->GetURL(
+      "matchheader.com", "/pages_with_script/index.html");
+  GURL denied_url = embedded_test_server()->GetURL(
+      "denied.com", "/pages_with_script/index.html");
+  GURL upgraded_url = embedded_test_server()->GetURL(
+      "upgraded.com", "/pages_with_script/index.html");
+
+  struct {
+    std::string filter;
+    int id;
+    int priority;
+    std::string type;
+    std::optional<std::string> redirect_url;
+    std::optional<std::vector<TestHeaderCondition>> response_header_condition;
+  } rules_data[] = {
+      // A rule for requests made to "matchheader.com" which redirects to
+      // `denied_url` if a set-cookie header is present but its value is not
+      // equal to "upgrade-token=valid".
+      {"matchheader.com", 1, kMinValidPriority, "redirect", denied_url.spec(),
+       std::vector<TestHeaderCondition>(
+           {TestHeaderCondition("set-cookie", {}, {"upgrade-token=valid"})})},
+
+      // A rule for requests made to "matchheader.com" which upgrades from HTTP
+      // to HTTPS if a set-cookie header is present with a value of
+      // "upgrade-token=valid".
+      {"matchheader.com", 2, kMinValidPriority, "upgradeScheme", std::nullopt,
+       std::vector<TestHeaderCondition>(
+           {TestHeaderCondition("set-cookie", {"upgrade-token=valid"}, {})})},
+
+      // A rule which redirects all URLs with https scheme to `upgraded_url`.
+      // Used to test if requests have been upgraded.
+      // TODO(kelvinjiang): See if we can eliminate this rule by using
+      // https_server().
+      {"|https*", 3, kMinValidPriority + 100, "redirect", upgraded_url.spec(),
+       std::nullopt}};
+
+  // Load the extension.
+  std::vector<TestRule> rules;
+  for (const auto& rule_data : rules_data) {
+    TestRule rule = CreateGenericRule(rule_data.id);
+    rule.action->type = rule_data.type;
+    rule.priority = rule_data.priority;
+
+    rule.condition->url_filter = rule_data.filter;
+    rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+
+    if (rule_data.redirect_url) {
+      rule.action->redirect.emplace();
+      rule.action->redirect->url = rule_data.redirect_url;
+    }
+
+    if (rule_data.response_header_condition) {
+      rule.condition->response_headers = rule_data.response_header_condition;
+    }
+    rules.push_back(std::move(rule));
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      rules, "test_extension", {URLPattern::kAllUrlsPattern}));
+
+  struct {
+    std::string hostname;
+    std::string path;
+    GURL expected_final_url;
+  } test_cases[] = {
+      // Test a request that does not have a set-cookie header, so no rules
+      // match and a redirect does not happen.
+      {"matchheader.com", "/pages_with_script/index.html", match_header_url},
+
+      // Test a request that does not have a "valid" upgrade token cookie, so it
+      // gets redirected.
+      {"matchheader.com", "/set-cookie?upgrade-token=other", denied_url},
+
+      // Test a request that has a "valid" upgrade token that will match with
+      // the upgrade rule with id 2: HTTPS requests can be verified in this
+      // testing environment by redirecting them to `upgraded_url`.
+      {"matchheader.com", "/set-cookie?upgrade-token=valid", upgraded_url},
+  };
+
+  for (const auto& test_case : test_cases) {
+    GURL url =
+        embedded_test_server()->GetURL(test_case.hostname, test_case.path);
+    SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
+
+    const GURL& final_url = web_contents()->GetLastCommittedURL();
+    EXPECT_EQ(test_case.expected_final_url, final_url);
+  }
+}
+
+// Test interactions between rules that match in the onBeforeRequest phase vs
+// the onHeadersReceived phase.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       DifferentRequestPhaseRuleInteractions) {
+  GURL redirected_url = embedded_test_server()->GetURL(
+      "redirected.com", "/pages_with_script/index.html");
+
+  struct {
+    std::string filter;
+    int id;
+    int priority;
+    std::string type;
+    std::optional<std::string> redirect_url = std::nullopt;
+    std::optional<std::vector<TestHeaderCondition>>
+        excluded_response_header_condition = std::nullopt;
+  } rules_data[] = {
+      // For google.com, there is a block rule in onBeforeRequest and a redirect
+      // rule in onHeadersReceived. The block rule should take precedence even
+      // though the redirect rule has higher priority, because
+      // the block rule will block the request in an earlier request stage than
+      // when the redirect rule will be matched.
+      {"google.com", 1, kMinValidPriority, "block"},
+      {"google.com", 2, kMinValidPriority + 10, "redirect",
+       redirected_url.spec(),
+       std::vector<TestHeaderCondition>(
+           {TestHeaderCondition("nonsense-header", {}, {})})},
+
+      // For example.com, there is a redirect rule in onBeforeRequest and a
+      // block rule in onHeadersReceived. The redirect rule should take
+      // precedence because it redirects the request in an earlier request stage
+      // than when the block rule would be matched.
+      {"example.com", 3, kMinValidPriority, "redirect", redirected_url.spec()},
+      {"example.com", 4, kMinValidPriority + 10, "block", std::nullopt,
+       std::vector<TestHeaderCondition>(
+           {TestHeaderCondition("nonsense-header", {}, {})})}};
+
+  // Load the extension.
+  std::vector<TestRule> rules;
+  for (const auto& rule_data : rules_data) {
+    TestRule rule = CreateGenericRule(rule_data.id);
+    rule.action->type = rule_data.type;
+
+    rule.condition->url_filter = rule_data.filter;
+    rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+
+    if (rule_data.redirect_url) {
+      rule.action->redirect.emplace();
+      rule.action->redirect->url = rule_data.redirect_url;
+    }
+
+    if (rule_data.excluded_response_header_condition) {
+      rule.condition->excluded_response_headers =
+          rule_data.excluded_response_header_condition;
+    }
+    rules.push_back(std::move(rule));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      rules, "test_extension", {URLPattern::kAllUrlsPattern}));
+
+  GURL google_url = embedded_test_server()->GetURL(
+      "google.com", "/pages_with_script/index.html");
+  GURL example_url = embedded_test_server()->GetURL(
+      "example.com", "/pages_with_script/index.html");
+  struct {
+    std::string hostname;
+    std::string path;
+    bool expect_main_frame_loaded;
+    GURL expected_final_url;
+  } test_cases[] = {
+      // The request should be blocked since rule with id 1 should take action
+      // in the onBeforeRequest stage and rule with id 2 should never be
+      // matched.
+      {"google.com", "/pages_with_script/index.html", false, google_url},
+
+      // The request should be redirected since rule with id 3 should take
+      // action in the onBeforeRequest stage and rule with id 4 should never be
+      // matched.
+      {"example.com", "/pages_with_script/index.html", true, redirected_url}};
+
+  // Verify that the extension correctly intercepts network requests.
+  for (const auto& test_case : test_cases) {
+    GURL url =
+        embedded_test_server()->GetURL(test_case.hostname, test_case.path);
+    SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::PageType expected_page_type = test_case.expect_main_frame_loaded
+                                               ? content::PAGE_TYPE_NORMAL
+                                               : content::PAGE_TYPE_ERROR;
+    EXPECT_EQ(expected_page_type, GetPageType());
+    const GURL& final_url = web_contents()->GetLastCommittedURL();
+    EXPECT_EQ(test_case.expected_final_url, final_url);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
@@ -7066,6 +7391,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestControllableResponseTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DNRMatchResponseHeadersBrowserTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
+
 }  // namespace
 }  // namespace declarative_net_request
 }  // namespace extensions

@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -80,13 +81,22 @@ class RulesetManager {
   const CompositeMatcher* GetMatcherForExtension(
       const ExtensionId& extension_id) const;
 
-  // Returns the action to take for the given request.
+  // Returns the action to take for the given request before it is sent.
   // Note: this can return an `ALLOW` or `ALLOW_ALL_REQUESTS` rule which is
   // effectively a no-op. We do this to ensure that matched allow rules are
   // correctly tracked by the `getMatchedRules` and `OnRuleMatchedDebug` APIs.
-  // Note: the returned action is owned by |request|.
-  const std::vector<RequestAction>& EvaluateRequest(
+  // Note: the returned action is owned by `request`.
+  const std::vector<RequestAction>& EvaluateBeforeRequest(
       const WebRequestInfo& request,
+      bool is_incognito_context) const;
+
+  // Returns the action to take for the given request after response headers
+  // have been received.
+  // Note: See comments for `EvaluateBeforeRequest` above for notes on returning
+  // an ALLOW or ALLOW_ALL_REQUESTS action.
+  std::vector<RequestAction> EvaluateRequestWithHeaders(
+      const WebRequestInfo& request,
+      const net::HttpResponseHeaders* response_headers,
       bool is_incognito_context) const;
 
   // Returns true if there is an active matcher which modifies "extraHeaders".
@@ -101,7 +111,9 @@ class RulesetManager {
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
   void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
-  bool has_rulesets() const { return !rulesets_.empty(); }
+  // Returns if there are any matchers containing rules for the corresponding
+  // request matching `stage`.
+  bool HasRulesets(RulesetMatchingStage stage) const;
 
   // Returns the number of CompositeMatchers currently being managed.
   size_t GetMatcherCountForTest() const { return rulesets_.size(); }
@@ -132,10 +144,11 @@ class RulesetManager {
   using RulesetAndPageAccess =
       std::pair<const ExtensionRulesetData*, PermissionsData::PageAccess>;
 
-  std::optional<RequestAction> GetBeforeRequestAction(
+  std::optional<RequestAction> GetAction(
       const std::vector<RulesetAndPageAccess>& rulesets,
       const WebRequestInfo& request,
-      const RequestParams& params) const;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const;
 
   // Returns the list of matching modifyHeaders actions sorted in descending
   // order of priority (|rulesets| is sorted in descending order of extension
@@ -148,6 +161,7 @@ class RulesetManager {
   // Helper for EvaluateRequest.
   std::vector<RequestAction> EvaluateRequestInternal(
       const WebRequestInfo& request,
+      const net::HttpResponseHeaders* response_headers,
       bool is_incognito_context) const;
 
   // Returns true if the given |request| should be evaluated for
