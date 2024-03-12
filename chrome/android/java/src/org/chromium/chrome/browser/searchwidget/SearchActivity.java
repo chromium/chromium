@@ -624,6 +624,20 @@ public class SearchActivity extends AsyncInitializationActivity
             @PageTransition int transition,
             @Nullable String postDataType,
             @Nullable byte[] postData) {
+        finish();
+        if (SearchActivityUtils.isOmniboxRequestForResult(getIntent())) {
+            SearchActivityUtils.resolveOmniboxRequestForResult(this, new GURL(url));
+            overridePendingTransition(0, android.R.anim.fade_out);
+        } else {
+            loadUrlInChromeBrowser(url, transition, postDataType, postData);
+        }
+    }
+
+    private void loadUrlInChromeBrowser(
+            String url,
+            @PageTransition int transition,
+            @Nullable String postDataType,
+            @Nullable byte[] postData) {
         // Wait until native has loaded.
         if (!mIsActivityUsable) {
             mQueuedUrl = url;
@@ -644,7 +658,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         .toBundle());
         RecordUserAction.record("SearchWidget.SearchMade");
         LocaleManager.getInstance().recordLocaleBasedSearchMetrics(true, url, transition);
-        finish();
     }
 
     /**
@@ -710,9 +723,15 @@ public class SearchActivity extends AsyncInitializationActivity
         return contentView;
     }
 
-    private void cancelSearch() {
+    @VisibleForTesting
+    /* package */ void cancelSearch() {
         finish();
-        overridePendingTransition(0, R.anim.activity_close_exit);
+        if (SearchActivityUtils.isOmniboxRequestForResult(getIntent())) {
+            SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
+            overridePendingTransition(0, android.R.anim.fade_out);
+        } else {
+            overridePendingTransition(0, R.anim.activity_close_exit);
+        }
     }
 
     private static void recordQuickActionSearchType(@SearchType int searchType) {
@@ -817,5 +836,9 @@ public class SearchActivity extends AsyncInitializationActivity
         applyColor(
                 ChromeColors.getSurfaceColor(
                         SearchActivity.this, R.dimen.omnibox_suggestion_dropdown_bg_elevation));
+    }
+
+    /* package */ void setActivityUsableForTesting(boolean isUsable) {
+        mIsActivityUsable = isUsable;
     }
 }

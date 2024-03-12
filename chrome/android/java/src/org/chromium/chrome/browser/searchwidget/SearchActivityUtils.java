@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,11 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.url.GURL;
 
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
-public interface SearchActivityUtils {
+public class SearchActivityUtils {
     @VisibleForTesting
     /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8 | 'I';
 
@@ -43,9 +45,16 @@ public interface SearchActivityUtils {
                 buildTrustedIntent(
                                 activity, SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH)
                         .putExtra(EXTRA_CURRENT_URL, currentUrl.getSpec())
-                        .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        .addFlags(
+                                Intent.FLAG_ACTIVITY_NO_HISTORY
+                                        | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
 
-        activity.startActivityForResult(intent, OMNIBOX_REQUEST_CODE);
+        activity.startActivityForResult(
+                intent,
+                OMNIBOX_REQUEST_CODE,
+                ActivityOptions.makeCustomAnimation(
+                                activity, android.R.anim.fade_in, R.anim.no_anim)
+                        .toBundle());
     }
 
     /**
