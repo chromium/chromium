@@ -21,6 +21,8 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
     : url(init.url_),
       origin_isolation_request(init.origin_isolation_request_),
       is_coop_isolation_requested(init.requests_coop_isolation_),
+      is_prefetch_with_cross_site_contamination(
+          init.is_prefetch_with_cross_site_contamination_),
       origin(init.origin_),
       is_sandboxed(init.is_sandboxed_),
       unique_sandbox_id(init.unique_sandbox_id_),
@@ -90,6 +92,12 @@ UrlInfoInit& UrlInfoInit::WithOriginIsolationRequest(
 
 UrlInfoInit& UrlInfoInit::WithCOOPSiteIsolation(bool requests_coop_isolation) {
   requests_coop_isolation_ = requests_coop_isolation;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithCrossSitePrefetchContamination(
+    bool contaminated) {
+  is_prefetch_with_cross_site_contamination_ = contaminated;
   return *this;
 }
 

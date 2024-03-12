@@ -166,6 +166,19 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
 </histogram>
 
+<histogram name="Preloading.PrefetchBCGSwap.RelatedActiveContents"
+    units="contents" expires_after="2024-06-30">
+  <owner>jbroman@chromium.org</owner>
+  <owner>portals-team@google.com</owner>
+  <summary>
+    Records the number of active contents in the same BrowsingInstance as a
+    frame which is, or would be, swapped to a new one due to use of a cross-site
+    prefetch, when this determination is being made on navigation. The
+    proportion of these which is greater than 1 is a rough upper bound for the
+    cases where this might be observable due to an opener relationship.
+  </summary>
+</histogram>
+
 <histogram
     name="Preloading.PrerenderBackNavigationEligibility.{PreloadingPredictor}"
     enum="PrerenderBackNavigationEligibility" expires_after="2024-08-04">

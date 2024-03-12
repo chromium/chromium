@@ -139,6 +139,11 @@ struct CONTENT_EXPORT UrlInfo {
   // on site isolation for `url`'s site.
   bool is_coop_isolation_requested = false;
 
+  // True if this resource is served from the prefetch cache, and its success
+  // may have been influenced by cross-site state. Such responses may require
+  // special handling to make it harder to detect that this has happened.
+  bool is_prefetch_with_cross_site_contamination = false;
+
   // This allows overriding the origin of |url| for process assignment purposes
   // in certain very special cases.
   // - The navigation to |url| is through loadDataWithBaseURL (e.g., in a
@@ -223,6 +228,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithOriginIsolationRequest(
       UrlInfo::OriginIsolationRequest origin_isolation_request);
   UrlInfoInit& WithCOOPSiteIsolation(bool requests_coop_isolation);
+  UrlInfoInit& WithCrossSitePrefetchContamination(bool contaminated);
   UrlInfoInit& WithOrigin(const url::Origin& origin);
   UrlInfoInit& WithSandbox(bool is_sandboxed);
   UrlInfoInit& WithUniqueSandboxId(int unique_sandbox_id);
@@ -244,6 +250,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfo::OriginIsolationRequest origin_isolation_request_ =
       UrlInfo::OriginIsolationRequest::kDefault;
   bool requests_coop_isolation_ = false;
+  bool is_prefetch_with_cross_site_contamination_ = false;
   std::optional<url::Origin> origin_;
   bool is_sandboxed_ = false;
   int64_t unique_sandbox_id_ = UrlInfo::kInvalidUniqueSandboxId;

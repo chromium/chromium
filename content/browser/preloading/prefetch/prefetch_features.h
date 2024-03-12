@@ -62,6 +62,11 @@ CONTENT_EXPORT extern const base::FeatureParam<
 // contaminated by cross-partition state.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchStateContaminationMitigation);
 
+// If true, contaminated prefetches will also force a browsing context group
+// swap.
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kPrefetchStateContaminationSwapsBrowsingContextGroup;
+
 // If explicitly disabled, prefetch proxy is not used.
 BASE_DECLARE_FEATURE(kPrefetchProxy);
 

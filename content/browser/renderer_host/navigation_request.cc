@@ -65,6 +65,7 @@
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/origin_trials/origin_trials_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
@@ -4103,6 +4104,17 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         }
       }
     }
+  }
+
+  // If a prefetch might have been affected by cross-site state, the
+  // relationship with other windows should be severed to make this more
+  // difficult to use to leak cross-site state.
+  // https://crbug.com/1439246
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchStateContaminationMitigation) &&
+      response_head_ &&
+      response_head_->is_prefetch_with_cross_site_contamination) {
+    url_info_init.WithCrossSitePrefetchContamination(true);
   }
 
   return UrlInfo(url_info_init);

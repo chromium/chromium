@@ -32,6 +32,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
@@ -2421,6 +2422,23 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   if (DoesNavigationChangeStoragePartition(current_instance,
                                            destination_url_info)) {
     return BrowsingContextGroupSwap::CreateSecuritySwap();
+  }
+
+  // If the destination might have been a prefetch based on cross-site state, we
+  // want to swap to make it more difficult to observe that the navigation
+  // completes faster than normal.
+  // https://crbug.com/1439246
+  if (destination_url_info.is_prefetch_with_cross_site_contamination) {
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        "Preloading.PrefetchBCGSwap.RelatedActiveContents",
+        base::saturated_cast<base::HistogramBase::Sample>(
+            current_instance->GetRelatedActiveContentsCount()),
+        51);
+    if (base::FeatureList::IsEnabled(
+            features::kPrefetchStateContaminationMitigation) &&
+        features::kPrefetchStateContaminationSwapsBrowsingContextGroup.Get()) {
+      return BrowsingContextGroupSwap::CreateSecuritySwap();
+    }
   }
 
   // We've checked that we didn't need to do a hard BrowsingInstance swap. If

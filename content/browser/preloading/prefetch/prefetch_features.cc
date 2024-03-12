@@ -50,6 +50,10 @@ BASE_FEATURE(kPrefetchStateContaminationMitigation,
              "PrefetchStateContaminationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool>
+    kPrefetchStateContaminationSwapsBrowsingContextGroup{
+        &kPrefetchStateContaminationMitigation, "swaps_bcg", false};
+
 BASE_FEATURE(kPrefetchProxy, "PrefetchProxy", base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
