@@ -158,11 +158,13 @@ bool FirstPartySetsDatabase::PersistSets(
     return false;
   }
 
-  if (!InsertManualConfiguration(browser_context_id, sets))
+  if (!InsertManualConfiguration(browser_context_id, sets)) {
     return false;
+  }
 
-  if (!InsertPolicyConfigurations(browser_context_id, config))
+  if (!InsertPolicyConfigurations(browser_context_id, config)) {
     return false;
+  }
 
   return transaction.Commit();
 }
@@ -229,7 +231,7 @@ bool FirstPartySetsDatabase::SetPublicSets(
   // TODO(shuuran): Garbage collect the public sets no longer used by any
   // browser_context_id.
 
-  return true;
+  return !TransactionFailed();
 }
 
 bool FirstPartySetsDatabase::InsertSitesToClear(
@@ -301,26 +303,28 @@ bool FirstPartySetsDatabase::InsertPolicyConfigurations(
     return false;
 
   return config.ForEachCustomizationEntry(
-      [&](const net::SchemefulSite& site,
-          const net::FirstPartySetEntryOverride& entry_override) -> bool {
-        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-        CHECK(!site.opaque());
-        static constexpr char kInsertSql[] =
-            "INSERT INTO "
-            "policy_configurations(browser_context_id,site,primary_site)"
-            "VALUES(?,?,?)";
-        sql::Statement insert_statement(
-            db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-        insert_statement.BindString(0, browser_context_id);
-        insert_statement.BindString(1, site.Serialize());
-        if (!entry_override.IsDeletion()) {
-          insert_statement.BindString(
-              2, entry_override.GetEntry().primary().Serialize());
-        } else {
-          insert_statement.BindNull(2);
-        }
-        return insert_statement.Run();
-      });
+             [&](const net::SchemefulSite& site,
+                 const net::FirstPartySetEntryOverride& entry_override)
+                 -> bool {
+               DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+               CHECK(!site.opaque());
+               static constexpr char kInsertSql[] =
+                   "INSERT INTO "
+                   "policy_configurations(browser_context_id,site,primary_site)"
+                   "VALUES(?,?,?)";
+               sql::Statement insert_statement(
+                   db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
+               insert_statement.BindString(0, browser_context_id);
+               insert_statement.BindString(1, site.Serialize());
+               if (!entry_override.IsDeletion()) {
+                 insert_statement.BindString(
+                     2, entry_override.GetEntry().primary().Serialize());
+               } else {
+                 insert_statement.BindNull(2);
+               }
+               return insert_statement.Run();
+             }) &&
+         !TransactionFailed();
 }
 
 bool FirstPartySetsDatabase::InsertManualConfiguration(
@@ -362,7 +366,7 @@ bool FirstPartySetsDatabase::InsertManualConfiguration(
         }
         return insert_statement.Run();
       });
-  return true;
+  return !TransactionFailed();
 }
 
 std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
@@ -377,18 +381,26 @@ FirstPartySetsDatabase::GetGlobalSetsAndConfig(
   if (!transaction.Begin())
     return {};
 
-  net::GlobalFirstPartySets global_sets = GetGlobalSets(browser_context_id);
+  std::optional<net::GlobalFirstPartySets> global_sets =
+      GetGlobalSets(browser_context_id);
+  if (!global_sets.has_value()) {
+    return {};
+  }
 
-  net::FirstPartySetsContextConfig config =
+  std::optional<net::FirstPartySetsContextConfig> config =
       FetchPolicyConfigurations(browser_context_id);
+  if (!config.has_value()) {
+    return {};
+  }
 
   if (!transaction.Commit())
     return {};
 
-  return std::make_pair(std::move(global_sets), std::move(config));
+  return std::make_pair(std::move(global_sets).value(),
+                        std::move(config).value());
 }
 
-net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
+std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(db_->HasActiveTransactions());
@@ -430,16 +442,17 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
       // possible. Consider deleting them from DB.
       if (site.has_value() && primary.has_value() && site_type.has_value()) {
         entries.emplace_back(
-            std::move(site.value()),
+            std::move(site).value(),
             net::FirstPartySetEntry(primary.value(), site_type.value(),
                                     /*site_index=*/std::nullopt));
       }
     }
     if (!statement.Succeeded())
-      return {};
+      return std::nullopt;
   }
-  if (!version_statement.Succeeded())
-    return {};
+  if (!version_statement.Succeeded() || TransactionFailed()) {
+    return std::nullopt;
+  }
 
   // Aliases are merged with entries inside of the public sets table so it is
   // sufficient to declare the global sets object with only the entries field.
@@ -449,8 +462,12 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
   // Query & apply manual configuration. Safe because this config and this
   // public sets data were written during the same run of Chrome, and the config
   // was computed from that data.
-  global_sets.UnsafeSetManualConfig(
-      FetchManualConfiguration(browser_context_id));
+  std::optional<net::FirstPartySetsContextConfig> manual_config =
+      FetchManualConfiguration(browser_context_id);
+  if (!manual_config.has_value()) {
+    return std::nullopt;
+  }
+  global_sets.UnsafeSetManualConfig(std::move(manual_config).value());
 
   return global_sets;
 }
@@ -469,25 +486,33 @@ FirstPartySetsDatabase::GetSitesToClearFilters(
   if (!transaction.Begin())
     return {};
 
-  std::vector<net::SchemefulSite> sites_to_clear =
+  std::optional<std::vector<net::SchemefulSite>> sites_to_clear =
       FetchSitesToClear(browser_context_id);
+  if (!sites_to_clear.has_value()) {
+    return {};
+  }
 
-  base::flat_map<net::SchemefulSite, int64_t> all_sites_to_clear =
-      FetchAllSitesToClearFilter(browser_context_id);
+  std::optional<base::flat_map<net::SchemefulSite, int64_t>>
+      all_sites_to_clear = FetchAllSitesToClearFilter(browser_context_id);
+  if (!all_sites_to_clear.has_value()) {
+    return {};
+  }
 
   net::FirstPartySetsCacheFilter cache_filter =
-      all_sites_to_clear.empty()
+      all_sites_to_clear->empty()
           ? net::FirstPartySetsCacheFilter()
-          : net::FirstPartySetsCacheFilter(std::move(all_sites_to_clear),
-                                           run_count_);
+          : net::FirstPartySetsCacheFilter(
+                std::move(all_sites_to_clear).value(), run_count_);
 
   if (!transaction.Commit())
     return {};
 
-  return std::make_pair(std::move(sites_to_clear), std::move(cache_filter));
+  return std::make_pair(std::move(sites_to_clear).value(),
+                        std::move(cache_filter));
 }
 
-std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
+std::optional<std::vector<net::SchemefulSite>>
+FirstPartySetsDatabase::FetchSitesToClear(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!browser_context_id.empty());
@@ -517,17 +542,18 @@ std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
-      results.push_back(std::move(site.value()));
+      results.push_back(std::move(site).value());
     }
   }
 
-  if (!statement.Succeeded())
-    return {};
+  if (!statement.Succeeded() || TransactionFailed()) {
+    return std::nullopt;
+  }
 
   return results;
 }
 
-base::flat_map<net::SchemefulSite, int64_t>
+std::optional<base::flat_map<net::SchemefulSite, int64_t>>
 FirstPartySetsDatabase::FetchAllSitesToClearFilter(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -551,17 +577,18 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
-      results.emplace_back(std::move(site.value()), statement.ColumnInt(1));
+      results.emplace_back(std::move(site).value(), statement.ColumnInt(1));
     }
   }
 
-  if (!statement.Succeeded())
-    return {};
+  if (!statement.Succeeded() || TransactionFailed()) {
+    return std::nullopt;
+  }
 
   return results;
 }
 
-net::FirstPartySetsContextConfig
+std::optional<net::FirstPartySetsContextConfig>
 FirstPartySetsDatabase::FetchPolicyConfigurations(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -605,11 +632,12 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
                 // and null site index for now.
                 net::SiteType::kAssociated, std::nullopt));
       }
-      results.emplace_back(std::move(site.value()), std::move(entry_override));
+      results.emplace_back(std::move(site).value(), std::move(entry_override));
     }
   }
-  if (!statement.Succeeded())
-    return {};
+  if (!statement.Succeeded() || TransactionFailed()) {
+    return std::nullopt;
+  }
 
   return net::FirstPartySetsContextConfig(std::move(results));
 }
@@ -634,7 +662,7 @@ bool FirstPartySetsDatabase::HasEntryInBrowserContextsClearedForTesting(
   return statement.Step() && statement.Succeeded();
 }
 
-net::FirstPartySetsContextConfig
+std::optional<net::FirstPartySetsContextConfig>
 FirstPartySetsDatabase::FetchManualConfiguration(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -683,12 +711,13 @@ FirstPartySetsDatabase::FetchManualConfiguration(
                 // details. Use null site index for now.
                 maybe_site_type.value(), std::nullopt));
       }
-      results.emplace_back(std::move(site.value()), std::move(entry_override));
+      results.emplace_back(std::move(site).value(), std::move(entry_override));
     }
   }
 
-  if (!statement.Succeeded())
-    return {};
+  if (!statement.Succeeded() || TransactionFailed()) {
+    return std::nullopt;
+  }
 
   return net::FirstPartySetsContextConfig(std::move(results));
 }
@@ -742,6 +771,10 @@ void FirstPartySetsDatabase::DatabaseErrorCallback(int extended_error,
 
     // Signal the test-expectation framework that the error was handled.
     std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
+
+    // Update db status since `RecoverIfPossible` poisoned the db handle
+    // already.
+    db_status_ = InitStatus::kError;
     return;
   }
 
@@ -901,6 +934,11 @@ bool FirstPartySetsDatabase::Destroy() {
     return true;
 
   return sql::Database::Delete(db_path_);
+}
+
+bool FirstPartySetsDatabase::TransactionFailed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !db_->HasActiveTransactions() || db_status_ != InitStatus::kSuccess;
 }
 
 }  // namespace content
