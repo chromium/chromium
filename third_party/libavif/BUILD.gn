@@ -84,7 +84,11 @@ component("libavif_enc") {
 
   configs += [ ":avif_config" ]
 
-  deps = [ "//third_party/libyuv" ]
+  deps = [
+    "//third_party/libwebp:libwebp_sharpyuv",
+    "//third_party/libyuv",
+  ]
+  defines = [ "AVIF_LIBSHARPYUV_ENABLED" ]
 
   if (enable_dav1d_decoder) {
     sources += [ "src/src/codec_dav1d.c" ]

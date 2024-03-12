@@ -369,6 +369,10 @@ source_set("libwebp_dsp_cpu_c") {
   public = [ "src/src/dsp/cpu.c" ]
 }
 
+config("libwebp_sharpyuv_public_config") {
+  include_dirs = [ "src" ]
+}
+
 static_library("libwebp_sharpyuv") {
   sources = [
     "src/sharpyuv/sharpyuv.c",
@@ -389,6 +393,7 @@ static_library("libwebp_sharpyuv") {
   }
 
   all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_sharpyuv_public_config" ]
 
   deps = [
     ":libwebp_dsp_cpu_c",
