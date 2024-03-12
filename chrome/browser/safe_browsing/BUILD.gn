@@ -92,6 +92,8 @@ static_library("safe_browsing") {
       "chrome_ping_manager_factory.h",
       "chrome_safe_browsing_blocking_page_factory.cc",
       "chrome_safe_browsing_blocking_page_factory.h",
+      "chrome_safe_browsing_local_state_delegate.cc",
+      "chrome_safe_browsing_local_state_delegate.h",
       "chrome_ui_manager_delegate.cc",
       "chrome_ui_manager_delegate.h",
       "chrome_user_population_helper.cc",

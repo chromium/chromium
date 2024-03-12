@@ -111,9 +111,25 @@ struct ClientPhishingRequestAndToken {
   std::string token;
 };
 
+// Provides access to local state preferences.
+class SafeBrowsingLocalStateDelegate {
+ public:
+  SafeBrowsingLocalStateDelegate() = default;
+  virtual ~SafeBrowsingLocalStateDelegate() = default;
+  SafeBrowsingLocalStateDelegate(const SafeBrowsingLocalStateDelegate&) =
+      delete;
+  SafeBrowsingLocalStateDelegate& operator=(
+      const SafeBrowsingLocalStateDelegate&) = delete;
+  explicit SafeBrowsingLocalStateDelegate(content::WebUI* web_ui) {}
+  // Returns the local state preference service.
+  virtual PrefService* GetLocalState() = 0;
+};
+
 class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
  public:
-  explicit SafeBrowsingUIHandler(content::BrowserContext* context);
+  SafeBrowsingUIHandler(
+      content::BrowserContext* context,
+      std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate);
 
   SafeBrowsingUIHandler(const SafeBrowsingUIHandler&) = delete;
   SafeBrowsingUIHandler& operator=(const SafeBrowsingUIHandler&) = delete;
@@ -356,13 +372,17 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // List that keeps all the WebUI listener objects.
   static std::vector<SafeBrowsingUIHandler*> webui_list_;
 
+  // Returns PrefService for local state.
+  std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate_;
+
   base::WeakPtrFactory<SafeBrowsingUIHandler> weak_factory_{this};
 };
 
 // The WebUI for chrome://safe-browsing
 class SafeBrowsingUI : public content::WebUIController {
  public:
-  explicit SafeBrowsingUI(content::WebUI* web_ui);
+  SafeBrowsingUI(content::WebUI* web_ui,
+                 std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate);
 
   SafeBrowsingUI(const SafeBrowsingUI&) = delete;
   SafeBrowsingUI& operator=(const SafeBrowsingUI&) = delete;

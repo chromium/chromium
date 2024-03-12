@@ -192,6 +192,8 @@ source_set("browser") {
     "safe_browsing/aw_safe_browsing_allowlist_manager.h",
     "safe_browsing/aw_safe_browsing_blocking_page.cc",
     "safe_browsing/aw_safe_browsing_blocking_page.h",
+    "safe_browsing/aw_safe_browsing_local_state_delegate_impl.cc",
+    "safe_browsing/aw_safe_browsing_local_state_delegate_impl.h",
     "safe_browsing/aw_safe_browsing_navigation_throttle.cc",
     "safe_browsing/aw_safe_browsing_navigation_throttle.h",
     "safe_browsing/aw_safe_browsing_ui_manager.cc",

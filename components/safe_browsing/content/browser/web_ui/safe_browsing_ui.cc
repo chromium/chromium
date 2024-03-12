@@ -2845,7 +2845,9 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }  // namespace
 
-SafeBrowsingUI::SafeBrowsingUI(content::WebUI* web_ui)
+SafeBrowsingUI::SafeBrowsingUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate)
     : content::WebUIController(web_ui) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -2856,8 +2858,8 @@ SafeBrowsingUI::SafeBrowsingUI(content::WebUI* web_ui)
 
   // Register callback handler.
   // Handles messages from JavaScript to C++ via chrome.send().
-  web_ui->AddMessageHandler(
-      std::make_unique<SafeBrowsingUIHandler>(browser_context));
+  web_ui->AddMessageHandler(std::make_unique<SafeBrowsingUIHandler>(
+      browser_context, std::move(delegate)));
 
   // Add required resources.
   html_source->AddResourcePath("safe_browsing.css", IDR_SAFE_BROWSING_CSS);
@@ -2872,8 +2874,10 @@ SafeBrowsingUI::SafeBrowsingUI(content::WebUI* web_ui)
 
 SafeBrowsingUI::~SafeBrowsingUI() {}
 
-SafeBrowsingUIHandler::SafeBrowsingUIHandler(content::BrowserContext* context)
-    : browser_context_(context) {}
+SafeBrowsingUIHandler::SafeBrowsingUIHandler(
+    content::BrowserContext* context,
+    std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate)
+    : browser_context_(context), delegate_(std::move(delegate)) {}
 
 SafeBrowsingUIHandler::~SafeBrowsingUIHandler() {
   WebUIInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
@@ -2950,8 +2954,9 @@ void SafeBrowsingUIHandler::OnGetCookie(
 }
 
 void SafeBrowsingUIHandler::GetSavedPasswords(const base::Value::List& args) {
-  password_manager::HashPasswordManager hash_manager(
-      user_prefs::UserPrefs::Get(browser_context_));
+  password_manager::HashPasswordManager hash_manager;
+  hash_manager.set_prefs(user_prefs::UserPrefs::Get(browser_context_));
+  hash_manager.set_local_prefs(delegate_->GetLocalState());
 
   base::Value::List saved_passwords;
   for (const password_manager::PasswordHashData& hash_data :

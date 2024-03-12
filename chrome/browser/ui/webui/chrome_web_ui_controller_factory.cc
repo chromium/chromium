@@ -27,6 +27,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_local_state_delegate.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
@@ -485,7 +486,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIPredictorsHost)
     return &NewWebUI<PredictorsUI>;
   if (url.host_piece() == safe_browsing::kChromeUISafeBrowsingHost)
-    return &NewWebUI<safe_browsing::SafeBrowsingUI>;
+    return &NewComponentUI<safe_browsing::SafeBrowsingUI,
+                           ChromeSafeBrowsingLocalStateDelegate>;
   if (url.host_piece() == chrome::kChromeUISegmentationInternalsHost)
     return &NewWebUI<SegmentationInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISignInInternalsHost)
