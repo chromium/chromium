@@ -1022,8 +1022,8 @@ TEST_P(SurfaceTest, SetBlendMode) {
 TEST_P(SurfaceTest, OverlayCandidate) {
   gfx::Size buffer_size(1, 1);
   auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), GL_TEXTURE_2D, 0,
-      true, true, false);
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), 0, true, true,
+      false);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 
@@ -1045,8 +1045,8 @@ TEST_P(SurfaceTest, OverlayCandidate) {
 TEST_P(SurfaceTest, SetAlpha) {
   gfx::Size buffer_size(1, 1);
   auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), GL_TEXTURE_2D, 0,
-      true, true, false);
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), 0, true, true,
+      false);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 
@@ -1098,8 +1098,8 @@ TEST_P(SurfaceTest, SetAlpha) {
 TEST_P(SurfaceTest, ForceRgbxTest) {
   gfx::Size buffer_size(1, 1);
   auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), GL_TEXTURE_2D, 0,
-      true, true, false);
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), 0, true, true,
+      false);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 
@@ -1129,7 +1129,7 @@ TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
   auto buffer =
       std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
                                    buffer_size, gfx::BufferFormat::RGBX_8888),
-                               GL_TEXTURE_2D, 0, true, true, false);
+                               0, true, true, false);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 

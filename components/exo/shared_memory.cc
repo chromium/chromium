@@ -73,7 +73,6 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
   handle.stride = stride;
 
   const gfx::BufferUsage buffer_usage = gfx::BufferUsage::GPU_READ;
-  const unsigned texture_target = GL_TEXTURE_2D;
 
   // COMMANDS_ISSUED queries are sufficient for shared memory
   // buffers as binding to texture is implemented using a call to
@@ -90,8 +89,8 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
 
   if (base::FeatureList::IsEnabled(kAlwaysUseGMBHandleForSHMExoBuffer)) {
     return Buffer::CreateBufferFromGMBHandle(
-        std::move(handle), size, format, buffer_usage, texture_target,
-        query_type, use_zero_copy, is_overlay_candidate, y_invert);
+        std::move(handle), size, format, buffer_usage, query_type,
+        use_zero_copy, is_overlay_candidate, y_invert);
   }
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplSharedMemory::CreateFromHandle(
@@ -101,9 +100,9 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
     LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
     return nullptr;
   }
-  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), texture_target,
-                                  query_type, use_zero_copy,
-                                  is_overlay_candidate, y_invert);
+  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), query_type,
+                                  use_zero_copy, is_overlay_candidate,
+                                  y_invert);
 }
 
 size_t SharedMemory::GetSize() const {

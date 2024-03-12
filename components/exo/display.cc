@@ -114,10 +114,6 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
   gmb_handle.native_pixmap_handle = std::move(handle);
 
   const gfx::BufferUsage buffer_usage = gfx::BufferUsage::GPU_READ;
-  const unsigned texture_target =
-      gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format)
-          ? gpu::GetPlatformSpecificTextureTarget()
-          : GL_TEXTURE_2D;
 
   // COMMANDS_COMPLETED queries are required by native pixmaps.
   const unsigned query_type = GL_COMMANDS_COMPLETED_CHROMIUM;
@@ -128,8 +124,8 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
 
   if (base::FeatureList::IsEnabled(kAlwaysUseGMBHandleForPixmapExoBuffer)) {
     return Buffer::CreateBufferFromGMBHandle(
-        std::move(gmb_handle), size, format, buffer_usage, texture_target,
-        query_type, use_zero_copy, is_overlay_candidate, y_invert);
+        std::move(gmb_handle), size, format, buffer_usage, query_type,
+        use_zero_copy, is_overlay_candidate, y_invert);
   }
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
@@ -140,9 +136,9 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
     LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
     return nullptr;
   }
-  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), texture_target,
-                                  query_type, use_zero_copy,
-                                  is_overlay_candidate, y_invert);
+  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), query_type,
+                                  use_zero_copy, is_overlay_candidate,
+                                  y_invert);
 }
 
 std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {

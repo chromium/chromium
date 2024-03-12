@@ -515,20 +515,17 @@ Buffer::BufferRelease& Buffer::BufferRelease::operator=(BufferRelease&&) =
 
 Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer)
     : Buffer(std::move(gpu_memory_buffer),
-             GL_TEXTURE_2D /* texture_target */,
              GL_COMMANDS_COMPLETED_CHROMIUM /* query_type */,
              true /* use_zero_copy */,
              false /* is_overlay_candidate */,
              false /* y_invert */) {}
 
 Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-               unsigned texture_target,
                unsigned query_type,
                bool use_zero_copy,
                bool is_overlay_candidate,
                bool y_invert)
     : gpu_memory_buffer_(std::move(gpu_memory_buffer)),
-      texture_target_(texture_target),
       query_type_(query_type),
       use_zero_copy_(use_zero_copy),
       is_overlay_candidate_(is_overlay_candidate),
@@ -543,7 +540,6 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     const gfx::Size& buffer_size,
     gfx::BufferFormat buffer_format,
     gfx::BufferUsage buffer_usage,
-    unsigned texture_target,
     unsigned query_type,
     bool use_zero_copy,
     bool is_overlay_candidate,
@@ -565,9 +561,9 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
   // Note that for now we are always creating a GMB from GMBHandle here. This
   // will help clients to move away from using GMB to create Exo::Buffer while
   // still keep the code inside here intact.
-  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), texture_target,
-                                  query_type, use_zero_copy,
-                                  is_overlay_candidate, y_invert);
+  return std::make_unique<Buffer>(std::move(gpu_memory_buffer), query_type,
+                                  use_zero_copy, is_overlay_candidate,
+                                  y_invert);
 }
 
 // static
@@ -636,9 +632,9 @@ bool Buffer::ProduceTransferableResource(
   resource->resource_source =
       viz::TransferableResource::ResourceSource::kExoBuffer;
 
-  // Create a new image texture for |gpu_memory_buffer_| with |texture_target_|
-  // if one doesn't already exist. The contents of this buffer are copied to
-  // |texture| using a call to CopyTexImage.
+  // Create a new image texture for |gpu_memory_buffer_| if one doesn't already
+  // exist. The contents of this buffer are copied to |texture| using a call to
+  // CopyTexImage.
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
         context_provider, context_factory->GetGpuMemoryBufferManager(),
@@ -694,7 +690,6 @@ bool Buffer::ProduceTransferableResource(
     uint32_t texture_target =
         contents_texture->shared_image()->GetTextureTarget(
             gpu_memory_buffer_->GetFormat());
-    CHECK_EQ(texture_target, texture_target_);
     resource->mailbox_holder =
         gpu::MailboxHolder(contents_texture->mailbox(),
                            resource->mailbox_holder.sync_token, texture_target);

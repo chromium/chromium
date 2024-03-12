@@ -35,7 +35,6 @@ class Buffer {
  public:
   explicit Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
   Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-         unsigned texture_target,
          unsigned query_type,
          bool use_zero_copy,
          bool is_overlay_candidate,
@@ -53,7 +52,6 @@ class Buffer {
       const gfx::Size& buffer_size,
       gfx::BufferFormat buffer_format,
       gfx::BufferUsage buffer_usage,
-      unsigned texture_target,
       unsigned query_type,
       bool use_zero_copy,
       bool is_overlay_candidate,
@@ -194,9 +192,6 @@ class Buffer {
 
   // The GPU memory buffer that contains the contents of this buffer.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-
-  // Texture target that must be used when creating a texture for buffer.
-  const unsigned texture_target_;
 
   // Query type that must be used when releasing buffer from a texture.
   const unsigned query_type_;
