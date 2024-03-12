@@ -74,12 +74,11 @@ absl::uint128 RandGenerator(absl::uint128 range) {
 // number of reports (up to the max) for the current trigger data type under
 // consideration. Given that each choice produces a distinct output, we sum
 // these up.
-absl::uint128 GetNumStatesRecursive(
-    attribution_reporting::TriggerSpecs::Iterator it,
-    int max_reports,
-    int window_val,
-    int max_reports_per_type,
-    internal::StateMap& map) {
+absl::uint128 GetNumStatesRecursive(TriggerSpecs::Iterator it,
+                                    int max_reports,
+                                    int window_val,
+                                    int max_reports_per_type,
+                                    internal::StateMap& map) {
   // Case 1: "B = 0" there is nothing left to assign for the last data index.
   // Also consider the trivial Case 2 -> Case 1 case without touching the cache
   // or recursive calls.
@@ -123,14 +122,13 @@ absl::uint128 GetNumStatesRecursive(
 
 // A variant of the above algorithm which samples a report given an index.
 // This follows a similarly structured algorithm.
-void GetReportsFromIndexRecursive(
-    attribution_reporting::TriggerSpecs::Iterator it,
-    int max_reports,
-    int window_val,
-    int max_reports_per_type,
-    absl::uint128 index,
-    std::vector<FakeEventLevelReport>& reports,
-    internal::StateMap& map) {
+void GetReportsFromIndexRecursive(TriggerSpecs::Iterator it,
+                                  int max_reports,
+                                  int window_val,
+                                  int max_reports_per_type,
+                                  absl::uint128 index,
+                                  std::vector<FakeEventLevelReport>& reports,
+                                  internal::StateMap& map) {
   // Case 1 and Case 2 -> 1. There are no more valid trigger data value, so
   // generate nothing.
   auto cur = it++;
@@ -194,10 +192,9 @@ void GetReportsFromIndexRecursive(
   NOTREACHED();
 }
 
-absl::uint128 GetNumStatesCached(
-    const attribution_reporting::TriggerSpecs& specs,
-    int max_reports,
-    internal::StateMap& map) {
+absl::uint128 GetNumStatesCached(const TriggerSpecs& specs,
+                                 int max_reports,
+                                 internal::StateMap& map) {
   if (specs.empty() || max_reports == 0) {
     return 1;
   }
@@ -258,17 +255,15 @@ double GetRandomizedResponseRate(absl::uint128 num_states, double epsilon) {
   return num_states_double / (num_states_double - 1 + std::exp(epsilon));
 }
 
-absl::uint128 GetNumStates(
-    const attribution_reporting::TriggerSpecs& specs,
-    attribution_reporting::MaxEventLevelReports max_reports) {
+absl::uint128 GetNumStates(const TriggerSpecs& specs,
+                           MaxEventLevelReports max_reports) {
   internal::StateMap map;
   return GetNumStatesCached(specs, max_reports, map);
 }
 
-RandomizedResponseData DoRandomizedResponse(
-    const attribution_reporting::TriggerSpecs& specs,
-    attribution_reporting::MaxEventLevelReports max_reports,
-    double epsilon) {
+RandomizedResponseData DoRandomizedResponse(const TriggerSpecs& specs,
+                                            MaxEventLevelReports max_reports,
+                                            double epsilon) {
   internal::StateMap map;
   return internal::DoRandomizedResponseWithCache(specs, max_reports, epsilon,
                                                  map);
@@ -394,7 +389,7 @@ std::vector<int> GetKCombinationAtIndex(absl::uint128 combination_index,
 }
 
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-    const attribution_reporting::TriggerSpecs& specs,
+    const TriggerSpecs& specs,
     int max_reports,
     absl::uint128 index,
     StateMap& map) {
@@ -464,11 +459,10 @@ double ComputeChannelCapacity(absl::uint128 num_states,
 }
 
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-    const attribution_reporting::TriggerSpecs& specs,
+    const TriggerSpecs& specs,
     int max_reports,
     absl::uint128 random_stars_and_bars_sequence_index) {
-  const attribution_reporting::TriggerSpec* single_spec =
-      specs.SingleSharedSpec();
+  const TriggerSpec* single_spec = specs.SingleSharedSpec();
   CHECK(single_spec);
 
   const int trigger_data_cardinality = specs.size();
@@ -509,11 +503,10 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
   return fake_reports;
 }
 
-RandomizedResponseData DoRandomizedResponseWithCache(
-    const attribution_reporting::TriggerSpecs& specs,
-    int max_reports,
-    double epsilon,
-    StateMap& map) {
+RandomizedResponseData DoRandomizedResponseWithCache(const TriggerSpecs& specs,
+                                                     int max_reports,
+                                                     double epsilon,
+                                                     StateMap& map) {
   const absl::uint128 num_states = GetNumStatesCached(specs, max_reports, map);
   double rate = GetRandomizedResponseRate(num_states, epsilon);
   std::optional<std::vector<FakeEventLevelReport>> fake_reports;

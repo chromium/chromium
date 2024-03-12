@@ -78,8 +78,7 @@ double GetRandomizedResponseRate(absl::uint128 num_states, double epsilon);
 
 // Returns the number of possible output states for the given API configuration.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::uint128 GetNumStates(const attribution_reporting::TriggerSpecs& specs,
-                           attribution_reporting::MaxEventLevelReports);
+absl::uint128 GetNumStates(const TriggerSpecs& specs, MaxEventLevelReports);
 
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that output space.
@@ -87,10 +86,9 @@ absl::uint128 GetNumStates(const attribution_reporting::TriggerSpecs& specs,
 // Returns `std::nullopt` if the output should be determined truthfully.
 // Otherwise will return a vector of fake reports.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-RandomizedResponseData DoRandomizedResponse(
-    const attribution_reporting::TriggerSpecs& specs,
-    attribution_reporting::MaxEventLevelReports,
-    double epsilon);
+RandomizedResponseData DoRandomizedResponse(const TriggerSpecs& specs,
+                                            MaxEventLevelReports,
+                                            double epsilon);
 
 // Exposed for testing purposes.
 namespace internal {
@@ -156,7 +154,7 @@ double ComputeChannelCapacity(absl::uint128 num_states,
 // `CHECK()`s `TriggerSpecs::SingleSharedSpec()`.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-    const attribution_reporting::TriggerSpecs&,
+    const TriggerSpecs&,
     int max_event_level_reports,
     absl::uint128 random_stars_and_bars_sequence_index);
 
@@ -169,7 +167,7 @@ using ConfigForCache = uint32_t;
 using StateMap = std::map<ConfigForCache, absl::uint128>;
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-    const attribution_reporting::TriggerSpecs& specs,
+    const TriggerSpecs& specs,
     int max_reports,
     absl::uint128 index,
     StateMap& map);
@@ -177,11 +175,10 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 // Exposed to speed up tests which perform randomized response many times in a
 // row.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-RandomizedResponseData DoRandomizedResponseWithCache(
-    const attribution_reporting::TriggerSpecs& specs,
-    int max_reports,
-    double epsilon,
-    StateMap& map);
+RandomizedResponseData DoRandomizedResponseWithCache(const TriggerSpecs& specs,
+                                                     int max_reports,
+                                                     double epsilon,
+                                                     StateMap& map);
 
 }  // namespace internal
 

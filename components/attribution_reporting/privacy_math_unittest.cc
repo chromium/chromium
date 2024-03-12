@@ -28,13 +28,13 @@ namespace {
 
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::MaxEventLevelReports;
+using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceType;
 
-attribution_reporting::TriggerSpecs SpecsFromWindowList(
-    const std::vector<int>& windows_per_type,
-    bool collapse_into_single_spec) {
-  attribution_reporting::TriggerSpecs::TriggerDataIndices indices;
-  std::vector<attribution_reporting::TriggerSpec> raw_specs;
+TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
+                                 bool collapse_into_single_spec) {
+  TriggerSpecs::TriggerDataIndices indices;
+  std::vector<TriggerSpec> raw_specs;
 
   bool supportable_by_single_spec = base::ranges::all_of(
       windows_per_type, [&](int w) { return w == windows_per_type[0]; });
@@ -48,8 +48,8 @@ attribution_reporting::TriggerSpecs SpecsFromWindowList(
     for (int i = 0; i < static_cast<int>(windows_per_type.size()); ++i) {
       indices[i] = 0;
     }
-    raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
-        base::Days(0), std::move(deltas)));
+    raw_specs.emplace_back(
+        *EventReportWindows::Create(base::Days(0), std::move(deltas)));
   } else {
     for (int index = 0; int windows : windows_per_type) {
       std::vector<base::TimeDelta> deltas;
@@ -57,15 +57,14 @@ attribution_reporting::TriggerSpecs SpecsFromWindowList(
       for (int i = 0; i < windows; i++) {
         deltas.emplace_back(base::Days(1) + base::Days(i));
       }
-      raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
-          base::Days(0), std::move(deltas)));
+      raw_specs.emplace_back(
+          *EventReportWindows::Create(base::Days(0), std::move(deltas)));
       indices[index] = index;
       index++;
     }
   }
 
-  return *attribution_reporting::TriggerSpecs::Create(std::move(indices),
-                                                      std::move(raw_specs));
+  return *TriggerSpecs::Create(std::move(indices), std::move(raw_specs));
 }
 
 TEST(PrivacyMathTest, BinomialCoefficient) {
@@ -421,17 +420,16 @@ TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected,
               internal::GetFakeReportsForSequenceIndex(
-                  attribution_reporting::TriggerSpecs(
-                      test_case.source_type,
-                      *EventReportWindows::FromDefaults(base::Days(30),
-                                                        test_case.source_type)),
+                  TriggerSpecs(test_case.source_type,
+                               *EventReportWindows::FromDefaults(
+                                   base::Days(30), test_case.source_type)),
                   MaxEventLevelReports(test_case.source_type),
                   test_case.sequence_index))
         << test_case.sequence_index;
   }
 }
 
-void RunRandomFakeReportsTest(const attribution_reporting::TriggerSpecs& specs,
+void RunRandomFakeReportsTest(const TriggerSpecs& specs,
                               const MaxEventLevelReports max_reports,
                               const int num_samples,
                               const double tolerance) {
@@ -496,9 +494,8 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Event_MatchesExpectedDistribution) {
   // For the distribution check, the probability of failure with `tolerance` is
   // at most 1e-9.
   RunRandomFakeReportsTest(
-      attribution_reporting::TriggerSpecs(
-          SourceType::kEvent, *EventReportWindows::FromDefaults(
-                                  base::Days(30), SourceType::kEvent)),
+      TriggerSpecs(SourceType::kEvent, *EventReportWindows::FromDefaults(
+                                           base::Days(30), SourceType::kEvent)),
       MaxEventLevelReports(1),
       /*num_samples=*/100'000,
       /*tolerance=*/0.03);
@@ -520,13 +517,13 @@ TEST(PrivacyMathTest,
   //
   // For the distribution check, the probability of failure with `tolerance` is
   // at most .0002.
-  RunRandomFakeReportsTest(attribution_reporting::TriggerSpecs(
-                               SourceType::kNavigation,
-                               *EventReportWindows::FromDefaults(
-                                   base::Days(30), SourceType::kNavigation)),
-                           MaxEventLevelReports(3),
-                           /*num_samples=*/150'000,
-                           /*tolerance=*/0.9);
+  RunRandomFakeReportsTest(
+      TriggerSpecs(SourceType::kNavigation,
+                   *EventReportWindows::FromDefaults(base::Days(30),
+                                                     SourceType::kNavigation)),
+      MaxEventLevelReports(3),
+      /*num_samples=*/150'000,
+      /*tolerance=*/0.9);
 }
 
 TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
@@ -536,15 +533,15 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
   //
   // For the distribution check, the probability of failure with `tolerance` is
   // at most 1e-9.
-  const std::vector<attribution_reporting::TriggerSpec> kSpecList = {
-      attribution_reporting::TriggerSpec(*EventReportWindows::Create(
+  const std::vector<TriggerSpec> kSpecList = {
+      TriggerSpec(*EventReportWindows::Create(
           /*start_time=*/base::Seconds(5),
           /*end_times=*/{base::Days(10), base::Days(20)})),
-      attribution_reporting::TriggerSpec(*EventReportWindows::Create(
+      TriggerSpec(*EventReportWindows::Create(
           /*start_time=*/base::Seconds(2),
           /*end_times=*/{base::Days(1)}))};
 
-  const auto kSpecs = *attribution_reporting::TriggerSpecs::Create(
+  const auto kSpecs = *TriggerSpecs::Create(
       /*trigger_data_indices=*/
       {
           {/*trigger_data=*/1, /*index=*/0},
@@ -630,9 +627,8 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
 // the trigger data *value* in the fake reports.
 TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   // Note that the trigger data does not start at 0.
-  const auto kSpecs = *attribution_reporting::TriggerSpecs::Create(
-      {{/*trigger_data=*/123, /*index=*/0}},
-      {attribution_reporting::TriggerSpec()});
+  const auto kSpecs = *TriggerSpecs::Create(
+      {{/*trigger_data=*/123, /*index=*/0}}, {TriggerSpec()});
 
   ASSERT_TRUE(kSpecs.SingleSharedSpec());
 
@@ -657,18 +653,18 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
 TEST(PrivacyMathTest, UnaryChannel) {
   const struct {
     const char* desc;
-    attribution_reporting::TriggerSpecs trigger_specs;
+    TriggerSpecs trigger_specs;
     MaxEventLevelReports max_event_level_reports;
   } kTestCases[] = {
       {
           .desc = "empty-specs",
-          .trigger_specs = attribution_reporting::TriggerSpecs(),
+          .trigger_specs = TriggerSpecs(),
           .max_event_level_reports = MaxEventLevelReports(20),
       },
       {
           .desc = "zero-max-reports",
-          .trigger_specs = attribution_reporting::TriggerSpecs(
-              SourceType::kNavigation, EventReportWindows()),
+          .trigger_specs =
+              TriggerSpecs(SourceType::kNavigation, EventReportWindows()),
           .max_event_level_reports = MaxEventLevelReports(0),
       },
   };
