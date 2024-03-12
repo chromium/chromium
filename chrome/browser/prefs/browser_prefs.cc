@@ -1003,6 +1003,11 @@ constexpr char kPlusAddressLastFetchedTime[] = "plus_address.last_fetched_time";
 // Deprecated 03/2024.
 constexpr char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 03/2024
+constexpr char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1114,6 +1119,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kOsCryptAppBoundFixedDataPrefName,
                                std::string());
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 03/2024.
+  registry->RegisterBooleanPref(kOobeGuestAcceptedTos, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2276,6 +2286,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Deprecated 02/2024.
   local_state->ClearPref(kOsCryptAppBoundFixedDataPrefName);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 03/2024.
+  local_state->ClearPref(kOobeGuestAcceptedTos);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

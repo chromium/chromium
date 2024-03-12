@@ -119,11 +119,6 @@ inline constexpr char kOobeStartTime[] = "oobe.oobe_start_time";
 // pref is used to hold that consent across browser restart.
 inline constexpr char kOobeGuestMetricsEnabled[] = "oobe.guest_metrics_enabled";
 
-// Boolean pref whether guest user went through ToS screen before starting the
-// session. If so, kOobeGuestMetricsEnabled will be loaded as the metrics
-// consent for the session.
-inline constexpr char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
-
 // Indicates that the reven board was updated from CloudReady to Flex.
 // TODO(https://crbug.com/1322394): deprecate this pref once update from
 // CloudReady won't be available anymore.

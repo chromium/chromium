@@ -108,7 +108,6 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
-  registry->RegisterBooleanPref(prefs::kOobeGuestAcceptedTos, false);
   registry->RegisterBooleanPref(prefs::kOobeCriticalUpdateCompleted, false);
   registry->RegisterBooleanPref(prefs::kOobeIsConsumerSegment, false);
   registry->RegisterBooleanPref(prefs::kOobeConsumerUpdateCompleted, false);
