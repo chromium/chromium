@@ -1,7 +1,7 @@
 <!-- #html_wrapper_imports_start
 import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
 #html_wrapper_imports_end -->
-<div id="label" class="cr-form-field-label" ?hidden="${this.hideLabel_}"
+<div id="label" class="cr-form-field-label" ?hidden="${!this.label}"
     aria-hidden="true">
   ${this.label}
 </div>
@@ -19,9 +19,9 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             pattern="${this.pattern || nothing}" ?required="${this.required}"
             minlength="${this.minlength}" inputmode="${this.inputmode}"
             aria-description="${this.ariaDescription || nothing}"
-            aria-errormessage="${this.ariaErrorMessage_ || nothing}"
-            aria-label="${this.ariaLabelFinal_}"
-            aria-invalid="${this.ariaInvalid_}"
+            aria-errormessage="${this.getAriaErrorMessage_() || nothing}"
+            aria-label="${this.getAriaLabel_()}"
+            aria-invalid="${this.getAriaInvalid_()}"
             .max="${this.max || nothing}" .min="${this.min || nothing}"
             @focus="${this.onInputFocus_}"
             @blur="${this.onInputBlur_}" @change="${this.onInputChange_}"
@@ -36,5 +36,5 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   </div>
   <slot name="suffix"></slot>
 </div>
-<div id="error" role="${this.errorRole_ || nothing}"
-     aria-live="assertive">${this.displayErrorMessage_}</div>
+<div id="error" role="${this.getErrorRole_() || nothing}"
+     aria-live="assertive">${this.getErrorMessage_()}</div>

@@ -79,10 +79,7 @@ export class CrInputElement extends CrLitElement {
   static override get properties() {
     return {
       ariaDescription: {type: String},
-      ariaErrorMessage_: {type: String},
-      ariaInvalid_: {type: String},
       ariaLabel: {type: String},
-      ariaLabelFinal_: {type: String},
 
       autofocus: {
         type: Boolean,
@@ -108,8 +105,6 @@ export class CrInputElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-
-      hideLabel_: {type: Boolean},
 
       invalid: {
         type: Boolean,
@@ -189,13 +184,7 @@ export class CrInputElement extends CrLitElement {
   type: string = 'text';
   value: string = '';
   protected internalValue_: string = '';
-  protected errorRole_: string = '';
-  protected ariaLabelFinal_: string|null = null;
-  protected ariaErrorMessage_: string = '';
-  protected ariaInvalid_: string = 'false';
-  protected displayErrorMessage_: string = '';
   protected focused_: boolean = false;
-  protected hideLabel_: boolean = true;
 
   override firstUpdated() {
     // Use inputTabindex instead.
@@ -211,29 +200,6 @@ export class CrInputElement extends CrLitElement {
       // the underlying native input's auto validation if |required| is set.
       this.internalValue_ =
           (this.value === undefined || this.value === null) ? '' : this.value;
-    }
-
-    if (changedProperties.has('invalid')) {
-      this.ariaInvalid_ = this.invalid ? 'true' : 'false';
-    }
-
-    if (changedProperties.has('errorMessage') ||
-        changedProperties.has('invalid')) {
-      this.displayErrorMessage_ = this.invalid ? this.errorMessage : '';
-      // On VoiceOver role="alert" is not consistently announced when its
-      // content changes. Adding and removing the |role| attribute every time
-      // there is an error, triggers VoiceOver to consistently announce.
-      this.errorRole_ = this.invalid ? 'alert' : '';
-      this.ariaErrorMessage_ = this.invalid ? 'error' : '';
-    }
-
-    if (changedProperties.has('label')) {
-      this.hideLabel_ = !this.label;
-    }
-
-    if (changedProperties.has('ariaLabel') || changedProperties.has('label') ||
-        changedProperties.has('placeholder')) {
-      this.ariaLabelFinal_ = this.ariaLabel || this.label || this.placeholder;
     }
 
     if (changedProperties.has('inputTabindex')) {
@@ -312,6 +278,29 @@ export class CrInputElement extends CrLitElement {
 
   protected onInputBlur_() {
     this.focused_ = false;
+  }
+
+  protected getAriaLabel_() {
+    return this.ariaLabel || this.label || this.placeholder;
+  }
+
+  protected getAriaInvalid_() {
+    return this.invalid ? 'true' : 'false';
+  }
+
+  protected getErrorMessage_() {
+    return this.invalid ? this.errorMessage : '';
+  }
+
+  protected getErrorRole_() {
+    // On VoiceOver role="alert" is not consistently announced when its
+    // content changes. Adding and removing the |role| attribute every time
+    // there is an error, triggers VoiceOver to consistently announce.
+    return this.invalid ? 'alert' : '';
+  }
+
+  protected getAriaErrorMessage_() {
+    return this.invalid ? 'error' : '';
   }
 
   /**
