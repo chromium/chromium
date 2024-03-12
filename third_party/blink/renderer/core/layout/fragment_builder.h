@@ -511,7 +511,7 @@ class CORE_EXPORT FragmentBuilder {
   }
 
   HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
-  HeapHashSet<Member<LayoutBox>>& EnsureSnapAreas();
+  HeapVector<Member<LayoutBox>>& EnsureSnapAreas();
   LogicalAnchorQuery& EnsureAnchorQuery();
   ScrollStartTargetCandidates& EnsureScrollStartTargets();
 
@@ -558,7 +558,7 @@ class CORE_EXPORT FragmentBuilder {
   const BreakToken* break_token_ = nullptr;
 
   HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
-  HeapHashSet<Member<LayoutBox>>* snap_areas_ = nullptr;
+  HeapVector<Member<LayoutBox>>* snap_areas_ = nullptr;
   LogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   std::optional<LayoutUnit> bfc_block_offset_;

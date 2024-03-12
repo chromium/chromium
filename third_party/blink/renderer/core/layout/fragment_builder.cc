@@ -122,23 +122,32 @@ void FragmentBuilder::PropagateStickyDescendants(
   }
 }
 
-HeapHashSet<Member<LayoutBox>>& FragmentBuilder::EnsureSnapAreas() {
+HeapVector<Member<LayoutBox>>& FragmentBuilder::EnsureSnapAreas() {
   if (!snap_areas_) {
-    snap_areas_ = MakeGarbageCollected<HeapHashSet<Member<LayoutBox>>>();
+    snap_areas_ = MakeGarbageCollected<HeapVector<Member<LayoutBox>>>();
   }
   return *snap_areas_;
 }
 
 void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
+  auto get_insertion_pos = [&](LayoutBox* snap_area) {
+    auto& snap_areas = EnsureSnapAreas();
+    // Ensure that snap areas are added in DOM order.
+    for (int i = snap_areas.size(); i >= 1; i--) {
+      if (snap_areas.at(i - 1)->IsBeforeInPreOrder(*snap_area)) {
+        return i;
+      }
+    }
+    return 0;
+  };
   if (child.IsSnapArea()) {
-    EnsureSnapAreas().insert(To<LayoutBox>(child.GetMutableLayoutObject()));
+    auto* snap_area = To<LayoutBox>(child.GetMutableLayoutObject());
+    EnsureSnapAreas().insert(get_insertion_pos(snap_area), snap_area);
   }
 
   if (const auto* child_snap_areas = child.PropagatedSnapAreas()) {
-    auto& snap_areas = EnsureSnapAreas();
-    for (auto& child_snap_area : *child_snap_areas) {
-      snap_areas.insert(child_snap_area);
-    }
+    EnsureSnapAreas().InsertVector(get_insertion_pos(child_snap_areas->at(0)),
+                                   *child_snap_areas);
   }
 
   if (child.IsSnapArea() && child.PropagatedSnapAreas()) {
