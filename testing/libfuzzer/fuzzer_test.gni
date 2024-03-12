@@ -119,6 +119,8 @@ template("fuzzer_test") {
         supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
       }
 
+      fuzzer_name = target_name
+
       # Generate .options file.
       config_file_name = target_name + ".options"
       action(config_file_name) {
@@ -131,9 +133,11 @@ template("fuzzer_test") {
         if (defined(invoker.dict)) {
           args += [
             "--dict",
-            rebase_path("$root_build_dir/" + invoker.target_name + ".dict",
+            rebase_path("$root_build_dir/" + fuzzer_name + ".dict",
                         root_build_dir),
           ]
+        } else {
+          not_needed([ "fuzzer_name" ])
         }
 
         if (defined(invoker.libfuzzer_options)) {
