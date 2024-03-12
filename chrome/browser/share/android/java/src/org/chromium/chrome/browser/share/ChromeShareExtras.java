@@ -28,7 +28,8 @@ public class ChromeShareExtras {
         DetailedContentType.GIF,
         DetailedContentType.HIGHLIGHTED_TEXT,
         DetailedContentType.SCREENSHOT,
-        DetailedContentType.WEB_SHARE
+        DetailedContentType.WEB_SHARE,
+        DetailedContentType.PAGE_INFO,
     })
     public @interface DetailedContentType {
         int NOT_SPECIFIED = 0;
@@ -37,6 +38,7 @@ public class ChromeShareExtras {
         int HIGHLIGHTED_TEXT = 3;
         int SCREENSHOT = 4;
         int WEB_SHARE = 5;
+        int PAGE_INFO = 6;
     }
 
     /** Whether to save the chosen activity for future direct sharing. */

@@ -10,11 +10,13 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.Delegate;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.PageInfoContents;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -54,7 +56,10 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
             if (!mPageInfoSupplier.hasValue() || mDestroyChecker.isDestroyed()) return;
 
             var pageInfo = mPageInfoSupplier.get();
-            var chromeShareExtras = new ChromeShareExtras.Builder().build();
+            var chromeShareExtras =
+                    new ChromeShareExtras.Builder()
+                            .setDetailedContentType(DetailedContentType.PAGE_INFO)
+                            .build();
 
             if (!TextUtils.isEmpty(pageInfo.errorMessage)
                     || pageInfo.isLoading
@@ -67,6 +72,7 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
                                     mTab.getUrl().getSpec())
                             .setText(pageInfo.resultContents)
                             .build();
+
             mChromeOptionShareCallback.showShareSheet(
                     shareParams, chromeShareExtras, SystemClock.elapsedRealtime());
 
@@ -109,6 +115,11 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
         sInstance = null;
     }
 
+    public static void setInstanceForTesting(PageInfoSharingController instanceForTesting) {
+        sInstance = instanceForTesting;
+        ResettersForTesting.register(PageInfoSharingControllerImpl::resetForTesting);
+    }
+
     /** Implementation of {@code PageInfoSharingController} */
     @Override
     public boolean isAvailableForTab(Tab tab) {
@@ -145,6 +156,18 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
         uiCoordinator.requestShowContent();
 
         mCurrentRequestInfoSupplier.set(new PageInfoContents(tab.getTitle(), false));
+    }
+
+    @Override
+    public void shareWithoutPageInfo(ChromeOptionShareCallback chromeOptionShareCallback, Tab tab) {
+        ShareParams shareParams =
+                new ShareParams.Builder(
+                                tab.getWindowAndroid(), tab.getTitle(), tab.getUrl().getSpec())
+                        .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
+        chromeOptionShareCallback.showShareSheet(
+                shareParams, chromeShareExtras, SystemClock.elapsedRealtime());
     }
 
     private void onRequestDestroyed() {

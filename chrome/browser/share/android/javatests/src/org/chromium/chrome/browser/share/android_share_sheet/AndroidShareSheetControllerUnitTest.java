@@ -63,6 +63,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -77,6 +78,8 @@ import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowShareImageFileUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingController;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -289,6 +292,84 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertEquals("Print callback is not called.", 1, mPrintCallback.getCallCount());
         Assert.assertEquals(
                 "TargetChosenCallback is not called.", 1, callbackHelper.getCallCount());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CHROME_SHARE_PAGE_INFO})
+    @Config(
+            sdk = 34,
+            shadows = {ShadowChooserActionHelper.class})
+    public void choosePageInfoAction() throws CanceledException {
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("text/plain")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
+
+        PageInfoSharingController mockPageInfoSharingController =
+                Mockito.mock(PageInfoSharingController.class);
+        PageInfoSharingControllerImpl.setInstanceForTesting(mockPageInfoSharingController);
+        doReturn(true).when(mockPageInfoSharingController).isAvailableForTab(mTab);
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
+
+        AndroidShareSheetController.showShareSheet(
+                params,
+                chromeShareExtras,
+                mBottomSheetController,
+                () -> mTab,
+                () -> mTabModelSelector,
+                () -> mProfile,
+                mPrintCallback::notifyCalled,
+                mDeviceLockActivityLauncher);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        chooseCustomAction(intent, R.string.share);
+
+        verify(mockPageInfoSharingController)
+                .sharePageInfo(any(), eq(mBottomSheetController), any(), eq(mTab));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CHROME_SHARE_PAGE_INFO})
+    @Config(
+            sdk = 34,
+            shadows = {ShadowChooserActionHelper.class})
+    public void chooseRemovePageInfoAction() throws CanceledException {
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("text/plain")
+                        .setText("Page info")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
+        // Show a share sheet containing page info.
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setIsUrlOfVisiblePage(true)
+                        .setDetailedContentType(DetailedContentType.PAGE_INFO)
+                        .build();
+
+        PageInfoSharingController mockPageInfoSharingController =
+                Mockito.mock(PageInfoSharingController.class);
+        PageInfoSharingControllerImpl.setInstanceForTesting(mockPageInfoSharingController);
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
+
+        AndroidShareSheetController.showShareSheet(
+                params,
+                chromeShareExtras,
+                mBottomSheetController,
+                () -> mTab,
+                () -> mTabModelSelector,
+                () -> mProfile,
+                mPrintCallback::notifyCalled,
+                mDeviceLockActivityLauncher);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        // Share sheets with page info should have a "remove" option to share without page info.
+        chooseCustomAction(intent, R.string.remove);
+
+        verify(mockPageInfoSharingController).shareWithoutPageInfo(any(), eq(mTab));
     }
 
     @Test

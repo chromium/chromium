@@ -35,4 +35,12 @@ public interface PageInfoSharingController {
             BottomSheetController bottomSheetController,
             ChromeOptionShareCallback chromeOptionShareCallback,
             Tab tab);
+
+    /**
+     * Removes page info from a share sheet.
+     *
+     * @param chromeOptionShareCallback Callback to create a new Android share sheet.
+     * @param tab A tab to share without page info.
+     */
+    void shareWithoutPageInfo(ChromeOptionShareCallback chromeOptionShareCallback, Tab tab);
 }

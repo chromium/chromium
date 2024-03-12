@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -28,11 +31,19 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -43,15 +54,24 @@ public class PageInfoSharingControllerUnitTest {
 
     @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
 
     @Before
     public void setUp() {
         PageInfoSharingControllerImpl.resetForTesting();
+        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
+        when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(any(String.class)))
+                .thenAnswer(
+                        (invocation) -> {
+                            return new GURL((String) invocation.getArguments()[0]);
+                        });
     }
 
     @Test
@@ -134,6 +154,61 @@ public class PageInfoSharingControllerUnitTest {
                                             optionShareCallback,
                                             tab);
                             verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+                        });
+    }
+
+    @Test
+    public void testSharePageInfo_ensureSheetMovesBackToShare() {
+        ChromeOptionShareCallback optionShareCallback = mock(ChromeOptionShareCallback.class);
+        Tab tab = Mockito.mock(Tab.class);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(tab.getTitle()).thenReturn("Page title");
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            PageInfoSharingControllerImpl.getInstance()
+                                    .sharePageInfo(
+                                            activity,
+                                            mBottomSheetController,
+                                            optionShareCallback,
+                                            tab);
+                            ArgumentCaptor<BottomSheetContent> bottomSheetContentArgumentCaptor =
+                                    ArgumentCaptor.forClass(BottomSheetContent.class);
+                            verify(mBottomSheetController)
+                                    .requestShowContent(
+                                            bottomSheetContentArgumentCaptor.capture(),
+                                            anyBoolean());
+
+                            android.view.View acceptButton =
+                                    bottomSheetContentArgumentCaptor
+                                            .getValue()
+                                            .getContentView()
+                                            .findViewById(R.id.accept_button);
+                            // Click accept button on shown bottom sheet.
+                            assertTrue(acceptButton.isEnabled());
+                            acceptButton.performClick();
+
+                            ArgumentCaptor<ChromeShareExtras> chromeShareExtrasArgumentCaptor =
+                                    ArgumentCaptor.forClass(ChromeShareExtras.class);
+                            ArgumentCaptor<ShareParams> shareParamsArgumentCaptor =
+                                    ArgumentCaptor.forClass(ShareParams.class);
+                            // New share sheet should be opened.
+                            verify(optionShareCallback)
+                                    .showShareSheet(
+                                            shareParamsArgumentCaptor.capture(),
+                                            chromeShareExtrasArgumentCaptor.capture(),
+                                            anyLong());
+
+                            // Share params should include page info content type.
+                            assertEquals(
+                                    DetailedContentType.PAGE_INFO,
+                                    chromeShareExtrasArgumentCaptor
+                                            .getValue()
+                                            .getDetailedContentType());
+                            assertEquals(
+                                    "Page title", shareParamsArgumentCaptor.getValue().getText());
                         });
     }
 }

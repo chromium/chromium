@@ -57,6 +57,9 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     private static final String USER_ACTION_PAGE_INFO_SELECTED =
             "SharingHubAndroid.PageInfoSelected";
+
+    private static final String USER_ACTION_REMOVE_PAGE_INFO_SELECTED =
+            "SharingHubAndroid.RemovePageInfoSelected";
     private static final Integer MAX_ACTION_SUPPORTED = 5;
 
     private final ChromeShareExtras mChromeShareExtras;
@@ -253,23 +256,39 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     @Override
     protected FirstPartyOption createPageInfoFirstPartyOption() {
-        if (!mTabProvider.hasValue()
-                || !mPageInfoSharingController.isAvailableForTab(mTabProvider.get())) {
+        if (!mTabProvider.hasValue()) {
             return null;
         }
 
-        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.share)
-                .setFeatureNameForMetrics(USER_ACTION_PAGE_INFO_SELECTED)
-                .setOnClickCallback(
-                        (view) -> {
-                            mPageInfoSharingController.sharePageInfo(
-                                    mActivity,
-                                    mBottomSheetController,
-                                    mChromeOptionShareCallback,
-                                    mTabProvider.get());
-                        })
-                .build();
+        if (mChromeShareExtras != null
+                && mChromeShareExtras.getDetailedContentType() == DetailedContentType.PAGE_INFO) {
+            return new FirstPartyOptionBuilder(ContentType.LINK_AND_TEXT)
+                    .setIcon(R.drawable.ic_remove, R.string.remove)
+                    .setFeatureNameForMetrics(USER_ACTION_REMOVE_PAGE_INFO_SELECTED)
+                    .setOnClickCallback(
+                            (view) -> {
+                                mPageInfoSharingController.shareWithoutPageInfo(
+                                        mChromeOptionShareCallback, mTabProvider.get());
+                            })
+                    .build();
+        }
+
+        if (mPageInfoSharingController.isAvailableForTab(mTabProvider.get())) {
+            return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
+                    .setIcon(R.drawable.ic_content_copy_black, R.string.share)
+                    .setFeatureNameForMetrics(USER_ACTION_PAGE_INFO_SELECTED)
+                    .setOnClickCallback(
+                            (view) -> {
+                                mPageInfoSharingController.sharePageInfo(
+                                        mActivity,
+                                        mBottomSheetController,
+                                        mChromeOptionShareCallback,
+                                        mTabProvider.get());
+                            })
+                    .build();
+        }
+
+        return null;
     }
 
     private ChromeCustomShareAction shareActionFromFirstPartyOption(FirstPartyOption option) {
