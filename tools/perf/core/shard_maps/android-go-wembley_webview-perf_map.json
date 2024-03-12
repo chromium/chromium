@@ -6,7 +6,11 @@
             },
             "speedometer2": {
                 "abridged": false
-            },
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
             "speedometer3": {
                 "abridged": false
             },
@@ -14,16 +18,7 @@
                 "abridged": false
             },
             "system_health.common_mobile": {
-                "end": 6,
-                "abridged": false
-            }
-        }
-    },
-    "1": {
-        "benchmarks": {
-            "system_health.common_mobile": {
-                "begin": 6,
-                "end": 20,
+                "end": 3,
                 "abridged": false
             }
         }
@@ -31,8 +26,8 @@
     "2": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 20,
-                "end": 51,
+                "begin": 3,
+                "end": 19,
                 "abridged": false
             }
         }
@@ -40,13 +35,22 @@
     "3": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 51,
-                "end": 74,
+                "begin": 19,
+                "end": 50,
                 "abridged": false
             }
         }
     },
     "4": {
+        "benchmarks": {
+            "system_health.common_mobile": {
+                "begin": 50,
+                "end": 74,
+                "abridged": false
+            }
+        }
+    },
+    "5": {
         "benchmarks": {
             "system_health.common_mobile": {
                 "begin": 74,
@@ -58,20 +62,11 @@
             }
         }
     },
-    "5": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 6,
-                "end": 10,
-                "abridged": false
-            }
-        }
-    },
     "6": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 10,
-                "end": 13,
+                "begin": 6,
+                "end": 11,
                 "abridged": false
             }
         }
@@ -79,7 +74,7 @@
     "7": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 13,
+                "begin": 11,
                 "end": 14,
                 "abridged": false
             }
@@ -116,7 +111,7 @@
         "benchmarks": {
             "system_health.memory_mobile": {
                 "begin": 28,
-                "end": 39,
+                "end": 38,
                 "abridged": false
             }
         }
@@ -124,7 +119,7 @@
     "12": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 39,
+                "begin": 38,
                 "end": 48,
                 "abridged": false
             }
@@ -195,29 +190,29 @@
     },
     "extra_infos": {
         "num_stories": 191,
-        "predicted_min_shard_time": 420.0,
-        "predicted_min_shard_index": 6,
-        "predicted_max_shard_time": 771.0,
-        "predicted_max_shard_index": 14,
-        "shard #0": 611.0,
-        "shard #1": 631.0,
-        "shard #2": 637.0,
-        "shard #3": 637.0,
-        "shard #4": 612.0,
-        "shard #5": 552.0,
-        "shard #6": 420.0,
-        "shard #7": 648.0,
-        "shard #8": 750.0,
-        "shard #9": 579.0,
-        "shard #10": 672.0,
-        "shard #11": 676.0,
-        "shard #12": 597.0,
-        "shard #13": 630.0,
-        "shard #14": 771.0,
-        "shard #15": 561.0,
-        "shard #16": 633.0,
-        "shard #17": 666.0,
-        "shard #18": 690.0,
-        "shard #19": 671.0
+        "predicted_min_shard_time": 432.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 879.0,
+        "predicted_max_shard_index": 7,
+        "shard #0": 432.0,
+        "shard #1": 682.0,
+        "shard #2": 658.0,
+        "shard #3": 662.0,
+        "shard #4": 636.0,
+        "shard #5": 612.0,
+        "shard #6": 741.0,
+        "shard #7": 879.0,
+        "shard #8": 753.0,
+        "shard #9": 573.0,
+        "shard #10": 669.0,
+        "shard #11": 634.0,
+        "shard #12": 657.0,
+        "shard #13": 624.0,
+        "shard #14": 777.0,
+        "shard #15": 564.0,
+        "shard #16": 639.0,
+        "shard #17": 660.0,
+        "shard #18": 670.0,
+        "shard #19": 672.0
     }
 }

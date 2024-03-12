@@ -36,7 +36,7 @@
         "name": "media.mobile/video.html?src=tulip2.mp3&type=audio&seek"
     },
     {
-        "duration": "24.0",
+        "duration": "25.0",
         "name": "media.mobile/video.html?src=tulip2.mp4"
     },
     {
@@ -64,7 +64,11 @@
         "name": "media.mobile/video.html?src=tulip2.vp9.webm_WiFi"
     },
     {
-        "duration": "349.0",
+        "duration": "350.0",
         "name": "speedometer2/Speedometer2"
+    },
+    {
+        "duration": "519.0",
+        "name": "speedometer3/Speedometer3"
     }
 ]
