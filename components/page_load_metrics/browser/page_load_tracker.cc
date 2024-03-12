@@ -76,33 +76,36 @@ void RecordLargestContentfulPaintImageLoadTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     base::TimeDelta document_ttfb) {
-  if (largest_contentful_paint.largest_image_load_start.has_value()) {
+  if (largest_contentful_paint.resource_load_timings->load_start.has_value()) {
     UMA_HISTOGRAM_BOOLEAN(
         internal::kImageLoadStartLessThanDocumentTTFB,
-        largest_contentful_paint.largest_image_load_start < document_ttfb);
+        largest_contentful_paint.resource_load_timings->load_start <
+            document_ttfb);
   }
 
-  if (largest_contentful_paint.largest_image_load_start.has_value() &&
-      largest_contentful_paint.largest_image_load_end.has_value()) {
+  if (largest_contentful_paint.resource_load_timings->load_start.has_value() &&
+      largest_contentful_paint.resource_load_timings->load_end.has_value()) {
     UMA_HISTOGRAM_BOOLEAN(
         internal::kImageLoadEndLessThanLoadStart,
-        largest_contentful_paint.largest_image_load_end <
-            largest_contentful_paint.largest_image_load_start);
+        largest_contentful_paint.resource_load_timings->load_end <
+            largest_contentful_paint.resource_load_timings->load_start);
   }
 
-  if (largest_contentful_paint.largest_image_load_end.has_value() &&
+  if (largest_contentful_paint.resource_load_timings->load_end.has_value() &&
       largest_contentful_paint.largest_image_paint.has_value()) {
-    UMA_HISTOGRAM_BOOLEAN(internal::kImageLCPLessThanLoadEnd,
-                          largest_contentful_paint.largest_image_paint <
-                              largest_contentful_paint.largest_image_load_end);
+    UMA_HISTOGRAM_BOOLEAN(
+        internal::kImageLCPLessThanLoadEnd,
+        largest_contentful_paint.largest_image_paint <
+            largest_contentful_paint.resource_load_timings->load_end);
   }
 
   // If the images load_start is less than document_ttfb, then something may be
   // wrong with the metric. Attempt to diagnose the cause and record it to UMA,
   // or report 'Unknown' if no cause is identified. This code may be removed
   // when https://crbug.com/1431906 is resolved.
-  if (largest_contentful_paint.largest_image_load_start.has_value() &&
-      largest_contentful_paint.largest_image_load_start < document_ttfb) {
+  if (largest_contentful_paint.resource_load_timings->load_start.has_value() &&
+      largest_contentful_paint.resource_load_timings->load_start <
+          document_ttfb) {
     if (largest_contentful_paint.is_loaded_from_memory_cache &&
         largest_contentful_paint.is_preloaded_with_early_hints) {
       RecordImageLoadStartLessThanDocumentTtfbCause(

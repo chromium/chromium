@@ -268,11 +268,11 @@ bool LargestContentfulPaintCalculator::NotifyMetricsIfLargestImagePaintChanged(
             blink::LargestContentfulPaintType::kDataURI;
       }
 
-      latest_lcp_details_.largest_image_discovery_time =
+      latest_lcp_details_.resource_load_timings.discovery_time =
           image_record->media_timing->DiscoveryTime();
-      latest_lcp_details_.largest_image_load_start =
+      latest_lcp_details_.resource_load_timings.load_start =
           image_record->media_timing->LoadStart();
-      latest_lcp_details_.largest_image_load_end =
+      latest_lcp_details_.resource_load_timings.load_end =
           image_record->media_timing->LoadEnd();
       latest_lcp_details_.is_loaded_from_memory_cache =
           image_record->media_timing->IsLoadedFromMemoryCache();

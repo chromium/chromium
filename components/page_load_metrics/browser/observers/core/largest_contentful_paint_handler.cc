@@ -302,9 +302,9 @@ void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
             largest_contentful_paint.type),
         largest_contentful_paint.image_bpp,
         GetImageRequestPriority(largest_contentful_paint),
-        largest_contentful_paint.largest_image_discovery_time,
-        largest_contentful_paint.largest_image_load_start,
-        largest_contentful_paint.largest_image_load_end);
+        largest_contentful_paint.resource_load_timings->discovery_time,
+        largest_contentful_paint.resource_load_timings->load_start,
+        largest_contentful_paint.resource_load_timings->load_end);
   }
 }
 
@@ -337,9 +337,9 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
             largest_contentful_paint.type),
         largest_contentful_paint.image_bpp,
         GetImageRequestPriority(largest_contentful_paint),
-        largest_contentful_paint.largest_image_discovery_time,
-        largest_contentful_paint.largest_image_load_start,
-        largest_contentful_paint.largest_image_load_end);
+        largest_contentful_paint.resource_load_timings->discovery_time,
+        largest_contentful_paint.resource_load_timings->load_start,
+        largest_contentful_paint.resource_load_timings->load_end);
   }
 }
 
@@ -417,11 +417,12 @@ void LargestContentfulPaintHandler::UpdateSubFrameTiming(
       /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type),
-      AdjustedTime(largest_contentful_paint.largest_image_discovery_time,
+      AdjustedTime(
+          largest_contentful_paint.resource_load_timings->discovery_time,
+          navigation_start_offset),
+      AdjustedTime(largest_contentful_paint.resource_load_timings->load_start,
                    navigation_start_offset),
-      AdjustedTime(largest_contentful_paint.largest_image_load_start,
-                   navigation_start_offset),
-      AdjustedTime(largest_contentful_paint.largest_image_load_end,
+      AdjustedTime(largest_contentful_paint.resource_load_timings->load_end,
                    navigation_start_offset));
 
   if (IsValid(new_image_candidate.Time())) {

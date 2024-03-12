@@ -98,11 +98,10 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
   FakePageTimingSender::PageTimingValidator validator_;
   mutable mojom::PageLoadTimingPtr fake_timing_;
   mojom::SoftNavigationMetricsPtr fake_soft_navigation_metrics_ =
-      mojom::SoftNavigationMetrics::New(
-          blink::kSoftNavigationCountDefaultValue,
-          base::Milliseconds(0),
-          std::string(),
-          mojom::LargestContentfulPaintTiming::New());
+      mojom::SoftNavigationMetrics::New(blink::kSoftNavigationCountDefaultValue,
+                                        base::Milliseconds(0),
+                                        std::string(),
+                                        CreateLargestContentfulPaintTiming());
 };
 
 typedef testing::Test MetricsRenderFrameObserverTest;
@@ -191,9 +190,9 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   mojom::SoftNavigationMetricsPtr soft_navigation_metrics =
-      mojom::SoftNavigationMetrics::New(
-          blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-          std::string(), mojom::LargestContentfulPaintTiming::New());
+      mojom::SoftNavigationMetrics::New(blink::kSoftNavigationCountDefaultValue,
+                                        base::Milliseconds(0), std::string(),
+                                        CreateLargestContentfulPaintTiming());
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
   observer.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
@@ -255,7 +254,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   observer.ExpectPageLoadTiming(timing);
 
   soft_navigation_metrics->largest_contentful_paint =
-      mojom::LargestContentfulPaintTiming::New();
+      CreateLargestContentfulPaintTiming();
 
   soft_navigation_metrics->largest_contentful_paint->largest_image_paint_size =
       1;

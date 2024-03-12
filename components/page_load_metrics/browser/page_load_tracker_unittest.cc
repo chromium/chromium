@@ -514,10 +514,10 @@ TEST_F(PageLoadTrackerTest, LargestImageIncorrectLoadTimings) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::Now();
 
-  timing.paint_timing->largest_contentful_paint->largest_image_load_start =
-      base::Milliseconds(56);
-  timing.paint_timing->largest_contentful_paint->largest_image_load_end =
-      base::Milliseconds(45);
+  timing.paint_timing->largest_contentful_paint->resource_load_timings
+      ->load_start = base::Milliseconds(56);
+  timing.paint_timing->largest_contentful_paint->resource_load_timings
+      ->load_end = base::Milliseconds(45);
   timing.paint_timing->largest_contentful_paint->largest_image_paint =
       base::Milliseconds(34);
 
@@ -613,10 +613,10 @@ class IrregularLcpPageLoadTrackerTest
     page_load_metrics::InitPageLoadTimingForTest(&timing);
     timing.navigation_start = base::Time::Now();
 
-    timing.paint_timing->largest_contentful_paint->largest_image_load_start =
-        base::Milliseconds(56);
-    timing.paint_timing->largest_contentful_paint->largest_image_load_end =
-        base::Milliseconds(45);
+    timing.paint_timing->largest_contentful_paint->resource_load_timings
+        ->load_start = base::Milliseconds(56);
+    timing.paint_timing->largest_contentful_paint->resource_load_timings
+        ->load_end = base::Milliseconds(45);
     timing.paint_timing->largest_contentful_paint->largest_image_paint =
         base::Milliseconds(34);
 

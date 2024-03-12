@@ -22,18 +22,20 @@ struct DocumentTiming {
   mojo_base.mojom.TimeDelta? load_event_start;
 };
 
+struct LcpResourceLoadTimings {
+  // Time when the underlying LCP resource is requested.
+  mojo_base.mojom.TimeDelta? discovery_time;
+
+  // Time when the underlying LCP resource starts loading.
+  mojo_base.mojom.TimeDelta? load_start;
+
+  // Time when the underlying LCP resource finishes loading.
+  mojo_base.mojom.TimeDelta? load_end;
+};
+
 struct LargestContentfulPaintTiming {
   // Time when the page's largest image is painted.
   mojo_base.mojom.TimeDelta? largest_image_paint;
-
-  // Time when the page's largest image is requested.
-  mojo_base.mojom.TimeDelta? largest_image_discovery_time;
-
-  // Time when the page's largest image starts loading.
-  mojo_base.mojom.TimeDelta? largest_image_load_start;
-
-  // Time when the page's largest image finishes loading.
-  mojo_base.mojom.TimeDelta? largest_image_load_end;
 
   // Size of the largest image of the largest image paint, by
   // Size = Height * Width. Removed images are excluded.
@@ -45,6 +47,8 @@ struct LargestContentfulPaintTiming {
   // Size of the largest text of the largest text paint, by
   // Size = Height * Width. Removed text is excluded.
   uint64 largest_text_paint_size;
+
+  LcpResourceLoadTimings resource_load_timings;
 
   // These are packed blink::LargestContentfulPaintType enums, indicating
   // the largest LCP candidate's type characteristics.

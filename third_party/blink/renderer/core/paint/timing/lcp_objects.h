@@ -14,18 +14,22 @@
 
 namespace blink {
 
+struct ResourceLoadTimings {
+  base::TimeTicks load_start;
+  base::TimeTicks load_end;
+  base::TimeTicks discovery_time;
+};
+
 struct LargestContentfulPaintDetails {
-  base::TimeTicks largest_image_paint_time = base::TimeTicks();
+  base::TimeTicks largest_image_paint_time;
   uint64_t largest_image_paint_size = 0;
-  base::TimeTicks largest_image_load_start = base::TimeTicks();
-  base::TimeTicks largest_image_load_end = base::TimeTicks();
-  base::TimeTicks largest_image_discovery_time = base::TimeTicks();
+  ResourceLoadTimings resource_load_timings = {};
   blink::LargestContentfulPaintType largest_contentful_paint_type =
       blink::LargestContentfulPaintType::kNone;
   double largest_contentful_paint_image_bpp = 0.0;
-  base::TimeTicks largest_text_paint_time = base::TimeTicks();
+  base::TimeTicks largest_text_paint_time;
   uint64_t largest_text_paint_size = 0;
-  base::TimeTicks largest_contentful_paint_time = base::TimeTicks();
+  base::TimeTicks largest_contentful_paint_time;
   std::optional<WebURLRequest::Priority>
       largest_contentful_paint_image_request_priority = std::nullopt;
   bool is_loaded_from_memory_cache = false;

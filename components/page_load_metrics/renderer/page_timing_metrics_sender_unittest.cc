@@ -43,13 +43,13 @@ class PageTimingMetricsSenderTest : public testing::Test {
   PageTimingMetricsSenderTest()
       : metrics_sender_(new TestPageTimingMetricsSender(
             std::make_unique<FakePageTimingSender>(&validator_),
-            mojom::PageLoadTiming::New(),
+            CreatePageLoadTiming(),
             PageTimingMetadataRecorder::MonotonicTiming())) {}
 
   mojom::SoftNavigationMetrics CreateEmptySoftNavigationMetrics() {
-    return mojom::SoftNavigationMetrics(
-        blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-        std::string(), mojom::LargestContentfulPaintTiming::New());
+    return mojom::SoftNavigationMetrics(blink::kSoftNavigationCountDefaultValue,
+                                        base::Milliseconds(0), std::string(),
+                                        CreateLargestContentfulPaintTiming());
   }
 
  protected:

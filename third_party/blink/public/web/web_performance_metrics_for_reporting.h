@@ -19,12 +19,16 @@ namespace blink {
 
 class WindowPerformance;
 
+struct ResourceLoadTimingsForReporting {
+  std::optional<base::TimeDelta> discovery_time = std::nullopt;
+  std::optional<base::TimeDelta> load_start = std::nullopt;
+  std::optional<base::TimeDelta> load_end = std::nullopt;
+};
+
 struct LargestContentfulPaintDetailsForReporting {
   double image_paint_time = 0;
   uint64_t image_paint_size = 0;
-  std::optional<base::TimeDelta> image_discovery_time = std::nullopt;
-  std::optional<base::TimeDelta> image_load_start = std::nullopt;
-  std::optional<base::TimeDelta> image_load_end = std::nullopt;
+  ResourceLoadTimingsForReporting resource_load_timings = {};
   blink::LargestContentfulPaintType type =
       blink::LargestContentfulPaintType::kNone;
   double image_bpp = 0.0;
