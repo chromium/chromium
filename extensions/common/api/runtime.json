@@ -8,7 +8,7 @@
 [
   {
     "namespace": "runtime",
-    "description": "Use the <code>chrome.runtime</code> API to retrieve the service worker, return details about the manifest, and listen for and respond to events in the app or extension lifecycle. You can also use this API to convert the relative path of URLs to fully-qualified URLs.",
+    "description": "Use the <code>chrome.runtime</code> API to retrieve the service worker, return details about the manifest, and listen for and respond to events in the extension lifecycle. You can also use this API to convert the relative path of URLs to fully-qualified URLs.",
     "types": [
       {
         "id": "Port",
@@ -66,10 +66,10 @@
           "frameId": {"type": "integer", "optional": true, "description": "The <a href='webNavigation#frame_ids'>frame</a> that opened the connection. 0 for top-level frames, positive for child frames. This will only be set when <code>tab</code> is set.", "extension_types": ["extension", "legacy_packaged_app"]},
           "guestProcessId": {"type": "integer", "optional": true, "nodoc": true, "description": "The guest process id of the requesting webview, if available. Only available for component extensions.", "extension_types": ["extension"]},
           "guestRenderFrameRoutingId": {"type": "integer", "optional": true, "nodoc": true, "description": "The guest render frame routing id of the requesting webview, if available. Only available for component extensions.", "extension_types": ["extension"]},
-          "id": {"type": "string", "optional": true, "description": "The ID of the extension or app that opened the connection, if any."},
+          "id": {"type": "string", "optional": true, "description": "The ID of the extension that opened the connection, if any."},
           "url": {"type": "string", "optional": true, "description": "The URL of the page or frame that opened the connection. If the sender is in an iframe, it will be iframe's URL not the URL of the page which hosts it."},
           "nativeApplication": {"type": "string", "optional": true, "description": "The name of the native application that opened the connection, if any."},
-          "tlsChannelId": {"type": "string", "optional": true, "description": "The TLS channel ID of the page or frame that opened the connection, if requested by the extension or app, and if available."},
+          "tlsChannelId": {"type": "string", "optional": true, "description": "The TLS channel ID of the page or frame that opened the connection, if requested by the extension, and if available."},
           "origin": {"type": "string", "optional": true, "description": "The origin of the page or frame that opened the connection. It can vary from the url property (e.g., about:blank) or can be opaque (e.g., sandboxed iframes). This is useful for identifying if the origin can be trusted if we can't immediately tell from the URL."},
           "documentId": {"type": "string", "optional": true, "description": "A UUID of the document that opened the connection."},
           "documentLifecycle": {"type": "string", "optional": true, "description": "The lifecycle the document that opened the connection is in at the time the port was created. Note that the lifecycle state of the document may have changed since port creation."}
@@ -382,7 +382,7 @@
       {
         "name": "requestUpdateCheck",
         "type": "function",
-        "description": "<p>Requests an immediate update check be done for this app/extension.</p> <p><b>Important</b>: Most extensions/apps should <b>not</b> use this method, since Chrome already does automatic checks every few hours, and you can listen for the $(ref:runtime.onUpdateAvailable) event without needing to call requestUpdateCheck.</p><p>This method is only appropriate to call in very limited circumstances, such as if your extension/app talks to a backend service, and the backend service has determined that the client extension/app version is very far out of date and you'd like to prompt a user to update. Most other uses of requestUpdateCheck, such as calling it unconditionally based on a repeating timer, probably only serve to waste client, network, and server resources.</p><p>Note: When called with a callback, instead of returning an object this function will return the two properties as separate arguments passed to the callback.</p>",
+        "description": "<p>Requests an immediate update check be done for this app/extension.</p> <p><b>Important</b>: Most extensions/apps should <b>not</b> use this method, since Chrome already does automatic checks every few hours, and you can listen for the $(ref:runtime.onUpdateAvailable) event without needing to call requestUpdateCheck.</p><p>This method is only appropriate to call in very limited circumstances, such as if your extension talks to a backend service, and the backend service has determined that the client extension version is very far out of date and you'd like to prompt a user to update. Most other uses of requestUpdateCheck, such as calling it unconditionally based on a repeating timer, probably only serve to waste client, network, and server resources.</p><p>Note: When called with a callback, instead of returning an object this function will return the two properties as separate arguments passed to the callback.</p>",
         "parameters": [],
         "returns_async": {
           "name": "callback",
@@ -434,9 +434,9 @@
         "name": "connect",
         "type": "function",
         "nocompile": true,
-        "description": "Attempts to connect listeners within an extension/app (such as the background page), or other extensions/apps. This is useful for content scripts connecting to their extension processes, inter-app/extension communication, and <a href=\"/docs/extensions/manifest/externally_connectable\">web messaging</a>. Note that this does not connect to any listeners in a content script. Extensions may connect to content scripts embedded in tabs via $(ref:tabs.connect).",
+        "description": "Attempts to connect listeners within an extension (such as the background page), or other extensions/apps. This is useful for content scripts connecting to their extension processes, inter-app/extension communication, and <a href=\"/docs/extensions/manifest/externally_connectable\">web messaging</a>. Note that this does not connect to any listeners in a content script. Extensions may connect to content scripts embedded in tabs via $(ref:tabs.connect).",
         "parameters": [
-          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension or app to connect to. If omitted, a connection will be attempted with your own extension. Required if sending messages from a web page for <a href=\"/docs/extensions/reference/manifest/externally-connectable\">web messaging</a>."},
+          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension to connect to. If omitted, a connection will be attempted with your own extension. Required if sending messages from a web page for <a href=\"/docs/extensions/reference/manifest/externally-connectable\">web messaging</a>."},
           {
             "type": "object",
             "name": "connectInfo",
@@ -449,7 +449,7 @@
         ],
         "returns": {
           "$ref": "Port",
-          "description": "Port through which messages can be sent and received. The port's $(ref:Port onDisconnect) event is fired if the extension/app does not exist. "
+          "description": "Port through which messages can be sent and received. The port's $(ref:Port onDisconnect) event is fired if the extension does not exist. "
         }
       },
       {
@@ -474,9 +474,9 @@
         "type": "function",
         "nocompile": true,
         "allowAmbiguousOptionalArguments": true,
-        "description": "Sends a single message to event listeners within your extension/app or a different extension/app. Similar to $(ref:runtime.connect) but only sends a single message, with an optional response. If sending to your extension, the $(ref:runtime.onMessage) event will be fired in every frame of your extension (except for the sender's frame), or $(ref:runtime.onMessageExternal), if a different extension. Note that extensions cannot send messages to content scripts using this method. To send messages to content scripts, use $(ref:tabs.sendMessage).",
+        "description": "Sends a single message to event listeners within your extension or a different extension/app. Similar to $(ref:runtime.connect) but only sends a single message, with an optional response. If sending to your extension, the $(ref:runtime.onMessage) event will be fired in every frame of your extension (except for the sender's frame), or $(ref:runtime.onMessageExternal), if a different extension. Note that extensions cannot send messages to content scripts using this method. To send messages to content scripts, use $(ref:tabs.sendMessage).",
         "parameters": [
-          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension/app to send the message to. If omitted, the message will be sent to your own extension/app. Required if sending messages from a web page for <a href=\"/docs/extensions/manifest/externally_connectable\">web messaging</a>."},
+          {"type": "string", "name": "extensionId", "optional": true, "description": "The ID of the extension to send the message to. If omitted, the message will be sent to your own extension/app. Required if sending messages from a web page for <a href=\"/docs/extensions/manifest/externally_connectable\">web messaging</a>."},
           { "type": "any", "name": "message", "description": "The message to send. This message should be a JSON-ifiable object." },
           {
             "type": "object",
@@ -727,7 +727,7 @@
         "type": "function",
         "nocompile": true,
         "options": { "unmanaged": true },
-        "description": "Fired when a message is sent from another extension/app (by $(ref:runtime.sendMessage)). Cannot be used in a content script.",
+        "description": "Fired when a message is sent from another extension (by $(ref:runtime.sendMessage)). Cannot be used in a content script.",
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the calling script."},
           {"name": "sender", "$ref": "MessageSender" },
