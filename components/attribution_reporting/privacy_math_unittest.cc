@@ -15,6 +15,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -155,7 +156,13 @@ TEST(PrivacyMathTest, GetKCombinationAtIndex) {
 // Simple stress test to make sure that GetKCombinationAtIndex is returning
 // combinations uniquely indexed by the given index, i.e. there are never any
 // repeats.
-TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
+// Times out on Windows debug builds; see https://crbug.com/329138754.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_GetKCombination_NoRepeats DISABLED_GetKCombination_NoRepeats
+#else
+#define MAYBE_GetKCombination_NoRepeats GetKCombination_NoRepeats
+#endif
+TEST(PrivacyMathTest, MAYBE_GetKCombination_NoRepeats) {
   for (int k = 1; k < 5; k++) {
     std::set<std::vector<int>> seen_combinations;
     for (int index = 0; index < 3000; index++) {
@@ -170,7 +177,15 @@ TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
 // The k-combination at a given index is the unique set of k positive integers
 // a_k > a_{k-1} > ... > a_2 > a_1 >= 0 such that
 // `index` = \sum_{i=1}^k {a_i}\choose{i}
-TEST(PrivacyMathTest, GetKCombination_MatchesDefinition) {
+// Times out on Windows debug builds; see https://crbug.com/329138754.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_GetKCombination_MatchesDefinition \
+  DISABLED_GetKCombination_MatchesDefinition
+#else
+#define MAYBE_GetKCombination_MatchesDefinition \
+  GetKCombination_MatchesDefinition
+#endif
+TEST(PrivacyMathTest, MAYBE_GetKCombination_MatchesDefinition) {
   for (int k = 1; k < 5; k++) {
     for (absl::uint128 index = 0; index < 3000; index++) {
       std::vector<int> combination = internal::GetKCombinationAtIndex(index, k);
@@ -489,8 +504,16 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Event_MatchesExpectedDistribution) {
       /*tolerance=*/0.03);
 }
 
+// Times out on Windows debug builds; see https://crbug.com/329138754.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_GetRandomFakeReports_Navigation_MatchesExpectedDistribution \
+  DISABLED_GetRandomFakeReports_Navigation_MatchesExpectedDistribution
+#else
+#define MAYBE_GetRandomFakeReports_Navigation_MatchesExpectedDistribution \
+  GetRandomFakeReports_Navigation_MatchesExpectedDistribution
+#endif
 TEST(PrivacyMathTest,
-     GetRandomFakeReports_Navigation_MatchesExpectedDistribution) {
+     MAYBE_GetRandomFakeReports_Navigation_MatchesExpectedDistribution) {
   // The probability that not all of the 2925 states are seen after
   // `num_samples` trials is at most ~1e-19, which is 0 for all practical
   // purposes, so the `expected_num_combinations` check should always pass.
