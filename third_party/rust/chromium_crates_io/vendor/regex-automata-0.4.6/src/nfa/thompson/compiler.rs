@@ -961,10 +961,12 @@ impl Compiler {
         // for all matches. When an unanchored prefix is not added, then the
         // NFA's anchored and unanchored start states are equivalent.
         let all_anchored = exprs.iter().all(|e| {
-            e.borrow()
-                .properties()
-                .look_set_prefix()
-                .contains(hir::Look::Start)
+            let props = e.borrow().properties();
+            if self.config.get_reverse() {
+                props.look_set_suffix().contains(hir::Look::End)
+            } else {
+                props.look_set_prefix().contains(hir::Look::Start)
+            }
         });
         let anchored = !self.config.get_unanchored_prefix() || all_anchored;
         let unanchored_prefix = if anchored {
@@ -1876,11 +1878,11 @@ impl Utf8Node {
 
 #[cfg(test)]
 mod tests {
-    use alloc::{vec, vec::Vec};
+    use alloc::vec;
 
     use crate::{
-        nfa::thompson::{SparseTransitions, State, Transition, NFA},
-        util::primitives::{PatternID, SmallIndex, StateID},
+        nfa::thompson::{SparseTransitions, State},
+        util::primitives::SmallIndex,
     };
 
     use super::*;
@@ -1926,6 +1928,11 @@ mod tests {
             })
             .collect();
         State::Sparse(SparseTransitions { transitions })
+    }
+
+    fn s_look(look: Look, next: usize) -> State {
+        let next = sid(next);
+        State::Look { look, next }
     }
 
     fn s_bin_union(alt1: usize, alt2: usize) -> State {
@@ -1975,6 +1982,80 @@ mod tests {
                 s_byte(b'a', 3),
                 s_match(0),
             ]
+        );
+    }
+
+    #[test]
+    fn compile_no_unanchored_prefix_with_start_anchor() {
+        let nfa = NFA::compiler()
+            .configure(NFA::config().which_captures(WhichCaptures::None))
+            .build(r"^a")
+            .unwrap();
+        assert_eq!(
+            nfa.states(),
+            &[s_look(Look::Start, 1), s_byte(b'a', 2), s_match(0)]
+        );
+    }
+
+    #[test]
+    fn compile_yes_unanchored_prefix_with_end_anchor() {
+        let nfa = NFA::compiler()
+            .configure(NFA::config().which_captures(WhichCaptures::None))
+            .build(r"a$")
+            .unwrap();
+        assert_eq!(
+            nfa.states(),
+            &[
+                s_bin_union(2, 1),
+                s_range(0, 255, 0),
+                s_byte(b'a', 3),
+                s_look(Look::End, 4),
+                s_match(0),
+            ]
+        );
+    }
+
+    #[test]
+    fn compile_yes_reverse_unanchored_prefix_with_start_anchor() {
+        let nfa = NFA::compiler()
+            .configure(
+                NFA::config()
+                    .reverse(true)
+                    .which_captures(WhichCaptures::None),
+            )
+            .build(r"^a")
+            .unwrap();
+        assert_eq!(
+            nfa.states(),
+            &[
+                s_bin_union(2, 1),
+                s_range(0, 255, 0),
+                s_byte(b'a', 3),
+                // Anchors get flipped in a reverse automaton.
+                s_look(Look::End, 4),
+                s_match(0),
+            ],
+        );
+    }
+
+    #[test]
+    fn compile_no_reverse_unanchored_prefix_with_end_anchor() {
+        let nfa = NFA::compiler()
+            .configure(
+                NFA::config()
+                    .reverse(true)
+                    .which_captures(WhichCaptures::None),
+            )
+            .build(r"a$")
+            .unwrap();
+        assert_eq!(
+            nfa.states(),
+            &[
+                // Anchors get flipped in a reverse automaton.
+                s_look(Look::Start, 1),
+                s_byte(b'a', 2),
+                s_match(0),
+            ],
         );
     }
 

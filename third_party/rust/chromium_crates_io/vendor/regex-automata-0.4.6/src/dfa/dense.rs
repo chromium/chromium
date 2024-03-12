@@ -9,7 +9,7 @@ This module also contains a [`dense::Builder`](Builder) and a
 
 #[cfg(feature = "dfa-build")]
 use core::cmp;
-use core::{convert::TryFrom, fmt, iter, mem::size_of, slice};
+use core::{fmt, iter, mem::size_of, slice};
 
 #[cfg(feature = "dfa-build")]
 use alloc::{

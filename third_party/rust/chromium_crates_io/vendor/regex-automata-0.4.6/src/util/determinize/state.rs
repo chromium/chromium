@@ -86,7 +86,7 @@ serialized anywhere. So any kind of change can be made with reckless abandon,
 as long as everything in this module agrees.
 */
 
-use core::{convert::TryFrom, mem};
+use core::mem;
 
 use alloc::{sync::Arc, vec::Vec};
 

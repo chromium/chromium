@@ -184,7 +184,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."read-fonts:0.15.6"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."regex-automata:0.4.5"]
+[policy."regex-automata:0.4.6"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."regex-syntax:0.8.2"]

@@ -41,6 +41,10 @@ like `u64::from` where possible, or even `usize::try_from()` for when we do
 explicitly want to panic or when we want to return an error for overflow.
 */
 
+// We define a little more than what we need, but I'd rather just have
+// everything via a consistent and uniform API then have holes.
+#![allow(dead_code)]
+
 pub(crate) trait U8 {
     fn as_usize(self) -> usize;
 }
@@ -236,16 +240,6 @@ pub(crate) trait Pointer {
 }
 
 impl<T> Pointer for *const T {
-    fn as_usize(self) -> usize {
-        self as usize
-    }
-}
-
-pub(crate) trait PointerMut {
-    fn as_usize(self) -> usize;
-}
-
-impl<T> PointerMut for *mut T {
     fn as_usize(self) -> usize {
         self as usize
     }

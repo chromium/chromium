@@ -38,11 +38,7 @@ assert_eq!(Some(HalfMatch::must(0, 7)), state.get_match());
 
 #[cfg(feature = "dfa-build")]
 use core::iter;
-use core::{
-    convert::{TryFrom, TryInto},
-    fmt,
-    mem::size_of,
-};
+use core::{fmt, mem::size_of};
 
 #[cfg(feature = "dfa-build")]
 use alloc::{vec, vec::Vec};
