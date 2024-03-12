@@ -262,6 +262,13 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that navigating forward to a page not using the default mode from a
 // restored session is using the mode used in the past session.
 - (void)testNavigateForwardToDesktopMode {
+  // TODO(crbug.com/329210328): Re-enable the test on iPad device.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad device.");
+  }
+#endif
+
   std::unique_ptr<web::DataResponseProvider> provider(
       new UserAgentResponseProvider());
   web::test::SetUpHttpServer(std::move(provider));
