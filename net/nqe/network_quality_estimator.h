@@ -44,6 +44,7 @@ class TickClock;
 
 namespace net {
 
+class HostPortPair;
 class NetLog;
 
 namespace nqe::internal {
