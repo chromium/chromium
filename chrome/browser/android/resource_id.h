@@ -70,6 +70,9 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP,
                     R.drawable.ic_vpn_key_blue)
 #endif
 
+// The icon shown when an update to GMSCore is needed.
+DECLARE_RESOURCE_ID(IDR_ANDROID_IC_ERROR, R.drawable.ic_error)
+
 DECLARE_RESOURCE_ID(IDR_SEND_TAB_TO_SELF, R.drawable.send_tab)
 
 // Icon displayed in the save address message on Android.

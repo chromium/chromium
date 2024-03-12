@@ -1198,6 +1198,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="AuthErrorUnresolvable"/>
   <int value="3" label="KeychainError"/>
   <int value="4" label="kKeyRetrievalRequired"/>
+  <int value="5" label="kGMSCoreOutdatedSavingDisabled"/>
+  <int value="6" label="kGMSCoreOutdatedSavingPossible"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">

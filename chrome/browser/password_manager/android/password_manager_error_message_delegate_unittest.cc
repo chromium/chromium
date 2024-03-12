@@ -167,6 +167,45 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       1);
 }
 
+// Tests that message properties (title, description, icon, button text) are
+// set correctly for "Update Google Play services" message.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       MessagePropertyValuesUpdateGooglePlayServices) {
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::
+          kGMSCoreOutdatedSavingPossible);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS_TO_ACCOUNT),
+      GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE),
+            GetMessageWrapper()->GetPrimaryButtonText());
+
+  DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that message properties (title, description, icon, button text) are
+// set correctly for "Update to save passwords" message.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       MessagePropertyValuesUpdateToSavePasswords) {
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::
+          kGMSCoreOutdatedSavingDisabled);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_TO_SAVE_PASSWORDS),
+            GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS),
+            GetMessageWrapper()->GetDescription());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE),
+            GetMessageWrapper()->GetPrimaryButtonText());
+
+  DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+}
+
 // Tests that the sign in flow starts when the user clicks the "Sign in" button
 // and that the metrics are recorded correctly.
 TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {

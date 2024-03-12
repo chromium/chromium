@@ -27,7 +27,11 @@ enum class PasswordStoreBackendErrorType {
   // Error related only to on-device encryption users when the encryption
   // key is missing. Used on Android.
   kKeyRetrievalRequired = 4,
-  kMaxValue = kKeyRetrievalRequired,
+  // Saving new credentials is disabled due to an outdated GMSCore version.
+  kGMSCoreOutdatedSavingDisabled = 5,
+  // Credentials are saved only on device due to an outdated GMSCore version.
+  kGMSCoreOutdatedSavingPossible = 6,
+  kMaxValue = kGMSCoreOutdatedSavingPossible,
 };
 
 enum class PasswordStoreBackendErrorRecoveryType {
