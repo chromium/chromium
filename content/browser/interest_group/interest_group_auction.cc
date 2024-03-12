@@ -2757,6 +2757,9 @@ InterestGroupAuction::CreateReporter(
   top_level_seller_winning_bid_info.direct_from_seller_signals_header_ad_slot =
       std::move(direct_from_seller_signals_header_ad_slot_);
   top_level_seller_winning_bid_info.bid = winner->bid->bid;
+  top_level_seller_winning_bid_info.rounded_bid =
+      InterestGroupAuctionReporter::RoundBidStochastically(
+          top_level_seller_winning_bid_info.bid);
 
   if (winner->bid->auction == this) {
     // Bid came directly from bidder, not a component auction.
@@ -2818,6 +2821,9 @@ InterestGroupAuction::CreateReporter(
         component_auction->direct_from_seller_signals_header_ad_slot_);
     const LeaderInfo& component_leader = component_auction->leader_info();
     component_seller_winning_bid_info->bid = component_leader.top_bid->bid->bid;
+    component_seller_winning_bid_info->rounded_bid =
+        InterestGroupAuctionReporter::RoundBidStochastically(
+            component_leader.top_bid->bid->bid);
     // The bidder in this auction was the actual bidder, so the currency comes
     // from it, too.
     component_seller_winning_bid_info->bid_currency =

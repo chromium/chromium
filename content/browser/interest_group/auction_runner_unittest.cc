@@ -17036,6 +17036,8 @@ TEST_P(BidRoundingTest, BidRounded) {
     }
 
     function reportResult(auctionConfig, browserSignals) {
+      sendReportTo("https://seller-reporting.example.com/?bid=" +
+                   browserSignals.bid);
     }
   )";
 
@@ -17055,22 +17057,31 @@ TEST_P(BidRoundingTest, BidRounded) {
     case 8:
       EXPECT_THAT(
           result_.report_urls,
-          testing::ElementsAre(testing::AnyOf(
-              GURL("https://buyer-reporting.example.com/?bid=1.9921875"),
-              GURL("https://buyer-reporting.example.com/?bid=1.984375"))));
+          testing::AnyOf(
+              testing::ElementsAre(
+                  GURL("https://seller-reporting.example.com/?bid=1.9921875"),
+                  GURL("https://buyer-reporting.example.com/?bid=1.9921875")),
+              testing::ElementsAre(
+                  GURL("https://seller-reporting.example.com/?bid=1.984375"),
+                  GURL("https://buyer-reporting.example.com/?bid=1.984375"))));
       break;
     case 16:
       EXPECT_THAT(
           result_.report_urls,
-          testing::ElementsAre(testing::AnyOf(
-              GURL(
-                  "https://buyer-reporting.example.com/?bid=1.990020751953125"),
-              GURL(
-                  "https://buyer-reporting.example.com/?bid=1.989990234375"))));
+          testing::AnyOf(
+              testing::ElementsAre(GURL("https://seller-reporting.example.com/"
+                                        "?bid=1.990020751953125"),
+                                   GURL("https://buyer-reporting.example.com/"
+                                        "?bid=1.990020751953125")),
+              testing::ElementsAre(GURL("https://seller-reporting.example.com/"
+                                        "?bid=1.989990234375"),
+                                   GURL("https://buyer-reporting.example.com/"
+                                        "?bid=1.989990234375"))));
       break;
     case 53:
       EXPECT_THAT(result_.report_urls,
                   testing::ElementsAre(
+                      GURL("https://seller-reporting.example.com/?bid=1.99"),
                       GURL("https://buyer-reporting.example.com/?bid=1.99")));
       break;
     default:

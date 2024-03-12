@@ -350,6 +350,11 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
 }
 
 /* static */
+double InterestGroupAuctionReporter::RoundBidStochastically(double bid) {
+  return RoundStochasticallyToKBits(bid, kFledgeBidReportingBits.Get());
+}
+
+/* static */
 double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
                                                                 unsigned k) {
   int value_exp;
@@ -482,6 +487,10 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
     DCHECK(top_seller_signals);
     DCHECK(component_seller_winning_bid_info_);
     DCHECK(seller_info->component_auction_modified_bid_params);
+    std::optional<double> rounded_modified_bid;
+    if (seller_info->component_auction_modified_bid_params->bid.has_value()) {
+      rounded_modified_bid = top_level_seller_winning_bid_info_.rounded_bid;
+    }
     other_seller =
         auction_worklet::mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
             top_level_seller_winning_bid_info_.auction_config->seller);
@@ -489,9 +498,7 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
         auction_worklet::mojom::ComponentAuctionReportResultParams::New(
             /*top_level_seller_signals=*/std::move(top_seller_signals).value(),
             /*modified_bid=*/
-            RoundStochasticallyToKBits(
-                seller_info->component_auction_modified_bid_params->bid,
-                kFledgeBidReportingBits.Get()));
+            rounded_modified_bid);
   }
 
   double bid = seller_info->bid;
@@ -545,9 +552,7 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
       winning_bid_info_.storage_interest_group->interest_group.owner,
       /*browser_signal_buyer_and_seller_reporting_id=*/
       browser_signal_buyer_and_seller_reporting_id,
-      winning_bid_info_.render_url,
-      RoundStochasticallyToKBits(bid, kFledgeBidReportingBits.Get()),
-      bid_currency,
+      winning_bid_info_.render_url, seller_info->rounded_bid, bid_currency,
       RoundStochasticallyToKBits(seller_info->score,
                                  kFledgeScoreReportingBits.Get()),
       RoundStochasticallyToKBits(highest_scoring_other_bid,
@@ -824,9 +829,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       InterestGroupAuction::GetDirectFromSellerAuctionSignalsHeaderAdSlot(
           *seller_info.direct_from_seller_signals_header_ad_slot),
       signals_for_winner, kanon_mode_, bid_is_kanon_,
-      winning_bid_info_.render_url,
-      RoundStochasticallyToKBits(winning_bid_info_.bid,
-                                 kFledgeBidReportingBits.Get()),
+      winning_bid_info_.render_url, seller_info.rounded_bid,
       winning_bid_info_.bid_currency,
       /*browser_signal_highest_scoring_other_bid=*/
       RoundStochasticallyToKBits(highest_scoring_other_bid,
