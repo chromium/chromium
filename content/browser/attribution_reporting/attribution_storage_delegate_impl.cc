@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -33,7 +34,6 @@
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/trigger_verification.h"
 
@@ -59,7 +59,7 @@ GetNullAggregatableReportsForLookback(
       continue;
     }
 
-    if (GenerateWithRate(rate)) {
+    if (attribution_reporting::GenerateWithRate(rate)) {
       reports.push_back(AttributionStorageDelegate::NullAggregatableReport{
           .fake_source_time = fake_source_time,
       });
@@ -202,7 +202,7 @@ double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     attribution_reporting::EventLevelEpsilon epsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return content::GetRandomizedResponseRate(
+  return attribution_reporting::GetRandomizedResponseRate(
       GetNumStates(trigger_specs, max_event_level_reports), epsilon);
 }
 
@@ -214,8 +214,9 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     attribution_reporting::EventLevelEpsilon epsilon,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RandomizedResponseData response =
-      DoRandomizedResponse(trigger_specs, max_event_level_reports, epsilon);
+  attribution_reporting::RandomizedResponseData response =
+      attribution_reporting::DoRandomizedResponse(
+          trigger_specs, max_event_level_reports, epsilon);
 
   if (response.channel_capacity() > GetMaxChannelCapacity(source_type)) {
     return base::unexpected(ExceedsChannelCapacityLimit());
@@ -225,8 +226,8 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     case AttributionNoiseMode::kDefault:
       return response;
     case AttributionNoiseMode::kNone:
-      return RandomizedResponseData(response.rate(),
-                                    response.channel_capacity(), std::nullopt);
+      return attribution_reporting::RandomizedResponseData(
+          response.rate(), response.channel_capacity(), std::nullopt);
   }
 }
 

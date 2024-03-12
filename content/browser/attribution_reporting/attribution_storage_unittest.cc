@@ -35,6 +35,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -50,7 +51,6 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
-#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
@@ -1260,7 +1260,8 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        NeverAttributeImpression_EventLevelReportNotStored) {
-  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{});
   StoreSourceResult result = storage()->StoreSource(
       TestAggregatableSourceProvider().GetBuilder().Build());
   EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
@@ -1285,8 +1286,9 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
-      {.trigger_data = 7, .window_index = 0}});
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{
+          {.trigger_data = 7, .window_index = 0}});
   StoreSourceResult result =
       storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
   EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
@@ -1311,7 +1313,8 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsChanged) {
     return r;
   }());
 
-  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{});
   storage()->StoreSource(TestAggregatableSourceProvider()
                              .GetBuilder()
                              .SetSourceEventId(5)
@@ -1342,7 +1345,8 @@ TEST_F(AttributionStorageTest,
 
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
 
-  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{});
   storage()->StoreSource(builder.SetSourceEventId(5).Build());
   delegate()->set_randomized_response(std::nullopt);
 
@@ -1375,7 +1379,8 @@ TEST_F(AttributionStorageTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{});
 
   storage()->StoreSource(provider.GetBuilder().Build());
   delegate()->set_randomized_response(std::nullopt);
@@ -1774,8 +1779,9 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
                        *attribution_reporting::EventReportWindows::Create(
                            base::Days(0), {kFirstWindow, kExpiry})))
       .SetMaxEventLevelReports(1);
-  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
-      {.trigger_data = 1, .window_index = 0}});
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{
+          {.trigger_data = 1, .window_index = 0}});
   StoreSourceResult result = storage()->StoreSource(builder.Build());
   EXPECT_EQ(result.status(), StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(std::nullopt);
@@ -1864,7 +1870,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
   const base::Time now = base::Time::Now();
 
   const struct {
-    RandomizedResponse randomized_response;
+    attribution_reporting::RandomizedResponse randomized_response;
     ::testing::Matcher<StoreSourceResult::Result> matches;
   } kTestCases[] = {
       {
@@ -1872,13 +1878,13 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
           VariantWith<StoreSourceResult::Success>(_),
       },
       {
-          std::vector<FakeEventLevelReport>(),
+          std::vector<attribution_reporting::FakeEventLevelReport>(),
           VariantWith<StoreSourceResult::SuccessNoised>(
               Field(&StoreSourceResult::SuccessNoised::min_fake_report_time,
                     std::nullopt)),
       },
       {
-          std::vector<FakeEventLevelReport>{
+          std::vector<attribution_reporting::FakeEventLevelReport>{
               {.trigger_data = 0, .window_index = 0},
               {.trigger_data = 0, .window_index = 1},
               {.trigger_data = 0, .window_index = 2}},

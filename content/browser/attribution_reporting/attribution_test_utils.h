@@ -50,9 +50,6 @@ namespace content {
 
 class AttributionTrigger;
 class CommonSourceInfo;
-class RandomizedResponseData;
-
-struct FakeEventLevelReport;
 
 enum class RateLimitResult : int;
 
@@ -338,10 +335,6 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionInfo& attribution_info);
-
-std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport&);
-
-std::ostream& operator<<(std::ostream& out, const RandomizedResponseData&);
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& source);
 

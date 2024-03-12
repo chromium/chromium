@@ -13,10 +13,10 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
-#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/common/content_export.h"
 
 namespace attribution_reporting {
@@ -147,7 +147,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       attribution_reporting::EventLevelEpsilon) const = 0;
 
   using GetRandomizedResponseResult =
-      base::expected<RandomizedResponseData, ExceedsChannelCapacityLimit>;
+      base::expected<attribution_reporting::RandomizedResponseData,
+                     ExceedsChannelCapacityLimit>;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns an error if the channel capacity exceeds the

@@ -474,8 +474,6 @@ source_set("browser") {
     "attribution_reporting/create_report_result.h",
     "attribution_reporting/os_registration.cc",
     "attribution_reporting/os_registration.h",
-    "attribution_reporting/privacy_math.cc",
-    "attribution_reporting/privacy_math.h",
     "attribution_reporting/rate_limit_result.h",
     "attribution_reporting/rate_limit_table.cc",
     "attribution_reporting/rate_limit_table.h",

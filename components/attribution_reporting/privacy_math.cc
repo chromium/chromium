@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/privacy_math.h"
+#include "components/attribution_reporting/privacy_math.h"
 
 #include <stdint.h>
 
@@ -26,7 +26,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
-namespace content {
+namespace attribution_reporting {
 
 namespace {
 
@@ -541,4 +541,4 @@ RandomizedResponseData DoRandomizedResponseWithCache(
 
 }  // namespace internal
 
-}  // namespace content
+}  // namespace attribution_reporting

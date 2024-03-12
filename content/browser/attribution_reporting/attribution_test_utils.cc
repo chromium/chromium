@@ -35,7 +35,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/os_registration.h"
-#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -650,31 +649,6 @@ std::ostream& operator<<(std::ostream& out,
                      ? base::NumberToString(*attribution_info.debug_key)
                      : "null")
              << ",context_origin=" << attribution_info.context_origin << "}";
-}
-
-std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport& r) {
-  return out << "{trigger_data=" << r.trigger_data
-             << ",window_index=" << r.window_index << "}";
-}
-
-std::ostream& operator<<(std::ostream& out, const RandomizedResponseData& r) {
-  out << "{rate=" << r.rate() << ",channel_capacity=" << r.channel_capacity()
-      << ",response=";
-
-  if (r.response().has_value()) {
-    out << "[";
-
-    for (const char* separator = ""; const auto& fake_report : *r.response()) {
-      out << separator << fake_report;
-      separator = ", ";
-    }
-
-    out << "]";
-  } else {
-    out << "null";
-  }
-
-  return out << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& source) {

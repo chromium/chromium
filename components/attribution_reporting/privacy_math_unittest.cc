@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/privacy_math.h"
+#include "components/attribution_reporting/privacy_math.h"
 
 #include <stdint.h>
 
@@ -19,11 +19,10 @@
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_config.h"
-#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
-namespace content {
+namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::EventReportWindows;
@@ -668,4 +667,4 @@ TEST(PrivacyMathTest, UnaryChannel) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace attribution_reporting

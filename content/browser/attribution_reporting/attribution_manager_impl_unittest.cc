@@ -37,6 +37,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -61,7 +62,6 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/os_registration.h"
-#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -2267,9 +2267,10 @@ class AttributionManagerImplFakeReportTest : public AttributionManagerImplTest {
  protected:
   void ConfigureStorageDelegate(
       ConfigurableStorageDelegate& delegate) const override {
-    delegate.set_randomized_response(std::vector<FakeEventLevelReport>{
-        {.trigger_data = 0, .window_index = 0},
-    });
+    delegate.set_randomized_response(
+        std::vector<attribution_reporting::FakeEventLevelReport>{
+            {.trigger_data = 0, .window_index = 0},
+        });
   }
 };
 

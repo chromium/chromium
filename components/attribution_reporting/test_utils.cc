@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
@@ -139,6 +140,31 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(std::ostream& out, const ParseError&) {
   return out << "ParseError";
+}
+
+std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport& r) {
+  return out << "{trigger_data=" << r.trigger_data
+             << ",window_index=" << r.window_index << "}";
+}
+
+std::ostream& operator<<(std::ostream& out, const RandomizedResponseData& r) {
+  out << "{rate=" << r.rate() << ",channel_capacity=" << r.channel_capacity()
+      << ",response=";
+
+  if (r.response().has_value()) {
+    out << "[";
+
+    for (const char* separator = ""; const auto& fake_report : *r.response()) {
+      out << separator << fake_report;
+      separator = ", ";
+    }
+
+    out << "]";
+  } else {
+    out << "null";
+  }
+
+  return out << "}";
 }
 
 }  // namespace attribution_reporting

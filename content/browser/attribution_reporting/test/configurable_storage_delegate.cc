@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
@@ -139,8 +140,8 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
     return base::unexpected(ExceedsChannelCapacityLimit());
   }
   double channel_capacity = 0;  // Not used by downstream code.
-  return RandomizedResponseData(randomized_response_rate_, channel_capacity,
-                                randomized_response_);
+  return attribution_reporting::RandomizedResponseData(
+      randomized_response_rate_, channel_capacity, randomized_response_);
 }
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
@@ -233,7 +234,7 @@ void ConfigurableStorageDelegate::set_randomized_response_rate(double rate) {
 }
 
 void ConfigurableStorageDelegate::set_randomized_response(
-    RandomizedResponse randomized_response) {
+    attribution_reporting::RandomizedResponse randomized_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   randomized_response_ = std::move(randomized_response);
 }

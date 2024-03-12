@@ -24,11 +24,13 @@ class AggregatableValues;
 class AggregationKeys;
 class DestinationSet;
 class EventReportWindows;
+class RandomizedResponseData;
 class SuitableOrigin;
 class SummaryBuckets;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
+struct FakeEventLevelReport;
 struct OsRegistrationItem;
 struct ParseError;
 struct SourceRegistration;
@@ -75,6 +77,10 @@ std::ostream& operator<<(std::ostream&, const TriggerSpecs::const_iterator&);
 std::ostream& operator<<(std::ostream&, const AggregatableTriggerConfig&);
 
 std::ostream& operator<<(std::ostream&, const ParseError&);
+
+std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport&);
+
+std::ostream& operator<<(std::ostream& out, const RandomizedResponseData&);
 
 }  // namespace attribution_reporting
 
