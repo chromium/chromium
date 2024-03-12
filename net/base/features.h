@@ -289,6 +289,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kWaitForFirstPartySetsInitNavigationThrottleTimeout;
 
+// When enabled, a cross-site ancestor chain bit is included in the partition
+// key in partitioned cookies.
+NET_EXPORT BASE_DECLARE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies);
+
 // When enabled, cookie-related code will treat cookies containing '\0', '\r',
 // and '\n' as invalid and reject the cookie.
 NET_EXPORT BASE_DECLARE_FEATURE(kBlockTruncatedCookies);

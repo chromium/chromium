@@ -245,6 +245,10 @@ extern const base::FeatureParam<base::TimeDelta>
         "kWaitForFirstPartySetsInitNavigationThrottleTimeout",
         base::Seconds(0)};
 
+BASE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies,
+             "AncestorChainBitEnabledInPartitionedCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBlockTruncatedCookies,
              "BlockTruncatedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);
