@@ -194,6 +194,8 @@ class PLATFORM_EXPORT CanvasResource
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
+  // Returns the texture format used by this resource.
+  viz::SharedImageFormat GetSharedImageFormat() const;
 
   SkImageInfo CreateSkImageInfo() const;
 
@@ -238,7 +240,6 @@ class PLATFORM_EXPORT CanvasResource
   gpu::gles2::GLES2Interface* ContextGL() const;
   gpu::raster::RasterInterface* RasterInterface() const;
   gpu::webgpu::WebGPUInterface* WebGPUInterface() const;
-  viz::SharedImageFormat GetSharedImageFormat() const;
   gfx::BufferFormat GetBufferFormat() const;
   gfx::ColorSpace GetColorSpace() const;
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>

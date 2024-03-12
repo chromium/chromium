@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -16,6 +17,25 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+namespace {
+
+WGPUTextureFormat VizToWGPUFormat(const viz::SharedImageFormat& format) {
+  // This function provides the inverse mapping of `WGPUFormatToViz` (located in
+  // webgpu_swap_buffer_provider.cc).
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return WGPUTextureFormat_BGRA8Unorm;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return WGPUTextureFormat_RGBA8Unorm;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return WGPUTextureFormat_RGBA16Float;
+  }
+  NOTREACHED() << "Unexpected canvas format: " << format.ToString();
+  return WGPUTextureFormat_RGBA8Unorm;
+}
+
+}  // namespace
 
 // static
 scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
@@ -100,6 +120,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   desc.dimension = WGPUTextureDimension_2D;
   desc.size.width = size.width();
   desc.size.height = size.height();
+  desc.format = VizToWGPUFormat(canvas_resource->GetSharedImageFormat());
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, desc, mailbox, sync_token,
       gpu::webgpu::WEBGPU_MAILBOX_NONE,
