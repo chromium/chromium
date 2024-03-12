@@ -15,12 +15,62 @@ import org.jni_zero.CalledByNative;
 import org.chromium.components.signin.AccountEmailDomainDisplayability;
 import org.chromium.components.signin.Tribool;
 
+import java.util.HashMap;
+
 /**
  * Stores all the information known about an account.
  *
  * This class has a native counterpart called AccountInfo.
  */
 public class AccountInfo extends CoreAccountInfo {
+    /** Used to instantiate `AccountInfo`. */
+    public static class Builder {
+        private CoreAccountInfo mCoreAccountInfo;
+        private String mFullName = "";
+        private String mGivenName = "";
+        private @Nullable Bitmap mAccountImage;
+        private AccountCapabilities mAccountCapabilities = new AccountCapabilities(new HashMap<>());
+
+        public Builder(String email, String gaiaId) {
+            mCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId);
+        }
+
+        public Builder(CoreAccountInfo coreAccountInfo) {
+            mCoreAccountInfo = coreAccountInfo;
+        }
+
+        public Builder fullName(String fullName) {
+            mFullName = fullName;
+            return this;
+        }
+
+        public Builder givenName(String givenName) {
+            mGivenName = givenName;
+            return this;
+        }
+
+        public Builder accountImage(Bitmap accountImage) {
+            mAccountImage = accountImage;
+            return this;
+        }
+
+        public Builder accountCapabilities(AccountCapabilities accountCapabilities) {
+            mAccountCapabilities = accountCapabilities;
+            return this;
+        }
+
+        public AccountInfo build() {
+            return new AccountInfo(
+                    mCoreAccountInfo.getId(),
+                    mCoreAccountInfo.getEmail(),
+                    mCoreAccountInfo.getGaiaId(),
+                    mFullName,
+                    mGivenName,
+                    mAccountImage,
+                    mAccountCapabilities);
+        }
+    }
+
     private final String mFullName;
     private final String mGivenName;
     private final @Nullable Bitmap mAccountImage;

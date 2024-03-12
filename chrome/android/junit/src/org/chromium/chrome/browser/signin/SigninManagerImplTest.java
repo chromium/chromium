@@ -69,7 +69,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -89,7 +88,6 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -102,14 +100,11 @@ public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
     private static final AccountInfo ACCOUNT_INFO =
-            new AccountInfo(
-                    new CoreAccountId(FakeAccountManagerFacade.toGaiaId("user@domain.com")),
-                    "user@domain.com",
-                    FakeAccountManagerFacade.toGaiaId("user@domain.com"),
-                    "full name",
-                    "given name",
-                    null,
-                    new AccountCapabilities(new HashMap<>()));
+            new AccountInfo.Builder(
+                            "user@domain.com", FakeAccountManagerFacade.toGaiaId("user@domain.com"))
+                    .fullName("full name")
+                    .givenName("given name")
+                    .build();
     // TODO(crbug/1491005): Add an addAccount overload to FakeAccountManagerFacade that takes a
     // CoreAccountInfo as parameter and remove this field.
     private static final Account ACCOUNT_FROM_INFO =
