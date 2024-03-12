@@ -98,8 +98,6 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   }
 
   void SetUp() override {
-    skip_splash_wait_override_ =
-        KioskLaunchController::SkipSplashScreenWaitForTesting();
     login_manager_.set_session_restore_enabled();
     login_manager_.SetDefaultLoginSwitches(
         {std::make_pair("test_switch_1", ""),
@@ -234,7 +232,8 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   FakeCWS fake_cws_;
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
+  base::AutoReset<bool> skip_splash_wait_override_ =
+      KioskLaunchController::SkipSplashScreenWaitForTesting();
 
   LoginManagerMixin login_manager_{&mixin_host_, {}};
 };

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_WEB_KIOSK_BASE_TEST_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_WEB_KIOSK_BASE_TEST_H_
 
+#include <optional>
+
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
@@ -56,11 +58,11 @@ class WebKioskBaseTest : public OobeBaseTest {
 
   std::unique_ptr<ScopedDeviceSettings> settings_;
 
-  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
+  base::AutoReset<bool> skip_splash_wait_override_ =
+      KioskLaunchController::SkipSplashScreenWaitForTesting();
 
-  std::unique_ptr<base::AutoReset<std::optional<bool>>>
-      can_configure_network_override_ =
-          NetworkUiController::SetCanConfigureNetworkForTesting(true);
+  base::AutoReset<std::optional<bool>> can_configure_network_override_ =
+      NetworkUiController::SetCanConfigureNetworkForTesting(true);
 };
 
 }  // namespace ash

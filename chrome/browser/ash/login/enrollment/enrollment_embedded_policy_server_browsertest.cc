@@ -1376,8 +1376,6 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
   // EnrollmentEmbeddedPolicyServerBase:
   void SetUp() override {
     needs_background_networking_ = true;
-    skip_splash_wait_override_ =
-        KioskLaunchController::SkipSplashScreenWaitForTesting();
     EnrollmentEmbeddedPolicyServerBase::SetUp();
   }
 
@@ -1389,7 +1387,8 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
 
  private:
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
-  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
+  base::AutoReset<bool> skip_splash_wait_override_ =
+      KioskLaunchController::SkipSplashScreenWaitForTesting();
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,

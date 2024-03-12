@@ -119,10 +119,10 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
 
-  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
-  SkipSplashScreenWaitForTesting();
-  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
-  BlockAppLaunchForTesting();
+  // Scoped overrides used during testing. The original behavior is restored
+  // when the returned objects are destroyed.
+  [[nodiscard]] static base::AutoReset<bool> SkipSplashScreenWaitForTesting();
+  [[nodiscard]] static base::AutoReset<bool> BlockAppLaunchForTesting();
   [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailureForTesting();
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);

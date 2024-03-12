@@ -95,10 +95,11 @@ class NetworkUiController
     return network_ui_state_;
   }
 
-  static std::unique_ptr<base::AutoReset<std::optional<bool>>>
+  // Scoped overrides used during testing. The original behavior is restored
+  // when the returned objects are destroyed.
+  [[nodiscard]] static base::AutoReset<std::optional<bool>>
   SetCanConfigureNetworkForTesting(bool can_configure_network);
-
-  static std::unique_ptr<base::AutoReset<base::TimeDelta>>
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
       SetNetworkWaitTimeoutForTesting(base::TimeDelta);
 
  private:

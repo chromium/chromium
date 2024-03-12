@@ -422,8 +422,6 @@ class LoginLogoutReporterKioskBrowserTest
     : public MixinBasedInProcessBrowserTest {
  protected:
   void SetUp() override {
-    skip_splash_wait_override_ =
-        KioskLaunchController::SkipSplashScreenWaitForTesting();
     login_manager_.set_session_restore_enabled();
 
     MixinBasedInProcessBrowserTest::SetUp();
@@ -457,7 +455,8 @@ class LoginLogoutReporterKioskBrowserTest
  private:
   FakeCWS fake_cws_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
+  base::AutoReset<bool> skip_splash_wait_override_ =
+      KioskLaunchController::SkipSplashScreenWaitForTesting();
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
 

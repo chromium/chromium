@@ -133,11 +133,6 @@ void KioskBaseTest::SetUp() {
   SetTestApp(KioskAppsMixin::kKioskAppId);
   needs_background_networking_ = true;
   ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-  skip_splash_wait_override_ =
-      KioskLaunchController::SkipSplashScreenWaitForTesting();
-  network_wait_time_override_ =
-      NetworkUiController::SetNetworkWaitTimeoutForTesting(
-          base::Milliseconds(1));
 
   OobeBaseTest::SetUp();
 }

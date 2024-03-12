@@ -309,9 +309,6 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    skip_splash_wait_override_ =
-        KioskLaunchController::SkipSplashScreenWaitForTesting();
-
     AddKioskAppToDevicePolicy();
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -368,8 +365,9 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
 
-  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
-  std::unique_ptr<base::AutoReset<bool>> block_app_launch_override_;
+  base::AutoReset<bool> skip_splash_wait_override_ =
+      KioskLaunchController::SkipSplashScreenWaitForTesting();
+  std::optional<base::AutoReset<bool>> block_app_launch_override_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

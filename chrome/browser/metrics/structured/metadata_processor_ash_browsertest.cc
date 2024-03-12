@@ -392,7 +392,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
           kAppInstallUrl,
           policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP));
   // Not strictly necessary, but makes kiosk tests run much faster.
-  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_ =
+  base::AutoReset<bool> skip_splash_wait_override_ =
       KioskLaunchController::SkipSplashScreenWaitForTesting();
   std::unique_ptr<ScopedDeviceSettings> settings_;
 };

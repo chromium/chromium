@@ -163,7 +163,7 @@ class WebKioskTest : public WebKioskBaseTest {
   }
 
  private:
-  std::unique_ptr<base::AutoReset<bool>> block_app_launch_override_;
+  std::optional<base::AutoReset<bool>> block_app_launch_override_;
 };
 
 // Runs the kiosk app when the network is always present.

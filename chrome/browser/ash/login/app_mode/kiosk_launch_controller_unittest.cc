@@ -348,8 +348,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       keyboard_controller_client_;
   std::unique_ptr<KioskController> kiosk_controller_;
 
-  std::unique_ptr<base::AutoReset<std::optional<bool>>>
-      can_configure_network_for_testing_;
+  base::AutoReset<std::optional<bool>> can_configure_network_for_testing_ =
+      NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
@@ -901,9 +901,6 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
     keyboard_controller_client_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
-
-    can_configure_network_for_testing_ =
-        NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
     controller_ = std::make_unique<KioskLaunchController>(

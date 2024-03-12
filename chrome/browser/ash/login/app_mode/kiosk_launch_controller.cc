@@ -823,17 +823,13 @@ NetworkUiController* KioskLaunchController::GetNetworkUiControllerForTesting() {
 }
 
 // static
-std::unique_ptr<base::AutoReset<bool>>
-KioskLaunchController::SkipSplashScreenWaitForTesting() {
-  return std::make_unique<base::AutoReset<bool>>(
-      &g_skip_splash_wait_for_testing, true);
+base::AutoReset<bool> KioskLaunchController::SkipSplashScreenWaitForTesting() {
+  return base::AutoReset<bool>(&g_skip_splash_wait_for_testing, true);
 }
 
 // static
-std::unique_ptr<base::AutoReset<bool>>
-KioskLaunchController::BlockAppLaunchForTesting() {
-  return std::make_unique<base::AutoReset<bool>>(
-      &g_block_app_launch_for_testing, true);
+base::AutoReset<bool> KioskLaunchController::BlockAppLaunchForTesting() {
+  return base::AutoReset<bool>(&g_block_app_launch_for_testing, true);
 }
 
 // static
