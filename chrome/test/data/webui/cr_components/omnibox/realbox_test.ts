@@ -12,6 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -153,8 +154,10 @@ suite('NewTabPageRealboxTest', () => {
     assertStyle(iconElement.$.icon, 'background-image', 'none');
   }
 
-  function areMatchesShowing(): boolean {
+  async function areMatchesShowing(): Promise<boolean> {
     // Force a synchronous render.
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(realbox);
     [...realbox.$.matches.shadowRoot!.querySelectorAll('dom-repeat')].forEach(
         template => template.render());
     return window.getComputedStyle(realbox.$.matches).display !== 'none';
@@ -164,7 +167,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(0, testProxy.handler.getCallCount('onFocusChanged'));
     assertFalse(realbox.hidden);
     assertNotEquals(realbox, getDeepActiveElement());
-    assertFalse(areMatchesShowing());
+    assertFalse(await areMatchesShowing());
   });
 
   test('clicking voice search button send voice search event', async () => {
@@ -252,7 +255,6 @@ suite('NewTabPageRealboxTest', () => {
   //============================================================================
 
   // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
-  /*
   test('left-clicking empty input queries autocomplete', async () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
@@ -273,8 +275,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -283,7 +284,9 @@ suite('NewTabPageRealboxTest', () => {
     // Left click does not query autocomplete when matches are showing.
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
+    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
+      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
+    });
 
     // Hide the matches by focusing out.
     matchEls[0]!.dispatchEvent(new FocusEvent('focusout', {
@@ -296,29 +299,29 @@ suite('NewTabPageRealboxTest', () => {
     // Right click does not query autocomplete.
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 1}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-    assertEquals(2, testProxy.handler.getCallCount('onFocusChanged'));
+    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
+      assertEquals(2, testProxy.handler.getCallCount('onFocusChanged'));
+    });
 
     // Left click does not query autocomplete when input is non-empty.
     realbox.$.input.value = '   ';
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
-  */
 
   // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
-  /*
   test('focusing the input does not query autocomplete', async () => {
     assertEquals(0, testProxy.handler.getCallCount('onFocusChanged'));
     realbox.$.input.value = '';
     realbox.$.input.focus();
     assertEquals(realbox.$.input, getDeepActiveElement());
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
+    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
+      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
+    });
   });
-  */
 
   // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
-  /*
     test('tabbing into empty input queries autocomplete', async () => {
       // Query zero-prefix matches.
       realbox.$.input.value = '';
@@ -338,16 +341,18 @@ suite('NewTabPageRealboxTest', () => {
         matches,
         suggestionGroupsMap: {},
       });
-      await testProxy.callbackRouterRemote.$.flushForTesting();
-      assertTrue(areMatchesShowing());
+      assertTrue(await areMatchesShowing());
 
       const matchEls =
           realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
       assertEquals(2, matchEls.length);
 
       // Tabbing into input does not query autocomplete when matches are
-    showing. realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', { bubbles:
-    true, cancelable: true, key: 'Tab',
+      // showing.
+      realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
+        bubbles: true,
+        cancelable: true,
+        key: 'Tab',
       }));
       assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
 
@@ -382,7 +387,6 @@ suite('NewTabPageRealboxTest', () => {
       }));
       assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
     });
-  */
 
   test('arrow up/down keys in empty input query autocomplete', async () => {
     // Query zero-prefix matches.
@@ -403,8 +407,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -458,8 +461,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -635,8 +637,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     assertEquals('listbox', realbox.$.matches.getAttribute('role'));
     const matchEls =
@@ -674,8 +675,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -742,8 +742,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     assertEquals('hello', realbox.$.input.value);
     const start = realbox.$.input.selectionStart!;
@@ -761,8 +760,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertFalse(areMatchesShowing());
+    assertFalse(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -779,8 +777,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     let matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -794,8 +791,7 @@ suite('NewTabPageRealboxTest', () => {
       matches: [],
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertFalse(areMatchesShowing());
+    assertFalse(await areMatchesShowing());
 
     matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -809,8 +805,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -846,8 +841,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     assertEquals('hello world', realbox.$.input.value);
     const start = realbox.$.input.selectionStart!;
@@ -879,8 +873,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     assertEquals('helloworld.com', realbox.$.input.value);
     const start = realbox.$.input.selectionStart!;
@@ -933,8 +926,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -979,8 +971,7 @@ suite('NewTabPageRealboxTest', () => {
           matches,
           suggestionGroupsMap: {},
         });
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertTrue(areMatchesShowing());
+        assertTrue(await areMatchesShowing());
 
         let matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1009,7 +1000,7 @@ suite('NewTabPageRealboxTest', () => {
         }));
 
         // Matches are hidden.
-        assertFalse(areMatchesShowing());
+        assertFalse(await areMatchesShowing());
 
         // First match is still selected.
         matchEls =
@@ -1056,8 +1047,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1093,8 +1083,7 @@ suite('NewTabPageRealboxTest', () => {
           matches,
           suggestionGroupsMap: {},
         });
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertTrue(areMatchesShowing());
+        assertTrue(await areMatchesShowing());
 
         let matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1123,7 +1112,7 @@ suite('NewTabPageRealboxTest', () => {
         }));
 
         // Matches are hidden.
-        assertFalse(areMatchesShowing());
+        assertFalse(await areMatchesShowing());
 
         // Matches are cleared.
         matchEls =
@@ -1167,8 +1156,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1201,8 +1189,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     // First match is selected.
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -1235,8 +1222,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1280,8 +1266,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1315,8 +1300,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1382,8 +1366,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     let matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1408,8 +1391,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1453,8 +1435,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1479,8 +1460,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     let matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1521,7 +1501,7 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(escapeEvent.defaultPrevented);
 
     // Matches are hidden.
-    assertFalse(areMatchesShowing());
+    assertFalse(await areMatchesShowing());
 
     // Matches are cleared.
     matchEls =
@@ -1537,8 +1517,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1555,7 +1534,7 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(escapeEvent.defaultPrevented);
 
     // Matches are hidden.
-    assertFalse(areMatchesShowing());
+    assertFalse(await areMatchesShowing());
 
     // Matches are cleared.
     matchEls =
@@ -1564,105 +1543,106 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
-  /*
-    test('arrow up/down moves selection / focus', async () => {
-      realbox.$.input.focus();
-      realbox.$.input.value = 'hello';
-      realbox.$.input.dispatchEvent(new InputEvent('input'));
-      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
-
-      const matches = [createSearchMatch(), createUrlMatch()];
-      testProxy.callbackRouterRemote.autocompleteResultChanged({
-        input: mojoString16(realbox.$.input.value.trimStart()),
-        matches,
-        suggestionGroupsMap: {},
-      });
-      await testProxy.callbackRouterRemote.$.flushForTesting();
-      assertTrue(areMatchesShowing());
-
-      const matchEls =
-          realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
-      assertEquals(2, matchEls.length);
-
-      let arrowDownEvent = new KeyboardEvent('keydown', {
-        bubbles: true,
-        cancelable: true,
-        composed: true,  // So it propagates across shadow DOM boundary.
-        key: 'ArrowDown',
-      });
-      realbox.$.input.dispatchEvent(arrowDownEvent);
-      assertTrue(arrowDownEvent.defaultPrevented);
-
-      // First match is selected but does not get focus while focus is in the
-      // input.
-      assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-      assertEquals('hello world', realbox.$.input.value);
-      assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
-
-      // If text is being composed with an IME composition selection is
-    prevented. arrowDownEvent = new KeyboardEvent('keydown', { bubbles: true,
-        cancelable: true,
-        composed: true,  // So it propagates across shadow DOM boundary.
-        isComposing: true,
-        key: 'ArrowDown',
-      });
-      realbox.$.input.dispatchEvent(arrowDownEvent);
-      assertFalse(arrowDownEvent.defaultPrevented);
-
-      // First match remains selected and does not get focus while focus is in
-    the
-      // input.
-      assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-      assertEquals('hello world', realbox.$.input.value);
-      assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
-
-      arrowDownEvent = new KeyboardEvent('keydown', {
-        bubbles: true,
-        cancelable: true,
-        composed: true,  // So it propagates across shadow DOM boundary.
-        key: 'ArrowDown',
-      });
-      realbox.$.input.dispatchEvent(arrowDownEvent);
-      assertTrue(arrowDownEvent.defaultPrevented);
-
-      // Second match gets selected but does not get focus while focus is in the
-      // input.
-      assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-      assertEquals('https://helloworld.com', realbox.$.input.value);
-      assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
-
-      // Move the focus to the second match.
-      matchEls[1]!.focus();
-      matchEls[1]!.dispatchEvent(new Event('focusin', {
-        bubbles: true,
-        cancelable: true,
-        composed: true,  // So it propagates across shadow DOM boundary.
-      }));
-
-      // Second match is selected and has focus.
-      assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-      assertEquals('https://helloworld.com', realbox.$.input.value);
-      assertEquals(matchEls[1], realbox.$.matches.shadowRoot!.activeElement);
-
-      const arrowUpEvent = new KeyboardEvent('keydown', {
-        bubbles: true,
-        cancelable: true,
-        composed: true,  // So it propagates across shadow DOM boundary.
-        key: 'ArrowUp',
-      });
-      matchEls[1]!.dispatchEvent(arrowUpEvent);
-      assertTrue(arrowUpEvent.defaultPrevented);
-
-      // First match gets selected and gets focus while focus is in the matches.
-      assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-      assertEquals('hello world', realbox.$.input.value);
-      assertEquals(matchEls[0], realbox.$.matches.shadowRoot!.activeElement);
-
-      // Changing match selection doesn't result in another onFocusChanged call
-      // because focus is for the whole realbox (including input container).
+  test('arrow up/down moves selection / focus', async () => {
+    realbox.$.input.focus();
+    realbox.$.input.value = 'hello';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
       assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
     });
-  */
+
+    const matches = [createSearchMatch(), createUrlMatch()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+    assertEquals(2, matchEls.length);
+
+    let arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First match is selected but does not get focus while focus is in the
+    // input.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world', realbox.$.input.value);
+    assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
+
+    // If text is being composed with an IME composition selection is prevented.
+    arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      isComposing: true,
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertFalse(arrowDownEvent.defaultPrevented);
+
+    // First match remains selected and does not get focus while focus is in the
+    // input.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world', realbox.$.input.value);
+    assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
+
+    arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // Second match gets selected but does not get focus while focus is in the
+    // input.
+    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('https://helloworld.com', realbox.$.input.value);
+    assertEquals(realbox.$.input, realbox.shadowRoot!.activeElement);
+
+    // Move the focus to the second match.
+    matchEls[1]!.focus();
+    matchEls[1]!.dispatchEvent(new Event('focusin', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+    }));
+
+    // Second match is selected and has focus.
+    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('https://helloworld.com', realbox.$.input.value);
+    assertEquals(matchEls[1], realbox.$.matches.shadowRoot!.activeElement);
+
+    const arrowUpEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowUp',
+    });
+    matchEls[1]!.dispatchEvent(arrowUpEvent);
+    assertTrue(arrowUpEvent.defaultPrevented);
+
+    // First match gets selected and gets focus while focus is in the matches.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world', realbox.$.input.value);
+    assertEquals(matchEls[0], realbox.$.matches.shadowRoot!.activeElement);
+
+    // Changing match selection doesn't result in another onFocusChanged call
+    // because focus is for the whole realbox (including input container).
+    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
+      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
+    });
+  });
 
   test('focus indicator', async () => {
     realbox.$.input.focus();
@@ -1684,8 +1664,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1742,8 +1721,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     // The responsiveness metrics are recorded once the results are painted.
     await testMetricsReporterProxy.whenCalled('umaReportTime');
@@ -1764,8 +1742,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     // Only one responsiveness metric is recorded when characters are deleted.
     await testMetricsReporterProxy.whenCalled('umaReportTime');
@@ -1797,8 +1774,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     // The responsiveness metrics are recorded when the default match has
     // inline autocompletion.
@@ -1826,8 +1802,7 @@ suite('NewTabPageRealboxTest', () => {
           matches,
           suggestionGroupsMap: {},
         });
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertTrue(areMatchesShowing());
+        assertTrue(await areMatchesShowing());
 
         const matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -1904,8 +1879,7 @@ suite('NewTabPageRealboxTest', () => {
           matches,
           suggestionGroupsMap: {},
         });
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertTrue(areMatchesShowing());
+        assertTrue(await areMatchesShowing());
 
         // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
         // assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
@@ -1939,8 +1913,7 @@ suite('NewTabPageRealboxTest', () => {
           matches,
           suggestionGroupsMap: {},
         });
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertTrue(areMatchesShowing());
+        assertTrue(await areMatchesShowing());
 
         const matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -2053,8 +2026,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap,
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     // The first match is showing. The second match is initially hidden.
     let matchEls = realbox.$.matches.selectableMatchElements;
@@ -2146,8 +2118,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap,
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertFalse(areMatchesShowing());
+    assertFalse(await areMatchesShowing());
 
     // Verify updating the suggestion group to be a primary group makes the
     // realbox dropdown show.
@@ -2157,8 +2128,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap,
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
   });
 
   test(
@@ -2184,8 +2154,7 @@ suite('NewTabPageRealboxTest', () => {
           matches,
           suggestionGroupsMap,
         });
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertTrue(areMatchesShowing());
+        assertTrue(await areMatchesShowing());
 
         const matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -2234,8 +2203,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -2283,8 +2251,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -2328,8 +2295,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEl = $$(realbox.$.matches, 'cr-realbox-match')!;
     verifyMatch(matches[0]!, matchEl);
@@ -2383,8 +2349,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
@@ -2440,8 +2405,7 @@ suite('NewTabPageRealboxTest', () => {
       matches,
       suggestionGroupsMap: {},
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     const arrowDownEvent = new KeyboardEvent('keydown', {
       bubbles: true,
