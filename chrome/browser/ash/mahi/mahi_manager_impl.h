@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
 #include "ui/gfx/image/image_skia.h"
@@ -32,7 +33,8 @@ class MahiManagerImpl : public chromeos::MahiManager {
   void GetSummary(MahiSummaryCallback callback) override;
   void GetOutlines(MahiOutlinesCallback callback) override;
   void GoToOutlineContent(int outline_id) override;
-  void AnswerQuestion(const std::string& question,
+  void AnswerQuestion(const std::u16string& question,
+                      bool current_panel_content,
                       MahiAnswerQuestionCallback callback) override;
   void GetSuggestedQuestion(MahiGetSuggestedQuestionCallback callback) override;
   void SetCurrentFocusedPageInfo(crosapi::mojom::MahiPageInfoPtr info) override;
@@ -47,8 +49,17 @@ class MahiManagerImpl : public chromeos::MahiManager {
  private:
   friend class MahiManagerImplTest;
 
-  void OnGetPageContent(MahiSummaryCallback callback,
-                        crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
+  // Initialize required provider if it is not initialized yet.
+  void MaybeInitialize();
+
+  void OnGetPageContentForSummary(
+      MahiSummaryCallback callback,
+      crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
+
+  void OnGetPageContentForQA(
+      const std::u16string& question,
+      MahiAnswerQuestionCallback callback,
+      crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
 
   void OnMahiProviderResponse(MahiSummaryCallback summary_callback,
                               base::Value::Dict dict,
@@ -56,6 +67,14 @@ class MahiManagerImpl : public chromeos::MahiManager {
 
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
+
+  crosapi::mojom::MahiPageContentPtr current_panel_content_ =
+      crosapi::mojom::MahiPageContent::New();
+
+  // Pair of question and their corresponding answer for the current panel
+  // content
+  std::vector<std::pair<std::u16string, std::optional<std::u16string>>>
+      current_panel_qa_;
 
   std::unique_ptr<manta::MahiProvider> mahi_provider_;
 

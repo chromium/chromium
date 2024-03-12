@@ -67,10 +67,13 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   // Goes to the content that is associated with `outline_id`.
   virtual void GoToOutlineContent(int outline_id) = 0;
 
-  // Answers the provided `question`.
+  // Answers the provided `question`. `current_panel_content` is a boolean to
+  // determine if the question is regarding the current content displayed on
+  // the panel.
   using MahiAnswerQuestionCallback =
       base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
-  virtual void AnswerQuestion(const std::string& question,
+  virtual void AnswerQuestion(const std::u16string& question,
+                              bool current_panel_content,
                               MahiAnswerQuestionCallback callback) = 0;
 
   // Gets suggested question for the content currently displayed in the panel.

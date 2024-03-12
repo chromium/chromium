@@ -29,7 +29,8 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   void GetSummary(MahiSummaryCallback callback) override;
   void GetOutlines(MahiOutlinesCallback callback) override;
   void GoToOutlineContent(int outline_id) override {}
-  void AnswerQuestion(const std::string& question,
+  void AnswerQuestion(const std::u16string& question,
+                      bool current_panel_content,
                       MahiAnswerQuestionCallback callback) override {}
   void GetSuggestedQuestion(
       MahiGetSuggestedQuestionCallback callback) override {}

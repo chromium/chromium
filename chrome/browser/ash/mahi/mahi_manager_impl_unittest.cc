@@ -8,7 +8,12 @@
 
 #include "ash/test/ash_test_helper.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
+#include "components/manta/features.h"
+#include "components/manta/manta_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -18,6 +23,20 @@
 namespace {
 
 using crosapi::mojom::MahiContextMenuActionType;
+
+class FakeMahiProvider : public manta::MahiProvider {
+ public:
+  FakeMahiProvider(
+      scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
+      signin::IdentityManager* identity_manager)
+      : MahiProvider(std::move(test_url_loader_factory), identity_manager) {}
+
+  void Summarize(const std::string& input,
+                 manta::MantaGenericCallback callback) {
+    std::move(callback).Run(base::Value::Dict(),
+                            {manta::MantaStatusCode::kOk, "Status string ok"});
+  }
+};
 
 }  // namespace
 
@@ -38,9 +57,11 @@ class MahiManagerImplTest : public testing::Test {
     crosapi_environment_.SetUp();
 
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
+    mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
   }
 
   void TearDown() override {
+    mahi_manager_impl_.reset();
     crosapi_environment_.TearDown();
     ash_test_helper_.TearDown();
   }
@@ -53,6 +74,13 @@ class MahiManagerImplTest : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<FakeMahiProvider> CreateMahiProvider() {
+    return std::make_unique<FakeMahiProvider>(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_),
+        identity_test_env_.identity_manager());
+  }
+
   // This instance is needed for setting up `ash_test_helper_`.
   // See //docs/threading_and_tasks_testing.md.
   content::BrowserTaskEnvironment task_environment_;
@@ -62,6 +90,9 @@ class MahiManagerImplTest : public testing::Test {
   // Need this to set up `Shell` and display.
   AshTestHelper ash_test_helper_;
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  signin::IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_F(MahiManagerImplTest, OpenPanel) {

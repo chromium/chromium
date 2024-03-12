@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "ash/system/mahi/mahi_panel_widget.h"
@@ -53,6 +54,14 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
   return nullptr;
 }
 
+ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
+  auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
+                                        ->crosapi_ash()
+                                        ->mahi_browser_delegate_ash();
+  CHECK(mahi_browser_delegate_ash);
+  return mahi_browser_delegate_ash;
+}
+
 }  // namespace
 
 namespace ash {
@@ -61,6 +70,7 @@ MahiManagerImpl::MahiManagerImpl() = default;
 
 MahiManagerImpl::~MahiManagerImpl() {
   mahi_panel_widget_.reset();
+  mahi_provider_.reset();
 }
 
 void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
@@ -77,18 +87,10 @@ gfx::ImageSkia MahiManagerImpl::GetContentIcon() {
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
-  auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
-                                        ->crosapi_ash()
-                                        ->mahi_browser_delegate_ash();
-  CHECK(mahi_browser_delegate_ash);
-
-  if (!mahi_provider_) {
-    mahi_provider_ = CreateProvider();
-  }
-
-  mahi_browser_delegate_ash->GetContentFromClient(
+  MaybeInitialize();
+  GetMahiBrowserDelgateAsh()->GetContentFromClient(
       current_page_info_->client_id, current_page_info_->page_id,
-      base::BindOnce(&MahiManagerImpl::OnGetPageContent,
+      base::BindOnce(&MahiManagerImpl::OnGetPageContentForSummary,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -103,9 +105,25 @@ void MahiManagerImpl::GetOutlines(MahiOutlinesCallback callback) {
 
 void MahiManagerImpl::GoToOutlineContent(int outline_id) {}
 
-void MahiManagerImpl::AnswerQuestion(const std::string& question,
+void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
+                                     bool current_panel_content,
                                      MahiAnswerQuestionCallback callback) {
-  std::move(callback).Run(u"test answer", MahiResponseStatus::kSuccess);
+  MaybeInitialize();
+
+  const std::u16string test_answer(u"test answer");
+
+  if (current_panel_content) {
+    std::move(callback).Run(test_answer, MahiResponseStatus::kSuccess);
+    current_panel_qa_.emplace_back(question, test_answer);
+    return;
+  }
+
+  current_panel_qa_.clear();
+  GetMahiBrowserDelgateAsh()->GetContentFromClient(
+      current_page_info_->client_id, current_page_info_->page_id,
+      base::BindOnce(&MahiManagerImpl::OnGetPageContentForQA,
+                     weak_ptr_factory_.GetWeakPtr(), question,
+                     std::move(callback)));
 }
 
 void MahiManagerImpl::GetSuggestedQuestion(
@@ -145,7 +163,14 @@ void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   }
 }
 
-void MahiManagerImpl::OnGetPageContent(
+void MahiManagerImpl::MaybeInitialize() {
+  if (!mahi_provider_) {
+    mahi_provider_ = CreateProvider();
+  }
+  CHECK(mahi_provider_);
+}
+
+void MahiManagerImpl::OnGetPageContentForSummary(
     MahiSummaryCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr) {
@@ -153,8 +178,12 @@ void MahiManagerImpl::OnGetPageContent(
                             MahiResponseStatus::kContentExtractionError);
     return;
   }
+
+  current_panel_content_ = std::move(mahi_content_ptr);
+
+  CHECK(mahi_provider_);
   mahi_provider_->Summarize(
-      base::UTF16ToUTF8(mahi_content_ptr->page_content),
+      base::UTF16ToUTF8(current_panel_content_->page_content),
       base::BindOnce(&MahiManagerImpl::OnMahiProviderResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -180,6 +209,23 @@ void MahiManagerImpl::OnMahiProviderResponse(
     std::move(summary_callback)
         .Run(u"Cannot find outputdata", latest_response_status_);
   }
+}
+
+void MahiManagerImpl::OnGetPageContentForQA(
+    const std::u16string& question,
+    MahiAnswerQuestionCallback callback,
+    crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
+  const std::u16string test_answer(u"test answer");
+  if (!mahi_content_ptr) {
+    std::move(callback).Run(test_answer,
+                            MahiResponseStatus::kContentExtractionError);
+    return;
+  }
+
+  current_panel_content_ = std::move(mahi_content_ptr);
+
+  std::move(callback).Run(test_answer, MahiResponseStatus::kSuccess);
+  current_panel_qa_.emplace_back(question, test_answer);
 }
 
 void MahiManagerImpl::OpenFeedbackDialog() {
