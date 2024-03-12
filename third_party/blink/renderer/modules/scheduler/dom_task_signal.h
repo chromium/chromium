@@ -35,7 +35,7 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
   DOMTaskSignal(ScriptState*,
                 const AtomicString& priority,
                 DOMTaskSignal* source_task_signal,
-                HeapVector<Member<AbortSignal>>& source_abort_signals);
+                const HeapVector<Member<AbortSignal>>& source_abort_signals);
   ~DOMTaskSignal() override;
 
   // task_signal.idl

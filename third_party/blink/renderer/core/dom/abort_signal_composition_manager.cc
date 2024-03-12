@@ -38,7 +38,7 @@ void AbortSignalCompositionManager::Settle() {
 DependentSignalCompositionManager::DependentSignalCompositionManager(
     AbortSignal& managed_signal,
     AbortSignalCompositionType type,
-    HeapVector<Member<AbortSignal>>& source_signals)
+    const HeapVector<Member<AbortSignal>>& source_signals)
     : AbortSignalCompositionManager(managed_signal, type) {
   DCHECK(GetSignal().IsCompositeSignal());
 

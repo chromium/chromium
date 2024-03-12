@@ -40,9 +40,8 @@ class RepeatingCallbackAlgorithm final : public DOMTaskSignal::Algorithm {
 DOMTaskSignal* DOMTaskSignal::CreateFixedPriorityTaskSignal(
     ScriptState* script_state,
     const AtomicString& priority) {
-  HeapVector<Member<AbortSignal>> source_abort_signals;
   return MakeGarbageCollected<DOMTaskSignal>(script_state, priority, nullptr,
-                                             source_abort_signals);
+                                             HeapVector<Member<AbortSignal>>());
 }
 
 DOMTaskSignal::DOMTaskSignal(ExecutionContext* context,
@@ -59,7 +58,7 @@ DOMTaskSignal::DOMTaskSignal(
     ScriptState* script_state,
     const AtomicString& priority,
     DOMTaskSignal* priority_source_signal,
-    HeapVector<Member<AbortSignal>>& abort_source_signals)
+    const HeapVector<Member<AbortSignal>>& abort_source_signals)
     : AbortSignal(script_state, abort_source_signals), priority_(priority) {
   HeapVector<Member<AbortSignal>> signals;
   if (priority_source_signal) {
@@ -91,7 +90,6 @@ AtomicString DOMTaskSignal::priority() {
 
 DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
     base::RepeatingClosure algorithm) {
-  CHECK_NE(GetSignalType(), SignalType::kInternal);
   if (priority_composition_manager_->IsSettled()) {
     return nullptr;
   }
@@ -106,7 +104,6 @@ DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
 
 void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
                                          ExceptionState& exception_state) {
-  CHECK_NE(GetSignalType(), SignalType::kInternal);
   if (is_priority_changing_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,

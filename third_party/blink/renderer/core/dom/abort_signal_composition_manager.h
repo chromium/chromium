@@ -115,7 +115,7 @@ class CORE_EXPORT DependentSignalCompositionManager
   DependentSignalCompositionManager(
       AbortSignal&,
       AbortSignalCompositionType,
-      HeapVector<Member<AbortSignal>>& source_signals);
+      const HeapVector<Member<AbortSignal>>& source_signals);
   ~DependentSignalCompositionManager() override;
   DependentSignalCompositionManager(const DependentSignalCompositionManager&) =
       delete;

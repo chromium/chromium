@@ -22,7 +22,6 @@ class AbortSignalCompositionManager;
 class AbortSignalRegistry;
 class ExceptionState;
 class ExecutionContext;
-class FollowAlgorithm;
 class ScriptState;
 
 // Implementation of https://dom.spec.whatwg.org/#interface-AbortSignal
@@ -37,14 +36,8 @@ class CORE_EXPORT AbortSignal : public EventTarget {
     kAborted,
     // Created by AbortSignal.timeout().
     kTimeout,
-    // Created by AbortSignal.any().
+    // Created by AbortSignal.any() or used internally to combine signals.
     kComposite,
-    // An internal signal which either is directly aborted or uses the internal
-    // `Follow` algorithm.
-    //
-    // TODO(crbug.com/1323391): Specs that use the internal `Follow` algorithm
-    // should be modified to create follow-immutable composite signals.
-    kInternal,
   };
 
   // The base class for "abort algorithm" defined at
@@ -81,8 +74,9 @@ class CORE_EXPORT AbortSignal : public EventTarget {
     Member<AbortSignal> signal_;
   };
 
-  // Constructs a SignalType::kInternal signal. This is only for non web-exposed
-  // signals.
+  // Constructs a composite signal that is dependent on no other signals. This
+  // is used to create non-abortable signal, e.g. fixed priority task signals
+  // and default signals used in fetch.
   explicit AbortSignal(ExecutionContext*);
 
   // Constructs a new signal with the given `SignalType`.
@@ -90,7 +84,8 @@ class CORE_EXPORT AbortSignal : public EventTarget {
 
   // Constructs a composite signal. The signal will be aborted if any of
   // `source_signals` are aborted or become aborted.
-  AbortSignal(ScriptState*, HeapVector<Member<AbortSignal>>& source_signals);
+  AbortSignal(ScriptState*,
+              const HeapVector<Member<AbortSignal>>& source_signals);
 
   ~AbortSignal() override;
 
@@ -133,18 +128,12 @@ class CORE_EXPORT AbortSignal : public EventTarget {
 
     friend class AbortController;
     friend class AbortSignal;
-    friend class FollowAlgorithm;
   };
   // The "To signal abort" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-add. Run all algorithms that were
   // added by AddAlgorithm(), in order of addition, then fire an "abort"
   // event. Does nothing if called more than once.
   void SignalAbort(ScriptState*, ScriptValue reason, SignalAbortPassKey);
-
-  // The "follow" algorithm from the standard:
-  // https://dom.spec.whatwg.org/#abortsignal-follow
-  // |this| is the followingSignal described in the standard.
-  void Follow(ScriptState*, AbortSignal* parent);
 
   virtual bool IsTaskSignal() const { return false; }
 
@@ -183,9 +172,8 @@ class CORE_EXPORT AbortSignal : public EventTarget {
   virtual bool IsSettledFor(AbortSignalCompositionType) const;
 
  private:
-  // Common constructor initialization separated out to make mutually exclusive
-  // constructors more readable.
-  void InitializeCommon(ExecutionContext*, SignalType);
+  void InitializeCompositeSignal(
+      const HeapVector<Member<AbortSignal>>& source_signals);
 
   void AbortTimeoutFired(ScriptState*);
 
@@ -196,12 +184,6 @@ class CORE_EXPORT AbortSignal : public EventTarget {
   // Invokes the given callback on the associated `AbortSignalRegistry`. Must
   // only be called for composite signals.
   void InvokeRegistryCallback(base::FunctionRef<void(AbortSignalRegistry&)>);
-
-  // This ensures abort is propagated to any "following" signals.
-  //
-  // TODO(crbug.com/1323391): Remove this after AbortSignal.any() is
-  // implemented.
-  HeapVector<Member<AlgorithmHandle>> dependent_signal_algorithms_;
 
   // https://dom.spec.whatwg.org/#abortsignal-abort-reason
   // There is one difference from the spec. The value is empty instead of
