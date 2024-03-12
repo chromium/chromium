@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -52,6 +53,7 @@ import java.util.concurrent.TimeoutException;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_ALL_IPH})
 @EnableFeatures(ChromeFeatureList.CCT_MINIMIZED)
+@Batch(Batch.PER_CLASS)
 public class IncognitoStorageLeakageTest {
     private static final String SITE_DATA_HTML_PATH =
             "/content/test/data/browsing_data/site_data.html";

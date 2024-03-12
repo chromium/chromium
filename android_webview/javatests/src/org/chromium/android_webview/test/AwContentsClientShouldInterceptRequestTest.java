@@ -28,6 +28,7 @@ import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHel
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -50,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 /** Tests for the WebViewClient.shouldInterceptRequest() method. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@Batch(Batch.PER_CLASS)
 public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
