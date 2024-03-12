@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
@@ -40,6 +41,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -535,6 +538,13 @@ class ManagementStateProvider : public StateProvider,
                 &profile_.get())) {
     BrowserList::AddObserver(this);
     profile_observation_.Observe(&GetProfileAttributesStorage());
+
+    pref_change_registrar_.Init(profile_->GetPrefs());
+    pref_change_registrar_.Add(
+        prefs::kCustomProfileLabel,
+        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            ElementToUpdate::kText));
   }
 
   ~ManagementStateProvider() override { BrowserList::RemoveObserver(this); }
@@ -599,6 +609,7 @@ class ManagementStateProvider : public StateProvider,
   bool user_accepted_account_management_ = false;
   bool enterprise_text_hide_scheduled_ = false;
   bool temporarily_showing_ = false;
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -1041,16 +1052,20 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
                                               guest_window_count);
       break;
     }
-    case ButtonState::kManagement:
-      if (IsManagementWork(profile_)) {
+    case ButtonState::kManagement: {
+      const std::string custom_managed_label =
+          profile_->GetPrefs()->GetString(prefs::kCustomProfileLabel);
+      if (!custom_managed_label.empty()) {
+        text = base::UTF8ToUTF16(custom_managed_label);
+      } else if (IsManagementWork(profile_)) {
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK);
-        color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       } else {
-        // Shcool.
+        // School.
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL);
-        color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       }
+      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       break;
+    }
     case ButtonState::kNormal:
       break;
   }

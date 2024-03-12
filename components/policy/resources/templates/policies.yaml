@@ -1236,6 +1236,7 @@ policies:
   1235: PrivacySandboxIpProtectionEnabled
   1236: OrcaEnabled
   1237: EnterpriseLogoUrl
+  1238: CustomProfileLabel
 atomic_groups:
   1: Homepage
   2: RemoteAccess

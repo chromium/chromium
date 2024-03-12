@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.custom_label",
+      "default_value": "",
+      "values_to_test": [
+        "Custom label",
+        "Another label"
+      ]
+    }
+  }
+]

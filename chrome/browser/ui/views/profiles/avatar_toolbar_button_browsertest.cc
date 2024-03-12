@@ -969,6 +969,23 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkNewBrowserShowsBadgeWithCustomLabel) {
+  browser()->profile()->GetPrefs()->SetString(prefs::kCustomProfileLabel,
+                                              "Custom Label");
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* second_browser_avatar_button =
+      GetAvatarToolbarButton(second_browser);
+  EXPECT_EQ(second_browser_avatar_button->GetText(), u"Custom Label");
+
+  browser()->profile()->GetPrefs()->SetString(prefs::kCustomProfileLabel,
+                                              "Updated Label");
+  EXPECT_EQ(second_browser_avatar_button->GetText(), u"Updated Label");
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkNewBrowserShowsBadge) {
   std::u16string work_label = u"Work";
   chrome::enterprise_util::SetUserAcceptedAccountManagement(

@@ -4040,6 +4040,10 @@ inline constexpr char kToolbarAvatarLabelSettings[] =
 
 // Url to an image representing the enterprise logo.
 inline constexpr char kEnterpriseLogoUrl[] = "enterprise_logo.url";
+
+// String value of the custom label of a managed profile.
+inline constexpr char kCustomProfileLabel[] = "profile.custom_label";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

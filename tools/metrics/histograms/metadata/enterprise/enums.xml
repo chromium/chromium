@@ -2070,6 +2070,7 @@ chromium-metrics-reviews@google.com.
   <int value="1235" label="PrivacySandboxIpProtectionEnabled"/>
   <int value="1236" label="OrcaEnabled"/>
   <int value="1237" label="EnterpriseLogoUrl"/>
+  <int value="1238" label="CustomProfileLabel"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

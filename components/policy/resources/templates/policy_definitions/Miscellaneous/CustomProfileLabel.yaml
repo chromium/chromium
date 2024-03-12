@@ -1,0 +1,20 @@
+caption: Custom profile label
+default: null
+desc: |-
+  This policy controls adds a custom label used to identify a signed in profile. This label will be shown in various locations to help users identify the profile such as next to the toolbar profile icon.
+  This label will also be used as a default name for newly created profiles that can be modified by the users.
+  If this policy is left unset and a label has to be shown, the default label, either "Work" or "School" will be used.
+example_value: Chromium
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+owners:
+- file://components/enterprise/OWNERS
+- ydago@chromium.org
+schema:
+  type: string
+deprecated: false
+tags: []
+type: string

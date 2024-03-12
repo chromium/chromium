@@ -433,6 +433,7 @@ void ProfileImpl::RegisterProfilePrefs(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(prefs::kPdfAnnotationsEnabled, true);
 #endif
+  registry->RegisterStringPref(prefs::kCustomProfileLabel, std::string());
 }
 
 ProfileImpl::ProfileImpl(
