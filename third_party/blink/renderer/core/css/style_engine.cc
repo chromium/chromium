@@ -3556,7 +3556,8 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   DCHECK(GetDocument().documentElement());
   ScriptForbiddenScope forbid_script;
   SkipStyleRecalcScope skip_scope(*this);
-  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(&GetDocument());
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
+      &GetDocument(), /*within_selector_checking=*/false);
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
@@ -3582,7 +3583,8 @@ void StyleEngine::RecalcPositionTryStyleForPseudoElement(
     const StyleRecalcContext& style_recalc_context) {
   ScriptForbiddenScope forbid_script;
   SkipStyleRecalcScope skip_scope(*this);
-  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(&GetDocument());
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
+      &GetDocument(), /*within-selector_checking=*/false);
   SelectorFilterRootScope filter_scope(
       FlatTreeTraversal::ParentElement(*pseudo_element.OriginatingElement()));
   pseudo_element.RecalcStyle(style_recalc_change, style_recalc_context);

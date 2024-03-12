@@ -1693,6 +1693,7 @@ class CORE_EXPORT Document : public ContainerNode,
   CheckPseudoHasCacheScope* GetCheckPseudoHasCacheScope() const {
     return check_pseudo_has_cache_scope_;
   }
+  bool InPseudoHasChecking() const { return in_pseudo_has_checking_; }
 
   CanvasFontCache* GetCanvasFontCache();
 
@@ -2263,6 +2264,13 @@ class CORE_EXPORT Document : public ContainerNode,
     check_pseudo_has_cache_scope_ = check_pseudo_has_cache_scope;
   }
 
+  // See CheckPseudoHasCacheScope constructor.
+  void EnterPseudoHasChecking() {
+    DCHECK(!in_pseudo_has_checking_);
+    in_pseudo_has_checking_ = true;
+  }
+  void LeavePseudoHasChecking() { in_pseudo_has_checking_ = false; }
+
   void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
   void UpdateHoverState(Element*);
 
@@ -2388,8 +2396,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // this currently is only used when NewBaseUrlInheritanceBehavior is enabled.
   KURL fallback_base_url_;
 
-  KURL base_element_url_;   // The URL set by the <base> element.
-  KURL cookie_url_;         // The URL to use for cookie access.
+  KURL base_element_url_;  // The URL set by the <base> element.
+  KURL cookie_url_;        // The URL to use for cookie access.
 
   AtomicString base_target_;
 
@@ -2566,6 +2574,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // references will be traced by a stack walk.
   GC_PLUGIN_IGNORE("https://crbug.com/669058")
   CheckPseudoHasCacheScope* check_pseudo_has_cache_scope_ = nullptr;
+
+  bool in_pseudo_has_checking_ = false;
 
   DocumentClassFlags document_classes_;
 
