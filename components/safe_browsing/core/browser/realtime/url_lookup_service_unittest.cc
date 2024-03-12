@@ -360,23 +360,15 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
 };
 
 TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
-  struct SanitizeUrlCase {
-    const char* url;
-    const char* expected_url;
-  } sanitize_url_cases[] = {
-      {"http://example.com/", "http://example.com/"},
-      {"http://user:pass@example.com/", "http://example.com/"},
-      {"http://%123:bar@example.com/", "http://example.com/"},
-      {"http://example.com/abc#123", "http://example.com/abc#123"}};
-  for (size_t i = 0; i < std::size(sanitize_url_cases); i++) {
-    GURL url(sanitize_url_cases[i].url);
+  GURL url("http://example.com/");
+  for (size_t i = 0; i < 2; i++) {
     auto result = FillRequestProto(url, /*is_sampled_report=*/i % 2 == 0);
+    EXPECT_EQ(url, result->url());
     if (i % 2 == 0) {
       EXPECT_EQ(/* sampled report */ 2, result->report_type());
     } else {
       EXPECT_EQ(/* full report */ 1, result->report_type());
     }
-    EXPECT_EQ(sanitize_url_cases[i].expected_url, result->url());
     EXPECT_EQ(RTLookupRequest::NAVIGATION, result->lookup_type());
     EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
               result->population().user_population());
@@ -390,6 +382,22 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     EXPECT_TRUE(result->population().is_under_advanced_protection());
 #endif
+  }
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestSanitizeURL) {
+  struct SanitizeUrlCase {
+    const char* url;
+    const char* expected_url;
+  } sanitize_url_cases[] = {
+      {"http://example.com/", "http://example.com/"},
+      {"http://user:pass@example.com/", "http://example.com/"},
+      {"http://%123:bar@example.com/", "http://example.com/"},
+      {"http://example.com/abc#123", "http://example.com/abc#123"}};
+  for (auto& sanitize_url_case : sanitize_url_cases) {
+    GURL url(sanitize_url_case.url);
+    auto result = RealTimeUrlLookupServiceBase::SanitizeURL(url);
+    EXPECT_EQ(sanitize_url_case.expected_url, result);
   }
 }
 
@@ -481,6 +489,39 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCacheInCacheManager) {
             cache_response->threat_info(0).verdict_type());
   EXPECT_EQ(RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
             cache_response->threat_info(0).threat_type());
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_PendingRequestForSameUrl) {
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+
+  // Only one network request should be made.
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(1);
+
+  base::MockCallback<RTLookupResponseCallback> response_callback_1;
+  rt_service()->StartLookup(url, response_callback_1.Get(),
+                            base::SequencedTaskRunner::GetCurrentDefault(),
+                            SessionID::InvalidValue());
+
+  base::MockCallback<RTLookupResponseCallback> response_callback_2;
+  rt_service()->StartLookup(url, response_callback_2.Get(),
+                            base::SequencedTaskRunner::GetCurrentDefault(),
+                            SessionID::InvalidValue());
+
+  // Expect both callbacks to be invoked.
+  EXPECT_CALL(response_callback_1, Run(/* is_rt_lookup_successful */ true,
+                                       /* is_cached_response */ false, _));
+  EXPECT_CALL(response_callback_2, Run(/* is_rt_lookup_successful */ true,
+                                       /* is_cached_response */ false, _));
+
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
@@ -1323,6 +1364,30 @@ TEST_F(RealTimeUrlLookupServiceTest, TestSendSampledRequest) {
       }));
   test_url_loader_factory_.SetInterceptor(interceptor.GetCallback());
 
+  rt_service()->SendSampledRequest(
+      url, base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue());
+  rt_service()->Shutdown();
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestConcurrentSendSampledRequests) {
+  EnableMbb();
+  // Enabling access token does not affect sending sampled ping.
+  EnableTokenFetchesInClient();
+  GURL url(kTestUrl);
+
+  // Only one network request should be made.
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(1);
+
+  // Send two sampled requests.
+  rt_service()->SendSampledRequest(
+      url, base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue());
   rt_service()->SendSampledRequest(
       url, base::SequencedTaskRunner::GetCurrentDefault(),
       SessionID::InvalidValue());

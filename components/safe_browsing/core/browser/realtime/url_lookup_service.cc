@@ -107,9 +107,9 @@ void RealTimeUrlLookupService::OnGetAccessToken(
                           base::TimeTicks::Now() - get_token_start_time);
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
                             !access_token.empty());
-  SendRequest(url, access_token, std::move(response_callback),
-              std::move(callback_task_runner),
-              /* is_sampled_report */ false, tab_id);
+  MaybeSendRequest(url, access_token, std::move(response_callback),
+                   std::move(callback_task_runner),
+                   /* is_sampled_report */ false, tab_id);
 }
 
 void RealTimeUrlLookupService::OnResponseUnauthorized(

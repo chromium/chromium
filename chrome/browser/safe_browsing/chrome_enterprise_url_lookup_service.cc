@@ -124,9 +124,9 @@ void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
     base::TimeTicks get_token_start_time,
     SessionID tab_id,
     const std::string& access_token) {
-  SendRequest(url, access_token, std::move(response_callback),
-              std::move(callback_task_runner),
-              /* is_sampled_report */ false, tab_id);
+  MaybeSendRequest(url, access_token, std::move(response_callback),
+                   std::move(callback_task_runner),
+                   /* is_sampled_report */ false, tab_id);
 }
 
 std::optional<std::string>
