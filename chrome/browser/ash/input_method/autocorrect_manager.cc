@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -437,7 +438,8 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
 
-  if (base::FeatureList::IsEnabled(features::kAutocorrectFederatedPhh)) {
+  if (ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() &&
+      base::FeatureList::IsEnabled(features::kAutocorrectFederatedPhh)) {
     // Report `original_text` to the Federated Service.
     federated_manager_.ReportSingleString(
         /*table_id*/ chromeos::federated::mojom::FederatedExampleTableId::
