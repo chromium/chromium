@@ -528,6 +528,36 @@
       },
     },
 
+    'chromeos_browser_criticalstaging_tast_tests': {
+      'chrome_criticalstaging_tast_tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 2,
+          'io_timeout': 3600,
+          'idempotent': False,
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
+    'chromeos_browser_disabled_tast_tests': {
+      'chrome_disabled_tast_tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 2,
+          'io_timeout': 3600,
+          'idempotent': False,
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
     'chromeos_browser_integration_tests': {
       'disk_usage_tast_test': {
         'mixins': [
@@ -5804,6 +5834,8 @@
 
     'chromeos_device_no_gtests': [
       'chromeos_browser_all_tast_tests',
+      'chromeos_browser_criticalstaging_tast_tests',
+      'chromeos_browser_disabled_tast_tests',
       'chromeos_browser_integration_tests',
     ],
 
@@ -5815,6 +5847,8 @@
 
     'chromeos_vm_gtests_and_tast': [
       'chromeos_browser_all_tast_tests',
+      'chromeos_browser_criticalstaging_tast_tests',
+      'chromeos_browser_disabled_tast_tests',
       'chromeos_browser_integration_tests',
       'chromeos_integration_tests',
       'chromeos_system_friendly_gtests',
@@ -5823,6 +5857,8 @@
 
     'chromeos_vm_tast': [
       'chromeos_browser_all_tast_tests',
+      'chromeos_browser_criticalstaging_tast_tests',
+      'chromeos_browser_disabled_tast_tests',
       'chromeos_browser_integration_tests',
     ],
 

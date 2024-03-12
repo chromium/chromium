@@ -495,6 +495,47 @@ targets.legacy_basic_suite(
     },
 )
 
+# Test suite for running criticalstaging Tast tests.
+targets.legacy_basic_suite(
+    name = "chromeos_browser_criticalstaging_tast_tests",
+    tests = {
+        "chrome_criticalstaging_tast_tests": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 2,
+                # Tast test doesn't always output. See crbug.com/1306300
+                io_timeout_sec = 3600,
+                idempotent = False,  # https://crbug.com/923426#c27
+            ),
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+# Test suite for running disabled Tast tests to collect data to re-enable
+# them. The test suite should not be critical to builders.
+targets.legacy_basic_suite(
+    name = "chromeos_browser_disabled_tast_tests",
+    tests = {
+        "chrome_disabled_tast_tests": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 2,
+                # Tast test doesn't always output. See crbug.com/1306300
+                io_timeout_sec = 3600,
+                idempotent = False,  # https://crbug.com/923426#c27
+            ),
+            experiment_percentage = 100,
+        ),
+    },
+)
+
 targets.legacy_basic_suite(
     name = "chromeos_browser_integration_tests",
     tests = {
