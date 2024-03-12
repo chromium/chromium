@@ -1431,7 +1431,7 @@ void DrawSlugOp::RasterWithFlags(const DrawSlugOp* op,
       DCHECK(!params.is_analyzing);
       const auto& draw_slug = i == 0 ? op->slug : op->extra_slugs[i - 1];
       if (draw_slug) {
-        draw_slug->draw(c);
+        draw_slug->draw(c, p);
       }
     }
     ++i;
