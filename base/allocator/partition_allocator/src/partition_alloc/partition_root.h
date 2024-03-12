@@ -1546,6 +1546,15 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // For better debuggability, we should do these checks before quarantining.
   if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
     if (settings.scheduler_loop_quarantine) {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+      // TODO(keishi): Add PA_LIKELY when brp is fully enabled as |brp_enabled|
+      // will be false only for the aligned partition.
+      if (brp_enabled()) {
+        auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
+            slot_start, slot_span->bucket->slot_size);
+        ref_count->PreReleaseFromAllocator();
+      }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       GetSchedulerLoopQuarantineBranch().Quarantine(object, slot_span,
                                                     slot_start);
       return;

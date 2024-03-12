@@ -210,6 +210,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 #endif
   }
 
+  // `PreReleaseFromAllocator()` performs what `ReleaseFromAllocator()` does
+  // partially in a way that supports multiple calls.
+  // This function can be used when allocation is sent to quarantine to perform
+  // dangling `raw_ptr` checks before quarantine, not after.
+  PA_ALWAYS_INLINE void PreReleaseFromAllocator() {
+    CheckCookieIfSupported();
+    CheckDanglingPointersOnFree(count_.load(std::memory_order_relaxed));
+  }
+
   // Returns true if the allocation should be reclaimed.
   // This function should be called by the allocator during Free().
   PA_ALWAYS_INLINE bool ReleaseFromAllocator() {
@@ -233,15 +242,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       return true;
     }
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-    // There are some dangling raw_ptr<>. Turn on the error flag if it exists
-    // some which have not opted-out of being checked against being dangling:
-    if (PA_UNLIKELY(old_count & kPtrCountMask)) {
-      count_.fetch_or(kDanglingRawPtrDetectedBit, std::memory_order_relaxed);
-      partition_alloc::internal::DanglingRawPtrDetected(
-          reinterpret_cast<uintptr_t>(this));
-    }
-#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+    CheckDanglingPointersOnFree(old_count);
     return false;
   }
 
@@ -309,6 +310,37 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 #endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
  private:
+  // If there are some dangling raw_ptr<>. Turn on the error flag, and
+  // emit the `DanglingPtrDetected` once to embedders.
+  PA_ALWAYS_INLINE void CheckDanglingPointersOnFree(CountType count) {
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+    // The `kPtrCountMask` counts the number of raw_ptr<T>. It is expected to be
+    // zero when there are no unexpected dangling pointers.
+    if (PA_LIKELY((count & kPtrCountMask) == 0)) {
+      return;
+    }
+
+    // Two events are sent to embedders:
+    // 1. `DanglingRawPtrDetected` - Here
+    // 2. `DanglingRawPtrReleased` - In Release().
+    //
+    // The `dangling_detected` bit signals we must emit the second during
+    // `Release().
+    CountType old_count =
+        count_.fetch_or(kDanglingRawPtrDetectedBit, std::memory_order_relaxed);
+
+    // This function supports multiple calls. `DanglingRawPtrDetected` must be
+    // called only once. So only the first caller setting the bit can continue.
+    if ((old_count & kDanglingRawPtrDetectedBit) ==
+        kDanglingRawPtrDetectedBit) {
+      return;
+    }
+
+    partition_alloc::internal::DanglingRawPtrDetected(
+        reinterpret_cast<uintptr_t>(this));
+#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  }
+
   // The common parts shared by Release() and ReleaseFromUnprotectedPtr().
   // Called after updating the ref counts, |count| is the new value of |count_|
   // set by fetch_sub. Returns true if memory can be reclaimed.
