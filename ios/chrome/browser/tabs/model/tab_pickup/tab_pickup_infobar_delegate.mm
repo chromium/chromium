@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tabs/model/tab_pickup/tab_pickup_infobar_delegate.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -56,12 +58,10 @@ void TabPickupInfobarDelegate::FetchFavIconImage(
   }
   favicon_loader_->FaviconForPageUrl(
       tab_url_, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
-        if (!attributes.usesDefaultImage) {
-          favicon_image_ = attributes.faviconImage;
-          block_handler();
-        }
-      });
+      /*fallback_to_google_server=*/true,
+      base::CallbackToBlock(
+          base::BindRepeating(&TabPickupInfobarDelegate::FaviconFetched,
+                              weak_factory_.GetWeakPtr(), block_handler)));
 }
 
 void TabPickupInfobarDelegate::OpenDistantTab() {
@@ -115,4 +115,15 @@ TabPickupInfobarDelegate::GetIdentifier() const {
 bool TabPickupInfobarDelegate::EqualsDelegate(
     infobars::InfoBarDelegate* delegate) const {
   return delegate->GetIdentifier() == GetIdentifier();
+}
+
+#pragma mark - Private methods
+
+void TabPickupInfobarDelegate::FaviconFetched(ProceduralBlock block_handler,
+                                              FaviconAttributes* attributes) {
+  DCHECK(block_handler);
+  if (!attributes.usesDefaultImage) {
+    favicon_image_ = attributes.faviconImage;
+    block_handler();
+  }
 }
