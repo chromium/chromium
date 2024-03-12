@@ -632,6 +632,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        InteractedWithFileSystemSubpage) {
+  base::HistogramTester histograms;
   const GURL url = embedded_test_server()->GetURL("/title1.html");
   const url::Origin origin = url::Origin::Create(url);
 
@@ -688,11 +689,15 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   PerformMouseClickOnView(toggle_extended_permissions_button);
   EXPECT_TRUE(permission_context->OriginHasExtendedPermission(origin));
   EXPECT_TRUE(toggle_extended_permissions_button->GetChecked());
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.ToggleExtendedPermissionOutcome", true, 1);
   // Clicking the extended permissions checkbox again disables extended
   // permissions for the given origin.
   PerformMouseClickOnView(toggle_extended_permissions_button);
   EXPECT_FALSE(permission_context->OriginHasExtendedPermission(origin));
   EXPECT_FALSE(toggle_extended_permissions_button->GetChecked());
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.ToggleExtendedPermissionOutcome", false, 1);
 
   // The `FileSystemAccessScrollPanel` element is visible and is populated as
   // expected.

@@ -410,12 +410,23 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Storage.FileSystemAccess.RestorePermissionPromptOutcome"
     enum="FileSystemAccessRestorePermissionPromptOutcome"
-    expires_after="2024-05-01">
+    expires_after="2024-09-01">
   <owner>christinesm@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
     The result of a user interaction with the File System Access Persistent
     Permissions restore prompt UI.
+  </summary>
+</histogram>
+
+<histogram name="Storage.FileSystemAccess.ToggleExtendedPermissionOutcome"
+    enum="Boolean" expires_after="2024-09-01">
+  <owner>christinesm@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The result of a user interaction with the File System Access Persistent
+    Permissions Page Info UI checkbox toggle option to enable or disable
+    Extended Permissions for a given origin.
   </summary>
 </histogram>
 

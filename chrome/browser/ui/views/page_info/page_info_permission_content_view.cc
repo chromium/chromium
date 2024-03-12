@@ -6,6 +6,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
@@ -313,6 +314,9 @@ void PageInfoPermissionContentView::ToggleFileSystemExtendedPermissions() {
   } else {
     context->RemoveOriginExtendedPermissionByUser(site_origin);
   }
+  base::UmaHistogramBoolean(
+      "Storage.FileSystemAccess.ToggleExtendedPermissionOutcome",
+      checkbox_enabled);
 }
 
 void PageInfoPermissionContentView::MaybeAddMediaPreview(
