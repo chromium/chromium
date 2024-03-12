@@ -325,9 +325,11 @@ BASE_FEATURE(kHideDelegatedFrameHostMac,
 
 // When enabled, ClientResourceProvider will attempt to unlock and delete
 // TransferableResources that have been returned as a part of eviction.
+//
+// Enabled by default 03/2014, kept to run a holdback experiment.
 BASE_FEATURE(kEvictionUnlocksResources,
              "EvictionUnlocksResources",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, FrameRateDecider will toggle to half framerate if there's only
 // one video on screen whose framerate is lower than the display vsync and in
@@ -339,9 +341,11 @@ BASE_FEATURE(kSingleVideoFrameRateThrottling,
 // When enabled, ClientResourceProvider will take callbacks intended to be ran
 // on the Main-thread, and will batch them into a single jump to that thread.
 // Rather than each performing its own separate post task.
+//
+// Enabled 03/2024, kept to run a holdback experiment.
 BASE_FEATURE(kBatchMainThreadReleaseCallbacks,
              "BatchMainThreadReleaseCallbacks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, snapshot the root surface when it is evicted.
 BASE_FEATURE(kSnapshotEvictedRootSurface,

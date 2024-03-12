@@ -6758,27 +6758,6 @@
             ]
         }
     ],
-    "EvictionUnlocksResources": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240201",
-                    "enable_features": [
-                        "BatchMainThreadReleaseCallbacks",
-                        "EvictionUnlocksResources",
-                        "ReclaimResourcesDelayedFlushInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExpandCompositedCullRect": [
         {
             "platforms": [
