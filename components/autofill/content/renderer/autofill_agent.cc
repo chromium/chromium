@@ -1232,6 +1232,9 @@ void AutofillAgent::HidePopup() {
 void AutofillAgent::DidChangeFormRelatedElementDynamically(
     const WebElement& element,
     WebFormRelatedChangeType form_related_change) {
+  if (!is_dom_content_loaded_) {
+    return;
+  }
   if (form_related_change == WebFormRelatedChangeType::kHide) {
     form_tracker_->ElementDisappeared(element);
     return;
