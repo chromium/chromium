@@ -41,6 +41,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -1121,14 +1122,19 @@ class SessionManagerClientImpl : public SessionManagerClient {
   void OnGetServerBackedStateKeys(StateKeysCallback callback,
                                   dbus::Response* response,
                                   dbus::ErrorResponse* error_response) {
+    if (error_response &&
+        error_response->GetErrorName() ==
+            login_manager::dbus_error::kStateKeysRequestFail) {
+      // Session manager failed to generate state keys, report identifiers
+      // error.
+      return std::move(callback).Run(
+          base::unexpected(StateKeyErrorType::kMissingIdentifiers));
+    }
+
     if (!response) {
-      // When the implementation returns an error, `error_response` is not null.
-      // However, session manager's implementation of state key retrieval does
-      // not support returning errors, hence we assume that it is null and
-      // report communication error.
-      std::move(callback).Run(
+      // DBus call failed with unspecified error, report communication error.
+      return std::move(callback).Run(
           base::unexpected(StateKeyErrorType::kCommunicationError));
-      return;
     }
 
     dbus::MessageReader reader(response);
@@ -1163,9 +1169,9 @@ class SessionManagerClientImpl : public SessionManagerClient {
     }
 
     if (state_keys.empty()) {
-      // TODO(b/318708647): Improve session manager's implementation to report
-      // an error via DBus rather than return empty list of keys. This will
-      // allow to differentiate between various types of missing identifiers.
+      // TODO(b/318708647): Session manager did not report an error but still
+      // responded with empty state keys. Report something else than missing
+      // identifiers.
       std::move(callback).Run(
           base::unexpected(StateKeyErrorType::kMissingIdentifiers));
       return;
