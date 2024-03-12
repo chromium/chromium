@@ -12,6 +12,7 @@
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
 
@@ -25,6 +26,21 @@ const char* FreezingVoteToString(
     return "None";
 
   return freezing::FreezingVoteValueToString(freezing_vote->value());
+}
+
+const char* PermissionStatusToString(
+    std::optional<blink::mojom::PermissionStatus> permission_status) {
+  if (!permission_status.has_value()) {
+    return "undefined";
+  }
+  switch (permission_status.value()) {
+    case blink::mojom::PermissionStatus::ASK:
+      return "ask";
+    case blink::mojom::PermissionStatus::DENIED:
+      return "denied";
+    case blink::mojom::PermissionStatus::GRANTED:
+      return "granted";
+  }
 }
 
 }  // namespace
@@ -80,6 +96,9 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   result.Set("had_form_interaction",
              page_node_impl->had_form_interaction_.value());
   result.Set("had_user_edits", page_node_impl->had_user_edits_.value());
+  result.Set("notification_permission",
+             PermissionStatusToString(
+                 page_node_impl->notification_permission_status_));
   if (page_node_impl->embedding_type_ != PageNode::EmbeddingType::kInvalid) {
     result.Set("embedding_type",
                PageNode::ToString(page_node_impl->embedding_type_));

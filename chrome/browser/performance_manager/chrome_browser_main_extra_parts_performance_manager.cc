@@ -18,7 +18,6 @@
 #include "chrome/browser/performance_manager/decorators/frozen_frame_aggregator.h"
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
-#include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 #include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
@@ -119,8 +118,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(
       std::make_unique<performance_manager::ProcessMetricsDecorator>());
   graph->PassToGraph(
-      std::make_unique<performance_manager::PageLiveStateDecorator>(
-          performance_manager::PageLiveStateDelegateImpl::Create()));
+      std::make_unique<performance_manager::PageLiveStateDecorator>());
   graph->PassToGraph(
       std::make_unique<performance_manager::TabRevisitTracker>());
 

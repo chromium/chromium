@@ -91,6 +91,8 @@ class PageNodeImpl
   bool IsHoldingIndexedDBLock() const override;
   int64_t GetNavigationID() const override;
   const std::string& GetContentsMimeType() const override;
+  std::optional<blink::mojom::PermissionStatus>
+  GetNotificationPermissionStatus() const override;
   base::TimeDelta GetTimeSinceLastNavigation() const override;
   const GURL& GetMainFrameUrl() const override;
   uint64_t EstimateMainFramePrivateFootprintSize() const override;
@@ -121,11 +123,19 @@ class PageNodeImpl
   void OnFaviconUpdated();
   void OnTitleUpdated();
   void OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node);
-  void OnMainFrameNavigationCommitted(bool same_document,
-                                      base::TimeTicks navigation_committed_time,
-                                      int64_t navigation_id,
-                                      const GURL& url,
-                                      const std::string& contents_mime_type);
+  void OnMainFrameNavigationCommitted(
+      bool same_document,
+      base::TimeTicks navigation_committed_time,
+      int64_t navigation_id,
+      const GURL& url,
+      const std::string& contents_mime_type,
+      std::optional<blink::mojom::PermissionStatus>
+          notification_permission_status);
+  // While notification permission status is most often updated on main frame
+  // navigation, it can also be updated independently from main frame navigation
+  // when the user grants/revokes the permission.
+  void OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus permission_status);
 
   // Accessors.
   FrameNodeImpl* opener_frame_node() const;
@@ -291,6 +301,11 @@ class PageNodeImpl
   // event for the main frame of this page or an empty string if the page has
   // never committed a navigation
   std::string contents_mime_type_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The notification permission status for the last committed main frame
+  // navigation.
+  std::optional<blink::mojom::PermissionStatus> notification_permission_status_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The unique ID of the browser context that this page belongs to.
   const std::string browser_context_id_;

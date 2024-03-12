@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -15,6 +16,7 @@
 #include "base/observer_list.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -133,6 +135,21 @@ class PerformanceManagerTabHelper
 
   void OnMainFrameNavigation(int64_t navigation_id);
 
+  // Returns the notification permission status for the current main frame and
+  // subscribes to changes.
+  std::optional<blink::mojom::PermissionStatus>
+  GetNotificationPermissionStatusAndObserveChanges();
+
+  // Callback invoked when the current main frame's notification permission
+  // status changes.
+  void OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus permission_status);
+
+  // Unsubscribe from changes to the current main frame's notification
+  // permission status, or no-op if there is no subscription.
+  void MaybeUnsubscribeFromNotificationPermissionStatusChange(
+      content::PermissionController* permission_controller);
+
   // Returns the FrameNodeImpl* associated with `render_frame_host`. This
   // CHECKs that it exists.
   FrameNodeImpl* GetExistingFrameNode(
@@ -201,6 +218,11 @@ class PerformanceManagerTabHelper
   // Maps from RenderFrameHost to the associated PM node. This is a single
   // map across all pages associated with this WebContents.
   std::map<content::RenderFrameHost*, std::unique_ptr<FrameNodeImpl>> frames_;
+
+  // Subscription to current main frame's notification permission status. May be
+  // null.
+  content::PermissionController::SubscriptionId
+      permission_controller_subscription_id_;
 
   raw_ptr<DestructionObserver> destruction_observer_ = nullptr;
   base::ObserverList<Observer, true, false> observers_;

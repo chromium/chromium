@@ -65,9 +65,10 @@ class PageDiscardingHelperTest
                                       FrameNodeImpl* frame = nullptr) {
     page = page ? page : page_node();
     frame = frame ? frame : frame_node();
-    page->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
-                                         page->GetNavigationID() + 1, url,
-                                         mime_type);
+    page->OnMainFrameNavigationCommitted(
+        false, base::TimeTicks::Now(), page->GetNavigationID() + 1, url,
+        mime_type, /* notification_permission_status=*/
+        blink::mojom::PermissionStatus::ASK);
     frame->OnNavigationCommitted(url, false);
   }
 
@@ -183,8 +184,9 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardNeverAudiblePage) {
       CreateFrameNodeAutoId(process_node(), new_page_node.get());
   new_page_node->SetIsVisible(false);
   const GURL kUrl("https://example.com");
-  new_page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
-                                                42, kUrl, "text/html");
+  new_page_node->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), 42, kUrl, "text/html",
+      /* notification_permission_status=*/blink::mojom::PermissionStatus::ASK);
   new_frame_node->OnNavigationCommitted(kUrl, false);
 
   EXPECT_FALSE(new_page_node->IsAudible());
@@ -349,30 +351,16 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardActiveTab) {
 
 TEST_F(PageDiscardingHelperTest,
        TestCannotProactivelyDiscardWithNotificationPermission) {
-  // The page is discardable if notifications are blocked.
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
-      ->SetContentSettingsForTesting({
-          {ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK},
-      });
+  // The page is discardable if notification permission is denied.
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::DENIED);
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
 
-  // The page is discardable if notifications aren't found in its permissions
-  // list.
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
-      ->SetContentSettingsForTesting({
-          {ContentSettingsType::AUTO_SELECT_CERTIFICATE, CONTENT_SETTING_ALLOW},
-      });
-  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
-  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
-
-  // The page is not proactively discardable if it can send notifications.
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
-      ->SetContentSettingsForTesting({
-          {ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
-      });
+  // The page is discardable if notification permission is granted.
+  page_node()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));

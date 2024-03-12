@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/mechanisms/freezer.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
@@ -75,8 +74,7 @@ class FreezingPolicyTest : public GraphTestHarness {
 
   void OnGraphCreated(GraphImpl* graph) override {
     // The freezing logic relies on the existence of the page live state data.
-    graph->PassToGraph(std::make_unique<PageLiveStateDecorator>(
-        PageLiveStateDelegateImpl::Create()));
+    graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
     graph->PassToGraph(std::make_unique<FreezingVoteDecorator>());
     // Create the policy and pass it to the graph.
     auto policy = std::make_unique<policies::FreezingPolicy>();

@@ -19,6 +19,7 @@
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 class GURL;
 
@@ -185,9 +186,13 @@ class PageNode : public Node {
   // See PageNodeObserver::OnMainFrameNavigationCommitted.
   virtual int64_t GetNavigationID() const = 0;
 
-  // Returns the MIME type of the contents associated with the last committed
-  // navigation event for the main frame of this page.
+  // Returns the MIME type for the last committed main frame navigation.
   virtual const std::string& GetContentsMimeType() const = 0;
+
+  // Returns the notification permission status for the last committed main
+  // frame navigation (nullopt if it wasn't retrieved).
+  virtual std::optional<blink::mojom::PermissionStatus>
+  GetNotificationPermissionStatus() const = 0;
 
   // Returns "zero" if no navigation has happened, otherwise returns the time
   // since the last navigation commit.

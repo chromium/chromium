@@ -32,6 +32,8 @@ namespace {
 using performance_manager::NodeBase;
 
 const char kHtmlMimeType[] = "text/html";
+const blink::mojom::PermissionStatus kAskPermissionStatus =
+    blink::mojom::PermissionStatus::ASK;
 
 class TestChangeStream : public discards::mojom::GraphChangeStream {
  public:
@@ -201,9 +203,11 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   const GURL kExampleUrl("http://www.example.org");
   int64_t next_navigation_id = 1;
   mock_graph.page->OnMainFrameNavigationCommitted(
-      false, now, next_navigation_id++, kExampleUrl, kHtmlMimeType);
+      false, now, next_navigation_id++, kExampleUrl, kHtmlMimeType,
+      kAskPermissionStatus);
   mock_graph.other_page->OnMainFrameNavigationCommitted(
-      false, now, next_navigation_id++, kExampleUrl, kHtmlMimeType);
+      false, now, next_navigation_id++, kExampleUrl, kHtmlMimeType,
+      kAskPermissionStatus);
 
   auto* main_frame = mock_graph.page->main_frame_node();
   main_frame->OnNavigationCommitted(kExampleUrl, /* same_document */ false);
@@ -287,7 +291,8 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   // Test change notifications.
   const GURL kAnotherURL("http://www.google.com/");
   mock_graph.page->OnMainFrameNavigationCommitted(
-      false, now, next_navigation_id++, kAnotherURL, kHtmlMimeType);
+      false, now, next_navigation_id++, kAnotherURL, kHtmlMimeType,
+      kAskPermissionStatus);
 
   size_t child_frame_id =
       impl_raw->GetNodeIdForTesting(mock_graph.child_frame.get());

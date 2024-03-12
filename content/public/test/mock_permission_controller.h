@@ -77,9 +77,8 @@ class MockPermissionController : public PermissionController {
                               const url::Origin& requesting_origin,
                               const base::RepeatingCallback<void(
                                   blink::mojom::PermissionStatus)>& callback));
-
-  void UnsubscribeFromPermissionStatusChange(
-      SubscriptionId subscription_id) override;
+  MOCK_METHOD1(UnsubscribeFromPermissionStatusChange,
+               void(SubscriptionId subscription_id));
 };
 
 }  // namespace content

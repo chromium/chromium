@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
-#include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
@@ -57,8 +56,7 @@ void GraphTestHarnessWithMockDiscarder::SetUp() {
   mock_discarder_ = mock_discarder.get();
 
   // The discarding logic relies on the existence of the page live state data.
-  graph()->PassToGraph(std::make_unique<PageLiveStateDecorator>(
-      PageLiveStateDelegateImpl::Create()));
+  graph()->PassToGraph(std::make_unique<PageLiveStateDecorator>());
 
   // Create the helper and pass it to the graph.
   auto page_discarding_helper =
@@ -97,8 +95,9 @@ void MakePageNodeDiscardable(PageNodeImpl* page_node,
   page_node->SetIsVisible(false);
   page_node->SetIsAudible(false);
   const auto kUrl = GURL("https://foo.com");
-  page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(), 42,
-                                            kUrl, "text/html");
+  page_node->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), 42, kUrl, "text/html",
+      /*notification_permission_status=*/blink::mojom::PermissionStatus::ASK);
   (*page_node->main_frame_nodes().begin())->OnNavigationCommitted(kUrl, false);
   task_env.FastForwardBy(base::Minutes(10));
   const auto* helper =

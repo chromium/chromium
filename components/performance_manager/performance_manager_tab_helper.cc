@@ -6,7 +6,6 @@
 
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -25,7 +24,9 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -159,6 +160,9 @@ void PerformanceManagerTabHelper::TearDown() {
     destruction_observer_->OnPerformanceManagerTabHelperDestroying(
         web_contents());
   }
+
+  MaybeUnsubscribeFromNotificationPermissionStatusChange(
+      web_contents()->GetBrowserContext()->GetPermissionController());
 
   // Unsubscribe from the associated WebContents.
   Observe(nullptr);
@@ -421,14 +425,75 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
   // Make sure the hierarchical structure is constructed before sending signal
   // to the performance manager.
   OnMainFrameNavigation(navigation_handle->GetNavigationId());
+
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
-      base::BindOnce(
-          &PageNodeImpl::OnMainFrameNavigationCommitted,
-          base::Unretained(primary_page_node()),
-          navigation_handle->IsSameDocument(), navigation_committed_time,
-          navigation_handle->GetNavigationId(), url,
-          navigation_handle->GetWebContents()->GetContentsMimeType()));
+      base::BindOnce(&PageNodeImpl::OnMainFrameNavigationCommitted,
+                     base::Unretained(primary_page_node()),
+                     navigation_handle->IsSameDocument(),
+                     navigation_committed_time,
+                     navigation_handle->GetNavigationId(), url,
+                     navigation_handle->GetWebContents()->GetContentsMimeType(),
+                     GetNotificationPermissionStatusAndObserveChanges()));
+}
+
+std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
+    GetNotificationPermissionStatusAndObserveChanges() {
+  // Don't get the content settings on android on each navigation because it may
+  // induce scroll jank. There are many same-document navigations while
+  // scrolling and getting the settings can invoke expensive platform APIs on
+  // Android. Moreover, this information is only used to decide if a tab should
+  // be discarded, which doesn't happen through Chrome code on that platform.
+#if BUILDFLAG(IS_ANDROID)
+  return std::nullopt;
+#else
+  content::PermissionController* permission_controller =
+      web_contents()->GetBrowserContext()->GetPermissionController();
+  if (!permission_controller) {
+    CHECK(permission_controller_subscription_id_.is_null());
+    return std::nullopt;
+  }
+
+  // Cancel previous change subscription.
+  MaybeUnsubscribeFromNotificationPermissionStatusChange(permission_controller);
+
+  // Create new change subscription.
+  permission_controller_subscription_id_ =
+      permission_controller->SubscribeToPermissionStatusChange(
+          blink::PermissionType::NOTIFICATIONS,
+          web_contents()->GetPrimaryMainFrame()->GetProcess(),
+          url::Origin::Create(web_contents()->GetLastCommittedURL()),
+          base::BindRepeating(&PerformanceManagerTabHelper::
+                                  OnNotificationPermissionStatusChange,
+                              // Unretained is safe because the subscription
+                              // is removed when `this` is deleted.
+                              base::Unretained(this)));
+
+  // Return current status.
+  return permission_controller->GetPermissionStatusForCurrentDocument(
+      blink::PermissionType::NOTIFICATIONS,
+      web_contents()->GetPrimaryMainFrame());
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void PerformanceManagerTabHelper::OnNotificationPermissionStatusChange(
+    blink::mojom::PermissionStatus permission_status) {
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE,
+      base::BindOnce(&PageNodeImpl::OnNotificationPermissionStatusChange,
+                     base::Unretained(primary_page_node()), permission_status));
+}
+
+void PerformanceManagerTabHelper::
+    MaybeUnsubscribeFromNotificationPermissionStatusChange(
+        content::PermissionController* permission_controller) {
+  if (permission_controller_subscription_id_.is_null()) {
+    return;
+  }
+
+  CHECK(permission_controller);
+  permission_controller->UnsubscribeFromPermissionStatusChange(
+      permission_controller_subscription_id_);
 }
 
 void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {

@@ -192,6 +192,13 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
 // Check that tabs with enabled notifications won't be discarded
 IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
                        TabWithNotificationNotDiscarded) {
+  // HTTPS because only secure origins can get the notification permission.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  // Grant notification permission by default (only works for secure origins).
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  ContentSetting::CONTENT_SETTING_ALLOW);
@@ -199,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(
           kFirstTabContents,
-          GetURL("example.com", "/notifications/notification_tester.html")),
+          https_server.GetURL("a.test",
+                              "/notifications/notification_tester.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }

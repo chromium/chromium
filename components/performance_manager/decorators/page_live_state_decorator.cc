@@ -79,11 +79,6 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_pinned_tab_;
   }
-  bool IsContentSettingTypeAllowed(ContentSettingsType type) const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    auto it = content_settings_.find(type);
-    return it != content_settings_.end() && it->second == CONTENT_SETTING_ALLOW;
-  }
   bool IsDevToolsOpen() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_dev_tools_open_;
@@ -125,10 +120,6 @@ class PageLiveStateDataImpl
   }
   void SetIsPinnedTabForTesting(bool value) override {
     set_is_pinned_tab(value);
-  }
-  void SetContentSettingsForTesting(
-      const std::map<ContentSettingsType, ContentSetting>& settings) override {
-    set_content_settings(settings);
   }
   void SetIsDevToolsOpenForTesting(bool value) override {
     set_is_dev_tools_open(value);
@@ -228,17 +219,6 @@ class PageLiveStateDataImpl
       obs.OnIsPinnedTabChanged(page_node_);
     }
   }
-  void set_content_settings(
-      std::map<ContentSettingsType, ContentSetting> settings) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Content settings are set for the first time when the page navigates, and
-    // subsequently when a notification that they have changed is received.
-    // Therefore, no need to check to see if they're equal to the previous
-    // value.
-    content_settings_ = std::move(settings);
-    for (auto& obs : observers_)
-      obs.OnContentSettingsChanged(page_node_);
-  }
   void set_is_dev_tools_open(bool is_dev_tools_open) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_dev_tools_open_ == is_dev_tools_open) {
@@ -276,8 +256,6 @@ class PageLiveStateDataImpl
   bool was_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_pinned_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  std::map<ContentSettingsType, ContentSetting> content_settings_
-      GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_dev_tools_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool updated_title_or_favicon_in_background_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -289,24 +267,7 @@ const char kDescriberName[] = "PageLiveStateDecorator";
 
 }  // namespace
 
-void PageLiveStateDecorator::Delegate::GetContentSettingsAndReply(
-    WebContentsProxy web_contents_proxy,
-    const GURL& url,
-    GetContentSettingsForUrlCallback callback) {
-  content::WebContents* web_contents = web_contents_proxy.Get();
-  if (web_contents) {
-    PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
-            GetContentSettingsForUrl(web_contents, url)));
-  }
-}
-
-PageLiveStateDecorator::PageLiveStateDecorator(
-    base::SequenceBound<Delegate> delegate)
-    : delegate_(std::move(delegate)) {}
+PageLiveStateDecorator::PageLiveStateDecorator() = default;
 PageLiveStateDecorator::~PageLiveStateDecorator() = default;
 
 // static
@@ -403,14 +364,6 @@ void PageLiveStateDecorator::SetIsPinnedTab(content::WebContents* contents,
 }
 
 // static
-void PageLiveStateDecorator::SetContentSettings(
-    content::WebContents* contents,
-    std::map<ContentSettingsType, ContentSetting> settings) {
-  SetPropertyForWebContentsPageNode(
-      contents, &PageLiveStateDataImpl::set_content_settings, settings);
-}
-
-// static
 void PageLiveStateDecorator::SetIsDevToolsOpen(content::WebContents* contents,
                                                bool is_dev_tools_open) {
   SetPropertyForWebContentsPageNode(
@@ -450,34 +403,8 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
   ret.Set("IsDevToolsOpen", data->IsDevToolsOpen());
   ret.Set("UpdatedTitleOrFaviconInBackground",
           data->UpdatedTitleOrFaviconInBackground());
-  ret.Set("IsNotificationsAllowed", data->IsContentSettingTypeAllowed(
-                                        ContentSettingsType::NOTIFICATIONS));
 
   return ret;
-}
-
-void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
-  // Don't get the content settings on android on each navigation because it may
-  // induce scroll jank. There are many same-document navigations while
-  // scrolling and getting the settings can invoke expensive platform APIs on
-  // Android. Moreover, this information is only used to decide if a tab should
-  // be discarded, which doesn't happen through Chrome code on that platform.
-#if !BUILDFLAG(IS_ANDROID)
-  // Get the content settings from the main thread.
-  // This call is not using `Then` and is instead passing a callback for the
-  // delegate to invoke with `CallOnGraph` on purpose. This is because it's
-  // possible for the first async call to be placed in the UI thread's task
-  // queue, and skipped as part of browser shutdown before being run. When that
-  // happens, the post task's reply has to be destroyed on its owner sequence,
-  // so a task is posted back to the Performance Manager sequence. At that point
-  // shutdown is complete, and the PM sequence is `BLOCK_SHUTDOWN` so a DCHECK
-  // is triggered. See crbug.com/1375270.
-  delegate_.AsyncCall(&Delegate::GetContentSettingsAndReply)
-      .WithArgs(page_node->GetContentsProxy(), page_node->GetMainFrameUrl(),
-                base::BindOnce(
-                    &PageLiveStateDecorator::OnContentSettingsReceived,
-                    weak_factory_.GetWeakPtr(), page_node->GetMainFrameUrl()));
-#endif
 }
 
 void PageLiveStateDecorator::OnTitleUpdated(const PageNode* page_node) {
@@ -492,20 +419,6 @@ void PageLiveStateDecorator::OnFaviconUpdated(const PageNode* page_node) {
     PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
         ->set_updated_title_or_favicon_in_background(true);
   }
-}
-
-void PageLiveStateDecorator::OnContentSettingsReceived(
-    const GURL& url,
-    base::WeakPtr<const PageNode> page_node,
-    const std::map<ContentSettingsType, ContentSetting>& settings) {
-  // If the page node doesn't exist anymore, or it has navigated to a different
-  // URL, there's nothing to do.
-  if (!page_node || page_node->GetMainFrameUrl() != url) {
-    return;
-  }
-
-  PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node.get()))
-      ->set_content_settings(settings);
 }
 
 PageLiveStateDecorator::Data::Data() = default;

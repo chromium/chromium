@@ -373,6 +373,11 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     return CanDiscardResult::kProtected;
   }
 
+  if (is_proactive && page_node->GetNotificationPermissionStatus() ==
+                          blink::mojom::PermissionStatus::GRANTED) {
+    return CanDiscardResult::kProtected;
+  }
+
   const auto* live_state_data = GetPageNodeLiveStateData(page_node);
 
   // The live state data won't be available if none of these events ever
@@ -419,14 +424,8 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     if (live_state_data->IsDevToolsOpen()) {
       return CanDiscardResult::kProtected;
     }
-    if (is_proactive) {
-      if (live_state_data->IsContentSettingTypeAllowed(
-              ContentSettingsType::NOTIFICATIONS)) {
-        return CanDiscardResult::kProtected;
-      }
-      if (live_state_data->UpdatedTitleOrFaviconInBackground()) {
-        return CanDiscardResult::kProtected;
-      }
+    if (is_proactive && live_state_data->UpdatedTitleOrFaviconInBackground()) {
+      return CanDiscardResult::kProtected;
     }
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.

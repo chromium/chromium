@@ -1091,8 +1091,6 @@ static_library("browser") {
     "performance_manager/decorators/helpers/page_live_state_decorator_helper.h",
     "performance_manager/decorators/page_aggregator.cc",
     "performance_manager/decorators/page_aggregator.h",
-    "performance_manager/decorators/page_live_state_decorator_delegate_impl.cc",
-    "performance_manager/decorators/page_live_state_decorator_delegate_impl.h",
     "performance_manager/mechanisms/freezer.cc",
     "performance_manager/mechanisms/freezer.h",
     "performance_manager/mechanisms/working_set_trimmer.cc",
