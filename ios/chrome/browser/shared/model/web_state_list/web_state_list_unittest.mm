@@ -2258,6 +2258,44 @@ TEST_F(WebStateListTest, ActivateWebStateAt_Grouped) {
   EXPECT_EQ(group, observer_.status_only_new_group());
 }
 
+// Tests that pinning a grouped tab updates removes the tab from the group.
+TEST_F(WebStateListTest, SetWebStatePinnedAt_PinningUngroups) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a b ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  web_state_list_.SetWebStatePinnedAt(0, true);
+
+  EXPECT_EQ("a | [ 0 b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_TRUE(observer_.pinned_state_changed());
+  EXPECT_EQ(group, observer_.status_only_old_group());
+  EXPECT_EQ(nullptr, observer_.status_only_new_group());
+  EXPECT_EQ(WebStateList::Range(1, 1), web_state_list_.GetWebStates(group));
+}
+
+// Tests that unpinning a tab doesn't add it to a group.
+TEST_F(WebStateListTest, SetWebStatePinnedAt_UnpinningDoesntGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "a | [ 0 b ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  web_state_list_.SetWebStatePinnedAt(0, false);
+
+  EXPECT_EQ("| [ 0 b ] a", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_TRUE(observer_.pinned_state_changed());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group));
+}
+
 // Tests creating a group with one tab that doesn't move.
 TEST_F(WebStateListTest, CreateGroup_OneTab_NotMoving) {
   WebStateListBuilderFromDescription builder;

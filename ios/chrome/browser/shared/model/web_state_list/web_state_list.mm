@@ -748,23 +748,10 @@ int WebStateList::SetWebStatePinnedAtImpl(int index, bool pinned) {
     return index;
   }
 
-  int new_index = index;
-  if (pinned) {
-    // Move the tab to the end of the pinned tabs. May be a no-op.
-    CHECK_LT(pinned_tabs_count_, count());
-    new_index = pinned_tabs_count_;
-    pinned_tabs_count_++;
-  } else {
-    // Move the tab to the end of the WebStateList. May be a no-op.
-    CHECK_GT(pinned_tabs_count_, 0);
-    new_index = count() - 1;
-    pinned_tabs_count_--;
-  }
-
-  // The pinned state update is notified in `MoveWebStateAtImpl()` with the type
-  // of `kMove` when a WebState is moved or `kStatusOnly` when a WebState is
-  // not moved.
-  MoveWebStateAtImpl(index, new_index, /*pinned_state_changed=*/true);
+  // When pinning, move to the end of the pinned tabs. When unpinning, move to
+  // the end of the WebStateList. May end up identical to `index`.
+  int new_index = pinned ? pinned_tabs_count_ : count() - 1;
+  MoveWebStateWrapperAt(index, new_index, pinned, /*new_group=*/nullptr);
 
   return new_index;
 }
