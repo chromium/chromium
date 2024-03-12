@@ -1732,6 +1732,12 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   dialog_type_ = kConfirmIdpLogin;
   config_url_ = idp_info->provider->config->config_url;
   login_url_ = idp_info->metadata.idp_login_url;
+
+  // Store variables used in RecordMismatchDialogShown since they may be cleaned
+  // up in ShowFailureDialog().
+  bool has_shown_mismatch = has_shown_mismatch_;
+  bool has_hints = !idp_info->provider->login_hint.empty() ||
+                   !idp_info->provider->domain_hint.empty();
   // TODO(crbug.com/329261790): Make ShowFailureDialog() return boolean and use
   // the value to know when to bail out of this method.
   request_dialog_controller_->ShowFailureDialog(
@@ -1750,9 +1756,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   if (!fedcm_metrics_) {
     return;
   }
-  fedcm_metrics_->RecordMismatchDialogShown(
-      has_shown_mismatch_, !idp_info->provider->login_hint.empty() ||
-                               !idp_info->provider->domain_hint.empty());
+  fedcm_metrics_->RecordMismatchDialogShown(has_shown_mismatch, has_hints);
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
