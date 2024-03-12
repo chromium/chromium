@@ -108,14 +108,14 @@ void BluetoothDevice::Trace(Visitor* visitor) const {
 }
 
 // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothdevice-watchadvertisements
-ScriptPromise BluetoothDevice::watchAdvertisements(
+ScriptPromiseTyped<IDLUndefined> BluetoothDevice::watchAdvertisements(
     ScriptState* script_state,
     const WatchAdvertisementsOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* context = GetExecutionContext();
   if (!context) {
     exception_state.ThrowTypeError(kInactiveDocumentError);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   CHECK(context->IsSecureContext());
@@ -128,7 +128,7 @@ ScriptPromise BluetoothDevice::watchAdvertisements(
       AbortWatchAdvertisements(options->signal());
       exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                         kAbortErrorMessage);
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
 
     // 1.2. Add the following abort steps to options.signal:
@@ -147,21 +147,22 @@ ScriptPromise BluetoothDevice::watchAdvertisements(
     // 'pending-watch' 2.1. Reject promise with InvalidStateError.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidStateErrorMessage);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // 2. If this.[[watchAdvertisementsState]] is 'watching':
   // 'watching' 2.1. Resolve promise with undefined.
   if (client_receiver_.is_bound() && !watch_advertisements_resolver_)
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
 
   // 2. If this.[[watchAdvertisementsState]] is 'not-watching':
   DCHECK(!client_receiver_.is_bound());
 
   // 'not-watching' 2.1. Set this.[[watchAdvertisementsState]] to
   // 'pending-watch'.
-  watch_advertisements_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  watch_advertisements_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   mojo::PendingAssociatedRemote<mojom::blink::WebBluetoothAdvertisementClient>
       client;
   client_receiver_.Bind(client.InitWithNewEndpointAndPassReceiver(),
@@ -202,20 +203,24 @@ void BluetoothDevice::AbortWatchAdvertisements(AbortSignal* signal) {
   abort_handle_map_.erase(signal);
 }
 
-ScriptPromise BluetoothDevice::forget(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> BluetoothDevice::forget(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!GetExecutionContext()) {
     exception_state.ThrowTypeError(kInactiveDocumentError);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   bluetooth_->Service()->ForgetDevice(
-      device_->id,
-      WTF::BindOnce(&BluetoothDevice::ForgetCallback, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      device_->id, WTF::BindOnce(
+                       [](ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+                         resolver->Resolve();
+                       },
+                       WrapPersistent(resolver)));
 
   return promise;
 }
@@ -267,10 +272,6 @@ void BluetoothDevice::WatchAdvertisementsCallback(
   // 2.2.3.3. Resolve promise with undefined.
   watch_advertisements_resolver_->Resolve();
   watch_advertisements_resolver_.Clear();
-}
-
-void BluetoothDevice::ForgetCallback(ScriptPromiseResolver* resolver) {
-  resolver->Resolve();
 }
 
 }  // namespace blink

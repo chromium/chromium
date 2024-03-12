@@ -45,7 +45,8 @@ class StorageBucket final : public ScriptWrappable,
   ScriptPromiseTyped<IDLBoolean> persisted(ScriptState*);
   ScriptPromiseTyped<StorageEstimate> estimate(ScriptState*);
   ScriptPromiseTyped<V8StorageBucketDurability> durability(ScriptState*);
-  ScriptPromise setExpires(ScriptState*, const DOMHighResTimeStamp&);
+  ScriptPromiseTyped<IDLUndefined> setExpires(ScriptState*,
+                                              const DOMHighResTimeStamp&);
   ScriptPromiseTyped<IDLNullable<IDLDOMHighResTimeStamp>> expires(ScriptState*);
   IDBFactory* indexedDB();
   LockManager* locks();
@@ -76,7 +77,7 @@ class StorageBucket final : public ScriptWrappable,
       ScriptPromiseResolverTyped<V8StorageBucketDurability>* resolver,
       mojom::blink::BucketDurability durability,
       bool success);
-  void DidSetExpires(ScriptPromiseResolver* resolver, bool success);
+  void DidSetExpires(ScriptPromiseResolverTyped<IDLUndefined>*, bool success);
   void DidGetExpires(
       ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
       const std::optional<base::Time> expires,

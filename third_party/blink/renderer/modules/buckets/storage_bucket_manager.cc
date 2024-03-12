@@ -159,12 +159,14 @@ ScriptPromiseTyped<IDLSequence<IDLString>> StorageBucketManager::keys(
   return promise;
 }
 
-ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
-                                           const String& name,
-                                           ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> StorageBucketManager::Delete(
+    ScriptState* script_state,
+    const String& name,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
@@ -253,14 +255,9 @@ void StorageBucketManager::DidGetKeys(
   resolver->Resolve(keys);
 }
 
-void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
-                                     bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid()) {
-    return;
-  }
-  ScriptState::Scope scope(script_state);
-
+void StorageBucketManager::DidDelete(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    bool success) {
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,

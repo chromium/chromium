@@ -121,10 +121,13 @@ ScriptPromiseTyped<V8StorageBucketDurability> StorageBucket::durability(
   return promise;
 }
 
-ScriptPromise StorageBucket::setExpires(ScriptState* script_state,
-                                        const DOMHighResTimeStamp& expires) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> StorageBucket::setExpires(
+    ScriptState* script_state,
+    const DOMHighResTimeStamp& expires) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -229,10 +232,6 @@ void StorageBucket::DidRequestPersist(
     ScriptPromiseResolverTyped<IDLBoolean>* resolver,
     bool persisted,
     bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
@@ -240,7 +239,6 @@ void StorageBucket::DidRequestPersist(
     return;
   }
 
-  ScriptState::Scope scope(script_state);
   resolver->Resolve(persisted);
 }
 
@@ -248,10 +246,6 @@ void StorageBucket::DidGetPersisted(
     ScriptPromiseResolverTyped<IDLBoolean>* resolver,
     bool persisted,
     bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
@@ -259,7 +253,6 @@ void StorageBucket::DidGetPersisted(
     return;
   }
 
-  ScriptState::Scope scope(script_state);
   resolver->Resolve(persisted);
 }
 
@@ -268,11 +261,6 @@ void StorageBucket::DidGetEstimate(
     int64_t current_usage,
     int64_t current_quota,
     bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
@@ -292,18 +280,12 @@ void StorageBucket::DidGetDurability(
     ScriptPromiseResolverTyped<V8StorageBucketDurability>* resolver,
     mojom::blink::BucketDurability durability,
     bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,
         "Unknown error occurred while getting durability."));
     return;
   }
-
-  ScriptState::Scope scope(script_state);
 
   if (durability == mojom::blink::BucketDurability::kRelaxed) {
     resolver->Resolve(
@@ -314,13 +296,9 @@ void StorageBucket::DidGetDurability(
   }
 }
 
-void StorageBucket::DidSetExpires(ScriptPromiseResolver* resolver,
-                                  bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
+void StorageBucket::DidSetExpires(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    bool success) {
   if (success) {
     resolver->Resolve();
   } else {
@@ -334,11 +312,6 @@ void StorageBucket::DidGetExpires(
     ScriptPromiseResolverTyped<IDLNullable<IDLDOMHighResTimeStamp>>* resolver,
     const std::optional<base::Time> expires,
     bool success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
   if (!success) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError,

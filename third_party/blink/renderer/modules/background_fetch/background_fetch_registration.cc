@@ -267,7 +267,7 @@ void BackgroundFetchRegistration::DidGetMatchingRequests(
   if (!return_all) {
     if (settled_fetches.empty()) {
       // Nothing was matched. Resolve with `undefined`.
-      resolver->Resolve();
+      resolver->DowncastTo<BackgroundFetchRecord>()->Resolve();
       return;
     }
 

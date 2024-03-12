@@ -27,7 +27,7 @@ PeriodicSyncManager::PeriodicSyncManager(
   DCHECK(registration_);
 }
 
-ScriptPromise PeriodicSyncManager::registerPeriodicSync(
+ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
     ScriptState* script_state,
     const String& tag,
     const BackgroundSyncOptions* options,
@@ -36,7 +36,7 @@ ScriptPromise PeriodicSyncManager::registerPeriodicSync(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Registration failed - no active Service Worker");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -44,12 +44,13 @@ ScriptPromise PeriodicSyncManager::registerPeriodicSync(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Periodic Background Sync is not allowed in fenced frames.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   mojom::blink::SyncRegistrationOptionsPtr sync_registration =
       mojom::blink::SyncRegistrationOptions::New(tag, options->minInterval());
@@ -95,19 +96,22 @@ ScriptPromiseTyped<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
   return promise;
 }
 
-ScriptPromise PeriodicSyncManager::unregister(ScriptState* script_state,
-                                              const String& tag) {
+ScriptPromiseTyped<IDLUndefined> PeriodicSyncManager::unregister(
+    ScriptState* script_state,
+    const String& tag) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsInFencedFrame()) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "Periodic Background Sync is not allowed in fenced frames."));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   // Silently succeed if there's no active service worker registration.
   if (!registration_->active()) {
@@ -134,7 +138,7 @@ PeriodicSyncManager::GetBackgroundSyncServiceRemote() {
 }
 
 void PeriodicSyncManager::RegisterCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     mojom::blink::BackgroundSyncError error,
     mojom::blink::SyncRegistrationOptionsPtr options) {
   switch (error) {
@@ -203,7 +207,7 @@ void PeriodicSyncManager::GetRegistrationsCallback(
 }
 
 void PeriodicSyncManager::UnregisterCallback(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     mojom::blink::BackgroundSyncError error) {
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE:

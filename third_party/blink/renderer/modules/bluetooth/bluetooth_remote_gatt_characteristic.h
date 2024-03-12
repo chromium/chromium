@@ -88,13 +88,16 @@ class BluetoothRemoteGATTCharacteristic final
       const V8BluetoothDescriptorUUID* descriptor_uuid,
       ExceptionState& exception_state);
   ScriptPromiseTyped<DOMDataView> readValue(ScriptState*, ExceptionState&);
-  ScriptPromise writeValue(ScriptState*, const DOMArrayPiece&, ExceptionState&);
-  ScriptPromise writeValueWithResponse(ScriptState*,
-                                       const DOMArrayPiece&,
-                                       ExceptionState&);
-  ScriptPromise writeValueWithoutResponse(ScriptState*,
-                                          const DOMArrayPiece&,
-                                          ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> writeValue(ScriptState*,
+                                              const DOMArrayPiece&,
+                                              ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> writeValueWithResponse(ScriptState*,
+                                                          const DOMArrayPiece&,
+                                                          ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> writeValueWithoutResponse(
+      ScriptState*,
+      const DOMArrayPiece&,
+      ExceptionState&);
   ScriptPromiseTyped<BluetoothRemoteGATTCharacteristic> startNotifications(
       ScriptState*,
       ExceptionState&);
@@ -135,7 +138,7 @@ class BluetoothRemoteGATTCharacteristic final
   void ReadValueCallback(ScriptPromiseResolverTyped<DOMDataView>*,
                          mojom::blink::WebBluetoothResult,
                          const std::optional<Vector<uint8_t>>& value);
-  void WriteValueCallback(ScriptPromiseResolver*,
+  void WriteValueCallback(ScriptPromiseResolverTyped<IDLUndefined>*,
                           const Vector<uint8_t>& value,
                           mojom::blink::WebBluetoothResult);
 
@@ -147,10 +150,11 @@ class BluetoothRemoteGATTCharacteristic final
       bool started,
       mojom::blink::WebBluetoothResult);
 
-  ScriptPromise WriteCharacteristicValue(ScriptState*,
-                                         const DOMArrayPiece& value,
-                                         mojom::blink::WebBluetoothWriteType,
-                                         ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> WriteCharacteristicValue(
+      ScriptState*,
+      const DOMArrayPiece& value,
+      mojom::blink::WebBluetoothWriteType,
+      ExceptionState&);
 
   void GetDescriptorsImpl(ScriptPromiseResolver*,
                           ExceptionState&,

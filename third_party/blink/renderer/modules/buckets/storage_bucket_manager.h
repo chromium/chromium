@@ -42,9 +42,9 @@ class MODULES_EXPORT StorageBucketManager final
   ScriptPromiseTyped<IDLSequence<IDLString>> keys(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromise Delete(ScriptState* script_state,
-                       const String& name,
-                       ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> Delete(ScriptState* script_state,
+                                          const String& name,
+                                          ExceptionState& exception_state);
 
   // GarbageCollected
   void Trace(Visitor*) const override;
@@ -63,7 +63,7 @@ class MODULES_EXPORT StorageBucketManager final
   void DidGetKeys(ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
                   const Vector<String>& keys,
                   bool success);
-  void DidDelete(ScriptPromiseResolver* resolver, bool success);
+  void DidDelete(ScriptPromiseResolverTyped<IDLUndefined>*, bool success);
 
   HeapMojoRemote<mojom::blink::BucketManagerHost> manager_remote_;
 
