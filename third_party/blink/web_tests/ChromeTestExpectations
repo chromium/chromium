@@ -129,6 +129,3 @@ crbug.com/1517744 external/wpt/wai-aria/role/synonym-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/tab-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/table-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Pass ]
-
-# Skipped because wptrunner does not yet set command line flag
-crbug.com/327605543 external/wpt/credential-management/digital-identity.https.html [ Failure ]
