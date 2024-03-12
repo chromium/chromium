@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
