@@ -174,7 +174,10 @@ void EvictionHandler::SubmitPlaceholderContentForEviction(
                      /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0,
                      /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
-  if (copy_result && !copy_result->IsEmpty()) {
+  // TODO(edcourtney): Handle this for software rendering, where there is no
+  // texture result but a SkBitmap instead.
+  if (copy_result && !copy_result->IsEmpty() &&
+      copy_result->GetTextureResult()) {
     auto resource = TransferableResource::MakeGpu(
         copy_result->GetTextureResult()->mailbox_holders[0].mailbox,
         GL_TEXTURE_2D,
