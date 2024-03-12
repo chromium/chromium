@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/affiliations",
   "+components/autofill/core",
   "+components/keyed_service/core",
   "+components/prefs",

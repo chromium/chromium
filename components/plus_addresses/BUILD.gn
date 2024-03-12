@@ -15,6 +15,8 @@ source_set("types") {
 
 source_set("plus_addresses") {
   sources = [
+    "affiliations/plus_address_affiliation_source_adapter.cc",
+    "affiliations/plus_address_affiliation_source_adapter.h",
     "plus_address_allocator.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
@@ -31,6 +33,7 @@ source_set("plus_addresses") {
     "plus_address_service.h",
   ]
   deps = [
+    "//components/affiliations/core/browser:affiliations",
     "//components/plus_addresses/webdata",
     "//components/prefs",
     "//components/signin/public/identity_manager",
@@ -72,6 +75,7 @@ buildflag_header("plus_addresses_buildflags") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parser_unittest.cc",
@@ -83,6 +87,8 @@ source_set("unit_tests") {
     ":plus_addresses",
     ":test_support",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/plus_addresses/webdata",
     "//components/prefs:test_support",
