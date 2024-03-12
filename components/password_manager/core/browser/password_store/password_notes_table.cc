@@ -27,11 +27,6 @@
 namespace password_manager {
 namespace {
 
-#if BUILDFLAG(IS_IOS)
-using metrics_util::PasswordNotesMigrationToOSCrypt;
-using metrics_util::RecordPasswordNotesMigrationToOSCryptStatus;
-#endif
-
 // Helper function to return a password notes map from the SQL statement.
 std::map<FormPrimaryKey, std::vector<PasswordNote>> StatementToPasswordNotes(
     sql::Statement* s) {
@@ -73,14 +68,11 @@ bool PasswordNotesTable::MigrateTable(int current_version,
 
 #if BUILDFLAG(IS_IOS)
   if (current_version < 40) {
-    RecordPasswordNotesMigrationToOSCryptStatus(
-        is_account_store, PasswordNotesMigrationToOSCrypt::kStarted);
     // In version 39 passwords encryption on iOS was migrated to OSCrypt.
     // In version 40 password notes encryption on iOS is migrated as well.
     sql::Statement get_notes_statement(
         db_->GetUniqueStatement("SELECT id, value FROM password_notes"));
 
-    int deleted_notes = 0, migrated_notes = 0;
     // Update each note value with the new BLOB.
     while (get_notes_statement.Step()) {
       int id = get_notes_statement.ColumnInt(0);
@@ -102,31 +94,16 @@ bool PasswordNotesTable::MigrateTable(int current_version,
             db_->GetUniqueStatement("DELETE FROM password_notes WHERE id = ?"));
         note_delete.BindInt(0, id);
         if (!note_delete.Run()) {
-          RecordPasswordNotesMigrationToOSCryptStatus(
-              is_account_store,
-              PasswordNotesMigrationToOSCrypt::kFailedToDelete);
           return false;
         }
-        deleted_notes++;
       } else if (retrieval_status != errSecSuccess) {
         // Stop migration with any other error.
-        base::UmaHistogramSparse(
-            base::StrCat({"PasswordManager.PasswordNotesMigrationToOSCrypt.",
-                          is_account_store ? "AccountStore" : "ProfileStore",
-                          ".KeychainRetrievalError"}),
-            static_cast<int>(retrieval_status));
-        RecordPasswordNotesMigrationToOSCryptStatus(
-            is_account_store,
-            PasswordNotesMigrationToOSCrypt::kFailedToDecryptFromKeychain);
         return false;
       } else {
         // Encrypt note using OSCrypt.
         std::string encrypted_note;
         if (LoginDatabase::EncryptedString(plaintext_note, &encrypted_note) !=
             LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
-          RecordPasswordNotesMigrationToOSCryptStatus(
-              is_account_store,
-              PasswordNotesMigrationToOSCrypt::kFailedToEncrypt);
           return false;
         }
 
@@ -136,27 +113,10 @@ bool PasswordNotesTable::MigrateTable(int current_version,
         password_note_update.BindBlob(0, encrypted_note);
         password_note_update.BindInt(1, id);
         if (!password_note_update.Run()) {
-          RecordPasswordNotesMigrationToOSCryptStatus(
-              is_account_store,
-              PasswordNotesMigrationToOSCrypt::kFailedToUpdate);
           return false;
         }
-        migrated_notes++;
       }
     }
-
-    RecordPasswordNotesMigrationToOSCryptStatus(
-        is_account_store, PasswordNotesMigrationToOSCrypt::kSuccess);
-    base::StringPiece infix_for_store =
-        is_account_store ? "AccountStore" : "ProfileStore";
-    base::UmaHistogramCounts1000(
-        base::StrCat({"PasswordManager.PasswordNotesMigrationToOSCrypt.",
-                      infix_for_store, ".DeletedNotesCount"}),
-        deleted_notes);
-    base::UmaHistogramCounts1000(
-        base::StrCat({"PasswordManager.PasswordNotesMigrationToOSCrypt.",
-                      infix_for_store, ".MigratedNotesCount"}),
-        migrated_notes);
   }
 #endif
   return true;

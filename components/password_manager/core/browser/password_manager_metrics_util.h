@@ -891,61 +891,6 @@ void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome);
 #endif
 
-#if BUILDFLAG(IS_IOS)
-// This enum indicates migration status from Keychain to OSCrypt for passwords
-// on iOS in the version 39.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Needs to stay in sync with MigrationToOSCryptEnum in enums.xml.
-enum class MigrationToOSCrypt {
-  kStarted = 0,
-  kFailedToCopyPasswordColumn = 1,
-  kFailedToDecryptFromKeychain = 2,
-  kFailedToEncrypt = 3,
-  kFailedToUpdate = 4,
-  kSuccess = 5,
-  kFailedToDelete = 6,
-  kMaxValue = kFailedToDelete,
-};
-
-// Records the latency of the passwords migration to OSCrypt of the login db on
-// iOS separated by password store type and whether the migration was successful
-// or not.
-void RecordMigrationToOSCryptLatency(bool success,
-                                     base::TimeDelta latency,
-                                     base::StringPiece store_infix);
-
-// Records the status of the passwords migration to OSCrypt of the login db on
-// iOS separated by password store type.
-void RecordMigrationToOSCryptStatus(base::TimeTicks migration_start_time,
-                                    bool is_account_store,
-                                    MigrationToOSCrypt status);
-
-// This enum indicates migration status from Keychain to OSCrypt for password
-// notes on iOS in the version 40.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Needs to stay in sync with PasswordNotesMigrationToOSCryptEnum in enums.xml.
-enum class PasswordNotesMigrationToOSCrypt {
-  kStarted = 0,
-  kFailedToDecryptFromKeychain = 1,
-  kFailedToEncrypt = 2,
-  kFailedToUpdate = 3,
-  kSuccess = 4,
-  kFailedToDelete = 5,
-  kMaxValue = kFailedToDelete,
-};
-
-// Records the status of the password notes migration to OSCrypt of the login db
-// on iOS separated by password store type.
-void RecordPasswordNotesMigrationToOSCryptStatus(
-    bool is_account_store,
-    PasswordNotesMigrationToOSCrypt status);
-#endif
 }  // namespace password_manager::metrics_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_METRICS_UTIL_H_

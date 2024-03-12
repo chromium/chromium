@@ -35,30 +35,7 @@
 using base::Bucket;
 using base::UTF16ToUTF8;
 using base::apple::ScopedCFTypeRef;
-using password_manager::metrics_util::MigrationToOSCrypt;
-using password_manager::metrics_util::PasswordNotesMigrationToOSCrypt;
 
-namespace {
-void ExpectSuccessMetricsRecorded(
-    const base::HistogramTester& histogram_tester,
-    password_manager::IsAccountStore is_account_store) {
-  base::StringPiece store_infix =
-      is_account_store ? "AccountStore" : "ProfileStore";
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("PasswordManager.MigrationToOSCrypt"),
-      BucketsInclude(Bucket(MigrationToOSCrypt::kStarted, 1),
-                     Bucket(MigrationToOSCrypt::kSuccess, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(base::StrCat(
-                  {"PasswordManager.MigrationToOSCrypt.", store_infix})),
-              BucketsInclude(Bucket(MigrationToOSCrypt::kStarted, 1),
-                             Bucket(MigrationToOSCrypt::kSuccess, 1)));
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({"PasswordManager.MigrationToOSCrypt.", store_infix,
-                    ".SuccessLatency"}),
-      1);
-}
-}  // namespace
 namespace password_manager {
 
 class LoginDatabaseIOSTest : public PlatformTest {
@@ -430,8 +407,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     LoginDatabase db(get_database_path(), IsAccountStore(false));
     ASSERT_TRUE(db.Init());
 
-    ExpectSuccessMetricsRecorded(histogram_tester, IsAccountStore(false));
-
     // Delete password from the keychain to check that GetAllLogins no longer
     // needs to access it.
     DeleteEncryptedPasswordFromKeychain(password_keychain_identifier);
@@ -495,8 +470,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   LoginDatabase login_db(get_database_path(), IsAccountStore(true));
   ASSERT_TRUE(login_db.Init());
 
-  ExpectSuccessMetricsRecorded(histogram_tester, IsAccountStore(true));
-
   // Delete password from the keychain to check that GetAllLogins no longer
   // needs to access it.
   DeleteEncryptedPasswordFromKeychain(password_keychain_identifier);
@@ -504,74 +477,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
   DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
-}
-
-TEST_F(LoginDatabaseMigrationToOSCryptTest,
-       MigrationFromVersion38FailureMetricsProfileStore) {
-  base::HistogramTester histogram_tester;
-
-  CreateDatabase("login_db_v38_with_keychain_id.sql");
-
-  // Ensure that the password entry in the db contain invalid keychain ids
-  // so that the migration will fail. This value can't be converted to
-  // CFStringRef.
-  ReplacePasswordValue("v10\x97&0\xa2Q\xd8\03\x9fM(\xb2\xa6y\xb8G");
-
-  LoginDatabase login_db(get_database_path(), IsAccountStore(false));
-  ASSERT_FALSE(login_db.Init());
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("PasswordManager.MigrationToOSCrypt"),
-      BucketsInclude(
-          Bucket(MigrationToOSCrypt::kStarted, 1),
-          Bucket(MigrationToOSCrypt::kFailedToDecryptFromKeychain, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "PasswordManager.MigrationToOSCrypt.ProfileStore"),
-              BucketsInclude(
-                  Bucket(MigrationToOSCrypt::kStarted, 1),
-                  Bucket(MigrationToOSCrypt::kFailedToDecryptFromKeychain, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.MigrationToOSCrypt.ProfileStore.KeychainRetrievalError",
-      -1, 1);
-
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.MigrationToOSCrypt.ProfileStore.SuccessLatency", 0);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.MigrationToOSCrypt.ProfileStore.ErrorLatency", 1);
-}
-
-TEST_F(LoginDatabaseMigrationToOSCryptTest,
-       MigrationFromVersion38FailureMetricsAccountStore) {
-  base::HistogramTester histogram_tester;
-
-  CreateDatabase("login_db_v38_with_keychain_id.sql");
-
-  // Ensure that the password entries in the db contain invalid keychain ids
-  // so that the migration will fail. This value can't be converted to
-  // CFStringRef.
-  ReplacePasswordValue("v10\x97&0\xa2Q\xd8\03\x9fM(\xb2\xa6y\xb8G");
-
-  LoginDatabase login_db(get_database_path(), IsAccountStore(true));
-  ASSERT_FALSE(login_db.Init());
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("PasswordManager.MigrationToOSCrypt"),
-      BucketsInclude(
-          Bucket(MigrationToOSCrypt::kStarted, 1),
-          Bucket(MigrationToOSCrypt::kFailedToDecryptFromKeychain, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "PasswordManager.MigrationToOSCrypt.AccountStore"),
-              BucketsInclude(
-                  Bucket(MigrationToOSCrypt::kStarted, 1),
-                  Bucket(MigrationToOSCrypt::kFailedToDecryptFromKeychain, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.MigrationToOSCrypt.AccountStore.KeychainRetrievalError",
-      -1, 1);
-
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.MigrationToOSCrypt.AccountStore.SuccessLatency", 0);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.MigrationToOSCrypt.AccountStore.ErrorLatency", 1);
 }
 
 TEST_F(LoginDatabaseMigrationToOSCryptTest,
@@ -595,16 +500,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   EXPECT_EQ(1u, forms.size());
   EXPECT_EQ(u"password", forms[0].password_value);
 
-  ExpectSuccessMetricsRecorded(histogram_tester, IsAccountStore(false));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.MigrationToOSCrypt."
-      "ProfileStore.DeletedPasswordCount",
-      1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.MigrationToOSCrypt."
-      "ProfileStore.MigratedPasswordCount",
-      1, 1);
-
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
   DeleteEncryptedPasswordFromKeychain(password_keychain_identifier);
@@ -625,17 +520,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     base::HistogramTester histogram_tester;
     LoginDatabase login_db(get_database_path(), IsAccountStore(false));
     ASSERT_TRUE(login_db.Init());
-
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            "PasswordManager.PasswordNotesMigrationToOSCrypt"),
-        BucketsInclude(Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-                       Bucket(PasswordNotesMigrationToOSCrypt::kSuccess, 1)));
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            "PasswordManager.PasswordNotesMigrationToOSCrypt.ProfileStore"),
-        BucketsInclude(Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-                       Bucket(PasswordNotesMigrationToOSCrypt::kSuccess, 1)));
 
     // Delete note from the keychain to check that GetAllLogins no longer needs
     // to access it;
@@ -678,17 +562,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     LoginDatabase login_db(get_database_path(), IsAccountStore(true));
     ASSERT_TRUE(login_db.Init());
 
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            "PasswordManager.PasswordNotesMigrationToOSCrypt"),
-        BucketsInclude(Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-                       Bucket(PasswordNotesMigrationToOSCrypt::kSuccess, 1)));
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            "PasswordManager.PasswordNotesMigrationToOSCrypt.AccountStore"),
-        BucketsInclude(Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-                       Bucket(PasswordNotesMigrationToOSCrypt::kSuccess, 1)));
-
     // Delete note from the keychain to check that GetAllLogins no longer needs
     // to access it;
     DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
@@ -708,72 +581,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     ASSERT_TRUE(OSCrypt::DecryptString16(note_values[0], &decrypted_note));
     EXPECT_EQ(decrypted_note, u"test_note");
   }
-}
-
-TEST_F(LoginDatabaseMigrationToOSCryptTest,
-       MigrationFromVersion39FailureMetricsProfileStore) {
-  base::HistogramTester histogram_tester;
-
-  CreateDatabase("login_db_v39_with_note_keychain_id.sql");
-
-  // Ensure that the note entry in the db contains invalid keychain ids so that
-  // the migration fails. This value can't be converted to CFStringRef.
-  ReplaceNoteValue("v10\x97&0\xa2Q\xd8\03\x9fM(\xb2\xa6y\xb8G");
-
-  LoginDatabase login_db(get_database_path(), IsAccountStore(false));
-  ASSERT_FALSE(login_db.Init());
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "PasswordManager.PasswordNotesMigrationToOSCrypt"),
-      BucketsInclude(
-          Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-          Bucket(PasswordNotesMigrationToOSCrypt::kFailedToDecryptFromKeychain,
-                 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "PasswordManager.PasswordNotesMigrationToOSCrypt.ProfileStore"),
-      BucketsInclude(
-          Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-          Bucket(PasswordNotesMigrationToOSCrypt::kFailedToDecryptFromKeychain,
-                 1)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordNotesMigrationToOSCrypt.ProfileStore."
-      "KeychainRetrievalError",
-      -1, 1);
-}
-
-TEST_F(LoginDatabaseMigrationToOSCryptTest,
-       MigrationFromVersion39FailureMetricsAccountStore) {
-  base::HistogramTester histogram_tester;
-
-  CreateDatabase("login_db_v39_with_note_keychain_id.sql");
-
-  // Ensure that the note entry in the db contains invalid keychain ids so that
-  // the migration fails. This value can't be converted to CFStringRef.
-  ReplaceNoteValue("v10\x97&0\xa2Q\xd8\03\x9fM(\xb2\xa6y\xb8G");
-
-  LoginDatabase login_db(get_database_path(), IsAccountStore(true));
-  ASSERT_FALSE(login_db.Init());
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "PasswordManager.PasswordNotesMigrationToOSCrypt"),
-      BucketsInclude(
-          Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-          Bucket(PasswordNotesMigrationToOSCrypt::kFailedToDecryptFromKeychain,
-                 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "PasswordManager.PasswordNotesMigrationToOSCrypt.AccountStore"),
-      BucketsInclude(
-          Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-          Bucket(PasswordNotesMigrationToOSCrypt::kFailedToDecryptFromKeychain,
-                 1)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordNotesMigrationToOSCrypt.AccountStore."
-      "KeychainRetrievalError",
-      -1, 1);
 }
 
 TEST_F(LoginDatabaseMigrationToOSCryptTest,
@@ -798,25 +605,6 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   EXPECT_EQ(forms[0].notes.size(), 1u);
   EXPECT_EQ(forms[0].notes[0].value, u"example_note");
   EXPECT_EQ(forms[1].notes.size(), 0u);
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "PasswordManager.PasswordNotesMigrationToOSCrypt"),
-      BucketsInclude(Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-                     Bucket(PasswordNotesMigrationToOSCrypt::kSuccess, 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "PasswordManager.PasswordNotesMigrationToOSCrypt.ProfileStore"),
-      BucketsInclude(Bucket(PasswordNotesMigrationToOSCrypt::kStarted, 1),
-                     Bucket(PasswordNotesMigrationToOSCrypt::kSuccess, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordNotesMigrationToOSCrypt."
-      "ProfileStore.DeletedNotesCount",
-      1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordNotesMigrationToOSCrypt."
-      "ProfileStore.MigratedNotesCount",
-      1, 1);
 
   // Clear the note from the keychain to ensure it doesn't affect other tests.
   DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
