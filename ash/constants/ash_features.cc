@@ -2130,7 +2130,7 @@ BASE_FEATURE(kOrcaShorten, "OrcaShorten", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables Orca capability check.
 BASE_FEATURE(kOrcaUseAccountCapabilities,
              "OrcaUseAccountCapabilities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Orca on Workspace.
 BASE_FEATURE(kOrcaOnWorkspace,
