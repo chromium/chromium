@@ -62,10 +62,12 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   PhysicalRect non_zero_visible_rect = scroll_snapport_rect;
   LayoutUnit minimum_layout_unit;
   minimum_layout_unit.SetRawValue(1);
-  if (non_zero_visible_rect.Width() == LayoutUnit())
+  if (non_zero_visible_rect.Width() <= LayoutUnit()) {
     non_zero_visible_rect.SetWidth(minimum_layout_unit);
-  if (non_zero_visible_rect.Height() == LayoutUnit())
+  }
+  if (non_zero_visible_rect.Height() <= LayoutUnit()) {
     non_zero_visible_rect.SetHeight(minimum_layout_unit);
+  }
 
   // Determine the appropriate X behavior.
   mojom::blink::ScrollAlignment::Behavior scroll_x;

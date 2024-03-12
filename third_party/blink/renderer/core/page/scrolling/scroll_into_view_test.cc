@@ -161,6 +161,55 @@ TEST_F(ScrollIntoViewTest, ScrollPaddingOnBodyWhenDocumentElDefinesViewport) {
   ASSERT_EQ(Window().scrollY(), 10 - 2);
 }
 
+// When the sum of scroll-padding in a scroll container along a specific axis
+// exceeds the length of that axis, it results in an empty scrollport. In this
+// case, invoking scrollIntoView on a child element within the scrollport
+// should not trigger scrolling.
+// See https://crbug.com/40055750
+TEST_F(ScrollIntoViewTest, EmptyScrollportSinceScrollPadding) {
+  v8::HandleScope HandleScope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(300, 300));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+      <style>
+        #container {
+          width: 200px;
+          display: flex;
+          flex-direction: row;
+          overflow-x: scroll;
+          scroll-padding: 50px 0;
+          height: 50px;
+        }
+
+        .item {
+          width: 50px;
+          height: 50px;
+          flex-shrink: 0;
+        }
+      </style>
+     <div id="container">
+        <div class="item"></div>
+        <div id="target" class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+      </div>
+    )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  target->scrollIntoView();
+  Element* scroller = GetDocument().getElementById(AtomicString("container"));
+
+  ASSERT_EQ(scroller->scrollLeft(), 0);
+}
+
 TEST_F(ScrollIntoViewTest, SmoothScroll) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
