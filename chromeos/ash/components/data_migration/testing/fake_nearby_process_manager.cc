@@ -5,6 +5,11 @@
 #include "chromeos/ash/components/data_migration/testing/fake_nearby_process_manager.h"
 
 #include "base/notimplemented.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "chromeos/ash/components/data_migration/constants.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
@@ -64,22 +69,47 @@ class FakeNearbyProcessReference
 
 FakeNearbyProcessManager::FakeNearbyProcessManager(
     std::string_view remote_endpoint_id)
-    : fake_nearby_connections_(std::move(remote_endpoint_id)) {}
+    : fake_nearby_connections_(std::move(remote_endpoint_id)),
+      receiver_(&fake_nearby_connections_) {
+  InitializeProcess();
+}
 
-FakeNearbyProcessManager::~FakeNearbyProcessManager() = default;
+FakeNearbyProcessManager::~FakeNearbyProcessManager() {
+  if (remote_.is_bound()) {
+    // Flushes any pending NearbyConnections mojo calls that the test may have
+    // made. Since the mojo call made below uses the same message pipe as that
+    // used during tests and mojo guarantees the ordering of calls made on the
+    // same message pipe, any pending mojo calls made during the test are
+    // guaranteed to be completed before the test exits. Failure to do so can
+    // result in memory leaks reported by LSAN; mojo leaks memory internally if
+    // the request's message loop is destroyed before a mojo call completes.
+    base::RunLoop run_loop;
+    remote_->StopAllEndpoints(
+        kServiceId,
+        base::BindLambdaForTesting(
+            [&run_loop](FakeNearbyConnections::Status) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+}
 
 std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
 FakeNearbyProcessManager::GetNearbyProcessReference(
     NearbyProcessStoppedCallback on_process_stopped_callback) {
-  mojo::PendingRemote<NearbyConnectionsMojom> pending_remote;
-  receiver_set_.Add(&fake_nearby_connections_,
-                    pending_remote.InitWithNewPipeAndPassReceiver());
-  return std::make_unique<FakeNearbyProcessReference>(
-      mojo::SharedRemote<NearbyConnectionsMojom>(std::move(pending_remote)));
+  if (!remote_.is_bound() || !receiver_.is_bound()) {
+    InitializeProcess();
+  }
+  return std::make_unique<FakeNearbyProcessReference>(remote_);
 }
 
 void FakeNearbyProcessManager::ShutDownProcess() {
-  receiver_set_.Clear();
+  receiver_.reset();
+  remote_.reset();
+}
+
+void FakeNearbyProcessManager::InitializeProcess() {
+  ShutDownProcess();
+  remote_.Bind(receiver_.BindNewPipeAndPassRemote(),
+               base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 }  // namespace data_migration

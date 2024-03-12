@@ -6,8 +6,21 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-component("data_migration") {
+source_set("constants") {
   sources = [ "constants.h" ]
+}
+
+source_set("file_receiver") {
+  sources = [
+    "file_receiver.cc",
+    "file_receiver.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/nearby_sharing/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
+  ]
 }
 
 source_set("test_support") {
@@ -21,11 +34,29 @@ source_set("test_support") {
   ]
 
   deps = [
-    ":data_migration",
+    ":constants",
     "//base",
+    "//base/test:test_support",
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
     "//mojo",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "file_receiver_unittest.cc" ]
+
+  deps = [
+    ":constants",
+    ":file_receiver",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/nearby_sharing/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

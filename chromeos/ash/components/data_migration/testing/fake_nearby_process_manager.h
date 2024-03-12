@@ -12,7 +12,8 @@
 #include "chromeos/ash/components/data_migration/testing/fake_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace data_migration {
 
@@ -37,10 +38,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
   std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
       NearbyProcessStoppedCallback on_process_stopped_callback) override;
   void ShutDownProcess() override;
+  void InitializeProcess();
 
   FakeNearbyConnections fake_nearby_connections_;
-  mojo::ReceiverSet<::nearby::connections::mojom::NearbyConnections>
-      receiver_set_;
+  mojo::Receiver<::nearby::connections::mojom::NearbyConnections> receiver_;
+  mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections> remote_;
 };
 
 }  // namespace data_migration
