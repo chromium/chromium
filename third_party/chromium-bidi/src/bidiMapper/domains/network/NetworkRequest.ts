@@ -340,9 +340,7 @@ export class NetworkRequest {
         method: ChromiumBidi.Network.EventNames.AuthRequired,
         params: {
           ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
-          // TODO: Why is this on the Spec
-          // How are we suppose to know the response if we are blocked by Auth
-          response: {} as any,
+          response: this.#getResponseEventParams(),
         },
       };
     });
@@ -492,6 +490,49 @@ export class NetworkRequest {
     };
   }
 
+  #getResponseEventParams(): Network.ResponseData {
+    // Chromium sends wrong extraInfo events for responses served from cache.
+    // See https://github.com/puppeteer/puppeteer/issues/9965 and
+    // https://crbug.com/1340398.
+    if (this.#response.info?.fromDiskCache) {
+      this.#response.extraInfo = undefined;
+    }
+
+    // TODO: get headers from Fetch.requestPaused
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
+      this.#response.info?.headers
+    );
+
+    const authChallenges = this.#authChallenges(
+      this.#response.info?.headers ?? {}
+    );
+
+    return {
+      url: this.url,
+      protocol: this.#response.info?.protocol ?? '',
+      status: this.statusCode,
+      statusText:
+        this.#response.info?.statusText ||
+        this.#response.paused?.responseStatusText ||
+        '',
+      fromCache:
+        this.#response.info?.fromDiskCache ||
+        this.#response.info?.fromPrefetchCache ||
+        this.#servedFromCache,
+      headers,
+      mimeType: this.#response.info?.mimeType || '',
+      bytesReceived: this.#response.info?.encodedDataLength || 0,
+      headersSize: computeHeadersSize(headers),
+      // TODO: consider removing from spec.
+      bodySize: 0,
+      content: {
+        // TODO: consider removing from spec.
+        size: 0,
+      },
+      ...(authChallenges ? {authChallenges} : {}),
+    };
+  }
+
   #getNavigationId(): BrowsingContext.Navigation | null {
     if (
       !this.#request.info ||
@@ -571,45 +612,11 @@ export class NetworkRequest {
       'ResponseReceivedEvent is not set'
     );
 
-    // Chromium sends wrong extraInfo events for responses served from cache.
-    // See https://github.com/puppeteer/puppeteer/issues/9965 and
-    // https://crbug.com/1340398.
-    if (this.#response.info?.fromDiskCache) {
-      this.#response.extraInfo = undefined;
-    }
-
-    // TODO: get headers from Fetch.requestPaused
-    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#response.info?.headers
-    );
-
     return {
       method: ChromiumBidi.Network.EventNames.ResponseStarted,
       params: {
         ...this.#getBaseEventParams(Network.InterceptPhase.ResponseStarted),
-        response: {
-          url: this.url,
-          protocol: this.#response.info?.protocol ?? '',
-          status: this.statusCode,
-          statusText:
-            this.#response.info?.statusText ||
-            this.#response.paused?.responseStatusText ||
-            '',
-          fromCache:
-            this.#response.info?.fromDiskCache ||
-            this.#response.info?.fromPrefetchCache ||
-            this.#servedFromCache,
-          headers,
-          mimeType: this.#response.info?.mimeType || '',
-          bytesReceived: this.#response.info?.encodedDataLength || 0,
-          headersSize: computeHeadersSize(headers),
-          // TODO: consider removing from spec.
-          bodySize: 0,
-          content: {
-            // TODO: consider removing from spec.
-            size: 0,
-          },
-        },
+        response: this.#getResponseEventParams(),
       },
     };
   }
@@ -618,49 +625,22 @@ export class NetworkRequest {
     assert(this.#request.info, 'RequestWillBeSentEvent is not set');
     assert(this.#response.info, 'ResponseReceivedEvent is not set');
 
-    // Chromium sends wrong extraInfo events for responses served from cache.
-    // See https://github.com/puppeteer/puppeteer/issues/9965 and
-    // https://crbug.com/1340398.
-    if (this.#response.info.fromDiskCache) {
-      this.#response.extraInfo = undefined;
-    }
-
-    const authChallenges = this.#authChallenges(this.#response.info.headers);
-    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#response.info.headers
-    );
-
     return {
       method: ChromiumBidi.Network.EventNames.ResponseCompleted,
       params: {
         ...this.#getBaseEventParams(),
-        response: {
-          url: this.url,
-          protocol: this.#response.info.protocol ?? '',
-          status: this.statusCode,
-          statusText: this.#response.info.statusText,
-          fromCache:
-            this.#response.info.fromDiskCache ||
-            this.#response.info.fromPrefetchCache ||
-            this.#servedFromCache,
-          headers,
-          mimeType: this.#response.info.mimeType,
-          bytesReceived: this.#response.info.encodedDataLength,
-          headersSize: computeHeadersSize(headers),
-          // TODO: consider removing from spec.
-          bodySize: 0,
-          content: {
-            // TODO: consider removing from spec.
-            size: 0,
-          },
-          ...(authChallenges ? {authChallenges} : {}),
-        },
+        response: this.#getResponseEventParams(),
       },
     };
   }
 
   #isIgnoredEvent(): boolean {
-    return this.#request.info?.request.url.endsWith('/favicon.ico') ?? false;
+    const faviconUrl = '/favicon.ico';
+    return (
+      this.#request.paused?.request.url.endsWith(faviconUrl) ??
+      this.#request.info?.request.url.endsWith(faviconUrl) ??
+      false
+    );
   }
 
   #authChallenges(
