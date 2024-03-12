@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 
 #include "base/auto_reset.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
