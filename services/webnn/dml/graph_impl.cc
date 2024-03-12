@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/ml/webnn/graph_validation_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
@@ -52,6 +53,12 @@ using IdToNodeOutputMap = std::map<uint64_t, const NodeOutput*>;
 
 constexpr const uint32_t kNhwcToNchwPermutation[] = {0, 3, 1, 2};
 constexpr const uint32_t kNchwToNhwcPermutation[] = {0, 2, 3, 1};
+// The `nhwc` input layout of regular conv2d is `ohwi` filter layout by default
+// that need to be transposed to `oihw`.
+constexpr const uint32_t kOhwiToOihwPermutation[] = {0, 3, 1, 2};
+// The `nhwc` input layout of depthwise conv2d is `ihwo` filter layout by
+// default that need to be transposed to `oihw`.
+constexpr const uint32_t kIhwoToOihwPermutation[] = {3, 0, 1, 2};
 
 DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
   switch (type) {
@@ -745,12 +752,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
 
   const NodeOutput* filter =
       GetNodeOutputForOperand(id_to_node_output_map, conv2d->filter_operand_id);
-  const auto& filter_tensor_desc = filter->GetTensorDesc();
+  auto filter_tensor_desc = filter->GetTensorDesc();
 
   uint64_t output_id = conv2d->output_operand_id;
   // The output tensor description may be transposed.
   auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
+  CHECK_EQ(output_tensor_desc.GetDimensions().size(), 4u);
 
   std::vector<const NodeOutput*> inputs = {input, filter};
   std::optional<TensorDesc> reshaped_bias_tensor_desc;
@@ -790,6 +798,19 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     // To support other layouts, we can transpose the input and output
     // tensors
     case mojom::InputOperandLayout::kChannelsLast: {
+      if (conv2d->type == mojom::Conv2d::Type::kDirect) {
+        const uint32_t input_channels = input_tensor_desc.GetDimensions()[3];
+        const uint32_t output_channels = output_tensor_desc.GetDimensions()[3];
+        const bool depthwise = webnn::IsDepthwiseConv2d(
+            input_channels, output_channels, conv2d->groups);
+        if (depthwise) {
+          // The filter layout is `ihwo` for depthwise conv2d.
+          filter_tensor_desc.Transpose(kIhwoToOihwPermutation);
+        } else {
+          // The filter layout is `ohwi` for regular conv2d.
+          filter_tensor_desc.Transpose(kOhwiToOihwPermutation);
+        }
+      }
       input_tensor_desc.Transpose(kNhwcToNchwPermutation);
       output_tensor_desc.Transpose(kNhwcToNchwPermutation);
       break;

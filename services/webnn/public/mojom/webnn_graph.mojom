@@ -157,8 +157,11 @@ struct Padding2d {
 
 // Represents a 2-D convolution given the input and filter tensors.
 //
-// * conv2d (Type == kDirect) only supports `oihw` (output_channels,
-//   input_channels/groups, height, width) filter layout
+// * conv2d (Type == kDirect):  `nchw` input layout only supports `oihw` (
+//   output_channels, input_channels/groups, height, width) filter layout,
+//   `nhwc` input layout only supports `ohwi` for regular conv2d and `ihwo` (1,
+//   height, width, options.groups) filter layout for depthwise conv2d that is
+//   `options.groups = inputChannels = outputChannels`.
 // * convTranspose2d (Type == kTransposed) only supports `iohw` (input_channels,
 //   output_channels/groups, height, width) filter layout
 // Support for other layouts are being discussed in the working group

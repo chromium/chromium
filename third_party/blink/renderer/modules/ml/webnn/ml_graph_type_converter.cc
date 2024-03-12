@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/types/expected_macros.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -431,6 +432,56 @@ OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewConcat(std::move(concat_mojo));
 }
 
+std::optional<String> ValidateConv2dDefaultFilterLayout(
+    const MLOperator* conv2d) {
+  const auto* options = static_cast<const MLConv2dOptions*>(conv2d->Options());
+  CHECK(options);
+  blink::V8MLConv2dFilterOperandLayout::Enum filter_layout =
+      options->filterLayout().AsEnum();
+  bool is_default_filter_layout = false;
+  switch (options->inputLayout().AsEnum()) {
+    case blink::V8MLInputOperandLayout::Enum::kNchw: {
+      // The nchw input layout uses oihw filter layout by default.
+      is_default_filter_layout =
+          filter_layout == blink::V8MLConv2dFilterOperandLayout::Enum::kOihw;
+      break;
+    }
+    case blink::V8MLInputOperandLayout::Enum::kNhwc: {
+      // For regular conv2d, ohwi filter layout is expected by default.
+      // For depthwise conv2d, ihwo filter layout is expected by default.
+      const auto* const input = conv2d->Inputs()[0].Get();
+      CHECK(input);
+      const auto& input_shape = input->Dimensions();
+      CHECK_EQ(input_shape.size(), 4u);
+      const uint32_t input_channels = input_shape[3];
+      const auto* const output = conv2d->Outputs()[0].Get();
+      CHECK(output);
+      const auto& output_shape = output->Dimensions();
+      CHECK_EQ(output_shape.size(), 4u);
+      const uint32_t output_channels = output_shape[3];
+      const uint32_t groups = base::checked_cast<uint32_t>(options->groups());
+      // Depthwise conv2d is "options.groups == input_channels ==
+      // output_channels".
+      const bool depthwise =
+          webnn::IsDepthwiseConv2d(input_channels, output_channels, groups);
+      is_default_filter_layout =
+          depthwise
+              ? filter_layout == V8MLConv2dFilterOperandLayout::Enum::kIhwo
+              : filter_layout == V8MLConv2dFilterOperandLayout::Enum::kOhwi;
+      break;
+    }
+  }
+
+  // TODO(crbug.com/1273291): support other layouts by transposing the
+  // filter operand.
+  if (!is_default_filter_layout) {
+    return String::Format("The filter layout %s is not supported.",
+                          options->filterLayout().AsCStr());
+  }
+
+  return std::nullopt;
+}
+
 template <typename MLConv2dOptionsType>
 base::expected<OperationPtr, String> CreateConv2dOperation(
     const OperandToIdMap& operand_to_id_map,
@@ -466,14 +517,11 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
   if constexpr (std::is_same<MLConv2dOptionsType, MLConv2dOptions>::value) {
     conv2d_mojo->type = blink_mojom::Conv2d::Type::kDirect;
 
-    if (options->filterLayout().AsEnum() !=
-        blink::V8MLConv2dFilterOperandLayout::Enum::kOihw) {
-      // The filter layout is being discussed to simplify other variants in
-      // WebNN working group
-      // https://github.com/webmachinelearning/webnn/issues/324.
-      return base::unexpected(
-          String::Format("The filter layout %s is not supported.",
-                         options->filterLayout().AsCStr()));
+    // The filter layout is being discussed to simplify in working group
+    // https://github.com/webmachinelearning/webnn/issues/324.
+    const auto validation_result = ValidateConv2dDefaultFilterLayout(conv2d);
+    if (validation_result) {
+      return base::unexpected(validation_result.value());
     }
   } else if constexpr (std::is_same<MLConv2dOptionsType,
                                     MLConvTranspose2dOptions>::value) {

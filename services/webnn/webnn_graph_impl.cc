@@ -271,8 +271,40 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
     std::optional<Operand> bias_operand) {
-  return ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
-      id_to_operand_map, conv2d, std::move(bias_operand));
+  auto component_attributes =
+      ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
+          id_to_operand_map, conv2d, std::move(bias_operand));
+  switch (conv2d->input_layout) {
+    case webnn::mojom::InputOperandLayout::kChannelsFirst:
+      // "channelsFirst": [batches, input_channels, height, width]
+      component_attributes.filter_layout = Conv2dFilterOperandLayout::kOihw;
+      break;
+    case webnn::mojom::InputOperandLayout::kChannelsLast:
+      // "channelsLast": [batches, height, width, input_channels]
+      // For regular conv2d, ohwi filter layout is expected by default.
+      // For depthwise conv2d, ihwo filter layout is expected by default.
+      const auto* const input =
+          GetMojoOperand(id_to_operand_map, conv2d->input_operand_id);
+      CHECK(input);
+      const auto& input_shape = input->dimensions;
+      CHECK_EQ(input_shape.size(), 4u);
+      const uint32_t input_channels = input_shape[3];
+      const auto* const output =
+          GetMojoOperand(id_to_operand_map, conv2d->output_operand_id);
+      CHECK(output);
+      const auto& output_shape = output->dimensions;
+      CHECK_EQ(output_shape.size(), 4u);
+      const uint32_t output_channels = output_shape[3];
+      // Depthwise conv2d is "options.groups == input_channels ==
+      // output_channels".
+      const bool depthwise = webnn::IsDepthwiseConv2d(
+          input_channels, output_channels, conv2d->groups);
+      component_attributes.filter_layout =
+          depthwise ? Conv2dFilterOperandLayout::kIhwo
+                    : Conv2dFilterOperandLayout::kOhwi;
+      break;
+  }
+  return component_attributes;
 }
 
 webnn::LstmAttributes ConvertToLstmAttributes(

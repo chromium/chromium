@@ -733,32 +733,6 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
   const bool depthwise =
       webnn::IsDepthwiseConv2d(input_channels, output_channels, conv2d.groups);
 
-  int32_t filter_index = operand_to_index_map_.at(conv2d.filter_operand_id);
-  const mojom::Operand& filter_operand = GetOperand(conv2d.filter_operand_id);
-  CHECK_EQ(filter_operand.dimensions.size(), 4u);
-  if (!depthwise) {
-    // For regular conv2d, NHWC input layout expects weights layout in ohwi that
-    // is [output_channels, height, width, input_channels], but the mojo
-    // definition only supports oihw [output_channels, input_channels, height,
-    // width] filter layout at current stage, so the Transpose tflite operator
-    // need to be used for converting oihw to ohwi filter layout.
-    //
-    // TODO(crbug.com/327969294): support ohwi filter layout in mojo definition.
-    const std::array<uint32_t, 4> oihw_to_ohwi_permutation = {0, 2, 3, 1};
-    filter_index = InsertTransposeOperation(filter_operand, filter_index,
-                                            oihw_to_ohwi_permutation);
-  } else {
-    // For depthwise conv2d, NHWC input layout expects weights layout in ihwo
-    // that is [1, kernel_height, kernel_width, input_channels *
-    // depth_multiplier], so the Transpose tflite operator need to be used for
-    // converting oihw to ihwo filter layout.
-    //
-    // TODO(crbug.com/327969294): support ihwo filter layout in mojo definition.
-    const std::array<uint32_t, 4> oihw_to_ihwo_permutation = {1, 2, 3, 0};
-    filter_index = InsertTransposeOperation(filter_operand, filter_index,
-                                            oihw_to_ihwo_permutation);
-  }
-
   // Validate activation operator that is partial supported in tflite schema and
   // convert to tflite function type.
   ::tflite::ActivationFunctionType activation =
@@ -773,10 +747,14 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
   // Get tflite padding mode with the size2d of input, filter, dilation.
   const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
                                                 .width = input_shape[2]};
+  // For nhwc input layout, the default filter layout is ohwi for regular conv2d
+  // and ihwo for depthwise conv2d.
+  const mojom::Operand& filter_operand = GetOperand(conv2d.filter_operand_id);
+  CHECK_EQ(filter_operand.dimensions.size(), 4u);
   const auto& filter_shape = filter_operand.dimensions;
   CHECK_EQ(filter_shape.size(), 4u);
-  const webnn::Size2d<uint32_t> filter_size2d = {.height = filter_shape[2],
-                                                 .width = filter_shape[3]};
+  const webnn::Size2d<uint32_t> filter_size2d = {.height = filter_shape[1],
+                                                 .width = filter_shape[2]};
   const auto padding_mode =
       GetTfLitePaddingMode(*conv2d.padding, input_size2d, filter_size2d,
                            *conv2d.strides, *conv2d.dilations);
@@ -835,7 +813,7 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
 
   const std::array<int32_t, 3> op_inputs = {
       explicit_pad_index ? explicit_pad_index.value() : input_index,
-      filter_index, bias_index};
+      operand_to_index_map_.at(conv2d.filter_operand_id), bias_index};
   const std::array<int32_t, 1> op_outputs = {
       operand_to_index_map_.at(conv2d.output_operand_id)};
   return ::tflite::CreateOperator(builder_, operator_code_index,
