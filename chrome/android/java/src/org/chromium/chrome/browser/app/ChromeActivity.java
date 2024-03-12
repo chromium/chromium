@@ -3171,7 +3171,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ReadAloudController readAloudController =
                 mRootUiCoordinator.getReadAloudControllerSupplier().get();
         if (readAloudController != null) {
-            readAloudController.playTab(currentTab);
+            readAloudController.playTab(currentTab, ReadAloudController.Entrypoint.OVERFLOW_MENU);
         }
     }
 

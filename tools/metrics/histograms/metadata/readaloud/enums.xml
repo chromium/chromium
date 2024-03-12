@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ReadAloudEntrypoint">
+  <int value="0" label="OVERFLOW_MENU"/>
+  <int value="1" label="MAGIC_TOOLBAR"/>
+  <int value="2" label="RESTORED_PLAYBACK"/>
+</enum>
+
 <enum name="ReadAloudErrorCode">
   <int value="0" label="Message successfully sent"/>
   <int value="1" label="CANCELLED"/>

@@ -67,7 +67,9 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
         }
 
         RecordUserAction.record("MobileTopToolbarReadAloudButton");
-        mControllerSupplier.get().playTab(mActiveTabSupplier.get());
+        mControllerSupplier
+                .get()
+                .playTab(mActiveTabSupplier.get(), ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
     }
 
     @Override
@@ -81,6 +83,7 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
 
     @Override
     protected boolean shouldShowButton(Tab tab) {
+
         if (!super.shouldShowButton(tab) || tab == null || mControllerSupplier.get() == null) {
             return false;
         }
