@@ -13,8 +13,9 @@ All on-device tests would ideally be annotated with one of:
 
 * `@Batch(Batch.UNIT_TESTS)`: For tests the do not rely on global application
   state.
-* `@Batch(Batch.PER_CLASS)`: For test classes where the process does need to be
-  restarted between `@Test`s within the class.
+* `@Batch(Batch.PER_CLASS)`: For test classes where the process does not need
+   to be restarted between `@Test`s within the class, but should be restarted
+   before and after the suite runs.
 * `@DoNotBatch(reason="..."`: For tests classes that require the process to be
   restarted for each test or are infeasible to batch.
 
