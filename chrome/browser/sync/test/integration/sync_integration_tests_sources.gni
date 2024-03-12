@@ -110,3 +110,8 @@ if (is_win) {
 if (is_chromeos_ash) {
   sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_cros.cc" ]
 }
+
+if (is_android) {
+  sync_integration_tests_sources +=
+      [ "../browser/sync/test/integration/single_client_web_apks_sync_test.cc" ]
+}
