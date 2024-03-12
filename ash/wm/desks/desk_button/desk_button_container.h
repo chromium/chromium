@@ -80,6 +80,10 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
   // shelf. It's used by the widget to layout contents properly.
   int GetPreferredLength() const;
 
+  // Returns true if the desk button UI is visible and the given
+  // `screen_location` intersects with the UI.
+  bool IntersectsWithDeskButtonUi(const gfx::Point& screen_location) const;
+
   std::u16string GetTitleForView(const views::View* view) const;
 
   bool IsHorizontalShelf() const;

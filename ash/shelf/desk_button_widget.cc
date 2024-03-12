@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/i18n/rtl.h"
 #include "base/ranges/algorithm.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -28,8 +29,57 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
+#include "ui/wm/core/coordinate_conversion.h"
+
+namespace {
+
+gfx::Point GetScreenLocationForEvent(aura::Window* root,
+                                     const ui::LocatedEvent& event) {
+  gfx::Point screen_location;
+  if (event.target()) {
+    screen_location = event.target()->GetScreenLocation(event);
+  } else {
+    screen_location = event.root_location();
+    wm::ConvertPointToScreen(root, &screen_location);
+  }
+  return screen_location;
+}
+
+}  // namespace
 
 namespace ash {
+
+// Customized window targeter that lets events fall through to the shelf if they
+// do not intersect with desk button UIs.
+class DeskButtonWindowTargeter : public aura::WindowTargeter {
+ public:
+  explicit DeskButtonWindowTargeter(DeskButtonWidget* desk_button_widget)
+      : desk_button_widget_(desk_button_widget) {}
+  DeskButtonWindowTargeter(const DeskButtonWindowTargeter&) = delete;
+  DeskButtonWindowTargeter& operator=(const DeskButtonWindowTargeter&) = delete;
+
+  // aura::WindowTargeter:
+  bool SubtreeShouldBeExploredForEvent(aura::Window* window,
+                                       const ui::LocatedEvent& event) override {
+    // Convert to screen coordinate. Do not process the event if it's not on the
+    // delegate view.
+    const gfx::Point screen_location =
+        GetScreenLocationForEvent(window->GetRootWindow(), event);
+    const gfx::Rect screen_bounds =
+        desk_button_widget_->delegate_view()->GetBoundsInScreen();
+    if (!screen_bounds.Contains(screen_location)) {
+      return false;
+    }
+
+    // Process the event if it intersects with desk button UI, otherwise let the
+    // event fall through to the shelf.
+    return desk_button_widget_->GetDeskButtonContainer()
+        ->IntersectsWithDeskButtonUi(screen_location);
+  }
+
+ private:
+  const raw_ptr<DeskButtonWidget> desk_button_widget_;
+};
 
 DeskButtonWidget::DelegateView::DelegateView() = default;
 DeskButtonWidget::DelegateView::~DelegateView() = default;
@@ -246,6 +296,9 @@ void DeskButtonWidget::Initialize(aura::Window* container) {
 
   CalculateTargetBounds();
   UpdateLayout(/*animate=*/false);
+
+  GetNativeWindow()->SetEventTargeter(
+      std::make_unique<DeskButtonWindowTargeter>(/*desk_button_widget=*/this));
 }
 
 DeskButtonContainer* DeskButtonWidget::GetDeskButtonContainer() const {

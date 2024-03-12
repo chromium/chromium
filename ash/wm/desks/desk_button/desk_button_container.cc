@@ -175,6 +175,19 @@ int DeskButtonContainer::GetPreferredLength() const {
   return len;
 }
 
+bool DeskButtonContainer::IntersectsWithDeskButtonUi(
+    const gfx::Point& screen_location) const {
+  if (auto* widget = GetWidget(); widget && widget->IsVisible()) {
+    for (const auto view : children()) {
+      if (view->GetVisible() &&
+          view->GetBoundsInScreen().Contains(screen_location)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 std::u16string DeskButtonContainer::GetTitleForView(
     const views::View* view) const {
   if (view == desk_button_) {

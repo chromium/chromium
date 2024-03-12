@@ -498,14 +498,12 @@ void DeskBarController::OnMaybePressOffBar(ui::LocatedEvent& event) {
   // view. Otherwise, we should either commit the desk name changes or close the
   // bars.
   bool intersect_with_bar_view = false;
-  bool intersect_with_desk_button_container = false;
+  bool intersect_with_desk_button = false;
   bool desk_name_being_modified = false;
   for (auto& desk_bar : desk_bars_) {
     // Converts to screen coordinate.
     gfx::Point screen_location;
     gfx::Rect desk_bar_view_bounds = desk_bar.bar_view->GetBoundsInScreen();
-    gfx::Rect desk_button_container_bounds =
-        GetDeskButtonContainer(desk_bar.bar_view->root())->GetBoundsInScreen();
     if (event.target()) {
       screen_location = event.target()->GetScreenLocation(event);
     } else {
@@ -522,13 +520,14 @@ void DeskBarController::OnMaybePressOffBar(ui::LocatedEvent& event) {
       event.StopPropagation();
     }
 
-    if (desk_button_container_bounds.Contains(screen_location)) {
-      intersect_with_desk_button_container = true;
+    if (GetDeskButtonContainer(desk_bar.bar_view->root())
+            ->IntersectsWithDeskButtonUi(screen_location)) {
+      intersect_with_desk_button = true;
     }
   }
 
   if (!intersect_with_bar_view && !desk_name_being_modified &&
-      !intersect_with_desk_button_container) {
+      !intersect_with_desk_button) {
     CloseAllDeskBars();
   }
 }
