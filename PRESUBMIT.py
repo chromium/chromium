@@ -1820,13 +1820,27 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       pattern = r'/\babsl::(optional|nullopt|make_optional|in_place|in_place_t)\b',
       explanation = (
-         'Don\'t use `absl::optional`. Use `std::optional`.',
+       'Don\'t use `absl::optional`. Use `std::optional`.',
       ),
       # TODO(b/40288126): Enforce after completing the rewrite.
       treat_as_error = False,
       excluded_paths = [
         _THIRD_PARTY_EXCEPT_BLINK,
       ]
+    ),
+    BanRule(
+      pattern = r'(base::)?\bStringPiece\b',
+      explanation = (
+          'Don\'t use `base::StringPiece`. Use `std::string_view`.',
+      ),
+      treat_as_error = False,
+    ),
+    BanRule(
+      pattern = r'(base::)?\bStringPiece16\b',
+      explanation = (
+          'Don\'t use `base::StringPiece16`. Use `std::u16string_view`.',
+      ),
+      treat_as_error = False,
     ),
 )
 
