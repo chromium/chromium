@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
 #include "base/functional/bind.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
@@ -300,7 +301,13 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressProfileTest, EditorCancel) {
       WaitForShow(AddNewAddressBubbleView::kTopViewId));
 }
 
-IN_PROC_BROWSER_TEST_F(AddNewAddressProfileTest, AddAddressAccept) {
+// TODO: crbug/325440757 - Consistently fails on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AddAddressAccept DISABLED_AddAddressAccept
+#else
+#define MAYBE_AddAddressAccept AddAddressAccept
+#endif
+IN_PROC_BROWSER_TEST_F(AddNewAddressProfileTest, MAYBE_AddAddressAccept) {
   RunTestSequence(
       ShowInitBubble(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
