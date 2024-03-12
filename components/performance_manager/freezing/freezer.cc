@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/mechanisms/freezer.h"
+#include "components/performance_manager/freezing/freezer.h"
 
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
@@ -18,7 +18,6 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
-namespace mechanism {
 namespace {
 
 // Try to freeze a page on the UI thread.
@@ -82,5 +81,4 @@ void Freezer::UnfreezePageNode(const PageNode* page_node) {
       base::BindOnce(&UnfreezePageOnUIThread, page_node->GetContentsProxy()));
 }
 
-}  // namespace mechanism
 }  // namespace performance_manager

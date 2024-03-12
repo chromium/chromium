@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/policies/freezing_policy.h"
+#include "components/performance_manager/freezing/freezing_policy.h"
 
 #include <memory>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/mechanisms/freezer.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-shared.h"
 
-namespace performance_manager::policies {
+namespace performance_manager {
 
 namespace {
 
@@ -61,8 +60,7 @@ bool IsPageCapturingDisplay(const PageNode* page_node) {
 
 }  // namespace
 
-FreezingPolicy::FreezingPolicy()
-    : freezer_(std::make_unique<mechanism::Freezer>()) {}
+FreezingPolicy::FreezingPolicy() : freezer_(std::make_unique<Freezer>()) {}
 FreezingPolicy::~FreezingPolicy() = default;
 
 void FreezingPolicy::OnBeforeGraphDestroyed(Graph* graph) {
@@ -180,7 +178,7 @@ void FreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
             },
             base::Unretained(this), page_node);
     auto timer = std::make_unique<base::OneShotTimer>();
-    timer->Start(FROM_HERE, kTabAudioProtectionTime,
+    timer->Start(FROM_HERE, kAudioProtectionTime,
                  std::move(remove_was_recently_audible_vote_after_timeout));
     page_nodes_recently_audible_.emplace(page_node, std::move(timer));
   } else {
@@ -342,4 +340,4 @@ void FreezingPolicy::InvalidateNegativeFreezingVote(const PageNode* page_node,
   voting_channels_[reason].InvalidateVote(page_node);
 }
 
-}  // namespace performance_manager::policies
+}  // namespace performance_manager

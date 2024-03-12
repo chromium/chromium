@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_POLICY_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_POLICY_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 
 #include <array>
 
@@ -17,11 +17,7 @@
 
 namespace performance_manager {
 
-namespace mechanism {
 class Freezer;
-}  // namespace mechanism
-
-namespace policies {
 
 // A simple freezing policy that attempts to freeze pages when their associated
 // freezing vote is positive.
@@ -53,9 +49,11 @@ class FreezingPolicy : public GraphObserver,
   FreezingPolicy& operator=(FreezingPolicy&&) = delete;
   ~FreezingPolicy() override;
 
-  void SetFreezerForTesting(std::unique_ptr<mechanism::Freezer> freezer) {
+  void SetFreezerForTesting(std::unique_ptr<Freezer> freezer) {
     freezer_ = std::move(freezer);
   }
+
+  static constexpr base::TimeDelta kAudioProtectionTime = base::Minutes(1);
 
  protected:
   // List of states that prevent a tab from being frozen.
@@ -135,10 +133,9 @@ class FreezingPolicy : public GraphObserver,
   raw_ptr<const PageNode> page_node_being_removed_ = nullptr;
 
   // The freezing mechanism used to do the actual freezing.
-  std::unique_ptr<mechanism::Freezer> freezer_;
+  std::unique_ptr<Freezer> freezer_;
 };
 
-}  // namespace policies
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_POLICY_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_

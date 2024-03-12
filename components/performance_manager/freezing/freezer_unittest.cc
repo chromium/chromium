@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/mechanisms/freezer.h"
+#include "components/performance_manager/freezing/freezer.h"
 
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -41,7 +41,7 @@ void MaybeFreezePageNode(content::WebContents* content) {
           [](base::WeakPtr<PageNode> page_node,
              base::OnceClosure quit_closure) {
             EXPECT_TRUE(page_node);
-            mechanism::Freezer freezer;
+            Freezer freezer;
             freezer.MaybeFreezePageNode(page_node.get());
             std::move(quit_closure).Run();
           },
@@ -64,7 +64,7 @@ void UnfreezePageNode(content::WebContents* content) {
           [](base::WeakPtr<PageNode> page_node,
              base::OnceClosure quit_closure) {
             EXPECT_TRUE(page_node);
-            mechanism::Freezer freezer;
+            Freezer freezer;
             freezer.UnfreezePageNode(page_node.get());
             std::move(quit_closure).Run();
           },
@@ -80,26 +80,7 @@ void UnfreezePageNode(content::WebContents* content) {
 
 }  // namespace
 
-class FreezerTest : public ChromeRenderViewHostTestHarness {
- public:
-  FreezerTest() = default;
-  ~FreezerTest() override = default;
-  FreezerTest(const FreezerTest& other) = delete;
-  FreezerTest& operator=(const FreezerTest&) = delete;
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    pm_harness_.SetUp();
-  }
-
-  void TearDown() override {
-    pm_harness_.TearDown();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
- private:
-  performance_manager::PerformanceManagerTestHarnessHelper pm_harness_;
-};
+using FreezerTest = PerformanceManagerTestHarness;
 
 TEST_F(FreezerTest, FreezeAndUnfreezePage) {
   SetContents(CreateTestWebContents());

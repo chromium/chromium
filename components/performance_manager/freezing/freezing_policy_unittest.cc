@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/policies/freezing_policy.h"
+#include "components/performance_manager/freezing/freezing_policy.h"
 
 #include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/mechanisms/freezer.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
+#include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -37,8 +36,8 @@ class FreezingPolicyAccess : public FreezingPolicy {
   using FreezingPolicy::CannotFreezeReasonToString;
 };
 
-// Mock version of a performance_manager::mechanism::Freezer.
-class LenientMockFreezer : public performance_manager::mechanism::Freezer {
+// Mock version of a performance_manager::Freezer.
+class LenientMockFreezer : public performance_manager::Freezer {
  public:
   LenientMockFreezer() = default;
   ~LenientMockFreezer() override = default;
@@ -77,7 +76,7 @@ class FreezingPolicyTest : public GraphTestHarness {
     graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
     graph->PassToGraph(std::make_unique<FreezingVoteDecorator>());
     // Create the policy and pass it to the graph.
-    auto policy = std::make_unique<policies::FreezingPolicy>();
+    auto policy = std::make_unique<FreezingPolicy>();
     policy_ = policy.get();
     graph->PassToGraph(std::move(policy));
 
@@ -113,7 +112,7 @@ TEST_F(FreezingPolicyTest, RecentlyAudiblePageGetsCannotFreezeVote) {
   EXPECT_EQ(page_node()->GetFreezingVote()->reason(),
             FreezingPolicyAccess::CannotFreezeReasonToString(
                 FreezingPolicyAccess::CannotFreezeReason::kRecentlyAudible));
-  task_env().FastForwardBy(policies::kTabAudioProtectionTime);
+  task_env().FastForwardBy(FreezingPolicy::kAudioProtectionTime);
   EXPECT_FALSE(page_node()->GetFreezingVote().has_value());
 }
 

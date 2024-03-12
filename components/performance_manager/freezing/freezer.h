@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_FREEZER_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_FREEZER_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZER_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZER_H_
 
 namespace performance_manager {
 
 class PageNode;
-
-namespace mechanism {
 
 // Mechanism to freeze a PageNode.
 class Freezer {
@@ -26,7 +24,6 @@ class Freezer {
   virtual void UnfreezePageNode(const PageNode* page_node);
 };
 
-}  // namespace mechanism
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_FREEZER_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZER_H_
