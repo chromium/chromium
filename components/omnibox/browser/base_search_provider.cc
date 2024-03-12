@@ -312,24 +312,6 @@ AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
 }
 
 // static
-void BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
-    const TemplateURL* template_url,
-    const SearchTermsData& search_terms_data,
-    metrics::OmniboxEventProto::PageClassification page_classification,
-    TemplateURLRef::SearchTermsArgs* search_terms_args) {
-  // Only append the suggest client query param for Google template URL.
-  if (!search::TemplateURLIsGoogle(template_url, search_terms_data)) {
-    return;
-  }
-
-  if (page_classification == metrics::OmniboxEventProto::CHROMEOS_APP_LIST) {
-    if (!search_terms_args->additional_query_params.empty())
-      search_terms_args->additional_query_params.append("&");
-    search_terms_args->additional_query_params.append("sclient=cros-launcher");
-  }
-}
-
-// static
 bool BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
     const GURL& page_url) {
   return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS();

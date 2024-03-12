@@ -101,15 +101,6 @@ class BaseSearchProvider : public AutocompleteProvider {
       const TemplateURLRef::SearchTermsArgs& original_search_terms,
       const SearchTermsData& search_terms_data);
 
-  // Appends specific suggest client based on page |page_classification| to
-  // the additional query params of |search_terms_args| only for Google template
-  // URLs.
-  static void AppendSuggestClientToAdditionalQueryParams(
-      const TemplateURL* template_url,
-      const SearchTermsData& search_terms_data,
-      metrics::OmniboxEventProto::PageClassification page_classification,
-      TemplateURLRef::SearchTermsArgs* search_terms_args);
-
   // Returns whether the URL of the current page is eligible to be sent in any
   // suggest request. Only valid URLs with an HTTP or HTTPS scheme are eligible.
   static bool PageURLIsEligibleForSuggestRequest(const GURL& page_url);
