@@ -456,8 +456,9 @@ class HeadlessModeScreenshotCommandWithBackgroundBrowserTest
   }
 };
 
+// TODO: crbug.com/329138763 - The test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithBackgroundBrowserTest,
-                       HeadlessScreenshotWithBackground) {
+                       DISABLED_HeadlessScreenshotWithBackground) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
