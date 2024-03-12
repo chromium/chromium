@@ -297,7 +297,7 @@ BASE_FEATURE(kBluetoothQualityReport,
 
 BASE_FEATURE(kCameraAppAutoQRDetection,
              "CameraAppAutoQRDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCameraAppCrosEvents,
              "CameraAppCrosEvents",

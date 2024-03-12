@@ -18,27 +18,32 @@ class BarcodeWorkerImpl {
     if (this.detector === null) {
       return null;
     }
-    const codes = await this.detector.detect(bitmap);
+    try {
+      const codes = await this.detector.detect(bitmap);
 
-    const cx = bitmap.width / 2;
-    const cy = bitmap.height / 2;
-    function distanceToCenter(code: DetectedBarcode): number {
-      const {left, right, top, bottom} = code.boundingBox;
-      const x = (left + right) / 2;
-      const y = (top + bottom) / 2;
-      return Math.hypot(x - cx, y - cy);
-    }
-
-    let minDistance = Infinity;
-    let bestCode: DetectedBarcode|null = null;
-    for (const code of codes) {
-      const distance = distanceToCenter(code);
-      if (distance < minDistance) {
-        bestCode = code;
-        minDistance = distance;
+      const cx = bitmap.width / 2;
+      const cy = bitmap.height / 2;
+      function distanceToCenter(code: DetectedBarcode): number {
+        const {left, right, top, bottom} = code.boundingBox;
+        const x = (left + right) / 2;
+        const y = (top + bottom) / 2;
+        return Math.hypot(x - cx, y - cy);
       }
+
+      let minDistance = Infinity;
+      let bestCode: DetectedBarcode|null = null;
+      for (const code of codes) {
+        const distance = distanceToCenter(code);
+        if (distance < minDistance) {
+          bestCode = code;
+          minDistance = distance;
+        }
+      }
+      return bestCode === null ? null : bestCode.rawValue;
+    } catch (e) {
+      // Barcode detection service unavailable.
+      return null;
     }
-    return bestCode === null ? null : bestCode.rawValue;
   }
 }
 
