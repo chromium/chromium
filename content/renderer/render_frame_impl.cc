@@ -5303,7 +5303,7 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
   // deleted.
   bool is_main_frame = is_main_frame_;
   if (auto* render_frame = RenderFrameImpl::FromWebFrame(previous_web_frame)) {
-    render_frame->provisional_frame_for_local_root_swap_ = this;
+    render_frame->provisional_frame_for_local_root_swap_ = GetWeakPtr();
   }
   if (!previous_web_frame->Swap(frame_)) {
     // Main frames should always swap successfully because there is no parent

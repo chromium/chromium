@@ -1636,7 +1636,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Set when this RenderFrame is being swapped for
   // `provisional_frame_for_local_root_swap_`.
-  raw_ptr<RenderFrameImpl> provisional_frame_for_local_root_swap_ = nullptr;
+  base::WeakPtr<RenderFrameImpl> provisional_frame_for_local_root_swap_ =
+      nullptr;
 
   // Set if this RenderFrameImpl is for a main frame which is not top-level.
   const bool is_for_nested_main_frame_;
