@@ -50,6 +50,7 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
   const bookmarks::BookmarkNode* bookmark_bar_node() const override;
   const bookmarks::BookmarkNode* other_node() const override;
   const bookmarks::BookmarkNode* mobile_node() const override;
+  const bookmarks::BookmarkNode* managed_node() const override;
   bool IsBookmarked(const GURL& url) const override;
   bool is_permanent_node(const bookmarks::BookmarkNode* node) const override;
   void AddObserver(bookmarks::BookmarkModelObserver* observer) override;
@@ -130,7 +131,6 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
 
   NodeExcludedFromViewPredicate GetNodeExcludedFromViewPredicate() const;
   bool IsNodeExcludedFromView(const bookmarks::BookmarkNode* node) const;
-  const bookmarks::BookmarkNode* managed_node() const;
 
   const raw_ptr<bookmarks::BookmarkModel> underlying_model_;
   const bookmarks::BookmarkModel::NodeTypeForUuidLookup

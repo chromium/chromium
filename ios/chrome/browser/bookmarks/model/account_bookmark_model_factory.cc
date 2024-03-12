@@ -71,7 +71,7 @@ BuildLegacyBookmarkModelWithDedicatedUnderlyingModel(
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->StartObservingBookmarkModel(bookmark_model.get());
   return std::make_unique<LegacyBookmarkModelWithDedicatedUnderlyingModel>(
-      std::move(bookmark_model));
+      std::move(bookmark_model), /*managed_bookmark_service=*/nullptr);
 }
 
 std::unique_ptr<KeyedService> BuildLegacyBookmarkModel(

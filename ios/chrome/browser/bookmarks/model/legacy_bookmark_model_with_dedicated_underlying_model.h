@@ -25,6 +25,7 @@ namespace bookmarks {
 class BookmarkModel;
 class BookmarkModelObserver;
 class BookmarkNode;
+class ManagedBookmarkService;
 struct QueryFields;
 }  // namespace bookmarks
 
@@ -35,14 +36,16 @@ struct QueryFields;
 class LegacyBookmarkModelWithDedicatedUnderlyingModel
     : public LegacyBookmarkModel {
  public:
-  explicit LegacyBookmarkModelWithDedicatedUnderlyingModel(
-      std::unique_ptr<bookmarks::BookmarkModel> underlying_model);
+  LegacyBookmarkModelWithDedicatedUnderlyingModel(
+      std::unique_ptr<bookmarks::BookmarkModel> underlying_model,
+      bookmarks::ManagedBookmarkService* managed_bookmark_service);
   ~LegacyBookmarkModelWithDedicatedUnderlyingModel() override;
 
   // LegacyBookmarkModel overrides.
   const bookmarks::BookmarkNode* bookmark_bar_node() const override;
   const bookmarks::BookmarkNode* other_node() const override;
   const bookmarks::BookmarkNode* mobile_node() const override;
+  const bookmarks::BookmarkNode* managed_node() const override;
   bool IsBookmarked(const GURL& url) const override;
   bool is_permanent_node(const bookmarks::BookmarkNode* node) const override;
   void AddObserver(bookmarks::BookmarkModelObserver* observer) override;
@@ -69,6 +72,7 @@ class LegacyBookmarkModelWithDedicatedUnderlyingModel
 
  private:
   const std::unique_ptr<bookmarks::BookmarkModel> underlying_model_;
+  const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   base::WeakPtrFactory<LegacyBookmarkModelWithDedicatedUnderlyingModel>
       weak_factory_{this};
 };

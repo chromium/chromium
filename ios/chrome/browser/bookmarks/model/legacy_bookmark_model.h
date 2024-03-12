@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_LEGACY_BOOKMARK_MODEL_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -94,6 +95,8 @@ class LegacyBookmarkModel : public KeyedService {
                                         size_t index,
                                         const std::u16string& title,
                                         const GURL& url);
+  void RemoveMany(const std::set<const bookmarks::BookmarkNode*>& nodes,
+                  bookmarks::metrics::BookmarkEditSource source);
   void CommitPendingWriteForTest();
 
   // LegacyBookmarkModel has three top-level permanent nodes (as opposed to
@@ -101,6 +104,7 @@ class LegacyBookmarkModel : public KeyedService {
   virtual const bookmarks::BookmarkNode* bookmark_bar_node() const = 0;
   virtual const bookmarks::BookmarkNode* other_node() const = 0;
   virtual const bookmarks::BookmarkNode* mobile_node() const = 0;
+  virtual const bookmarks::BookmarkNode* managed_node() const = 0;
 
   virtual bool IsBookmarked(const GURL& url) const = 0;
   virtual bool is_permanent_node(const bookmarks::BookmarkNode* node) const = 0;

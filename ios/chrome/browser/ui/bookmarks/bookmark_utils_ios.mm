@@ -110,19 +110,12 @@ NodeSet FindNodesByNodeReferences(NodeReferenceSet references) {
 
 const BookmarkNode* FindNodeById(LegacyBookmarkModel* model, int64_t id) {
   DCHECK(model);
-  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
-  while (iterator.has_next()) {
-    const BookmarkNode* node = iterator.Next();
-    if (node->id() == id) {
-      return node;
-    }
-  }
-  return nullptr;
+  return model->GetNodeById(id);
 }
 
 const BookmarkNode* FindFolderById(LegacyBookmarkModel* model, int64_t id) {
   const BookmarkNode* node = FindNodeById(model, id);
-  return node && node->is_folder() ? node : nullptr;
+  return (node && node->is_folder()) ? node : nullptr;
 }
 
 NSString* TitleForBookmarkNode(const BookmarkNode* node) {
@@ -186,20 +179,6 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
 }
 
 #pragma mark - Updating Bookmarks
-
-// Deletes all subnodes of `node`, including `node`, that are in `bookmarks`.
-void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
-                     LegacyBookmarkModel* model,
-                     const BookmarkNode* node) {
-  // Delete children in reverse order, so that the index remains valid.
-  for (size_t i = node->children().size(); i > 0; --i) {
-    DeleteBookmarks(bookmarks, model, node->children()[i - 1].get());
-  }
-
-  if (base::Contains(bookmarks, node)) {
-    model->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
-  }
-}
 
 // Creates a toast which will undo the changes made to the bookmark model if
 // the user presses the undo button, and the UndoManagerWrapper allows the undo
@@ -472,7 +451,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
                      LegacyBookmarkModel* model) {
   CHECK(model && model->loaded()) << "Model: " << model;
-  DeleteBookmarks(bookmarks, model, model->root_node());
+  model->RemoveMany(bookmarks, bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
@@ -591,10 +570,17 @@ bool MoveBookmarks(
   }
 
   for (auto& [source_model, model_bookmarks] : cross_model_moves) {
-    did_perform_move = MoveToOtherModelRecursive(model_bookmarks, source_model,
-                                                 dest_model, destination_folder,
-                                                 source_model->root_node()) ||
-                       did_perform_move;
+    for (const bookmarks::BookmarkNode* source_permanent_folder :
+         {source_model->bookmark_bar_node(), source_model->mobile_node(),
+          source_model->other_node(), source_model->managed_node()}) {
+      if (!source_permanent_folder) {
+        continue;
+      }
+      did_perform_move = MoveToOtherModelRecursive(
+                             model_bookmarks, source_model, dest_model,
+                             destination_folder, source_permanent_folder) ||
+                         did_perform_move;
+    }
   }
 
   return did_perform_move;

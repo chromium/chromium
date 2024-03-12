@@ -260,10 +260,6 @@ using bookmarks::BookmarkNode;
       (sectionID == SectionIdentifierAccountBookmarks)
           ? _accountFolderNodes
           : _localOrSyncableFolderNodes;
-  const BookmarkNode* rootFolderNode =
-      (sectionID == SectionIdentifierAccountBookmarks)
-          ? [_dataSource.accountDataSource rootFolderNode]
-          : [_dataSource.localOrSyncableDataSource rootFolderNode];
   for (const BookmarkNode* folderNode : folders) {
     TableViewBookmarksFolderItem* folderItem =
         [[TableViewBookmarksFolderItem alloc]
@@ -278,7 +274,7 @@ using bookmarks::BookmarkNode;
 
     // Indentation level.
     NSInteger level = 0;
-    while (folderNode && folderNode != rootFolderNode) {
+    while (folderNode && !folderNode->is_root()) {
       ++level;
       folderNode = folderNode->parent();
     }

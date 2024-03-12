@@ -894,16 +894,18 @@ bool IsABookmarkNodeSectionForIdentifier(
   return self.displayedNode && !self.displayedNode->children().empty();
 }
 
-// Returns whether there are bookmark nodes in `model` that are added by users.
+// Returns whether there are bookmark nodes in `model`, excluding permanent
+// nodes themselves.
 - (BOOL)hasBookmarksOrFoldersInModel:(LegacyBookmarkModel*)model {
-  // The root node always has its permanent nodes. If all the permanent nodes
-  // are empty, we treat it as if the root itself is empty.
-  const auto& childrenOfRootNode = model->root_node()->children();
-  for (const auto& child : childrenOfRootNode) {
-    if (!child->children().empty()) {
-      return YES;
-    }
+  if (!model->HasNoUserCreatedBookmarksOrFolders()) {
+    return YES;
   }
+
+  // In addition to user-created bookmarks, there could be managed bookmarks.
+  if (model->managed_node() && !model->managed_node()->children().empty()) {
+    return YES;
+  }
+
   return NO;
 }
 

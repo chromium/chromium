@@ -9,11 +9,14 @@
 #include "base/check.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
 
 LegacyBookmarkModelWithDedicatedUnderlyingModel::
     LegacyBookmarkModelWithDedicatedUnderlyingModel(
-        std::unique_ptr<bookmarks::BookmarkModel> underlying_model)
-    : underlying_model_(std::move(underlying_model)) {
+        std::unique_ptr<bookmarks::BookmarkModel> underlying_model,
+        bookmarks::ManagedBookmarkService* managed_bookmark_service)
+    : underlying_model_(std::move(underlying_model)),
+      managed_bookmark_service_(managed_bookmark_service) {
   CHECK(underlying_model_);
 }
 
@@ -43,6 +46,12 @@ LegacyBookmarkModelWithDedicatedUnderlyingModel::other_node() const {
 const bookmarks::BookmarkNode*
 LegacyBookmarkModelWithDedicatedUnderlyingModel::mobile_node() const {
   return underlying_model()->mobile_node();
+}
+
+const bookmarks::BookmarkNode*
+LegacyBookmarkModelWithDedicatedUnderlyingModel::managed_node() const {
+  return managed_bookmark_service_ ? managed_bookmark_service_->managed_node()
+                                   : nullptr;
 }
 
 bool LegacyBookmarkModelWithDedicatedUnderlyingModel::IsBookmarked(

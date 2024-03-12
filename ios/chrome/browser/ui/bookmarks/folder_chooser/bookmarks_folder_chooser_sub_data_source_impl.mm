@@ -59,10 +59,6 @@ using bookmarks::BookmarkNode;
   return _bookmarkModel->mobile_node();
 }
 
-- (const BookmarkNode*)rootFolderNode {
-  return _bookmarkModel->root_node();
-}
-
 - (std::vector<const BookmarkNode*>)visibleFolderNodes {
   return bookmark_utils_ios::VisibleNonDescendantNodes(
       [_parentDataSource editedNodes], _bookmarkModel);

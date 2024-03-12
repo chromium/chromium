@@ -25,8 +25,6 @@ class BookmarkNode;
 
 // "Mobile Bookmarks" folder node that always exists by default.
 - (const bookmarks::BookmarkNode*)mobileFolderNode;
-// Root folder node in the bookmark model tree.
-- (const bookmarks::BookmarkNode*)rootFolderNode;
 // The list of visible folders to show.
 - (std::vector<const bookmarks::BookmarkNode*>)visibleFolderNodes;
 

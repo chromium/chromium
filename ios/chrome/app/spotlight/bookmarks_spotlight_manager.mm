@@ -23,6 +23,7 @@
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -83,8 +84,10 @@ class SpotlightBookmarkModelBridge;
 
   // The nodes stored in this stack will be indexed.
   // Nodes are stored as a pair of flag indicating if it belongs to the local
-  // model (true) or account model (false), plus UUID itself.
-  std::stack<std::pair<bool, base::Uuid>> _indexingStack;
+  // model or account model, plus UUID itself.
+  // TODO(crbug.com/326185948): Once a single BookmarkModel exists on iOS,
+  // remove the enum.
+  std::stack<std::pair<BookmarkModelType, base::Uuid>> _indexingStack;
 
   // Number of times the indexing was interrupted by model updates.
   NSInteger _reindexInterruptionCount;
@@ -308,7 +311,10 @@ class SpotlightBookmarkModelBridge;
   DCHECK(model);
 
   bool isLocalModel = (model == _localOrSyncableBookmarkModel);
-  _indexingStack.push(std::make_pair(isLocalModel, node->uuid()));
+  _indexingStack.push(std::make_pair(isLocalModel
+                                         ? BookmarkModelType::kLocalOrSyncable
+                                         : BookmarkModelType::kAccount,
+                                     node->uuid()));
 
   if (!self.nextBatchOperation) {
     [self indexNextBatchInStack];
@@ -318,9 +324,16 @@ class SpotlightBookmarkModelBridge;
 // Loads a node from the corresponding model, respecting the correct lookup
 // order (see comment in NodeTypeForUuidLookup).
 - (const bookmarks::BookmarkNode*)nodeWithUUID:(base::Uuid)uuid
-                               usingLocalModel:(BOOL)isLocalModel {
-  LegacyBookmarkModel* model =
-      isLocalModel ? _localOrSyncableBookmarkModel : _accountBookmarkModel;
+                                usingModelType:(BookmarkModelType)modelType {
+  LegacyBookmarkModel* model = nullptr;
+  switch (modelType) {
+    case BookmarkModelType::kLocalOrSyncable:
+      model = _localOrSyncableBookmarkModel;
+      break;
+    case BookmarkModelType::kAccount:
+      model = _accountBookmarkModel;
+      break;
+  }
 
   if (!model || !model->loaded()) {
     return nullptr;
@@ -350,12 +363,13 @@ class SpotlightBookmarkModelBridge;
       return;
     }
 
-    std::pair<bool, base::Uuid> nodeDescription = _indexingStack.top();
+    std::pair<BookmarkModelType, base::Uuid> nodeDescription =
+        _indexingStack.top();
     _indexingStack.pop();
 
     const bookmarks::BookmarkNode* node =
         [self nodeWithUUID:nodeDescription.second
-            usingLocalModel:nodeDescription.first];
+            usingModelType:nodeDescription.first];
     if (!node) {
       continue;
     }
@@ -430,6 +444,21 @@ class SpotlightBookmarkModelBridge;
                                }];
 }
 
+- (void)pushPermanentFoldersToIndexingStack:(const LegacyBookmarkModel*)model
+                             usingModelType:(BookmarkModelType)modelType {
+  if (!model || !model->loaded()) {
+    return;
+  }
+
+  for (const bookmarks::BookmarkNode* permanent_folder :
+       {model->bookmark_bar_node(), model->mobile_node(), model->other_node(),
+        model->managed_node()}) {
+    if (permanent_folder) {
+      _indexingStack.push(std::make_pair(modelType, permanent_folder->uuid()));
+    }
+  }
+}
+
 - (void)completedClearAllSpotlightItems {
   if (self.isShuttingDown) {
     return;
@@ -465,15 +494,13 @@ class SpotlightBookmarkModelBridge;
 
   _nodesIndexed = 0;
   _pendingLargeIconTasksCount = 0;
-  if (_localOrSyncableBookmarkModel &&
-      _localOrSyncableBookmarkModel->loaded()) {
-    _indexingStack.push(std::make_pair(
-        true, _localOrSyncableBookmarkModel->root_node()->uuid()));
-  }
-  if (_accountBookmarkModel && _accountBookmarkModel->loaded()) {
-    _indexingStack.push(
-        std::make_pair(false, _accountBookmarkModel->root_node()->uuid()));
-  }
+  // TODO(crbug.com/326185948): Once a single BookmarkModel exists on iOS, this
+  // code could simply push the root node's UUID.
+  [self
+      pushPermanentFoldersToIndexingStack:_localOrSyncableBookmarkModel
+                           usingModelType:BookmarkModelType::kLocalOrSyncable];
+  [self pushPermanentFoldersToIndexingStack:_accountBookmarkModel
+                             usingModelType:BookmarkModelType::kAccount];
   _initialIndexTimer = std::make_unique<base::ElapsedTimer>();
   [self indexNextBatchInStack];
 
@@ -514,7 +541,7 @@ class SpotlightBookmarkModelBridge;
 // Clears the reindex stack.
 - (void)stopIndexing {
   _initialIndexTimer.reset();
-  _indexingStack = std::stack<std::pair<bool, base::Uuid>>();
+  _indexingStack = std::stack<std::pair<BookmarkModelType, base::Uuid>>();
   _nodesIndexed = 0;
   [self.nextBatchOperation cancel];
   self.nextBatchOperation = nil;

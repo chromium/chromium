@@ -48,6 +48,10 @@ BuildLegacyBookmarkModelWithDedicatedUnderlyingModel(
     ChromeBrowserState* browser_state) {
   CHECK(!base::FeatureList::IsEnabled(
       syncer::kEnableBookmarkFoldersForAccountStorage));
+
+  bookmarks::ManagedBookmarkService* managed_bookmark_service =
+      ManagedBookmarkServiceFactory::GetForBrowserState(browser_state);
+
   // When using a dedicated BookmarkModel instance, another factory
   // (AccountBookmarkModelFactory) deals with account bookmarks. Hence,
   // dependencies related to account bookmarks can be null here. This includes
@@ -55,8 +59,7 @@ BuildLegacyBookmarkModelWithDedicatedUnderlyingModel(
   // separately.
   auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
       std::make_unique<BookmarkClientImpl>(
-          browser_state,
-          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
+          browser_state, managed_bookmark_service,
           ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state),
           /*account_bookmark_sync_service=*/nullptr,
@@ -65,7 +68,7 @@ BuildLegacyBookmarkModelWithDedicatedUnderlyingModel(
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->StartObservingBookmarkModel(bookmark_model.get());
   return std::make_unique<LegacyBookmarkModelWithDedicatedUnderlyingModel>(
-      std::move(bookmark_model));
+      std::move(bookmark_model), managed_bookmark_service);
 }
 
 std::unique_ptr<KeyedService> BuildLegacyBookmarkModel(
