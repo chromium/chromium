@@ -81,9 +81,13 @@ SurfaceManager::~SurfaceManager() {
 
   // All SurfaceClients and their surfaces are supposed to be
   // destroyed before SurfaceManager.
-  // TODO(crbug.com/823043): The following two DCHECKs don't hold.
+  // TODO(crbug.com/823043): The following two DCHECKs don't hold. Destroy
+  // manually for now to avoid ~Surface calling back into a partially-destructed
+  // `this`.
   // DCHECK(surface_map_.empty());
   // DCHECK(surfaces_to_destroy_.empty());
+  surfaces_to_destroy_.clear();
+  surface_map_.clear();
 }
 
 #if DCHECK_IS_ON()
