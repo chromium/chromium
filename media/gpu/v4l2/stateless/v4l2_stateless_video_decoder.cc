@@ -240,8 +240,18 @@ void V4L2StatelessVideoDecoder::ApplyResolutionChange() {
   output_queue_.reset();
 
   // The driver can be busy cleaning up the resources that were freed up by
-  // resting the queues.
-  base::PlatformThread::Sleep(base::Milliseconds(2));
+  // resetting the queues. This delayed task allows for any messages resulting
+  // from the queue teardown to be serviced.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&V4L2StatelessVideoDecoder::ContinueApplyResolutionChange,
+                     weak_ptr_factory_for_events_.GetWeakPtr()),
+      base::Milliseconds(1));
+}
+
+void V4L2StatelessVideoDecoder::ContinueApplyResolutionChange() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(3);
 
   // TODO(frkoenig): There only needs to be a single buffer in order to
   // decode. This should be investigated later to see if additional buffers

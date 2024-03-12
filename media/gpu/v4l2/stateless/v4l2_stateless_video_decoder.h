@@ -109,6 +109,10 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Trampoline the preparation of a resolution change to the client.
   void PrepareChangeResolution(DecoderStatus status);
 
+  // Continue with the resolution change after allowing the teardown of the
+  // queues to occur.
+  void ContinueApplyResolutionChange();
+
   // The uncompressed format that the driver produces is setup by the
   // |output_queue_|. This format then needs to be passed further down the
   // pipeline.
