@@ -767,7 +767,8 @@ VulkanImageProcessor::~VulkanImageProcessor() {
       ->PerformImmediateCleanup();
 }
 
-std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
+std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
+    TiledImageFormat format) {
   auto vulkan_implementation = gpu::CreateVulkanImplementation(
       /*use_swiftshader=*/false, /*allow_protected_memory=*/false);
 
@@ -790,7 +791,9 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
   }
 
   auto render_pass = VulkanRenderPass::Create(
-      VK_FORMAT_B8G8R8A8_UNORM, vulkan_device_queue->GetVulkanDevice());
+      format == kMM21 ? VK_FORMAT_B8G8R8A8_UNORM
+                      : VK_FORMAT_A2R10G10B10_UNORM_PACK32,
+      vulkan_device_queue->GetVulkanDevice());
   if (!render_pass) {
     return nullptr;
   }
@@ -814,9 +817,15 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
   if (!vert_shader) {
     return nullptr;
   }
-  auto frag_shader =
-      VulkanShader::Create(kMM21ShaderFrag, sizeof(kMM21ShaderFrag),
-                           vulkan_device_queue->GetVulkanDevice());
+
+  std::unique_ptr<VulkanShader> frag_shader = nullptr;
+  if (format == kMT2T) {
+    frag_shader = VulkanShader::Create(kMT2TShaderFrag, sizeof(kMT2TShaderFrag),
+                                       vulkan_device_queue->GetVulkanDevice());
+  } else {
+    frag_shader = VulkanShader::Create(kMM21ShaderFrag, sizeof(kMM21ShaderFrag),
+                                       vulkan_device_queue->GetVulkanDevice());
+  }
   if (!frag_shader) {
     return nullptr;
   }
@@ -926,7 +935,7 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
   }
 
   auto out_texture = VulkanTextureImage::Create(
-      out_image, {VK_FORMAT_B8G8R8A8_UNORM}, {output_resolution},
+      out_image, {out_image.format()}, {output_resolution},
       {VK_IMAGE_ASPECT_COLOR_BIT},
       /*is_framebuffer=*/true, render_pass_->Get(),
       vulkan_device_queue_->GetVulkanDevice());

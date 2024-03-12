@@ -40,6 +40,13 @@ double ComputeSSIM(const VideoFrame& frame1, const VideoFrame& frame2);
 double ComputeLogLikelihoodRatio(scoped_refptr<const VideoFrame> golden_frame,
                                  scoped_refptr<const VideoFrame> test_frame);
 
+double ComputeAR30PSNR(const uint32_t* frame1_data,
+                       size_t frame1_stride,
+                       const uint32_t* frame2_data,
+                       size_t frame2_stride,
+                       size_t width,
+                       size_t height);
+
 }  // namespace test
 }  // namespace media
 

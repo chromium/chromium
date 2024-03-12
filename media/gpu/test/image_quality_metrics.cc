@@ -275,6 +275,8 @@ double ComputeLogProbability(const VideoFrame& frame,
   return ret;
 }
 
+constexpr double kMaxPsnr = 128.0;
+
 }  // namespace
 
 size_t CompareFramesWithErrorDiff(const VideoFrame& frame1,
@@ -346,6 +348,44 @@ double ComputeLogLikelihoodRatio(scoped_refptr<const VideoFrame> golden_frame,
   ASSERT_TRUE_OR_RETURN(test_log_prob != 0.0, 0.0);
 
   return test_log_prob / golden_log_prob;
+}
+
+double ComputeAR30PSNR(const uint32_t* frame1_data,
+                       size_t frame1_stride,
+                       const uint32_t* frame2_data,
+                       size_t frame2_stride,
+                       size_t width,
+                       size_t height) {
+  uint64_t sum_square_error = 0;
+  const uint64_t samples =
+      static_cast<uint64_t>(width) * static_cast<uint64_t>(height) * 3;
+
+  for (size_t y = 0; y < height; y++) {
+    for (size_t x = 0; x < width; x++) {
+      const uint32_t pixel1 = frame1_data[y * frame1_stride + x];
+      const uint32_t pixel2 = frame2_data[y * frame2_stride + x];
+      const int32_t r1 = (pixel1 >> 20) & 0x3FF;
+      const int32_t g1 = (pixel1 >> 10) & 0x3FF;
+      const int32_t b1 = pixel1 & 0x3FF;
+      const int32_t r2 = (pixel2 >> 20) & 0x3FF;
+      const int32_t g2 = (pixel2 >> 10) & 0x3FF;
+      const int32_t b2 = pixel2 & 0x3FF;
+
+      sum_square_error += (r1 - r2) * (r1 - r2);
+      sum_square_error += (g1 - g2) * (g1 - g2);
+      sum_square_error += (b1 - b2) * (b1 - b2);
+    }
+  }
+
+  if (!sum_square_error) {
+    return kMaxPsnr;
+  }
+
+  double inverse_mse =
+      static_cast<double>(samples) / static_cast<double>(sum_square_error);
+  double psnr = 10.0 * log10(1023.0 * 1023.0 * inverse_mse);
+
+  return psnr > kMaxPsnr ? kMaxPsnr : psnr;
 }
 }  // namespace test
 }  // namespace media

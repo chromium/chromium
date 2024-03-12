@@ -23,6 +23,8 @@
 
 namespace media {
 
+enum TiledImageFormat { kMM21, kMT2T };
+
 // An image processor using Vulkan to perform MM21 detiling.
 class MEDIA_GPU_EXPORT VulkanImageProcessor {
  public:
@@ -31,7 +33,8 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
 
   ~VulkanImageProcessor();
 
-  static std::unique_ptr<VulkanImageProcessor> Create();
+  static std::unique_ptr<VulkanImageProcessor> Create(
+      TiledImageFormat format = kMM21);
 
   // Note: |crop_rect| is actually the crop *in addition* to the |visible_rect|
   // cropping. It is equivalent to |uv_rect| in an OverlayCandidate.

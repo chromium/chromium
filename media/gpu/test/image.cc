@@ -46,6 +46,8 @@ VideoPixelFormat ConvertStringtoPixelFormat(const std::string& pixel_format) {
     return PIXEL_FORMAT_I420;
   } else if (pixel_format == "NV12") {
     return PIXEL_FORMAT_NV12;
+  } else if (pixel_format == "P010" || pixel_format == "MT2T") {
+    return PIXEL_FORMAT_P016LE;
   } else if (pixel_format == "YV12") {
     return PIXEL_FORMAT_YV12;
   } else if (pixel_format == "RGBA") {

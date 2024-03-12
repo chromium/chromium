@@ -40,6 +40,9 @@ std::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
     case gfx::BufferFormat::P010:
       return PIXEL_FORMAT_P016LE;
 
+    case gfx::BufferFormat::RGBA_1010102:
+      return PIXEL_FORMAT_XR30;
+
     default:
       DLOG(WARNING) << "Unsupported BufferFormat: "
                     << gfx::BufferFormatToString(format);
@@ -73,6 +76,9 @@ std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
 
     case PIXEL_FORMAT_P016LE:
       return gfx::BufferFormat::P010;
+
+    case PIXEL_FORMAT_XR30:
+      return gfx::BufferFormat::RGBA_1010102;
 
     default:
       DLOG(WARNING) << "Unsupported VideoPixelFormat: " << pixel_format;

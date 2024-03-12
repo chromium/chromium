@@ -45,6 +45,7 @@
 #include "media/gpu/chromeos/vulkan_image_processor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/image_processor/image_processor_client.h"
+#include "media/gpu/test/image_quality_metrics.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_frame_validator.h"
@@ -76,8 +77,8 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#define MM21_TILE_WIDTH 32
-#define MM21_TILE_HEIGHT 16
+#define MM21_TILE_WIDTH 32u
+#define MM21_TILE_HEIGHT 16u
 
 namespace media {
 namespace {
@@ -219,6 +220,14 @@ const base::FilePath::CharType* kI420Image270P =
 // File for MM21 detile and scaling test.
 const base::FilePath::CharType* kMM21Image270P =
     FILE_PATH_LITERAL("puppets-480x270.mm21.yuv");
+
+#if BUILDFLAG(ENABLE_VULKAN)
+// Files for MT2T Vulkan detile test.
+const base::FilePath::CharType* kMT2TImage =
+    FILE_PATH_LITERAL("crowd_run_1080x512.mt2t");
+const base::FilePath::CharType* kP010Image =
+    FILE_PATH_LITERAL("crowd_run_1080x512.p010");
+#endif
 #endif
 
 enum class YuvSubsampling {
@@ -298,10 +307,12 @@ scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
 
 scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
                                                 VideoFrame::StorageType type) {
-  DCHECK_EQ(size.width(), base::bits::AlignUpDeprecatedDoNotUse(
-                              size.width(), MM21_TILE_WIDTH));
-  DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
-                               size.height(), MM21_TILE_HEIGHT));
+  DCHECK_EQ(static_cast<unsigned int>(size.width()),
+            base::bits::AlignUp(static_cast<unsigned int>(size.width()),
+                                MM21_TILE_WIDTH));
+  DCHECK_EQ(static_cast<unsigned int>(size.height()),
+            base::bits::AlignUp(static_cast<unsigned int>(size.height()),
+                                MM21_TILE_HEIGHT));
 
   scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
   if (!ret) {
@@ -1011,6 +1022,202 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   munmap(vulkan_output_y, i420_scaled_y_size);
   munmap(vulkan_output_u, i420_scaled_u_v_size);
   munmap(vulkan_output_v, i420_scaled_u_v_size);
+}
+
+TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
+  constexpr size_t kBppNumerator = 5;
+  constexpr size_t kBppDenom = 4;
+
+  test::Image input_image(BuildSourceFilePath(base::FilePath(kMT2TImage)));
+  ASSERT_TRUE(input_image.Load());
+  test::Image golden_image(BuildSourceFilePath(base::FilePath(kP010Image)));
+  ASSERT_TRUE(golden_image.Load());
+
+  gfx::Rect visible_rect = input_image.VisibleRect();
+  gfx::Size output_size = gfx::Size(1000, 1000);
+  gfx::Size coded_size = gfx::Size(
+      base::bits::AlignUp(static_cast<unsigned int>(visible_rect.width()),
+                          MM21_TILE_WIDTH),
+      base::bits::AlignUp(static_cast<unsigned int>(visible_rect.height()),
+                          MM21_TILE_HEIGHT));
+
+  scoped_refptr<VideoFrame> mt2t_frame = CreateNV12Frame(
+      gfx::Size(coded_size.width(),
+                coded_size.height() * kBppNumerator / kBppDenom),
+      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  ASSERT_TRUE(mt2t_frame);
+
+  ASSERT_FALSE(IsIntelMediaCompressedModifier(mt2t_frame->layout().modifier()));
+  std::unique_ptr<VideoFrameMapper> frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_NV12,
+          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  scoped_refptr<VideoFrame> mapped_mt2t_frame =
+      frame_mapper->Map(mt2t_frame, PROT_READ | PROT_WRITE);
+  ASSERT_TRUE(mapped_mt2t_frame);
+  memcpy(mapped_mt2t_frame->GetWritableVisibleData(VideoFrame::kYPlane),
+         input_image.Data(), mt2t_frame->coded_size().GetArea());
+  memcpy(mapped_mt2t_frame->GetWritableVisibleData(VideoFrame::kUVPlane),
+         input_image.Data() + mt2t_frame->coded_size().GetArea(),
+         mt2t_frame->coded_size().GetArea() / 2);
+
+  constexpr base::TimeDelta kNullTimestamp;
+  scoped_refptr<VideoFrame> vulkan_output_frame =
+      CreateGpuMemoryBufferVideoFrame(
+          VideoPixelFormat::PIXEL_FORMAT_XR30, output_size,
+          gfx::Rect(output_size.width(), output_size.height()), output_size,
+          kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  ASSERT_TRUE(vulkan_output_frame);
+
+  auto in_gmb = CreateGpuMemoryBufferHandle(mt2t_frame.get());
+  auto out_gmb = CreateGpuMemoryBufferHandle(vulkan_output_frame.get());
+
+  // Initialize shared image infrastructure.
+  auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+  auto surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
+  auto context = gl::init::CreateGLContext(share_group.get(), surface.get(),
+                                           gl::GLContextAttribs());
+  context->MakeCurrent(surface.get());
+  auto context_state = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group, surface, context, false, base::DoNothing(),
+      gpu::GpuPreferences().gr_context_type);
+  gpu::SharedImageManager shared_image_manager;
+  gpu::GpuPreferences gpu_preferences;
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  gpu::GpuFeatureInfo gpu_info;
+  gpu::SharedImageFactory shared_image_factory(
+      gpu_preferences, gpu_workarounds, gpu_info, context_state.get(),
+      &shared_image_manager, nullptr, false);
+
+  // Wrap input and output frames in shared images.
+  auto input_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto output_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
+      viz::SharedImageFormat::PlaneConfig::kY_UV,
+      viz::SharedImageFormat::Subsampling::k420,
+      viz::SharedImageFormat::ChannelFormat::k8);
+  format_nv12.SetPrefersExternalSampler();
+  shared_image_factory.CreateSharedImage(
+      input_mailbox, format_nv12, mt2t_frame->coded_size(),
+      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kOpaque_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      std::move(in_gmb));
+  shared_image_factory.CreateSharedImage(
+      output_mailbox, viz::SinglePlaneFormat::kBGRA_1010102, output_size,
+      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kUnpremul_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+          gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
+      "TestLabel", std::move(out_gmb));
+
+  auto vulkan_image_processor = VulkanImageProcessor::Create(kMT2T);
+  ASSERT_TRUE(vulkan_image_processor);
+
+  auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
+      input_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
+      vulkan_image_processor->GetVulkanImplementation());
+  auto output_vulkan_representation = shared_image_manager.ProduceVulkan(
+      output_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
+      vulkan_image_processor->GetVulkanImplementation());
+  {
+    std::vector<VkSemaphore> begin_semaphores;
+    std::vector<VkSemaphore> end_semaphores;
+    auto input_access = input_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kRead, begin_semaphores, end_semaphores);
+    auto output_access = output_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kWrite, begin_semaphores,
+        end_semaphores);
+
+    // TODO(b/251458823): Add tests for more interesting crop and rotation
+    // parameters.
+    vulkan_image_processor->Process(
+        input_access->GetVulkanImage(), visible_rect.size(),
+        output_access->GetVulkanImage(),
+        gfx::RectF(static_cast<float>(output_size.width()),
+                   static_cast<float>(output_size.height())),
+        gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE, begin_semaphores,
+        end_semaphores);
+  }
+
+  // This implicitly waits for all semaphores to signal.
+  vulkan_image_processor->GetVulkanDeviceQueue()
+      ->GetFenceHelper()
+      ->PerformImmediateCleanup();
+
+  // Map output frame.
+  std::unique_ptr<VideoFrameMapper> output_frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_XR30,
+          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  scoped_refptr<VideoFrame> mapped_output_frame =
+      output_frame_mapper->Map(vulkan_output_frame, PROT_READ | PROT_WRITE);
+
+  // Replicate this operation with LibYUV.
+  uint16_t* i010_y = reinterpret_cast<uint16_t*>(
+      mmap(nullptr, visible_rect.size().GetArea() * 2, PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint16_t* i010_u = reinterpret_cast<uint16_t*>(
+      mmap(nullptr, visible_rect.size().GetArea() / 4 * 2,
+           PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint16_t* i010_v = reinterpret_cast<uint16_t*>(
+      mmap(nullptr, visible_rect.size().GetArea() / 4 * 2,
+           PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  libyuv::P010ToI010(reinterpret_cast<uint16_t*>(golden_image.Data()),
+                     visible_rect.width(),
+                     reinterpret_cast<uint16_t*>(golden_image.Data()) +
+                         visible_rect.size().GetArea(),
+                     visible_rect.width(), i010_y, visible_rect.width(), i010_u,
+                     visible_rect.width() / 2, i010_v, visible_rect.width() / 2,
+                     visible_rect.width(), visible_rect.height());
+  uint16_t* scaled_i010_y = reinterpret_cast<uint16_t*>(
+      mmap(nullptr, output_size.GetArea() * 2, PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint16_t* scaled_i010_u = reinterpret_cast<uint16_t*>(
+      mmap(nullptr, output_size.GetArea() / 4 * 2, PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  uint16_t* scaled_i010_v = reinterpret_cast<uint16_t*>(
+      mmap(nullptr, output_size.GetArea() / 4 * 2, PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  libyuv::I420Scale_16(
+      i010_y, visible_rect.width(), i010_u, visible_rect.width() / 2, i010_v,
+      visible_rect.width() / 2, visible_rect.width(), visible_rect.height(),
+      scaled_i010_y, output_size.width(), scaled_i010_u,
+      output_size.width() / 2, scaled_i010_v, output_size.width() / 2,
+      output_size.width(), output_size.height(), libyuv::kFilterBilinear);
+  uint32_t* libyuv_output = reinterpret_cast<uint32_t*>(
+      mmap(nullptr, output_size.GetArea() * 4, PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  libyuv::I010ToAR30(
+      scaled_i010_y, output_size.width(), scaled_i010_u,
+      output_size.width() / 2, scaled_i010_v, output_size.width() / 2,
+      reinterpret_cast<uint8_t*>(libyuv_output), output_size.width() * 4,
+      output_size.width(), output_size.height());
+
+  double psnr = test::ComputeAR30PSNR(
+      reinterpret_cast<const uint32_t*>(
+          mapped_output_frame->visible_data(VideoFrame::kARGBPlane)),
+      mapped_output_frame->stride(VideoFrame::kARGBPlane) / 4, libyuv_output,
+      output_size.width(), output_size.width(), output_size.height());
+
+  // TODO(b/328227651): We have to keep this PSNR threshold pretty low because
+  // LibYUV produces innacurate results in the 10-bit YUV->ARGB conversion. We
+  // should try to fix this discrepancy though.
+  constexpr double kPsnrThreshold = 25.0;
+  ASSERT_TRUE(psnr >= kPsnrThreshold);
+
+  munmap(libyuv_output, output_size.GetArea() * 4);
+  munmap(i010_y, visible_rect.size().GetArea() * 2);
+  munmap(i010_u, visible_rect.size().GetArea() / 4 * 2);
+  munmap(i010_v, visible_rect.size().GetArea() / 4 * 2);
+  munmap(scaled_i010_y, output_size.GetArea() * 2);
+  munmap(scaled_i010_u, output_size.GetArea() / 4 * 2);
+  munmap(scaled_i010_v, output_size.GetArea() / 4 * 2);
 }
 #endif
 #endif
