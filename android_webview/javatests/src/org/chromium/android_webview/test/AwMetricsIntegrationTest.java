@@ -35,7 +35,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
@@ -514,7 +513,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @OnlyRunIn(MULTI_PROCESS) // This functionality is specific to the OOP-renderer
-    @DisabledTest(message = "https://crbug.com/1524013")
     public void testRendererHistograms() throws Throwable {
         EmbeddedTestServer embeddedTestServer =
                 EmbeddedTestServer.createAndStartServer(
