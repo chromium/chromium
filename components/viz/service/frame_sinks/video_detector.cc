@@ -22,7 +22,8 @@
 
 namespace viz {
 
-constexpr base::TimeDelta VideoDetector::kVideoTimeout;
+constexpr base::TimeDelta VideoDetector::kMaxVideoTimeout;
+constexpr base::TimeDelta VideoDetector::kMinVideoTimeout;
 constexpr base::TimeDelta VideoDetector::kMinVideoDuration;
 
 // Stores information about updates to a client and determines whether it's
@@ -192,8 +193,13 @@ void VideoDetector::OnSurfaceWillBeDrawn(Surface* surface) {
   base::TimeTicks now = tick_clock_->NowTicks();
 
   if (it->second->ReportDrawnAndCheckForVideo(surface, now)) {
-    video_inactive_timer_.Start(FROM_HERE, kVideoTimeout, this,
-                                &VideoDetector::OnVideoActivityEnded);
+    // Avoid (re)starting the timer every frame since it has considerable
+    // overhead.
+    if (!video_inactive_timer_.IsRunning() ||
+        (video_inactive_timer_.desired_run_time() - now) < kMinVideoTimeout) {
+      video_inactive_timer_.Start(FROM_HERE, kMaxVideoTimeout, this,
+                                  &VideoDetector::OnVideoActivityEnded);
+    }
     if (!video_is_playing_) {
       video_is_playing_ = true;
       for (auto& observer : observers_) {

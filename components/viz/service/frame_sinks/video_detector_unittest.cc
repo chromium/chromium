@@ -125,7 +125,7 @@ class VideoDetectorTest : public testing::Test {
                 VideoDetector::kMinDamageHeight);
   static constexpr base::TimeDelta kMinDuration =
       VideoDetector::kMinVideoDuration;
-  static constexpr base::TimeDelta kTimeout = VideoDetector::kVideoTimeout;
+  static constexpr base::TimeDelta kTimeout = VideoDetector::kMaxVideoTimeout;
 
   // Move |detector_|'s idea of the current time forward by |delta|.
   void AdvanceTime(base::TimeDelta delta) {
