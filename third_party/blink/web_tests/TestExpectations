@@ -2616,6 +2616,8 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-values/viewport-units-scrollbars-auto-vhw-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-values/viewport-units-scrollbars-scroll-vhw-001.html [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-button-mode-priority.tentative.https.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fedcm-button-and-other-account/external/wpt/credential-management/fedcm-button-and-other-account/fedcm-use-other-account-button-flow.tentative.https.html [ Timeout ]
@@ -3039,6 +3041,7 @@ crbug.com/626703 [ Linux ] wpt_internal/webxr/xrSession_dataProviderDisconnect_i
 crbug.com/626703 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Mac14 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/active-lock.html [ Timeout ]

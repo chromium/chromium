@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] TrustedTypePolicyFactory interface: existence and properties of interface object
+  assert_equals: prototype of self's property "TrustedTypePolicyFactory" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
+[FAIL] TrustedTypePolicyFactory interface: existence and properties of interface prototype object
+  assert_equals: prototype of TrustedTypePolicyFactory.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
+Harness: the test ran to completion.
+

@@ -228228,6 +228228,32 @@
        {}
       ]
      ],
+     "viewport-units-scrollbars-auto-vhw-001.html": [
+      "04b959fa49a4bf44ae88a12209f67c910166f82f",
+      [
+       null,
+       [
+        [
+         "/css/css-values/viewport-units-scrollbars-auto-ltr-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewport-units-scrollbars-scroll-vhw-001.html": [
+      "c44edc2da804a12ae1971357772f4fc7051087bc",
+      [
+       null,
+       [
+        [
+         "/css/css-values/viewport-units-scrollbars-scroll-ltr-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "viewport-units-writing-mode-font-size.html": [
       "fd1a4aaca5d61b51f932b1b39cf6e1719bb75824",
       [
@@ -337394,6 +337420,18 @@
       "bc914522c7fcf556c69ba56d2d0ba792d7e92b89",
       []
      ],
+     "viewport-units-scrollbars-auto-ltr-001-ref.html": [
+      "a8cc95cdda1d35a2a0dda0365e90b0b4d4662788",
+      []
+     ],
+     "viewport-units-scrollbars-scroll-blank-001-ref.html": [
+      "f0718d0e8d28f562e93a27c357cf826ffeeb17df",
+      []
+     ],
+     "viewport-units-scrollbars-scroll-ltr-001-ref.html": [
+      "fe9a454525c215343acfc1eeb60f3750df57654e",
+      []
+     ],
      "viewport-units-writing-mode-font-size-ref.html": [
       "1e09173353f9e6de48db31d595c68dbe58bba52b",
       []
@@ -353210,7 +353248,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "1ea8496e74223080ec295d430048ec33d70ba150",
+     "73b4f5201fb55a7e8d2fd88e6f1d2d2d49f392f8",
      []
     ],
     "not-fully-active-expected.txt": [
@@ -389135,8 +389173,8 @@
      "9d36f476f0a42e895f5845aba7dd5098bb32ac08",
      []
     ],
-    "idlharness.tentative.window.js.html": [
-     "07847fdb39ea21b3feeebc10501d3aa6bdf97881",
+    "idlharness.window-expected.txt": [
+     "9d36f476f0a42e895f5845aba7dd5098bb32ac08",
      []
     ],
     "no-require-trusted-types-for-report-only.html.headers": [
@@ -643797,6 +643835,24 @@
       {}
      ]
     ],
+    "idlharness.window.js": [
+     "07847fdb39ea21b3feeebc10501d3aa6bdf97881",
+     [
+      "trusted-types/idlharness.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "no-require-trusted-types-for-report-only.html": [
      "651bf0a7199beab43e4f00d3c72462ffda1905f2",
      [
@@ -661744,7 +661800,7 @@
      ]
     ],
     "video-encoder-config.https.any.js": [
-     "5011bfdd0a8506f3c236d3cdaf197458f5cc9a45",
+     "8d554e4f4dbb935d12a6c7e3aa606fc50db01424",
      [
       "webcodecs/video-encoder-config.https.any.html",
       {
@@ -669384,6 +669440,57 @@
          [
           "title",
           "validation tests for WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "gather.https.any.js": [
+      "67ac7d7be39a0b42d7f6e19afe1a825703292110",
+      [
+       "webnn/validation_tests/gather.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gather operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/gather.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API gather operation"
          ],
          [
           "global",
