@@ -32,9 +32,9 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kAntiFingerprintingEnabled,
+      prefs::kFingerprintingProtectionEnabled,
       base::BindRepeating(
-          &TrackingProtectionSettings::OnAntiFingerprintingPrefChanged,
+          &TrackingProtectionSettings::OnFingerprintingProtectionPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kIpProtectionEnabled,
@@ -91,9 +91,9 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
           is_incognito_);
 }
 
-bool TrackingProtectionSettings::IsAntiFingerprintingEnabled() const {
-  return pref_service_->GetBoolean(prefs::kAntiFingerprintingEnabled) &&
-         base::FeatureList::IsEnabled(kAntiFingerprintingSetting);
+bool TrackingProtectionSettings::IsFingerprintingProtectionEnabled() const {
+  return pref_service_->GetBoolean(prefs::kFingerprintingProtectionEnabled) &&
+         base::FeatureList::IsEnabled(kFingerprintingProtectionSetting);
 }
 
 bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
@@ -144,9 +144,9 @@ void TrackingProtectionSettings::OnIpProtectionPrefChanged() {
   }
 }
 
-void TrackingProtectionSettings::OnAntiFingerprintingPrefChanged() {
+void TrackingProtectionSettings::OnFingerprintingProtectionPrefChanged() {
   for (auto& observer : observers_) {
-    observer.OnAntiFingerprintingEnabledChanged();
+    observer.OnFingerprintingProtectionEnabledChanged();
   }
 }
 

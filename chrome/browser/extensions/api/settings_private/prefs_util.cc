@@ -362,7 +362,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kEnableDoNotTrack] = settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kIpProtectionEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kAntiFingerprintingEnabled] =
+  (*s_allowlist)[::prefs::kFingerprintingProtectionEnabled] =
       settings_api::PrefType::kBoolean;
 
   // Sync and personalization page.

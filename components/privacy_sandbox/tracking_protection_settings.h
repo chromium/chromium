@@ -43,7 +43,7 @@ class TrackingProtectionSettings
   bool AreAllThirdPartyCookiesBlocked() const;
 
   // Returns whether anti-fingerprinting is enabled.
-  bool IsAntiFingerprintingEnabled() const;
+  bool IsFingerprintingProtectionEnabled() const;
 
   // Returns whether IP protection is enabled.
   bool IsIpProtectionEnabled() const;
@@ -61,7 +61,7 @@ class TrackingProtectionSettings
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
   void OnIpProtectionPrefChanged();
-  void OnAntiFingerprintingPrefChanged();
+  void OnFingerprintingProtectionPrefChanged();
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;

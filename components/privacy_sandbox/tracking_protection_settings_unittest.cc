@@ -24,7 +24,7 @@ class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
   MOCK_METHOD(void, OnDoNotTrackEnabledChanged, (), (override));
-  MOCK_METHOD(void, OnAntiFingerprintingEnabledChanged, (), (override));
+  MOCK_METHOD(void, OnFingerprintingProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
@@ -41,7 +41,7 @@ class TrackingProtectionSettingsTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {privacy_sandbox::kIpProtectionV1,
-         privacy_sandbox::kAntiFingerprintingSetting},
+         privacy_sandbox::kFingerprintingProtectionSetting},
         {});
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(
@@ -79,10 +79,12 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   EXPECT_TRUE(tracking_protection_settings()->IsIpProtectionEnabled());
 }
 
-TEST_F(TrackingProtectionSettingsTest, ReturnsAntiFingerprintingStatus) {
-  EXPECT_FALSE(tracking_protection_settings()->IsAntiFingerprintingEnabled());
-  prefs()->SetBoolean(prefs::kAntiFingerprintingEnabled, true);
-  EXPECT_TRUE(tracking_protection_settings()->IsAntiFingerprintingEnabled());
+TEST_F(TrackingProtectionSettingsTest, ReturnsFingerprintingProtectionStatus) {
+  EXPECT_FALSE(
+      tracking_protection_settings()->IsFingerprintingProtectionEnabled());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
+  EXPECT_TRUE(
+      tracking_protection_settings()->IsFingerprintingProtectionEnabled());
 }
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
@@ -168,16 +170,16 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForDoNotTrack) {
 }
 
 TEST_F(TrackingProtectionSettingsTest,
-       CorrectlyCallsObserversForAntiFingerprinting) {
+       CorrectlyCallsObserversForFingerprintingProtection) {
   MockTrackingProtectionSettingsObserver observer;
   tracking_protection_settings()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnAntiFingerprintingEnabledChanged());
-  prefs()->SetBoolean(prefs::kAntiFingerprintingEnabled, true);
+  EXPECT_CALL(observer, OnFingerprintingProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
-  EXPECT_CALL(observer, OnAntiFingerprintingEnabledChanged());
-  prefs()->SetBoolean(prefs::kAntiFingerprintingEnabled, false);
+  EXPECT_CALL(observer, OnFingerprintingProtectionEnabledChanged());
+  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 

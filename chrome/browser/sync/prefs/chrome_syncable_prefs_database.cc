@@ -326,7 +326,7 @@ enum {
   kAccessibilityFaceGazeCursorSpeedRight = 100266,
   kAccessibilityFaceGazeCursorSmoothing = 100267,
   kAccessibilityFaceGazeCursorUseAcceleration = 100268,
-  kAntiFingerprintingEnabled = 100269,
+  kFingerprintingProtectionEnabled = 100269,
   kAccessibilityFaceGazeGesturesToMacros = 100270,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
@@ -1408,8 +1408,8 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kIpProtectionEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kAntiFingerprintingEnabled,
-     {syncable_prefs_ids::kAntiFingerprintingEnabled, syncer::PREFERENCES,
+    {prefs::kFingerprintingProtectionEnabled,
+     {syncable_prefs_ids::kFingerprintingProtectionEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kHttpsFirstModeIncognito,

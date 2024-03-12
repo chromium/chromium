@@ -22710,6 +22710,7 @@ from previous Chrome versions.
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
   <int value="865096806" label="CrosMall:disabled"/>
   <int value="865952257" label="CrOSLateBootBluetoothTelephony:disabled"/>
+  <int value="866313743" label="FingerprintingProtectionSetting:enabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
   <int value="867512869" label="mark-non-secure-as"/>
   <int value="868009556" label="AutofillUpstream:enabled"/>
@@ -22782,6 +22783,7 @@ from previous Chrome versions.
   <int value="900560795"
       label="HttpsFirstModeV2ForTypicallySecureUsers:disabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
+  <int value="900642009" label="FingerprintingProtectionSetting:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
   <int value="902442795" label="time-before-discard-in-minutes"/>
   <int value="902649149" label="ArcGhostWindowNewStyle:enabled"/>

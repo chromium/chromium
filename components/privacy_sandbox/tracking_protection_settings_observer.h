@@ -23,7 +23,7 @@ class TrackingProtectionSettingsObserver {
   virtual void OnDoNotTrackEnabledChanged() {}
 
   // For observation of anti-fingerprinting.
-  virtual void OnAntiFingerprintingEnabledChanged() {}
+  virtual void OnFingerprintingProtectionEnabledChanged() {}
 
   // For observation of IP protection.
   virtual void OnIpProtectionEnabledChanged() {}
