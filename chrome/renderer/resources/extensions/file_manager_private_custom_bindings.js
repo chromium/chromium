@@ -158,13 +158,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       });
 
   apiFunctions.setHandleRequest(
-      'computeChecksum', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
-        fileManagerPrivateInternal.computeChecksum(
-            url, callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
       'searchFiles', function(params, successCallback, failureCallback) {
         const newParams = {
           query: params.query,

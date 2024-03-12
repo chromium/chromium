@@ -43,7 +43,6 @@ namespace fileManagerPrivateInternal {
   callback AddFileWatchCallback = void(optional boolean success);
   callback RemoveFileWatchCallback = void(optional boolean success);
   callback GetCustomActionsCallback = void(fileSystemProvider.Action[] actions);
-  callback ComputeChecksumCallback = void(DOMString checksum);
   callback GetMimeTypeCallback = void(DOMString result);
   callback GetContentMimeTypeCallback = void(DOMString result);
   callback GetContentMetadataCallback = void(
@@ -93,9 +92,6 @@ namespace fileManagerPrivateInternal {
         DOMString[] urls,
         DOMString actionId,
         SimpleCallback callback);
-    static void computeChecksum(
-        DOMString url,
-        ComputeChecksumCallback callback);
     static void getContentMimeType(
         DOMString blobUUID,
         GetContentMimeTypeCallback callback);

@@ -495,13 +495,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, AddFileWatch) {
                                {.load_as_component = true}));
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, ContentChecksum) {
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
-
-  ASSERT_TRUE(RunExtensionTest("file_browser/content_checksum_test", {},
-                               {.load_as_component = true}));
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
   const base::FilePath downloads_dir = temp_dir_.GetPath();
 

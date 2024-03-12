@@ -47,7 +47,6 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
-#include "chrome/browser/ash/extensions/file_manager/file_stream_md5_digester.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
@@ -168,36 +167,10 @@ size_t GetFileNameMaxLengthAsync(const std::string& path) {
   return stat.f_namemax;
 }
 
-bool GetFileExtendedAttribute(const base::FilePath& path,
-                              const char* name,
-                              std::vector<char>* value) {
-  ssize_t len = getxattr(path.value().c_str(), name, nullptr, 0);
-  if (len < 0) {
-    PLOG_IF(ERROR, errno != ENODATA) << "getxattr: " << path;
-    return false;
-  }
-  value->resize(len);
-  if (getxattr(path.value().c_str(), name, value->data(), len) != len) {
-    PLOG(ERROR) << "getxattr: " << path;
-    return false;
-  }
-  return true;
-}
-
 // Converts a status code to a bool value and calls the |callback| with it.
 void StatusCallbackToResponseCallback(base::OnceCallback<void(bool)> callback,
                                       base::File::Error result) {
   std::move(callback).Run(result == base::File::FILE_OK);
-}
-
-// Calls a response callback (on the UI thread) with a file content hash
-// computed on the IO thread.
-void ComputeChecksumRespondOnUIThread(
-    base::OnceCallback<void(std::string)> callback,
-    std::string hash) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(hash)));
 }
 
 ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
@@ -1288,167 +1261,6 @@ void FileManagerPrivateInternalResolveIsolatedEntriesFunction::
 
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            ResolveIsolatedEntries::Results::Create(entries)));
-}
-
-FileManagerPrivateInternalComputeChecksumFunction::
-    FileManagerPrivateInternalComputeChecksumFunction()
-    : digester_(base::MakeRefCounted<drive::util::FileStreamMd5Digester>()) {}
-
-FileManagerPrivateInternalComputeChecksumFunction::
-    ~FileManagerPrivateInternalComputeChecksumFunction() = default;
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateInternalComputeChecksumFunction::Run() {
-  using drive::util::FileStreamMd5Digester;
-  using extensions::api::file_manager_private_internal::ComputeChecksum::Params;
-  const std::optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (params->url.empty()) {
-    return RespondNow(Error("File URL must be provided."));
-  }
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          Profile::FromBrowserContext(browser_context()), render_frame_host());
-
-  FileSystemURL file_system_url(
-      file_system_context->CrackURLInFirstPartyContext(GURL(params->url)));
-  if (!file_system_url.is_valid()) {
-    return RespondNow(Error("File URL was invalid"));
-  }
-
-  std::unique_ptr<storage::FileStreamReader> reader =
-      file_system_context->CreateFileStreamReader(
-          file_system_url, 0, storage::kMaximumLength, base::Time());
-
-  FileStreamMd5Digester::ResultCallback result_callback = base::BindOnce(
-      &ComputeChecksumRespondOnUIThread,
-      base::BindOnce(
-          &FileManagerPrivateInternalComputeChecksumFunction::RespondWith,
-          this));
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&FileStreamMd5Digester::GetMd5Digest, digester_,
-                                std::move(reader), std::move(result_callback)));
-
-  return RespondLater();
-}
-
-void FileManagerPrivateInternalComputeChecksumFunction::RespondWith(
-    std::string hash) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  Respond(WithArguments(std::move(hash)));
-}
-
-FileManagerPrivateSearchFilesByHashesFunction::
-    FileManagerPrivateSearchFilesByHashesFunction() = default;
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateSearchFilesByHashesFunction::Run() {
-  using api::file_manager_private::SearchFilesByHashes::Params;
-  const std::optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  // TODO(hirono): Check the volume ID and fail the function for volumes other
-  // than Drive.
-
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::EventLogger* const logger = file_manager::util::GetLogger(profile);
-  if (logger) {
-    logger->Log(logging::LOGGING_INFO,
-                "%s[%s] called. (volume id: %s, number of hashes: %zd)", name(),
-                request_uuid().AsLowercaseString().c_str(),
-                params->volume_id.c_str(), params->hash_list.size());
-  }
-  set_log_on_completion(true);
-
-  drive::DriveIntegrationService* integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile);
-  if (!integration_service) {
-    // |integration_service| is NULL if Drive is disabled or not mounted.
-    return RespondNow(Error("Drive not available"));
-  }
-
-  std::set<std::string> hashes(params->hash_list.begin(),
-                               params->hash_list.end());
-
-  // DriveFs doesn't provide dedicated backup solution yet, so for now just walk
-  // the files and check MD5 extended attribute.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          &FileManagerPrivateSearchFilesByHashesFunction::SearchByAttribute,
-          this, hashes,
-          integration_service->GetMountPointPath().Append(
-              drive::util::kDriveMyDriveRootDirName),
-          base::FilePath("/").Append(drive::util::kDriveMyDriveRootDirName)),
-      base::BindOnce(
-          &FileManagerPrivateSearchFilesByHashesFunction::OnSearchByAttribute,
-          this, hashes));
-
-  return RespondLater();
-}
-
-std::vector<drive::HashAndFilePath>
-FileManagerPrivateSearchFilesByHashesFunction::SearchByAttribute(
-    const std::set<std::string>& hashes,
-    const base::FilePath& dir,
-    const base::FilePath& prefix) {
-  std::vector<drive::HashAndFilePath> results;
-
-  if (hashes.empty()) {
-    return results;
-  }
-
-  std::set<std::string> remaining = hashes;
-  std::vector<char> attribute;
-  base::FileEnumerator enumerator(dir, true, base::FileEnumerator::FILES);
-  for (base::FilePath path = enumerator.Next(); !path.empty();
-       path = enumerator.Next()) {
-    if (GetFileExtendedAttribute(path, "user.drive.md5", &attribute)) {
-      std::string md5(attribute.begin(), attribute.end());
-
-      if (remaining.erase(md5)) {
-        base::FilePath drive_path = prefix;
-        bool success = dir.AppendRelativePath(path, &drive_path);
-        DCHECK(success);
-        results.push_back({md5, drive_path});
-        if (remaining.empty()) {
-          break;
-        }
-      }
-    }
-  }
-
-  return results;
-}
-
-void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByAttribute(
-    const std::set<std::string>& hashes,
-    const std::vector<drive::HashAndFilePath>& results) {
-  OnSearchByHashes(hashes, drive::FileError::FILE_ERROR_OK, results);
-}
-
-void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
-    const std::set<std::string>& hashes,
-    drive::FileError error,
-    const std::vector<drive::HashAndFilePath>& search_results) {
-  if (error != drive::FileError::FILE_ERROR_OK) {
-    Respond(Error(drive::FileErrorToString(error)));
-    return;
-  }
-
-  base::Value::Dict result;
-  for (const auto& hash : hashes) {
-    result.EnsureList(hash);
-  }
-
-  for (const auto& hashAndPath : search_results) {
-    base::Value::List* list = result.FindList(hashAndPath.hash);
-    DCHECK(list);
-    list->Append(hashAndPath.path.value());
-  }
-  Respond(WithArguments(std::move(result)));
 }
 
 FileManagerPrivateInternalSearchFilesFunction::

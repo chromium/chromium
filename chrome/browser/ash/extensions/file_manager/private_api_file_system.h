@@ -47,22 +47,9 @@ using EntryDefinitionList = std::vector<EntryDefinition>;
 }  // namespace util
 }  // namespace file_manager
 
-namespace drive {
-namespace util {
-class FileStreamMd5Digester;
-}  // namespace util
-
-// File path and its MD5 hash obtained from drive.
-struct HashAndFilePath {
-  std::string hash;
-  base::FilePath path;
-};
-
-namespace policy {
+namespace drive::policy {
 class DlpFilesControllerAsh;
-}  // namespace policy
-
-}  // namespace drive
+}  // namespace drive::policy
 
 namespace extensions {
 
@@ -420,56 +407,6 @@ class FileManagerPrivateInternalResolveIsolatedEntriesFunction
   void RunAsyncAfterConvertFileDefinitionListToEntryDefinitionList(
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
-};
-
-class FileManagerPrivateInternalComputeChecksumFunction
-    : public LoggedExtensionFunction {
- public:
-  FileManagerPrivateInternalComputeChecksumFunction();
-
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.computeChecksum",
-                             FILEMANAGERPRIVATEINTERNAL_COMPUTECHECKSUM)
-
- protected:
-  ~FileManagerPrivateInternalComputeChecksumFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  scoped_refptr<drive::util::FileStreamMd5Digester> digester_;
-
-  void RespondWith(std::string hash);
-};
-
-// Implements the chrome.fileManagerPrivate.searchFilesByHashes method.
-class FileManagerPrivateSearchFilesByHashesFunction
-    : public LoggedExtensionFunction {
- public:
-  FileManagerPrivateSearchFilesByHashesFunction();
-
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.searchFilesByHashes",
-                             FILEMANAGERPRIVATE_SEARCHFILESBYHASHES)
-
- protected:
-  ~FileManagerPrivateSearchFilesByHashesFunction() override = default;
-
- private:
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
-  // Fallback to walking the filesystem and checking file attributes.
-  std::vector<drive::HashAndFilePath> SearchByAttribute(
-      const std::set<std::string>& hashes,
-      const base::FilePath& dir,
-      const base::FilePath& prefix);
-  void OnSearchByAttribute(const std::set<std::string>& hashes,
-                           const std::vector<drive::HashAndFilePath>& results);
-
-  // Sends a response with |results| to the extension.
-  void OnSearchByHashes(const std::set<std::string>& hashes,
-                        drive::FileError error,
-                        const std::vector<drive::HashAndFilePath>& results);
 };
 
 class FileManagerPrivateInternalSearchFilesFunction

@@ -899,11 +899,6 @@ declare global {
           searchParams: SearchMetadataParams,
           callback: (results: DriveMetadataSearchResult[]) => void): void;
 
-      export function searchFilesByHashes(
-          volumeId: string, hashList: string[], callback: (paths: {
-                                                  [key: string]: any,
-                                                }) => void): void;
-
       export function searchFiles(
           searchParams: SearchMetadataParams,
           callback: (entries: Entry[]) => void): void;
@@ -926,9 +921,6 @@ declare global {
       export function openInspector(type: InspectionType): void;
 
       export function openSettingsSubpage(subPage: string): void;
-
-      export function computeChecksum(
-          entry: Entry, callback: (checksum: string) => void): void;
 
       export function getProviders(callback: (extensions: Provider[]) => void):
           void;
