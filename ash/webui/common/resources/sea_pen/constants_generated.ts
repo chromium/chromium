@@ -1934,18 +1934,26 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundSimpleStyleMinimal,
               translation: 'minimal',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/minimal.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundSimpleStyleZen,
               translation: 'zen',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/zen.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundSimpleStyleModern,
               translation: 'modern',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/modern.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundSimpleStyleMagical,
               translation: 'magical',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/magical.jpg',
             },
           ],
         ],
@@ -1955,14 +1963,20 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundSimpleToneNeutral,
               translation: 'neutral',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/neutral.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundSimpleToneDark,
               translation: 'dark',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/dark.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundSimpleToneLight,
               translation: 'light',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/light.jpg',
             },
           ],
         ],
@@ -1986,18 +2000,26 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeStyleModern,
               translation: 'modern',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/modern.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeStyleCreative,
               translation: 'creative',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/creative.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeStyleTraditional,
               translation: 'traditional',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/traditional.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeStyleFuturistic,
               translation: 'futuristic',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/futuristic.jpg',
             },
           ],
         ],
@@ -2007,18 +2029,26 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeColorNeutral,
               translation: 'neutral',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/neutral.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeColorDark,
               translation: 'dark',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/dark.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeColorColorful,
               translation: 'colorful',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/colorful.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundOfficeColorEarthy,
               translation: 'earthy',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/earthy.jpg',
             },
           ],
         ],
@@ -2042,66 +2072,94 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainFeatureSaltLake,
               translation: 'salt lake',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/salt_lake.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainFeatureRiver,
               translation: 'glacial river',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glacial_river.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundTerrainFeatureNorthernLights,
               translation: 'northern lights',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/northern_lights.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainFeatureSandDunes,
               translation: 'sand dunes',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sand_dune.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainFeatureClayHills,
               translation: 'clay hills',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/clay_hills.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundTerrainFeatureSandyLagoon,
               translation: 'sandy lagoon',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sandy_lagoon.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainFeatureMountains,
               translation: 'mountains',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mountain.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundTerrainFeatureBioluminescentBeach,
               translation: 'bioluminescent beach',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bioluminescent_beach.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundTerrainFeatureFireflyForest,
               translation: 'firefly forest',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/firefly_forest.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundTerrainFeatureDifferentPlanet,
               translation: 'different planet',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/different_planet.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainFeatureTreeTunnel,
               translation: 'tree tunnel',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tree_tunnel.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundTerrainFeatureBaobabTrees,
               translation: 'baobab trees',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/baobab_trees.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundTerrainFeatureMistyForest,
               translation: 'misty forest',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/misty_forest.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundTerrainFeatureCactusForest,
               translation: 'cactus forest',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cactus_forest.jpg',
             },
           ],
         ],
@@ -2111,42 +2169,62 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorPink,
               translation: 'pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorCyan,
               translation: 'cyan',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cyan.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorWhite,
               translation: 'white',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/white.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorPurple,
               translation: 'purple',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/purple.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorBlue,
               translation: 'blue',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorYellow,
               translation: 'yellow',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/yellow.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorMaroonPink,
               translation: 'maroon and pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/maroon_pink.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorBluePurple,
               translation: 'blue and purple',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue_purple.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorPinkYellow,
               translation: 'pink and yellow',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink_yellow.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundTerrainColorBluePink,
               translation: 'blue and pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue_pink.jpg',
             },
           ],
         ],
@@ -2170,18 +2248,26 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeStyleCozy,
               translation: 'cozy',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cozy.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeStyleNeutral,
               translation: 'neutral',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/neutral.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeStyleDistressed,
               translation: 'distressed',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/distressed.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeStyleClassic,
               translation: 'classic',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/classic.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeStyleRomantic,
@@ -2195,22 +2281,32 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeTypeCottage,
               translation: 'cottage',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cottage.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeTypeModern,
               translation: 'modern',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/modern.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeTypeTeaHouse,
               translation: 'tea house',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tea_house.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeTypeHighTea,
               translation: 'high tea',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/high_tea.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeTypeOutdoor,
               translation: 'outdoor',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/outdoor.jpg',
             },
           ],
         ],
@@ -2234,10 +2330,14 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureField,
               translation: 'field of flowers ',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/field_of_flowers.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureSwamp,
               translation: 'swamp',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/swamp.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureBeach,
@@ -2246,66 +2346,98 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureMeadow,
               translation: 'meadow',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/meadow.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureForest,
               translation: 'forest',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/forest.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureGlacier,
               translation: 'glacier',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/glacier.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureIsland,
               translation: 'tropical island',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/island.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureJungle,
               translation: 'jungle',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/jungle.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureLake,
               translation: 'lake',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lake.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureCliff,
               translation: 'cliff',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cliff.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureOcean,
               translation: 'vast ocean',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/ocean.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureRiver,
               translation: 'river',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/river.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureDune,
               translation: 'sand dune',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sand_dune.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureMountain,
               translation: 'mountain',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mountain.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureValley,
               translation: 'valley',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/valley.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureWaterfall,
               translation: 'waterfall',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/waterfall.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureCanyon,
               translation: 'canyon',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/canyon.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureCityscape,
               translation: 'cityscape',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cityscape.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureVillage,
               translation: 'village',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/mediterranean_village.jpg',
             },
           ],
         ],
@@ -2315,71 +2447,105 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementAvantGarde,
               translation: 'avant-garde',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/avant-garde.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementRealist,
               translation: 'realist',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/realist.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementExpressionist,
               translation: 'expressionist',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/expressionist.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementImpressionist,
               translation: 'impressionist',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/impressionist.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundArtMovementPostImpressionist,
               translation: 'post-impressionist',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/post-impressionist.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementArtNouveau,
               translation: 'art nouveau',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/art_nouveau.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementBaroque,
               translation: 'baroque',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/baroque.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementBauhaus,
               translation: 'bauhaus',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bauhaus.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementClassicist,
               translation: 'classicist',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/classicist.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementWatercolor,
               translation: 'watercolor',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/watercolor.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementAbstract,
               translation: 'abstract',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/abstract.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementPointillist,
               translation: 'pointillist',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pointillist.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementGraphicDesign,
               translation: 'graphic design',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/graphic.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementModernArt,
               translation: 'modern art',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/modern_art.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementAnime,
               translation: 'anime',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/anime.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementPixelArt,
               translation: 'pixel art',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pixel_art.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtMovementCyberpunk,
               translation: 'cyberpunk',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cyberpunk.jpg',
             },
           ],
         ],
@@ -2405,52 +2571,76 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectBicycle,
               translation: 'bicycle',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bicycle.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectCastle,
               translation: 'castle',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/castle.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesObjectBuilding,
               translation: 'building',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/building.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectBoat,
               translation: 'boat',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/boat.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectLamp,
               translation: 'lamp',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lamp.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectTable,
               translation: 'table',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/table.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectBridge,
               translation: 'bridge',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bridge.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesObjectLighthouse,
               translation: 'lighthouse',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lighthouse.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectPagoda,
               translation: 'pagoda',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pagoda.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectPalace,
               translation: 'palace',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/palace.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectTower,
               translation: 'tower',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tower.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesObjectChair,
               translation: 'chair',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/chair.jpg',
             },
           ],
         ],
@@ -2461,99 +2651,143 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialFlowers,
               translation: 'flowers',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/flowers.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialSilk,
               translation: 'silk',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/silk.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialFelt,
               translation: 'felt',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/felt.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialBurlap,
               translation: 'burlap',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/burlap.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialChiffon,
               translation: 'chiffon',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/chiffon.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialCotton,
               translation: 'cotton',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cotton.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialFur,
               translation: 'fur',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/fur.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialLace,
               translation: 'lace',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lace.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialLinen,
               translation: 'linen',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/linen.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialOrganza,
               translation: 'organza',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/organza.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialTulle,
               translation: 'tulle',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tulle.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialWool,
               translation: 'wool',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/wool.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialYarn,
               translation: 'yarn',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/yarn.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialFleece,
               translation: 'fleece',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/fleece.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialClay,
               translation: 'clay',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/clay.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialStone,
               translation: 'stone',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/stone.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialWood,
               translation: 'wood',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/wood.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialAmethyst,
               translation: 'amethyst',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/amethyst.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundDreamscapesMaterialLapisLuzuli,
               translation: 'lapis luzuli',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lapis_luzuli.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialObsidian,
               translation: 'obsidian',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/obsidian.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialOpal,
               translation: 'opal',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/opal.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesMaterialSapphire,
               translation: 'sapphire',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sapphire.jpg',
             },
           ],
         ],
@@ -2564,36 +2798,50 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesColorsPinkPurple,
               translation: 'pink and purple',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink_purple.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesColorsCoralTan,
               translation: 'coral and tan',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/coral_tan.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundDreamscapesColorsCreamOrange,
               translation: 'cream and orange',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cream_orange.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesColorsBlueIndigo,
               translation: 'blue and indigo',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue_indigo.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesColorsGreenTeal,
               translation: 'green and teal',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/green_teal.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundDreamscapesColorsBurgundyMaroon,
               translation: 'burgundy and maroon',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/burgundy_maroon.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundDreamscapesColorsYellowTeal,
               translation: 'yellow and teal',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/yellow_teal.jpg',
             },
           ],
         ],
@@ -2619,86 +2867,128 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorPink,
               translation: 'pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorYellow,
               translation: 'yellow',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/yellow.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorPink,
               translation: 'pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorRed,
               translation: 'red',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/red.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorBlue,
               translation: 'blue',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorIndigo,
               translation: 'indigo',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/indigo.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorGreen,
               translation: 'green',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/green.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorCyan,
               translation: 'cyan',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cyan.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorPurple,
               translation: 'purple',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/purple.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorBrown,
               translation: 'brown',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/brown.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorGold,
               translation: 'gold',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/gold.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorRust,
               translation: 'rust',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/rust.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorOlive,
               translation: 'olive',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/olive.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorGray,
               translation: 'gray',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/gray.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorWhite,
               translation: 'white',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/white.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorBeige,
               translation: 'beige',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/beige.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorMagenta,
               translation: 'magenta',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/magenta.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorNeonGreen,
               translation: 'neon green',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/neon_green.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorLightBlue,
               translation: 'light blue',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/light_blue.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorNeonPink,
               translation: 'neon pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/neon_pink.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersColorCoralPink,
               translation: 'coral pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/coral_pink.jpg',
             },
           ],
         ],
@@ -2708,168 +2998,242 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsLemons,
               translation: 'lemons',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lemons.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsFlowers,
               translation: 'flowers',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/flowers.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsApples,
               translation: 'apples',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/apples.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsCherries,
               translation: 'cherries',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cherries.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsOranges,
               translation: 'oranges',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/oranges.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersSubjectsPineapples,
               translation: 'pineapples',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pineapples.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersSubjectsStrawberries,
               translation: 'strawberries',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/strawberries.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersSubjectsWatermelons,
               translation: 'watermelons',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/watermelons.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsPotatoes,
               translation: 'potatoes',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/potatoes.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsSushi,
               translation: 'sushi',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sushi.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersSubjectsBaconAndEggs,
               translation: 'bacon and eggs',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bacon_and_eggs.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsPizza,
               translation: 'pizza',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pizza.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsHotDogs,
               translation: 'hot dogs',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/hot_dogs.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersSubjectsHamburgers,
               translation: 'hamburgers',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/hamburgers.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsRamen,
               translation: 'ramen',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/ramen.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsTacos,
               translation: 'tacos',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tacos.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsBunnies,
               translation: 'bunnies',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bunnies.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsCats,
               translation: 'cats',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/rectangle_3471020.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsDogs,
               translation: 'dogs',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/dogs.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsKoalas,
               translation: 'koalas',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/koalas.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsPandas,
               translation: 'pandas',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pandas.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsPenguins,
               translation: 'penguins',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/penguins.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsPigs,
               translation: 'pigs',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pigs.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsSloths,
               translation: 'sloths',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/sloths.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsPonies,
               translation: 'ponies',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/ponies.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsElephants,
               translation: 'elephants',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/elephants.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsFoxes,
               translation: 'foxes',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/foxes.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsOwls,
               translation: 'owls',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/owls.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsCrabs,
               translation: 'crabs',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/crabs.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsBees,
               translation: 'bees',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bees.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersSubjectsButterflies,
               translation: 'butterflies',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/butterflies.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsBicycles,
               translation: 'bicycles',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bicycles.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsBoats,
               translation: 'boats',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/boats.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersSubjectsBooks,
               translation: 'books',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/books.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsCutlery,
               translation: 'cutlery',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cutlery.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersSubjectsUmbrellas,
               translation: 'umbrellas',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/umbrellas.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersSubjectsInstruments,
               translation: 'instruments',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/musical_instruments.jpg',
             },
           ],
         ],
@@ -2880,94 +3244,134 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundPurple,
               translation: 'purple',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/purple.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersBackgroundBlue,
               translation: 'blue',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/blue.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundIndigo,
               translation: 'indigo',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/indigo.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundGreen,
               translation: 'green',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/green.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersBackgroundCyan,
               translation: 'cyan',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cyan.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundBrown,
               translation: 'brown',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/brown.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersBackgroundGold,
               translation: 'gold',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/gold.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersBackgroundRed,
               translation: 'red',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/red.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersBackgroundRust,
               translation: 'rust',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/rust.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundOlive,
               translation: 'olive',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/olive.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersBackgroundPink,
               translation: 'pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pink.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundCharactersBackgroundGray,
               translation: 'gray',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/gray.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundYellow,
               translation: 'yellow',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/yellow.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundWhite,
               translation: 'white',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/white.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundBeige,
               translation: 'beige',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/beige.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundCharactersBackgroundMagenta,
               translation: 'magenta',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/magenta.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersBackgroundNeonGreen,
               translation: 'neon green',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/neon_green.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersBackgroundLightBlue,
               translation: 'light blue',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/light_blue.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersBackgroundNeonPink,
               translation: 'neon pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/neon_pink.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundCharactersBackgroundCoralPink,
               translation: 'coral pink',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/coral_pink.jpg',
             },
           ],
         ],
@@ -2993,25 +3397,35 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
               value:
                   SeaPenTemplateOption.kVcBackgroundGlowscapesLandscapeValley,
               translation: 'valley',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/valley.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundGlowscapesLandscapeHotSpring,
               translation: 'hot spring',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/hot_spring.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundGlowscapesLandscapeMeadow,
               translation: 'meadow',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/meadow.jpg',
             },
             {
               value: SeaPenTemplateOption
                          .kVcBackgroundGlowscapesLandscapeCoralReef,
               translation: 'coral reef',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/coral_reef.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundGlowscapesLandscapePond,
               translation: 'pond',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pond.jpg',
             },
           ],
         ],
@@ -3021,23 +3435,33 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureRiver,
               translation: 'river',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/river.jpg',
             },
             {
               value:
                   SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureSaltRock,
               translation: 'salt rock',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/salt_rock.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureFlower,
               translation: 'flower',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/flower.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeatureWalkway,
               translation: 'walkway',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/walkway.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundGlowscapesFeaturePool,
               translation: 'pool',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pool.jpg',
             },
           ],
         ],
