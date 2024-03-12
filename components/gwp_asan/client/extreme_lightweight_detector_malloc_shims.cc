@@ -21,7 +21,7 @@ namespace {
 
 using allocator_shim::AllocatorDispatch;
 
-extern AllocatorDispatch g_allocator_dispatch;
+extern AllocatorDispatch allocator_dispatch;
 
 // By being implemented as a global with inline method definitions, method calls
 // and member accesses are inlined and as efficient as possible in the
@@ -29,14 +29,14 @@ extern AllocatorDispatch g_allocator_dispatch;
 //
 // Note that this optimization has not been benchmarked. However since it is
 // easy to do there is no reason to pay the extra cost.
-SamplingState<EXTREMELIGHTWEIGHTDETECTOR> g_sampling_state;
+SamplingState<EXTREMELIGHTWEIGHTDETECTOR> sampling_state;
 
 using partition_alloc::internal::LightweightQuarantineBranch;
 using partition_alloc::internal::LightweightQuarantineRoot;
 
-ExtremeLightweightDetectorOptions g_init_options;
+ExtremeLightweightDetectorOptions init_options;
 
-std::atomic<bool> g_is_quarantine_initialized = false;
+std::atomic<bool> is_quarantine_initialized = false;
 
 // The PartitionRoot used by the PartitionAlloc-Everywhere (i.e. PartitionAlloc
 // as malloc), which is also the target partition root of the quarantine.
@@ -44,18 +44,18 @@ std::atomic<bool> g_is_quarantine_initialized = false;
 // PartitionRoot and LightweightQuarantineBranch::Quarantine() cannot handle
 // an object in an unknown root, the Extreme LUD performs only for the objects
 // in this PartitionRoot.
-partition_alloc::PartitionRoot* g_lightweight_quarantine_partition_root;
+partition_alloc::PartitionRoot* lightweight_quarantine_partition_root;
 // A raw pointer to the LightweightQuarantineBranch as the fast path to the
 // object. This bypasses the access check and indirect access due to the
 // following std::optional and base::NoDestructor.
-LightweightQuarantineBranch* g_lightweight_quarantine_branch;
+LightweightQuarantineBranch* lightweight_quarantine_branch;
 
 // The memory storage for the quarantine root and branch to make them alive for
 // the process lifetime. std::optional reserves the memory space without
 // constructing the objects and allows to construct them lazily.
-std::optional<LightweightQuarantineRoot> g_lightweight_quarantine_root_storage;
+std::optional<LightweightQuarantineRoot> lightweight_quarantine_root_storage;
 std::optional<base::NoDestructor<LightweightQuarantineBranch>>
-    g_lightweight_quarantine_branch_storage;
+    lightweight_quarantine_branch_storage;
 
 // Sets up all we need and returns true, or returns false.
 //
@@ -65,7 +65,7 @@ std::optional<base::NoDestructor<LightweightQuarantineBranch>>
 bool TryInitSlow();
 
 inline bool TryInit() {
-  if (LIKELY(g_is_quarantine_initialized.load(std::memory_order_acquire))) {
+  if (LIKELY(is_quarantine_initialized.load(std::memory_order_acquire))) {
     return true;
   }
 
@@ -100,16 +100,16 @@ bool TryInitSlow() {
     partition_alloc::PartitionRoot* partition_root =
         allocator_shim::internal::PartitionAllocMalloc::Allocator();
 
-    g_lightweight_quarantine_partition_root = partition_root;
-    g_lightweight_quarantine_root_storage.emplace(
-        *partition_root, g_init_options.quarantine_capacity_in_bytes);
-    g_lightweight_quarantine_branch_storage.emplace(
-        g_lightweight_quarantine_root_storage->CreateBranch(
+    lightweight_quarantine_partition_root = partition_root;
+    lightweight_quarantine_root_storage.emplace(
+        *partition_root, init_options.quarantine_capacity_in_bytes);
+    lightweight_quarantine_branch_storage.emplace(
+        lightweight_quarantine_root_storage->CreateBranch(
             /*lock_required=*/true));
-    g_lightweight_quarantine_branch =
-        g_lightweight_quarantine_branch_storage.value().get();
+    lightweight_quarantine_branch =
+        lightweight_quarantine_branch_storage.value().get();
 
-    g_is_quarantine_initialized.store(true, std::memory_order_release);
+    is_quarantine_initialized.store(true, std::memory_order_release);
 
     return true;
   }();
@@ -146,9 +146,9 @@ inline bool Quarantine(void* object) {
       partition_alloc::internal::SlotSpanMetadata::FromObject(object);
   partition_alloc::PartitionRoot* root =
       partition_alloc::PartitionRoot::FromSlotSpanMetadata(slot_span);
-  if (UNLIKELY(root != g_lightweight_quarantine_partition_root)) {
+  if (UNLIKELY(root != lightweight_quarantine_partition_root)) {
     // The LightweightQuarantineRoot is configured for
-    // g_lightweight_quarantine_partition_root. We cannot quarantine an object
+    // lightweight_quarantine_partition_root. We cannot quarantine an object
     // in other partition roots.
     return false;
   }
@@ -157,7 +157,7 @@ inline bool Quarantine(void* object) {
   ExtremeLightweightDetectorUtil::Zap(object, usable_size);
 
   uintptr_t slot_start = root->ObjectToSlotStart(object);
-  g_lightweight_quarantine_branch->Quarantine(object, slot_span, slot_start);
+  lightweight_quarantine_branch->Quarantine(object, slot_span, slot_start);
 
   return true;
 }
@@ -198,7 +198,7 @@ void* ReallocFn(const AllocatorDispatch* self,
 }
 
 void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
-  if (UNLIKELY(g_sampling_state.Sample())) {
+  if (UNLIKELY(sampling_state.Sample())) {
     if (LIKELY(Quarantine(address))) {
       return;
     }
@@ -245,7 +245,7 @@ void FreeDefiniteSizeFn(const AllocatorDispatch* self,
                         void* address,
                         size_t size,
                         void* context) {
-  if (UNLIKELY(g_sampling_state.Sample())) {
+  if (UNLIKELY(sampling_state.Sample())) {
     if (LIKELY(Quarantine(address))) {
       return;
     }
@@ -287,7 +287,7 @@ void AlignedFreeFn(const AllocatorDispatch* self,
   self->next->aligned_free_function(self->next, address, context);
 }
 
-AllocatorDispatch g_allocator_dispatch = {
+AllocatorDispatch allocator_dispatch = {
     &AllocFn,
     &AllocUncheckedFn,
     &AllocZeroInitializedFn,
@@ -311,20 +311,20 @@ AllocatorDispatch g_allocator_dispatch = {
 
 void InstallExtremeLightweightDetectorHooks(
     const ExtremeLightweightDetectorOptions& options) {
-  DCHECK(!g_init_options.sampling_frequency);
+  DCHECK(!init_options.sampling_frequency);
   DCHECK(options.sampling_frequency);
 
-  g_init_options = options;
+  init_options = options;
 
-  g_sampling_state.Init(g_init_options.sampling_frequency);
-  allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);
+  sampling_state.Init(init_options.sampling_frequency);
+  allocator_shim::InsertAllocatorDispatch(&allocator_dispatch);
 }
 
 partition_alloc::internal::LightweightQuarantineBranch&
 GetEludQuarantineBranchForTesting() {
   CHECK(TryInit());
 
-  return *g_lightweight_quarantine_branch;
+  return *lightweight_quarantine_branch;
 }
 
 }  // namespace gwp_asan::internal
