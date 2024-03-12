@@ -625,7 +625,7 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, dse_source);
 
     default_search_manager.SetUserSelectedDefaultSearchEngine(
-        *default_template_url_data);
+        *default_template_url_data, search_engines::ChoiceMadeLocation::kOther);
 
     default_search_manager.GetDefaultSearchEngine(&dse_source);
     EXPECT_EQ(DefaultSearchManager::FROM_USER, dse_source);
@@ -1186,7 +1186,8 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
     user_dse.SetKeyword(u"userkeyword");
     user_dse.SetShortName(u"username");
     user_dse.SetURL("http://user_default_engine/search?q=good_user_query");
-    default_search_manager.SetUserSelectedDefaultSearchEngine(user_dse);
+    default_search_manager.SetUserSelectedDefaultSearchEngine(
+        user_dse, search_engines::ChoiceMadeLocation::kOther);
 
     const TemplateURLData* current_dse =
         default_search_manager.GetDefaultSearchEngine(&dse_source);

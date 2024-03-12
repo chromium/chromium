@@ -8,9 +8,13 @@
 namespace search_engines {
 
 // The location from which the default search engine was set.
+//
 // Maintained by chrome-waffle-eng@google.com, please reach out if looking into
 // adding some new entry here, as there are some requirements that non-`kOther`
 // entries must meet.
+//
+// Its values are saved and read from prefs. Do not reorder, do not delete
+// existing values.
 //
 // Must be kept in sync with the ChoiceMadeLocation enum in
 // search_engines_browser_proxy.ts

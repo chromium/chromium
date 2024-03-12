@@ -1000,7 +1000,8 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,
     // in fact, the effective DSE changes.
     if (url) {
-      default_search_manager_.SetUserSelectedDefaultSearchEngine(url->data());
+      default_search_manager_.SetUserSelectedDefaultSearchEngine(
+          url->data(), choice_made_location);
       selection_added = true;
     } else {
       default_search_manager_.ClearUserSelectedDefaultSearchEngine();
@@ -1970,7 +1971,8 @@ void TemplateURLService::ApplyInitializersForTesting(
 
     // Set the first provided identifier to be the default.
     if (i == 0) {
-      default_search_manager_.SetUserSelectedDefaultSearchEngine(data);
+      default_search_manager_.SetUserSelectedDefaultSearchEngine(
+          data, search_engines::ChoiceMadeLocation::kOther);
     }
   }
 }
@@ -2157,7 +2159,7 @@ void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
   if (prefs_ && (synced_turl->sync_guid() ==
                  GetDefaultSearchProviderPrefValue(*prefs_))) {
     default_search_manager_.SetUserSelectedDefaultSearchEngine(
-        synced_turl->data());
+        synced_turl->data(), search_engines::ChoiceMadeLocation::kOther);
   }
 }
 
@@ -2737,8 +2739,10 @@ void TemplateURLService::OnDefaultSearchProviderGUIDChanged() {
   }
 
   const TemplateURL* turl = GetTemplateURLForGUID(new_guid);
-  if (turl)
-    default_search_manager_.SetUserSelectedDefaultSearchEngine(turl->data());
+  if (turl) {
+    default_search_manager_.SetUserSelectedDefaultSearchEngine(
+        turl->data(), search_engines::ChoiceMadeLocation::kOther);
+  }
 }
 
 void TemplateURLService::MaybeSetIsActiveSearchEngines(
