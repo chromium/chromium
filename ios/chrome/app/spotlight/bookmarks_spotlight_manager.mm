@@ -483,11 +483,11 @@ class SpotlightBookmarkModelBridge;
 
 - (LegacyBookmarkModel*)bookmarkModelForNode:
     (const bookmarks::BookmarkNode*)node {
-  if (node->HasAncestor(_localOrSyncableBookmarkModel->root_node())) {
+  if (_localOrSyncableBookmarkModel->IsNodePartOfModel(node)) {
     return _localOrSyncableBookmarkModel;
   }
   DCHECK(_accountBookmarkModel &&
-         node->HasAncestor(_accountBookmarkModel->root_node()));
+         _accountBookmarkModel->IsNodePartOfModel(node));
   return _accountBookmarkModel;
 }
 

@@ -107,10 +107,10 @@ void BookmarkIOSUnitTestSupport::ChangeTitle(const std::u16string& title,
 
 LegacyBookmarkModel* BookmarkIOSUnitTestSupport::GetBookmarkModelForNode(
     const BookmarkNode* node) {
-  if (node->HasAncestor(local_or_syncable_bookmark_model_->root_node())) {
+  if (local_or_syncable_bookmark_model_->IsNodePartOfModel(node)) {
     return local_or_syncable_bookmark_model_;
   }
   DCHECK(account_bookmark_model_ &&
-         node->HasAncestor(account_bookmark_model_->root_node()));
+         account_bookmark_model_->IsNodePartOfModel(node));
   return account_bookmark_model_;
 }

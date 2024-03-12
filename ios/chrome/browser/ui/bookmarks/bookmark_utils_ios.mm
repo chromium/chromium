@@ -154,11 +154,10 @@ BookmarkModelType GetBookmarkModelType(
     LegacyBookmarkModel* account_model) {
   DCHECK(bookmark_node);
   DCHECK(profile_model);
-  if (bookmark_node->HasAncestor(profile_model->root_node())) {
+  if (profile_model->IsNodePartOfModel(bookmark_node)) {
     return BookmarkModelType::kLocalOrSyncable;
   }
-  DCHECK(account_model &&
-         bookmark_node->HasAncestor(account_model->root_node()));
+  DCHECK(account_model && account_model->IsNodePartOfModel(bookmark_node));
   return BookmarkModelType::kAccount;
 }
 
@@ -522,7 +521,7 @@ bool MoveToOtherModelRecursive(
     const BookmarkNode* destination_folder,
     const BookmarkNode* node_cursor) {
   DCHECK(source_model != dest_model);
-  DCHECK(destination_folder->HasAncestor(dest_model->root_node()));
+  DCHECK(dest_model->IsNodePartOfModel(destination_folder));
   if (bookmarks_to_move.empty()) {
     return false;  // No more bookmarks to move.
   }

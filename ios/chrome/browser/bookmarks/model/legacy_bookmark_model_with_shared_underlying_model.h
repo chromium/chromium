@@ -67,6 +67,8 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
       size_t max_count,
       std::vector<const bookmarks::BookmarkNode*>* nodes) override;
   const bookmarks::BookmarkNode* GetNodeById(int64_t id) override;
+  bool IsNodePartOfModel(const bookmarks::BookmarkNode* node) const override;
+  base::WeakPtr<LegacyBookmarkModel> AsWeakPtr() override;
 
   // BookmarkModelObserver overrides.
   void BookmarkModelLoaded(bool ids_reassigned) override;
@@ -100,7 +102,6 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
   void GroupedBookmarkChangesBeginning() override;
   void GroupedBookmarkChangesEnded() override;
-  base::WeakPtr<LegacyBookmarkModel> AsWeakPtr() override;
 
  protected:
   const bookmarks::BookmarkModel* underlying_model() const override;

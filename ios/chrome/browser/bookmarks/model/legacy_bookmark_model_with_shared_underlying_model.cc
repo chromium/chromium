@@ -435,6 +435,11 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::
   }
 }
 
+bool LegacyBookmarkModelWithSharedUnderlyingModel::IsNodePartOfModel(
+    const bookmarks::BookmarkNode* node) const {
+  return node && !IsNodeExcludedFromView(node);
+}
+
 base::WeakPtr<LegacyBookmarkModel>
 LegacyBookmarkModelWithSharedUnderlyingModel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

@@ -159,7 +159,7 @@ using bookmarks::BookmarkNode;
 - (void)bookmarkModelWillRemoveAllNodes:
     (const LegacyBookmarkModel*)bookmarkModel {
   auto nodeInModel = [bookmarkModel](const BookmarkNode* node) {
-    return node->HasAncestor(bookmarkModel->root_node());
+    return bookmarkModel->IsNodePartOfModel(node);
   };
   // Remove will-be removed nodes (in `model`) from `_editedNodes`.
   std::erase_if(_editedNodes, nodeInModel);
@@ -168,7 +168,7 @@ using bookmarks::BookmarkNode;
     // if `_editedNodes` becomes empty, nothing to move.  Exit the folder
     // chooser.
     [_delegate bookmarksFolderChooserMediatorWantsDismissal:self];
-  } else if (_selectedFolderNode->HasAncestor(bookmarkModel->root_node())) {
+  } else if (bookmarkModel->IsNodePartOfModel(_selectedFolderNode)) {
     // The selected folder will be deleted. Unset `_selectedFolderNode`.
     _selectedFolderNode = nil;
   }

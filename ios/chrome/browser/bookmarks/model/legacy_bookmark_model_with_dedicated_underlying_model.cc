@@ -102,6 +102,11 @@ LegacyBookmarkModelWithDedicatedUnderlyingModel::GetNodeById(int64_t id) {
   return bookmarks::GetBookmarkNodeByID(underlying_model(), id);
 }
 
+bool LegacyBookmarkModelWithDedicatedUnderlyingModel::IsNodePartOfModel(
+    const bookmarks::BookmarkNode* node) const {
+  return node && node->HasAncestor(underlying_model_->root_node());
+}
+
 base::WeakPtr<LegacyBookmarkModel>
 LegacyBookmarkModelWithDedicatedUnderlyingModel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
