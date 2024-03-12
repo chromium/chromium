@@ -510,22 +510,30 @@ TEST_F(TabsApiUnitTest, TabsUpdate) {
 }
 
 // Tests that calling chrome.tabs.update does not update a saved tab.
-TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTabNotAllowed) {
+TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("UpdateTest").Build();
   const GURL kExampleCom("http://example.com");
   const GURL kChromiumOrg("https://chromium.org");
 
   // Add a web contents to the browser.
-  std::unique_ptr<content::WebContents> contents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  std::unique_ptr<content::WebContents> contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   content::WebContents* raw_contents = contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+
+  // Web Contents used to test active state by taking active state first.
+  std::unique_ptr<content::WebContents> non_updated_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* raw_non_updated_contents = non_updated_contents.get();
+  browser()->tab_strip_model()->AppendWebContents(
+      std::move(non_updated_contents), false);
+
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
   CreateSessionServiceTabHelper(raw_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(raw_contents).id();
+  int non_updated_tab_id =
+      sessions::SessionTabHelper::IdForTab(raw_non_updated_contents).id();
 
   // Navigate the browser to example.com
   content::WebContentsTester* web_contents_tester =
@@ -552,17 +560,126 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTabNotAllowed) {
   EXPECT_TRUE(ExtensionTabUtil::TabIsInSavedTabGroup(
       raw_contents, browser()->tab_strip_model()));
 
-  // Try to use the TabsUpdateFunction to navigate to chromium.org
-  auto function = base::MakeRefCounted<TabsUpdateFunction>();
-  function->set_extension(extension);
-  static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
-  const std::string args =
-      base::StringPrintf(kFormatArgs, tab_id, kChromiumOrg.spec().c_str());
+  {  // Test the active state change for a saved tab.
+    browser()->tab_strip_model()->ActivateTabAt(
+        browser()->tab_strip_model()->GetIndexOfWebContents(
+            raw_non_updated_contents));
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"active": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+    EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+              raw_contents);
+  }
 
-  std::string error = api_test_utils::RunFunctionAndReturnError(
-      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
-  EXPECT_EQ(kExampleCom, raw_contents->GetLastCommittedURL());
+  {  // Reset the active states, and then test highlighted for a saved tab.
+    browser()->tab_strip_model()->ActivateTabAt(
+        browser()->tab_strip_model()->GetIndexOfWebContents(
+            raw_non_updated_contents));
+    if (browser()->tab_strip_model()->IsTabSelected(
+            browser()->tab_strip_model()->GetIndexOfWebContents(
+                raw_contents))) {
+      browser()->tab_strip_model()->ToggleSelectionAt(
+          browser()->tab_strip_model()->GetIndexOfWebContents(raw_contents));
+    }
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"highlighted": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+    EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+              raw_contents);
+  }
+
+  {  // Reset the active states, and then test selected state for a saved tab.
+    browser()->tab_strip_model()->ActivateTabAt(
+        browser()->tab_strip_model()->GetIndexOfWebContents(
+            raw_non_updated_contents));
+    if (browser()->tab_strip_model()->IsTabSelected(
+            browser()->tab_strip_model()->GetIndexOfWebContents(
+                raw_contents))) {
+      browser()->tab_strip_model()->ToggleSelectionAt(
+          browser()->tab_strip_model()->GetIndexOfWebContents(raw_contents));
+    }
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"selected": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+    EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(
+        browser()->tab_strip_model()->GetIndexOfWebContents(raw_contents)));
+  }
+
+  {  // Test Muted state.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"muted": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+  }
+
+  {  // Test setting the opener.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"openerTabId": %d}])";
+    const std::string args =
+        base::StringPrintf(kFormatArgs, tab_id, non_updated_tab_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+  }
+
+  {  // Test setting the discard state.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"autoDiscardable": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+  }
+
+  {  // Test setting pinned state should fail.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"pinned": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab_id);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+    EXPECT_EQ(kExampleCom, raw_contents->GetLastCommittedURL());
+  }
+
+  {  // Test setting URL should fail.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("UpdateTest").Build();
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension);
+    static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
+    const std::string args =
+        base::StringPrintf(kFormatArgs, tab_id, kChromiumOrg.spec().c_str());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(tabs_constants::kSavedTabGroupNotEditableError, error);
+    EXPECT_EQ(kExampleCom, raw_contents->GetLastCommittedURL());
+  }
 
   // Clean up.
   saved_service->UnsaveGroup(group);
