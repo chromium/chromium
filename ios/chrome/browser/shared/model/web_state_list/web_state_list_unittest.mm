@@ -2411,3 +2411,363 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_GroupedLeftAndRight) {
   EXPECT_EQ(WebStateList::Range(2, 4), web_state_list_.GetWebStates(group_2));
   EXPECT_EQ(4, observer_.web_state_moved_count());
 }
+
+// Tests calling MoveWebStateWrapperAt with same index but adding to the group
+// on the left.
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_NoMove_GoToLeftGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a ] b "));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(1, 1, false, group_0);
+
+  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(nullptr, observer_.status_only_old_group());
+  EXPECT_EQ(group_0, observer_.status_only_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt with same index but adding to the group
+// on the right.
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_NoMove_GoToRightGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| a [ 0 b ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_0);
+
+  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(nullptr, observer_.status_only_old_group());
+  EXPECT_EQ(group_0, observer_.status_only_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt with same index but moving from own group
+// to the group on the left (old group having no remaining tab in it).
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_NoMove_GoToLeftGroup_OldGroupEmpty) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a ] [ 1 b ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(1, 1, false, group_0);
+
+  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(2, 0), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(group_1, observer_.status_only_old_group());
+  EXPECT_EQ(group_0, observer_.status_only_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt with same index but moving from own group
+// to the group on the right (old group having no remaining tab in it).
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_NoMove_GoToRightGroup_OldGroupEmpty) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a ] [ 1 b ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_1);
+
+  EXPECT_EQ("| [ 1 a b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(1, 0), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(group_0, observer_.status_only_old_group());
+  EXPECT_EQ(group_1, observer_.status_only_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt with same index but moving from own group
+// to the group on the left (old group still having remaining tabs in it).
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_NoMove_GoToLeftGroup_OldGroupNonEmpty) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "| [ 0 a b ] [ 1 c d ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(2, 2, false, group_0);
+
+  EXPECT_EQ("| [ 0 a b c ] [ 1 d ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 3), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(3, 1), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(group_1, observer_.status_only_old_group());
+  EXPECT_EQ(group_0, observer_.status_only_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt with same index but moving from own group
+// to the group on the right (old group still having remaining tabs in it).
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_NoMove_GoToRightGroup_OldGroupNonEmpty) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "| [ 0 a b ] [ 1 c d ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(1, 1, false, group_1);
+
+  EXPECT_EQ("| [ 0 a ] [ 1 b c d ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(1, 3), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(group_0, observer_.status_only_old_group());
+  EXPECT_EQ(group_1, observer_.status_only_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving a pinned tab to a group while
+// keeping the same position.
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_NoMove_PinnedToGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "a | [ 0 b ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(0, 0, false, group);
+
+  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_EQ(1, observer_.pinned_state_changed());
+  EXPECT_EQ(nullptr, observer_.status_only_old_group());
+  EXPECT_EQ(group, observer_.status_only_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving a pinned tab to a group with a
+// change of index.
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_Move_PinnedToGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "a | [ 0 b ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(0, 1, false, group);
+
+  EXPECT_EQ("| [ 0 b a ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(1, observer_.pinned_state_changed());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an ungrouped tab to a group on its
+// left.
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_MoveToLeft_NoGroupToGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a ] b"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(1, 0, false, group_0);
+
+  EXPECT_EQ("| [ 0 b a ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group_0, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an ungrouped tab to a group on its
+// right.
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_MoveToRight_NoGroupToGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| a [ 0 b ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(0, 1, false, group_0);
+
+  EXPECT_EQ("| [ 0 b a ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group_0, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an grouped tab to a group on its
+// left (old group having no remaining tab in it).
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_MoveToLeft_GroupToGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a ] [ 1 b ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(1, 0, false, group_0);
+
+  EXPECT_EQ("| [ 0 b a ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(2, 0), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(group_1, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group_0, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an grouped tab to a group on its
+// right (old group having no remaining tab in it).
+TEST_F(WebStateListTest, MoveWebStateWrapperAt_MoveToRight_GroupToGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a ] [ 1 b ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(0, 1, false, group_1);
+
+  EXPECT_EQ("| [ 1 b a ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 0), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group_1, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an grouped tab to a group on its
+// left (old group still having remaining tabs in it).
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_MoveToLeft_GroupToGroup_NoEmptyGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a ] [ 1 b c ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(1, 0, false, group_0);
+
+  EXPECT_EQ("| [ 0 b a ] [ 1 c ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(2, 1), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(group_1, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group_0, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an grouped tab to a group on its
+// right (old group still having remaining tabs in it).
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_MoveToRight_GroupToGroup_NoEmptyGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a b ] [ 1 c ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(0, 2, false, group_1);
+
+  EXPECT_EQ("| [ 0 b ] [ 1 c a ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(1, 2), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
+  EXPECT_EQ(group_1, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an ungrouped tab to another
+// ungrouped position on the left updates untouched groups in between.
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_MoveToLeft_Ungrouped_UpdatesGroupsInBetween) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "| [ 0 a ] [ 1 b ] c [ 2 d ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+  const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(2, 1, false, nullptr);
+
+  EXPECT_EQ("| [ 0 a ] c [ 1 b ] [ 2 d ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(2, 1), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(WebStateList::Range(3, 1), web_state_list_.GetWebStates(group_2));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
+}
+
+// Tests calling MoveWebStateWrapperAt moving an ungrouped tab to another
+// ungrouped position on the right updates untouched groups in between.
+TEST_F(WebStateListTest,
+       MoveWebStateWrapperAt_MoveToRight_Ungrouped_UpdatesGroupsInBetween) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "| [ 0 a ] b [ 1 c ] [ 2 d ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+  const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
+
+  observer_.ResetStatistics();
+  auto lock = web_state_list_.LockForMutation();
+  web_state_list_.MoveWebStateWrapperAt(1, 2, false, nullptr);
+
+  EXPECT_EQ("| [ 0 a ] [ 1 c ] b [ 2 d ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(1, 1), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(WebStateList::Range(3, 1), web_state_list_.GetWebStates(group_2));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
+}

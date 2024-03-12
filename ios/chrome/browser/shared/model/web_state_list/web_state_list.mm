@@ -972,6 +972,88 @@ WebStateList::WebStateWrapper* WebStateList::GetWebStateWrapperAt(
   return web_state_wrappers_[index].get();
 }
 
+void WebStateList::MoveWebStateWrapperAt(int from_index,
+                                         int to_index,
+                                         bool pinned,
+                                         const TabGroup* new_group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+  DCHECK(!(pinned && new_group));
+
+  // Prepare info about the move.
+  const bool index_changed = from_index != to_index;
+  const bool pinned_state_changed = IsWebStatePinnedAt(from_index) != pinned;
+  const TabGroup* old_group = GetGroupOfWebStateAt(from_index);
+  const bool group_changed = old_group != new_group;
+
+  // Return early if nothing has changed.
+  if (!index_changed && !pinned_state_changed && !group_changed) {
+    return;
+  }
+
+  // Prepare the status for the observers. The moves don't change the active
+  // web state.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
+
+  // Update the pinned tabs count.
+  if (pinned_state_changed) {
+    if (pinned) {
+      CHECK_LT(pinned_tabs_count_, count());
+      pinned_tabs_count_++;
+    } else {
+      CHECK_GT(pinned_tabs_count_, 0);
+      pinned_tabs_count_--;
+    }
+  }
+
+  // Update the wrapper's group tag.
+  web_state_wrappers_[from_index]->SetGroup(new_group);
+
+  // Update the groups ranges.
+  for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
+    const TabGroup* group = group_it->first.get();
+    Range& group_range = group_it->second;
+    // Remove the item from the old group.
+    if (group == old_group) {
+      group_range.ContractRight();
+    }
+    // Slide all groups after the removed tab to the left.
+    if (from_index < group_range.start()) {
+      group_range.MoveLeft();
+    }
+    // Add the item to the new group.
+    if (group == new_group) {
+      group_range.ExpandRight();
+    } else if (to_index <= group_range.start()) {
+      // Slide all groups at or after the added tab to the right.
+      group_range.MoveRight();
+    }
+  }
+
+  // Move the wrapper.
+  JustMoveWebStateWrapperAt(from_index, to_index);
+
+  // Notify the observers of the change.
+  if (index_changed) {
+    const WebStateListChangeMove move_change(
+        GetWebStateAt(to_index), from_index, to_index, pinned_state_changed,
+        old_group, new_group);
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, move_change, status);
+    }
+  } else {
+    DCHECK(pinned_state_changed || group_changed);
+    const WebStateListChangeStatusOnly status_only_change(
+        GetWebStateAt(to_index), to_index, pinned_state_changed, old_group,
+        new_group);
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, status_only_change, status);
+    }
+  }
+}
+
 void WebStateList::JustMoveWebStateWrapperAt(int from_index, int to_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
