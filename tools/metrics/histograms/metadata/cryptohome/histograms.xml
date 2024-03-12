@@ -115,6 +115,26 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of triggering disk cleanup.</summary>
 </histogram>
 
+<histogram name="Cryptohome.DownloadsBindMountMigration.{Operation}"
+    enum="PopularOSErrno" expires_after="2025-03-01">
+  <owner>wenbojie@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error or success of the {Operation} operation that happened when migrating
+    the 'Downloads' folder from ~/Downloads to ~/MyFiles/Downloads.
+  </summary>
+  <token key="Operation">
+    <variant name="BackUp"/>
+    <variant name="CleanUp"/>
+    <variant name="FixXattr"/>
+    <variant name="Move"/>
+    <variant name="Restore"/>
+    <variant name="SetXattrForNewCryptoHome"/>
+    <variant name="SetXattrToMigrated"/>
+    <variant name="SetXattrToMigrating"/>
+  </token>
+</histogram>
+
 <histogram name="Cryptohome.DownloadsBindMountMigrationStatus"
     enum="CryptohomeDownloadsMigrationStatus" expires_after="2025-03-01">
   <owner>wenbojie@chromium.org</owner>

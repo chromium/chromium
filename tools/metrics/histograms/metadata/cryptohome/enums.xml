@@ -175,6 +175,9 @@ chromium-metrics-reviews@google.com.
     Folder ~/MyFiles/Downloads is already marked as &quot;migrated&quot;, but a
     new ~/Downloads folder somehow reappeared
   </int>
+  <int value="9" label="New CryptoHome">
+    There is nothing to migrate. Simply set the xattr to &quot;migrated&quot;.
+  </int>
 </enum>
 
 <enum name="CryptohomeError">
