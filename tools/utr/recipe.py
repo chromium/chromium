@@ -171,6 +171,7 @@ class LegacyRunner:
         proc = await asyncio.create_subprocess_exec(
             cmd[0],
             *cmd[1:],
+            limit=1024 * 1024 * 128,  # 128 MiB: there can be massive lines
             env=env,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
@@ -183,8 +184,11 @@ class LegacyRunner:
         else:
           adapter = output_adapter.PassthroughAdapter()
         while not proc.stdout.at_eof():
-          line = await proc.stdout.readline()
-          adapter.ProcessLine(line.decode('utf-8').strip('\n'))
+          try:
+            line = await proc.stdout.readline()
+            adapter.ProcessLine(line.decode('utf-8').strip('\n'))
+          except ValueError as e:
+            logging.exception(f'Failed to parse line from the recipe')
         await proc.wait()
         return proc.returncode
 

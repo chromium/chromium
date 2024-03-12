@@ -89,7 +89,7 @@ def parse_args():
 
 def main():
   args = parse_args()
-  logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.WARN,
+  logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO,
                       format='%(message)s')
 
   if not recipe.check_rdb_auth():
