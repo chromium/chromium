@@ -5327,11 +5327,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "legacy-tech-report-top-level-url",
-    "owners": ["zmin@chromium.org", "parastoog@chromium.org"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "link-cross-device-internals",
     "owners": [ "chromeos-cross-device-eng@google.com", "dclasson@chromium.org" ],
     "expiry_milestone": 125

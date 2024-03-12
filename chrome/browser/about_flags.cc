@@ -6821,11 +6821,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kLegacyTechReportEnableCookieIssueReports)},
 
-    {"legacy-tech-report-top-level-url",
-     flag_descriptions::kLegacyTechReportTopLevelUrlName,
-     flag_descriptions::kLegacyTechReportTopLevelUrlDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kLegacyTechReportTopLevelUrl)},
-
     {
         "zero-copy-tab-capture",
         flag_descriptions::kEnableZeroCopyTabCaptureName,
