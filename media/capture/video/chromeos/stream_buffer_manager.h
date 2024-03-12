@@ -41,7 +41,6 @@ class GpuMemoryBufferSupport;
 namespace media {
 
 class CameraBufferFactory;
-class VideoCaptureBufferObserver;
 
 struct BufferInfo;
 
@@ -57,8 +56,7 @@ class CAPTURE_EXPORT StreamBufferManager final {
   StreamBufferManager(
       CameraDeviceContext* device_context,
       bool video_capture_use_gmb,
-      std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
-      std::unique_ptr<VideoCaptureBufferObserver> buffer_observer);
+      std::unique_ptr<CameraBufferFactory> camera_buffer_factory);
 
   StreamBufferManager(const StreamBufferManager&) = delete;
   StreamBufferManager& operator=(const StreamBufferManager&) = delete;
@@ -175,10 +173,6 @@ class CAPTURE_EXPORT StreamBufferManager final {
       stream_context_;
 
   raw_ptr<CameraDeviceContext> device_context_;
-
-  // The interface to notify camera device a new buffer needs to be registered
-  // or a buffer needs to be retired.
-  std::unique_ptr<VideoCaptureBufferObserver> buffer_observer_;
 
   bool video_capture_use_gmb_;
 

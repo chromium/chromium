@@ -54,8 +54,7 @@ VideoCaptureDevice::Client::ReserveResult AllocateNV12GpuMemoryBuffer(
   const int arbitrary_frame_feedback_id = 0;
   const auto reserve_result = capture_client->ReserveOutputBuffer(
       buffer_size, kOpaqueVideoFormat, arbitrary_frame_feedback_id,
-      out_capture_buffer, /*require_new_buffer_id=*/nullptr,
-      /*retire_old_buffer_id=*/nullptr);
+      out_capture_buffer);
   if (reserve_result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     return reserve_result;
   }

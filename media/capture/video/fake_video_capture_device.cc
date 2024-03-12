@@ -824,8 +824,7 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   VideoCaptureDevice::Client::Buffer capture_buffer;
   const auto reserve_result = client()->ReserveOutputBuffer(
       device_state()->format.frame_size, device_state()->format.pixel_format,
-      arbitrary_frame_feedback_id, &capture_buffer,
-      /*require_new_buffer_id=*/nullptr, /*retire_old_buffer_id=*/nullptr);
+      arbitrary_frame_feedback_id, &capture_buffer);
   if (reserve_result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     client()->OnFrameDropped(
         ConvertReservationFailureToFrameDropReason(reserve_result));
