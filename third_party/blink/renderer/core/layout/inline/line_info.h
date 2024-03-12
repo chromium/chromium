@@ -49,6 +49,11 @@ class CORE_EXPORT LineInfo {
                     const InlineItemsData&,
                     bool use_first_line_style);
 
+  // True if this line is a first formatted line.
+  // https://drafts.csswg.org/css-pseudo-4/#first-formatted-line
+  bool IsFirstFormattedLine() const { return is_first_formatted_line_; }
+  void SetIsFirstFormattedLine(bool value) { is_first_formatted_line_ = value; }
+
   // Use ::first-line style if true.
   // https://drafts.csswg.org/css-pseudo/#selectordef-first-line
   // This is false for the "first formatted line" if '::first-line' rule is not
@@ -286,6 +291,7 @@ class CORE_EXPORT LineInfo {
   ETextAlign text_align_ = ETextAlign::kLeft;
   TextDirection base_direction_ = TextDirection::kLtr;
 
+  bool is_first_formatted_line_ = false;
   bool use_first_line_style_ = false;
   bool is_last_line_ = false;
   bool has_forced_break_ = false;

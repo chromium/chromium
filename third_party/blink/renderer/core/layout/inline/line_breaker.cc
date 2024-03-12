@@ -691,6 +691,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   }
 
   line_info->SetStart(current_);
+  line_info->SetIsFirstFormattedLine(is_first_formatted_line_);
   line_info->SetLineStyle(node_, items_data_, use_first_line_style_);
 
   DCHECK(!line_info->TextIndent());

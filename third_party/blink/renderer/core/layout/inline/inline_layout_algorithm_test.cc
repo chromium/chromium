@@ -861,9 +861,9 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpace) {
       <div id="abs1" style="position: absolute">abs1</div>
       <div id="float1" style="float: left">float1</div>
       <div id="empty1"></div>
-      <div id="first">first</div>
+      <div id="first">first<br>first L2</div>
       <div id="middle">middle</div>
-      <div id="last">last</div>
+      <div id="last">last<br>last L2</div>
       <div id="abs2" style="position: absolute">abs1</div>
       <div id="float2" style="float: left">float1</div>
     </div>

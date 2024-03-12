@@ -704,10 +704,18 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     container_builder_.SetMetrics(line_box_metrics);
 
   const ConstraintSpace& space = GetConstraintSpace();
-  if (space.ShouldTextBoxTrimStart() || space.ShouldTextBoxTrimEnd()) {
+  if (UNLIKELY(space.ShouldTextBoxTrimStart() ||
+               space.ShouldTextBoxTrimEnd())) {
     // TODO(crbug.com/40254880): Just flags, trimming data isn't implemented.
+    if (space.ShouldTextBoxTrimStart() && line_info->IsFirstFormattedLine()) {
+      // Apply `text-box-trim: start` if this is the first formatted line.
+      container_builder_.SetIsTextBoxTrimApplied();
+    }
+    if (space.ShouldTextBoxTrimEnd() && !line_info->GetBreakToken()) {
+      // Apply `text-box-trim: end` if this is the last line.
+      container_builder_.SetIsTextBoxTrimApplied();
+    }
     // TODO(crbug.com/40254880): Block-in-inline case probably needs a logic.
-    container_builder_.SetIsTextBoxTrimApplied();
   }
 
   // |container_builder_| is already set up by |PlaceBlockInInline|.
