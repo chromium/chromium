@@ -5907,6 +5907,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Pine.OnboardingDialog.TurnRestoreOn" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    The action taken by the user when the onboarding dialog is shown and the
+    user had Restore off. Emits true if the user accepted the dialog and turned
+    Restore to 'Ask every time', false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pine.ScreenshotEncodeAndSaveDuration" units="ms"
     expires_after="2024-12-31">
   <owner>minch@chromium.org</owner>

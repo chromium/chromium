@@ -47,6 +47,9 @@ constexpr int kOnboardingMessageHeight = 200;
 constexpr int kNudgeMaxShownCount = 3;
 constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
+// If set to true, ignores the prefs show limit for testing.
+bool g_ignore_prefs_for_testing = false;
+
 // Records the UMA metrics for the pine screenshot taken on the last shutdown.
 // Resets the prefs used to store the metrics across shutdowns.
 void RecordPineScreenshotMetrics(PrefService* local_state) {
@@ -94,6 +97,9 @@ PrefService* GetActivePrefService() {
 // Returns true if this is the first time login and we should show the pine
 // onboarding message.
 bool ShouldShowPineOnboarding() {
+  if (g_ignore_prefs_for_testing) {
+    return true;
+  }
   PrefService* prefs = GetActivePrefService();
   return prefs && prefs->GetBoolean(prefs::kShouldShowPineOnboarding);
 }
@@ -151,6 +157,9 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
   dialog->SetAcceptButtonText(l10n_util::GetStringUTF16(
       restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_ACCEPT
                  : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_ACCEPT));
+  dialog->SetAcceptCallback(
+      base::BindOnce(&PineController::OnOnboardingAcceptPressed,
+                     base::Unretained(this), restore_on));
   if (restore_on) {
     // If the user had the restore pref set as "Ask every time", don't show the
     // Cancel button.
@@ -158,6 +167,9 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
   } else {
     dialog->SetCancelButtonText(
         l10n_util::GetStringUTF16(IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_CANCEL));
+    // `this` is guaranteed to outlive the dialog.
+    dialog->SetCancelCallback(base::BindOnce(
+        &PineController::OnOnboardingCancelPressed, base::Unretained(this)));
   }
 
   onboarding_widget_->Show();
@@ -265,6 +277,11 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   prefs->SetTime(prefs::kPineNudgeLastShown, now);
 }
 
+// static
+void PineController::SetIgnorePrefsForTesting(bool val) {
+  g_ignore_prefs_for_testing = val;
+}
+
 void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {
   CHECK(pine_contents_data_);
 
@@ -297,6 +314,19 @@ void PineController::StartPineOverviewSession() {
   // TODO(sammiequon): Add a new start action for this type of overview session.
   OverviewController::Get()->StartOverview(OverviewStartAction::kAccelerator,
                                            OverviewEnterExitType::kPine);
+}
+
+void PineController::OnOnboardingAcceptPressed(bool restore_on) {
+  // TODO(sophiewen): Bind this to start the pine session.
+  if (!restore_on) {
+    // We only record the action taken if the user had Restore off.
+    base::UmaHistogramBoolean(kPineOnboardingHistogram, true);
+  }
+}
+
+void PineController::OnOnboardingCancelPressed() {
+  // The cancel button would only exist if the user had Restore off.
+  base::UmaHistogramBoolean(kPineOnboardingHistogram, false);
 }
 
 }  // namespace ash

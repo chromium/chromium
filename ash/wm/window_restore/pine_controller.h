@@ -9,15 +9,14 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image_skia.h"
-
-namespace views {
-class Widget;
-}  // namespace views
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
 // Public so it can be used by tests.
 inline constexpr char kEducationNudgeId[] = "PineEducationNudge";
+inline constexpr char kPineOnboardingHistogram[] =
+    "Ash.Pine.OnboardingDialog.TurnRestoreOn";
 
 struct PineContentsData;
 
@@ -64,13 +63,23 @@ class ASH_EXPORT PineController : public OverviewObserver {
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
  private:
+  friend class PineTest;
+  FRIEND_TEST_ALL_PREFIXES(PineTest, OnboardingMetrics);
+
+  static void SetIgnorePrefsForTesting(bool val);
+
   // Callback function for when the pine image is finished decoding.
   void OnPineImageDecoded(const gfx::ImageSkia& pine_image);
 
   void StartPineOverviewSession();
 
+  // Called when the accept or cancel button in the onboarding dialog is
+  // pressed.
+  void OnOnboardingAcceptPressed(bool restore_on);
+  void OnOnboardingCancelPressed();
+
   // The first-time experience onboarding dialog.
-  std::unique_ptr<views::Widget> onboarding_widget_;
+  views::UniqueWidgetPtr onboarding_widget_;
 
   // Stores the data needed to display the pine dialog. Created on login, and
   // deleted after the user interacts with the dialog. If the user exits

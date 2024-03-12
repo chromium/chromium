@@ -4,11 +4,13 @@
 
 #include "ash/wm/window_restore/pine_contents_view.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/shell.h"
+#include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
@@ -31,10 +33,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -76,6 +80,14 @@ class PineTest : public AshTestBase {
                        .pine_widget()
                        ->GetContentsView()))
         .overflow_view();
+  }
+
+  SystemDialogDelegateView* GetOnboardingDialog() {
+    auto* pine_controller = Shell::Get()->pine_controller();
+    auto* onboarding_widget = pine_controller->onboarding_widget_.get();
+    return onboarding_widget ? views::AsViewClass<SystemDialogDelegateView>(
+                                   onboarding_widget->GetContentsView())
+                             : nullptr;
   }
 
   // Used for testing overview. Returns a vector with `n` chrome browser app
@@ -287,6 +299,45 @@ TEST_F(PineTest, NudgePreferences) {
   SetFakeNow(FakeTimeNow() + base::Hours(25));
   test_start_and_end_overview();
   EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+}
+
+// Tests the onboarding metrics are recorded correctly.
+TEST_F(PineTest, OnboardingMetrics) {
+  base::HistogramTester histogram_tester;
+  PineController::SetIgnorePrefsForTesting(true);
+
+  // Verify initial histogram counts.
+  histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 0);
+
+  // Press "Accept". Test we increment `true`.
+  auto* pine_controller = Shell::Get()->pine_controller();
+  pine_controller->MaybeShowPineOnboardingMessage(
+      /*restore_on=*/false);
+  auto* dialog = GetOnboardingDialog();
+  LeftClickOn(dialog->GetAcceptButtonForTesting());
+  views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
+  histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
+                                     /*sample=*/true,
+                                     /*expected_count=*/1);
+
+  // Press "Cancel". Test we increment `false`.
+  pine_controller->MaybeShowPineOnboardingMessage(
+      /*restore_on=*/false);
+  dialog = GetOnboardingDialog();
+  LeftClickOn(dialog->GetCancelButtonForTesting());
+  views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
+  histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
+                                     /*sample=*/false,
+                                     /*expected_count=*/1);
+
+  // Verify total counts.
+  histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
+
+  // Show the onboarding dialog with 'Restore' on. Test we don't record.
+  pine_controller->MaybeShowPineOnboardingMessage(
+      /*restore_on=*/true);
+  LeftClickOn(GetOnboardingDialog()->GetAcceptButtonForTesting());
+  histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
 }
 
 }  // namespace ash
