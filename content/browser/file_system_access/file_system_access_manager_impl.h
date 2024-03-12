@@ -485,14 +485,23 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       ChooseEntriesCallback callback,
       std::vector<FileSystemChooser::ResultEntry> entries,
       FileSystemAccessPermissionContext::SensitiveEntryResult result);
-  void DidCreateAndTruncateSaveFile(const BindingContext& binding_context,
-                                    const FileSystemChooser::ResultEntry& entry,
-                                    const storage::FileSystemURL& url,
-                                    ChooseEntriesCallback callback,
-                                    bool success);
+  void OnCheckPathsAgainstEnterprisePolicy(
+      const BindingContext& binding_context,
+      const FileSystemChooser::Options& options,
+      const std::string& starting_directory_id,
+      bool request_directory_write_access,
+      ChooseEntriesCallback callback,
+      std::vector<FileSystemAccessPermissionContext::PathInfo> entries);
+
+  void DidCreateAndTruncateSaveFile(
+      const BindingContext& binding_context,
+      const FileSystemAccessPermissionContext::PathInfo& entry,
+      const storage::FileSystemURL& url,
+      ChooseEntriesCallback callback,
+      bool success);
   void DidChooseDirectory(
       const BindingContext& binding_context,
-      const FileSystemChooser::ResultEntry& entry,
+      const FileSystemAccessPermissionContext::PathInfo& entry,
       ChooseEntriesCallback callback,
       const SharedHandleState& shared_handle_state,
       FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome);

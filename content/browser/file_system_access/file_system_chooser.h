@@ -29,6 +29,8 @@ class WebContents;
 // All of this class has to be called on the UI thread.
 class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
  public:
+  // TODO: crbug.com/326462071 - Consider making ResultEntry an alias of
+  // FileSystemAccessPermissionContext::PathInfo.
   using PathType = FileSystemAccessEntryFactory::PathType;
   struct ResultEntry {
     PathType type;

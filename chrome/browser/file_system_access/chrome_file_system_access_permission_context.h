@@ -17,6 +17,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/file_system_access_permission_context.h"
@@ -27,6 +28,11 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "components/enterprise/common/files_scan_data.h"
 #endif
 
 class HostContentSettingsMap;
@@ -195,6 +201,10 @@ class ChromeFileSystemAccessPermissionContext
   void OnFileCreatedFromShowSaveFilePicker(
       const GURL& file_picker_binding_context,
       const storage::FileSystemURL& url) override;
+  void CheckPathsAgainstEnterprisePolicy(
+      std::vector<PathInfo> entries,
+      content::GlobalRenderFrameHostId frame_id,
+      EntriesAllowedByEnterprisePolicyCallback callback) override;
 
   // Registers a subscriber to be notified of file creation events originating
   // from `window.showSaveFilePicker()` until the returned subscription is
@@ -339,6 +349,14 @@ class ChromeFileSystemAccessPermissionContext
   };
 
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  void OnContentAnalysisComplete(
+      std::vector<PathInfo> entries,
+      EntriesAllowedByEnterprisePolicyCallback callback,
+      std::vector<base::FilePath> paths,
+      std::vector<bool> allowed);
+#endif
 
   // Checks whether the file or directory at `path` corresponds to a directory
   // Chrome considers sensitive (i.e. system files). Calls `callback` with

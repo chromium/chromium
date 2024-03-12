@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
@@ -78,7 +79,12 @@ class FileSystemAccessPermissionContext {
   struct PathInfo {
     PathType type = PathType::kLocal;
     base::FilePath path;
+
+    bool operator==(const PathInfo& other) const = default;
   };
+
+  using EntriesAllowedByEnterprisePolicyCallback =
+      base::OnceCallback<void(std::vector<PathInfo>)>;
 
   // Returns the read permission grant to use for a particular path.
   virtual scoped_refptr<FileSystemAccessPermissionGrant> GetReadPermissionGrant(
@@ -177,6 +183,15 @@ class FileSystemAccessPermissionContext {
   virtual void OnFileCreatedFromShowSaveFilePicker(
       const GURL& file_picker_binding_context,
       const storage::FileSystemURL& url) = 0;
+
+  // Checks the paths listed in `entries` to determine if they should be allowed
+  // or blocked within this context, for the given render frame host, based on
+  // enterprise policies. Invokes `callback` with the list of entries which are
+  // allowed.
+  virtual void CheckPathsAgainstEnterprisePolicy(
+      std::vector<PathInfo> entries,
+      GlobalRenderFrameHostId frame_id,
+      EntriesAllowedByEnterprisePolicyCallback callback) = 0;
 
  protected:
   virtual ~FileSystemAccessPermissionContext() = default;

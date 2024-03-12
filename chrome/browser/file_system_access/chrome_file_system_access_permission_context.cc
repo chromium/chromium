@@ -4,6 +4,7 @@
 
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
@@ -1578,6 +1579,83 @@ void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
   CheckPathAgainstBlocklist(path_type, path, handle_type,
                             std::move(after_blocklist_check_callback));
 }
+
+void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
+    std::vector<PathInfo> entries,
+    content::GlobalRenderFrameHostId frame_id,
+    EntriesAllowedByEnterprisePolicyCallback callback) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  // Get WebContents pointer in order to perform enterprise content analysis.
+  content::WebContents* web_contents = nullptr;
+  if (!entries.empty()) {
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
+    if (rfh && rfh->IsActive()) {
+      web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    }
+  }
+
+  if (!web_contents) {
+    std::move(callback).Run(std::move(entries));
+    return;
+  }
+
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+          Profile::FromBrowserContext(profile()),
+          web_contents->GetLastCommittedURL(), &data,
+          enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
+    std::move(callback).Run(std::move(entries));
+    return;
+  }
+
+  data.reason =
+      enterprise_connectors::ContentAnalysisRequest::FILE_PICKER_DIALOG;
+
+  // Move the paths from `entries` to `data.paths` to minimize memory copies.
+  // Later the paths will be recombined with the type left in `entries` for
+  // those files that pass enterprise policy checks.
+  std::transform(std::make_move_iterator(entries.begin()),
+                 std::make_move_iterator(entries.end()),
+                 std::back_inserter(data.paths),
+                 [](PathInfo&& entry) { return std::move(entry.path); });
+
+  // TODO: crbug.com/326618625 - Handle kExternal files correctly.
+  // CreateForFilesInWebContents() only handles real OS files, so these entries
+  // are ignored and passed directly to OnContentAnalysisComplete() unchanged.
+  // kExternal files only exist in ChromeOS.
+  enterprise_connectors::ContentAnalysisDelegate::CreateForFilesInWebContents(
+      web_contents, std::move(data),
+      base::BindOnce(
+          &ChromeFileSystemAccessPermissionContext::OnContentAnalysisComplete,
+          weak_factory_.GetWeakPtr(), std::move(entries), std::move(callback)),
+      safe_browsing::DeepScanAccessPoint::UPLOAD);
+#else
+  std::move(callback).Run(std::move(entries));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+}
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
+void ChromeFileSystemAccessPermissionContext::OnContentAnalysisComplete(
+    std::vector<PathInfo> entries,
+    EntriesAllowedByEnterprisePolicyCallback callback,
+    std::vector<base::FilePath> paths,
+    std::vector<bool> allowed) {
+  CHECK_EQ(paths.size(), allowed.size());
+  CHECK_EQ(paths.size(), entries.size());
+
+  std::vector<PathInfo> result_entries;
+  for (size_t i = 0; i < paths.size(); ++i) {
+    if (allowed[i]) {
+      result_entries.emplace_back(
+          PathInfo{.type = entries[i].type, .path = std::move(paths[i])});
+    }
+  }
+
+  std::move(callback).Run(std::move(result_entries));
+}
+
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     PathType path_type,

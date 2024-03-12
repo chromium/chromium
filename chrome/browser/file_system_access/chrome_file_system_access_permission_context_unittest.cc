@@ -34,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
@@ -58,6 +59,13 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#endif
+
 using content::BrowserContext;
 using content::WebContents;
 using content::WebContentsTester;
@@ -80,6 +88,45 @@ using SensitiveDirectoryResult =
     ChromeFileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserActivationState =
     content::FileSystemAccessPermissionGrant::UserActivationState;
+using PathInfo = content::FileSystemAccessPermissionContext::PathInfo;
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+using ContentAnalysisDelegate = enterprise_connectors::ContentAnalysisDelegate;
+using FakeContentAnalysisDelegate =
+    enterprise_connectors::test::FakeContentAnalysisDelegate;
+using ContentAnalysisResponse = enterprise_connectors::ContentAnalysisResponse;
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+namespace {
+
+constexpr char kDummyDmToken[] = "dm_token";
+
+void EnableEnterpriseAnalysis(Profile* profile) {
+  static constexpr char kEnabled[] = R"(
+    {
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["dlp"]
+          }
+        ],
+        "block_until_verdict": 1
+    })";
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile->GetPrefs(), enterprise_connectors::FILE_ATTACHED, kEnabled);
+  enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
+  policy::SetDMTokenForTesting(
+      policy::DMToken::CreateValidToken(kDummyDmToken));
+}
+
+bool CreateNonEmptyFile(const base::FilePath& path) {
+  return base::WriteFile(path, "data");
+}
+
+}  // namespace
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 class TestFileSystemAccessPermissionContext
     : public ChromeFileSystemAccessPermissionContext {
@@ -143,6 +190,10 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+    enterprise_connectors::test::ClearAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_ATTACHED);
+#endif
     task_environment_.RunUntilIdle();
     ASSERT_TRUE(temp_dir_.Delete());
     web_contents_.reset();
@@ -2721,5 +2772,165 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
 }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       CheckPathsAgainstEnterprisePolicy_Empty) {
+  EnableEnterpriseAnalysis(profile());
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &FakeContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindRepeating(
+          [](const std::string& contents, const base::FilePath& path) {
+            return FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"});
+          }),
+      kDummyDmToken));
+
+  std::vector<PathInfo> entries;
+
+  base::test::TestFuture<std::vector<PathInfo>> future;
+  permission_context_->CheckPathsAgainstEnterprisePolicy(entries, frame_id(),
+                                                         future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().empty());
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       CheckPathsAgainstEnterprisePolicy_BadFrameId) {
+  EnableEnterpriseAnalysis(profile());
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &FakeContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindRepeating(
+          [](const std::string& contents, const base::FilePath& path) {
+            return FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"});
+          }),
+      kDummyDmToken));
+
+  base::FilePath path = temp_dir_.GetPath().AppendASCII("foo");
+  EXPECT_TRUE(CreateNonEmptyFile(path));
+  std::vector<PathInfo> entries{
+      {PathType::kLocal, path},
+  };
+
+  base::test::TestFuture<std::vector<PathInfo>> future;
+  permission_context_->CheckPathsAgainstEnterprisePolicy(
+      entries, content::GlobalRenderFrameHostId(), future.GetCallback());
+  EXPECT_THAT(future.Get<0>(), testing::ElementsAreArray(entries));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       CheckPathsAgainstEnterprisePolicy_OneFile) {
+  EnableEnterpriseAnalysis(profile());
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &FakeContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindRepeating(
+          [](const std::string& contents, const base::FilePath& path) {
+            return FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"});
+          }),
+      kDummyDmToken));
+
+  base::FilePath path = temp_dir_.GetPath().AppendASCII("foo");
+  EXPECT_TRUE(CreateNonEmptyFile(path));
+  std::vector<PathInfo> entries{
+      {PathType::kLocal, path},
+  };
+
+  base::test::TestFuture<std::vector<PathInfo>> future;
+  permission_context_->CheckPathsAgainstEnterprisePolicy(entries, frame_id(),
+                                                         future.GetCallback());
+  EXPECT_THAT(future.Get<0>(), testing::ElementsAreArray(entries));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       CheckPathsAgainstEnterprisePolicy_OneDirectoryAllowed) {
+  base::FilePath path_foo = temp_dir_.GetPath().AppendASCII("foo");
+  base::FilePath path_bar = temp_dir_.GetPath().AppendASCII("bar");
+  EXPECT_TRUE(CreateNonEmptyFile(path_foo));
+  EXPECT_TRUE(CreateNonEmptyFile(path_bar));
+
+  // A directory is allowed if all contained files are allowed.
+  EnableEnterpriseAnalysis(profile());
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &FakeContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindLambdaForTesting(
+          [path_foo](const std::string& contents, const base::FilePath& path) {
+            return FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"});
+          }),
+      kDummyDmToken));
+
+  std::vector<PathInfo> entries{
+      {PathType::kLocal, temp_dir_.GetPath()},
+  };
+
+  base::test::TestFuture<std::vector<PathInfo>> future;
+  permission_context_->CheckPathsAgainstEnterprisePolicy(entries, frame_id(),
+                                                         future.GetCallback());
+  EXPECT_THAT(future.Get<0>(), testing::SizeIs(1));
+  EXPECT_EQ(future.Get<0>()[0].path, temp_dir_.GetPath());
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       CheckPathsAgainstEnterprisePolicy_OneDirectoryBlocked) {
+  base::FilePath path_foo = temp_dir_.GetPath().AppendASCII("foo");
+  base::FilePath path_bar = temp_dir_.GetPath().AppendASCII("bar");
+  EXPECT_TRUE(CreateNonEmptyFile(path_foo));
+  EXPECT_TRUE(CreateNonEmptyFile(path_bar));
+
+  // A directory is blocked if at least one file is blocked.
+  EnableEnterpriseAnalysis(profile());
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &FakeContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindLambdaForTesting([path_foo](const std::string& contents,
+                                            const base::FilePath& path) {
+        return path == path_foo
+                   ? FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"})
+                   : FakeContentAnalysisDelegate::DlpResponse(
+                         ContentAnalysisResponse::Result::SUCCESS, "rule",
+                         ContentAnalysisResponse::Result::TriggeredRule::BLOCK);
+      }),
+      kDummyDmToken));
+
+  std::vector<PathInfo> entries{
+      {PathType::kLocal, temp_dir_.GetPath()},
+  };
+
+  base::test::TestFuture<std::vector<PathInfo>> future;
+  permission_context_->CheckPathsAgainstEnterprisePolicy(entries, frame_id(),
+                                                         future.GetCallback());
+  EXPECT_THAT(future.Get<0>(), testing::SizeIs(0));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       CheckPathsAgainstEnterprisePolicy_TwoFilesOneBlocked) {
+  base::FilePath path_foo = temp_dir_.GetPath().AppendASCII("foo");
+  base::FilePath path_bar = temp_dir_.GetPath().AppendASCII("bar");
+  EXPECT_TRUE(CreateNonEmptyFile(path_foo));
+  EXPECT_TRUE(CreateNonEmptyFile(path_bar));
+
+  EnableEnterpriseAnalysis(profile());
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &FakeContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindLambdaForTesting([path_foo](const std::string& contents,
+                                            const base::FilePath& path) {
+        return path == path_foo
+                   ? FakeContentAnalysisDelegate::SuccessfulResponse({"dlp"})
+                   : FakeContentAnalysisDelegate::DlpResponse(
+                         ContentAnalysisResponse::Result::SUCCESS, "rule",
+                         ContentAnalysisResponse::Result::TriggeredRule::BLOCK);
+      }),
+      kDummyDmToken));
+
+  std::vector<PathInfo> entries{
+      {PathType::kLocal, path_foo},
+      {PathType::kLocal, path_bar},
+  };
+
+  base::test::TestFuture<std::vector<PathInfo>> future;
+  permission_context_->CheckPathsAgainstEnterprisePolicy(entries, frame_id(),
+                                                         future.GetCallback());
+  EXPECT_THAT(future.Get<0>(), testing::SizeIs(1));
+  EXPECT_EQ(future.Get<0>()[0].path, path_foo);
+}
+
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #endif  // !BUILDFLAG(IS_ANDROID)

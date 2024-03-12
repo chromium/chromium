@@ -108,6 +108,13 @@ class MockFileSystemAccessPermissionContext
               (const GURL& file_picker_binding_context,
                const storage::FileSystemURL& url),
               (override));
+
+  MOCK_METHOD(void,
+              CheckPathsAgainstEnterprisePolicy,
+              (std::vector<PathInfo> entries,
+               GlobalRenderFrameHostId frame_id,
+               EntriesAllowedByEnterprisePolicyCallback callback),
+              (override));
 };
 
 }  // namespace content
