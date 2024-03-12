@@ -3237,6 +3237,8 @@
     "ChromeCompose": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
@@ -4196,6 +4198,8 @@
     "ComposeModelQualityLogging": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
