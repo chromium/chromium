@@ -1364,6 +1364,26 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       IncognitoMode_EditAndDeleteSuggestionsAreNotAdded) {
+  autofill_client()->set_is_off_the_record(true);
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(),
+      /*last_targeted_fields=*/std::nullopt, NAME_FIRST);
+
+  ASSERT_EQ(1u, suggestions.size());
+  ASSERT_GT(suggestions[0].children.size(), 0u);
+  EXPECT_THAT(suggestions[0].children,
+              Not(Contains(EqualsSuggestion(PopupItemId::kEditAddressProfile))))
+      << "Children should not contain the 'Edit address' suggestion because "
+         "there user is in incognito mode.";
+  EXPECT_THAT(
+      suggestions[0].children,
+      Not(Contains(EqualsSuggestion(PopupItemId::kDeleteAddressProfile))))
+      << "Children should not contain the 'Delete address' suggestion because "
+         "there user is in incognito mode.";
+}
+
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        FillEverythingFromAddressProfile_NotAddedIfLastTargetedAllFieldTypes) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),

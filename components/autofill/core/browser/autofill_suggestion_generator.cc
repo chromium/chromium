@@ -546,10 +546,13 @@ void AddContactChildSuggestions(FieldType trigger_field_type,
   }
 }
 
-// Adds footer child suggestions to build autofill popup submenu.
+// Adds footer child suggestions for editing and deleting a profile from the
+// popup submenu. Note that these footer suggestions are not added in incognito
+// mode (`is_off_the_record`).
 void AddFooterChildSuggestions(const AutofillProfile& profile,
                                FieldType trigger_field_type,
                                std::optional<FieldTypeSet> last_targeted_fields,
+                               bool is_off_the_record,
                                Suggestion& suggestion) {
   // If the trigger field is not classified as an address field, then the
   // filling was triggered from the context menu. In this scenario, the user
@@ -563,10 +566,12 @@ void AddFooterChildSuggestions(const AutofillProfile& profile,
     suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
         Suggestion::Guid(profile.guid())));
   }
-  suggestion.children.push_back(
-      GetEditAddressProfileSuggestion(Suggestion::Guid(profile.guid())));
-  suggestion.children.push_back(
-      GetDeleteAddressProfileSuggestion(Suggestion::Guid(profile.guid())));
+  if (!is_off_the_record) {
+    suggestion.children.push_back(
+        GetEditAddressProfileSuggestion(Suggestion::Guid(profile.guid())));
+    suggestion.children.push_back(
+        GetDeleteAddressProfileSuggestion(Suggestion::Guid(profile.guid())));
+  }
 }
 
 // Adds nested entry to the `suggestion` for filling credit card cardholder name
@@ -1378,7 +1383,13 @@ void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
   AddContactChildSuggestions(trigger_field_type, profile, app_locale,
                              suggestion);
   AddFooterChildSuggestions(profile, trigger_field_type, last_targeted_fields,
-                            suggestion);
+                            autofill_client_->IsOffTheRecord(), suggestion);
+  // In incognito mode we do not have edit and deleting options. In this
+  // situation there is a chance that no footer suggestions exist, which could
+  // lead to a leading `kSeparator` suggestion.
+  if (suggestion.children.back().popup_item_id == PopupItemId::kSeparator) {
+    suggestion.children.pop_back();
+  }
 }
 
 std::vector<Suggestion>
