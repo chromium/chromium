@@ -176,6 +176,7 @@
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_handler_base.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
@@ -4675,6 +4676,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // IPC-friendly token that represents this host.
   const blink::LocalFrameToken frame_token_;
+
+  // The most recent accessibility mode received from the host's delegate in
+  // `UpdateAccessibilityMode()`. This is a debugging aid for
+  // https://crbug.com/326751711.
+  ui::AXMode last_ax_mode_;
 
   // Binding to remote implementation of mojom::RenderAccessibility. Note that
   // this binding is done on-demand (in UpdateAccessibilityMode()) and will only
