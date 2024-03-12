@@ -11045,25 +11045,6 @@
             ]
         }
     ],
-    "NavigationPredictor": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230616",
-                    "enable_features": [
-                        "NavigationPredictor"
-                    ]
-                }
-            ]
-        }
-    ],
     "NearbyShareNameEnabled": [
         {
             "platforms": [
