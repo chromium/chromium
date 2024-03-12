@@ -51,11 +51,15 @@ namespace debug {
 // Helper for adding a set of multiple worker related crash keys.
 //
 // It is meant to be created when we detect exactly two entries for the same
-// worker that will be recorded in WorkerIdSet.
+// worker that will be recorded in `WorkerIdSet::Add()`.
 //
 // These crash keys set information relevant to when two workers are attempting
-// to be added to the WorkerIdSet. All keys are logged every time this class is
-// instantiated. Each key describes it's possible values.
+// to be added to the `WorkerIdSet`. All keys are logged every time this class
+// is instantiated. Each key describes its possible values.
+//
+//  The "previous" `WorkerId` is the one that existed before
+//  `WorkerIdSet::Add()` is called. The "new" `WorkerId` is the duplicate that
+//  will be added once `WorkerIdSet::Add()` completes.
 class ScopedMultiWorkerCrashKeys {
  public:
   explicit ScopedMultiWorkerCrashKeys(const ExtensionId& extension_id,
@@ -83,14 +87,14 @@ class ScopedMultiWorkerCrashKeys {
   // Whether the renderer process ids for the previous and new worker match.
   // Values are: "yes", or "no".
   base::debug::ScopedCrashKeyString
-      identical_worker_renderer_process_ids_crash_key_;
+      identical_worker_render_process_ids_crash_key_;
 
   // Whether the renderer process id for the previous and new worker for this
   // specific extension are running or not. Values are: "yes", or "no".
   base::debug::ScopedCrashKeyString
-      previous_worker_renderer_process_running_crash_key_;
+      previous_worker_render_process_running_crash_key_;
   base::debug::ScopedCrashKeyString
-      new_worker_renderer_process_running_crash_key_;
+      new_worker_render_process_running_crash_key_;
 };
 
 }  // namespace debug
