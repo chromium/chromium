@@ -24,6 +24,7 @@
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
+#include "ash/wm/window_restore/pine_test_api.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -63,16 +64,16 @@ class PineTest : public AshTestBase {
     const PineContentsView* contents_view =
         views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
     ASSERT_TRUE(contents_view);
-    ASSERT_TRUE(contents_view->container_view_for_testing());
+    ASSERT_TRUE(PineContentsViewTestApi(contents_view).container_view());
   }
 
   const PineItemsOverflowView* GetOverflowView() const {
-    return views::AsViewClass<PineContentsView>(
-               OverviewGridTestApi(Shell::GetPrimaryRootWindow())
-                   .pine_widget()
-                   ->GetContentsView())
-        ->container_view_for_testing()
-        ->overflow_view_for_testing();
+    return PineContentsViewTestApi(
+               views::AsViewClass<PineContentsView>(
+                   OverviewGridTestApi(Shell::GetPrimaryRootWindow())
+                       .pine_widget()
+                       ->GetContentsView()))
+        .overflow_view();
   }
 
   // Used for testing overview. Returns a vector with `n` chrome browser app
@@ -122,13 +123,13 @@ TEST_F(PineTest, TwoWindowOverflow) {
 
   const PineItemsOverflowView* overflow_view = GetOverflowView();
   ASSERT_TRUE(overflow_view);
-  EXPECT_EQ(2u, overflow_view->image_view_map_for_testing().size());
+  PineItemsOverflowViewTestApi test_api(overflow_view);
+  EXPECT_EQ(2u, test_api.image_views_count());
 
   // The top row should have two elements, and the bottom row should have zero
   // elements, in order to form a 2x1 layout.
-  EXPECT_EQ(2u, overflow_view->top_row_view_for_testing()->children().size());
-  EXPECT_EQ(0u,
-            overflow_view->bottom_row_view_for_testing()->children().size());
+  EXPECT_EQ(2u, test_api.top_row_view_children_count());
+  EXPECT_EQ(0u, test_api.bottom_row_view_children_count());
 }
 
 TEST_F(PineTest, ThreeWindowOverflow) {
@@ -140,13 +141,13 @@ TEST_F(PineTest, ThreeWindowOverflow) {
 
   const PineItemsOverflowView* overflow_view = GetOverflowView();
   ASSERT_TRUE(overflow_view);
-  EXPECT_EQ(3u, overflow_view->image_view_map_for_testing().size());
+  PineItemsOverflowViewTestApi test_api(overflow_view);
+  EXPECT_EQ(3u, test_api.image_views_count());
 
   // The top row should have one element, and the bottom row should have two
   // elements, in order to form a triangular layout.
-  EXPECT_EQ(1u, overflow_view->top_row_view_for_testing()->children().size());
-  EXPECT_EQ(2u,
-            overflow_view->bottom_row_view_for_testing()->children().size());
+  EXPECT_EQ(1u, test_api.top_row_view_children_count());
+  EXPECT_EQ(2u, test_api.bottom_row_view_children_count());
 }
 
 TEST_F(PineTest, FourWindowOverflow) {
@@ -158,13 +159,13 @@ TEST_F(PineTest, FourWindowOverflow) {
 
   const PineItemsOverflowView* overflow_view = GetOverflowView();
   ASSERT_TRUE(overflow_view);
-  EXPECT_EQ(4u, overflow_view->image_view_map_for_testing().size());
+  PineItemsOverflowViewTestApi test_api(overflow_view);
+  EXPECT_EQ(4u, test_api.image_views_count());
 
   // The top and bottom rows should have two elements each, in order to form a
   // 2x2 layout.
-  EXPECT_EQ(2u, overflow_view->top_row_view_for_testing()->children().size());
-  EXPECT_EQ(2u,
-            overflow_view->bottom_row_view_for_testing()->children().size());
+  EXPECT_EQ(2u, test_api.top_row_view_children_count());
+  EXPECT_EQ(2u, test_api.bottom_row_view_children_count());
 }
 
 TEST_F(PineTest, FivePlusWindowOverflow) {
@@ -176,16 +177,16 @@ TEST_F(PineTest, FivePlusWindowOverflow) {
 
   const PineItemsOverflowView* overflow_view = GetOverflowView();
   ASSERT_TRUE(overflow_view);
+  PineItemsOverflowViewTestApi test_api(overflow_view);
 
   // The image view map should only have three elements as the fourth slot is
   // saved for a count of the remaining windows.
-  EXPECT_EQ(3u, overflow_view->image_view_map_for_testing().size());
+  EXPECT_EQ(3u, test_api.image_views_count());
 
   // The top row should have two elements, and the bottom row should have zero
   // elements, in order to form a 2x2 layout.
-  EXPECT_EQ(2u, overflow_view->top_row_view_for_testing()->children().size());
-  EXPECT_EQ(2u,
-            overflow_view->bottom_row_view_for_testing()->children().size());
+  EXPECT_EQ(2u, test_api.top_row_view_children_count());
+  EXPECT_EQ(2u, test_api.bottom_row_view_children_count());
 }
 
 // Tests that the pine screenshot should not be shown if it has different

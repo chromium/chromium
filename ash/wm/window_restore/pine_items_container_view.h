@@ -26,11 +26,9 @@ class PineItemsContainerView : public views::BoxLayoutView {
   PineItemsContainerView& operator=(const PineItemsContainerView&) = delete;
   ~PineItemsContainerView() override = default;
 
-  const PineItemsOverflowView* overflow_view_for_testing() const {
-    return overflow_view_for_testing_;
-  }
-
  private:
+  friend class PineContentsViewTestApi;
+
   raw_ptr<PineItemsOverflowView> overflow_view_for_testing_ = nullptr;
 };
 

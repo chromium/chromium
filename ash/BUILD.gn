@@ -4804,6 +4804,8 @@ static_library("test_support") {
     "wm/test/test_session_state_animator.h",
     "wm/window_preview_view_test_api.cc",
     "wm/window_preview_view_test_api.h",
+    "wm/window_restore/pine_test_api.cc",
+    "wm/window_restore/pine_test_api.h",
     "wm/workspace_controller_test_api.cc",
     "wm/workspace_controller_test_api.h",
   ]

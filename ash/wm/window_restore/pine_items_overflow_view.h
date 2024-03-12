@@ -14,11 +14,9 @@ class ImageView;
 
 namespace ash {
 
-class PineItemsOverflowView;
-
 // An alternative to `PineItemView` when there are more than four windows in
 // `apps` and the remaining information needs to be condensed.
-class PineItemsOverflowView : public views::BoxLayoutView {
+class ASH_EXPORT PineItemsOverflowView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemsOverflowView, views::BoxLayoutView)
 
  public:
@@ -30,19 +28,9 @@ class PineItemsOverflowView : public views::BoxLayoutView {
 
   void SetIconForIndex(int index, const gfx::ImageSkia& icon);
 
-  const base::flat_map<int, views::ImageView*>& image_view_map_for_testing()
-      const {
-    return image_view_map_;
-  }
-
-  const views::BoxLayoutView* top_row_view_for_testing() const {
-    return top_row_view_;
-  }
-  const views::BoxLayoutView* bottom_row_view_for_testing() const {
-    return bottom_row_view_;
-  }
-
  private:
+  friend class PineItemsOverflowViewTestApi;
+
   base::flat_map<int, views::ImageView*> image_view_map_;
 
   // These views are stacked vertically to act as rows of window icons.

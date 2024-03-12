@@ -17,6 +17,7 @@
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/pine_test_api.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
@@ -36,7 +37,7 @@ namespace ash::full_restore {
 
 namespace {
 
-PineContentsView* GetPineContentsView() {
+const PineContentsView* GetPineContentsView() {
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   if (!overview_grid) {
@@ -54,15 +55,17 @@ PineContentsView* GetPineContentsView() {
 // Retrieve the "Restore" button from the pine dialog, if we are in a overview
 // pine session.
 const PillButton* GetPineDialogRestoreButton() {
-  PineContentsView* pine_contents_view = GetPineContentsView();
-  return pine_contents_view ? pine_contents_view->restore_button_for_testing()
-                            : nullptr;
+  const PineContentsView* pine_contents_view = GetPineContentsView();
+  return pine_contents_view
+             ? PineContentsViewTestApi(pine_contents_view).restore_button()
+             : nullptr;
 }
 
 const PillButton* GetPineDialogCancelButton() {
-  PineContentsView* pine_contents_view = GetPineContentsView();
-  return pine_contents_view ? pine_contents_view->cancel_button_for_testing()
-                            : nullptr;
+  const PineContentsView* pine_contents_view = GetPineContentsView();
+  return pine_contents_view
+             ? PineContentsViewTestApi(pine_contents_view).cancel_button()
+             : nullptr;
 }
 
 }  // namespace
