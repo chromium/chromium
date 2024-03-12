@@ -555,6 +555,36 @@ inline CSSValueID PlatformEnumToCSSValueID(TextWrap v) {
   return CSSValueID::kNone;
 }
 
+template <>
+inline TryTactic CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kFlipBlock:
+      return TryTactic::kFlipBlock;
+    case CSSValueID::kFlipInline:
+      return TryTactic::kFlipInline;
+    case CSSValueID::kFlipStart:
+      return TryTactic::kFlipStart;
+    default:
+      NOTREACHED();
+      return TryTactic::kNone;
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(TryTactic v) {
+  switch (v) {
+    case TryTactic::kNone:
+      NOTREACHED();
+      return CSSValueID::kNone;
+    case TryTactic::kFlipBlock:
+      return CSSValueID::kFlipBlock;
+    case TryTactic::kFlipInline:
+      return CSSValueID::kFlipInline;
+    case TryTactic::kFlipStart:
+      return CSSValueID::kFlipStart;
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

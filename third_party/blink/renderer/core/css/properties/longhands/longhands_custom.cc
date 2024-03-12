@@ -7075,19 +7075,10 @@ const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
       if (const ScopedCSSName* name = option.GetPositionTryName()) {
         option_value->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
       }
-      if (option.HasTryTactic()) {
-        TryTacticFlags tactic = option.GetTryTactic();
-        if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipBlock)) {
-          option_value->Append(
-              *CSSIdentifierValue::Create(CSSValueID::kFlipBlock));
-        }
-        if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipInline)) {
-          option_value->Append(
-              *CSSIdentifierValue::Create(CSSValueID::kFlipInline));
-        }
-        if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipStart)) {
-          option_value->Append(
-              *CSSIdentifierValue::Create(CSSValueID::kFlipStart));
+      const TryTacticList& tactic_list = option.GetTryTactic();
+      for (TryTactic tactic : tactic_list) {
+        if (tactic != TryTactic::kNone) {
+          option_value->Append(*CSSIdentifierValue::Create(tactic));
         }
       }
       option_list->Append(*option_value);
@@ -7108,28 +7099,18 @@ void PositionTryOptions::ApplyValue(StyleResolverState& state,
   HeapVector<PositionTryOption> options;
   for (const auto& option : To<CSSValueList>(value)) {
     const ScopedCSSName* scoped_name = nullptr;
-    TryTacticFlags try_tactics = static_cast<TryTacticFlags>(TryTactic::kNone);
+    TryTacticList tactic_list = {TryTactic::kNone};
+    wtf_size_t tactic_index = 0;
     for (const auto& name_or_tactic : To<CSSValueList>(*option)) {
       if (const auto* name = DynamicTo<CSSCustomIdentValue>(*name_or_tactic)) {
         scoped_name = StyleBuilderConverter::ConvertCustomIdent(state, *name);
         continue;
       }
-      switch (To<CSSIdentifierValue>(*name_or_tactic).GetValueID()) {
-        case CSSValueID::kFlipBlock:
-          try_tactics |= static_cast<TryTacticFlags>(TryTactic::kFlipBlock);
-          break;
-        case CSSValueID::kFlipInline:
-          try_tactics |= static_cast<TryTacticFlags>(TryTactic::kFlipInline);
-          break;
-        case CSSValueID::kFlipStart:
-          try_tactics |= static_cast<TryTacticFlags>(TryTactic::kFlipStart);
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
+      CHECK_LT(tactic_index, tactic_list.size());
+      tactic_list[tactic_index++] =
+          To<CSSIdentifierValue>(*name_or_tactic).ConvertTo<TryTactic>();
     }
-    options.push_back(PositionTryOption(scoped_name, try_tactics));
+    options.push_back(PositionTryOption(scoped_name, tactic_list));
   }
   DCHECK(!options.empty());
   state.StyleBuilder().SetPositionTryOptions(

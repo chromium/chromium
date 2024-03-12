@@ -7,7 +7,7 @@
 namespace blink {
 
 bool PositionTryOption::operator==(const PositionTryOption& other) const {
-  return tactic_ == other.tactic_ &&
+  return tactic_list_ == other.tactic_list_ &&
          base::ValuesEquivalent(position_try_name_, other.position_try_name_);
 }
 

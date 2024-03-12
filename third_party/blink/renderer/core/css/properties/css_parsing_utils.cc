@@ -7189,13 +7189,48 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
                                             CSSValuePair::kKeepIdenticalValues);
 }
 
+// Consume 'flip-block || flip-inline || flip-start' into `flips`,
+// in the order that they appear.
+//
+// Returns true if anything was set in `flip`.
+//
+// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+bool ConsumeFlipsInto(CSSParserTokenRange& range, CSSValue* (&flips)[3]) {
+  bool seen_flip_block = false;
+  bool seen_flip_inline = false;
+  bool seen_flip_start = false;
+
+  wtf_size_t i = 0;
+
+  while (!range.AtEnd()) {
+    CHECK_LE(i, 3u);
+    if (!seen_flip_block &&
+        (flips[i] = ConsumeIdent<CSSValueID::kFlipBlock>(range))) {
+      seen_flip_block = true;
+      ++i;
+      continue;
+    }
+    if (!seen_flip_inline &&
+        (flips[i] = ConsumeIdent<CSSValueID::kFlipInline>(range))) {
+      seen_flip_inline = true;
+      ++i;
+      continue;
+    }
+    if (!seen_flip_start &&
+        (flips[i] = ConsumeIdent<CSSValueID::kFlipStart>(range))) {
+      seen_flip_start = true;
+      ++i;
+      continue;
+    }
+    break;
+  }
+  return i != 0;
+}
+
 CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
                                          const CSSParserContext& context) {
   CSSValue* dashed_ident = nullptr;
-  CSSValue* flip_block = nullptr;
-  CSSValue* flip_inline = nullptr;
-  CSSValue* flip_start = nullptr;
-  bool has_tactic = false;
+  CSSValue* flips[3] = {nullptr};
   while (!range.AtEnd()) {
     if (!dashed_ident && (dashed_ident = ConsumeDashedIdent(range, context))) {
       continue;
@@ -7207,60 +7242,23 @@ CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
         continue;
       }
     }
-    if (has_tactic) {
-      break;
+    if (!flips[0] && ConsumeFlipsInto(range, flips)) {
+      CHECK(flips[0]);
+      continue;
     }
-    while (!range.AtEnd()) {
-      CSSIdentifierValue* tactic =
-          ConsumeIdent<CSSValueID::kFlipBlock, CSSValueID::kFlipInline,
-                       CSSValueID::kFlipStart>(range);
-      if (!tactic) {
-        break;
-      }
-      has_tactic = true;
-      switch (tactic->GetValueID()) {
-        case CSSValueID::kFlipBlock:
-          if (flip_block) {
-            return nullptr;
-          }
-          flip_block = tactic;
-          break;
-        case CSSValueID::kFlipInline:
-          if (flip_inline) {
-            return nullptr;
-          }
-          flip_inline = tactic;
-          break;
-        case CSSValueID::kFlipStart:
-          if (flip_start) {
-            return nullptr;
-          }
-          flip_start = tactic;
-          break;
-        default:
-          NOTREACHED();
-          return nullptr;
-      }
-    }
-    if (!has_tactic) {
-      break;
-    }
+    break;
   }
-  if (!has_tactic && !dashed_ident) {
+  if (!flips[0] && !dashed_ident) {
     return nullptr;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (dashed_ident) {
     list->Append(*dashed_ident);
   }
-  if (flip_block) {
-    list->Append(*flip_block);
-  }
-  if (flip_inline) {
-    list->Append(*flip_inline);
-  }
-  if (flip_start) {
-    list->Append(*flip_start);
+  for (CSSValue* flip : flips) {
+    if (flip) {
+      list->Append(*flip);
+    }
   }
   return list;
 }

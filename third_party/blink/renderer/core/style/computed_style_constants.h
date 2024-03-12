@@ -491,6 +491,14 @@ enum class CompositingOperator : unsigned {
   kPlusLighter
 };
 
+// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+enum class TryTactic : uint8_t {
+  kNone,
+  kFlipBlock,
+  kFlipInline,
+  kFlipStart,
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_
