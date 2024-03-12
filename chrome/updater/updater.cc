@@ -171,9 +171,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
                                    command_line->HasSwitch(kTagSwitch) ||
                                    command_line->HasSwitch(kRuntimeSwitch) ||
                                    command_line->HasSwitch(kHandoffSwitch);
+  const bool is_silent = command_line->HasSwitch(kSilentSwitch);
   base::SingleThreadTaskExecutor main_task_executor(
-      is_app_install_mode ? base::MessagePumpType::UI
-                          : base::MessagePumpType::DEFAULT);
+      (is_app_install_mode || !is_silent) ? base::MessagePumpType::UI
+                                          : base::MessagePumpType::DEFAULT);
   if (is_app_install_mode) {
     return MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run();
   }
