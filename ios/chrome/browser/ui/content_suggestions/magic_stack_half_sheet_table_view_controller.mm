@@ -217,7 +217,7 @@ enum ItemType : NSInteger {
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = title;
   switchItem.iconImage = symbol;
-  switchItem.iconTintColor = UIColor.blackColor;
+  switchItem.iconTintColor = [UIColor colorNamed:kSolidBlackColor];
   switchItem.accessibilityIdentifier = title;
   return switchItem;
 }
