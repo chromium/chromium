@@ -90,7 +90,10 @@ static NSDateFormatter* CreateDateTimeFormatter(
 static inline String NormalizeWhitespace(const String& date_time_format) {
   String normalized_date_time_format = date_time_format;
   // Revert ICU 72 change that introduced U+202F instead of U+0020
-  // to separate time from AM/PM. See https://crbug.com/1453047.
+  // to separate time from AM/PM.
+  //
+  // TODO(https://crbug.com/1453047): Move this normalization to
+  // `//third_party/icu/` or `//third_party/icu/patches/`.
   return normalized_date_time_format.Replace(0x202f, 0x20);
 }
 
