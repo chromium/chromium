@@ -17,7 +17,7 @@
     background: darkcyan;
     top: 10px;
     left: 10px;
-    width: 250px;
+    width: 150px; /* force fallback */
     height: 25px;
     position-try-options: --pf;
     transition-property: top, left;
@@ -25,6 +25,7 @@
     transition-timing-function: steps(2, start);
   }
   @position-try --pf {
+    width: 50px;
     top: 50px;
     left: 50px;
   }

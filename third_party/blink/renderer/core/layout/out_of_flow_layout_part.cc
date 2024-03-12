@@ -201,6 +201,12 @@ class OOFCandidateStyleIterator {
     return false;
   }
 
+  void MoveToStyleWithoutOptions() {
+    CHECK(element_);
+    CHECK(position_try_options_);
+    style_ = UpdateStyle(/* try_set */ nullptr);
+  }
+
  private:
   void Initialize() {
     if (element_) {
@@ -1768,6 +1774,12 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       }
     }
   } while (!offset_info && iter.MoveToNextStyle());
+
+  if (!offset_info) {
+    // None of the options worked out. Fall back to style without any options
+    // applied.
+    iter.MoveToStyleWithoutOptions();
+  }
 
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
       has_try_options) {

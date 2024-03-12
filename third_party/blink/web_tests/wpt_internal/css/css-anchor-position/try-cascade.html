@@ -15,11 +15,12 @@
     background: darkcyan;
     left: 0px;
     top: 0px;
-    width: 150px;
+    width: 150px; /* force fallback */
     height: 25px;
     position-try-options: --pf;
   }
   @position-try --pf {
+    width: 50px;
     left: 50px;
     top: 50px;
   }
