@@ -343,6 +343,11 @@ void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
   ca_layer_error_code_ = ca_layer_error_code;
 }
 
+void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
+    int max_pending_swaps) {
+  cap_max_pending_swaps_ = max_pending_swaps;
+}
+
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
   if (!(base::FeatureList::IsEnabled(

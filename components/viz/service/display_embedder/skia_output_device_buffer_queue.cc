@@ -224,6 +224,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     capabilities_.pending_swap_params.max_pending_swaps_120hz = 4;
   }
 #endif
+
   DCHECK_LT(capabilities_.pending_swap_params.max_pending_swaps,
             capabilities_.number_of_buffers);
   DCHECK_LT(
@@ -237,6 +238,11 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
 
   if (capabilities_.supports_post_sub_buffer)
     capabilities_.supports_target_damage = true;
+
+#if BUILDFLAG(IS_MAC)
+  presenter_->SetMaxPendingSwaps(
+      capabilities_.pending_swap_params.max_pending_swaps);
+#endif
 }
 
 SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {

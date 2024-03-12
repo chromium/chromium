@@ -369,6 +369,9 @@ void OutputPresenterGL::SetCALayerErrorCode(
   ca_layer_error_code_ = ca_layer_error_code;
 }
 
+void OutputPresenterGL::SetMaxPendingSwaps(int max_pending_swaps) {
+  presenter_->SetMaxPendingSwaps(max_pending_swaps);
+}
 #endif
 
 }  // namespace viz

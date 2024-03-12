@@ -120,10 +120,14 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
                        PresentationCallback presentation_callback,
                        gfx::FrameData data) = 0;
 
+#if BUILDFLAG(IS_APPLE)
   // Sets result of delegated compositing. Value originates from overlay
   // processors and is used by integration tests to ensure we don't fall out of
   // delegated mode.
   virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
+
+  virtual void SetMaxPendingSwaps(int max_pending_swaps) {}
+#endif
 
   // Sets preferred frame rate
   virtual void SetFrameRate(float frame_rate) {}

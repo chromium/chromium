@@ -59,8 +59,10 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       ScopedOverlayAccess* access,
       std::unique_ptr<gfx::GpuFence> acquire_fence) final;
   void SetVSyncDisplayID(int64_t display_id) final;
+
 #if BUILDFLAG(IS_APPLE)
   void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) final;
+  void SetMaxPendingSwaps(int max_pending_swaps) final;
 #endif
 
  private:
