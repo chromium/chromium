@@ -65,13 +65,18 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
 
   void ClearFirstPaintPresentationPromise() {
     AdvanceClock(base::Milliseconds(1));
-    GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstPaint, Now());
+    viz::FrameTimingDetails presentation_details;
+    presentation_details.presentation_feedback.timestamp = Now();
+    GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstPaint,
+                                            presentation_details);
   }
 
   void ClearFirstContentfulPaintPresentationPromise() {
     AdvanceClock(base::Milliseconds(1));
+    viz::FrameTimingDetails presentation_details;
+    presentation_details.presentation_feedback.timestamp = Now();
     GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstContentfulPaint,
-                                            Now());
+                                            presentation_details);
   }
 
   void ClearProvisionalFirstMeaningfulPaintPresentationPromise() {
@@ -81,8 +86,10 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
 
   void ClearProvisionalFirstMeaningfulPaintPresentationPromise(
       base::TimeTicks timestamp) {
+    viz::FrameTimingDetails presentation_details;
+    presentation_details.presentation_feedback.timestamp = timestamp;
     Detector().ReportPresentationTime(
-        PaintEvent::kProvisionalFirstMeaningfulPaint, timestamp);
+        PaintEvent::kProvisionalFirstMeaningfulPaint, presentation_details);
   }
 
   unsigned OutstandingDetectorPresentationPromiseCount() {

@@ -33,6 +33,7 @@
 #include "components/viz/service/layers/layer_context_impl.h"
 #include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/surface_client.h"
+#include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/transitions/surface_animation_manager.h"
 #include "components/viz/service/viz_service_export.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
@@ -472,10 +473,47 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   BeginFrameTracker begin_frame_tracker_;
 
-  // Maps |frame_token| to the timestamp when that frame was received. This
-  // timestamp is combined with the information received in OnSurfacePresented()
-  // and stored in |frame_timing_details_|.
-  base::flat_map<uint32_t, base::TimeTicks> pending_received_frame_times_;
+  // Keeps track of the timestamps for a specific frame's submission and
+  // embedding. Observes the surface if the frame hasn't been embedded yet.
+  class PendingFrameDetails : SurfaceObserver {
+   public:
+    PendingFrameDetails(base::TimeTicks frame_submit_timestamp,
+                        SurfaceManager* surface_manager);
+    ~PendingFrameDetails() override;
+
+    // Sets the surface ID and adds/observes the embedded timestamp for the
+    // surface, to set `frame_embed_timestamp_`.
+    void set_surface_id(SurfaceId surface_id);
+
+    base::TimeTicks frame_submit_timestamp() const {
+      return frame_submit_timestamp_;
+    }
+    base::TimeTicks frame_embed_timestamp() const {
+      return frame_embed_timestamp_;
+    }
+
+   private:
+    void OnAddedSurfaceReference(const SurfaceId& parent_id,
+                                 const SurfaceId& child_id) override;
+
+    // Either sets `frame_embed_timestamp_` to the time the surface with ID
+    // `surface_id_` is embedded (if it's embedded already), or starts
+    // observing `OnAddedSurfaceReference()` to watch and set the timestamp
+    // for when that surface gets embedded later.
+    void SetOrObserveFrameEmbedTimeStamp();
+
+    const base::TimeTicks frame_submit_timestamp_;
+    base::TimeTicks frame_embed_timestamp_;
+    // The surface ID that is associated with the frame.
+    SurfaceId surface_id_;
+    const raw_ptr<SurfaceManager> surface_manager_;
+  };
+
+  // Maps |frame_token| to the timestamps when that frame was received and
+  // embedded. These timestamps will be combined with the information received
+  // in OnSurfacePresented() and stored in |frame_timing_details_|.
+  base::flat_map<uint32_t, std::unique_ptr<PendingFrameDetails>>
+      pending_received_frame_times_;
   FrameTimingDetailsMap frame_timing_details_;
   LocalSurfaceId last_evicted_local_surface_id_;
 

@@ -11,6 +11,7 @@
 #include <optional>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -172,6 +173,12 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   base::flat_set<SurfaceId> GetSurfacesThatReferenceChildForTesting(
       const SurfaceId& surface_id) const;
 
+  // Gets the earliest timestamp when the surface with ID `surface_id` gets
+  // embedded through `AddSurfaceReferences()`, if it's already embedded.
+  // Returns an empty base::TimeTicks() if the surface hasn't been embedded yet.
+  base::TimeTicks GetSurfaceReferencedTimestamp(
+      const SurfaceId& surface_id) const;
+
   // Returns the primary surface if it exists. Otherwise, this will return the
   // most recent surface in |surface_range|. If no surface exists, this will
   // return nullptr.
@@ -327,6 +334,13 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // A map of surfaces that have temporary references.
   std::unordered_map<SurfaceId, TemporaryReferenceData, SurfaceIdHash>
       temporary_references_;
+
+  // A map of pair(the timestamp of the first time a surface gets referenced,
+  // the number of references that surface has).
+  std::unordered_map<SurfaceId,
+                     std::pair<base::TimeTicks, uint32_t>,
+                     SurfaceIdHash>
+      surface_referenced_timestamps_;
 
   // Range tracking information for temporary references. Each map entry is an
   // is an ordered list of SurfaceIds that have temporary references with the

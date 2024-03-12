@@ -12,6 +12,7 @@
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
@@ -84,7 +85,10 @@ class WindowPerformanceTest : public testing::Test,
   void SimulatePaint() { performance_->OnPaintFinished(); }
   void SimulateResolvePresentationPromise(uint64_t presentation_index,
                                           base::TimeTicks timestamp) {
-    performance_->OnPresentationPromiseResolved(presentation_index, timestamp);
+    viz::FrameTimingDetails presentation_details;
+    presentation_details.presentation_feedback.timestamp = timestamp;
+    performance_->OnPresentationPromiseResolved(presentation_index,
+                                                presentation_details);
   }
 
   // Only use this function if you don't care about the time difference between

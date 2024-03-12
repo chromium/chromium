@@ -62,6 +62,10 @@ class PointF;
 class RectF;
 }  // namespace gfx
 
+namespace viz {
+struct FrameTimingDetails;
+}  // namespace viz
+
 namespace blink {
 
 class FrameWidgetTestHelper;
@@ -161,7 +165,7 @@ class WebFrameWidget : public WebWidget {
   // passed to the callback is the presentation timestamp; otherwise, it would
   // be timestamp of when the failure is detected.
   virtual void NotifyPresentationTime(
-      base::OnceCallback<void(base::TimeTicks)> callback) = 0;
+      base::OnceCallback<void(const viz::FrameTimingDetails&)> callback) = 0;
 
 #if BUILDFLAG(IS_APPLE)
   virtual void NotifyCoreAnimationErrorCode(

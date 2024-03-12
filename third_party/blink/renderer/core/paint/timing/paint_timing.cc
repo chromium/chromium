@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
@@ -320,15 +321,20 @@ void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {
       *GetFrame(), std::move(callback));
 }
 
-void PaintTiming::ReportPresentationTime(PaintEvent event,
-                                         base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
+void PaintTiming::ReportPresentationTime(
+    PaintEvent event,
+    const viz::FrameTimingDetails& presentation_details) {
+  CHECK(IsMainThread());
+  base::TimeTicks timestamp =
+      presentation_details.presentation_feedback.timestamp;
+
   switch (event) {
     case PaintEvent::kFirstPaint:
       SetFirstPaintPresentation(timestamp);
       return;
     case PaintEvent::kFirstContentfulPaint:
       SetFirstContentfulPaintPresentation(timestamp);
+      RecordFirstContentfulPaintTimingMetrics(presentation_details);
       return;
     case PaintEvent::kFirstImagePaint:
       SetFirstImagePaintPresentation(timestamp);
@@ -337,15 +343,43 @@ void PaintTiming::ReportPresentationTime(PaintEvent event,
       SetPortalActivatedPaint(timestamp);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
+  }
+}
+
+void PaintTiming::RecordFirstContentfulPaintTimingMetrics(
+    const viz::FrameTimingDetails& frame_timing_details) {
+  if (frame_timing_details.received_compositor_frame_timestamp ==
+          base::TimeTicks() ||
+      frame_timing_details.embedded_frame_timestamp == base::TimeTicks()) {
+    return;
+  }
+  bool frame_submitted_before_embed =
+      (frame_timing_details.received_compositor_frame_timestamp <
+       frame_timing_details.embedded_frame_timestamp);
+  base::UmaHistogramBoolean("Navigation.FCPFrameSubmittedBeforeSurfaceEmbed",
+                            frame_submitted_before_embed);
+  if (frame_submitted_before_embed) {
+    base::UmaHistogramCustomTimes(
+        "Navigation.FCPFrameSubmissionToSurfaceEmbed",
+        frame_timing_details.embedded_frame_timestamp -
+            frame_timing_details.received_compositor_frame_timestamp,
+        base::Milliseconds(1), base::Minutes(3), 50);
+  } else {
+    base::UmaHistogramCustomTimes(
+        "Navigation.SurfaceEmbedToFCPFrameSubmission",
+        frame_timing_details.received_compositor_frame_timestamp -
+            frame_timing_details.embedded_frame_timestamp,
+        base::Milliseconds(1), base::Minutes(3), 50);
   }
 }
 
 void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
     wtf_size_t index,
-    base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
-  SetFirstPaintAfterBackForwardCacheRestorePresentation(timestamp, index);
+    const viz::FrameTimingDetails& presentation_details) {
+  CHECK(IsMainThread());
+  SetFirstPaintAfterBackForwardCacheRestorePresentation(
+      presentation_details.presentation_feedback.timestamp, index);
 }
 
 void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {

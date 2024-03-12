@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
@@ -434,8 +435,10 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
         frame_widget->RequestNewLocalSurfaceId();
       }
       frame_widget->NotifyPresentationTime(WTF::BindOnce(
-          [](base::TimeTicks start, base::TimeTicks finish) {
-            base::TimeDelta duration = finish - start;
+          [](base::TimeTicks start,
+             const viz::FrameTimingDetails& frame_timing_details) {
+            base::TimeDelta duration =
+                frame_timing_details.presentation_feedback.timestamp - start;
             base::UmaHistogramTimes(
                 "Navigation."
                 "MainframeSameDocumentNavigationCommitToPresentFirstFrame",

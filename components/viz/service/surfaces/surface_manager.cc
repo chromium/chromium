@@ -255,6 +255,17 @@ SurfaceManager::GetSurfacesThatReferenceChildForTesting(
   return parents;
 }
 
+base::TimeTicks SurfaceManager::GetSurfaceReferencedTimestamp(
+    const SurfaceId& surface_id) const {
+  CHECK(surface_id.is_valid());
+  auto surface_referenced_timestamp =
+      surface_referenced_timestamps_.find(surface_id);
+  if (surface_referenced_timestamp != surface_referenced_timestamps_.end()) {
+    return surface_referenced_timestamp->second.first;
+  }
+  return base::TimeTicks();
+}
+
 SurfaceManager::SurfaceIdSet SurfaceManager::GetLiveSurfaces() {
   SurfaceIdSet reachable_surfaces;
 
@@ -312,6 +323,17 @@ void SurfaceManager::AddSurfaceReferenceImpl(
 
   references_[parent_id].insert(child_id);
 
+  // Increase the number of references to `child_id`.
+  if (surface_referenced_timestamps_.find(child_id) ==
+      surface_referenced_timestamps_.end()) {
+    // If the surface has never been referenced before, also record the current
+    // time as the first timestamp that the surface has been referenced.
+    surface_referenced_timestamps_[child_id] =
+        std::make_pair(base::TimeTicks::Now(), 1);
+  } else {
+    surface_referenced_timestamps_[child_id].second++;
+  }
+
   for (auto& observer : observer_list_)
     observer.OnAddedSurfaceReference(parent_id, child_id);
 
@@ -338,6 +360,15 @@ void SurfaceManager::RemoveSurfaceReferenceImpl(
   iter_parent->second.erase(child_iter);
   if (iter_parent->second.empty())
     references_.erase(iter_parent);
+
+  // Decrease the amount of references to `child_id`, and erase the entry from
+  // `surface_referenced_timestamps_` if we've removed the last reference.
+  CHECK(surface_referenced_timestamps_.find(child_id) !=
+        surface_referenced_timestamps_.end());
+  surface_referenced_timestamps_[child_id].second--;
+  if (surface_referenced_timestamps_[child_id].second == 0) {
+    surface_referenced_timestamps_.erase(child_id);
+  }
 }
 
 bool SurfaceManager::HasTemporaryReference(const SurfaceId& surface_id) const {

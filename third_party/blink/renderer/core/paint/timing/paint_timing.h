@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -32,7 +33,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
                                       public Supplement<Document> {
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(const viz::FrameTimingDetails&)>;
   using RequestAnimationFrameTimesAfterBackForwardCacheRestore = std::array<
       base::TimeTicks,
       WebPerformanceMetricsForReporting::
@@ -166,10 +167,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   }
 
   void RegisterNotifyPresentationTime(ReportTimeCallback);
-  void ReportPresentationTime(PaintEvent, base::TimeTicks timestamp);
+  void ReportPresentationTime(PaintEvent, const viz::FrameTimingDetails&);
+  void RecordFirstContentfulPaintTimingMetrics(const viz::FrameTimingDetails&);
   void ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
       wtf_size_t index,
-      base::TimeTicks timestamp);
+      const viz::FrameTimingDetails&);
 
   // The caller owns the |clock| which must outlive the PaintTiming.
   void SetTickClockForTesting(const base::TickClock* clock);

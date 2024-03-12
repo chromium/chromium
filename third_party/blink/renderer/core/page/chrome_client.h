@@ -80,6 +80,10 @@ namespace ui {
 class Cursor;
 }
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace blink {
 
 class ColorChooser;
@@ -561,7 +565,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // the frame to be presented, the `callback` will run with the time of the
   // failure.
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(const viz::FrameTimingDetails&)>;
   virtual void NotifyPresentationTime(LocalFrame& frame,
                                       ReportTimeCallback callback) {}
 

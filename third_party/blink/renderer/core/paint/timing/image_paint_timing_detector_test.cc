@@ -1286,9 +1286,12 @@ TEST_P(ImagePaintTimingDetectorTest, MAYBE_LargestImagePaint_Detached_Frame) {
 
   // Start tracing, we only want to capture it during the ReportPaintTime.
   trace_analyzer::Start("loading");
+  viz::FrameTimingDetails presentation_details;
+  presentation_details.presentation_feedback.timestamp =
+      test_task_runner_->NowTicks();
   child_detector->callback_manager_->ReportPaintTime(
       std::make_unique<PaintTimingCallbackManager::CallbackQueue>(),
-      test_task_runner_->NowTicks());
+      presentation_details);
 
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;

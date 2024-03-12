@@ -114,7 +114,8 @@ class CORE_EXPORT WebFrameWidgetImpl
  public:
   struct PromiseCallbacks {
     base::OnceCallback<void(base::TimeTicks)> swap_time_callback;
-    base::OnceCallback<void(base::TimeTicks)> presentation_time_callback;
+    base::OnceCallback<void(const viz::FrameTimingDetails&)>
+        presentation_time_callback;
 #if BUILDFLAG(IS_APPLE)
     base::OnceCallback<void(gfx::CALayerResult)>
         core_animation_error_code_callback;
@@ -226,7 +227,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void RequestDecode(const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) override;
   void NotifyPresentationTimeInBlink(
-      base::OnceCallback<void(base::TimeTicks)> presentation_callback) final;
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>
+          presentation_callback) final;
   void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;
   const cc::LayerTreeSettings* GetLayerTreeSettings() final;
@@ -354,7 +356,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ApplyViewportIntersectionForTesting(
       mojom::blink::ViewportIntersectionStatePtr intersection_state);
   void NotifyPresentationTime(
-      base::OnceCallback<void(base::TimeTicks)> callback) override;
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>
+          presentation_callback) override;
 #if BUILDFLAG(IS_APPLE)
   void NotifyCoreAnimationErrorCode(
       base::OnceCallback<void(gfx::CALayerResult)> callback) override;
@@ -890,7 +893,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebInputEventResult HandleCapturedMouseEvent(const WebCoalescedInputEvent&);
   void MouseContextMenu(const WebMouseEvent&);
   void CancelDrag();
-  void PresentationCallbackForMeaningfulLayout(base::TimeTicks);
+  void PresentationCallbackForMeaningfulLayout(
+      const viz::FrameTimingDetails& first_paint_details);
 
   void ForEachRemoteFrameControlledByWidget(
       base::FunctionRef<void(RemoteFrame*)> callback);

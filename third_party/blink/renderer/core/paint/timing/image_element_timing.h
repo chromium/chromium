@@ -16,6 +16,10 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace blink {
 
 class ImageResourceContent;
@@ -77,7 +81,8 @@ class CORE_EXPORT ImageElementTiming final
       const gfx::Rect& image_border);
 
   // Callback for the presentation promise. Reports paint timestamps.
-  void ReportImagePaintPresentationTime(base::TimeTicks timestamp);
+  void ReportImagePaintPresentationTime(
+      const viz::FrameTimingDetails& presentation_details);
 
   // Class containing information about image element timing.
   class ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {

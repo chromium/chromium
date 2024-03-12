@@ -614,15 +614,17 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
             {WTF::BindOnce(
                  [](base::OnceClosure swap_quit_closure,
                     base::TimeTicks* swap_time, base::TimeTicks timestamp) {
-                   DCHECK(!timestamp.is_null());
+                   CHECK(!timestamp.is_null());
                    *swap_time = timestamp;
                    std::move(swap_quit_closure).Run();
                  },
                  swap_run_loop.QuitClosure(), WTF::Unretained(&swap_time)),
              WTF::BindOnce(
                  [](base::OnceClosure presentation_quit_closure,
-                    base::TimeTicks timestamp) {
-                   DCHECK(!timestamp.is_null());
+                    const viz::FrameTimingDetails& presentation_details) {
+                   base::TimeTicks timestamp =
+                       presentation_details.presentation_feedback.timestamp;
+                   CHECK(!timestamp.is_null());
                    std::move(presentation_quit_closure).Run();
                  },
                  presentation_run_loop.QuitClosure())});
@@ -703,18 +705,21 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
 
         swap_run_loop.Quit();
       }),
-      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-        DCHECK(!timestamp.is_null());
-        DCHECK(!failed_presentation_time.is_null());
-        DCHECK(!successful_presentation_time.is_null());
+      base::BindLambdaForTesting(
+          [&](const viz::FrameTimingDetails& presentation_details) {
+            base::TimeTicks timestamp =
+                presentation_details.presentation_feedback.timestamp;
+            CHECK(!timestamp.is_null());
+            CHECK(!failed_presentation_time.is_null());
+            CHECK(!successful_presentation_time.is_null());
 
-        // Verify that this callback is run in response to the
-        // successful presentation, not the failed one before that.
-        EXPECT_NE(timestamp, failed_presentation_time);
-        EXPECT_EQ(timestamp, successful_presentation_time);
+            // Verify that this callback is run in response to the
+            // successful presentation, not the failed one before that.
+            EXPECT_NE(timestamp, failed_presentation_time);
+            EXPECT_EQ(timestamp, successful_presentation_time);
 
-        presentation_run_loop.Quit();
-      })};
+            presentation_run_loop.Quit();
+          })};
 
 #if BUILDFLAG(IS_MAC)
   // Assign a ca_layer error code.
@@ -792,15 +797,18 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
              presentation_time = timestamp + delta_from_swap_time;
              swap_run_loop.Quit();
            }),
-           base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-             DCHECK(!timestamp.is_null());
-             DCHECK(!presentation_time.is_null());
+           base::BindLambdaForTesting(
+               [&](const viz::FrameTimingDetails& presentation_details) {
+                 base::TimeTicks timestamp =
+                     presentation_details.presentation_feedback.timestamp;
+                 CHECK(!timestamp.is_null());
+                 CHECK(!presentation_time.is_null());
 
-             // Verify that the presentation is only reported on the successful
-             // commit to the compositor.
-             EXPECT_EQ(timestamp, presentation_time);
-             presentation_run_loop.Quit();
-           })});
+                 // Verify that the presentation is only reported on the
+                 // successful commit to the compositor.
+                 EXPECT_EQ(timestamp, presentation_time);
+                 presentation_run_loop.Quit();
+               })});
 
   // Simulate a failed commit to the compositor, which should not trigger either
   // a swap or a presentation callback in response.
@@ -1879,8 +1887,10 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
                swap_run_loop.QuitClosure(), WTF::Unretained(&swap_time)),
            WTF::BindOnce(
                [](base::OnceClosure presentation_quit_closure,
-                  base::TimeTicks timestamp) {
-                 DCHECK(!timestamp.is_null());
+                  const viz::FrameTimingDetails& presentation_details) {
+                 base::TimeTicks timestamp =
+                     presentation_details.presentation_feedback.timestamp;
+                 CHECK(!timestamp.is_null());
                  std::move(presentation_quit_closure).Run();
                },
                presentation_run_loop.QuitClosure())});

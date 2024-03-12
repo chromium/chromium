@@ -165,7 +165,9 @@ void FirstMeaningfulPaintDetector::RegisterNotifyPresentationTime(
 
 void FirstMeaningfulPaintDetector::ReportPresentationTime(
     PaintEvent event,
-    base::TimeTicks timestamp) {
+    const viz::FrameTimingDetails& presentation_details) {
+  base::TimeTicks timestamp =
+      presentation_details.presentation_feedback.timestamp;
   DCHECK(event == PaintEvent::kProvisionalFirstMeaningfulPaint);
   DCHECK_GT(outstanding_presentation_promise_count_, 0U);
   --outstanding_presentation_promise_count_;

@@ -760,6 +760,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.FCPFrameSubmissionToSurfaceEmbed" units="ms"
+    expires_after="2024-06-14">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the time between when the first contentful paint frame for a new
+    document is received by Viz to when the surface used for the new document
+    gets embedded by the browser process. Logged after the first contentful
+    frame has been displayed on screen.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.FCPFrameSubmittedBeforeSurfaceEmbed" enum="Boolean"
+    expires_after="2024-06-14">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records whether the first contentful paint frame for a new document was
+    received by Viz before the surface used for the document gets embedded by
+    the browser process. Logged after the first contentful frame has been
+    displayed on screen.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.FencedFrameAutomaticBeaconEventType"
     enum="FencedFrameAutomaticBeaconEventType" expires_after="2024-10-01">
   <owner>lbrady@google.com</owner>
@@ -1568,6 +1592,18 @@ chromium-metrics-reviews@google.com.
     <variant name="AllOrigins"/>
     <variant name="SameOrigin"/>
   </token>
+</histogram>
+
+<histogram name="Navigation.SurfaceEmbedToFCPFrameSubmission" units="ms"
+    expires_after="2024-06-14">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the time between when the surface used for a new document gets
+    embedded by the browser process to when the first contentful paint frame for
+    the new document is received by Viz. Logged after the first contentful frame
+    has been displayed on screen.
+  </summary>
 </histogram>
 
 <histogram name="Navigation.ThrottleDeferTime.{Event}" units="ms"

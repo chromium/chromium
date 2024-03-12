@@ -570,7 +570,7 @@ static void PrintDocumentTofile(v8::Isolate* isolate,
 }
 
 void OnSwapCompletedHelper(CallbackAndContext* callback_and_context,
-                           base::TimeTicks) {
+                           const viz::FrameTimingDetails&) {
   RunCallbackHelper(callback_and_context, /*value=*/{});
 }
 

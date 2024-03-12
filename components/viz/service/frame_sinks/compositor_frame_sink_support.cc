@@ -767,7 +767,9 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   }
 
   base::TimeTicks now_time = base::TimeTicks::Now();
-  pending_received_frame_times_.emplace(frame.metadata.frame_token, now_time);
+  pending_received_frame_times_.emplace(
+      frame.metadata.frame_token,
+      std::make_unique<PendingFrameDetails>(now_time, surface_manager_));
 
   // Override the has_damage flag (ignoring invalid data from clients).
   frame.metadata.begin_frame_ack.has_damage = true;
@@ -899,6 +901,13 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
                                             last_begin_frame_args_);
   }
 
+  // We use `last_created_surface_id_` to use the embedding timestamp of the
+  // last Surface which was successfully presented before this point, in case
+  // the frame is rejected. Now that we know this frame can be presented, use
+  // its correct SurfaceId.
+  pending_received_frame_times_[frame.metadata.frame_token]->set_surface_id(
+      last_created_surface_id_);
+
   const int64_t trace_id = ~frame.metadata.begin_frame_ack.trace_id;
   TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
                          "Event.Pipeline", TRACE_ID_GLOBAL(trace_id),
@@ -1016,7 +1025,10 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
 
   FrameTimingDetails details;
   details.received_compositor_frame_timestamp =
-      received_frame_timestamp->second;
+      received_frame_timestamp->second->frame_submit_timestamp();
+  details.embedded_frame_timestamp =
+      is_root_ ? details.received_compositor_frame_timestamp
+               : received_frame_timestamp->second->frame_embed_timestamp();
   details.draw_start_timestamp = draw_start_timestamp;
   details.swap_timings = swap_timings;
   details.presentation_feedback = feedback;
@@ -1678,6 +1690,49 @@ void CompositorFrameSinkSupport::ScheduleSelfDestruction() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CompositorFrameSinkSupport::DestroySelf,
                                 weak_factory_.GetWeakPtr()));
+}
+
+CompositorFrameSinkSupport::PendingFrameDetails::PendingFrameDetails(
+    base::TimeTicks frame_submit_timestamp,
+    SurfaceManager* surface_manager)
+    : frame_submit_timestamp_(frame_submit_timestamp),
+      // Use the submit timestamp as the default value, so that the metrics
+      // won't get skewed in case the surface never gets embedded/the surface
+      // ID never gets set.
+      frame_embed_timestamp_(frame_submit_timestamp),
+      surface_manager_(surface_manager) {}
+
+void CompositorFrameSinkSupport::PendingFrameDetails::
+    SetOrObserveFrameEmbedTimeStamp() {
+  frame_embed_timestamp_ =
+      surface_manager_->GetSurfaceReferencedTimestamp(surface_id_);
+  if (frame_embed_timestamp_ == base::TimeTicks()) {
+    // The frame hasn't been embedded yet. Observe `OnAddedSurfaceReference()`
+    // to be notified when the surface for the frame gets embedded.
+    surface_manager_->AddObserver(this);
+  }
+}
+
+CompositorFrameSinkSupport::PendingFrameDetails::~PendingFrameDetails() {
+  surface_manager_->RemoveObserver(this);
+}
+
+void CompositorFrameSinkSupport::PendingFrameDetails::set_surface_id(
+    SurfaceId surface_id) {
+  CHECK(!surface_id_.is_valid());
+  surface_id_ = surface_id;
+  SetOrObserveFrameEmbedTimeStamp();
+}
+
+void CompositorFrameSinkSupport::PendingFrameDetails::OnAddedSurfaceReference(
+    const SurfaceId& parent_id,
+    const SurfaceId& child_id) {
+  CHECK_EQ(frame_embed_timestamp_, base::TimeTicks());
+  if (child_id != surface_id_) {
+    return;
+  }
+  frame_embed_timestamp_ = base::TimeTicks::Now();
+  surface_manager_->RemoveObserver(this);
 }
 
 }  // namespace viz

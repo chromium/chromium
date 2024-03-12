@@ -3134,12 +3134,14 @@ void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
 }
 
 void WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout(
-    base::TimeTicks first_paint_time) {
+    const viz::FrameTimingDetails& first_paint_details) {
   // |local_root_| may be null if the widget has shut down between when this
   // callback was requested and when it was resolved by the compositor.
   if (local_root_)
     local_root_->ViewImpl()->DidFirstVisuallyNonEmptyPaint();
 
+  base::TimeTicks first_paint_time =
+      first_paint_details.presentation_feedback.timestamp;
   if (widget_base_)
     widget_base_->DidFirstVisuallyNonEmptyPaint(first_paint_time);
 }
@@ -3322,7 +3324,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
 #endif
     } else {
       ReportTime(std::move(callbacks.swap_time_callback), swap_time);
-      ReportTime(std::move(callbacks.presentation_time_callback), swap_time);
+      ReportPresentationTime(std::move(callbacks.presentation_time_callback),
+                             swap_time);
 #if BUILDFLAG(IS_APPLE)
       ReportErrorCode(std::move(callbacks.core_animation_error_code_callback),
                       gfx::kCALayerUnknownNoWidget);
@@ -3331,7 +3334,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   }
 
   static void RunCallbackAfterPresentation(
-      base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
+      base::OnceCallback<void(const viz::FrameTimingDetails&)>
+          presentation_callback,
       base::TimeTicks swap_time,
       const viz::FrameTimingDetails& frame_timing_details) {
     DCHECK(!swap_time.is_null());
@@ -3342,14 +3346,39 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
         !presentation_time.is_null() && (presentation_time > swap_time);
     UMA_HISTOGRAM_BOOLEAN("PageLoad.Internal.Renderer.PresentationTime.Valid",
                           presentation_time_is_valid);
-    ReportTime(std::move(presentation_time_callback),
-               presentation_time_is_valid ? presentation_time : swap_time);
+    if (presentation_time_is_valid) {
+      ReportPresentationTime(std::move(presentation_callback),
+                             frame_timing_details);
+    } else {
+      viz::FrameTimingDetails frame_timing_details_with_swap_time =
+          frame_timing_details;
+      frame_timing_details_with_swap_time.presentation_feedback.timestamp =
+          swap_time;
+      ReportPresentationTime(std::move(presentation_callback),
+                             frame_timing_details_with_swap_time);
+    }
   }
 
   static void ReportTime(base::OnceCallback<void(base::TimeTicks)> callback,
                          base::TimeTicks time) {
     if (callback)
       std::move(callback).Run(time);
+  }
+
+  static void ReportPresentationTime(
+      base::OnceCallback<void(const viz::FrameTimingDetails&)> callback,
+      base::TimeTicks time) {
+    viz::FrameTimingDetails frame_timing_details;
+    frame_timing_details.presentation_feedback.timestamp = time;
+    ReportPresentationTime(std::move(callback), frame_timing_details);
+  }
+
+  static void ReportPresentationTime(
+      base::OnceCallback<void(const viz::FrameTimingDetails&)> callback,
+      const viz::FrameTimingDetails& frame_timing_details) {
+    if (callback) {
+      std::move(callback).Run(frame_timing_details);
+    }
   }
 
 #if BUILDFLAG(IS_APPLE)
@@ -3374,7 +3403,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
     }
 
     ReportTime(std::move(callbacks.swap_time_callback), failure_time);
-    ReportTime(std::move(callbacks.presentation_time_callback), failure_time);
+    ReportPresentationTime(std::move(callbacks.presentation_time_callback),
+                           failure_time);
 #if BUILDFLAG(IS_APPLE)
     ReportErrorCode(std::move(callbacks.core_animation_error_code_callback),
                     gfx::kCALayerUnknownDidNotSwap);
@@ -3394,13 +3424,15 @@ void WebFrameWidgetImpl::NotifySwapAndPresentationTimeForTesting(
 }
 
 void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(
-    base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
+    base::OnceCallback<void(const viz::FrameTimingDetails&)>
+        presentation_callback) {
   NotifySwapAndPresentationTime(
       {.presentation_time_callback = std::move(presentation_callback)});
 }
 
 void WebFrameWidgetImpl::NotifyPresentationTime(
-    base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
+    base::OnceCallback<void(const viz::FrameTimingDetails&)>
+        presentation_callback) {
   NotifySwapAndPresentationTime(
       {.presentation_time_callback = std::move(presentation_callback)});
 }
