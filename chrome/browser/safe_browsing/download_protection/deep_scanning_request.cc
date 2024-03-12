@@ -636,18 +636,20 @@ void DeepScanningRequest::OnConsumerScanComplete(
     request_tokens_.push_back(response.request_token());
     ResponseToDownloadCheckResult(response, &download_result);
     LogDeepScanEvent(item_, DeepScanEvent::kScanCompleted);
+  } else if (is_invalid_password) {
+    // Since we now prompt the user for a password, FILE_ENCRYPTED indicates
+    // the password was not correct. Instead of failing, ask the user to
+    // correct the issue.
+    DownloadItemWarningData::SetHasIncorrectPassword(item_, true);
+    PromptForPassword(item_);
+    download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
+    LogDeepScanEvent(item_, DeepScanEvent::kIncorrectPassword);
+    base::UmaHistogramBoolean(
+        "SBClientDownload.DeepScan.IncorrectPasswordVerdictIsLocal",
+        result == BinaryUploadService::Result::FILE_ENCRYPTED);
   } else {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
     LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
-
-    if (is_invalid_password) {
-      // Since we now prompt the user for a password, FILE_ENCRYPTED indicates
-      // the password was not correct. Instead of failing, ask the user to
-      // correct the issue.
-      DownloadItemWarningData::SetHasIncorrectPassword(item_, true);
-      PromptForPassword(item_);
-      download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
-    }
   }
 
   LogDeepScanResult(download_result, trigger_,

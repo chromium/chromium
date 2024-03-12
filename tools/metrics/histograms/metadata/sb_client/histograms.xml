@@ -79,6 +79,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.DeepScan.IncorrectPasswordVerdictIsLocal"
+    enum="Boolean" expires_after="2024-09-12">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This logs whether an incorrect password verdict is shown due to the password
+    being identified as incorrect locally or on the server. It is logged once
+    for each incorrect password prompt shown.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
     expires_after="2024-06-30">
   <owner>drubery@chromium.org</owner>

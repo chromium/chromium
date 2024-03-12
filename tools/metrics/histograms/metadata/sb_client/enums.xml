@@ -247,6 +247,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Scan failed"/>
   <int value="6" label="Scan deleted"/>
   <int value="7" label="Prompt accepted from chrome://downloads"/>
+  <int value="8" label="Incorrect password prompt shown"/>
 </enum>
 
 <enum name="SBDeepScanTriggers">
