@@ -8,6 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 
@@ -256,6 +257,72 @@ webapps::AppId WebAppTestInstallWithOsHooksObserver::BeginListeningAndWait(
   BeginListening(optional_app_ids);
   webapps::AppId id = Wait();
   return id;
+}
+
+WebAppTestLaunchedObserver::WebAppTestLaunchedObserver(webapps::AppId app_id)
+    : app_id_(std::move(app_id)) {
+  observation_.Observe(BrowserList::GetInstance());
+}
+WebAppTestLaunchedObserver::~WebAppTestLaunchedObserver() = default;
+
+void WebAppTestLaunchedObserver::WaitUntilLaunched() {
+  CHECK(!run_loop_.AnyQuitCalled());
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    OnBrowserAdded(browser);
+  }
+  run_loop_.Run();
+}
+
+void WebAppTestLaunchedObserver::OnBrowserAdded(Browser* browser) {
+  if (run_loop_.AnyQuitCalled()) {
+    return;
+  }
+
+  if (!AppBrowserController::IsForWebApp(browser, app_id_)) {
+    return;
+  }
+
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    // Wait for WebContents insertion in OnTabStripModelChanged().
+    browser->tab_strip_model()->AddObserver(this);
+    return;
+  }
+
+  CheckWebContents(web_contents);
+}
+
+void WebAppTestLaunchedObserver::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kInserted) {
+    tab_strip_model->RemoveObserver(this);
+    CheckWebContents(change.GetInsert()->contents.front().contents.get());
+  }
+}
+
+void WebAppTestLaunchedObserver::CheckWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    // Wait for page load in DidFinishLoad().
+    Observe(web_contents);
+    return;
+  }
+
+  run_loop_.Quit();
+}
+
+void WebAppTestLaunchedObserver::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  run_loop_.Quit();
+  Observe(nullptr);
+}
+
+void WebAppTestLaunchedObserver::WebContentsDestroyed() {
+  Observe(nullptr);
 }
 
 WebAppTestManifestUpdatedObserver::WebAppTestManifestUpdatedObserver(

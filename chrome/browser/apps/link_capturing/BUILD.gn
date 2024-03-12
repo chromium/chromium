@@ -120,18 +120,26 @@ source_set("unit_tests") {
 }
 
 # Browser tests which require an Ash process with App Service to be running.
-if (is_chromeos) {
-  source_set("app_service_browser_tests") {
-    testonly = true
+source_set("app_service_browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "chromeos_link_capturing_delegate_browsertest.cc" ]
+  sources = [ "link_capturing_navigation_throttle_browsertest.cc" ]
 
-    deps = [
-      ":link_capturing",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support_ui",
-    ]
+  if (is_chromeos) {
+    sources += [ "chromeos_link_capturing_delegate_browsertest.cc" ]
   }
+
+  deps = [
+    ":link_capturing",
+    ":test_support",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
 }
