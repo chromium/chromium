@@ -130,6 +130,25 @@ inline constexpr char kDefaultSupervisedUserFilteringBehavior[] =
 inline constexpr char kFirstTimeInterstitialBannerState[] =
     "profile.managed.banner_state";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// An integer pref that stores the current state of the local extension
+// parent approval migration when the feature
+// `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` becomes enabled.
+// Its values are drawn from
+// `supervised user::LocallyParentApprovedExtensionsMigrationState`.
+inline constexpr char kLocallyParentApprovedExtensionsMigrationState[] =
+    "profile.managed.locally_parent_approved_extensions_migration_state";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// A dictionary pref that stores the extension Ids that are treated as
+// parent-approved on a Desktop device when the feature
+// `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` becomes enabled.
+// This is only populated on Win/Linux/Mac.
+inline constexpr char kSupervisedUserLocallyParentApprovedExtensions[] =
+    "profile.managed.locally_parent_approved_extensions";
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace prefs
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_PREF_NAMES_H_

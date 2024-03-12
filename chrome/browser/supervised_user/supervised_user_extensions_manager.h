@@ -75,7 +75,6 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               UninstallReason reason) override;
-
  private:
   // These enum values represent operations to manage the
   // kSupervisedUserApprovedExtensions user pref, which stores parent approved
@@ -144,8 +143,30 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   // launched.
   bool ShouldBlockExtension(const std::string& extension_id) const;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Triggers an one-time migration of the present extensions as parent-approved
+  // when the feature
+  // `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` becomes
+  // enabled.
+  void MaybeMarkExtensionsLocallyParentApproved();
+
+  // Marks the extensions available to the child user as locally parent-approved
+  // on a preference on this device.
+  void DoExtensionsMigrationToParentApproved();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  // Returns true if the given `extension_id` has been marked locally parent
+  // approved.
+  bool IsLocallyParentApprovedExtension(const std::string& extension_id) const;
+
+  // Removes from the locally approved extension preference the given
+  // `extension_ids`. The input `extension_ids` doesn't have to be a subset of
+  // the locally approved extensions: the method will remove those that are
+  // locally approved and ignore the rest.
+  void RemoveLocalParentalApproval(const std::set<std::string> extension_ids);
+
   // The current state of registration of this class as a management policy.
-  bool is_active_policy_for_supervised_users_;
+  bool is_active_policy_for_supervised_users_ = false;
 
   const raw_ptr<content::BrowserContext> context_;
   raw_ptr<ExtensionPrefs> extension_prefs_;
