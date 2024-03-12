@@ -11,6 +11,12 @@
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class GURL;
 
 namespace autofill {
@@ -24,6 +30,9 @@ namespace payments {
 // WebContents of the original tab that the pop-up is created in. If there is a
 // pop-up currently present, `this` will observe the WebContents of that pop-up.
 class DesktopPaymentsWindowManager : public PaymentsWindowManager,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+                                     public BrowserListObserver,
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
                                      public content::WebContentsObserver {
  public:
   explicit DesktopPaymentsWindowManager(ContentAutofillClient* client);
@@ -37,6 +46,11 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   friend class DesktopPaymentsWindowManagerTestApi;
@@ -84,6 +98,11 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
 
   // ContentAutofillClient that owns `this`.
   const raw_ref<ContentAutofillClient> client_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::ScopedObservation<BrowserList, BrowserListObserver> scoped_observation_{
+      this};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::WeakPtrFactory<DesktopPaymentsWindowManager> weak_ptr_factory_{this};
 };

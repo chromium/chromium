@@ -24,7 +24,11 @@ namespace autofill::payments {
 
 DesktopPaymentsWindowManager::DesktopPaymentsWindowManager(
     ContentAutofillClient* client)
-    : client_(CHECK_DEREF(client)) {}
+    : client_(CHECK_DEREF(client)) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  scoped_observation_.Observe(BrowserList::GetInstance());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+}
 
 DesktopPaymentsWindowManager::~DesktopPaymentsWindowManager() = default;
 
@@ -43,6 +47,23 @@ void DesktopPaymentsWindowManager::WebContentsDestroyed() {
     OnWebContentsDestroyedForVcn3ds();
   }
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void DesktopPaymentsWindowManager::OnBrowserSetLastActive(Browser* browser) {
+  // If there is an ongoing payments window manager pop-up flow, and the
+  // original tab's WebContents become active, activate the pop-up's
+  // WebContents. This functionality is only required on Linux and LaCros, as on
+  // other desktop platforms the pop-up will always be the top-most browser
+  // window due to differences in window management on these platforms.
+  if (web_contents()) {
+    CHECK_NE(flow_type_, FlowType::kNoFlow);
+    if (browser->tab_strip_model()->GetActiveWebContents() ==
+        &client_->GetWebContents()) {
+      web_contents()->GetDelegate()->ActivateContents(web_contents());
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void DesktopPaymentsWindowManager::CreatePopup(const GURL& url) {
   // Create a pop-up window. The created pop-up will not have any relationship

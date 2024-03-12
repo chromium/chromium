@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -346,6 +347,27 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   test_api(window_manager()).OnVcn3dsAuthenticationProgressDialogCancelled();
   EXPECT_FALSE(test_api(window_manager()).GetVcn3dsContext().has_value());
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Tests that if a VCN 3DS flow is ongoing, and the original tab is set active,
+// the payments window manager popup's web contents are re-activated.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Vcn3ds_OriginalTabSetLastActive) {
+  ShowUi("Vcn3ds");
+  VerifyUi();
+
+  // Activate the original browser and check that the browser containing the
+  // pop-up's web contents becomes the last active browser.
+  ui_test_utils::BrowserActivationWaiter waiter(
+      BrowserList::GetInstance()->get(1));
+  BrowserList::GetInstance()->get(0)->window()->Activate();
+  waiter.WaitForActivation();
+  EXPECT_TRUE(BrowserList::GetInstance()
+                  ->GetLastActive()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents() == GetPopupWebContents());
+}
+#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace payments
 
