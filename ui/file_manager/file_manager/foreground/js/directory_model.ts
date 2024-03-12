@@ -558,6 +558,14 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
           isOneDriveId(getVolume(state, currentDirectoryFileData)?.providerId);
       if (currentDirectoryOnOdfs) {
         const {myFilesEntry} = getMyFiles(state);
+        if (!myFilesEntry) {
+          // This can only happen if local user files are disabled.
+          console.warn(
+              'ODFS disabled, but local user files disabled by policy.');
+          // TODO(b/328030489): Navigate to default display root.
+          this.store_.dispatch(changeDirectory({toKey: ''}));
+          return;
+        }
         const myFilesRootKey = myFilesEntry.toURL();
         this.store_.dispatch(changeDirectory({toKey: myFilesRootKey}));
       }
@@ -1167,7 +1175,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   /**
    * Gets the current MyFilesEntry.
    */
-  getMyFiles(): FilesAppDirEntry {
+  getMyFiles(): null|FilesAppDirEntry {
     const {myFilesEntry} = getMyFiles(getStore().getState());
     return myFilesEntry;
   }
@@ -1199,7 +1207,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     const locationInfo = this.volumeManager_.getLocationInfo(dirEntry);
     if (locationInfo && locationInfo.rootType === RootType.DOWNLOADS &&
         locationInfo.isRootEntry) {
-      dirEntry = this.getMyFiles();
+      dirEntry = this.getMyFiles()!;
     }
 
     // If there is on-going scan, cancel it.

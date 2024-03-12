@@ -464,13 +464,21 @@ function findVolumeByType(volumes: VolumeMap, volumeType: VolumeType): Volume|
 
 /**
  * Returns the MyFiles entry and volume, the entry can either be a fake one
- * (EntryList) or a real one (VolumeEntry) depends on if the MyFiles volume is
- * mounted or not.
+ * (EntryList) or a real one (VolumeEntry) depending on if the MyFiles volume is
+ * mounted or not, and returns null if local files are disabled by policy.
  * Note: it will create a fake EntryList in the store if there's no
- * MyFiles entry in the store (e.g. no EntryList and no VolumeEntry).
+ * MyFiles entry in the store (e.g. no EntryList and no VolumeEntry), but local
+ * files are enabled.
  */
 export function getMyFiles(state: State):
-    {myFilesVolume: null|Volume, myFilesEntry: VolumeEntry|EntryList} {
+    {myFilesVolume: null|Volume, myFilesEntry: null|VolumeEntry|EntryList} {
+  if (state.preferences?.localUserFilesAllowed === false) {
+    return {
+      myFilesEntry: null,
+      myFilesVolume: null,
+    };
+  }
+
   const {volumes} = state;
   const myFilesVolume = findVolumeByType(volumes, VolumeType.DOWNLOADS);
   const myFilesVolumeEntry = myFilesVolume ?

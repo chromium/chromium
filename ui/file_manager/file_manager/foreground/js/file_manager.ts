@@ -1431,7 +1431,7 @@ export class FileManager {
         // here.
         // TODO(b/308504417): MyFiles entry list should be selected before
         // MyFiles volume mounts.
-        if (myFiles.myFilesVolume) {
+        if (myFiles && myFiles.myFilesVolume) {
           nextCurrentDirEntry = myFiles.myFilesEntry;
         }
       } else if (this.ui.directoryTree?.dataModel.myFilesModel) {

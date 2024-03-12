@@ -66,6 +66,10 @@ export async function*
   let isVolumeEntryInMyFiles = false;
   if (entry.rootType && uiEntryRootTypesInMyFiles.has(entry.rootType)) {
     const {myFilesEntry} = getMyFiles(state);
+    if (!myFilesEntry) {
+      // TODO(aidazolic): Add separately.
+      return;
+    }
     const children = myFilesEntry.getUiChildren();
     // Check if the the ui entry already has a corresponding volume entry.
     isVolumeEntryInMyFiles = !!children.find(
@@ -88,6 +92,9 @@ export async function*
       const {myFilesEntry: updatedMyFiles} = getMyFiles(getStore().getState());
       // Trigger a re-scan for MyFiles to make FileData.children in the store
       // has this newly added children.
+      if (!updatedMyFiles) {
+        return;
+      }
       for await (const action of readSubDirectories(updatedMyFiles.toURL())) {
         yield action;
       }
@@ -135,6 +142,9 @@ export async function* removeUiEntry(key: FileKey): ActionsProducerGen {
     // the execution of this function and between the pause MyFiles might
     // change.
     const {myFilesEntry} = getMyFiles(getStore().getState());
+    if (!myFilesEntry) {
+      return;
+    }
     const children = myFilesEntry.getUiChildren();
     const isUiEntryInMyFiles =
         !!children.find(childEntry => isSameEntry(childEntry, entry));

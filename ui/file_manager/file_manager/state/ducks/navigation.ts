@@ -39,7 +39,7 @@ function getPrefixEntryOrEntry(state: State, volume: Volume): VolumeEntry|
     return entry as VolumeEntry | EntryList | null;
   }
   if (volume.volumeType === VolumeType.DOWNLOADS) {
-    return getMyFiles(state).myFilesEntry;
+    return getMyFiles(state)!.myFilesEntry;
   }
 
   const entry = getEntry(state, volume.rootKey!);
@@ -116,15 +116,16 @@ function refreshNavigationRootsReducer(currentState: State): State {
 
   // 3. MyFiles
   const {myFilesEntry, myFilesVolume} = getMyFiles(currentState);
-  roots.push({
-    key: myFilesEntry.toURL(),
-    section: NavigationSection.MY_FILES,
-    // Only show separator if this is not the first navigation item.
-    separator: processedEntryKeys.size > 0,
-    type: myFilesVolume ? NavigationType.VOLUME : NavigationType.ENTRY_LIST,
-  });
-  processedEntryKeys.add(myFilesEntry.toURL());
-
+  if (myFilesEntry) {
+    roots.push({
+      key: myFilesEntry.toURL(),
+      section: NavigationSection.MY_FILES,
+      // Only show separator if this is not the first navigation item.
+      separator: processedEntryKeys.size > 0,
+      type: myFilesVolume ? NavigationType.VOLUME : NavigationType.ENTRY_LIST,
+    });
+    processedEntryKeys.add(myFilesEntry.toURL());
+  }
   // 4. Add Google Drive - the only Drive.
   // When drive pref changes from enabled to disabled, we remove the drive root
   // key from the `state.uiEntries` immediately, but the drive root entry itself

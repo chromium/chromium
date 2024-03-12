@@ -144,14 +144,14 @@ function addVolumeReducer(currentState: State, payload: {
   // volume manager.
   volume.isDisabled = !!newVolumeEntry.disabled;
 
-  // Handles volumes nested inside MyFiles.
+  // Handles volumes nested inside MyFiles, if local user files are allowed.
   // It creates a placeholder for MyFiles if MyFiles volume isn't mounted yet.
   const myFilesNestedVolumeTypes = getVolumeTypesNestedInMyFiles();
   const {myFilesEntry} = getMyFiles(currentState);
   // For volumes which are supposed to be nested inside MyFiles (e.g. Android,
   // Crostini, GuestOS), we need to nest them into MyFiles and remove the
   // placeholder fake entry if existed.
-  if (myFilesNestedVolumeTypes.has(volume.volumeType)) {
+  if (myFilesEntry && myFilesNestedVolumeTypes.has(volume.volumeType)) {
     volume.prefixKey = myFilesEntry.toURL();
 
     const myFilesEntryKey = myFilesEntry.toURL();
