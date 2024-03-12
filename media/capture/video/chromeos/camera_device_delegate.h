@@ -40,6 +40,9 @@ enum class StreamType : uint64_t {
   kUnknown = 4,
 };
 
+// TODO(b/130774415): Get the keys from VendorTagOps by names instead.
+inline constexpr uint32_t kCrosDigitalZoomRequestedVendorKey = 0x80070001;
+
 // A map to know that each StreamType belongs to which ClientType.
 // The index is StreamType value.
 constexpr std::array<ClientType, static_cast<int>(StreamType::kUnknown)>
@@ -266,6 +269,11 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // Returns 0 for min or max or both fps when fps range is not valid,
   // caller should handle that accordingly.
   std::pair<int32_t, int32_t> GetFrameRateRange();
+
+  // Configures the session_parameters to configure the streams to handle
+  // digital zoom in the stream manipulator.
+  void SetDigitalZoomSessionParameters(
+      cros::mojom::CameraMetadataPtr* session_parameters);
 
   // Configures the session_parameters with initial values for the keys
   // found in ANDROID_REQUEST_AVAILABLE_SESSION_KEYS.

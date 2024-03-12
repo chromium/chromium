@@ -22,6 +22,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/device_event_log/device_event_log.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
 #include "media/capture/video/chromeos/camera_3a_controller.h"
@@ -1086,6 +1087,14 @@ void CameraDeviceDelegate::ConfigureStreams(
   if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
     stream_config->session_parameters = cros::mojom::CameraMetadata::New();
     ConfigureSessionParameters(&stream_config->session_parameters);
+    // TODO(b/225112054): Remove the check for Chrome flag once the feature is
+    // enabled by default.
+    bool request_digital_zoom =
+        camera_app_device != nullptr &&
+        base::FeatureList::IsEnabled(ash::features::kCameraAppDigitalZoom);
+    if (request_digital_zoom) {
+      SetDigitalZoomSessionParameters(&stream_config->session_parameters);
+    }
   }
   device_ops_->ConfigureStreams(
       std::move(stream_config),
@@ -1885,6 +1894,16 @@ void CameraDeviceDelegate::ConfigureSessionParameters(
       }
     }
   }
+}
+
+void CameraDeviceDelegate::SetDigitalZoomSessionParameters(
+    cros::mojom::CameraMetadataPtr* session_parameters) {
+  CAMERA_LOG(EVENT)
+      << "Setting kCrosDigitalZoomRequestedVendorKey in session_parameters.";
+  auto e = BuildMetadataEntry(static_cast<cros::mojom::CameraMetadataTag>(
+                                  kCrosDigitalZoomRequestedVendorKey),
+                              uint8_t{1});
+  AddOrUpdateMetadataEntry(session_parameters, std::move(e));
 }
 
 }  // namespace media
