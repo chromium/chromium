@@ -144,6 +144,9 @@ class LensOverlayController : public TabStripModelObserver,
   void CloseRequestedByOverlay() override;
   void IssueLensRequest(const ::gfx::RectF& region) override;
 
+  // Calls CloseUI() asynchronously.
+  void CloseUIAsync();
+
   // Owns this class.
   raw_ptr<tabs::TabModel> tab_model_;
 

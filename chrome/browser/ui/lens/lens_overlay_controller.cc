@@ -206,6 +206,11 @@ class LensOverlayController::UnderlyingWebContentsObserver
     }
   }
 
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override {
+    lens_overlay_controller_->CloseUIAsync();
+  }
+
  private:
   raw_ptr<LensOverlayController> lens_overlay_controller_;
 };
@@ -330,6 +335,10 @@ void LensOverlayController::TabBackgrounded() {
 }
 
 void LensOverlayController::CloseRequestedByOverlay() {
+  CloseUIAsync();
+}
+
+void LensOverlayController::CloseUIAsync() {
   state_ = State::kClosing;
 
   // This callback comes from WebUI. CloseUI synchronously destroys the WebUI.
