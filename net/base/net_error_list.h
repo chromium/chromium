@@ -18,7 +18,7 @@
 //   300-399 HTTP errors
 //   400-499 Cache errors
 //   500-599 ?
-//   600-699 FTP errors
+//   600-699 <Obsolete: FTP errors>
 //   700-799 Certificate manager errors
 //   800-899 DNS resolver errors
 
@@ -907,37 +907,13 @@ NET_ERROR(TRUST_TOKEN_OPERATION_FAILED, -506)
 NET_ERROR(TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST, -507)
 
 // *** Code -600 is reserved (was FTP_PASV_COMMAND_FAILED). ***
-
-// A generic error for failed FTP control connection command.
-// If possible, please use or add a more specific error code.
-NET_ERROR(FTP_FAILED, -601)
-
-// The server cannot fulfill the request at this point. This is a temporary
-// error.
-// FTP response code 421.
-NET_ERROR(FTP_SERVICE_UNAVAILABLE, -602)
-
-// The server has aborted the transfer.
-// FTP response code 426.
-NET_ERROR(FTP_TRANSFER_ABORTED, -603)
-
-// The file is busy, or some other temporary error condition on opening
-// the file.
-// FTP response code 450.
-NET_ERROR(FTP_FILE_BUSY, -604)
-
-// Server rejected our command because of syntax errors.
-// FTP response codes 500, 501.
-NET_ERROR(FTP_SYNTAX_ERROR, -605)
-
-// Server does not support the command we issued.
-// FTP response codes 502, 504.
-NET_ERROR(FTP_COMMAND_NOT_SUPPORTED, -606)
-
-// Server rejected our command because we didn't issue the commands in right
-// order.
-// FTP response code 503.
-NET_ERROR(FTP_BAD_COMMAND_SEQUENCE, -607)
+// *** Code -601 is reserved (was FTP_FAILED). ***
+// *** Code -602 is reserved (was FTP_SERVICE_UNAVAILABLE). ***
+// *** Code -603 is reserved (was FTP_TRANSFER_ABORTED). ***
+// *** Code -604 is reserved (was FTP_FILE_BUSY). ***
+// *** Code -605 is reserved (was FTP_SYNTAX_ERROR). ***
+// *** Code -606 is reserved (was FTP_COMMAND_NOT_SUPPORTED). ***
+// *** Code -607 is reserved (was FTP_BAD_COMMAND_SEQUENCE). ***
 
 // PKCS #12 import failed due to incorrect password.
 NET_ERROR(PKCS12_IMPORT_BAD_PASSWORD, -701)
