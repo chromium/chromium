@@ -16,17 +16,7 @@ std::string TestAXMediaAppUntrustedHandler::GetDocumentTreeToStringForTesting()
   if (!document_.ax_tree()) {
     return {};
   }
-  std::string document_tree_string;
-  ui::AXTreeData document_tree_data = document_.GetTreeData();
-  document_.ax_tree()->UpdateDataForTesting(ui::AXTreeData());  // IN-TEST
-  document_tree_string = document_.ax_tree()->ToString();
-  document_.ax_tree()->UpdateDataForTesting(document_tree_data);  // IN-TEST
-
-  // Remove the `child_tree_id` from `document_tree_string`, because it changes
-  // every time the document tree is created.
-  constexpr char pattern[] = "child_tree_id=\\S*";
-  re2::RE2::GlobalReplace(&document_tree_string, pattern, "");
-  return document_tree_string;
+  return document_.ax_tree()->ToString();
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

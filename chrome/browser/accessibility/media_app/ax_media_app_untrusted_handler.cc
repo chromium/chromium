@@ -691,6 +691,13 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
     return;
   }
   if (!pages_.contains(dirty_page_id)) {
+    // Add a newly generated tree id to the tree update so that the new
+    // AXSerializableTree that's generated as a non-empty tree id.
+    CHECK(complete_tree_update.has_tree_data);
+    CHECK(complete_tree_update.tree_data.tree_id.type() ==
+          ax::mojom::AXTreeIDType::kUnknown)
+        << "Not expected to be set yet.";
+    complete_tree_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
     auto page_tree =
         std::make_unique<ui::AXSerializableTree>(complete_tree_update);
     page_sources_[dirty_page_id] =
@@ -708,6 +715,10 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
       return;
     }
   }
+
+  CHECK(pages_[dirty_page_id]->GetTreeID().type() !=
+        ax::mojom::AXTreeIDType::kUnknown);
+
   // Update the page location again - running the page through OCR overwrites
   // the previous `AXTree` it was given and thus the page location it was
   // already given in `PageMetadataUpdated()`. Restore it here.

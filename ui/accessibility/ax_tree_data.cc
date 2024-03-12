@@ -26,12 +26,12 @@ AXTreeData::~AXTreeData() = default;
 std::string AXTreeData::ToString() const {
   std::string result;
 
-  if (tree_id != AXTreeIDUnknown())
-    result += " tree_id=" + tree_id.ToString().substr(0, 8);
+  // The exact value of the tree ids are not added to the string as it varies,
+  // and adding it would cause test failures.
   if (parent_tree_id != AXTreeIDUnknown())
-    result += " parent_tree_id=" + parent_tree_id.ToString().substr(0, 8);
+    result += " has_parent_tree";
   if (focused_tree_id != AXTreeIDUnknown())
-    result += " focused_tree_id=" + focused_tree_id.ToString().substr(0, 8);
+    result += " has_focused_tree";
 
   if (!doctype.empty())
     result += " doctype=" + doctype;

@@ -797,11 +797,11 @@ BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
   if (!obj)
     return GetBrowserAccessibilityRoot();
 
-  if (obj->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
-    ui::AXTreeID child_tree_id = ui::AXTreeID::FromString(
-        obj->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+  std::optional<ui::AXTreeID> child_tree_id =
+      obj->node()->data().GetChildTreeID();
+  if (child_tree_id) {
     const BrowserAccessibilityManager* child_manager =
-        BrowserAccessibilityManager::FromID(child_tree_id);
+        BrowserAccessibilityManager::FromID(*child_tree_id);
     if (child_manager)
       return child_manager->GetFocusFromThisOrDescendantFrame();
   }

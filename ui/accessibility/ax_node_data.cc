@@ -481,11 +481,30 @@ bool AXNodeData::GetHtmlAttribute(const char* attribute,
 }
 
 void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
-  ax::mojom::StringAttribute attribute =
-      ax::mojom::StringAttribute::kChildTreeId;
-  if (HasStringAttribute(attribute))
-    RemoveStringAttribute(attribute);
-  string_attributes.emplace_back(attribute, tree_id.ToString());
+  DCHECK(!HasChildTreeID());
+  if (tree_id.type() == ax::mojom::AXTreeIDType::kUnknown) {
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    return;
+  }
+  std::string tree_id_str = tree_id.ToString();
+  DCHECK(!tree_id_str.empty());
+  string_attributes.emplace_back(ax::mojom::StringAttribute::kChildTreeId,
+                                 tree_id_str);
+}
+
+bool AXNodeData::HasChildTreeID() const {
+  return HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+}
+
+std::optional<AXTreeID> AXNodeData::GetChildTreeID() const {
+  std::string child_tree_id_str;
+  if (!GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
+                          &child_tree_id_str)) {
+    return std::nullopt;
+  }
+
+  DCHECK(!child_tree_id_str.empty());
+  return AXTreeID::FromString(child_tree_id_str);
 }
 
 void AXNodeData::AddBoolAttribute(ax::mojom::BoolAttribute attribute,
@@ -1708,7 +1727,9 @@ std::string AXNodeData::ToString(bool verbose) const {
         result += " autocomplete=" + value;
         break;
       case ax::mojom::StringAttribute::kChildTreeId:
-        result += " child_tree_id=" + value.substr(0, 8);
+        // This is covered by has_child_tree above. The exact value of the
+        // child tree is not added to the string as it varies, and adding it
+        // would cause tesrt failures.
         break;
       case ax::mojom::StringAttribute::kChildTreeNodeAppId:
         result += " child_tree_node_app_id=" + value.substr(0, 8);

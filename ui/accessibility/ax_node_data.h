@@ -340,6 +340,9 @@ struct AX_BASE_EXPORT AXNodeData {
   // expand/collapse.
   bool SupportsExpandCollapse() const;
 
+  bool HasChildTreeID() const;
+  std::optional<AXTreeID> GetChildTreeID() const;
+
   // Return a string representation of this data, for debugging.
   virtual std::string ToString(bool verbose = true) const;
 

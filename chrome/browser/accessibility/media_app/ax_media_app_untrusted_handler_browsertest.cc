@@ -176,31 +176,30 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
     ASSERT_NE(nullptr, page->ax_tree());
   }
 
-  // Remove the tree data, because its tree ID would change every time the
-  // test is run, and because it is unimportant for our test purposes.
-  ui::AXTreeData tree_data;
-  for (auto const& [_, page] : pages) {
-    page->ax_tree()->UpdateDataForTesting(tree_data);
-  }
-
-  EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (0, 0)-(3, 8)\n",
-            pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-3 staticText name=Testing (0, 10)-(3, 8)\n",
-            pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (0, 20)-(3, 8)\n",
-            pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree\n"
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (0, 0)-(3, 8)\n",
+      pages.at(fake_metadata[0]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "name=Testing (0, 10)-(3, 8)\n",
+      pages.at(fake_metadata[1]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "name=Testing (0, 20)-(3, 8)\n",
+      pages.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
       "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
       "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 10)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 20)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 
   // Relocate all the pages 3 units to the left and resize the second page. This
@@ -225,27 +224,32 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
   for (auto const& [_, page] : pages2) {
     ASSERT_NE(nullptr, page.get());
     ASSERT_NE(nullptr, page->ax_tree());
-    page->ax_tree()->UpdateDataForTesting(tree_data);
   }
 
-  EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (-3, 0)-(3, 8)\n",
-            pages2.at(fake_metadata[0]->id)->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-3 staticText name=Testing (-3, 10)-(8, 3)\n",
-            pages2.at(fake_metadata[1]->id)->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (-3, 15)-(3, 8)\n",
-            pages2.at(fake_metadata[2]->id)->ax_tree()->ToString());
   EXPECT_EQ(
-      "AXTree\n"
+      "AXTree has_parent_tree title=Screen AI\nid=-2 staticText "
+      "name=Testing (-3, 0)-(3, 8)\n",
+      pages2.at(fake_metadata[0]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-3 staticText "
+      "name=Testing (-3, 10)-(8, 3)\n",
+      pages2.at(fake_metadata[1]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=Screen AI\nid=-4 staticText "
+      "name=Testing (-3, 15)-(3, 8)\n",
+      pages2.at(fake_metadata[2]->id)->ax_tree()->ToString());
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
       "name_from=attribute clips_children child_ids=2,3,4 (-3, 0)-(8, 23) "
       "text_align=left restriction=readonly scroll_x_min=-3 scroll_y_min=0 "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (-3, 0)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute has_child_tree (-3, 10)-"
-      "(8, 3) restriction=readonly  is_page_breaking_object=true\n"
+      "(8, 3) restriction=readonly is_page_breaking_object=true\n"
       "  id=4 region name=Page 3 name_from=attribute has_child_tree (-3, 15)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 
@@ -309,19 +313,19 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[4]);
 
   EXPECT_EQ(
-      "AXTree\n"
+      "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
       "name_from=attribute clips_children child_ids=2,3,4,5 (-2.5, 0)-(8, 33) "
       "text_align=left restriction=readonly scroll_x_min=-2 scroll_y_min=0 "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 10)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=4 region name=Page 3 name_from=attribute has_child_tree (-2.5, 20)-"
-      "(8, 3) restriction=readonly  is_page_breaking_object=true\n"
+      "(8, 3) restriction=readonly is_page_breaking_object=true\n"
       "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, 25)-"
-      "(3, 8) restriction=readonly  is_page_breaking_object=true\n",
+      "(3, 8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 
@@ -381,17 +385,17 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   // We'll also use the locations of pages one and three as a proxy to determine
   // if their were in fact skipped.
   EXPECT_EQ(
-      "AXTree\n"
+      "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
       "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
       "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly  is_page_breaking_object=true\n"
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly  is_page_breaking_object=true\n",
+      "8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 
@@ -512,13 +516,11 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly child_tree_id= is_page_breaking_object=true\n"
+      "8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
-      "10)-(3, 8) restriction=readonly child_tree_id= "
-      "is_page_breaking_object=true\n"
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
       "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
-      "20)-(3, 8) restriction=readonly child_tree_id= "
-      "is_page_breaking_object=true\n",
+      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
       pending_serialized_updates[3].ToString());
 
   // Rotate the second page. It should update the location of all pages.
