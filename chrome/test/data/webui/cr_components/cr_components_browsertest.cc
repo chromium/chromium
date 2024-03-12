@@ -61,6 +61,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, HistoryEmbeddings) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsTest, HistoryEmbeddingsFilterChips) {
+  RunTest("cr_components/history_embeddings/filter_chips_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ManagedDialog) {
   RunTest("cr_components/managed_dialog_test.js", "mocha.run()");
 }

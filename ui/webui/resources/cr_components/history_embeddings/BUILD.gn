@@ -14,8 +14,12 @@ mojom("mojo_bindings") {
 
 build_webui("build") {
   grd_prefix = "cr_components_history_embeddings"
-  web_component_files = [ "history_embeddings.ts" ]
+  web_component_files = [
+    "filter_chips.ts",
+    "history_embeddings.ts",
+  ]
   non_web_component_files = [ "browser_proxy.ts" ]
+  icons_html_files = [ "icons.html" ]
 
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
   mojo_files = [ "$target_gen_dir/history_embeddings.mojom-webui.ts" ]

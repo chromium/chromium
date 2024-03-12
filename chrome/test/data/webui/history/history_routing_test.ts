@@ -5,11 +5,13 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistorySideBarElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, BrowserServiceImpl, MetricsProxyImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl, BrowserServiceImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
 import {TestBrowserService} from './test_browser_service.js';
@@ -245,5 +247,54 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
     loadTimeData.overrideValues({lastSelectedTab: 0});
     initialize();
     assertEquals(`chrome://history/`, window.location.href);
+  });
+});
+
+suite(`routing-test-with-history-embeddings-enabled`, () => {
+  let app: HistoryAppElement;
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      enableHistoryEmbeddings: true,
+      isHistoryClustersEnabled: true,
+      isHistoryClustersVisible: true,
+    });
+  });
+
+  setup(() => {
+    window.history.replaceState({}, '', '/');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    // Some extra setup of mocking proxies to get the history-app to work.
+    BrowserServiceImpl.setInstance(new TestBrowserService());
+    BrowserProxyImpl.setInstance(new TestBrowserProxy());
+    MetricsProxyImpl.setInstance(new TestMetricsProxy());
+    const handler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
+    HistoryEmbeddingsBrowserProxyImpl.setInstance(
+        new HistoryEmbeddingsBrowserProxyImpl(handler));
+    handler.setResultFor('doSomething', Promise.resolve(true));
+
+    app = document.createElement('history-app');
+    document.body.appendChild(app);
+    return flushTasks();
+  });
+
+  test('route updates from filter chips', () => {
+    // Tabs should be hidden.
+    assertEquals(null, app.shadowRoot!.querySelector('cr-tabs'));
+
+    const filterChips =
+        app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');
+    assertTrue(!!filterChips);
+    assertTrue(isVisible(filterChips));
+
+    // Changing the "By group" chip to should change the URL.
+    filterChips.dispatchEvent(new CustomEvent(
+        'show-results-by-group-changed', {detail: {value: true}}));
+    assertEquals('chrome://history/grouped', window.location.href);
+
+    filterChips.dispatchEvent(new CustomEvent(
+        'show-results-by-group-changed', {detail: {value: false}}));
+    assertEquals('chrome://history/', window.location.href);
   });
 });

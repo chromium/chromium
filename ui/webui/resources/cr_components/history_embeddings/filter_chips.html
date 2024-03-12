@@ -1,0 +1,31 @@
+<style>
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+hr {
+  margin: 0;
+  width: 1px;
+  height: 20px;
+  border: 0;
+  background: var(--cr-fallback-color-divider);
+}
+
+#suggestions {
+  display: flex;
+  gap: 8px;
+}
+</style>
+
+<cr-chip id="byGroupChip" selected$="[[showResultsByGroup]]"
+    on-click="onByGroupClick_">
+  <iron-icon id="byGroupChipIcon"
+      icon="[[getByGroupIcon_(showResultsByGroup)]]">
+  </iron-icon>
+  $i18n{historyClustersTabLabel}
+</cr-chip>
+
+<hr></hr>

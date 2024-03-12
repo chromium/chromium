@@ -7,6 +7,8 @@ import './app.js';
 export {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 export {ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 export {MetricsProxy, MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
+export {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
+export {PageHandlerRemote as HistoryEmbeddingsPageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
