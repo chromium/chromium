@@ -6,11 +6,11 @@ status: 200OK
 protocol: http/1.1
 scheme: http
 domain: 127.0.0.1
-remoteaddress: 127.0.0.1:8000
+remote-address: 127.0.0.1:8000
 type: xhr
 initiator: network-columns-visible.js:18Script
 cookies: 0
-setcookies: 0
+set-cookies: 0
 priority: HighHigh
 cache-control: 
 connection: Keep-Alive

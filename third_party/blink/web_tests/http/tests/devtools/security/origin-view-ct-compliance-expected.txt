@@ -22,7 +22,7 @@ foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=text-button jslog=Action; track: click; context: security.view-requests-in-network-panel type=button role=link >
+            <BUTTON class=text-button jslog=Action; track: click; context: reveal-in-network type=button role=link >
 View requests in Network Panel
             </BUTTON>
         </DIV>

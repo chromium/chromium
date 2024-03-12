@@ -59,9 +59,9 @@ active mixed content
         <DIV >
 You have recently allowed non-secure content (such as scripts or iframes) to run on this site.
         </DIV>
-        <DIV class=security-mixed-content devtools-link role=link tabindex=0 >
+        <BUTTON class=security-mixed-content devtools-link text-button link-style role=link tabindex=0 >
 View 1 request in Network Panel
-        </DIV>
+        </BUTTON>
     </DIV>
 </DIV>
 <DIV class=security-explanation security-explanation-neutral >
@@ -79,9 +79,9 @@ mixed content
         <DIV >
 This page includes HTTP resources.
         </DIV>
-        <DIV class=security-mixed-content devtools-link role=link tabindex=0 >
+        <BUTTON class=security-mixed-content devtools-link text-button link-style role=link tabindex=0 >
 View 1 request in Network Panel
-        </DIV>
+        </BUTTON>
     </DIV>
 </DIV>
 

@@ -6864,13 +6864,6 @@ crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-loa
 crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageswap-push-from-click.html [ Timeout ]
 crbug.com/326459000 virtual/pageswap/external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-from-click.html [ Timeout ]
 
-crbug.com/1467464 http/tests/devtools/network/network-columns-visible.js [ Failure Pass Timeout ]
-crbug.com/1467464 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass Timeout ]
-crbug.com/1467464 http/tests/devtools/security/origin-view-noncryptographic-secure-origin.js [ Failure Pass Timeout ]
-crbug.com/1467464 http/tests/devtools/security/origin-view-then-interstitial.js [ Failure Pass Timeout ]
-crbug.com/1467464 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass Timeout ]
-
-
 # Flaky test
 crbug.com/325415944 [ Linux ] external/wpt/longtask-timing/spin-eventloop-not-longtask.html [ Failure Pass ]
 
@@ -6888,14 +6881,6 @@ crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/exter
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-script.https.sub.html [ Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/redirect/redirect-location.any.serviceworker.html [ Timeout ]
-
-crbug.com/1467464 http/tests/devtools/console/console-format-classes.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/console/viewport-testing/console-key-links.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/blocked-mixed-content.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/mixed-content-active-and-passive-reload.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/mixed-content-reload.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
-
 
 # Gardener 2023-02-28
 crbug.com/327434497 [ Mac13 ] wpt_internal/scheduler/task-signal-any-memory-abort-1.any.html [ Failure Pass ]
