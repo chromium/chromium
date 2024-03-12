@@ -113,12 +113,18 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     super.viewDidLoad()
     view.backgroundColor = UIColor(named: kGroupedPrimaryBackgroundColor)
 
+    // Don't clip to bound the collection view to allow the shadow of the long press to be displayed fully.
+    // The trailing placeholder will ensure that the cells aren't displayed out of the bounds.
+    collectionView.clipsToBounds = false
     collectionView.translatesAutoresizingMaskIntoConstraints = false
-    collectionView.clipsToBounds = true
-    view.layer.masksToBounds = true
-
     collectionView.backgroundColor = .clear
     view.addSubview(collectionView)
+
+    let trailingPlaceholder = UIView()
+    trailingPlaceholder.translatesAutoresizingMaskIntoConstraints = false
+    trailingPlaceholder.backgroundColor = view.backgroundColor
+    // Add the placeholder above the collection view but below the other elements.
+    view.insertSubview(trailingPlaceholder, aboveSubview: collectionView)
 
     // Mirror the layer.
     rightStaticSeparator.transform = CGAffineTransformMakeScale(-1, 1)
@@ -147,6 +153,12 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
     NSLayoutConstraint.activate(
       [
+        /// `trailingPlaceholder` constraints.
+        trailingPlaceholder.leadingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+        trailingPlaceholder.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        trailingPlaceholder.topAnchor.constraint(equalTo: view.topAnchor),
+        trailingPlaceholder.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
         /// `collectionView` constraints.
         collectionView.leadingAnchor.constraint(
           equalTo: view.leadingAnchor),
