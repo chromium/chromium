@@ -25,7 +25,10 @@ class OrcaPolicyTest : public PolicyTest {
         /*enabled_features=*/{chromeos::features::kOrca,
                               chromeos::features::kFeatureManagementOrca,
                               ash::features::kOrcaControlledByPolicy},
-        /*disabled_features=*/{chromeos::features::kOrcaDogfood});
+        // TODO: b:329215512: Remove the OrcaUseAccountCapabilities from the
+        // disable list.
+        /*disabled_features=*/{chromeos::features::kOrcaDogfood,
+                               ash::features::kOrcaUseAccountCapabilities});
   }
 
  protected:
