@@ -15,6 +15,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -703,6 +704,15 @@ void LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired() {
   TRACE_EVENT0(
       "startup",
       "LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired");
+
+  // `post_login_deferred_task_runner_` could be started in tests in
+  // `ScheduleWaitForShelfAnimationEndIfNeeded` where shelf is created
+  // before tests fake logins.
+  if (post_login_deferred_task_runner_->Started()) {
+    CHECK_IS_TEST();
+    return;
+  }
+
   post_login_deferred_task_runner_->Start();
 }
 
