@@ -261,7 +261,10 @@ void BrowsingHistoryService::QueryHistoryInternal(
   }
 
   WebHistoryService* web_history = driver_->GetWebHistoryService();
-  if (web_history) {
+  // Run WebHistory query for full history. App-specific history uses the
+  // results from the local database only, since the legacy json API service
+  // WebHistory relies on can't be updated to process app_id.
+  if (web_history && state->original_options.app_id == kNoAppIdFilter) {
     if (state->remote_results.size() < desired_count &&
         state->remote_status != REACHED_BEGINNING) {
       // Start a timer with timeout before we make the actual query, otherwise
