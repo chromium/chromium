@@ -17,10 +17,10 @@ class SearchTermsData {
   // Enumeration of the known search or suggest request sources. These values
   // are not persisted or used in histograms; thus can be freely changed.
   enum class RequestSource {
-    SEARCHBOX,      // Omnibox or the NTP realbox. The default.
-    CROS_APP_LIST,  // Chrome OS app list searchbox.
-    NTP_MODULE,     // Suggestions for the NTP modules.
-    JOURNEYS,       // Suggestions for the Journeys.
+    SEARCHBOX,             // Omnibox or the NTP realbox. The default.
+    CROS_APP_LIST,         // Chrome OS app list searchbox.
+    NTP_MODULE,            // Suggestions for the NTP modules.
+    CONTEXTUAL_SEARCHBOX,  // Contextual searchbox.
   };
 
   // Utility function that takes a snapshot of a different SearchTermsData

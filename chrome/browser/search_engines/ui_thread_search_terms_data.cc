@@ -87,8 +87,8 @@ std::string UIThreadSearchTermsData::GetSuggestClient(
   switch (request_source) {
     case RequestSource::NTP_MODULE:
       return "chrome-android-search-resumption-module";
-    case RequestSource::JOURNEYS:
-      return "journeys";
+    case RequestSource::CONTEXTUAL_SEARCHBOX:
+      return "chrome-contextual-searchbox";
     case RequestSource::SEARCHBOX:
     case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -106,7 +106,7 @@ std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
       BrowserThread::CurrentlyOn(BrowserThread::UI));
   switch (request_source) {
     case RequestSource::NTP_MODULE:
-    case RequestSource::JOURNEYS:
+    case RequestSource::CONTEXTUAL_SEARCHBOX:
       return "";
     case RequestSource::SEARCHBOX:
     case RequestSource::CROS_APP_LIST:

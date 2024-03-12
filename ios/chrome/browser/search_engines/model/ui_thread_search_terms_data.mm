@@ -78,7 +78,7 @@ std::string UIThreadSearchTermsData::GetSuggestClient(
   switch (request_source) {
     case RequestSource::NTP_MODULE:
       return "chrome-ios-ntp";
-    case RequestSource::JOURNEYS:
+    case RequestSource::CONTEXTUAL_SEARCHBOX:
       return "";
     case RequestSource::SEARCHBOX:
     case RequestSource::CROS_APP_LIST:
@@ -91,7 +91,7 @@ std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
   DCHECK(thread_checker_.CalledOnValidThread());
   switch (request_source) {
     case RequestSource::NTP_MODULE:
-    case RequestSource::JOURNEYS:
+    case RequestSource::CONTEXTUAL_SEARCHBOX:
       return "";
     case RequestSource::SEARCHBOX:
     case RequestSource::CROS_APP_LIST:
