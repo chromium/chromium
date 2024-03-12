@@ -28,7 +28,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -432,7 +432,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     List<CreditCard> cards =
-                            PersonalDataManager.getInstance().getCreditCardsForSettings();
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
+                                    .getCreditCardsForSettings();
                     for (int i = 0; i < cards.size(); i++) {
                         if (!cards.get(i).getIsLocal()) return true;
                     }

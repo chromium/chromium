@@ -69,7 +69,7 @@ public class PersonalDataManagerTest {
         mHelper = new AutofillTestHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        PersonalDataManager.getInstance()
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
                                 .setImageFetcherForTesting(
                                         new TestImageFetcher(TEST_CARD_ART_IMAGE)));
     }
@@ -289,7 +289,8 @@ public class PersonalDataManagerTest {
                                                             ChromeFeatureList
                                                                     .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES))
                                     .sameAs(
-                                            PersonalDataManager.getInstance()
+                                            AutofillTestHelper
+                                                    .getPersonalDataManagerForLastUsedProfile()
                                                     .getCustomImageForAutofillSuggestionIfAvailable(
                                                             cardArtUrl, cardIconSpecsLarge)
                                                     .get()));
@@ -302,7 +303,8 @@ public class PersonalDataManagerTest {
                                                             ChromeFeatureList
                                                                     .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES))
                                     .sameAs(
-                                            PersonalDataManager.getInstance()
+                                            AutofillTestHelper
+                                                    .getPersonalDataManagerForLastUsedProfile()
                                                     .getCustomImageForAutofillSuggestionIfAvailable(
                                                             cardArtUrl, cardIconSpecsSmall)
                                                     .get()));
@@ -1175,7 +1177,7 @@ public class PersonalDataManagerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PersonalDataManager.getInstance()
+                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
                             .getCustomImageForAutofillSuggestionIfAvailable(
                                     cardArtUrl, cardIconSpecs);
                     expectedHistogram.assertExpected();
@@ -1198,9 +1200,9 @@ public class PersonalDataManagerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PersonalDataManager.getInstance()
+                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
                             .setImageFetcherForTesting(new TestImageFetcher(null));
-                    PersonalDataManager.getInstance()
+                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
                             .getCustomImageForAutofillSuggestionIfAvailable(
                                     cardArtUrl, cardIconSpecs);
                     expectedHistogram.assertExpected();
