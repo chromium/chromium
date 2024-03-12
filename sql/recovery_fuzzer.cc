@@ -47,28 +47,27 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   bool should_attempt_recovery = false;
   database.set_error_callback(
       base::BindLambdaForTesting([&](int extended_error, sql::Statement*) {
-        should_attempt_recovery = sql::BuiltInRecovery::ShouldAttemptRecovery(
-            &database, extended_error);
+        should_attempt_recovery =
+            sql::Recovery::ShouldAttemptRecovery(&database, extended_error);
       }));
   std::ignore = database.Open(env.data_file_path());
 
   // Select a recovery strategy pseudorandomly.
-  auto strategy =
-      size % 2 == 0
-          ? sql::BuiltInRecovery::Strategy::kRecoverOrRaze
-          : sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze;
+  auto strategy = size % 2 == 0
+                      ? sql::Recovery::Strategy::kRecoverOrRaze
+                      : sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze;
 
   // Ensure that we remember to update the fuzzer if more strategies are added.
   switch (strategy) {
-    case sql::BuiltInRecovery::Strategy::kRecoverOrRaze:
-    case sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze:
+    case sql::Recovery::Strategy::kRecoverOrRaze:
+    case sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze:
       break;
   }
 
   // Attempt recovery.
   if (should_attempt_recovery) {
     database.reset_error_callback();
-    std::ignore = sql::BuiltInRecovery::RecoverDatabase(&database, strategy);
+    std::ignore = sql::Recovery::RecoverDatabase(&database, strategy);
   }
 
   return 0;

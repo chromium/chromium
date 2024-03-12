@@ -343,9 +343,9 @@ void BrowsingTopicsSiteDataStorage::DatabaseErrorCallback(
     sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Attempt to recover a corrupt database, if it is eligible to be recovered.
-  if (sql::BuiltInRecovery::RecoverIfPossible(
+  if (sql::Recovery::RecoverIfPossible(
           db_.get(), extended_error,
-          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
+          sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 

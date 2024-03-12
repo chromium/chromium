@@ -2273,8 +2273,8 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
     size_t error_count = 0;
     auto callback = base::BindLambdaForTesting([&](int error, Statement* stmt) {
       error_count++;
-      ASSERT_TRUE(BuiltInRecovery::RecoverIfPossible(
-          db_.get(), error, sql::BuiltInRecovery::Strategy::kRecoverOrRaze));
+      ASSERT_TRUE(Recovery::RecoverIfPossible(
+          db_.get(), error, sql::Recovery::Strategy::kRecoverOrRaze));
       if (corrupt_after_recovery) {
         // Corrupt the file again after temporarily recovering it.
         ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));

@@ -32,7 +32,7 @@ namespace sql {
 //       recovery should not be attempted on WAL databases for now.
 //
 // Uses SQLite's recovery extension: https://www.sqlite.org/recovery.html
-class COMPONENT_EXPORT(SQL) BuiltInRecovery {
+class COMPONENT_EXPORT(SQL) Recovery {
  public:
   enum class Strategy {
     // Razes the database if it could not be recovered.
@@ -137,9 +137,9 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   // Recommended usage from within a database error callback:
   //
   //  // Attempt to recover the database, if recovery is possible.
-  //  if (sql::BuiltInRecovery::RecoverIfPossible(
+  //  if (sql::Recovery::RecoverIfPossible(
   //          &db, extended_error,
-  //          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
+  //          sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
   //    // Recovery was attempted. The database handle has been poisoned and the
   //    // error callback has been reset.
   //
@@ -150,12 +150,12 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
                                               int extended_error,
                                               Strategy strategy);
 
-  BuiltInRecovery(const BuiltInRecovery&) = delete;
-  BuiltInRecovery& operator=(const BuiltInRecovery&) = delete;
+  Recovery(const Recovery&) = delete;
+  Recovery& operator=(const Recovery&) = delete;
 
  private:
-  BuiltInRecovery(Database* database, Strategy strategy);
-  ~BuiltInRecovery();
+  Recovery(Database* database, Strategy strategy);
+  ~Recovery();
 
   // Entry point.
   SqliteResultCode RecoverAndReplaceDatabase();

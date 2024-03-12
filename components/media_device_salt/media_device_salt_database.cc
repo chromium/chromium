@@ -221,9 +221,8 @@ void MediaDeviceSaltDatabase::OnDatabaseError(int error,
                                               sql::Statement* statement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::UmaHistogramSqliteResult("Media.MediaDevices.SaltDatabaseErrors", error);
-  std::ignore = sql::BuiltInRecovery::RecoverIfPossible(
-      &db_, error,
-      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+  std::ignore = sql::Recovery::RecoverIfPossible(
+      &db_, error, sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
 }
 
 }  // namespace media_device_salt

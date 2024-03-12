@@ -129,7 +129,7 @@ class TestCase {
     }
   }
 
-  sql::BuiltInRecovery::Strategy strategy() const { return strategy_; }
+  sql::Recovery::Strategy strategy() const { return strategy_; }
   bool wal_mode() const { return wal_mode_; }
   base::span<const Mutation> mutations() const { return mutations_; }
   std::string_view sql_statement() const { return sql_statement_; }
@@ -157,18 +157,17 @@ class TestCase {
 
  private:
   // Converts an arbitrary int to a valid enum value.
-  static sql::BuiltInRecovery::Strategy RecoveryStrategyFromInt(int input);
+  static sql::Recovery::Strategy RecoveryStrategyFromInt(int input);
   // Converts arbitrary bytes in `s` to a human-readable ASCII string.
   // Non-printable characters are hex-escaped.
   static std::string DebugFormat(std::string_view s);
   // Converts the value of `strategy`, which must be a valid enum value, to a
   // human-readable string.
-  static constexpr const char* DebugFormat(
-      sql::BuiltInRecovery::Strategy strategy);
+  static constexpr const char* DebugFormat(sql::Recovery::Strategy strategy);
 
   // Fields parsed from the fuzzer input:
-  const sql::BuiltInRecovery::Strategy strategy_ =
-      sql::BuiltInRecovery::Strategy::kRecoverOrRaze;
+  const sql::Recovery::Strategy strategy_ =
+      sql::Recovery::Strategy::kRecoverOrRaze;
   const bool wal_mode_ = false;
   std::vector<Mutation> mutations_;
   const std::string sql_statement_;
@@ -266,7 +265,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
   auto error_callback =
       base::BindLambdaForTesting([&](int extended_error, sql::Statement*) {
         if (!attempted_recovery) {
-          attempted_recovery = sql::BuiltInRecovery::RecoverIfPossible(
+          attempted_recovery = sql::Recovery::RecoverIfPossible(
               &database, extended_error, test_case.strategy());
         }
       });
@@ -291,22 +290,22 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
 
 namespace {
 
-sql::BuiltInRecovery::Strategy TestCase::RecoveryStrategyFromInt(int input) {
+sql::Recovery::Strategy TestCase::RecoveryStrategyFromInt(int input) {
   static_assert(
-      std::is_same_v<std::underlying_type<sql::BuiltInRecovery::Strategy>::type,
+      std::is_same_v<std::underlying_type<sql::Recovery::Strategy>::type,
                      decltype(input)>,
-      "sql::BuiltInRecovery::Strategy's underlying type must match the input");
+      "sql::Recovery::Strategy's underlying type must match the input");
 
-  const auto strategy = static_cast<sql::BuiltInRecovery::Strategy>(input);
+  const auto strategy = static_cast<sql::Recovery::Strategy>(input);
 
   // Ensure that we remember to update the fuzzer if more strategies are added.
   switch (strategy) {
-    case sql::BuiltInRecovery::Strategy::kRecoverOrRaze:
-    case sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze:
+    case sql::Recovery::Strategy::kRecoverOrRaze:
+    case sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze:
       return strategy;
   }
   // When `input` is out of range, return a default value.
-  return sql::BuiltInRecovery::Strategy::kRecoverOrRaze;
+  return sql::Recovery::Strategy::kRecoverOrRaze;
 }
 
 std::string TestCase::DebugFormat(std::string_view s) {
@@ -326,12 +325,11 @@ std::string TestCase::DebugFormat(std::string_view s) {
   return out;
 }
 
-constexpr const char* TestCase::DebugFormat(
-    sql::BuiltInRecovery::Strategy strategy) {
+constexpr const char* TestCase::DebugFormat(sql::Recovery::Strategy strategy) {
   switch (strategy) {
-    case sql::BuiltInRecovery::Strategy::kRecoverOrRaze:
+    case sql::Recovery::Strategy::kRecoverOrRaze:
       return "kRecoverOrRaze";
-    case sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze:
+    case sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze:
       return "kRecoverWithMetaVersionOrRaze";
   }
 }

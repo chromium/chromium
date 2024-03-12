@@ -230,8 +230,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SqlRecoveryResult">
   <summary>
-    Outcome of attempting to recover a database with sql::BuiltInRecovery. See
-    sql::BuiltInRecovery::Result for descriptions.
+    Outcome of attempting to recover a database with sql::Recovery. See
+    sql::Recovery::Result for descriptions.
   </summary>
   <int value="0" label="kUnknown"/>
   <int value="1" label="kSuccess"/>

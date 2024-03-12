@@ -38,8 +38,7 @@ constexpr char kMainDatabaseName[] = "main";
 }  // namespace
 
 // static
-bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
-                                            int extended_error) {
+bool Recovery::ShouldAttemptRecovery(Database* database, int extended_error) {
   return database && database->is_open() &&
          !database->DbPath(InternalApiToken()).empty() &&
 #if BUILDFLAG(IS_FUCHSIA)
@@ -50,16 +49,16 @@ bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
 }
 
 // static
-SqliteResultCode BuiltInRecovery::RecoverDatabase(Database* database,
-                                                  Strategy strategy) {
-  auto recovery = BuiltInRecovery(database, strategy);
+SqliteResultCode Recovery::RecoverDatabase(Database* database,
+                                           Strategy strategy) {
+  auto recovery = Recovery(database, strategy);
   return recovery.RecoverAndReplaceDatabase();
 }
 
 // static
-bool BuiltInRecovery::RecoverIfPossible(Database* database,
-                                        int extended_error,
-                                        Strategy strategy) {
+bool Recovery::RecoverIfPossible(Database* database,
+                                 int extended_error,
+                                 Strategy strategy) {
   if (!ShouldAttemptRecovery(database, extended_error)) {
     return false;
   }
@@ -69,7 +68,7 @@ bool BuiltInRecovery::RecoverIfPossible(Database* database,
   // re-entry.
   database->reset_error_callback();
 
-  auto result = BuiltInRecovery::RecoverDatabase(database, strategy);
+  auto result = Recovery::RecoverDatabase(database, strategy);
   if (!IsSqliteSuccessCode(result)) {
     DLOG(ERROR) << "Database recovery failed with result code: " << result;
   }
@@ -77,7 +76,7 @@ bool BuiltInRecovery::RecoverIfPossible(Database* database,
   return true;
 }
 
-BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
+Recovery::Recovery(Database* database, Strategy strategy)
     : strategy_(strategy),
       db_(database),
       recover_db_(sql::DatabaseOptions{
@@ -107,7 +106,7 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
   db_->RollbackAllTransactions();
 }
 
-BuiltInRecovery::~BuiltInRecovery() {
+Recovery::~Recovery() {
   // Recovery result must be set before we reach this point.
   CHECK_NE(result_, Result::kUnknown);
 
@@ -143,15 +142,15 @@ BuiltInRecovery::~BuiltInRecovery() {
   sql::Database::Delete(recovery_database_path_);
 }
 
-void BuiltInRecovery::SetRecoverySucceeded() {
+void Recovery::SetRecoverySucceeded() {
   // Recovery result must only be set once.
   CHECK_EQ(result_, Result::kUnknown);
 
   result_ = Result::kSuccess;
 }
 
-void BuiltInRecovery::SetRecoveryFailed(Result failure_result,
-                                        SqliteResultCode result_code) {
+void Recovery::SetRecoveryFailed(Result failure_result,
+                                 SqliteResultCode result_code) {
   // Recovery result must only be set once.
   CHECK_EQ(result_, Result::kUnknown);
 
@@ -175,7 +174,7 @@ void BuiltInRecovery::SetRecoveryFailed(Result failure_result,
   sqlite_result_code_ = result_code;
 }
 
-SqliteResultCode BuiltInRecovery::RecoverAndReplaceDatabase() {
+SqliteResultCode Recovery::RecoverAndReplaceDatabase() {
   auto sqlite_result_code = AttemptToRecoverDatabaseToBackup();
   if (sqlite_result_code != SqliteResultCode::kOk) {
     return sqlite_result_code;
@@ -202,7 +201,7 @@ SqliteResultCode BuiltInRecovery::RecoverAndReplaceDatabase() {
   return ReplaceOriginalWithRecoveredDb();
 }
 
-SqliteResultCode BuiltInRecovery::AttemptToRecoverDatabaseToBackup() {
+SqliteResultCode Recovery::AttemptToRecoverDatabaseToBackup() {
   CHECK(db_->is_open());
   CHECK(!recover_db_.is_open());
 
@@ -274,7 +273,7 @@ SqliteResultCode BuiltInRecovery::AttemptToRecoverDatabaseToBackup() {
   return sqlite_result_code;
 }
 
-SqliteResultCode BuiltInRecovery::ReplaceOriginalWithRecoveredDb() {
+SqliteResultCode Recovery::ReplaceOriginalWithRecoveredDb() {
   CHECK(db_->is_open());
   CHECK(recover_db_.is_open());
 
@@ -342,7 +341,7 @@ SqliteResultCode BuiltInRecovery::ReplaceOriginalWithRecoveredDb() {
   return SqliteResultCode::kOk;
 }
 
-bool BuiltInRecovery::RecoveredDbHasValidMetaTable() {
+bool Recovery::RecoveredDbHasValidMetaTable() {
   CHECK(recover_db_.is_open());
 
   if (!MetaTable::DoesTableExist(&recover_db_)) {

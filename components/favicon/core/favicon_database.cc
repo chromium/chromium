@@ -195,9 +195,9 @@ void DatabaseErrorCallback(sql::Database* db,
   // see how to reach that.
 
   // Attempt to recover a corrupt database, if it is eligible to be recovered.
-  if (sql::BuiltInRecovery::RecoverIfPossible(
+  if (sql::Recovery::RecoverIfPossible(
           db, extended_error,
-          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
+          sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 

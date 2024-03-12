@@ -116,28 +116,26 @@ INSTANTIATE_TEST_SUITE_P(All, SqlRecoveryTest, testing::Bool());
 
 TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
   // Attempt to recover from corruption.
-  ASSERT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
+  ASSERT_TRUE(Recovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
 
   // Do not attempt to recover from transient errors.
-  EXPECT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_BUSY));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&db_, SQLITE_BUSY));
 
   // Do not attempt to recover null databases.
-  EXPECT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(nullptr, SQLITE_CORRUPT));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(nullptr, SQLITE_CORRUPT));
 
   // Do not attempt to recover closed databases.
   Database invalid_db;
-  EXPECT_FALSE(
-      BuiltInRecovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
 
   // Do not attempt to recover in-memory databases.
   ASSERT_TRUE(invalid_db.OpenInMemory());
-  EXPECT_FALSE(
-      BuiltInRecovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
 
   // Return true for databases which have an error callback set, even though
   // the error callback should be reset before recovery is attempted.
   db_.set_error_callback(base::DoNothing());
-  EXPECT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
+  EXPECT_TRUE(Recovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
 }
 
 TEST_P(SqlRecoveryTest, RecoverCorruptIndex) {
@@ -168,11 +166,11 @@ TEST_P(SqlRecoveryTest, RecoverCorruptIndex) {
         // Recovery::Begin() does not support a pre-existing error callback.
         db_.reset_error_callback();
 
-        EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                      &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-                  SqliteResultCode::kOk);
+        EXPECT_EQ(
+            Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
         histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
-                                             BuiltInRecovery::Result::kSuccess,
+                                             Recovery::Result::kSuccess,
                                              /*expected_bucket_count=*/1);
         histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
                                              SqliteLoggedResultCode::kNoError,
@@ -271,9 +269,9 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
         // Recovery::Begin() does not support a pre-existing error callback.
         db_.reset_error_callback();
 
-        EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                      &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-                  SqliteResultCode::kOk);
+        EXPECT_EQ(
+            Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
       }));
 
   // SUM(unindexed) heavily nudges SQLite to use the table instead of the index.
@@ -305,11 +303,11 @@ TEST_P(SqlRecoveryTest, Meta) {
   }
 
   // Test expected case where everything works.
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(
+                &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
             SqliteResultCode::kOk);
   histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
-                                       BuiltInRecovery::Result::kSuccess,
+                                       Recovery::Result::kSuccess,
                                        /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
                                        SqliteLoggedResultCode::kNoError,
@@ -322,12 +320,12 @@ TEST_P(SqlRecoveryTest, Meta) {
   // Test version row missing.
   EXPECT_TRUE(db_.Execute("DELETE FROM meta WHERE key = 'version'"));
 
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(
+                &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
             SqliteResultCode::kError);
   histogram_tester_.ExpectBucketCount(
       kRecoveryResultHistogramName,
-      BuiltInRecovery::Result::kFailedMetaTableVersionWasInvalid,
+      Recovery::Result::kFailedMetaTableVersionWasInvalid,
       /*expected_count=*/1);
   histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
                                        SqliteLoggedResultCode::kNoError,
@@ -337,12 +335,12 @@ TEST_P(SqlRecoveryTest, Meta) {
   // Test meta table missing.
   ASSERT_FALSE(db_.DoesTableExist("meta"));
 
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(
+                &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
             SqliteResultCode::kError);
   histogram_tester_.ExpectBucketCount(
       kRecoveryResultHistogramName,
-      BuiltInRecovery::Result::kFailedMetaTableDoesNotExist,
+      Recovery::Result::kFailedMetaTableDoesNotExist,
       /*expected_count=*/1);
   histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
                                        SqliteLoggedResultCode::kNoError,
@@ -363,8 +361,7 @@ TEST_P(SqlRecoveryTest, AutoRecoverTable) {
   static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
   const std::string orig_data(ExecuteWithResults(&db_, kXSql, "|", "\n"));
 
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
             SqliteResultCode::kOk);
 
   // Since the database was not corrupt, the entire schema and all
@@ -374,8 +371,7 @@ TEST_P(SqlRecoveryTest, AutoRecoverTable) {
   ASSERT_EQ(orig_data, ExecuteWithResults(&db_, kXSql, "|", "\n"));
 
   // Recovery succeeds silently, since there's nothing to do.
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
             SqliteResultCode::kOk);
 }
 
@@ -405,8 +401,7 @@ TEST_P(SqlRecoveryTest, AutoRecoverTableWithDefault) {
 
   std::string final_schema(orig_schema);
   std::string final_data(orig_data);
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
             SqliteResultCode::kOk);
 
   // Since the database was not corrupt, the entire schema and all
@@ -431,8 +426,7 @@ TEST_P(SqlRecoveryTest, AutoRecoverTableWithRowid) {
   static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
   const std::string orig_data(ExecuteWithResults(&db_, kXSql, "|", "\n"));
 
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
             SqliteResultCode::kOk);
 
   // Since the database was not corrupt, the entire schema and all
@@ -516,9 +510,9 @@ void TestRecoverDatabase(Database& db,
 
 TEST_P(SqlRecoveryTest, RecoverDatabase) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+        SqliteResultCode::kOk);
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
@@ -527,10 +521,9 @@ TEST_P(SqlRecoveryTest, RecoverDatabase) {
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseMeta) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_EQ(
-        BuiltInRecovery::RecoverDatabase(
-            &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
-        SqliteResultCode::kOk);
+    EXPECT_EQ(Recovery::RecoverDatabase(
+                  &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
+              SqliteResultCode::kOk);
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
@@ -539,8 +532,8 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseMeta) {
 
 TEST_P(SqlRecoveryTest, RecoverIfPossible) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
-        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze));
+    EXPECT_TRUE(Recovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, Recovery::Strategy::kRecoverOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
@@ -549,9 +542,9 @@ TEST_P(SqlRecoveryTest, RecoverIfPossible) {
 
 TEST_P(SqlRecoveryTest, RecoverIfPossibleMeta) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
+    EXPECT_TRUE(Recovery::RecoverIfPossible(
         &db_, SQLITE_CORRUPT,
-        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze));
+        Recovery::Strategy::kRecoverWithMetaVersionOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
@@ -562,9 +555,9 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithoutErrorCallback) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
     // `RecoverIfPossible()` should not set an error callback.
     EXPECT_FALSE(db_.has_error_callback());
-    bool recovery_was_attempted = BuiltInRecovery::RecoverIfPossible(
+    bool recovery_was_attempted = Recovery::RecoverIfPossible(
         &db_, SQLITE_CORRUPT,
-        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+        Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
     EXPECT_TRUE(recovery_was_attempted);
     EXPECT_FALSE(db_.has_error_callback());
   });
@@ -578,9 +571,9 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithErrorCallback) {
     db_.set_error_callback(base::DoNothing());
     // The error callback should be reset during `RecoverIfPossible()` if
     // recovery was attempted.
-    bool recovery_was_attempted = BuiltInRecovery::RecoverIfPossible(
+    bool recovery_was_attempted = Recovery::RecoverIfPossible(
         &db_, SQLITE_CORRUPT,
-        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+        Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
     EXPECT_TRUE(recovery_was_attempted);
     EXPECT_NE(db_.has_error_callback(), recovery_was_attempted);
   });
@@ -594,8 +587,8 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithClosedDatabase) {
     // Recovery should not be attempted on a closed database.
     db_.Close();
 
-    EXPECT_FALSE(BuiltInRecovery::RecoverIfPossible(
-        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze));
+    EXPECT_FALSE(Recovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, Recovery::Strategy::kRecoverOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
@@ -604,8 +597,8 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithClosedDatabase) {
 
 TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
-        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze));
+    EXPECT_TRUE(Recovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, Recovery::Strategy::kRecoverOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
@@ -613,7 +606,7 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
 
   // Log to the overall histograms.
   histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
-                                       BuiltInRecovery::Result::kSuccess,
+                                       Recovery::Result::kSuccess,
                                        /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
                                        SqliteLoggedResultCode::kNoError,
@@ -621,7 +614,7 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
   // And the histograms for this specific feature.
   histogram_tester_.ExpectUniqueSample(
       base::StrCat({kRecoveryResultHistogramName, ".MyFeatureDatabase"}),
-      BuiltInRecovery::Result::kSuccess,
+      Recovery::Result::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(
       base::StrCat({kRecoveryResultCodeHistogramName, ".MyFeatureDatabase"}),
@@ -665,8 +658,7 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
   // Database handle is valid before recovery, poisoned after.
   static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
   EXPECT_TRUE(db.IsSQLValid(kTrivialSql));
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db, BuiltInRecovery::Strategy::kRecoverOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(&db, Recovery::Strategy::kRecoverOrRaze),
             SqliteResultCode::kOk);
   EXPECT_FALSE(db.IsSQLValid(kTrivialSql));
 
@@ -694,13 +686,12 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseDelete) {
     ASSERT_FALSE(Reopen());
 
     // This should "recover" the database by making it valid, but empty.
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kNotADatabase);
-    histogram_tester_.ExpectUniqueSample(
-        kRecoveryResultHistogramName,
-        BuiltInRecovery::Result::kFailedRecoveryRun,
-        /*expected_bucket_count=*/1);
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+        SqliteResultCode::kNotADatabase);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                         Recovery::Result::kFailedRecoveryRun,
+                                         /*expected_bucket_count=*/1);
     histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
                                          SqliteLoggedResultCode::kNotADatabase,
                                          /*expected_bucket_count=*/1);
@@ -745,8 +736,7 @@ TEST_P(SqlRecoveryTest, BeginRecoverDatabase) {
   }
 
   // Run recovery code, then commit.  The index is recovered.
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
             SqliteResultCode::kOk);
   db_.Close();
   ASSERT_TRUE(Reopen());
@@ -771,13 +761,12 @@ TEST_P(SqlRecoveryTest, AttachFailure) {
     ASSERT_FALSE(Reopen());
 
     // Begin() should fail.
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kNotADatabase);
-    histogram_tester_.ExpectUniqueSample(
-        kRecoveryResultHistogramName,
-        BuiltInRecovery::Result::kFailedRecoveryRun,
-        /*expected_bucket_count=*/1);
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+        SqliteResultCode::kNotADatabase);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                         Recovery::Result::kFailedRecoveryRun,
+                                         /*expected_bucket_count=*/1);
     histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
                                          SqliteLoggedResultCode::kNotADatabase,
                                          /*expected_bucket_count=*/1);
@@ -816,8 +805,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   ASSERT_TRUE(recover_db.Open(db_path));
   // Recovery will use the page size set in the database object, which may not
   // match the file's page size.
-  EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                &recover_db, BuiltInRecovery::Strategy::kRecoverOrRaze),
+  EXPECT_EQ(Recovery::RecoverDatabase(&recover_db,
+                                      Recovery::Strategy::kRecoverOrRaze),
             SqliteResultCode::kOk);
 
   // Recovery poisoned the handle, must re-open.
@@ -864,15 +853,15 @@ TEST_P(SqlRecoveryTest, PageSize) {
 TEST_P(SqlRecoveryTest, CannotRecoverClosedDb) {
   db_.Close();
 
-  EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
-                         &db_, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         &db_, Recovery::Strategy::kRecoverOrRaze));
 }
 
 TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
   db_.set_error_callback(base::DoNothing());
 
-  EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
-                         &db_, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         &db_, Recovery::Strategy::kRecoverOrRaze));
 }
 
 // TODO(https://crbug.com/1255316): Ideally this would be a
@@ -880,8 +869,8 @@ TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
 // that it is passed a non-null database pointer and will instead likely result
 // in unexpected behavior or crashes.
 TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
-  EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
-                         nullptr, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         nullptr, Recovery::Strategy::kRecoverOrRaze));
 }
 
 // TODO(https://crbug.com/1255316): Ideally this would be a
@@ -892,9 +881,8 @@ TEST_P(SqlRecoveryTest, CannotRecoverInMemoryDb) {
   Database in_memory_db;
   ASSERT_TRUE(in_memory_db.OpenInMemory());
 
-  EXPECT_CHECK_DEATH(
-      std::ignore = BuiltInRecovery::RecoverDatabase(
-          &in_memory_db, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         &in_memory_db, Recovery::Strategy::kRecoverOrRaze));
 }
 
 // This test mimics the case where a database that was using WAL mode crashed,
@@ -925,10 +913,10 @@ TEST_P(SqlRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
   ASSERT_TRUE(non_wal_db.Open(wal_db_path));
 
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &non_wal_db,
-                  BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
-              SqliteResultCode::kOk);
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(
+            &non_wal_db, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
+        SqliteResultCode::kOk);
   });
 
   TestRecoverDatabase(non_wal_db, wal_db_path, /*with_meta=*/true,

@@ -331,7 +331,7 @@ bool Database::Open(const base::FilePath& path) {
   DCHECK_NE(path_string, kSqliteOpenInMemoryPath)
       << "Path conflicts with SQLite magic identifier";
 
-  if (OpenInternal(path_string, OpenMode::kNone)) {
+  if (OpenInternal(path_string)) {
     return true;
   }
   // OpenInternal() may have run the error callback before returning false. If
@@ -339,7 +339,7 @@ bool Database::Open(const base::FilePath& path) {
   // razed, so a second attempt may succeed.
   if (poisoned_) {
     Close();
-    return OpenInternal(path_string, OpenMode::kNone);
+    return OpenInternal(path_string);
   }
   // Otherwise, do not attempt to reopen.
   return false;
@@ -351,19 +351,12 @@ bool Database::OpenInMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   in_memory_ = true;
-  return OpenInternal(kSqliteOpenInMemoryPath, OpenMode::kInMemory);
+  return OpenInternal(kSqliteOpenInMemoryPath);
 }
 
 void Database::DetachFromSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
-bool Database::OpenTemporary(base::PassKey<Recovery>) {
-  TRACE_EVENT0("sql", "Database::OpenTemporary");
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return OpenInternal(std::string(), OpenMode::kTemporary);
 }
 
 void Database::CloseInternal(bool forced) {
@@ -1796,21 +1789,9 @@ const char* Database::GetErrorMessage() const {
   return sqlite3_errmsg(db_);
 }
 
-bool Database::OpenInternal(const std::string& db_file_path,
-                            Database::OpenMode mode) {
+bool Database::OpenInternal(const std::string& db_file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("sql", "Database::OpenInternal", "path", db_file_path);
-
-  DCHECK(mode != OpenMode::kTemporary || db_file_path.empty())
-      << "Temporary databases should be open with an empty file path";
-
-  if (mode == OpenMode::kInMemory) {
-    DCHECK_EQ(db_file_path, kSqliteOpenInMemoryPath)
-        << "In-memory databases should be open with the magic :memory: path";
-  } else {
-    DCHECK_NE(db_file_path, kSqliteOpenInMemoryPath)
-        << "Database file path conflicts with SQLite magic identifier";
-  }
 
   if (is_open()) {
     DLOG(FATAL) << "sql::Database is already open.";
@@ -1843,7 +1824,8 @@ bool Database::OpenInternal(const std::string& db_file_path,
   std::string uri_file_path = db_file_path;
   if (options_.exclusive_database_file_lock) {
 #if BUILDFLAG(IS_WIN)
-    if (mode == OpenMode::kNone) {
+    const bool in_memory = db_file_path == kSqliteOpenInMemoryPath;
+    if (!in_memory) {
       // Do not allow query injection.
       if (base::Contains(db_file_path, '?')) {
         return false;

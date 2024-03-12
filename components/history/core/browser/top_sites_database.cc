@@ -113,9 +113,9 @@ void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  if (sql::BuiltInRecovery::RecoverIfPossible(
+  if (sql::Recovery::RecoverIfPossible(
           db_.get(), extended_error,
-          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
+          sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 

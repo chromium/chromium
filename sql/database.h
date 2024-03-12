@@ -53,7 +53,6 @@ class ChromeSqlDiagnostics;
 namespace sql {
 
 class DatabaseMemoryDumpProvider;
-class Recovery;
 class Statement;
 
 namespace test {
@@ -110,8 +109,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // If true, enables SQLite's Write-Ahead Logging (WAL).
   //
   // WAL integration is under development, and should not be used in shipping
-  // Chrome features yet. In particular, our custom database recovery code does
-  // not support the WAL log file.
+  // Chrome features yet.
   //
   // WAL mode is currently not fully supported on FuchsiaOS. It will only be
   // turned on if the database is also using exclusive locking mode.
@@ -392,14 +390,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // The memory associated with the database will be released when the database
   // is closed.
   [[nodiscard]] bool OpenInMemory();
-
-  // Alternative to Open() that creates a temporary on-disk database.
-  //
-  // Returns true in case of success, false in case of failure.
-  //
-  // The files associated with the temporary database will be deleted when the
-  // database is closed.
-  [[nodiscard]] bool OpenTemporary(base::PassKey<Recovery>);
 
   // Returns true if the database has been successfully opened.
   bool is_open() const;
@@ -739,24 +729,12 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
 
-  // Enables a special behavior for OpenInternal().
-  enum class OpenMode {
-    // No special behavior.
-    kNone,
-
-    // Open an in-memory database. Used by OpenInMemory().
-    kInMemory,
-
-    // Open a temporary database. Used by OpenTemporary().
-    kTemporary,
-  };
-
-  // Implements Open(), OpenInMemory(), and OpenTemporary().
+  // Implements Open(), OpenInMemory().
   //
-  // `db_file_path` is a UTF-8 path to the file storing the database pages. The
-  // path must be empty if `mode` is kTemporary. The path must be the SQLite
-  // magic memory path string if `mode` is kMemory.
-  bool OpenInternal(const std::string& file_name, OpenMode mode);
+  // `db_file_path` is a UTF-8 path to the file storing the database pages. If
+  // `file_name` is the SQLite magic memory path :memory:, the database will be
+  // opened in-memory.
+  bool OpenInternal(const std::string& file_name);
 
   // Configures the underlying sqlite3* object via sqlite3_db_config().
   //
@@ -955,9 +933,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns a SQLite VFS interface pointer to the file storing database pages.
   //
   // Returns null if the database is not backed by a VFS file. This is always
-  // the case for in-memory databases. Temporary databases (only used by sq
-  // ::Recovery) start without a backing VFS file, and only get a file when they
-  // outgrow their page cache.
+  // the case for in-memory databases.
   //
   // This method must only be called while the database is successfully opened.
   sqlite3_file* GetSqliteVfsFile();

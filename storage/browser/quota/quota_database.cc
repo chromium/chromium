@@ -807,9 +807,9 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
 bool QuotaDatabase::RecoverOrRaze(int error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::ignore = sql::BuiltInRecovery::RecoverIfPossible(
+  std::ignore = sql::Recovery::RecoverIfPossible(
       db_.get(), error_code,
-      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+      sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
 
   db_.reset();
   EnsureOpened();
