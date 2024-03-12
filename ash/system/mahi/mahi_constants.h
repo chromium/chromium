@@ -20,6 +20,7 @@ enum ViewId {
   kLearnMoreLink,
   kRefreshView,
   kMahiPanelView,
+  kBackButton,
 };
 
 // The size of the icon that appears in the panel's source row.

@@ -255,9 +255,6 @@ END_METADATA
 
 }  // namespace
 
-BEGIN_METADATA(MahiPanelView)
-END_METADATA
-
 MahiPanelView::MahiPanelView() {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetMainAxisAlignment(views::LayoutAlignment::kStart);
@@ -284,45 +281,70 @@ MahiPanelView::MahiPanelView() {
       views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
-  // Views constructions.
-  auto header_row = std::make_unique<views::FlexLayoutView>();
-  header_row->SetOrientation(views::LayoutOrientation::kHorizontal);
+  // Construction of the header row, which includes a back button (visible only
+  // in the Q&A view), the panel title, an experiment badge and a close button.
+  auto* header_row = AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .SetCollapseMargins(true)
+          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
+            layout->SetDefault(views::kMarginsKey,
+                               gfx::Insets::VH(0, kHeaderRowSpacing));
+          }))
+          .Build());
 
-  auto header_left_container = std::make_unique<views::FlexLayoutView>();
-  header_left_container->SetOrientation(views::LayoutOrientation::kHorizontal);
-  header_left_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  header_left_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  header_left_container->SetDefault(
-      views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kHeaderRowSpacing));
-  header_left_container->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kUnbounded)));
+  header_row->AddChildView(
+      IconButton::Builder()
+          .SetViewId(mahi_constants::ViewId::kBackButton)
+          .SetType(IconButton::Type::kSmallFloating)
+          .SetVisible(false)  // Visible when Q&A View is showing.
+          .SetVectorIcon(&kEcheArrowBackIcon)
+          // TODO(b/319264190): Replace string.
+          .SetAccessibleName(u"Back to summary")
+          .Build());
 
-  // TODO(b/319264190): Replace the string used here with the correct string ID.
-  auto header_label = std::make_unique<views::Label>(u"Mahi Panel");
-  header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                        *header_label);
-  header_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  header_left_container->AddChildView(std::move(header_label));
+  header_row->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .SetCollapseMargins(true)
+          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
+            layout->SetDefault(views::kMarginsKey,
+                               gfx::Insets::VH(0, kHeaderRowSpacing));
+            layout->SetProperty(
+                views::kFlexBehaviorKey,
+                views::FlexSpecification(views::FlexSpecification(
+                    views::MinimumFlexSizeRule::kPreferred,
+                    views::MaximumFlexSizeRule::kUnbounded)));
+          }))
+          .AddChildren(
+              views::Builder<views::Label>()
+                  // TODO(b/319264190): Replace the string used here with the
+                  // correct string ID.
+                  .SetText(u"Mahi Panel")
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetFontList(
+                      TypographyProvider::Get()->ResolveTypographyToken(
+                          TypographyToken::kCrosTitle1))
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface),
+              views::Builder<views::View>(
+                  std::make_unique<chromeos::mahi::ExperimentBadge>()))
+          .Build());
 
-  header_left_container->AddChildView(
-      std::make_unique<chromeos::mahi::ExperimentBadge>());
-
-  header_row->AddChildView(std::move(header_left_container));
-
-  // TODO(b/319264190): Replace the string IDs used here with the correct IDs.
-  auto close_button = std::make_unique<IconButton>(
-      base::BindRepeating(&MahiPanelView::OnCloseButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      IconButton::Type::kMedium, &kMediumOrLargeCloseButtonIcon,
-      IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN);
-  close_button->SetID(mahi_constants::ViewId::kCloseButton);
-  header_row->AddChildView(std::move(close_button));
-
-  AddChildView(std::move(header_row));
+  header_row->AddChildView(
+      IconButton::Builder()
+          .SetViewId(mahi_constants::ViewId::kCloseButton)
+          .SetType(IconButton::Type::kMedium)
+          .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
+          // TODO(b/319264190): Replace the string used here with the
+          // correct string ID.
+          .SetAccessibleName(u"Close button")
+          .SetCallback(base::BindRepeating(&MahiPanelView::OnCloseButtonPressed,
+                                           weak_ptr_factory_.GetWeakPtr()))
+          .Build());
 
   auto* const mahi_manager = chromeos::MahiManager::Get();
 
@@ -401,5 +423,8 @@ void MahiPanelView::OnLearnMoreLinkClicked() {
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
+
+BEGIN_METADATA(MahiPanelView)
+END_METADATA
 
 }  // namespace ash
