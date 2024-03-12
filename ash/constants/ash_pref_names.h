@@ -198,6 +198,12 @@ inline constexpr char kMultitaskMenuNudgeClamshellLastShown[] =
 inline constexpr char kMultitaskMenuNudgeTabletLastShown[] =
     "cros.wm_nudge.tablet_multitask_nudge_last_shown";
 
+// The number of times we have shown the pine education nudge.
+inline constexpr char kPineNudgeShownCount[] = "ash.wm.pine_nudge_shown_count";
+
+// The last time we showed the pine education nudge.
+inline constexpr char kPineNudgeLastShown[] = "ash.wm.pine_nudge_last_shown";
+
 // The following SAML-related prefs are not settings that the domain admin can
 // set, but information that the SAML Identity Provider can send us:
 

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -17,6 +18,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_types.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
@@ -87,10 +89,16 @@ class PineTest : public AshTestBase {
     return data;
   }
 
+  static base::Time FakeTimeNow() { return fake_time_; }
+  static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
+
  private:
   InProcessDataDecoder decoder_;
   base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
+  static base::Time fake_time_;
 };
+
+base::Time PineTest::fake_time_;
 
 TEST_F(PineTest, Show) {
   Shell::Get()
@@ -232,6 +240,53 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
   // The image inside `PineContentsData` should be null when the landscape image
   // is going to be shown inside a display in the portrait orientation.
   EXPECT_TRUE(pine_contents_data->image.isNull());
+}
+
+// Tests that based on preferences (shown count, and last shown time), the nudge
+// may or may not be shown.
+TEST_F(PineTest, NudgePreferences) {
+  SetFakeNow(base::Time::Now());
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &PineTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  auto* pine_controller = Shell::Get()->pine_controller();
+  auto* anchored_nudge_manager = Shell::Get()->anchored_nudge_manager();
+
+  auto test_start_and_end_overview = [&pine_controller,
+                                      &anchored_nudge_manager]() {
+    // Reset the nudge if it's currently showing.
+    anchored_nudge_manager->Cancel(kEducationNudgeId);
+    pine_controller->MaybeStartPineOverviewSessionDevAccelerator();
+    WaitForOverviewEntered();
+    ToggleOverview();
+  };
+
+  // Start pine session, then end overview. Test we show the nudge.
+  test_start_and_end_overview();
+  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+
+  // Start and end overview. This does not show the nudge as 24 hours have not
+  // elapsed since the nudge was shown.
+  test_start_and_end_overview();
+  EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+
+  // Start and end overview after waiting 25 hours. The nudge should now show
+  // for the second time.
+  SetFakeNow(FakeTimeNow() + base::Hours(25));
+  test_start_and_end_overview();
+  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+
+  // Show the nudge for a third time. This will be the last time it is shown.
+  SetFakeNow(FakeTimeNow() + base::Hours(25));
+  test_start_and_end_overview();
+  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+
+  // Advance the clock and attempt to show the nudge for a fourth time. Verify
+  // that it will not show.
+  SetFakeNow(FakeTimeNow() + base::Hours(25));
+  test_start_and_end_overview();
+  EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
 }
 
 }  // namespace ash

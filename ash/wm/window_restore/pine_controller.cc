@@ -7,8 +7,11 @@
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/display/screen_ash.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -38,6 +41,11 @@ namespace {
 // TODO(sophiewen): Remove these when we get assets from UX.
 constexpr int kOnboardingMessageWidth = 500;
 constexpr int kOnboardingMessageHeight = 200;
+
+// The nudge will not be shown if it already been shown 3 times, or if 24 hours
+// have not yet passed since it was last shown.
+constexpr int kNudgeMaxShownCount = 3;
+constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 // Records the UMA metrics for the pine screenshot taken on the last shutdown.
 // Resets the prefs used to store the metrics across shutdowns.
@@ -92,9 +100,13 @@ bool ShouldShowPineOnboarding() {
 
 }  // namespace
 
-PineController::PineController() = default;
+PineController::PineController() {
+  Shell::Get()->overview_controller()->AddObserver(this);
+}
 
-PineController::~PineController() = default;
+PineController::~PineController() {
+  Shell::Get()->overview_controller()->RemoveObserver(this);
+}
 
 void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
   if (onboarding_widget_) {
@@ -217,6 +229,40 @@ void PineController::MaybeEndPineOverviewSession() {
   pine_contents_data_.reset();
   OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
                                          OverviewEnterExitType::kPine);
+}
+
+void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
+  if (canceled || !features::IsForestFeatureEnabled()) {
+    return;
+  }
+
+  // TODO(sophiewen): Check if pine was in session?
+
+  PrefService* prefs = GetActivePrefService();
+  if (!prefs) {
+    return;
+  }
+
+  // Nudge has already been shown three times. No need to educate anymore.
+  const int shown_count = prefs->GetInteger(prefs::kPineNudgeShownCount);
+  if (shown_count >= kNudgeMaxShownCount) {
+    return;
+  }
+
+  // Nudge has been shown within the last 24 hours already.
+  base::Time now = base::Time::Now();
+  if ((now - prefs->GetTime(prefs::kPineNudgeLastShown)) <
+      kNudgeTimeBetweenShown) {
+    return;
+  }
+
+  AnchoredNudgeData nudge_data(
+      kEducationNudgeId, NudgeCatalogName::kPineEducationNudge,
+      l10n_util::GetStringUTF16(IDS_ASH_PINE_EDUCATION_NUDGE));
+  AnchoredNudgeManager::Get()->Show(nudge_data);
+
+  prefs->SetInteger(prefs::kPineNudgeShownCount, shown_count + 1);
+  prefs->SetTime(prefs::kPineNudgeLastShown, now);
 }
 
 void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {

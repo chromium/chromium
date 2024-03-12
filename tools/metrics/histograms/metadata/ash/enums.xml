@@ -1361,6 +1361,7 @@ ash/ambient/util/time_of_day_utils.h -->
       label="Website Telemetry Reporting Nudge (deprecated 01/2024)"/>
   <int value="27" label="Standalone Window Migration Ux"/>
   <int value="28" label="Focus Mode Ending Moment Nudge"/>
+  <int value="29" label="Pine Education Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">

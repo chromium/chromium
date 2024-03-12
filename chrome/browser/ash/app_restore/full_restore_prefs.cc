@@ -26,6 +26,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   if (features::IsForestFeatureEnabled()) {
     registry->RegisterBooleanPref(prefs::kShouldShowPineOnboarding, true);
+    registry->RegisterIntegerPref(prefs::kPineNudgeShownCount, 0);
+    registry->RegisterTimePref(prefs::kPineNudgeLastShown, base::Time());
   }
 }
 

@@ -190,6 +190,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackPageUp, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackPageDown, 0);
     registry->RegisterBooleanPref(prefs::kShouldShowPineOnboarding, false);
+    registry->RegisterIntegerPref(prefs::kPineNudgeShownCount, 0);
+    registry->RegisterTimePref(prefs::kPineNudgeLastShown, base::Time());
   }
 }
 

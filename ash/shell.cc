@@ -928,6 +928,9 @@ Shell::~Shell() {
   // Relies on `overview_controller`.
   post_login_glanceables_metrics_reporter_.reset();
 
+  // Has to happen before `~OverviewController` since it's an observer.
+  pine_controller_.reset();
+
   // Has to happen before `~MruWindowTracker` and after
   // `~GameDashboardController`.
   overview_controller_.reset();
@@ -986,7 +989,6 @@ Shell::~Shell() {
   backlights_forced_off_setter_.reset();
 
   float_controller_.reset();
-  pine_controller_.reset();
   pip_controller_.reset();
   screen_pinning_controller_.reset();
 

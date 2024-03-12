@@ -232,7 +232,8 @@ enum class NudgeCatalogName {
   // [Deprecated] kWebsiteTelemetryReportingNudge = 26,
   kStandaloneWindowMigrationUx = 27,
   kFocusModeEndingMomentNudge = 28,
-  kMaxValue = kFocusModeEndingMomentNudge
+  kPineEducationNudge = 29,
+  kMaxValue = kPineEducationNudge
 };
 
 // A living catalog that registers toasts.
