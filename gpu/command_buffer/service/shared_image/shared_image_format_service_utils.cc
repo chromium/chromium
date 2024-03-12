@@ -627,21 +627,15 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
     skgpu::graphite::DawnTextureInfo dawn_texture_info;
-    wgpu::TextureFormat wgpu_view_format =
+    wgpu::TextureFormat wgpu_format =
         gpu::ToDawnTextureViewFormat(format, plane_index);
-    if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
+    if (wgpu_format == wgpu::TextureFormat::Undefined) {
       return dawn_texture_info;
     }
     dawn_texture_info.fSampleCount = 1;
-    // For multiplanar shared image, we don't know the real texture format until
-    // the promise image is fulfilled, so set the fFormat to Undefined for now.
-    dawn_texture_info.fFormat = format.is_multi_plane()
-                                    ? wgpu::TextureFormat::Undefined
-                                    : wgpu_view_format;
-    dawn_texture_info.fViewFormat = wgpu_view_format;
+    dawn_texture_info.fFormat = wgpu_format;
     // The aspect is always defaulted to all as multiplanar copies are not
     // needed by the display compositor.
-    // TODO(324422644): set fAspect to Undefined for multiplanar format.
     dawn_texture_info.fAspect = wgpu::TextureAspect::All;
     // For promise textures, just need TextureBinding usage for sampling
     // except for dcomp scanout which needs rendering and copy usages as well.
@@ -665,15 +659,13 @@ skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     bool supports_multiplanar_rendering,
     bool supports_multiplanar_copy) {
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
-  wgpu::TextureFormat wgpu_view_format =
+  wgpu::TextureFormat wgpu_format =
       ToDawnTextureViewFormat(format, plane_index);
-  if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
+  if (wgpu_format == wgpu::TextureFormat::Undefined) {
     return dawn_texture_info;
   }
   dawn_texture_info.fSampleCount = 1;
-  dawn_texture_info.fFormat =
-      is_yuv_plane ? ToDawnFormat(format) : wgpu_view_format;
-  dawn_texture_info.fViewFormat = wgpu_view_format;
+  dawn_texture_info.fFormat = wgpu_format;
   dawn_texture_info.fAspect = ToDawnTextureAspect(is_yuv_plane, plane_index);
   dawn_texture_info.fUsage = SupportedDawnTextureUsage(
       is_yuv_plane, scanout_dcomp_surface, supports_multiplanar_rendering,
