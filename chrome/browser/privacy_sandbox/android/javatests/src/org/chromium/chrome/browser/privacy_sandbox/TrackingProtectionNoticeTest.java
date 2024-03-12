@@ -21,6 +21,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController.NOTICE_CONTROLLER_EVENT_HISTOGRAM;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.os.Build;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.SmallTest;
 
@@ -40,6 +42,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
@@ -298,6 +301,9 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     @ParameterAnnotations.UseMethodParameter(TPNoticeTestParams.class)
+    // TODO(crbug.com/40234615): Update Espresso to latest version. SwipeUp doesn't work with the
+    // current Espresso version and newest API levels.
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R)
     public void testNoticeDismissedByUser(@NoticeType int noticeType) {
         mFakeTrackingProtectionBridge.setRequiredNotice(noticeType);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
