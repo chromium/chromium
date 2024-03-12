@@ -1141,6 +1141,7 @@ if (use_blink) {
 
   test("components_perftests") {
     sources = [
+      "attribution_reporting/privacy_math_perftest.cc",
       "discardable_memory/common/discardable_shared_memory_heap_perftest.cc",
       "omnibox/browser/history_quick_provider_performance_unittest.cc",
       "subresource_filter/core/common/perftests/indexed_ruleset_perftest.cc",
@@ -1150,6 +1151,7 @@ if (use_blink) {
 
     deps = [
       "//base",
+      "//components/attribution_reporting",
       "//components/bookmarks/test",
       "//components/discardable_memory/common",
       "//components/history/core/test",

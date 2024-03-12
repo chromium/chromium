@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
@@ -43,6 +44,43 @@ FiltersDisjunction FiltersForSourceType(
           },
       },
       lookback_window)};
+}
+
+TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
+                                 bool collapse_into_single_spec) {
+  attribution_reporting::TriggerSpecs::TriggerDataIndices indices;
+  std::vector<attribution_reporting::TriggerSpec> raw_specs;
+
+  bool supportable_by_single_spec = base::ranges::all_of(
+      windows_per_type, [&](int w) { return w == windows_per_type[0]; });
+
+  if (collapse_into_single_spec && supportable_by_single_spec) {
+    std::vector<base::TimeDelta> deltas;
+    deltas.reserve(windows_per_type[0]);
+    for (int i = 0; i < windows_per_type[0]; i++) {
+      deltas.emplace_back(base::Days(1) + base::Days(i));
+    }
+    for (int i = 0; i < static_cast<int>(windows_per_type.size()); ++i) {
+      indices[i] = 0;
+    }
+    raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
+        base::Days(0), std::move(deltas)));
+  } else {
+    for (int index = 0; int windows : windows_per_type) {
+      std::vector<base::TimeDelta> deltas;
+      deltas.reserve(windows_per_type[0]);
+      for (int i = 0; i < windows; i++) {
+        deltas.emplace_back(base::Days(1) + base::Days(i));
+      }
+      raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
+          base::Days(0), std::move(deltas)));
+      indices[index] = index;
+      index++;
+    }
+  }
+
+  return *attribution_reporting::TriggerSpecs::Create(std::move(indices),
+                                                      std::move(raw_specs));
 }
 
 std::ostream& operator<<(std::ostream& out,

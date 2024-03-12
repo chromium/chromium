@@ -13,12 +13,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -30,42 +30,6 @@ using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceType;
-
-TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
-                                 bool collapse_into_single_spec) {
-  TriggerSpecs::TriggerDataIndices indices;
-  std::vector<TriggerSpec> raw_specs;
-
-  bool supportable_by_single_spec = base::ranges::all_of(
-      windows_per_type, [&](int w) { return w == windows_per_type[0]; });
-
-  if (collapse_into_single_spec && supportable_by_single_spec) {
-    std::vector<base::TimeDelta> deltas;
-    deltas.reserve(windows_per_type[0]);
-    for (int i = 0; i < windows_per_type[0]; i++) {
-      deltas.emplace_back(base::Days(1) + base::Days(i));
-    }
-    for (int i = 0; i < static_cast<int>(windows_per_type.size()); ++i) {
-      indices[i] = 0;
-    }
-    raw_specs.emplace_back(
-        *EventReportWindows::Create(base::Days(0), std::move(deltas)));
-  } else {
-    for (int index = 0; int windows : windows_per_type) {
-      std::vector<base::TimeDelta> deltas;
-      deltas.reserve(windows_per_type[0]);
-      for (int i = 0; i < windows; i++) {
-        deltas.emplace_back(base::Days(1) + base::Days(i));
-      }
-      raw_specs.emplace_back(
-          *EventReportWindows::Create(base::Days(0), std::move(deltas)));
-      indices[index] = index;
-      index++;
-    }
-  }
-
-  return *TriggerSpecs::Create(std::move(indices), std::move(raw_specs));
-}
 
 TEST(PrivacyMathTest, BinomialCoefficient) {
   // Test cases generated via a python program using scipy.special.comb.
