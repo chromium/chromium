@@ -232,6 +232,43 @@ TEST_F(GLTextureImageBackingFactoryTest,
   backing_factory()->EnableSupportForAllMetalUsagesForTesting(true);
 }
 
+// This test verifies that GLTextureImageBackingFactory using ANGLE-Metal allows
+// creation of an I420 SI with usages that together specify that it will be used
+// conceptually only for raster over GLES2. Regression test for
+// crbug.com/328472684.
+TEST_F(GLTextureImageBackingFactoryTest,
+       I420SIUsedOnlyForRasterOverGLESAllowedWithANGLEMetal) {
+#if BUILDFLAG(IS_ANDROID)
+  // NOTE: This test fails with the validating command decoder (used only on
+  // Android), for which multiplanar formats are not supported. Note that
+  // Android always uses OOP-C and thus does not encounter the production use
+  // case for which this regression test exists (2-copy upload of pure SW video
+  // frames to WebGL with non-OOP-C).
+  if (!use_passthrough()) {
+    GTEST_SKIP();
+  }
+#endif
+  auto format = viz::MultiPlaneFormat::kI420;
+  gfx::Size size(256, 256);
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY;
+
+  backing_factory()->ForceSetUsingANGLEMetalForTesting(true);
+  backing_factory()->EnableSupportForAllMetalUsagesForTesting(false);
+
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size,
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL, {});
+  EXPECT_TRUE(supported);
+
+  backing_factory()->ForceSetUsingANGLEMetalForTesting(false);
+  backing_factory()->EnableSupportForAllMetalUsagesForTesting(true);
+}
+
 // Tests that GLTextureImageBackingFactory will not create SharedImages with
 // Skia usages when Skia is using Graphite (as in that case Skia is not
 // necessarily using GL).
@@ -271,6 +308,38 @@ TEST_F(GLTextureImageBackingFactoryTest,
         {});
     EXPECT_TRUE(supported) << raster_usage;
   }
+}
+
+// This test verifies that GLTextureImageBackingFactory using Graphite allows
+// creation of an I420 SI with usages that together specify that it will be used
+// conceptually only for raster over GLES2. Regression test for
+// crbug.com/328472684.
+TEST_F(GLTextureImageBackingFactoryTest,
+       I420SIUsedOnlyForRasterOverGLESAllowedWithGraphite) {
+#if BUILDFLAG(IS_ANDROID)
+  // NOTE: This test fails with the validating command decoder (used only on
+  // Android), for which multiplanar formats are not supported. Note that
+  // Android always uses OOP-C and thus does not encounter the production use
+  // case for which this regression test exists (2-copy upload of pure SW video
+  // frames to WebGL with non-OOP-C).
+  if (!use_passthrough()) {
+    GTEST_SKIP();
+  }
+#endif
+  auto format = viz::MultiPlaneFormat::kI420;
+  gfx::Size size(256, 256);
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                   gpu::SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY;
+
+  bool supported = backing_factory_->CanCreateSharedImage(
+      usage, format, size,
+      /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGraphiteDawn,
+      {});
+  EXPECT_TRUE(supported);
 }
 
 // Ensures that GLTextureImageBacking registers it's estimated size

@@ -165,15 +165,26 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
+    // NOTE: This GLES2 usage is *only* for raster, as these SharedImages are
+    // created to hold YUV data that is then converted to RGBA via the raster
+    // interface before being shared with some other use case (e.g., WebGL).
+    // There is no flow wherein these SharedImages are directly exposed to
+    // WebGL. It is critical to specify this to the service side to ensure that
+    // the correct SharedImage backing is created (see crbug.com/328472684).
     mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                    gpu::SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY;
     // RASTER_{READ, WRITE} usages should be included as these SharedImages are
     // both read and written via raster, but historically these usages were not
     // included. Currently in the process of adding with a killswitch.
     // TODO(crbug.com/1524009): Remove this killswitch post-safe rollout.
+    // NOTE: It is critical to specify that this raster usage is *only* over
+    // GLES2 to the service side to ensure that the correct SharedImage backing
+    // is created (see crbug.com/328472684).
     if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageWithNonOOPR)) {
       mailbox_usage = mailbox_usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                      gpu::SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY;
     }
   }
 
