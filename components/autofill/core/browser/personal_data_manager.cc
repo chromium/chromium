@@ -142,7 +142,7 @@ void PersonalDataManager::Init(
   if (!payments_data_manager_) {
     payments_data_manager_ = std::make_unique<PaymentsDataManager>(
         profile_database, account_database, image_fetcher,
-        std::move(shared_storage_handler), app_locale_, this);
+        std::move(shared_storage_handler), pref_service, app_locale_, this);
   }
 
   SetPrefService(pref_service);
@@ -589,10 +589,6 @@ CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
 CreditCard* PersonalDataManager::GetCreditCardByServerId(
     const std::string& server_id) {
   return payments_data_manager_->GetCreditCardByServerId(server_id);
-}
-
-void PersonalDataManager::ClearAllCreditCardBenefits() {
-  payments_data_manager_->ClearAllCreditCardBenefits();
 }
 
 bool PersonalDataManager::IsDataLoaded() const {

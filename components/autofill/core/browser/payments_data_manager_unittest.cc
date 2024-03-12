@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
@@ -1567,7 +1568,8 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(PaymentsDataManagerTest, ClearAllCreditCardBenefits) {
+TEST_F(PaymentsDataManagerTest,
+       OnAutofillPaymentsCardBenefitsPrefChange_PrefIsOn_DoesNotClearBenefits) {
   // Add the card benefits to the web database.
   std::vector<CreditCardBenefit> card_benefits;
   card_benefits.push_back(test::GetActiveCreditCardFlatRateBenefit());
@@ -1579,14 +1581,39 @@ TEST_F(PaymentsDataManagerTest, ClearAllCreditCardBenefits) {
   PersonalDataChangedWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(card_benefits.size(),
-            test_api(*personal_data_).GetCreditCardBenefitsCount());
+            test_api(personal_data_->payments_data_manager())
+                .GetCreditCardBenefitsCount());
 
-  // Delete the card benefits.
-  PersonalDataChangedWaiter waiter(*personal_data_);
-  personal_data_->ClearAllCreditCardBenefits();
-  std::move(waiter).Wait();
+  prefs::SetPaymentCardBenefits(prefs_.get(), true);
 
-  ASSERT_EQ(0U, test_api(*personal_data_).GetCreditCardBenefitsCount());
+  ASSERT_EQ(card_benefits.size(),
+            test_api(personal_data_->payments_data_manager())
+                .GetCreditCardBenefitsCount());
+}
+
+TEST_F(PaymentsDataManagerTest,
+       OnAutofillPaymentsCardBenefitsPrefChange_PrefIsOff_ClearsCardBenefits) {
+  // Add the card benefits to the web database.
+  std::vector<CreditCardBenefit> card_benefits;
+  card_benefits.push_back(test::GetActiveCreditCardFlatRateBenefit());
+  card_benefits.push_back(test::GetActiveCreditCardCategoryBenefit());
+  card_benefits.push_back(test::GetActiveCreditCardMerchantBenefit());
+  SetCreditCardBenefits(card_benefits);
+  // Refresh to load the card benefits from the web database.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  ASSERT_EQ(card_benefits.size(),
+            test_api(personal_data_->payments_data_manager())
+                .GetCreditCardBenefitsCount());
+
+  // Disable autofill payment card benefits pref and check that no benefits
+  // are returned.
+  prefs::SetPaymentCardBenefits(prefs_.get(), false);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  ASSERT_EQ(0U, test_api(personal_data_->payments_data_manager())
+                    .GetCreditCardBenefitsCount());
 }
 
 #if !BUILDFLAG(IS_IOS)

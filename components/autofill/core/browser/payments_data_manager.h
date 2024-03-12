@@ -23,6 +23,8 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -44,6 +46,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       scoped_refptr<AutofillWebDataService> account_database,
       AutofillImageFetcherBase* image_fetcher,
       std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
+      PrefService* pref_service,
       const std::string& app_locale,
       PersonalDataManager* pdm);
 
@@ -204,9 +207,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void RemoveServerCvc(int64_t instrument_id);
   virtual void ClearServerCvcs();
 
-  // Clears all the credit card benefits from the webdata database.
-  void ClearAllCreditCardBenefits();
-
   // Method to clear all local CVCs from the local web database.
   virtual void ClearLocalCvcs();
 
@@ -246,6 +246,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void CancelPendingServerQueries();
 
  protected:
+  friend class PaymentsDataManagerTestApi;
   // TODO(b/322170538): Remove dependency.
   friend class PersonalDataManager;
   friend class PersonalDataManagerTestApi;
@@ -359,6 +360,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Whether MaskedBankAccounts are supported for the platform OS.
   bool AreBankAccountsSupported() const;
 
+  // Clear all credit card benefits when the `kAutofillPaymentCardBenefits`
+  // preference is turned off.
+  void OnAutofillPaymentsCardBenefitsPrefChange();
+
+  // Clears all the credit card benefits from the webdata database.
+  void ClearAllCreditCardBenefits();
+
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
 
@@ -388,6 +396,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
+
+  // Pref registrar for managing the change observers.
+  PrefChangeRegistrar pref_registrar_;
+
+  // The PrefService that this instance uses to read and write preferences.
+  // Must outlive this instance.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   base::WeakPtrFactory<PaymentsDataManager> weak_factory_{this};
 };

@@ -17,12 +17,6 @@ class PersonalDataManagerTestApi {
       PersonalDataManager& personal_data_manager)
       : personal_data_manager_(personal_data_manager) {}
 
-  // Returns the number of credit card benefits.
-  size_t GetCreditCardBenefitsCount() {
-    return personal_data_manager_->payments_data_manager()
-        .credit_card_benefits_.size();
-  }
-
   void SetImageFetcher(AutofillImageFetcherBase* image_fetcher) {
     personal_data_manager_->payments_data_manager().image_fetcher_ =
         image_fetcher;

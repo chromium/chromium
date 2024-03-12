@@ -12,6 +12,7 @@ TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale,
                           /*account_database=*/nullptr,
                           /*image_fetcher=*/nullptr,
                           /*shared_storage_handler=*/nullptr,
+                          /*pref_service=*/nullptr,
                           app_locale,
                           pdm) {}
 

@@ -355,9 +355,6 @@ class PersonalDataManager : public KeyedService,
   // match.
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
 
-  // Clears all the credit card benefits from the webdata database.
-  void ClearAllCreditCardBenefits();
-
   // Add the credit-card-linked benefit to local cache for tests. This does
   // not affect data in the real database.
   void AddCreditCardBenefitForTest(CreditCardBenefit benefit) {

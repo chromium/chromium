@@ -53,7 +53,6 @@
     </settings-toggle-button>
 </template>
 <template is="dom-if" if="[[cardBenefitsFlagEnabled_]]">
-  <!--  TODO(crbug.com/324094766): Handle event when toggle status changes.-->
   <settings-toggle-button id="cardBenefitsToggle"
       no-extension-indicator label="$i18n{cardBenefitsToggleLabel}"
       sub-label-with-link="[[cardBenefitsSublabel_]]"

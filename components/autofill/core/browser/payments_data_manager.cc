@@ -23,6 +23,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 
 namespace autofill {
@@ -251,14 +253,25 @@ PaymentsDataManager::PaymentsDataManager(
     scoped_refptr<AutofillWebDataService> account_database,
     AutofillImageFetcherBase* image_fetcher,
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
+    PrefService* pref_service,
     const std::string& app_locale,
     PersonalDataManager* pdm)
     : pdm_(pdm),
       image_fetcher_(image_fetcher),
       shared_storage_handler_(std::move(shared_storage_handler)),
-      app_locale_(app_locale) {
+      app_locale_(app_locale),
+      pref_service_(pref_service) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
+  // `pref_service_` can be nullptr in tests.
+  if (pref_service) {
+    pref_registrar_.Init(pref_service);
+    pref_registrar_.Add(
+        prefs::kAutofillPaymentCardBenefits,
+        base::BindRepeating(
+            &PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange,
+            base::Unretained(this)));
+  }
 }
 
 PaymentsDataManager::~PaymentsDataManager() {
@@ -963,17 +976,6 @@ void PaymentsDataManager::ClearLocalCvcs() {
   Refresh();
 }
 
-void PaymentsDataManager::ClearAllCreditCardBenefits() {
-  if (!GetServerDatabase()) {
-    return;
-  }
-  // Clear all the credit card benefits from the webdata database.
-  GetServerDatabase()->ClearAllCreditCardBenefits();
-
-  // Refresh the local cache and send notifications to observers.
-  Refresh();
-}
-
 void PaymentsDataManager::ClearAllServerDataForTesting() {
   // This could theoretically be called before we get the data back from the
   // database on startup, and it could get called when the wallet pref is
@@ -1281,6 +1283,23 @@ bool PaymentsDataManager::AreBankAccountsSupported() const {
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange() {
+  if (!prefs::IsPaymentCardBenefitsEnabled(pref_service_)) {
+    ClearAllCreditCardBenefits();
+  }
+}
+
+void PaymentsDataManager::ClearAllCreditCardBenefits() {
+  if (!GetServerDatabase()) {
+    return;
+  }
+  // Clear all the credit card benefits from the webdata database.
+  GetServerDatabase()->ClearAllCreditCardBenefits();
+
+  // Refresh the local cache and send notifications to observers.
+  Refresh();
 }
 
 void PaymentsDataManager::OnCardArtImagesFetched(
