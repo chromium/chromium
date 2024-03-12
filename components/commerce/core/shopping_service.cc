@@ -1627,6 +1627,58 @@ void ShoppingService::StopTrackingAllParcels(
   }
 }
 
+void ShoppingService::GetProductIdentifierForUrl(
+    const GURL& url,
+    UrlProductIdentifierTupleCallback callback) {
+  GetProductInfoForUrl(
+      url,
+      base::BindOnce(
+          [](UrlProductIdentifierTupleCallback product_callback,
+             const GURL& url, const std::optional<const ProductInfo>& info) {
+            std::move(product_callback)
+                .Run(std::move(UrlProductIdentifierTuple(
+                    url, info.has_value() ? info.value().product_cluster_id
+                                          : std::nullopt)));
+          },
+          std::move(callback)));
+}
+
+void ShoppingService::CreateProductSpecificationsSet(
+    base::OnceCallback<void(ProductSpecificationSet)> callback,
+    const std::vector<UrlProductIdentifierTuple>& result) {
+  // Build a comma-separated list of product ids.
+  std::vector<std::string> string_product_ids(result.size());
+  std::transform(result.begin(), result.end(), string_product_ids.begin(),
+                 [](commerce::UrlProductIdentifierTuple value) {
+                   return base::NumberToString(std::get<1>(value).value_or(0));
+                 });
+
+  auto product_list_string = std::accumulate(
+      std::next(string_product_ids.begin()), string_product_ids.end(),
+      string_product_ids[0],
+      [](const std::string& a, const std::string& b) { return a + "," + b; });
+
+  ProductSpecificationSet sepcification_set;
+  sepcification_set.product_spec_url = net::AppendQueryParameter(
+      GURL(commerce::kChromeUICompareUrl), "ids", product_list_string);
+
+  std::move(callback).Run(sepcification_set);
+}
+
+void ShoppingService::GetProductSpecificationsSetForUrls(
+    const std::vector<GURL>& urls,
+    base::OnceCallback<void(ProductSpecificationSet)> callback) {
+  const auto barrier_callback =
+      base::BarrierCallback<const UrlProductIdentifierTuple&>(
+          urls.size(),
+          base::BindOnce(&ShoppingService::CreateProductSpecificationsSet,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  for (auto url : urls) {
+    GetProductIdentifierForUrl(url, barrier_callback);
+  }
+}
+
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

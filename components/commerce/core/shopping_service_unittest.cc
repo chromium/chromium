@@ -28,6 +28,7 @@
 #include "components/search/ntp_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -1567,6 +1568,84 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutDiscountCode) {
             run_loop->Quit();
           },
           &run_loop));
+  run_loop.Run();
+}
+
+TEST_P(ShoppingServiceTest, TestProductSpecificationsSetResponse) {
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetProductSpecificationsSetForUrls(
+      std::vector<GURL>{GURL(kProductUrl), GURL(kMerchantUrl)},
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             commerce::ProductSpecificationSet spec_set) {
+            std::string ids;
+            net::GetValueForKeyInQuery(spec_set.product_spec_url, "ids", &ids);
+            ASSERT_EQ("456,0", ids);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_P(ShoppingServiceTest,
+       TestProductSpecificationsSetResponse_MultipleProducts) {
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetProductSpecificationsSetForUrls(
+      std::vector<GURL>{
+          GURL(kProductUrl),
+          GURL(kProductUrl),
+      },
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             commerce::ProductSpecificationSet spec_set) {
+            std::string ids;
+            net::GetValueForKeyInQuery(spec_set.product_spec_url, "ids", &ids);
+            ASSERT_EQ("456,456", ids);
+            run_loop->Quit();
+          },
+          &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_P(ShoppingServiceTest, TestProductSpecificationsSetResponse_NoProducts) {
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kFalse, meta);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetProductSpecificationsSetForUrls(
+      std::vector<GURL>{
+          GURL(kProductUrl),
+          GURL(kProductUrl),
+      },
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             commerce::ProductSpecificationSet spec_set) {
+            std::string ids;
+            net::GetValueForKeyInQuery(spec_set.product_spec_url, "ids", &ids);
+            ASSERT_EQ("0,0", ids);
+            run_loop->Quit();
+          },
+          &run_loop));
+
   run_loop.Run();
 }
 

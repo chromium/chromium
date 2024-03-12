@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "base/tuple.h"
 #include "components/commerce/core/proto/parcel.pb.h"
 #include "url/gurl.h"
 
@@ -143,6 +144,12 @@ struct ParcelTrackingStatus {
   ParcelStatus::ParcelState state = ParcelStatus::UNKNOWN;
   GURL tracking_url;
   base::Time estimated_delivery_time;
+};
+
+// Information returned by ProductSpecifications API.
+struct ProductSpecificationSet {
+ public:
+  GURL product_spec_url;
 };
 
 // Callbacks and typedefs for various accessors in the shopping service.

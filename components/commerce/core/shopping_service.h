@@ -183,6 +183,12 @@ using RepeatingProductInfoCallback =
 using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
     void(const int64_t, const GURL&, std::optional<ProductInfo>)>;
 
+using UrlProductIdentifierTuple =
+    std::tuple<const GURL&, const std::optional<const uint64_t>>;
+
+using UrlProductIdentifierTupleCallback =
+    base::OnceCallback<void(const UrlProductIdentifierTuple&)>;
+
 // Under Desktop browser test or interactive ui test, use
 // ShoppingServiceFactory::SetTestingFactory to create a
 // MockShoppingService for testing. The test should use
@@ -443,6 +449,11 @@ class ShoppingService : public KeyedService,
   // Called to stop tracking all parcels.
   void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);
 
+  // Called to fetch product specs for a set of urls.
+  void GetProductSpecificationsSetForUrls(
+      const std::vector<GURL>& urls,
+      base::OnceCallback<void(const ProductSpecificationSet)> callback);
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -641,6 +652,13 @@ class ShoppingService : public KeyedService,
   void SetDiscountsStorageForTesting(std::unique_ptr<DiscountsStorage> storage);
 
   void OnStateChanged(syncer::SyncService* sync) override;
+
+  void GetProductIdentifierForUrl(const GURL& url,
+                                  UrlProductIdentifierTupleCallback callback);
+
+  void CreateProductSpecificationsSet(
+      base::OnceCallback<void(const ProductSpecificationSet)> callback,
+      const std::vector<UrlProductIdentifierTuple>& result);
 
   // Updates the bookmark model used for sync (and shopping) if needed. Invoked
   // when sync state changes.
