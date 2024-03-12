@@ -18,10 +18,13 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ash {
 namespace {
+
+using Corner = gfx::RRectF::Corner;
 
 constexpr float PI = 3.1415926f;
 
@@ -58,7 +61,7 @@ struct CircularArc {
     }
 
     // atan2 range is angle between (-PI, PI]. Therefore we must transform the
-    // angle in range [0, 2*PI].
+    // angle in range [0, 2*PI).
     // Note: atan2 assumes that the positive y-axis runs from bottom
     // to top, whereas our positive y-axis runs from top to bottom. Therefore,
     // we need to flip the direction y vector.
@@ -86,8 +89,8 @@ struct CircularArc {
     // where theta is the angle counter-clockwise from +x axis.
     // Note: For y coordinate, We have a negative sign calculation since
     // our y-axis runs positive top-down.
-    float x = center.x() + radius * std::cos(mid_angle_in_radian);
-    float y = center.y() - radius * std::sin(mid_angle_in_radian);
+    const float x = center.x() + radius * std::cos(mid_angle_in_radian);
+    const float y = center.y() - radius * std::sin(mid_angle_in_radian);
 
     return {x, y};
   }
@@ -173,8 +176,7 @@ struct CircularArc {
 };
 
 // Returns the arc that represents the corner of `rrectf`.
-CircularArc GetArcForCorner(const gfx::RRectF& rrectf,
-                            gfx::RRectF::Corner corner) {
+CircularArc GetArcForCorner(const gfx::RRectF& rrectf, Corner corner) {
   const gfx::RectF bounding_box = rrectf.CornerBoundingRect(corner);
 
   CircularArc corner_arc;
@@ -182,22 +184,22 @@ CircularArc GetArcForCorner(const gfx::RRectF& rrectf,
   corner_arc.radius = radii.x();
 
   switch (corner) {
-    case gfx::RRectF::Corner::kUpperRight:
+    case Corner::kUpperRight:
       corner_arc.center = bounding_box.bottom_left();
       corner_arc.start_angle = CircularArc::DEGREE_0;
       corner_arc.end_angle = CircularArc::DEGREE_90;
       break;
-    case gfx::RRectF::Corner::kUpperLeft:
+    case Corner::kUpperLeft:
       corner_arc.center = bounding_box.bottom_right();
       corner_arc.start_angle = CircularArc::DEGREE_90;
       corner_arc.end_angle = CircularArc::DEGREE_180;
       break;
-    case gfx::RRectF::Corner::kLowerLeft:
+    case Corner::kLowerLeft:
       corner_arc.center = bounding_box.top_right();
       corner_arc.start_angle = CircularArc::DEGREE_180;
       corner_arc.end_angle = CircularArc::DEGREE_270;
       break;
-    case gfx::RRectF::Corner::kLowerRight:
+    case Corner::kLowerRight:
       corner_arc.center = bounding_box.origin();
       corner_arc.start_angle = CircularArc::DEGREE_270;
       corner_arc.end_angle = CircularArc::DEGREE_360;
@@ -210,9 +212,7 @@ CircularArc GetArcForCorner(const gfx::RRectF& rrectf,
 // Returns true if the point `p` is contained by `rrectf`. It takes into account
 // the curvature of the corners.
 bool CheckCornerContainment(const gfx::PointF& p, const gfx::RRectF& rrectf) {
-  using Corner = gfx::RRectF::Corner;
-
-  gfx::RectF rectf = rrectf.rect();
+  const gfx::RectF rectf = rrectf.rect();
   if (!rectf.InclusiveContains(p)) {
     return false;
   }
@@ -279,16 +279,15 @@ bool CheckCornerContainment(const gfx::PointF& p, const gfx::RRectF& rrectf) {
                             rrectf.GetCornerRadii(containing_corner).y());
 }
 
-gfx::PointF GetCornerCoordinates(const gfx::RectF& rectf,
-                                 gfx::RRectF::Corner corner) {
+gfx::PointF GetCornerCoordinates(const gfx::RectF& rectf, Corner corner) {
   switch (corner) {
-    case gfx::RRectF::Corner::kUpperLeft:
+    case Corner::kUpperLeft:
       return rectf.origin();
-    case gfx::RRectF::Corner::kUpperRight:
+    case Corner::kUpperRight:
       return rectf.top_right();
-    case gfx::RRectF::Corner::kLowerRight:
+    case Corner::kLowerRight:
       return rectf.bottom_right();
-    case gfx::RRectF::Corner::kLowerLeft:
+    case Corner::kLowerLeft:
       return rectf.bottom_left();
   }
 }
@@ -297,7 +296,7 @@ gfx::PointF GetCornerCoordinates(const gfx::RectF& rectf,
 // the corner radius of `containing_rect`.
 bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
                                 const gfx::RRectF& containing_rect,
-                                gfx::RRectF::Corner corner) {
+                                Corner corner) {
   if (rect.IsEmpty() || containing_rect.IsEmpty()) {
     return false;
   }
@@ -316,20 +315,20 @@ bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
     return false;
   }
 
-  const gfx::PointF rect_corner_coordinates =
-      GetCornerCoordinates(rect.rect(), corner);
-
-  // In the case where either the corner of the containing_rect or rect are
-  // rounded, we have the following cases:
-  //  * If the corner of containing_rect is square, we do not need to override
-  //  the radius of rect since the curvature of rect's is contained by the
-  //  square containing rect corner.
-  //  * If the corner of rect is square, we must override the radius if the
-  //  square corner of rect is located outside the curvature of the rect's
-  //  corner.
-  if (containing_rect_corner_radii.IsZero() ||
-      CheckCornerContainment(rect_corner_coordinates, containing_rect)) {
+  // If only the corner of containing_rect is square, we do not need to
+  // override the radius of rect since the curvature of rect's is contained by
+  // the square containing rect corner.
+  if (containing_rect_corner_radii.IsZero()) {
     return false;
+  }
+
+  // If only the corner of rect is square, we must override the radius if the
+  // square corner of rect is located outside the curvature of the rect's
+  // corner.
+  if (rect_corner_radii.IsZero()) {
+    const gfx::PointF rect_corner_coordinates =
+        GetCornerCoordinates(rect.rect(), corner);
+    return !CheckCornerContainment(rect_corner_coordinates, containing_rect);
   }
 
   const CircularArc arc = GetArcForCorner(rect, corner);
@@ -352,15 +351,22 @@ Corners FindCornersToOverrideRadius(const gfx::RRectF& rect,
                                     const gfx::RRectF& containing_rect) {
   Corners corners;
 
-  for (auto corner :
-       {gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
-        gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft}) {
+  for (auto corner : {Corner::kUpperLeft, Corner::kUpperRight,
+                      Corner::kLowerRight, Corner::kLowerLeft}) {
     if (ShouldOverrideCornerRadius(rect, containing_rect, corner)) {
       corners.insert(corner);
     }
   }
 
   return corners;
+}
+
+gfx::RRectF ApplyTransform(const gfx::RRectF& bounds,
+                           const gfx::Transform& transform) {
+  gfx::MaskFilterInfo layer_mask_info(bounds);
+  layer_mask_info.ApplyTransform(transform);
+
+  return layer_mask_info.rounded_corner_bounds();
 }
 
 }  // namespace
@@ -372,21 +378,22 @@ ScopedLayerTreeSynchronizer::ScopedLayerTreeSynchronizer(ui::Layer* root_layer)
 
 ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() = default;
 
-void ScopedLayerTreeSynchronizer::
-    SynchronizeRoundedCornersAvoidingRenderSurfaces() {
-  if (root_layer_->rounded_corner_radii().IsEmpty()) {
+void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
+    ui::Layer* layer,
+    const gfx::RRectF& reference_bounds) {
+  CHECK(root_layer_->Contains(layer));
+  if (reference_bounds.IsEmpty() ||
+      reference_bounds.GetType() == gfx::RRectF::Type::kRect) {
     return;
   }
 
-  for (ui::Layer* child : root_layer_->children()) {
-    SynchronizeLayerTreeRoundedCornersImpl(child);
-  }
+  SynchronizeLayerTreeRoundedCorners(layer, reference_bounds);
 }
 
-void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCornersImpl(
-    ui::Layer* layer) {
+void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCorners(
+    ui::Layer* layer,
+    const gfx::RRectF& reference_bounds) {
   CHECK(layer);
-  CHECK(root_layer_->Contains(layer));
 
   if (!layer->rounded_corner_radii().IsEmpty()) {
     gfx::Transform transform;
@@ -398,20 +405,14 @@ void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCornersImpl(
     // `transform` accounts for layer offset from its parent.
     gfx::RRectF layer_rrectf(gfx::RectF(layer->bounds().size()),
                              layer->rounded_corner_radii());
-
-    gfx::MaskFilterInfo layer_mask_info(layer_rrectf);
-    layer_mask_info.ApplyTransform(transform);
-
-    const gfx::RRectF root_layer_local_bounds(
-        gfx::RectF(root_layer_->bounds().size()),
-        root_layer_->rounded_corner_radii());
+    auto transformed_layer_bounds = ApplyTransform(layer_rrectf, transform);
 
     // Finds the corners of the `layer` that either intersect with the corners
-    // of the `root_layer_` or are drawn outside the curvature (if any) of the
-    // root_layer rounded corners. The function considers the curvature (if any)
-    // of the `layer` corners as well.
-    const Corners corners_to_update = FindCornersToOverrideRadius(
-        layer_mask_info.rounded_corner_bounds(), root_layer_local_bounds);
+    // of the `reference_bounds` or are drawn outside the curvature (if any) of
+    // the reference_bounds rounded corners. The function considers the
+    // curvature (if any) of the layer corners as well.
+    const Corners corners_to_update =
+        FindCornersToOverrideRadius(transformed_layer_bounds, reference_bounds);
 
     if (!corners_to_update.empty()) {
       // The inverse transform coverts from the coordinate space of `layer` to
@@ -419,37 +420,38 @@ void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCornersImpl(
       const gfx::Transform inverse_transform = transform.GetCheckedInverse();
 
       const float scale_x = inverse_transform.rc(0, 0);
-      const float scale_y = inverse_transform.rc(1, 1);
-      CHECK_LE(std::abs(scale_y - scale_x), 0.05);
 
-      const gfx::RoundedCornersF& root_layer_radii =
-          root_layer_->rounded_corner_radii();
-
-      // The `root_radii` are scaled so that when the transformation of the
-      // `layer` is applied, the `layer` radii match the radii of the
-      // `root_layer_`.
+      // The `reference_bounds` radii are scaled so that when the transformation
+      // of the `layer` is applied, the `layer` radii match the radii of the
+      // reference_bounds radii.
       gfx::RoundedCornersF radii = layer->rounded_corner_radii();
 
-      radii.Set(corners_to_update.contains(gfx::RRectF::Corner::kUpperLeft)
-                    ? root_layer_radii.upper_left() * scale_x
+      radii.Set(corners_to_update.contains(Corner::kUpperLeft)
+                    ? reference_bounds.GetCornerRadii(Corner::kUpperLeft).x() *
+                          scale_x
                     : radii.upper_left(),
-                corners_to_update.contains(gfx::RRectF::Corner::kUpperRight)
-                    ? root_layer_radii.upper_right() * scale_x
+                corners_to_update.contains(Corner::kUpperRight)
+                    ? reference_bounds.GetCornerRadii(Corner::kUpperRight).x() *
+                          scale_x
                     : radii.upper_right(),
-                corners_to_update.contains(gfx::RRectF::Corner::kLowerRight)
-                    ? root_layer_radii.lower_right() * scale_x
+                corners_to_update.contains(Corner::kLowerRight)
+                    ? reference_bounds.GetCornerRadii(Corner::kLowerRight).x() *
+                          scale_x
                     : radii.lower_right(),
-                corners_to_update.contains(gfx::RRectF::Corner::kLowerLeft)
-                    ? root_layer_radii.lower_left() * scale_x
+                corners_to_update.contains(Corner::kLowerLeft)
+                    ? reference_bounds.GetCornerRadii(Corner::kLowerLeft).x() *
+                          scale_x
                     : radii.lower_left());
 
-      layer->SetRoundedCornerRadius(radii);
-      layer->SetIsFastRoundedCorner(/*enable=*/true);
+      if (radii != layer->rounded_corner_radii()) {
+        layer->SetRoundedCornerRadius(radii);
+        layer->SetIsFastRoundedCorner(/*enable=*/!radii.IsEmpty());
+      }
     }
   }
 
   for (ui::Layer* child : layer->children()) {
-    SynchronizeLayerTreeRoundedCornersImpl(child);
+    SynchronizeLayerTreeRoundedCorners(child, reference_bounds);
   }
 }
 

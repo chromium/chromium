@@ -5,10 +5,7 @@
 #ifndef ASH_WM_WINDOW_PREVIEW_VIEW_H_
 #define ASH_WM_WINDOW_PREVIEW_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "ash/wm/window_mirror_view.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -71,8 +68,6 @@ class ASH_EXPORT WindowPreviewView
   raw_ptr<aura::Window> window_;
 
   base::flat_map<aura::Window*, WindowMirrorView*> mirror_views_;
-
-  std::unique_ptr<ScopedLayerTreeSynchronizer> layer_tree_synchronizer_;
 
   // Transient children of |window_| may be added as transients before they're
   // actually parented; i.e. `OnTransientChildWindowAdded()` is called before

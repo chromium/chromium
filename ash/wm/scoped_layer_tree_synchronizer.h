@@ -9,14 +9,17 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 
+namespace gfx {
+class RRectF;
+}  // namespace gfx
+
 namespace ui {
 class Layer;
 }  // namespace ui
 
 namespace ash {
 
-// Synchronizes the layer tree to ensure that render surfaces are not needed to
-// draw the correct result.
+// Synchronizes the layer tree to specified rounded corner bounds.
 class ASH_EXPORT ScopedLayerTreeSynchronizer {
  public:
   explicit ScopedLayerTreeSynchronizer(ui::Layer* root_layer);
@@ -27,21 +30,28 @@ class ASH_EXPORT ScopedLayerTreeSynchronizer {
 
   ~ScopedLayerTreeSynchronizer();
 
-  // If needed, synchronizes the rounded corners of the subtree layers rooted
-  // at root layer. This enables the rounded corners of the root layer to be
-  // drawn without requiring a render surface.
-  // Note that the current implementation assumes that the subtree fits within
-  // the boundaries of the root layer.
-  void SynchronizeRoundedCornersAvoidingRenderSurfaces();
+  // Synchronizes the rounded corners of the subtree layers that are rooted at
+  // `layer`. (layer must be a child layer of root_layer). If a corner of the
+  // subtree's layer intersects or is drawn outside the curvature(if any) of
+  // `reference_bounds', the radius of that corner is updated(synchronized) to
+  // match radius of reference_bounds.
+  // Note: The current implementation assumes that the subtree is contained
+  // within the layer's bounds and the bounds are in the `root_layer`'s target
+  // space.
+  void SynchronizeRoundedCorners(ui::Layer* layer,
+                                 const gfx::RRectF& reference_bounds);
 
  private:
-  // Traverses through the layer subtree rooted at `layer`. When a corner of the
-  // `layer` intersects or is drawn outside the curvature of the corner of the
-  // `root_layer_`, the radius of that corner of the `layer` is updated.
-  void SynchronizeLayerTreeRoundedCornersImpl(ui::Layer* layer);
+  // Traverses through the layer subtree rooted at `layer`, updates the corners
+  // of `layer` if conditions described in the comment for
+  // `SynchronizeRoundedCorners()`.
+  // Note: `reference_bounds` are in target space of `root_layer_`;
+  void SynchronizeLayerTreeRoundedCorners(ui::Layer* layer,
+                                          const gfx::RRectF& reference_bounds);
 
-  // The subtree that may be altered is rooted at `root_layer_`.
-  const raw_ptr<ui::Layer> root_layer_;
+  // Any subtree that may be altered is rooted at `root_layer_`. All the
+  // calculation done in the target space of `root_layer_`.
+  raw_ptr<ui::Layer> root_layer_;
 };
 
 }  // namespace ash

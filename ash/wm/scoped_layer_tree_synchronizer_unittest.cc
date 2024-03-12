@@ -12,7 +12,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace ash {
 namespace {
@@ -84,7 +86,10 @@ TEST_P(UpdatingScopedLayerTreeSynchronizerTest, OverlappingCorners) {
       std::make_unique<ScopedLayerTreeSynchronizer>(root.get());
 
   ASSERT_EQ(child_layer->rounded_corner_radii(), child_layer_radii());
-  layer_tree_synchronizer->SynchronizeRoundedCornersAvoidingRenderSurfaces();
+
+  layer_tree_synchronizer->SynchronizeRoundedCorners(
+      root.get(),
+      gfx::RRectF(gfx::RectF(root_layer_bounds()), root_layer_radii()));
 
   // Root layer bounds and radii should be unaffected.
   ASSERT_EQ(root->rounded_corner_radii(), root_layer_radii());
@@ -246,7 +251,8 @@ TEST_F(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
 
   auto layer_tree_synchronizer =
       std::make_unique<ScopedLayerTreeSynchronizer>(root.get());
-  layer_tree_synchronizer->SynchronizeRoundedCornersAvoidingRenderSurfaces();
+  layer_tree_synchronizer->SynchronizeRoundedCorners(
+      root.get(), gfx::RRectF(gfx::RectF(kRootBounds), kRootLayerRadii));
 
   EXPECT_EQ(root->rounded_corner_radii(), kRootLayerRadii);
   constexpr gfx::RoundedCornersF kUpdatedLayer1Radii =
