@@ -1394,6 +1394,15 @@ BASE_FEATURE(kLightweightNoStatePrefetch,
 
 BASE_FEATURE(kLinkPreview, "LinkPreview", base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<LinkPreviewTriggerType>::Option
+    link_preview_trigger_type_options[] = {
+        {LinkPreviewTriggerType::kAltClick, "alt_click"},
+        {LinkPreviewTriggerType::kAltHover, "alt_hover"},
+        {LinkPreviewTriggerType::kLongPress, "long_press"}};
+const base::FeatureParam<LinkPreviewTriggerType> kLinkPreviewTriggerType{
+    &kLinkPreview, "trigger_type", LinkPreviewTriggerType::kAltHover,
+    &link_preview_trigger_type_options};
+
 // A feature to control whether the loading phase should be extended beyond
 // First Meaningful Paint by a configurable buffer.
 BASE_FEATURE(kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
@@ -2542,6 +2551,11 @@ bool ParkableStringsUseSnappy() {
 bool IsKeepAliveURLLoaderServiceEnabled() {
   return base::FeatureList::IsEnabled(kKeepAliveInBrowserMigration) ||
          base::FeatureList::IsEnabled(kFetchLaterAPI);
+}
+
+bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
+  return base::FeatureList::IsEnabled(blink::features::kLinkPreview) &&
+         type == blink::features::kLinkPreviewTriggerType.Get();
 }
 
 BASE_FEATURE(kExpandCompositedCullRect,

@@ -284,4 +284,9 @@ ContentRendererClient::CreateCastStreamingResourceProvider() {
 }
 #endif
 
+std::unique_ptr<blink::WebLinkPreviewTriggerer>
+ContentRendererClient::CreateLinkPreviewTriggerer() {
+  return nullptr;
+}
+
 }  // namespace content

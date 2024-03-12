@@ -140,8 +140,8 @@ NavigationPolicy NavigationPolicyFromCurrentEvent(
 
 NavigationPolicy NavigationPolicyFromEvent(const Event* event) {
   // TODO(b:298160400): Add a setting to disable Link Preview.
-  bool is_link_preview_enabled =
-      base::FeatureList::IsEnabled(features::kLinkPreview);
+  bool is_link_preview_enabled = IsLinkPreviewTriggerTypeEnabled(
+      features::LinkPreviewTriggerType::kAltClick);
 
   NavigationPolicy event_policy =
       NavigationPolicyFromEventInternal(event, is_link_preview_enabled);

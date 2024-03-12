@@ -185,6 +185,11 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Returns the referrer for this document.
   WebString OutgoingReferrer() const;
 
+  // (Experimental) Initiates Link Preview for `url`.
+  //
+  // It is intended to be used in WebLinkPreviewTriggerer.
+  void InitiatePreview(const WebURL& url);
+
 #if INSIDE_BLINK
   WebDocument(Document*);
   WebDocument& operator=(Document*);

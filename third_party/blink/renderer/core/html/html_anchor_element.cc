@@ -35,10 +35,12 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -209,8 +211,35 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
   url.AppendNumber(clamped_point.y());
 }
 
+void EmitDidAnchorElementReceiveMouseDownEvent(
+    HTMLAnchorElement& anchor_element,
+    Event& event) {
+  LocalFrame* local_frame = anchor_element.GetDocument().GetFrame();
+  if (!local_frame) {
+    return;
+  }
+
+  WebLinkPreviewTriggerer* triggerer =
+      local_frame->GetOrCreateLinkPreviewTriggerer();
+  if (!triggerer) {
+    return;
+  }
+
+  auto* mev = DynamicTo<MouseEvent>(event);
+  if (!mev) {
+    return;
+  }
+
+  WebElement web_element = WebElement(DynamicTo<Element>(&anchor_element));
+  auto button = WebMouseEvent::Button(mev->button());
+  triggerer->DidAnchorElementReceiveMouseDownEvent(web_element, button,
+                                                   mev->ClickCount());
+}
+
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   if (IsLink()) {
+    EmitDidAnchorElementReceiveMouseDownEvent(*this, event);
+
     if (isConnected() && base::FeatureList::IsEnabled(
                              features::kSpeculativeServiceWorkerWarmUp)) {
       Document& top_document = GetDocument().TopDocument();
