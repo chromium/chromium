@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_IMPL_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -13,6 +14,8 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -72,6 +75,7 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
 
     explicit SimpleThreadImpl(const WTF::String& name_prefix,
                               const base::SimpleThread::Options& options,
+                              base::TimeDelta realtime_period,
                               bool supports_gc,
                               NonMainThreadImpl* worker_thread,
                               base::MessagePumpType message_pump_type);
@@ -106,6 +110,12 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
    private:
     void Run() override;
 
+#if BUILDFLAG(IS_APPLE)
+    base::TimeDelta GetRealtimePeriod() override { return realtime_period_; }
+
+    const base::TimeDelta realtime_period_;
+#endif
+
     const base::MessagePumpType message_pump_type_;
 
     // Internal queue not exposed externally nor to the scheduler used for
@@ -139,6 +149,11 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
   const ThreadType thread_type_;
   std::unique_ptr<scheduler::WorkerSchedulerProxy> worker_scheduler_proxy_;
   bool supports_gc_;
+
+#if BUILDFLAG(IS_APPLE)
+  FRIEND_TEST_ALL_PREFIXES(NonMainThreadImplRealtimePeriodTest,
+                           RealtimePeriodConfiguration);
+#endif
 };
 
 }  // namespace scheduler

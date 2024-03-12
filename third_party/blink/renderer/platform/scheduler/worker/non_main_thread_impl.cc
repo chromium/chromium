@@ -61,8 +61,9 @@ NonMainThreadImpl::NonMainThreadImpl(const ThreadCreationParams& params)
     message_pump_type = base::MessagePumpType::IO;
   }
   thread_ = std::make_unique<SimpleThreadImpl>(
-      params.name ? params.name : String(), options, supports_gc_,
-      const_cast<scheduler::NonMainThreadImpl*>(this), message_pump_type);
+      params.name ? params.name : String(), options, params.realtime_period,
+      supports_gc_, const_cast<scheduler::NonMainThreadImpl*>(this),
+      message_pump_type);
   if (supports_gc_) {
     MemoryPressureListenerRegistry::Instance().RegisterThread(
         const_cast<scheduler::NonMainThreadImpl*>(this));
@@ -109,10 +110,16 @@ void NonMainThreadImpl::ShutdownOnThread() {
 NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
     const WTF::String& name_prefix,
     const base::SimpleThread ::Options& options,
+    base::TimeDelta realtime_period,
     bool supports_gc,
     NonMainThreadImpl* worker_thread,
     base::MessagePumpType message_pump_type)
     : SimpleThread(name_prefix.Utf8(), options),
+#if BUILDFLAG(IS_APPLE)
+      realtime_period_((options.thread_type == base::ThreadType::kRealtimeAudio)
+                           ? realtime_period
+                           : base::TimeDelta()),
+#endif
       message_pump_type_(message_pump_type),
       thread_(worker_thread),
       supports_gc_(supports_gc) {
