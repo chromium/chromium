@@ -7,7 +7,7 @@
     --choice-list-bottom-padding: 50px;
     --choice-list-horizontal-padding: 8px;
     --content-container-width: 500px;
-    --radio-button-horizontal-padding: 24px;
+    --radio-button-horizontal-padding: 16px;
     --choice-gap: 16px;
     --cr-expand-button-icon-size: 20px;
     color: var(--cr-primary-text-color);
@@ -50,12 +50,12 @@
   }
 
   .tangible-sync-style .title {
-    margin-bottom: 12px;
+    margin: 16px 0 0 0;
   }
 
   .tangible-sync-style .subtitle {
     line-height: 30px;
-    margin: 12px 0 40px;
+    margin: 0 0 24px;
   }
 
   #choiceList {
@@ -115,7 +115,7 @@
     background-color: var(--google-grey-100);
     border-bottom: 1px solid var(--background-color);
     border-radius: 2px;
-    padding: 16px var(--radio-button-horizontal-padding);
+    padding: 10px var(--radio-button-horizontal-padding);
   }
 
   cr-radio-button:first-of-type {
@@ -131,7 +131,7 @@
 
   .product-logo {
     height: 48px;
-    margin-top: 80px;
+    margin-top: 68px;
     width: 48px;
   }
 
@@ -212,14 +212,23 @@
     height: 24px;
   }
 
-  .secondary {
+  .marketing-snippet {
     color: var(--cr-secondary-text-color);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 16px;
   }
 
   .truncate-text {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .search-engine-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 20px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -348,8 +357,10 @@
             <div class="choice-icon"
                 style$="background-image: [[item.iconPath]];"></div>
             <div class="choice-text">
-              <div aria-hidden="true">[[item.name]]</div>
-              <div class$="secondary
+              <div aria-hidden="true" class="search-engine-name">
+                [[item.name]]
+              </div>
+              <div class$="marketing-snippet
                   [[getMarketingSnippetClass(item.showMarketingSnippet)]]">
                 [[item.marketingSnippet]]
               </div>
