@@ -876,6 +876,19 @@ gfx::Rect DesktopWindowTreeHostPlatform::GetBoundsInDIP() const {
   return platform_window()->GetBoundsInDIP();
 }
 
+void DesktopWindowTreeHostPlatform::OnOcclusionStateChanged(
+    ui::PlatformWindowOcclusionState occlusion_state) {
+  WindowTreeHostPlatform::OnOcclusionStateChanged(occlusion_state);
+  if (compositor() && aura::NativeWindowOcclusionTracker::
+                          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
+    if (compositor()->IsVisible()) {
+      GetContentWindow()->Show();
+    } else {
+      GetContentWindow()->Hide();
+    }
+  }
+}
+
 void DesktopWindowTreeHostPlatform::OnClosed() {
   open_windows().remove(GetAcceleratedWidget());
   wm::SetWindowMoveClient(window(), nullptr);

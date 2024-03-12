@@ -146,6 +146,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void HideImpl() override;
   gfx::Rect CalculateRootWindowBounds() const override;
   gfx::Rect GetBoundsInDIP() const override;
+  void OnOcclusionStateChanged(
+      ui::PlatformWindowOcclusionState occlusion_state) override;
 
   // PlatformWindowDelegate:
   void OnClosed() override;
