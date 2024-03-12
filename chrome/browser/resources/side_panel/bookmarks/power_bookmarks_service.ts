@@ -512,6 +512,11 @@ export class PowerBookmarksService {
 
     // Fetch the representative image for this page, if possible.
     this.activeImageServiceRequestCount_++;
+    // TODO(b/303613231): Update this code to distinguish account bookmarks
+    // (which can get images from PageImageService) from local bookmarks (which
+    // can't), once the account bookmark store exists. The "is account bookmark"
+    // bit will likely need to be plumbed here. (For reference:
+    // crrev.com/c/5346717 made the equivalent change for Android.)
     const {result} =
         await PageImageServiceBrowserProxy.getInstance()
             .handler.getPageImageUrl(
