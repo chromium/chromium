@@ -27,9 +27,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -347,6 +349,12 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     ASSERT_FALSE(element.IsNull());
     WebInputElement fname_element = element.To<WebInputElement>();
     SimulateUserInputChangeForElement(&fname_element, value);
+  }
+
+  // This triggers a layout update to apply JS changes like display = 'none'.
+  void ForceLayoutUpdate() {
+    GetWebFrameWidget()->UpdateAllLifecyclePhases(
+        blink::DocumentUpdateReason::kTest);
   }
 
   std::string GetFocusLog() {
@@ -1029,6 +1037,7 @@ TEST_P(FormAutocompleteSubmissionTest, AjaxSucceeded_FormlessElements) {
   ExecuteJavaScriptForTests(
       "var element = document.getElementById('fname');"
       "element.style.display = 'none';");
+  ForceLayoutUpdate();
 
   // Simulate AJAX request.
   static_cast<blink::WebAutofillClient*>(autofill_agent_)->AjaxSucceeded();
@@ -1122,8 +1131,8 @@ TEST_P(FormAutocompleteSubmissionTest, FormSubmittedByDOMMutationAfterXHR) {
   std::string hide_elements =
       "var address = document.getElementById('address_field');"
       "address.style = 'display:none';";
-
   ExecuteJavaScriptForTests(hide_elements.c_str());
+  ForceLayoutUpdate();
   base::RunLoop().RunUntilIdle();
 
   VerifyReceivedAddressRendererMessages(fake_driver_, "City",

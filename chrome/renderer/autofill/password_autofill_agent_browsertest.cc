@@ -938,6 +938,12 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     return ::testing::AssertionSuccess();
   }
 
+  // This triggers a layout update to apply JS changes like display = 'none'.
+  void ForceLayoutUpdate() {
+    GetWebFrameWidget()->UpdateAllLifecyclePhases(
+        blink::DocumentUpdateReason::kTest);
+  }
+
   FakeMojoPasswordManagerDriver fake_driver_;
   testing::NiceMock<FakePasswordGenerationDriver> fake_pw_client_;
 
@@ -2964,6 +2970,7 @@ TEST_F(PasswordAutofillAgentTest,
       "var username = document.getElementById('username');"
       "username.style = 'display:none';";
   ExecuteJavaScriptForTests(hide_elements.c_str());
+  ForceLayoutUpdate();
 
   base::RunLoop().RunUntilIdle();
 
@@ -3486,6 +3493,7 @@ TEST_F(PasswordAutofillAgentTest,
       "var username = document.getElementById('username');"
       "username.style = 'display:none';";
   ExecuteJavaScriptForTests(hide_elements.c_str());
+  ForceLayoutUpdate();
 
   base::RunLoop().RunUntilIdle();
 
@@ -3510,6 +3518,7 @@ TEST_F(PasswordAutofillAgentTest, PromptForAJAXSubmitAfterHidingParentElement) {
       "var outerDiv = document.getElementById('outer');"
       "outerDiv.style = 'display:none';";
   ExecuteJavaScriptForTests(hide_element.c_str());
+  ForceLayoutUpdate();
 
   base::RunLoop().RunUntilIdle();
 
@@ -3999,6 +4008,7 @@ TEST_F(PasswordAutofillAgentTest,
       "var username = document.getElementById('username');"
       "username.style = 'display:none';";
   ExecuteJavaScriptForTests(hide_elements.c_str());
+  ForceLayoutUpdate();
   base::RunLoop().RunUntilIdle();
 
   ExpectSameDocumentNavigationWithUsernameAndPasswords(

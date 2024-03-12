@@ -1235,19 +1235,24 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
   if (!is_dom_content_loaded_) {
     return;
   }
-  if (form_related_change == WebFormRelatedChangeType::kHide) {
-    form_tracker_->ElementDisappeared(element);
-    return;
+  switch (form_related_change) {
+    case blink::WebFormRelatedChangeType::kAdd:
+    case blink::WebFormRelatedChangeType::kReassociate:
+      ExtractFormsAndNotifyPasswordAutofillAgent(
+          process_forms_after_dynamic_change_timer_);
+      break;
+    case blink::WebFormRelatedChangeType::kRemove:
+      form_tracker_->ElementDisappeared(element);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillDetectRemovedFormControls)) {
+        ExtractFormsAndNotifyPasswordAutofillAgent(
+            process_forms_after_dynamic_change_timer_);
+      }
+      break;
+    case blink::WebFormRelatedChangeType::kHide:
+      form_tracker_->ElementDisappeared(element);
+      break;
   }
-  if (form_related_change == WebFormRelatedChangeType::kRemove &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillDetectRemovedFormControls)) {
-    return;
-  }
-  // If the control flow is here than the document was at least loaded. The
-  // whole page doesn't have to be loaded.
-  ExtractFormsAndNotifyPasswordAutofillAgent(
-      process_forms_after_dynamic_change_timer_);
 }
 
 void AutofillAgent::DidCompleteFocusChangeInFrame() {
@@ -1649,6 +1654,10 @@ void AutofillAgent::UpdateStateForTextChange(
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillImproveSubmissionDetection)) {
+    return last_interacted_.saved_state;
+  }
   auto has_been_user_edited = [this](const FormFieldData& field) {
     return formless_elements_user_edited_.contains(field.renderer_id);
   };

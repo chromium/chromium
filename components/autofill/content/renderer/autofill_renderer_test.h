@@ -22,6 +22,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 
 namespace autofill::test {
 
@@ -134,6 +136,12 @@ class AutofillRendererTest : public content::RenderViewTest {
   // FormsSeen() has happened.
   void WaitForFormsSeen() {
     task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle * 3 / 2);
+  }
+
+  // This triggers a layout update to apply JS changes like display = 'none'.
+  void ForceLayoutUpdate() {
+    GetWebFrameWidget()->UpdateAllLifecyclePhases(
+        blink::DocumentUpdateReason::kTest);
   }
 
  protected:

@@ -653,9 +653,34 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
 }
 
+class AutofillAgentSubmissionTest : public AutofillAgentTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  AutofillAgentSubmissionTest() {
+    if (improved_submission_detection()) {
+      scoped_feature_list.InitWithFeatures(
+          {features::kAutofillReplaceCachedWebElementsByRendererIds,
+           features::kAutofillImproveSubmissionDetection},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          features::kAutofillImproveSubmissionDetection);
+    }
+  }
+
+  bool improved_submission_detection() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
+                         AutofillAgentSubmissionTest,
+                         ::testing::Bool());
+
 // Test that AutofillAgent::JavaScriptChangedValue updates the
 // last interacted saved state.
-TEST_F(AutofillAgentTest,
+TEST_P(AutofillAgentSubmissionTest,
        JavaScriptChangedValueUpdatesLastInteractedSavedState) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillImproveSubmissionDetection};
@@ -698,7 +723,7 @@ TEST_F(AutofillAgentTest,
 // Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
 // updates the last interacted saved state when the <input>s have no containing
 // <form>.
-TEST_F(AutofillAgentTest,
+TEST_P(AutofillAgentSubmissionTest,
        FormlessApplyFormActionUpdatesLastInteractedSavedState) {
   LoadHTML(R"(
     <input id="text_id">
@@ -734,7 +759,8 @@ TEST_F(AutofillAgentTest,
 // Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
 // updates the last interacted saved state when the <input>s have a containing
 // <form>.
-TEST_F(AutofillAgentTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
+TEST_P(AutofillAgentSubmissionTest,
+       FormApplyFormActionUpdatesLastInteractedSavedState) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="text_id">
@@ -769,7 +795,8 @@ TEST_F(AutofillAgentTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
   EXPECT_EQ(u"autofilled", last_interacted_saved_state->fields[0].value);
 }
 
-TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {
+TEST_P(AutofillAgentSubmissionTest,
+       HideElementTriggersFormTracker_DisplayNone) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -784,7 +811,8 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {
       blink::DocumentUpdateReason::kTest);
 }
 
-TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_VisibilityHidden) {
+TEST_P(AutofillAgentSubmissionTest,
+       HideElementTriggersFormTracker_VisibilityHidden) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -799,7 +827,7 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_VisibilityHidden) {
       blink::DocumentUpdateReason::kTest);
 }
 
-TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_TypeHidden) {
+TEST_P(AutofillAgentSubmissionTest, HideElementTriggersFormTracker_TypeHidden) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -814,7 +842,7 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_TypeHidden) {
       blink::DocumentUpdateReason::kTest);
 }
 
-TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_HiddenTrue) {
+TEST_P(AutofillAgentSubmissionTest, HideElementTriggersFormTracker_HiddenTrue) {
   LoadHTML(R"(
     <form id="form_id">
       <input id="field_id">
@@ -829,7 +857,7 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_HiddenTrue) {
       blink::DocumentUpdateReason::kTest);
 }
 
-TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_ShadowDom) {
+TEST_P(AutofillAgentSubmissionTest, HideElementTriggersFormTracker_ShadowDom) {
   LoadHTML(R"(
    <form id="form_id">
     <div>
@@ -851,7 +879,7 @@ TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_ShadowDom) {
 // Test that an inferred form submission as a result of a page deleting ALL of
 // the <input>s (that the user has edited) on a page with no <form> sends the
 // contents of all of the fields to the browser.
-TEST_F(AutofillAgentTest,
+TEST_P(AutofillAgentSubmissionTest,
        FormlessOnInferredFormSubmissionAfterXhrAndAllInputsRemoved) {
   LoadHTML(R"(
     <div id='shipping'>
@@ -881,7 +909,7 @@ TEST_F(AutofillAgentTest,
 // Tests that an inferred form submission as a result of a page deleting ALL of
 // the <input>s that the user has edited but NOT ALL of the <inputs> on the page
 // sends the user-edited <inputs> to the browser.
-TEST_F(AutofillAgentTest,
+TEST_P(AutofillAgentSubmissionTest,
        FormlessOnInferredFormSubmissionAfterXhrAndSomeInputsRemoved) {
   LoadHTML(R"(
     Search: <input type='text' id='search'><br>
@@ -915,8 +943,9 @@ TEST_F(AutofillAgentTest,
 // AND
 // - An <input> other than the last interacted <input> is hidden.
 // THAT
-// The visible <input>s are sent to the browser.
-TEST_F(AutofillAgentTest, FormlessOnNavigationAfterSomeInputsRemoved) {
+// The edited <input>s are sent to the browser.
+TEST_P(AutofillAgentSubmissionTest,
+       FormlessOnNavigationAfterSomeInputsRemoved) {
   LoadHTML(R"(
     Name: <input type='text' id='name'><br>
     Address: <input type='text' id='address'>
@@ -925,12 +954,22 @@ TEST_F(AutofillAgentTest, FormlessOnNavigationAfterSomeInputsRemoved) {
   SimulateUserEditField(blink::WebFormElement(), "name", "Ariel");
   SimulateUserEditField(blink::WebFormElement(), "address", "Atlantica");
 
-  EXPECT_CALL(
-      autofill_driver(),
-      FormSubmitted(
-          AllOf(FieldsAre("id", &FormFieldData::id_attribute, {u"address"}),
-                FieldsAre("value", &FormFieldData::value, {u"Atlantica"})),
-          _, _));
+  std::vector<std::u16string> expected_id_attributes =
+      improved_submission_detection()
+          ? std::vector<std::u16string>{u"name", u"address"}
+          : std::vector<std::u16string>{u"address"};
+
+  std::vector<std::u16string> expected_values =
+      improved_submission_detection()
+          ? std::vector<std::u16string>{u"Ariel", u"Atlantica"}
+          : std::vector<std::u16string>{u"Atlantica"};
+
+  EXPECT_CALL(autofill_driver(),
+              FormSubmitted(AllOf(FieldsAre("id", &FormFieldData::id_attribute,
+                                            expected_id_attributes),
+                                  FieldsAre("value", &FormFieldData::value,
+                                            expected_values)),
+                            _, _));
 
   // Remove element that the user did not interact with last.
   ExecuteJavaScriptForTests(R"(document.getElementById('name').remove();)");
@@ -946,7 +985,7 @@ TEST_F(AutofillAgentTest, FormlessOnNavigationAfterSomeInputsRemoved) {
 // - Inferred form submission as a result of the page removing the <form> from
 //   the DOM hierarchy does not send fields which were removed from the DOM
 //   hierarchy at autofill time.
-TEST_F(AutofillAgentTest,
+TEST_P(AutofillAgentSubmissionTest,
        OnInferredFormSubmissionAfterAutofillRemovesLastQueriedElement) {
   LoadHTML(R"(
     <form id="form">

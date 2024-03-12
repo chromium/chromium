@@ -3969,6 +3969,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
       // Hide form, which is the trigger for the submission event.
       document.getElementById('shipping').style.display = 'none';
       )");
+  // This forces layout update.
+  RunUntilInputProcessed(GetRenderViewHost()->GetWidget());
   run_loop.Run();
 }
 
@@ -3999,6 +4001,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
       xhr.open('GET', '/xhr', true);
       xhr.send(null);
       )");
+  // This forces layout update.
+  RunUntilInputProcessed(GetRenderViewHost()->GetWidget());
   run_loop.Run();
 }
 
@@ -4032,6 +4036,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
       xhr.open('GET', '/xhr', true);
       xhr.send(null);
       )");
+  // This forces layout update.
+  RunUntilInputProcessed(GetRenderViewHost()->GetWidget());
   run_loop.Run();
 }
 
@@ -4063,6 +4069,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
       }
       xhr.send(null);
       )");
+  // This forces layout update.
+  RunUntilInputProcessed(GetRenderViewHost()->GetWidget());
   run_loop.Run();
 }
 
