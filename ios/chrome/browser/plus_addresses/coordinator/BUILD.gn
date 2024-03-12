@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":coordinator",
     "//base/test:test_support",
     "//components/plus_addresses",
+    "//components/plus_addresses:test_support",
     "//ios/chrome/browser/plus_addresses/model",
     "//ios/chrome/browser/plus_addresses/ui:constants",
     "//ios/chrome/browser/plus_addresses/ui:ui",

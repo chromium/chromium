@@ -15,6 +15,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -23,14 +24,9 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/1467623): Consolidate this and the desktop version. Splitting
-// them was a mechanism to reduce dependencies during implementation, but isn't
-// the ideal long-term state.
 namespace plus_addresses {
 
 namespace {
-
-constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
 
 constexpr char kPlusAddressModalEventHistogram[] =
     "Autofill.PlusAddresses.Modal.Events";
@@ -45,76 +41,6 @@ std::string FormatModalDurationMetrics(
       /*offsets=*/nullptr);
 }
 
-// Used to control the behavior of the controller's `plus_address_service_`
-// (though mocking would also be fine). Most importantly, this avoids the
-// requirement to mock the identity portions of the `PlusAddressService`.
-class FakePlusAddressService : public PlusAddressService {
- public:
-  FakePlusAddressService() = default;
-
-  void ReservePlusAddress(const url::Origin& origin,
-                          PlusAddressRequestCallback on_completed) override {
-    if (should_fail_to_reserve_) {
-      std::move(on_completed)
-          .Run(base::unexpected(PlusAddressRequestError(
-              PlusAddressRequestErrorType::kNetworkError)));
-      return;
-    }
-    std::move(on_completed)
-        .Run(PlusProfile({.facet = facet_,
-                          .plus_address = kFakePlusAddress,
-                          .is_confirmed = is_confirmed_}));
-  }
-
-  void ConfirmPlusAddress(const url::Origin& origin,
-                          const std::string& plus_address,
-                          PlusAddressRequestCallback on_completed) override {
-    if (should_fail_to_confirm_) {
-      std::move(on_completed)
-          .Run(base::unexpected(PlusAddressRequestError(
-              PlusAddressRequestErrorType::kNetworkError)));
-      return;
-    }
-    is_confirmed_ = true;
-    PlusProfile profile({.facet = facet_,
-                         .plus_address = plus_address,
-                         .is_confirmed = is_confirmed_});
-    if (on_confirmed.has_value()) {
-      std::move(on_confirmed.value()).Run(profile);
-      on_confirmed.reset();
-      return;
-    }
-    std::move(on_completed).Run(profile);
-  }
-
-  // Used to test scenarios where Reserve returns a confirmed PlusProfile.
-  void set_is_confirmed(bool confirmed) { is_confirmed_ = confirmed; }
-
-  void set_confirm_callback(PlusAddressRequestCallback callback) {
-    on_confirmed = std::move(callback);
-  }
-
-  // Used to test scenarios where error occurs on `ConfirmPlusAddress`.
-  void set_should_fail_to_confirm(bool status) {
-    should_fail_to_confirm_ = status;
-  }
-  // Used to test scenarios where error occurs on `ReservePlusAddress`.
-  void set_should_fail_to_reserve(bool status) {
-    should_fail_to_reserve_ = status;
-  }
-
-  std::optional<PlusAddressRequestCallback> on_confirmed;
-  std::string facet_ = "facet.bar";
-  bool is_confirmed_ = false;
-  std::string primary_email_address_ = "primary@plus.plus";
-  bool should_fail_to_confirm_ = false;
-  bool should_fail_to_reserve_ = false;
-
-  std::optional<std::string> GetPrimaryEmail() override {
-    // Ensure the value is present without requiring identity setup.
-    return primary_email_address_;
-  }
-};
 }  // namespace
 
 // Testing very basic functionality for now. As UI complexity increases, this

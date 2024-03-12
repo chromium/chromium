@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "base/types/expected.h"
+#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
@@ -24,65 +25,7 @@
 #import "url/gurl.h"
 #import "url/origin.h"
 
-namespace {
-constexpr char kFacet[] = "facet.bar";
-constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
-}  // namespace
-
-namespace plus_addresses {
-namespace {
-
-// Used to control the behavior of the coordinator's plus address service.
-// This avoids the identity portion of the implementation, and mocks out the
-// network requests normally handled by the `PlusAddressClient`.
-class FakePlusAddressService : public PlusAddressService {
- public:
-  FakePlusAddressService() = default;
-
-  void ReservePlusAddress(const url::Origin& origin,
-                          PlusAddressRequestCallback on_completed) override {
-    if (force_error_) {
-      std::move(on_completed)
-          .Run(base::unexpected(PlusAddressRequestError(
-              PlusAddressRequestErrorType::kOAuthError)));
-      return;
-    }
-    std::move(on_completed)
-        .Run(PlusProfile({.facet = kFacet,
-                          .plus_address = kFakePlusAddress,
-                          .is_confirmed = false}));
-  }
-
-  void ConfirmPlusAddress(const url::Origin& origin,
-                          const std::string& plus_address,
-                          PlusAddressRequestCallback on_completed) override {
-    if (force_error_) {
-      std::move(on_completed)
-          .Run(base::unexpected(PlusAddressRequestError(
-              PlusAddressRequestErrorType::kOAuthError)));
-      return;
-    }
-    std::move(on_completed)
-        .Run(PlusProfile({.facet = kFacet,
-                          .plus_address = kFakePlusAddress,
-                          .is_confirmed = false}));
-  }
-
-  std::optional<std::string> GetPrimaryEmail() override {
-    // Ensure the value is present without requiring identity setup.
-    return "plus+primary@plus.plus";
-  }
-
-  void set_force_error_for_testing(bool force_error) {
-    force_error_ = force_error;
-  }
-
- private:
-  bool force_error_;
-};
-
-}  // namespace
-}  // namespace plus_addresses
+using plus_addresses::FakePlusAddressService;
 
 class PlusAddressBottomSheetMediatorTest : public PlatformTest {
  protected:
@@ -98,12 +41,18 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
     incognito_ = browser_state_.get()->IsOffTheRecord();
   }
+
+  FakePlusAddressService& service() { return service_; }
+
   base::test::TaskEnvironment task_environment_;
   id consumer_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   BOOL incognito_;
+
+ private:
+  FakePlusAddressService service_;
 };
 
 // Ensure that the consumer is notified when a plus address is successfully
@@ -115,17 +64,17 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
 #define MAYBE_ReservePlusAddress DISABLED_ReservePlusAddress
 #endif
 TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ReservePlusAddress) {
-  plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
-          initWithPlusAddressService:&service
-                           activeUrl:GURL(kFacet)
+          initWithPlusAddressService:&service()
+                           activeUrl:GURL(FakePlusAddressService::kFacet)
                     autofillCallback:base::DoNothing()
                            urlLoader:url_loader_
                            incognito:incognito_];
   mediator.consumer = consumer_;
   OCMExpect([consumer_
-      didReservePlusAddress:base::SysUTF8ToNSString(kFakePlusAddress)]);
+      didReservePlusAddress:base::SysUTF8ToNSString(
+                                FakePlusAddressService::kFakePlusAddress)]);
   [mediator reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -133,12 +82,11 @@ TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ReservePlusAddress) {
 // Ensure that the consumer is notified when errors are observed by the
 // mediator.
 TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
-  plus_addresses::FakePlusAddressService service;
-  service.set_force_error_for_testing(/*force_error_for_testing=*/true);
+  service().set_should_fail_to_reserve(true);
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
-          initWithPlusAddressService:&service
-                           activeUrl:GURL(kFacet)
+          initWithPlusAddressService:&service()
+                           activeUrl:GURL(FakePlusAddressService::kFacet)
                     autofillCallback:base::DoNothing()
                            urlLoader:url_loader_
                            incognito:incognito_];
@@ -158,17 +106,17 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
 #define MAYBE_ConfirmPlusAddress DISABLED_ConfirmPlusAddress
 #endif
 TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddress) {
-  plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
-          initWithPlusAddressService:&service
-                           activeUrl:GURL(kFacet)
+          initWithPlusAddressService:&service()
+                           activeUrl:GURL(FakePlusAddressService::kFacet)
                     autofillCallback:base::DoNothing()
                            urlLoader:url_loader_
                            incognito:incognito_];
   mediator.consumer = consumer_;
   OCMExpect([consumer_
-      didReservePlusAddress:base::SysUTF8ToNSString(kFakePlusAddress)]);
+      didReservePlusAddress:base::SysUTF8ToNSString(
+                                FakePlusAddressService::kFakePlusAddress)]);
   [mediator reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ didConfirmPlusAddress]);
@@ -184,33 +132,32 @@ TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddress) {
 #define MAYBE_ConfirmPlusAddressError DISABLED_ConfirmPlusAddressError
 #endif
 TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddressError) {
-  plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
-          initWithPlusAddressService:&service
-                           activeUrl:GURL(kFacet)
+          initWithPlusAddressService:&service()
+                           activeUrl:GURL(FakePlusAddressService::kFacet)
                     autofillCallback:base::DoNothing()
                            urlLoader:url_loader_
                            incognito:incognito_];
   mediator.consumer = consumer_;
   OCMExpect([consumer_
-      didReservePlusAddress:base::SysUTF8ToNSString(kFakePlusAddress)]);
+      didReservePlusAddress:base::SysUTF8ToNSString(
+                                FakePlusAddressService::kFakePlusAddress)]);
   [mediator reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ notifyError:plus_addresses::PlusAddressMetrics::
                                        PlusAddressModalCompletionStatus::
                                            kConfirmPlusAddressError]);
-  service.set_force_error_for_testing(/*force_error_for_testing=*/true);
+  service().set_should_fail_to_confirm(true);
   [mediator confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 TEST_F(PlusAddressBottomSheetMediatorTest, openManagementUrlOnNewTab) {
-  plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
-          initWithPlusAddressService:&service
-                           activeUrl:GURL(kFacet)
+          initWithPlusAddressService:&service()
+                           activeUrl:GURL(FakePlusAddressService::kFacet)
                     autofillCallback:base::DoNothing()
                            urlLoader:url_loader_
                            incognito:incognito_];
@@ -224,11 +171,10 @@ TEST_F(PlusAddressBottomSheetMediatorTest, openManagementUrlOnNewTab) {
 
 // Ensure that `openNewTab` opens errorReportUrl.
 TEST_F(PlusAddressBottomSheetMediatorTest, openErrorReportUrlOnNewTab) {
-  plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
-          initWithPlusAddressService:&service
-                           activeUrl:GURL(kFacet)
+          initWithPlusAddressService:&service()
+                           activeUrl:GURL(FakePlusAddressService::kFacet)
                     autofillCallback:base::DoNothing()
                            urlLoader:url_loader_
                            incognito:incognito_];

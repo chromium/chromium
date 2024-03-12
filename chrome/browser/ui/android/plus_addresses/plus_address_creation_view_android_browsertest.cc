@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -18,43 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
-
-namespace {
-
-constexpr char kFakeEmailAddressForCallback[] = "plus+plus@plus.plus";
-
-// Used to control the behavior of the controller's `plus_address_service_`
-// (though mocking would also be fine). Most importantly, this avoids the
-// requirement to mock the identity portions of the `PlusAddressService`.
-class FakePlusAddressService : public PlusAddressService {
- public:
-  FakePlusAddressService() = default;
-
-  void ReservePlusAddress(const url::Origin& origin,
-                          PlusAddressRequestCallback on_completed) override {
-    std::move(on_completed)
-        .Run(PlusProfile({.facet = facet_,
-                          .plus_address = plus_address_,
-                          .is_confirmed = false}));
-  }
-
-  void ConfirmPlusAddress(const url::Origin& origin,
-                          const std::string& plus_address,
-                          PlusAddressRequestCallback on_completed) override {
-    std::move(on_completed)
-        .Run(PlusProfile({.facet = facet_,
-                          .plus_address = plus_address_,
-                          .is_confirmed = true}));
-  }
-
-  std::string plus_address_ = kFakeEmailAddressForCallback;
-  std::string facet_ = "facet.bar";
-
-  std::optional<std::string> GetPrimaryEmail() override {
-    return "plus+primary@plus.plus";
-  }
-};
-}  // namespace
 
 // TODO(crbug.com/1467623): Consolidate android/desktop controllers, and
 // presumably switch to the `PlatformBrowserTest` pattern.
@@ -99,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {
   EXPECT_FALSE(future.IsReady());
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), kFakeEmailAddressForCallback);
+  EXPECT_EQ(future.Get(), FakePlusAddressService::kFakePlusAddress);
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
@@ -124,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
 
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), kFakeEmailAddressForCallback);
+  EXPECT_EQ(future.Get(), FakePlusAddressService::kFakePlusAddress);
   EXPECT_FALSE(second_future.IsReady());
 }
 
@@ -171,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
       second_future.GetCallback());
   controller->OnConfirmed();
   EXPECT_TRUE(second_future.IsReady());
-  EXPECT_EQ(second_future.Get(), kFakeEmailAddressForCallback);
+  EXPECT_EQ(second_future.Get(), FakePlusAddressService::kFakePlusAddress);
 }
 
 // Ensure that closing the web contents with the plus_address creation UI open
