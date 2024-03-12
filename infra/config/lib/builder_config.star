@@ -6,14 +6,14 @@
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys", "kinds", "triggerer")
+load("//project.star", "settings")
 load("./args.star", "args")
 load("./builder_url.star", "linkify_builder")
-load("./sheriff_rotations.star", "get_sheriff_rotations")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./nodes.star", "nodes")
+load("./sheriff_rotations.star", "get_sheriff_rotations")
 load("./structs.star", "structs")
 load("./targets.star", "get_targets_spec_generator", "register_targets")
-load("//project.star", "settings")
 
 def _enum(**kwargs):
     """Create an enum struct.
@@ -186,19 +186,19 @@ def _skylab_upload_location(*, gs_bucket, gs_extra = None):
 def _clusterfuzz_archive(
         *,
         gs_bucket,
-        gs_acl = None,
         archive_name_prefix,
+        gs_acl = None,
         archive_subdir = None):
     """The details for configuring clusterfuzz archiving.
 
     Args:
         gs_bucket: (str) The name of the Google Cloud Storage bucket to upload
             the archive to.
-        gs_acl: (str) The name of a Google Cloud Storage canned ACL to apply to
-            the uploaded archive.
         archive_name_prefix: (str) The prefix of the archive's name. The name of
             the archive will contain additional details such as platform and
             target among others.
+        gs_acl: (str) The name of a Google Cloud Storage canned ACL to apply to
+            the uploaded archive.
         archive_subdir: (str) An optional additional subdirectory within the
             platform/target directory to upload the archive to.
     """
@@ -234,9 +234,9 @@ def _bisect_archive(
 
 def _builder_spec(
         *,
-        execution_mode = _execution_mode.COMPILE_AND_TEST,
         gclient_config,
         chromium_config,
+        execution_mode = _execution_mode.COMPILE_AND_TEST,
         android_config = None,
         android_version_file = None,
         clobber = None,
@@ -250,9 +250,9 @@ def _builder_spec(
     """Details for configuring execution for a single builder.
 
     Args:
-        execution_mode: (execution_mode) The execution mode of the builder.
         gclient_config: (gclient_config) The gclient config for the builder.
         chromium_config: (chromium_config) The chromium config for the builder.
+        execution_mode: (execution_mode) The execution mode of the builder.
         android_config: (android_config) The android config for the builder.
         android_version_file: (str) A path relative to the checkout to a file
             containing the Chrome version information for Android.
@@ -632,7 +632,7 @@ def _check_specs_for_consistency(bucket_name, builder_name, entries):
                 bucket_name,
                 builder_name,
                 "".join(
-                    ["\n  {}".format(l) for l in failure_output],
+                    ["\n  {}".format(o) for o in failure_output],
                 ),
             ))
 

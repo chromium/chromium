@@ -6,6 +6,8 @@
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
+"""Entrypoint for `lucicfg generate infra/config/main.star`."""
+
 load("//lib/branches.star", "branches")
 load("//lib/chrome_settings.star", "chrome_settings")
 load("//project.star", "settings")

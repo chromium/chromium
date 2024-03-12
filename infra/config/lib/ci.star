@@ -13,11 +13,11 @@ corresponding attribute on `defaults` that is a `lucicfg.var` that can be used
 to set the default value. Can also be accessed through `ci.defaults`.
 """
 
+load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builder_config.star", "builder_config")
 load("./builders.star", "builders", "os", "os_category")
-load("//project.star", "settings")
 
 defaults = args.defaults(
     extends = builders.defaults,
