@@ -15,6 +15,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 
 namespace ash {
 
@@ -22,7 +23,8 @@ class BirchDataProvider;
 
 // Birch model, which is used to aggregate and store relevant information from
 // different providers.
-class ASH_EXPORT BirchModel : public SessionObserver {
+class ASH_EXPORT BirchModel : public SessionObserver,
+                              public SimpleGeolocationProvider::Observer {
  public:
   BirchModel();
   BirchModel(const BirchModel&) = delete;
@@ -75,6 +77,9 @@ class ASH_EXPORT BirchModel : public SessionObserver {
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // SimpleGeolocationProvider::Observer:
+  void OnGeolocationPermissionChanged(bool enabled) override;
 
   void OverrideWeatherProviderForTest(
       std::unique_ptr<BirchDataProvider> weather_provider);

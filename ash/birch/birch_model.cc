@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 
 namespace ash {
 
@@ -34,9 +35,11 @@ BirchModel::BirchModel() {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
   }
   Shell::Get()->session_controller()->AddObserver(this);
+  SimpleGeolocationProvider::GetInstance()->AddObserver(this);
 }
 
 BirchModel::~BirchModel() {
+  SimpleGeolocationProvider::GetInstance()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
@@ -189,10 +192,11 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
 }
 
 bool BirchModel::IsDataFresh() {
-  return (!birch_client_ ||
-          (is_calendar_data_fresh_ && is_files_data_fresh_ &&
-           is_tabs_data_fresh_ && is_release_notes_data_fresh_)) &&
-         (!weather_provider_ || is_weather_data_fresh_);
+  bool is_birch_client_fresh =
+      !birch_client_ || (is_calendar_data_fresh_ && is_files_data_fresh_ &&
+                         is_tabs_data_fresh_ && is_release_notes_data_fresh_);
+  bool is_weather_fresh = !weather_provider_ || is_weather_data_fresh_;
+  return is_birch_client_fresh && is_weather_fresh;
 }
 
 void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
@@ -208,6 +212,14 @@ void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
   // Clear the existing data and mark the data as not fresh.
   ClearAllItems();
   MarkDataNotFresh();
+}
+
+void BirchModel::OnGeolocationPermissionChanged(bool enabled) {
+  // If geolocation permission is disabled, remove any cached weather data.
+  if (!enabled) {
+    weather_items_.clear();
+    is_weather_data_fresh_ = false;
+  }
 }
 
 void BirchModel::OverrideWeatherProviderForTest(

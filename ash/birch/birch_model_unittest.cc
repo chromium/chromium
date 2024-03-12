@@ -10,6 +10,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
@@ -17,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -710,6 +712,28 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
 
   // The data is not fresh.
   EXPECT_FALSE(model->IsDataFresh());
+}
+
+TEST_F(BirchModelTest, WeatherItemsClearedWhenGeolocationDisabled) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Geolocation starts as allowed.
+  auto* geolocation_provider = SimpleGeolocationProvider::GetInstance();
+  ASSERT_EQ(geolocation_provider->GetGeolocationAccessLevel(),
+            GeolocationAccessLevel::kAllowed);
+
+  // Add a weather item.
+  std::vector<BirchWeatherItem> weather_items;
+  weather_items.emplace_back(u"Sunny", u"72", ui::ImageModel());
+  model->SetWeatherItems(std::move(weather_items));
+  ASSERT_FALSE(model->GetWeatherForTest().empty());
+
+  // Disable geolocation permission.
+  geolocation_provider->SetGeolocationAccessLevel(
+      GeolocationAccessLevel::kDisallowed);
+
+  // The weather item is removed.
+  EXPECT_TRUE(model->GetWeatherForTest().empty());
 }
 
 }  // namespace ash

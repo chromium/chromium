@@ -17,6 +17,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -69,6 +70,13 @@ BirchWeatherProvider::BirchWeatherProvider(BirchModel* birch_model)
 BirchWeatherProvider::~BirchWeatherProvider() = default;
 
 void BirchWeatherProvider::RequestBirchDataFetch() {
+  if (!SimpleGeolocationProvider::GetInstance()
+           ->IsGeolocationUsageAllowedForSystem()) {
+    // Weather is not allowed if geolocation is off.
+    birch_model_->SetWeatherItems({});
+    return;
+  }
+
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
