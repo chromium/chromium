@@ -22,6 +22,15 @@ class PaymentsDataManagerTestApi {
     return payments_data_manager_->credit_card_benefits_.size();
   }
 
+  void SetImageFetcher(AutofillImageFetcherBase* image_fetcher) {
+    payments_data_manager_->image_fetcher_ = image_fetcher;
+  }
+
+  void OnCardArtImagesFetched(
+      std::vector<std::unique_ptr<CreditCardArtImage>> images) {
+    payments_data_manager_->OnCardArtImagesFetched(std::move(images));
+  }
+
  private:
   const raw_ref<PaymentsDataManager> payments_data_manager_;
 };

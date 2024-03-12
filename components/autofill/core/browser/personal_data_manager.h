@@ -697,7 +697,6 @@ class PersonalDataManager : public KeyedService,
   // TODO(b/322170538): The `PaymentsDataManager` shouldn't depend on the PDM
   // at all, let alone befriend it.
   friend class PaymentsDataManager;
-  friend class PersonalDataManagerTestApi;
   // Used to get a pointer to the strike database for migrating existing
   // profiles. Note, the result can be a nullptr, for example, on incognito
   // mode.

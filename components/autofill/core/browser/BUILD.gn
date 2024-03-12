@@ -891,7 +891,6 @@ static_library("test_support") {
     "payments/test_virtual_card_enrollment_manager.cc",
     "payments/test_virtual_card_enrollment_manager.h",
     "payments_data_manager_test_api.h",
-    "personal_data_manager_test_api.h",
     "personal_data_manager_test_utils.cc",
     "personal_data_manager_test_utils.h",
     "profile_token_quality_test_api.cc",

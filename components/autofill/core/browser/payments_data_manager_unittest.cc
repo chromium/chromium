@@ -37,7 +37,6 @@
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
@@ -1624,7 +1623,8 @@ TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
                                            expected_image);
   std::vector<std::unique_ptr<CreditCardArtImage>> images;
   images.push_back(std::move(credit_card_art_image));
-  test_api(*personal_data_).OnCardArtImagesFetched(std::move(images));
+  test_api(personal_data_->payments_data_manager())
+      .OnCardArtImagesFetched(std::move(images));
 
   gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
       GURL("https://www.example.com"));
@@ -1664,7 +1664,8 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
 
 TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
   MockAutofillImageFetcher mock_image_fetcher;
-  test_api(*personal_data_).SetImageFetcher(&mock_image_fetcher);
+  test_api(personal_data_->payments_data_manager())
+      .SetImageFetcher(&mock_image_fetcher);
   auto wait_for_fetch_images_for_url = [&] {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_image_fetcher, FetchImagesForURLs)

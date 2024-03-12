@@ -249,7 +249,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   friend class PaymentsDataManagerTestApi;
   // TODO(b/322170538): Remove dependency.
   friend class PersonalDataManager;
-  friend class PersonalDataManagerTestApi;
   friend class TestPaymentsDataManager;
   friend class TestPersonalDataManager;
 
