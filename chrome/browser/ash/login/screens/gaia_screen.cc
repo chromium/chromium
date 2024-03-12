@@ -100,7 +100,7 @@ std::string GaiaScreen::GetResultString(Result result) {
     case Result::ENTER_QUICK_START:
       return "EnterQuickStart";
     case Result::QUICK_START_ONGOING:
-      return "QuickStartOngoing";
+      return BaseScreen::kNotApplicable;
   }
 }
 
@@ -113,6 +113,16 @@ GaiaScreen::GaiaScreen(base::WeakPtr<TView> view,
 
 GaiaScreen::~GaiaScreen() {
   backlights_forced_off_observation_.Reset();
+}
+
+bool GaiaScreen::MaybeSkip(WizardContext& context) {
+  // Continue QuickStart flow if there is an ongoing setup.
+  if (context.quick_start_setup_ongoing) {
+    exit_callback_.Run(Result::QUICK_START_ONGOING);
+    return true;
+  }
+
+  return false;
 }
 
 void GaiaScreen::LoadOnlineGaia() {
@@ -194,12 +204,6 @@ const std::string& GaiaScreen::EnrollmentNudgeEmail() {
 void GaiaScreen::ShowImpl() {
   if (!view_)
     return;
-
-  // Continue QuickStart flow if there is an ongoing setup.
-  if (context()->quick_start_setup_ongoing) {
-    exit_callback_.Run(Result::QUICK_START_ONGOING);
-    return;
-  }
 
   if (!backlights_forced_off_observation_.IsObserving()) {
     backlights_forced_off_observation_.Observe(

@@ -76,6 +76,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
       ScreenBacklightState screen_backlight_state) override;
 
  private:
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
