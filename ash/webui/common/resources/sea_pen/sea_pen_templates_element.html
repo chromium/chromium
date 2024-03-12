@@ -26,6 +26,16 @@
   wallpaper-grid-item[data-sea-pen-image]::part(text) {
     position: unset;
   }
+
+  wallpaper-grid-item:hover::part(image) {
+    filter: brightness(55%);
+  }
+
+  wallpaper-grid-item::part(textShadow) {
+    background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
+        rgba(var(--google-grey-900-rgb), 40%));
+    height: 100%;
+  }
 </style>
 <!-- TODO(b/308200616): Add real text -->
 <h2 class="wallpaper-collections-heading">[[i18n('seaPenTemplateHeading')]]</h2>
