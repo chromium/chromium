@@ -133,6 +133,12 @@ bool BaseQueue::AllocateBuffers(uint32_t num_planes, size_t num_buffers) {
 
 void BaseQueue::DeallocateBuffers() {
   DVLOGF(3);
+
+  if (MemoryType::kMemoryMapped == memory_type_) {
+    for (auto& buffer : buffers_) {
+      device_->MunmapBuffer(buffer);
+    }
+  }
   buffers_.clear();
 
   const auto count = device_->RequestBuffers(buffer_type_, memory_type_, 0);
