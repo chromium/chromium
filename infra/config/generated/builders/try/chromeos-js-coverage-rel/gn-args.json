@@ -8,6 +8,7 @@
     "proprietary_codecs": true,
     "target_os": "chromeos",
     "use_javascript_coverage": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

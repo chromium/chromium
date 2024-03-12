@@ -5,6 +5,7 @@
     "is_component_build": false,
     "is_debug": false,
     "is_tsan": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

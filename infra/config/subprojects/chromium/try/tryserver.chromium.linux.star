@@ -26,6 +26,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -337,6 +338,8 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
+    siso_enabled = False,
     tryjob = try_.job(),
 )
 
@@ -391,7 +394,6 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -400,7 +402,6 @@ try_.compilator_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 # TODO(crbug.com/1394755): Remove this builder after burning down failures
@@ -518,7 +519,6 @@ try_.builder(
     },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -573,16 +573,20 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
+    siso_enabled = False,
+    tryjob = try_.job(),
 )
 
 try_.compilator_builder(
     name = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
+    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
+    siso_enabled = False,
 )
 
 # TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
@@ -603,7 +607,6 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -612,7 +615,6 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_asan_siso_rel_ng-compilator",
     main_list_view = "try",
-    siso_enabled = True,
     # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
     # Many concurrent compile jobs may cause the slowness.
     siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -669,7 +671,6 @@ try_.builder(
     # regression in compiler or toolchain.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -729,7 +730,6 @@ try_.builder(
     },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -821,16 +821,20 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
+    siso_enabled = False,
+    tryjob = try_.job(),
 )
 
 try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
     main_list_view = "try",
+    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
+    siso_enabled = False,
 )
 
 # TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
@@ -851,7 +855,6 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -860,7 +863,6 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_tsan_siso_rel_ng-compilator",
     main_list_view = "try",
-    siso_enabled = True,
     # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
     # Many concurrent compile jobs may cause the slowness.
     siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
