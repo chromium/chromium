@@ -58,8 +58,6 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
     TransitionState(State::kAborted);
     return;
   }
-
-  SCOPED_CRASH_KEY_STRING256("SWRace", "request_url", request.url.spec());
 }
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -418,6 +416,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     return;
   }
 
+  SCOPED_CRASH_KEY_STRING256("SWRace", "request_url", request_.url.spec());
   auto [read_result, read_buffer] = read_buffer_manager_->ReadData();
   TRACE_EVENT_WITH_FLOW2("ServiceWorker",
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",

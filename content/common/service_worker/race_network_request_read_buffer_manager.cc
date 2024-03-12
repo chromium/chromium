@@ -55,6 +55,8 @@ RaceNetworkRequestReadBufferManager::ReadData() {
             network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
   }
 
+  SCOPED_CRASH_KEY_BOOL("SWRace", "consumer_handle_valid",
+                        consumer_handle_->is_valid());
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(num_bytes);
   result = consumer_handle_->ReadData(buffer->data(), &num_bytes,
