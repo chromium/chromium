@@ -759,15 +759,15 @@ const TabGroup* WebStateList::CreateGroupImpl(
   int pivot_index = kInvalidIndex;
   const int first_index = *indices.begin();
   if (IsWebStatePinnedAt(first_index)) {
-    // Move to the last pinned tabs.
-    pivot_index = pinned_tabs_count_ - 1;
+    // Move to the last pinned tab.
+    pivot_index = pinned_tabs_count_;
   } else {
     const TabGroup* group = GetGroupOfWebStateAt(first_index);
     const TabGroup* group_before = ContainsIndex(first_index - 1)
                                        ? GetGroupOfWebStateAt(first_index - 1)
                                        : nullptr;
     if (group && group == group_before) {
-      pivot_index = GetWebStates(group).end() - 1;
+      pivot_index = GetWebStates(group).end();
     } else {
       pivot_index = first_index;
     }
@@ -785,119 +785,26 @@ const TabGroup* WebStateList::CreateGroupImpl(
   std::vector<int> before_pivot;
   std::vector<int> after_pivot;
   for (const auto& index : indices) {
-    if (index <= pivot_index) {
+    if (index < pivot_index) {
       before_pivot.push_back(index);
     } else {
       after_pivot.push_back(index);
     }
   }
 
-  // Prepare the status for the observers. The moves don't change the active
-  // web state.
-  web::WebState* const active_web_state = GetActiveWebState();
-  const WebStateListStatus status = {.old_active_web_state = active_web_state,
-                                     .new_active_web_state = active_web_state};
-
   // Iterate over the WebStates on the left of the pivot.
   // Reverse `before_pivot` to start from the rightmost, to keep indices valid.
   std::reverse(before_pivot.begin(), before_pivot.end());
-  int to_index = pivot_index;
+  int to_index = pivot_index - 1;
   for (int index : before_pivot) {
-    // Unpin if needed.
-    bool pinned_state_changed = false;
-    if (index < pinned_tabs_count_) {
-      CHECK_GT(pinned_tabs_count_, 0);
-      --pinned_tabs_count_;
-      pinned_state_changed = true;
-    }
-
-    // Update the group tag.
-    const TabGroup* old_group = GetGroupOfWebStateAt(index);
-    web_state_wrappers_[index]->SetGroup(new_group);
-
-    JustMoveWebStateWrapperAt(index, to_index);
-
-    // Update the new group range (doing it before updating the old group
-    // range in case the groups are the same, to avoid having a negative
-    // count).
-    {
-      auto it = groups_.find(new_group);
-      DCHECK(it != groups_.end());
-      Range range = it->second;
-      it->second = Range(to_index, range.count() + 1);
-    }
-
-    // Update the old group range.
-    if (old_group) {
-      auto it = groups_.find(old_group);
-      DCHECK(it != groups_.end());
-      it->second.ContractRight();
-    }
-
-    // Notify the changes to the observers.
-    if (index == to_index) {
-      const WebStateListChangeStatusOnly status_only_change(
-          GetWebStateAt(index), index, pinned_state_changed, old_group,
-          new_group);
-      for (auto& observer : observers_) {
-        observer.WebStateListDidChange(this, status_only_change, status);
-      }
-    } else {
-      web::WebState* web_state = GetWebStateAt(to_index);
-      const WebStateListChangeMove move_change(web_state, index, to_index,
-                                               pinned_state_changed, old_group,
-                                               new_group);
-      for (auto& observer : observers_) {
-        observer.WebStateListDidChange(this, move_change, status);
-      }
-    }
-
+    MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, new_group);
     --to_index;
   }
 
   // Iterate over the WebStates on the right of the pivot.
-  to_index = pivot_index + 1;
+  to_index = pivot_index;
   for (int index : after_pivot) {
-    // Update the group tag.
-    const TabGroup* old_group = GetGroupOfWebStateAt(index);
-    web_state_wrappers_[index]->SetGroup(new_group);
-
-    JustMoveWebStateWrapperAt(index, to_index);
-
-    // Update the new group range (doing it before updating the old group
-    // range in case the groups are the same, to avoid having a negative
-    // count).
-    {
-      auto it = groups_.find(new_group);
-      DCHECK(it != groups_.end());
-      it->second.ExpandRight();
-    }
-
-    // Update the old group range.
-    if (old_group) {
-      auto it = groups_.find(old_group);
-      DCHECK(it != groups_.end());
-      it->second.ContractLeft();
-    }
-
-    // Notify the changes to the observers.
-    if (index == to_index) {
-      const WebStateListChangeStatusOnly status_only_change(
-          GetWebStateAt(index), index, /*pinned_state_changed=*/false,
-          old_group, new_group);
-      for (auto& observer : observers_) {
-        observer.WebStateListDidChange(this, status_only_change, status);
-      }
-    } else {
-      web::WebState* web_state = GetWebStateAt(to_index);
-      const WebStateListChangeMove move_change(web_state, index, to_index,
-                                               /*pinned_state_changed=*/false,
-                                               old_group, new_group);
-      for (auto& observer : observers_) {
-        observer.WebStateListDidChange(this, move_change, status);
-      }
-    }
-
+    MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, new_group);
     ++to_index;
   }
 
