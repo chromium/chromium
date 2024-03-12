@@ -593,9 +593,17 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
            net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN ||
        max_bandwidth_mbps <
            blink::features::kLCPPFontURLPredictorThresholdInMbps.Get())) {
+    base::UmaHistogramEnumeration(
+        "Blink.LCPP.FontFetch.Disabled.ConnectionType", connection_type,
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_LAST);
     return std::vector<GURL>();
   }
-
+  // Workaround: we cannot use UmaHistogramEnumeration because
+  // connection_type is defined with old C enum, and setting kValue causes
+  // namespace conflict.
+  base::UmaHistogramEnumeration(
+      "Blink.LCPP.FontFetch.Enabled.ConnectionType", connection_type,
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_LAST);
   return font_urls;
 }
 
