@@ -35,7 +35,7 @@ extern const char kHatsShouldShowSurveyReasonAndroidHistogram[];
 // configuration. It is created on a per profile basis.
 class HatsServiceAndroid : public HatsService {
  public:
-  class DelayedSurveyTask {
+  class DelayedSurveyTask : public content::WebContentsObserver {
    public:
     DelayedSurveyTask(HatsServiceAndroid* hats_service,
                       const std::string& trigger,
@@ -51,7 +51,7 @@ class HatsServiceAndroid : public HatsService {
     DelayedSurveyTask(const DelayedSurveyTask&) = delete;
     DelayedSurveyTask& operator=(const DelayedSurveyTask&) = delete;
 
-    ~DelayedSurveyTask();
+    ~DelayedSurveyTask() override;
 
     // Asks |hats_service_| to launch the survey with id |trigger_| for tab
     // |web_contents_|.
@@ -59,7 +59,8 @@ class HatsServiceAndroid : public HatsService {
 
     void DismissCallback(messages::DismissReason reason);
 
-    content::WebContents* web_contents() const { return web_contents_.get(); }
+    // content::WebContentsObserver
+    void WebContentsDestroyed() override;
 
     // Returns a weak pointer to this object.
     base::WeakPtr<DelayedSurveyTask> GetWeakPtr();
@@ -72,7 +73,6 @@ class HatsServiceAndroid : public HatsService {
     messages::MessageWrapper* GetMessageForTesting() { return message_.get(); }
 
    private:
-    raw_ptr<content::WebContents> web_contents_;
     raw_ptr<HatsServiceAndroid> hats_service_;
 
     std::unique_ptr<messages::MessageWrapper> message_;
