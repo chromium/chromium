@@ -501,11 +501,8 @@ void RecordImportFromPKCS12KcerResult(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(b/264387231): Record UMA events about PKCS#12 import using Kcer.
 
-  if (kcer_import_result.has_value() || (nss_import_result == net::OK)) {
-    // Return success if at least one of the branches succeeded. The cert should
-    // be usable.
-    return std::move(callback).Run(net::OK);
-  }
+  // Just return the nss_import_result. Kcer will attempt to import only if NSS
+  // succeeds and even if Kcer fails, the cert should be usable.
   return std::move(callback).Run(nss_import_result);
 }
 
@@ -698,7 +695,8 @@ void CertificateManagerModel::ImportFromPKCS12(
   // slot). With the experiment enabled it should also be imported into Chaps.
   // `is_extractable` == false means that the cert came from the "Import and
   // Bind" button and it's import into Chaps by default.
-  if (is_extractable && chromeos::features::IsPkcs12ToChapsDualWriteEnabled()) {
+  if ((nss_import_result == net::OK) && is_extractable &&
+      chromeos::features::IsPkcs12ToChapsDualWriteEnabled()) {
     std::string u8_password = base::UTF16ToUTF8(password);
     return kcer_->ImportPkcs12Cert(
         kcer::Token::kUser,
