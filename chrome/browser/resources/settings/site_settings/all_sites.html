@@ -63,7 +63,7 @@
           [[getClearStorageDescription_(totalUsage_, filter)]]
       </div>
       <div id="clearAllButton"
-          hidden$="[[!shouldShowClearAllButton_(filteredList_)]]">
+          hidden$="[[!shouldShowClearAllButton_(filteredList_.length)]]">
         <cr-button type="button" on-click="onConfirmClearAllData_">
           [[getClearDataButtonString_(filter)]]
         </cr-button>
