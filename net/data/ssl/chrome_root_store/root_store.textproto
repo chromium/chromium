@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 14
+version_major: 15
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -815,5 +815,19 @@ trust_anchors {
 # https://sectigopublicserverauthenticationrootr46-ev.sectigo.com/
 trust_anchors {
   sha256_hex: "7bb647a62aeeac88bf257aa522d01ffea395e0ab45c73f93f65654ec38f25a06"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# CN=SSL.com TLS ECC Root CA 2022, O=SSL Corporation, C=US
+# https://test-root-2022-ecc.ssl.com
+trust_anchors {
+  sha256_hex: "c32ffd9f46f936d16c3673990959434b9ad60aafbb9e7cf33654f144cc1ba143"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# CN=SSL.com TLS RSA Root CA 2022, O=SSL Corporation, C=US
+# https://test-root-2022-rsa.ssl.com
+trust_anchors {
+  sha256_hex: "8faf7d2e2cb4709bb8e0b33666bf75a5dd45b5de480f8ea8d4bfe6bebc17f2ed"
   ev_policy_oids: "2.23.140.1.1"
 }
