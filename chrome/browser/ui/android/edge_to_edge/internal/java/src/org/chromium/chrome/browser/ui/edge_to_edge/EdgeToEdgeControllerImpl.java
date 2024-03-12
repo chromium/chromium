@@ -66,6 +66,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private boolean mDidSetDecorAndListener;
     private InsetObserver mInsetObserver;
     private @Nullable Insets mSystemInsets;
+    private @Nullable Insets mKeyboardInsets;
+    private @Nullable Integer mBottomInsetOverride;
     private @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
 
     /**
@@ -144,7 +146,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     @Override
     public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {
         mPadAdjusters.addObserver(adjuster);
-        if (mSystemInsets != null) adjuster.adjustToEdge(mIsActivityToEdge, mSystemInsets.bottom);
+        int bottomInset = mIsActivityToEdge && mSystemInsets != null ? mSystemInsets.bottom : 0;
+        if (mSystemInsets != null) adjuster.overrideBottomInset(bottomInset);
     }
 
     @Override
@@ -254,25 +257,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
             mDidSetDecorAndListener = true;
             mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(mActivity.getWindow(), false);
             mWindowInsetsConsumer =
-                    (view, windowInsets) -> {
-                        Insets newInsets =
-                                windowInsets.getInsets(
-                                        WindowInsetsCompat.Type.navigationBars()
-                                                + WindowInsetsCompat.Type.statusBars());
-                        if (!newInsets.equals(mSystemInsets)) {
-                            mSystemInsets = newInsets;
-                            // When a foldable goes to/from tablet mode we must reassess.
-                            // TODO(https://crbug.com/325356134) Find a cleaner check and remedy.
-                            mIsActivityToEdge =
-                                    mIsActivityToEdge
-                                            && EdgeToEdgeControllerFactory.isSupportedConfiguration(
-                                                    mActivity);
-                            // Note that we cannot adjustEdges earlier since we need the system
-                            // insets.
-                            adjustEdges(mIsActivityToEdge, viewId, webContents);
-                        }
-                        return windowInsets;
-                    };
+                    (view, windowInsets) -> handleWindowInsets(windowInsets, viewId, webContents);
             if (EdgeToEdgeUtils.isInsetsManagementEnabled()) {
                 mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
             } else {
@@ -282,6 +267,32 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         } else {
             adjustEdges(toEdge, viewId, webContents);
         }
+    }
+
+    private WindowInsetsCompat handleWindowInsets(
+            @NonNull WindowInsetsCompat windowInsets,
+            int viewId,
+            @Nullable WebContents webContents) {
+        Insets newInsets =
+                windowInsets.getInsets(
+                        WindowInsetsCompat.Type.navigationBars()
+                                + WindowInsetsCompat.Type.statusBars());
+        Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+
+        if (!newInsets.equals(mSystemInsets) || !newKeyboardInsets.equals(mKeyboardInsets)) {
+            mSystemInsets = newInsets;
+            mKeyboardInsets = newKeyboardInsets;
+
+            // When a foldable goes to/from tablet mode we must reassess.
+            // TODO(https://crbug.com/325356134) Find a cleaner check and remedy.
+            mIsActivityToEdge =
+                    mIsActivityToEdge
+                            && EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+            // Note that we cannot adjustEdges earlier since we need the system
+            // insets.
+            adjustEdges(mIsActivityToEdge, viewId, webContents);
+        }
+        return windowInsets;
     }
 
     /**
@@ -300,6 +311,15 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // All the other edges need to be padded to prevent drawing under an edge that we
         // don't want drawn ToEdge (e.g. the Status Bar).
         int bottomPadding = toEdge ? 0 : mSystemInsets.bottom;
+        int bottomInsetForAdjusters = toEdge ? mSystemInsets.bottom : 0;
+        if (mKeyboardInsets != null && mKeyboardInsets.bottom > bottomPadding) {
+            // If the keyboard is showing, change the bottom padding to account for the keyboard.
+            // Clear the bottom inset used for the adjusters, since there are no missing bottom
+            // system bars above the keyboard to compensate for.
+            bottomPadding = mKeyboardInsets.bottom;
+            bottomInsetForAdjusters = 0;
+        }
+
         mEdgeToEdgeOSWrapper.setPadding(
                 mActivity.findViewById(viewId),
                 mSystemInsets.left,
@@ -308,7 +328,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 bottomPadding);
 
         for (var adjuster : mPadAdjusters) {
-            adjuster.adjustToEdge(toEdge, mSystemInsets.bottom);
+            adjuster.overrideBottomInset(bottomInsetForAdjusters);
         }
         for (var observer : mEdgeChangeObservers) {
             observer.onToEdgeChange(isToEdge() ? mSystemInsets.bottom : 0);

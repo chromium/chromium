@@ -679,15 +679,20 @@ class ManualFillingMediator
         int newControlsHeight = 0;
         int newControlsOffset = 0;
         if (requiresVisibleBar(extensionState)) {
+            boolean isEdgeToEdgeActive =
+                    mEdgeToEdgeControllerSupplier.get() != null
+                            && mEdgeToEdgeControllerSupplier.get().isEdgeToEdgeActive();
             // TODO(crbug/1511220): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
-            if (mModel.get(IS_FULLSCREEN)) { // Hides UI and lets keyboard overlay webContents.
+            if (mModel.get(IS_FULLSCREEN) // Hides UI and lets keyboard overlay webContents.
+                    // No need to set the controls height to 0 in edge-to-edge since the content
+                    // view will resize to account for the keyboard.
+                    && !isEdgeToEdgeActive) {
                 newControlsOffset = getKeyboardAndNavigationHeight();
                 // Don't resize the page because the keyboard does not doesn't do that either in
                 // fullscreen mode. It's overlaying the content and the accessory mimics that.
                 newControlsHeight = 0;
             } else {
                 newControlsHeight = getBarHeightWithoutShadow();
-                newControlsOffset = getOffsetIfEdgeToEdgeIsActive();
             }
         }
         if (requiresVisibleSheet(extensionState)) {
@@ -702,23 +707,6 @@ class ManualFillingMediator
         if (isInitialized() && !mKeyboardAccessory.empty()) {
             updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
         }
-    }
-
-    private int getOffsetIfEdgeToEdgeIsActive() {
-        // When e2e is on, the rootView (CoordinatorLayout) does not resize with
-        // the appearance of the keyboard; i.e. the bottom part of root view overlaps
-        // with keyboard. So an extra offset is required in that case.
-        if (mEdgeToEdgeControllerSupplier.get() != null
-                && (mEdgeToEdgeControllerSupplier.get().isEdgeToEdgeActive()
-                        || mEdgeToEdgeControllerSupplier.get().getBottomInset() != 0)) {
-            if (mEdgeToEdgeControllerSupplier.get().getBottomInset() != 0) {
-                return getKeyboardAndNavigationHeight();
-            } else {
-                // Intentionally ignore the navigation bar height.
-                return mSoftKeyboardDelegate.calculateSoftKeyboardHeight(getContentView());
-            }
-        }
-        return 0; // The bar is just above the keyboard.
     }
 
     /**

@@ -8,9 +8,10 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 public interface EdgeToEdgePadAdjuster {
 
     /**
-     * @param toEdge Whether edge-to-edge is on.
-     * @param inset The bottom inset which is supposed to be padded to or removed from the bottom
-     *     view.
+     * Override the bottom inset of the adjuster with additional bottom padding.
+     *
+     * @param inset The additional bottom inset in px to add to original view padding. Passing in an
+     *     inset of 0 will reset to the original padding.
      */
-    void adjustToEdge(boolean toEdge, int inset);
+    void overrideBottomInset(int inset);
 }

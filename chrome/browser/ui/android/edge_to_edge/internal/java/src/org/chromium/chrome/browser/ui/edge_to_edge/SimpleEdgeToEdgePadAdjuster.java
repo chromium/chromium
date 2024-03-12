@@ -13,30 +13,19 @@ import android.view.View;
 public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
 
     private final View mViewToPad;
-    private boolean mPadded;
+    private final int mDefaultBottomPadding;
 
     public SimpleEdgeToEdgePadAdjuster(View view) {
         mViewToPad = view;
+        mDefaultBottomPadding = mViewToPad.getPaddingBottom();
     }
 
     @Override
-    public void adjustToEdge(boolean toEdge, int inset) {
-        if (toEdge) {
-            if (mPadded) return;
-            mViewToPad.setPadding(
-                    mViewToPad.getPaddingLeft(),
-                    mViewToPad.getPaddingTop(),
-                    mViewToPad.getPaddingRight(),
-                    mViewToPad.getPaddingBottom() + inset);
-            mPadded = true;
-        } else if (mPadded) {
-            // reset to normal.
-            mViewToPad.setPadding(
-                    mViewToPad.getPaddingLeft(),
-                    mViewToPad.getPaddingTop(),
-                    mViewToPad.getPaddingRight(),
-                    mViewToPad.getPaddingBottom() - inset);
-            mPadded = false;
-        }
+    public void overrideBottomInset(int inset) {
+        mViewToPad.setPadding(
+                mViewToPad.getPaddingLeft(),
+                mViewToPad.getPaddingTop(),
+                mViewToPad.getPaddingRight(),
+                mDefaultBottomPadding + inset);
     }
 }
