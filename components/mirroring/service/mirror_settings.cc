@@ -23,11 +23,6 @@ namespace mirroring {
 
 namespace {
 
-// Default end-to-end latency. Currently adaptive latency control is disabled
-// because of audio playout regressions (b/32876644).
-// TODO(openscreen/44): Re-enable in port to Open Screen.
-constexpr base::TimeDelta kDefaultPlayoutDelay = base::Milliseconds(400);
-
 constexpr int kAudioTimebase = 48000;
 constexpr int kVideoTimebase = 90000;
 constexpr int kAudioChannels = 2;

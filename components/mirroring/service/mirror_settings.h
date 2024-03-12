@@ -18,7 +18,20 @@ namespace mirroring {
 
 // The interval since the last video frame was received from the video source,
 // before requesting a refresh frame.
-constexpr base::TimeDelta kFrameRefreshInterval = base::Milliseconds(50);
+inline constexpr base::TimeDelta kFrameRefreshInterval = base::Milliseconds(50);
+
+// Default end-to-end latency. Currently adaptive latency control is disabled
+// because of audio playout regressions (b/32876644).
+// TODO(openscreen/44): Re-enable in port to Open Screen.
+//
+// NOTE: currently ChromeOS does not support a lower default playout delay.
+// TODO(https://issuetracker.google.com/327950363): investigate.
+inline constexpr base::TimeDelta kDefaultPlayoutDelay =
+#if BUILDFLAG(IS_CHROMEOS)
+    base::Milliseconds(400);
+#else
+    base::Milliseconds(200);
+#endif
 
 // Holds the default settings for a mirroring session. This class provides the
 // audio/video configs that this sender supports. And also provides the
