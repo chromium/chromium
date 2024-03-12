@@ -100,9 +100,10 @@ class ForwardingUnderlyingSink : public UnderlyingSinkBase {
       WritableStreamWrapper* writable_stream_wrapper)
       : writable_stream_wrapper_(writable_stream_wrapper) {}
 
-  ScriptPromise start(ScriptState* script_state,
-                      WritableStreamDefaultController* controller,
-                      ExceptionState&) override {
+  ScriptPromiseTyped<IDLUndefined> start(
+      ScriptState* script_state,
+      WritableStreamDefaultController* controller,
+      ExceptionState&) override {
     class AbortAlgorithm final : public AbortSignal::Algorithm {
      public:
       explicit AbortAlgorithm(WritableStreamWrapper* writable_stream_wrapper)
@@ -122,26 +123,29 @@ class ForwardingUnderlyingSink : public UnderlyingSinkBase {
     writable_stream_wrapper_->SetController(controller);
     abort_handle_ = Controller()->signal()->AddAlgorithm(
         MakeGarbageCollected<AbortAlgorithm>(writable_stream_wrapper_));
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromise write(ScriptState*,
-                      ScriptValue chunk,
-                      WritableStreamDefaultController* controller,
-                      ExceptionState& exception_state) override {
+  ScriptPromiseTyped<IDLUndefined> write(
+      ScriptState*,
+      ScriptValue chunk,
+      WritableStreamDefaultController* controller,
+      ExceptionState& exception_state) override {
     DCHECK_EQ(writable_stream_wrapper_->Controller(), controller);
     return writable_stream_wrapper_->Write(chunk, exception_state);
   }
 
-  ScriptPromise close(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseTyped<IDLUndefined> close(ScriptState* script_state,
+                                         ExceptionState&) override {
     writable_stream_wrapper_->CloseStream();
     abort_handle_.Clear();
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromise abort(ScriptState* script_state,
-                      ScriptValue reason,
-                      ExceptionState& exception_state) override {
+  ScriptPromiseTyped<IDLUndefined> abort(
+      ScriptState* script_state,
+      ScriptValue reason,
+      ExceptionState& exception_state) override {
     return close(script_state, exception_state);
   }
 

@@ -26,24 +26,27 @@ class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
   // We define non-virtual |start| and |write| which take ScriptValue for
   // |controller| and are called from IDL. Also we define virtual |start| and
   // |write| which take WritableStreamDefaultController.
-  virtual ScriptPromise start(ScriptState*,
-                              WritableStreamDefaultController*,
-                              ExceptionState&) = 0;
-  virtual ScriptPromise write(ScriptState*,
-                              ScriptValue chunk,
-                              WritableStreamDefaultController*,
-                              ExceptionState&) = 0;
-  virtual ScriptPromise close(ScriptState*, ExceptionState&) = 0;
-  virtual ScriptPromise abort(ScriptState*,
-                              ScriptValue reason,
-                              ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined>
+  start(ScriptState*, WritableStreamDefaultController*, ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined> write(
+      ScriptState*,
+      ScriptValue chunk,
+      WritableStreamDefaultController*,
+      ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined> close(ScriptState*,
+                                                 ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined> abort(ScriptState*,
+                                                 ScriptValue reason,
+                                                 ExceptionState&) = 0;
 
-  ScriptPromise start(ScriptState*, ScriptValue controller, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> start(ScriptState*,
+                                         ScriptValue controller,
+                                         ExceptionState&);
 
-  ScriptPromise write(ScriptState* script_state,
-                      ScriptValue chunk,
-                      ScriptValue controller,
-                      ExceptionState& exception_state) {
+  ScriptPromiseTyped<IDLUndefined> write(ScriptState* script_state,
+                                         ScriptValue chunk,
+                                         ScriptValue controller,
+                                         ExceptionState& exception_state) {
     DCHECK(controller_);
     return write(script_state, chunk, controller_, exception_state);
   }

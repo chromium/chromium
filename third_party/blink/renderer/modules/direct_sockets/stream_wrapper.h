@@ -140,7 +140,8 @@ class WritableStreamWrapper : public StreamWrapper {
   virtual void OnAbortSignal() = 0;
 
   // Implements UnderlyingSink::write(...)
-  virtual ScriptPromise Write(ScriptValue, ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined> Write(ScriptValue,
+                                                 ExceptionState&) = 0;
 
   ControllerType* Controller() const { return controller_.Get(); }
   void SetController(ControllerType* controller) { controller_ = controller; }

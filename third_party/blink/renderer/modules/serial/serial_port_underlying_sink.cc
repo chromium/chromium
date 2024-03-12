@@ -34,7 +34,7 @@ SerialPortUnderlyingSink::SerialPortUnderlyingSink(
                                     WrapWeakPersistent(this)));
 }
 
-ScriptPromise SerialPortUnderlyingSink::start(
+ScriptPromiseTyped<IDLUndefined> SerialPortUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
@@ -60,10 +60,10 @@ ScriptPromise SerialPortUnderlyingSink::start(
   abort_handle_ = controller->signal()->AddAlgorithm(
       MakeGarbageCollected<AbortAlgorithm>(this));
 
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise SerialPortUnderlyingSink::write(
+ScriptPromiseTyped<IDLUndefined> SerialPortUnderlyingSink::write(
     ScriptState* script_state,
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
@@ -76,18 +76,20 @@ ScriptPromise SerialPortUnderlyingSink::write(
   buffer_source_ = V8BufferSource::Create(script_state->GetIsolate(),
                                           chunk.V8Value(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
 
-  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = pending_operation_->Promise();
+  pending_operation_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = pending_operation_->Promise();
 
   WriteData();
   return promise;
 }
 
-ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> SerialPortUnderlyingSink::close(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // The specification guarantees that this will only be called after all
   // pending writes have been completed.
   DCHECK(!pending_operation_);
@@ -96,16 +98,18 @@ ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
   data_pipe_.reset();
   abort_handle_.Clear();
 
-  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  pending_operation_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   serial_port_->Drain(WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
                                     WrapPersistent(this)));
   return pending_operation_->Promise();
 }
 
-ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
-                                              ScriptValue reason,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> SerialPortUnderlyingSink::abort(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   // The specification guarantees that this will only be called after all
   // pending writes have been completed.
   DCHECK(!pending_operation_);
@@ -118,11 +122,12 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
   // don't need to do it here.
   if (serial_port_->IsClosing()) {
     serial_port_->UnderlyingSinkClosed();
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
-  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  pending_operation_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   serial_port_->Flush(device::mojom::blink::SerialPortFlushMode::kTransmit,
                       WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
                                     WrapPersistent(this)));

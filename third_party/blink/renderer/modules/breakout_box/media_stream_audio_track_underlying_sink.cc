@@ -48,17 +48,17 @@ MediaStreamAudioTrackUnderlyingSink::MediaStreamAudioTrackUnderlyingSink(
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableAudio);
 }
 
-ScriptPromise MediaStreamAudioTrackUnderlyingSink::start(
+ScriptPromiseTyped<IDLUndefined> MediaStreamAudioTrackUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   source_broker_->OnClientStarted();
   is_connected_ = true;
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
+ScriptPromiseTyped<IDLUndefined> MediaStreamAudioTrackUnderlyingSink::write(
     ScriptState* script_state,
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
@@ -68,18 +68,18 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
       V8AudioData::ToWrappable(script_state->GetIsolate(), chunk.V8Value());
   if (!audio_data) {
     exception_state.ThrowTypeError("Null audio data.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (!audio_data->data()) {
     exception_state.ThrowTypeError("Empty or closed audio data.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (!source_broker_->IsRunning()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   const auto& data = audio_data->data();
@@ -91,30 +91,30 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     audio_data->close();
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Invalid audio data");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   source_broker_->PushAudioData(audio_data->data());
   audio_data->close();
 
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise MediaStreamAudioTrackUnderlyingSink::abort(
+ScriptPromiseTyped<IDLUndefined> MediaStreamAudioTrackUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Disconnect();
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise MediaStreamAudioTrackUnderlyingSink::close(
+ScriptPromiseTyped<IDLUndefined> MediaStreamAudioTrackUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Disconnect();
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 std::unique_ptr<WritableStreamTransferringOptimizer>

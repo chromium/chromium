@@ -104,8 +104,9 @@ void TCPWritableStreamWrapper::OnAbortSignal() {
   }
 }
 
-ScriptPromise TCPWritableStreamWrapper::Write(ScriptValue chunk,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> TCPWritableStreamWrapper::Write(
+    ScriptValue chunk,
+    ExceptionState& exception_state) {
   // There can only be one call to write() in progress at a time.
   DCHECK(!write_promise_resolver_);
   DCHECK(!buffer_source_);
@@ -115,18 +116,19 @@ ScriptPromise TCPWritableStreamWrapper::Write(ScriptValue chunk,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNetworkError,
         "The underlying data pipe was disconnected.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   buffer_source_ = V8BufferSource::Create(GetScriptState()->GetIsolate(),
                                           chunk.V8Value(), exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   DCHECK(buffer_source_);
 
-  write_promise_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      GetScriptState(), exception_state.GetContext());
+  write_promise_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          GetScriptState(), exception_state.GetContext());
   auto promise = write_promise_resolver_->Promise();
 
   WriteDataAsynchronously();

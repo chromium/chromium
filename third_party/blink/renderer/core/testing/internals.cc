@@ -483,21 +483,21 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
                 std::in_place,
                 false)) {}
 
-  ScriptPromise start(ScriptState* script_state,
-                      WritableStreamDefaultController*,
-                      ExceptionState&) override {
+  ScriptPromiseTyped<IDLUndefined> start(ScriptState* script_state,
+                                         WritableStreamDefaultController*,
+                                         ExceptionState&) override {
     if (internal_sink_) {
-      return ScriptPromise::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     start_resolver_ =
         MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
             script_state);
     return start_resolver_->Promise();
   }
-  ScriptPromise write(ScriptState* script_state,
-                      ScriptValue chunk,
-                      WritableStreamDefaultController*,
-                      ExceptionState&) override {
+  ScriptPromiseTyped<IDLUndefined> write(ScriptState* script_state,
+                                         ScriptValue chunk,
+                                         WritableStreamDefaultController*,
+                                         ExceptionState&) override {
     DCHECK(internal_sink_);
     internal_sink_->Append(
         ToCoreString(script_state->GetIsolate(),
@@ -505,15 +505,16 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
                          ->ToString(script_state->GetContext())
                          .ToLocalChecked())
             .Utf8());
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
-  ScriptPromise close(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseTyped<IDLUndefined> close(ScriptState* script_state,
+                                         ExceptionState&) override {
     DCHECK(internal_sink_);
     closed_ = true;
     if (!optimizer_flag_->data.load()) {
       // The normal closure case.
       internal_sink_->Close();
-      return ScriptPromise::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
 
     // When the optimizer is active, we need to detach `internal_sink_` and
@@ -523,12 +524,12 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
           *reply_task_runner_, FROM_HERE,
           CrossThreadBindOnce(std::move(reply_), std::move(internal_sink_)));
     }
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
-  ScriptPromise abort(ScriptState* script_state,
-                      ScriptValue reason,
-                      ExceptionState&) override {
-    return ScriptPromise::CastUndefined(script_state);
+  ScriptPromiseTyped<IDLUndefined> abort(ScriptState* script_state,
+                                         ScriptValue reason,
+                                         ExceptionState&) override {
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Attach(std::unique_ptr<InternalSink> internal_sink) {

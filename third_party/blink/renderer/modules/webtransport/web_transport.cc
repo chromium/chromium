@@ -103,16 +103,17 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
                          DatagramDuplexStream* datagrams)
       : web_transport_(web_transport), datagrams_(datagrams) {}
 
-  ScriptPromise start(ScriptState* script_state,
-                      WritableStreamDefaultController*,
-                      ExceptionState&) override {
-    return ScriptPromise::CastUndefined(script_state);
+  ScriptPromiseTyped<IDLUndefined> start(ScriptState* script_state,
+                                         WritableStreamDefaultController*,
+                                         ExceptionState&) override {
+    return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromise write(ScriptState* script_state,
-                      ScriptValue chunk,
-                      WritableStreamDefaultController*,
-                      ExceptionState& exception_state) override {
+  ScriptPromiseTyped<IDLUndefined> write(
+      ScriptState* script_state,
+      ScriptValue chunk,
+      WritableStreamDefaultController*,
+      ExceptionState& exception_state) override {
     auto v8chunk = chunk.V8Value();
     auto* isolate = script_state->GetIsolate();
 
@@ -120,7 +121,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
       DOMArrayBuffer* data = NativeValueTraits<DOMArrayBuffer>::NativeValue(
           isolate, v8chunk, exception_state);
       if (exception_state.HadException())
-        return ScriptPromise();
+        return ScriptPromiseTyped<IDLUndefined>();
       return SendDatagram(
           {static_cast<const uint8_t*>(data->Data()), data->ByteLength()});
     }
@@ -130,7 +131,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
           NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
               isolate, v8chunk, exception_state);
       if (exception_state.HadException())
-        return ScriptPromise();
+        return ScriptPromiseTyped<IDLUndefined>();
       return SendDatagram({static_cast<const uint8_t*>(data->buffer()->Data()) +
                                data->byteOffset(),
                            data->byteLength()});
@@ -138,19 +139,20 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
     exception_state.ThrowTypeError(
         "Datagram is not an ArrayBuffer or ArrayBufferView type.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  ScriptPromise close(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseTyped<IDLUndefined> close(ScriptState* script_state,
+                                         ExceptionState&) override {
     web_transport_ = nullptr;
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromise abort(ScriptState* script_state,
-                      ScriptValue reason,
-                      ExceptionState&) override {
+  ScriptPromiseTyped<IDLUndefined> abort(ScriptState* script_state,
+                                         ScriptValue reason,
+                                         ExceptionState&) override {
     web_transport_ = nullptr;
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void SendPendingDatagrams() {
@@ -172,9 +174,11 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
   }
 
  private:
-  ScriptPromise SendDatagram(base::span<const uint8_t> data) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-        web_transport_->script_state_);
+  ScriptPromiseTyped<IDLUndefined> SendDatagram(
+      base::span<const uint8_t> data) {
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+            web_transport_->script_state_);
     // This resolver is for the return value of this function. When the
     // WebTransport is closed, the stream (for datagrams) is errored and
     // resolvers in `pending_datagrams_resolvers_` are released without
@@ -199,24 +203,21 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
         static_cast<wtf_size_t>(high_water_mark)) {
       // In this case we pretend that the datagram is processed immediately, to
       // get more requests from the stream.
-      return ScriptPromise::CastUndefined(web_transport_->script_state_.Get());
+      return ToResolvedUndefinedPromise(web_transport_->script_state_.Get());
     }
     return resolver->Promise();
   }
 
   void OnDatagramProcessed(bool sent) {
     DCHECK(!pending_datagrams_resolvers_.empty());
-
-    ScriptPromiseResolver* resolver = pending_datagrams_resolvers_.front();
-    pending_datagrams_resolvers_.pop_front();
-
-    resolver->Resolve();
+    pending_datagrams_resolvers_.TakeFirst()->Resolve();
   }
 
   Member<WebTransport> web_transport_;
   const Member<DatagramDuplexStream> datagrams_;
   Vector<Vector<uint8_t>> pending_datagrams_;
-  HeapDeque<Member<ScriptPromiseResolver>> pending_datagrams_resolvers_;
+  HeapDeque<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
+      pending_datagrams_resolvers_;
 };
 
 // Passes incoming datagrams to the datagrams.readable stream. It maintains its

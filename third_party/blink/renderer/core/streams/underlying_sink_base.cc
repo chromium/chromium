@@ -9,9 +9,10 @@
 
 namespace blink {
 
-ScriptPromise UnderlyingSinkBase::start(ScriptState* script_state,
-                                        ScriptValue controller,
-                                        ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> UnderlyingSinkBase::start(
+    ScriptState* script_state,
+    ScriptValue controller,
+    ExceptionState& exception_state) {
   controller_ = WritableStreamDefaultController::From(script_state, controller);
   return start(script_state, controller_, exception_state);
 }

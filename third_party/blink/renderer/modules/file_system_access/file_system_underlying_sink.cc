@@ -36,14 +36,14 @@ FileSystemUnderlyingSink::FileSystemUnderlyingSink(
   DCHECK(writer_remote_.is_bound());
 }
 
-ScriptPromise FileSystemUnderlyingSink::start(
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise FileSystemUnderlyingSink::write(
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::write(
     ScriptState* script_state,
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
@@ -52,7 +52,7 @@ ScriptPromise FileSystemUnderlyingSink::write(
       V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams>::
       NativeValue(script_state->GetIsolate(), chunk.V8Value(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
 
   if (input->IsWriteParams()) {
     return HandleParams(script_state, *input->GetAsWriteParams(),
@@ -64,35 +64,38 @@ ScriptPromise FileSystemUnderlyingSink::write(
   return WriteData(script_state, offset_, write_data, exception_state);
 }
 
-ScriptPromise FileSystemUnderlyingSink::close(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::close(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!writer_remote_.is_bound() || pending_operation_) {
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
-  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = pending_operation_->Promise();
+  pending_operation_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto result = pending_operation_->Promise();
   writer_remote_->Close(WTF::BindOnce(&FileSystemUnderlyingSink::CloseComplete,
                                       WrapPersistent(this)));
 
   return result;
 }
 
-ScriptPromise FileSystemUnderlyingSink::abort(ScriptState* script_state,
-                                              ScriptValue reason,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::abort(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   // The specification guarantees that this will only be called after all
   // pending writes have been aborted. Terminating the remote connection
   // will ensure that the writes are not closed successfully.
   if (writer_remote_.is_bound())
     writer_remote_.reset();
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise FileSystemUnderlyingSink::HandleParams(
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
     ScriptState* script_state,
     const WriteParams& params,
     ExceptionState& exception_state) {
@@ -101,7 +104,7 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. truncate requires a size argument");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     return Truncate(script_state, params.sizeNonNull(), exception_state);
   }
@@ -111,7 +114,7 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. seek requires a position argument");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     return Seek(script_state, params.positionNonNull(), exception_state);
   }
@@ -123,13 +126,13 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. write requires a data argument");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     if (!params.data()) {
       ThrowTypeErrorAndInvalidateSink(
           exception_state,
           "Invalid params passed. write requires a non-null data");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     return WriteData(script_state, position, params.data(), exception_state);
   }
@@ -137,7 +140,7 @@ ScriptPromise FileSystemUnderlyingSink::HandleParams(
   ThrowDOMExceptionAndInvalidateSink(exception_state,
                                      DOMExceptionCode::kInvalidStateError,
                                      "Object reached an invalid state");
-  return ScriptPromise();
+  return ScriptPromiseTyped<IDLUndefined>();
 }
 
 namespace {
@@ -336,7 +339,7 @@ void FileSystemUnderlyingSink::ThrowTypeErrorAndInvalidateSink(
   writer_remote_.reset();
 }
 
-ScriptPromise FileSystemUnderlyingSink::WriteData(
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::WriteData(
     ScriptState* script_state,
     uint64_t position,
     const V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString* data,
@@ -347,7 +350,7 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   offset_ = position;
@@ -398,7 +401,7 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Failed to create datapipe");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   WriterHelper* helper;
@@ -430,12 +433,13 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
       position, std::move(consumer_handle),
       WTF::BindOnce(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
 
-  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  pending_operation_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   return pending_operation_->Promise();
 }
 
-ScriptPromise FileSystemUnderlyingSink::Truncate(
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::Truncate(
     ScriptState* script_state,
     uint64_t size,
     ExceptionState& exception_state) {
@@ -443,28 +447,30 @@ ScriptPromise FileSystemUnderlyingSink::Truncate(
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
-  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = pending_operation_->Promise();
+  pending_operation_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto result = pending_operation_->Promise();
   writer_remote_->Truncate(
       size, WTF::BindOnce(&FileSystemUnderlyingSink::TruncateComplete,
                           WrapPersistent(this), size));
   return result;
 }
 
-ScriptPromise FileSystemUnderlyingSink::Seek(ScriptState* script_state,
-                                             uint64_t offset,
-                                             ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> FileSystemUnderlyingSink::Seek(
+    ScriptState* script_state,
+    uint64_t offset,
+    ExceptionState& exception_state) {
   if (!writer_remote_.is_bound() || pending_operation_) {
     ThrowDOMExceptionAndInvalidateSink(exception_state,
                                        DOMExceptionCode::kInvalidStateError,
                                        "Object reached an invalid state");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   offset_ = offset;
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void FileSystemUnderlyingSink::WriteComplete(
