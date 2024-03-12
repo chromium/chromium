@@ -95,7 +95,11 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     private void onInstallClicked() {
         RecordHistogram.recordEnumeratedHistogram(
                 "WebApk.UniversalInstall.DialogAction", INSTALL_APP, DIALOG_RESULT_COUNT);
-        mController.hideContent(mContent, /* animate= */ true);
+        // It is important to not animate the disappearance of this bottom sheet, because the Rich
+        // Install dialog might be shown next, and it (like Universal Install) is also implemented
+        // as a bottom sheet. Trying to show and expand one sheet while another is going away
+        // doesn't work too well at the moment (the new sheet shows but fails to expand).
+        mController.hideContent(mContent, /* animate= */ false);
         mInstallCallback.run();
     }
 
