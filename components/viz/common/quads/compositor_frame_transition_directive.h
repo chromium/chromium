@@ -9,14 +9,12 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
+#include "components/viz/common/navigation_id.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
-
-using NavigationId = base::UnguessableToken;
 
 // This is a transition directive that can be associated with a compositor
 // frame. The intent is to be able to animate a compositor frame into the right

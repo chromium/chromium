@@ -72,6 +72,7 @@ class DevicePosturePlatformProvider;
 class MouseWheelPhaseHandler;
 class RenderWidgetHostImpl;
 class RenderWidgetHostViewBaseObserver;
+class ScopedViewTransitionResources;
 class SyntheticGestureTarget;
 class TextInputManager;
 class TouchSelectionControllerClientManager;
@@ -623,6 +624,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 
+  void SetViewTransitionResources(
+      std::unique_ptr<ScopedViewTransitionResources> resources);
+  bool HasViewTransitionResourcesForTesting() const {
+    return !!view_transition_resources_;
+  }
+
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
   ~RenderWidgetHostViewBase() override;
@@ -794,6 +801,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
   bool is_evicted_ = false;
 
   bool is_frame_sink_id_owner_ = false;
+
+  std::unique_ptr<ScopedViewTransitionResources> view_transition_resources_;
 
   base::WeakPtrFactory<RenderWidgetHostViewBase> weak_factory_{this};
 };

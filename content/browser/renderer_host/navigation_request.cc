@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -88,6 +89,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
 #include "content/browser/renderer_host/system_entropy_utils.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
@@ -2432,8 +2434,7 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
     // eventually wasn't activated, abort the ViewTransition. The state was
     // cached assuming this navigation will be same-origin which might not be
     // the case now that we need to make a network request.
-    // TODO(khushalsagar): Also clear the cached textures in the GPU process.
-    commit_params_->view_transition_state.reset();
+    ResetViewTransitionState();
   } else {
     // The reserved host should match with the potential host. Otherwise the
     // reserved host may not be ready for activation yet as we haven't run
@@ -7430,6 +7431,19 @@ void NavigationRequest::DidCommitNavigation(
   }
   navigation_or_document_handle_->OnNavigationCommitted(*this);
 
+  // If the navigation committed successfully, pass ownership of ViewTransition
+  // resources to the new view. This ensures that the resources are cleaned up
+  // if the new renderer process terminates before taking ownership of them.
+  //
+  // TODO(khushalsagar): If the navigation was cancelled, we should inform the
+  // old Document otherwise it's rendering will stay blocked.
+  if (view_transition_resources_ && state_ == DID_COMMIT) {
+    GetRenderFrameHost()
+        ->GetRenderWidgetHost()
+        ->GetRenderWidgetHostViewBase()
+        ->SetViewTransitionResources(std::move(view_transition_resources_));
+  }
+
   StopCommitTimeout();
 
   // Switching BrowsingInstance because of COOP or top-level cross browsing
@@ -10067,8 +10081,22 @@ NavigationRequest::GetJavaNavigationHandle() {
 #endif
 
 void NavigationRequest::SetViewTransitionState(
+    std::unique_ptr<ScopedViewTransitionResources> resources,
     blink::ViewTransitionState view_transition_state) {
   commit_params_->view_transition_state = std::move(view_transition_state);
+  CHECK(resources);
+  view_transition_resources_ = std::move(resources);
+}
+
+void NavigationRequest::ResetViewTransitionState() {
+  if (!commit_params_->view_transition_state) {
+    CHECK(!view_transition_resources_);
+    return;
+  }
+
+  CHECK(view_transition_resources_);
+  commit_params_->view_transition_state.reset();
+  view_transition_resources_.reset();
 }
 
 blink::RuntimeFeatureStateContext&

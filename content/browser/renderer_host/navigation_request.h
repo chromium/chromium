@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/navigation_type.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -1167,7 +1168,9 @@ class CONTENT_EXPORT NavigationRequest
 
   // Initializes state which is passed from the old Document to the new Document
   // for a ViewTransition.
-  void SetViewTransitionState(blink::ViewTransitionState view_transition_state);
+  void SetViewTransitionState(
+      std::unique_ptr<ScopedViewTransitionResources> resources,
+      blink::ViewTransitionState view_transition_state);
 
   // Returns a const reference to a blink::RuntimeFeatureStateContext (RFSC)
   // object. Once the commit params are sent to the renderer we no longer allow
@@ -2046,6 +2049,8 @@ class CONTENT_EXPORT NavigationRequest
 
   void MaybeRecordTraceEventsAndHistograms();
 
+  void ResetViewTransitionState();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
@@ -2860,6 +2865,13 @@ class CONTENT_EXPORT NavigationRequest
   // This tracks whether the pageswap event has been fired for this
   // navigation.
   bool did_fire_page_swap_ = false;
+
+  // A scoped reference on the ViewTransition resources generated for this
+  // navigation. This is set after we received the cached results from the old
+  // Document's renderer. If the navigation commits, the resources are
+  // transferred to the new Document's view. If the navigation finishes without
+  // committing, the resources are destroyed with this request.
+  std::unique_ptr<ScopedViewTransitionResources> view_transition_resources_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

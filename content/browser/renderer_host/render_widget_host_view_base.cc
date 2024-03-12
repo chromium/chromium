@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base_observer.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
@@ -1135,6 +1136,11 @@ void RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration() {
     // register until ownership has been transferred.
     router->RemoveFrameSinkIdOwner(GetFrameSinkId());
   }
+}
+
+void RenderWidgetHostViewBase::SetViewTransitionResources(
+    std::unique_ptr<ScopedViewTransitionResources> resources) {
+  view_transition_resources_ = std::move(resources);
 }
 
 }  // namespace content

@@ -62,6 +62,7 @@ include_rules = [
     "+components/performance_manager/public/mojom/coordination_unit.mojom-blink.h",
     "+components/performance_manager/public/mojom/web_memory.mojom-blink.h",
     "+components/viz/common/frame_timing_details.h",
+    "+components/viz/common/navigation_id.h",
     "+gpu/config/gpu_feature_info.h",
     "-inspector/v8",
     "+mojo/public/cpp/base",

@@ -7482,6 +7482,7 @@ data/title4.html
 data/touch_selection.html
 data/tree_parser_util.js
 data/unload.html
+data/view_transitions/basic-vt-opt-in.html
 data/view_transitions/green.html
 data/view_transitions/red_jank_second_pageshow.html
 data/virtual-keyboard.html

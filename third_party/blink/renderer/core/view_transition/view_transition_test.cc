@@ -1317,7 +1317,7 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
   page_swap_params->navigation_type =
       mojom::blink::NavigationTypeForNavigationApi::kPush;
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
-      GetDocument(), std::move(page_swap_params),
+      GetDocument(), viz::NavigationId::Create(), std::move(page_swap_params),
       base::BindOnce([](const ViewTransitionState&) {}));
 
   ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());

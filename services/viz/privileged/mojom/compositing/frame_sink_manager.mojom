@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/viz/privileged/mojom/compositing/display_private.mojom";
@@ -206,6 +207,17 @@ interface FrameSinkManager {
   // Stops frame counting on the Viz thread and returns all records to the
   // caller.
   StopFrameCountingForTest() => (FrameCountingData? data);
+
+  // Clears the ViewTransition resources if they have not been claimed by a
+  // CompositorFrameSink. `navigation_id` identifies the navigation for which
+  // the resources were cached.
+  ClearUnclaimedViewTransitionResources(
+    mojo_base.mojom.UnguessableToken navigation_id);
+
+  // Returns true if there are any unclaimed ViewTransition resources. For
+  // testing only.
+  [Sync]
+  HasUnclaimedViewTransitionResourcesForTest() => (bool has_resources);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display

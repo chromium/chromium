@@ -50,6 +50,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
 struct BLINK_COMMON_EXPORT ViewTransitionState {
  public:
   bool HasElements() const { return !elements.empty(); }
+  const viz::TransitionId& GetTransitionId() const { return transition_id; }
 
  private:
   // IMPORTANT:

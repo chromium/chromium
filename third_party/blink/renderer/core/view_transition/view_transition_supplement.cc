@@ -209,15 +209,18 @@ void ViewTransitionSupplement::SetCrossDocumentOptIn(
 // static
 void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     Document& document,
+    const viz::NavigationId& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
   DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   auto* supplement = From(document);
-  supplement->StartTransition(document, std::move(params), std::move(callback));
+  supplement->StartTransition(document, navigation_id, std::move(params),
+                              std::move(callback));
 }
 
 void ViewTransitionSupplement::StartTransition(
     Document& document,
+    const viz::NavigationId& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
   if (transition_) {
@@ -228,7 +231,7 @@ void ViewTransitionSupplement::StartTransition(
   DCHECK(!transition_)
       << "SkipTransition() should finish existing |transition_|";
   transition_ = ViewTransition::CreateForSnapshotForNavigation(
-      &document, std::move(callback), this);
+      &document, navigation_id, std::move(callback), this);
 
   auto* page_swap_event = MakeGarbageCollected<PageSwapEvent>(
       document, std::move(params), transition_->GetScriptDelegate());

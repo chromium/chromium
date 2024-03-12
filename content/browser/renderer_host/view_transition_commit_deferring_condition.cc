@@ -13,9 +13,6 @@
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 
 namespace content {
-namespace {
-
-}  // namespace
 
 // static
 std::unique_ptr<CommitDeferringCondition>
@@ -67,7 +64,7 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
 
 ViewTransitionCommitDeferringCondition::ViewTransitionCommitDeferringCondition(
     NavigationRequest& navigation_request)
-    : CommitDeferringCondition(navigation_request) {}
+    : CommitDeferringCondition(navigation_request), weak_factory_(this) {}
 
 ViewTransitionCommitDeferringCondition::
     ~ViewTransitionCommitDeferringCondition() = default;
@@ -83,43 +80,34 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
       navigation_request->WillDispatchPageSwap();
   CHECK(page_swap_event_params);
 
+  auto navigation_id = viz::NavigationId::Create();
+  resources_ = std::make_unique<ScopedViewTransitionResources>(navigation_id);
+  resume_navigation_ = std::move(resume);
+
   CHECK(render_frame_host->IsRenderFrameLive());
-  resume_processing_callback_ = std::move(resume);
 
   // Request a snapshot. This includes running any associaged script in the
   // renderer process.
   render_frame_host->GetAssociatedLocalFrame()
       ->SnapshotDocumentForViewTransition(
-          std::move(page_swap_event_params),
-          base::BindOnce(&ViewTransitionCommitDeferringCondition::OnSnapshotAck,
-                         weak_factory_.GetWeakPtr(),
-                         navigation_request->GetWeakPtr()));
+          navigation_id, std::move(page_swap_event_params),
+          base::BindOnce(&ViewTransitionCommitDeferringCondition::
+                             OnSnapshotAckFromRenderer,
+                         weak_factory_.GetWeakPtr()));
+
   // Also post a timeout task to resume even if the renderer has not acked.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ViewTransitionCommitDeferringCondition::OnSnapshotTimeout,
                      weak_factory_.GetWeakPtr()),
       GetSnapshotCallbackTimeout());
+
   return Result::kDefer;
 }
 
-void ViewTransitionCommitDeferringCondition::OnSnapshotAck(
-    base::WeakPtr<NavigationRequest> navigation_request,
-    const blink::ViewTransitionState& view_transition_state) {
-  if (!resume_processing_callback_) {
-    return;
-  }
-
-  if (navigation_request && view_transition_state.HasElements()) {
-    navigation_request->SetViewTransitionState(
-        std::move(view_transition_state));
-  }
-  std::move(resume_processing_callback_).Run();
-}
-
 void ViewTransitionCommitDeferringCondition::OnSnapshotTimeout() {
-  if (resume_processing_callback_) {
-    std::move(resume_processing_callback_).Run();
+  if (resume_navigation_) {
+    std::move(resume_navigation_).Run();
   }
 }
 
@@ -127,6 +115,21 @@ base::TimeDelta
 ViewTransitionCommitDeferringCondition::GetSnapshotCallbackTimeout() const {
   // TODO(vmpstr): Figure out if we need to increase this in tests.
   return base::Seconds(4);
+}
+
+void ViewTransitionCommitDeferringCondition::OnSnapshotAckFromRenderer(
+    const blink::ViewTransitionState& view_transition_state) {
+  // The timeout may have been triggered already.
+  if (!resume_navigation_) {
+    return;
+  }
+
+  if (view_transition_state.HasElements()) {
+    NavigationRequest::From(&GetNavigationHandle())
+        ->SetViewTransitionState(std::move(resources_),
+                                 std::move(view_transition_state));
+  }
+  std::move(resume_navigation_).Run();
 }
 
 }  // namespace content

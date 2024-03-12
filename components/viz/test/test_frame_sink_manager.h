@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/viz/common/navigation_id.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -80,6 +81,10 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                                  base::TimeDelta bucket_size) override {}
   void StopFrameCountingForTest(
       StopFrameCountingForTestCallback callback) override {}
+  void ClearUnclaimedViewTransitionResources(
+      const NavigationId& navigation_id) override {}
+  void HasUnclaimedViewTransitionResourcesForTest(
+      HasUnclaimedViewTransitionResourcesForTestCallback callback) override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

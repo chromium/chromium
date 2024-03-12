@@ -471,6 +471,18 @@ void HostFrameSinkManager::StopFrameCountingForTest(
       std::move(callback));
 }
 
+void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(
+    const NavigationId& navigation_id) {
+  frame_sink_manager_->ClearUnclaimedViewTransitionResources(navigation_id);
+}
+
+bool HostFrameSinkManager::HasUnclaimedViewTransitionResourcesForTest() {
+  bool has_resources = false;
+  frame_sink_manager_->HasUnclaimedViewTransitionResourcesForTest(
+      &has_resources);
+  return has_resources;
+}
+
 HostFrameSinkManager::FrameSinkData::FrameSinkData() = default;
 
 HostFrameSinkManager::FrameSinkData::FrameSinkData(FrameSinkData&& other) =

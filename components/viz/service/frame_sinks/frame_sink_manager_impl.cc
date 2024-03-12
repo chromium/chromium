@@ -925,4 +925,14 @@ void FrameSinkManagerImpl::StopFrameCountingForTest(
   frame_counter_.reset();
 }
 
+void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(
+    const NavigationId& navigation_id) {
+  navigation_to_animation_manager_.erase(navigation_id);
+}
+
+void FrameSinkManagerImpl::HasUnclaimedViewTransitionResourcesForTest(
+    HasUnclaimedViewTransitionResourcesForTestCallback callback) {
+  std::move(callback).Run(!navigation_to_animation_manager_.empty());
+}
+
 }  // namespace viz

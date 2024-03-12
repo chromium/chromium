@@ -185,21 +185,23 @@ ViewTransition::ViewTransition(PassKey,
 // static
 ViewTransition* ViewTransition::CreateForSnapshotForNavigation(
     Document* document,
+    const viz::NavigationId& navigation_id,
     ViewTransitionStateCallback callback,
     Delegate* delegate) {
-  return MakeGarbageCollected<ViewTransition>(PassKey(), document,
-                                              std::move(callback), delegate);
+  return MakeGarbageCollected<ViewTransition>(
+      PassKey(), document, navigation_id, std::move(callback), delegate);
 }
 
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
+                               const viz::NavigationId& navigation_id,
                                ViewTransitionStateCallback callback,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kForSnapshot),
       document_(document),
       delegate_(delegate),
-      transition_id_(viz::TransitionId::Create()),
+      transition_id_(navigation_id),
       document_tag_(NextDocumentTag()),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,

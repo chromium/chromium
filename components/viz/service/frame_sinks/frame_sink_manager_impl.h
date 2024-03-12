@@ -25,6 +25,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/constants.h"
+#include "components/viz/common/navigation_id.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
@@ -162,6 +163,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                                  base::TimeDelta bucket_size) override;
   void StopFrameCountingForTest(
       StopFrameCountingForTestCallback callback) override;
+  void ClearUnclaimedViewTransitionResources(
+      const NavigationId& navigation_id) override;
+  void HasUnclaimedViewTransitionResourcesForTest(
+      HasUnclaimedViewTransitionResourcesForTestCallback callback) override;
 
   void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 

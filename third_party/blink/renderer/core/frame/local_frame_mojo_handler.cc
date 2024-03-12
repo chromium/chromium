@@ -1349,10 +1349,12 @@ void LocalFrameMojoHandler::SetV8CompileHints(
 }
 
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
+    const viz::NavigationId& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     SnapshotDocumentForViewTransitionCallback callback) {
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
-      *frame_->GetDocument(), std::move(params), std::move(callback));
+      *frame_->GetDocument(), navigation_id, std::move(params),
+      std::move(callback));
 }
 
 void LocalFrameMojoHandler::DispatchPageSwap(
