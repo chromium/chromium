@@ -44,8 +44,6 @@ class LensUntrustedUI : public ui::UntrustedBubbleWebUIController,
   mojo::Receiver<lens::mojom::LensPageHandlerFactory>
       lens_page_factory_receiver_{this};
 
-  std::vector<unsigned char> screenshot_image_;
-
   base::WeakPtrFactory<LensUntrustedUI> weak_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();

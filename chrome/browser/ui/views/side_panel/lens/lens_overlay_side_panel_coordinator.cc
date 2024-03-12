@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -31,9 +32,11 @@ namespace lens {
 
 LensOverlaySidePanelCoordinator::LensOverlaySidePanelCoordinator(
     const raw_ptr<Browser> browser,
+    const raw_ptr<LensOverlayController> lens_overlay_controller,
     const raw_ptr<SidePanelUI> side_panel_ui,
     content::WebContents* web_contents)
     : tab_browser_(browser),
+      lens_overlay_controller_(lens_overlay_controller),
       side_panel_ui_(side_panel_ui),
       tab_web_contents_(web_contents->GetWeakPtr()) {}
 
@@ -89,6 +92,11 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
           tab_browser_->profile(), IDS_SIDE_PANEL_COMPANION_TITLE,
           /*webui_resizes_host=*/false,
           /*esc_closes_ui=*/false));
+  // Important safety note: creating the SidePanelWebUIViewT can result in
+  // synchronous construction of the WebUIController. Until
+  // "CreateGlueForWebView" is called below, the WebUIController will not be
+  // able to access to LensOverlayController.
+  lens_overlay_controller_->CreateGlueForWebView(view.get());
   view->SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(view.get())->SetAvailable(true);
   return view;

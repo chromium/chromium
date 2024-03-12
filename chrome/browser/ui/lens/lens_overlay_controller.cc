@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
@@ -34,14 +36,32 @@
 
 namespace {
 
-// In order to glue the WebUIController to the appropriate instance of
-// LensOverlayController, we need to keep a global list of a
-// LensOverlayControllers.
-using ControllerVector = std::vector<LensOverlayController*>;
-ControllerVector& GetAllControllers() {
-  static base::NoDestructor<ControllerVector> instance;
-  return *instance;
-}
+// When a WebUIController for lens overlay is created, we need a mechanism to
+// glue that instance to the LensOverlayController that spawned it. This class
+// is that glue. The lifetime of this instance is scoped to the lifetime of the
+// LensOverlayController, which semantically "owns" this instance.
+class LensOverlayControllerGlue
+    : public content::WebContentsUserData<LensOverlayControllerGlue> {
+ public:
+  ~LensOverlayControllerGlue() override = default;
+
+  LensOverlayController* controller() { return controller_; }
+
+ private:
+  friend WebContentsUserData;
+
+  LensOverlayControllerGlue(content::WebContents* contents,
+                            LensOverlayController* controller)
+      : content::WebContentsUserData<LensOverlayControllerGlue>(*contents),
+        controller_(controller) {}
+
+  // Semantically owns this class.
+  raw_ptr<LensOverlayController> controller_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerGlue);
 
 }  // namespace
 
@@ -49,12 +69,10 @@ LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
   // Automatically unregisters on destruction.
   tab_model_->owning_model()->AddObserver(this);
-
-  GetAllControllers().push_back(this);
 }
 
 LensOverlayController::~LensOverlayController() {
-  std::erase(GetAllControllers(), this);
+  CloseUI();
 }
 
 void LensOverlayController::ShowUI() {
@@ -87,7 +105,8 @@ void LensOverlayController::ShowUI() {
     CHECK(tab_browser);
     results_side_panel_coordinator_ =
         std::make_unique<lens::LensOverlaySidePanelCoordinator>(
-            tab_browser, SidePanelUI::GetSidePanelUIForBrowser(tab_browser),
+            tab_browser, this,
+            SidePanelUI::GetSidePanelUIForBrowser(tab_browser),
             tab_model_->contents());
   }
 
@@ -99,9 +118,27 @@ void LensOverlayController::ShowUI() {
 }
 
 void LensOverlayController::CloseUI() {
+  // Destroy the glue to avoid UaF. This must be done before destroying
+  // `results_side_panel_coordinator_` or `overlay_widget_`.
+  // This logic results on the assumption that the only way to destroy the
+  // instances of views::WebView being glued is through this method. Any changes
+  // to this assumption will likely need to restructure the concept of
+  // `glued_webviews_`.
+  for (views::WebView* glue : glued_webviews_) {
+    glue->GetWebContents()->RemoveUserData(
+        LensOverlayControllerGlue::UserDataKey());
+  }
+  glued_webviews_.clear();
+
   results_side_panel_coordinator_.reset();
+
+  // Widget destruction can be asynchronous. We want to synchronously release
+  // resources, so we clear the contents view immediately.
+  if (overlay_widget_) {
+    overlay_widget_->SetContentsView(std::make_unique<views::View>());
+  }
   overlay_widget_.reset();
-  overlay_web_contents_ = nullptr;
+
   receiver_.reset();
   page_.reset();
   current_screenshot_.reset();
@@ -112,18 +149,67 @@ void LensOverlayController::CloseUI() {
 }
 
 // static
+LensOverlayController* LensOverlayController::GetController(
+    content::WebUI* web_ui) {
+  return LensOverlayControllerGlue::FromWebContents(web_ui->GetWebContents())
+      ->controller();
+}
+
 void LensOverlayController::BindOverlay(
-    content::WebUI* web_ui,
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
-  content::WebContents* web_contents = web_ui->GetWebContents();
-  for (LensOverlayController* controller : GetAllControllers()) {
-    if (controller->overlay_web_contents_ == web_contents) {
-      controller->BindOverlay(std::move(receiver), std::move(page));
-      return;
+  if (state_ != State::kStartingWebUI) {
+    return;
+  }
+  receiver_.Bind(std::move(receiver));
+  page_.Bind(std::move(page));
+  state_ = State::kOverlay;
+}
+
+raw_ptr<views::Widget> LensOverlayController::GetOverlayWidgetForTesting() {
+  return overlay_widget_.get();
+}
+
+void LensOverlayController::ResetUIBounds() {
+  content::WebContents* active_web_contents = tab_model_->contents();
+  // TODO(b/329103641): Use correct coordinate system.
+  overlay_widget_->SetBounds(active_web_contents->GetContainerBounds());
+}
+
+void LensOverlayController::CreateGlueForWebView(views::WebView* web_view) {
+  LensOverlayControllerGlue::CreateForWebContents(web_view->GetWebContents(),
+                                                  this);
+  glued_webviews_.push_back(web_view);
+}
+
+class LensOverlayController::UnderlyingWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  UnderlyingWebContentsObserver(content::WebContents* web_contents,
+                                LensOverlayController* lens_overlay_controller)
+      : content::WebContentsObserver(web_contents),
+        lens_overlay_controller_(lens_overlay_controller) {}
+
+  ~UnderlyingWebContentsObserver() override = default;
+
+  UnderlyingWebContentsObserver(const UnderlyingWebContentsObserver&) = delete;
+  UnderlyingWebContentsObserver& operator=(
+      const UnderlyingWebContentsObserver&) = delete;
+
+  // content::WebContentsObserver
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override {
+    // We only care to resize the overlay when it's visible to the user.
+    if (lens_overlay_controller_->state() == State::kStartingWebUI ||
+        lens_overlay_controller_->state() == State::kOverlay ||
+        lens_overlay_controller_->state() == State::kOverlayAndResults) {
+      lens_overlay_controller_->ResetUIBounds();
     }
   }
-}
+
+ private:
+  raw_ptr<LensOverlayController> lens_overlay_controller_;
+};
 
 void LensOverlayController::DidCaptureScreenshot(int attempt_id,
                                                  const SkBitmap& bitmap) {
@@ -192,12 +278,6 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
   return params;
 }
 
-void LensOverlayController::ResetUIBounds() {
-  content::WebContents* active_web_contents = tab_model_->contents();
-  // TODO(b/329103641): Use correct coordinate system.
-  overlay_widget_->SetBounds(active_web_contents->GetContainerBounds());
-}
-
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   CHECK(tab_model_);
   // Create a flex layout host view to make sure the web view covers the entire
@@ -215,10 +295,13 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       web_view->GetWebContents(), SK_ColorTRANSPARENT);
 
+  // Create glue so that WebUIControllers created by this instance can
+  // communicate with this instance.
+  CreateGlueForWebView(web_view.get());
+
   // Load the untrusted WebUI into the web view.
   GURL url(chrome::kChromeUILensUntrustedURL);
   web_view->LoadInitialURL(url);
-  overlay_web_contents_ = web_view->GetWebContents();
 
   host_view->AddChildView(std::move(web_view));
   return host_view;
@@ -248,50 +331,10 @@ void LensOverlayController::TabBackgrounded() {
   CloseUI();
 }
 
-void LensOverlayController::BindOverlay(
-    mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
-    mojo::PendingRemote<lens::mojom::LensPage> page) {
-  if (state_ != State::kStartingWebUI) {
-    return;
-  }
-  receiver_.Bind(std::move(receiver));
-  page_.Bind(std::move(page));
-  state_ = State::kOverlay;
-}
-
 void LensOverlayController::CloseRequestedByOverlay() {
-  CloseUI();
+  state_ = State::kClosing;
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&LensOverlayController::CloseUI,
+                                weak_factory_.GetWeakPtr()));
 }
-
-raw_ptr<views::Widget> LensOverlayController::GetOverlayWidgetForTesting() {
-  return overlay_widget_.get();
-}
-
-class LensOverlayController::UnderlyingWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  UnderlyingWebContentsObserver(content::WebContents* web_contents,
-                                LensOverlayController* lens_overlay_controller)
-      : content::WebContentsObserver(web_contents),
-        lens_overlay_controller_(lens_overlay_controller) {}
-
-  ~UnderlyingWebContentsObserver() override = default;
-
-  UnderlyingWebContentsObserver(const UnderlyingWebContentsObserver&) = delete;
-  UnderlyingWebContentsObserver& operator=(
-      const UnderlyingWebContentsObserver&) = delete;
-
-  // content::WebContentsObserver
-  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
-                        const gfx::Size& frame_size) override {
-    // We only care to resize the overlay when it's visible to the user.
-    if (lens_overlay_controller_->state() == State::kStartingWebUI ||
-        lens_overlay_controller_->state() == State::kOverlay ||
-        lens_overlay_controller_->state() == State::kOverlayAndResults) {
-      lens_overlay_controller_->ResetUIBounds();
-    }
-  }
-
- private:
-  raw_ptr<LensOverlayController> lens_overlay_controller_;
-};

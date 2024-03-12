@@ -5,9 +5,6 @@
 #include "chrome/browser/ui/webui/lens/lens_untrusted_ui.h"
 
 #include "base/memory/ref_counted_memory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -29,6 +26,9 @@ namespace lens {
 
 LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedBubbleWebUIController(web_ui) {
+  // This code path is invoked for both the overlay WebUI and the sidepanel
+  // WebUI.
+
   // Set up the chrome-untrusted://lens source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -42,28 +42,6 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       base::make_span(kLensUntrustedResources, kLensUntrustedResourcesSize),
       IDR_LENS_UNTRUSTED_LENS_OVERLAY_HTML);
 
-  // Get the viewport screenshot
-  Browser* browser =
-      chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
-  CHECK(browser);
-
-  const SkBitmap& screenshot_bitmap = browser->tab_strip_model()
-                                          ->GetActiveTab()
-                                          ->lens_overlay_controller()
-                                          ->current_screenshot();
-
-  // Convert Bitmap into JPEG so it can easily be rendered in the WebUI
-  // TODO(b/328294622): Increase quality if pixelated once rendered.
-  // TODO(b/328630043): Ensure doing JPEG encoding on main thread does not cause
-  // performance issues.
-  if (!gfx::JPEGCodec::Encode(screenshot_bitmap, /*quality=*/90,
-                              &screenshot_image_)) {
-    // If encoding fails, the output to the vector is unknown, so we clear to
-    // make sure there is not bad data.
-    screenshot_image_.clear();
-    return;
-  }
-
   // Set request filter for loading the screenshot on the page.
   html_source->SetRequestFilter(
       base::BindRepeating(&ShouldLoadScreenshot),
@@ -74,12 +52,25 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
 void LensUntrustedUI::LoadScreenshot(
     const std::string& resource_path,
     content::WebUIDataSource::GotDataCallback got_data_callback) {
-  if (!screenshot_image_.empty()) {
-    std::move(got_data_callback)
-        .Run(base::RefCountedBytes::TakeVector(&screenshot_image_));
-  } else {
+  // Get the viewport screenshot
+  const SkBitmap& screenshot_bitmap =
+      LensOverlayController::GetController(web_ui())->current_screenshot();
+
+  // Convert Bitmap into JPEG so it can easily be rendered in the WebUI
+  // TODO(b/328294622): Increase quality if pixelated once rendered.
+  // TODO(b/328630043): Ensure doing JPEG encoding on main thread does not cause
+  // performance issues.
+  std::vector<unsigned char> screenshot_image;
+  if (!gfx::JPEGCodec::Encode(screenshot_bitmap, /*quality=*/90,
+                              &screenshot_image)) {
+    // If encoding fails, the output to the vector is unknown, so we clear to
+    // make sure there is not bad data.
     std::move(got_data_callback).Run(nullptr);
+    return;
   }
+
+  std::move(got_data_callback)
+      .Run(base::RefCountedBytes::TakeVector(&screenshot_image));
 }
 
 void LensUntrustedUI::BindInterface(
@@ -93,8 +84,8 @@ void LensUntrustedUI::CreatePageHandler(
     mojo::PendingRemote<lens::mojom::LensPage> page) {
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
-  LensOverlayController::BindOverlay(web_ui(), std::move(receiver),
-                                     std::move(page));
+  LensOverlayController::GetController(web_ui())->BindOverlay(
+      std::move(receiver), std::move(page));
 }
 
 LensUntrustedUI::~LensUntrustedUI() = default;

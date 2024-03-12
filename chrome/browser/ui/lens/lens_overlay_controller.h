@@ -30,6 +30,7 @@ class TabModel;
 
 namespace views {
 class View;
+class WebView;
 }  // namespace views
 
 namespace content {
@@ -49,16 +50,22 @@ class LensOverlayController : public TabStripModelObserver,
   // is not kOff. This has no effect if the tab is not in the foreground.
   void ShowUI();
 
-  // Closes the overlay UI and sets state to kOff.
+  // Closes the overlay UI and sets state to kOff. This method should be
+  // idempotent. This synchronously destroys any associated WebUIs, so should
+  // not be invoked in callbacks from those WebUIs.
   void CloseUI();
+
+  // Given an instance of `web_ui` created by the LensOverlayController, returns
+  // the LensOverlayController. This method is necessary because WebUIController
+  // is created by //content with no context or references to the owning
+  // controller.
+  static LensOverlayController* GetController(content::WebUI* web_ui);
 
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and ready to bind.
-  static void BindOverlay(
-      content::WebUI* web_ui,
-      mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
-      mojo::PendingRemote<lens::mojom::LensPage> page);
+  void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
+                   mojo::PendingRemote<lens::mojom::LensPage> page);
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -77,6 +84,9 @@ class LensOverlayController : public TabStripModelObserver,
 
     // Showing an overlay with results.
     kOverlayAndResults,
+
+    // Will be kOff soon.
+    kClosing,
   };
   State state() { return state_; }
 
@@ -84,11 +94,20 @@ class LensOverlayController : public TabStripModelObserver,
   // screenshot is showing, will return nullptr.
   const SkBitmap& current_screenshot() { return current_screenshot_; }
 
+  // Returns the side panel coordinator
+  lens::LensOverlaySidePanelCoordinator* side_panel_coordinator() {
+    return results_side_panel_coordinator_.get();
+  }
+
   // Testing helper method for checking widget.
   raw_ptr<views::Widget> GetOverlayWidgetForTesting();
 
   // Resizes the overlay UI. Used when the window size changes.
   void ResetUIBounds();
+
+  // Creates the glue that allows the WebUIController for a WebView to look up
+  // the LensOverlayController.
+  void CreateGlueForWebView(views::WebView* web_view);
 
  private:
   class UnderlyingWebContentsObserver;
@@ -121,10 +140,6 @@ class LensOverlayController : public TabStripModelObserver,
   // Called when the associated tab enters the background.
   void TabBackgrounded();
 
-  // See BindOverlay(), this is the instance-specific version.
-  void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
-                   mojo::PendingRemote<lens::mojom::LensPage> page);
-
   // lens::mojom::LensPageHandler overrides.
   void CloseRequestedByOverlay() override;
 
@@ -141,9 +156,9 @@ class LensOverlayController : public TabStripModelObserver,
   // Pointer to the overlay widget.
   views::UniqueWidgetPtr overlay_widget_;
 
-  // Pointer to the WebContents that is hosting the overlay WebUI. Only valid
-  // while `overlay_widget_` is showing.
-  raw_ptr<content::WebContents> overlay_web_contents_;
+  // Pointer to the WebViews that are being glued by this class. Only used to
+  // clean up stale pointers. Only valid while `overlay_widget_` is showing.
+  std::vector<views::WebView*> glued_webviews_;
 
   // The screenshot that is currently being rendered by the WebUI.
   SkBitmap current_screenshot_;

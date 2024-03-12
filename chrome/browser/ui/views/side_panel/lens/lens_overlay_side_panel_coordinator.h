@@ -9,6 +9,7 @@
 
 class Browser;
 class GURL;
+class LensOverlayController;
 class SidePanelUI;
 
 namespace content {
@@ -24,8 +25,9 @@ namespace lens {
 // Handles the creation and registration of the lens overlay side panel entry.
 class LensOverlaySidePanelCoordinator {
  public:
-  explicit LensOverlaySidePanelCoordinator(
+  LensOverlaySidePanelCoordinator(
       const raw_ptr<Browser> browser,
+      const raw_ptr<LensOverlayController> lens_overlay_controller,
       const raw_ptr<SidePanelUI> side_panel_ui,
       content::WebContents* web_contents);
   LensOverlaySidePanelCoordinator(const LensOverlaySidePanelCoordinator&) =
@@ -55,6 +57,10 @@ class LensOverlaySidePanelCoordinator {
 
   // The browser of the tab web contents passed by the overlay.
   const raw_ptr<Browser> tab_browser_;
+
+  // Owns this.
+  const raw_ptr<LensOverlayController> lens_overlay_controller_;
+
   // The side panel UI corresponding to the tab's browser.
   const raw_ptr<SidePanelUI> side_panel_ui_;
   base::WeakPtr<content::WebContents> tab_web_contents_;

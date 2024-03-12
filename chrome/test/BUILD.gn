@@ -4228,7 +4228,6 @@ if (!is_android) {
         "../browser/ui/views/session_crashed_bubble_view_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_test_utils.cc",
-        "../browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator_browsertest.cc",
         "../browser/ui/views/side_search/default_search_icon_source_browsertest.cc",
         "../browser/ui/views/site_data/page_specific_site_data_dialog_browsertest.cc",
         "../browser/ui/views/status_bubble_views_browsertest.cc",
