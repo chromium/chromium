@@ -1450,20 +1450,24 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     identifiers.insert(session_util::GetSessionIdentifier(identifier, true));
   }
 
-  // TODO(crbug.com/325612597): Iterate over all browser states.
-  ChromeBrowserState* browserState = self.appState.mainBrowserState;
-  base::RepeatingClosure dataDeletedClosure = ExpectNCall(
-      browserState->HasOffTheRecordChromeBrowserState() ? 2u : 1u,
-      base::BindRepeating(&sessions_storage_util::ResetDiscardedSessions));
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    base::RepeatingClosure dataDeletedClosure = ExpectNCall(
+        browserState->HasOffTheRecordChromeBrowserState() ? 2u : 1u,
+        base::BindRepeating(&sessions_storage_util::ResetDiscardedSessions));
 
-  SessionRestorationServiceFactory::GetForBrowserState(browserState)
-      ->DeleteDataForDiscardedSessions(identifiers, dataDeletedClosure);
-
-  if (browserState->HasOffTheRecordChromeBrowserState()) {
-    ChromeBrowserState* otrBrowserState =
-        browserState->GetOffTheRecordChromeBrowserState();
-    SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+    SessionRestorationServiceFactory::GetForBrowserState(browserState)
         ->DeleteDataForDiscardedSessions(identifiers, dataDeletedClosure);
+
+    if (browserState->HasOffTheRecordChromeBrowserState()) {
+      ChromeBrowserState* otrBrowserState =
+          browserState->GetOffTheRecordChromeBrowserState();
+      SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+          ->DeleteDataForDiscardedSessions(identifiers, dataDeletedClosure);
+    }
   }
 }
 
