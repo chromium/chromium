@@ -16,10 +16,12 @@
 
 namespace global_media_controls {
 
+class MediaItemUIUpdatedView;
 class MediaItemUIView;
 
-// MediaItemUIListView is a container that holds a list of MediaItemUIViews and
-// handles adding/removing separators and creating a scrollable view.
+// MediaItemUIListView is a scrollable view container that holds a list of
+// MediaItemUIViews or MediaItemUIUpdatedViews, and creates item separators if
+// needed.
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
     : public views::ScrollView {
   METADATA_HEADER(MediaItemUIListView, views::ScrollView)
@@ -40,15 +42,26 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   MediaItemUIListView& operator=(const MediaItemUIListView&) = delete;
   ~MediaItemUIListView() override;
 
-  // Adds the given item into the list.
+  // Adds the given MediaItemUIView into the list.
   void ShowItem(const std::string& id, std::unique_ptr<MediaItemUIView> item);
 
-  // Removes the given item from the list.
+  // Removes the given MediaItemUIView from the list.
   void HideItem(const std::string& id);
 
+  // Gets the given MediaItemUIView from the list.
   MediaItemUIView* GetItem(const std::string& id);
 
-  bool empty() { return items_.empty(); }
+  // Adds the given MediaItemUIUpdatedView into the list.
+  void ShowUpdatedItem(const std::string& id,
+                       std::unique_ptr<MediaItemUIUpdatedView> item);
+
+  // Removes the given MediaItemUIUpdatedView from the list.
+  void HideUpdatedItem(const std::string& id);
+
+  // Gets the given MediaItemUIUpdatedView from the list.
+  MediaItemUIUpdatedView* GetUpdatedItem(const std::string& id);
+
+  bool empty() { return items_.empty() && updated_items_.empty(); }
 
   base::WeakPtr<MediaItemUIListView> GetWeakPtr();
 
@@ -58,7 +71,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   }
 
  private:
+  // If media::kGlobalMediaControlsUpdatedUI on non-CrOS is enabled,
+  // `updated_items_` is used, otherwise `items_` is used. `items_` is always
+  // used for CrOS.
+  // TODO(b/329160058): Use better naming.
   std::map<const std::string, MediaItemUIView*> items_;
+  std::map<const std::string, MediaItemUIUpdatedView*> updated_items_;
 
   std::optional<SeparatorStyle> separator_style_;
 

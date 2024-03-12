@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 
 #include "base/containers/contains.h"
+#include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -111,6 +112,35 @@ void MediaItemUIListView::HideItem(const std::string& id) {
 
 MediaItemUIView* MediaItemUIListView::GetItem(const std::string& id) {
   return items_[id];
+}
+
+void MediaItemUIListView::ShowUpdatedItem(
+    const std::string& id,
+    std::unique_ptr<MediaItemUIUpdatedView> item) {
+  CHECK(!base::Contains(updated_items_, id));
+  CHECK(item.get());
+
+  updated_items_[id] = contents()->AddChildView(std::move(item));
+
+  contents()->InvalidateLayout();
+  PreferredSizeChanged();
+}
+
+void MediaItemUIListView::HideUpdatedItem(const std::string& id) {
+  if (!base::Contains(updated_items_, id)) {
+    return;
+  }
+
+  contents()->RemoveChildViewT(updated_items_[id]);
+  updated_items_.erase(id);
+
+  contents()->InvalidateLayout();
+  PreferredSizeChanged();
+}
+
+MediaItemUIUpdatedView* MediaItemUIListView::GetUpdatedItem(
+    const std::string& id) {
+  return updated_items_[id];
 }
 
 base::WeakPtr<MediaItemUIListView> MediaItemUIListView::GetWeakPtr() {

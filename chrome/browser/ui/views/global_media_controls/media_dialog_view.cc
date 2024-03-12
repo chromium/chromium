@@ -34,6 +34,7 @@
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
+#include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
@@ -177,14 +178,22 @@ bool MediaDialogView::IsShowing() {
 global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  auto view = BuildMediaItemUIView(id, item);
-  auto* view_ptr = view.get();
+  global_media_controls::MediaItemUI* view_ptr;
+
+  if (media_color_theme_.has_value()) {
+    auto view = BuildMediaItemUIUpdatedView(id, item);
+    view_ptr = view.get();
+    updated_items_[id] = view.get();
+    active_sessions_view_->ShowUpdatedItem(id, std::move(view));
+  } else {
+    auto view = BuildMediaItemUIView(id, item);
+    view_ptr = view.get();
+    observed_items_[id] = view.get();
+    active_sessions_view_->ShowItem(id, std::move(view));
+  }
+
   view_ptr->AddObserver(this);
-  observed_items_[id] = view_ptr;
-
-  active_sessions_view_->ShowItem(id, std::move(view));
   UpdateBubbleSize();
-
   for (auto& observer : observers_) {
     observer.OnMediaSessionShown();
   }
@@ -192,7 +201,11 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
 }
 
 void MediaDialogView::HideMediaItem(const std::string& id) {
-  active_sessions_view_->HideItem(id);
+  if (media_color_theme_.has_value()) {
+    active_sessions_view_->HideUpdatedItem(id);
+  } else {
+    active_sessions_view_->HideItem(id);
+  }
 
   if (active_sessions_view_->empty()) {
     HideDialog();
@@ -205,6 +218,7 @@ void MediaDialogView::HideMediaItem(const std::string& id) {
   }
 }
 
+// TODO(yrw): Implement changes for `updated_items_`.
 void MediaDialogView::RefreshMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
@@ -336,11 +350,19 @@ void MediaDialogView::OnMediaItemUIActionsChanged() {
 }
 
 void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {
-  auto iter = observed_items_.find(id);
-  DCHECK(iter != observed_items_.end());
+  if (media_color_theme_.has_value()) {
+    auto iter = updated_items_.find(id);
+    CHECK(iter != updated_items_.end());
 
-  iter->second->RemoveObserver(this);
-  observed_items_.erase(iter);
+    iter->second->RemoveObserver(this);
+    updated_items_.erase(iter);
+  } else {
+    auto iter = observed_items_.find(id);
+    CHECK(iter != observed_items_.end());
+
+    iter->second->RemoveObserver(this);
+    observed_items_.erase(iter);
+  }
 }
 
 void MediaDialogView::AddObserver(MediaDialogViewObserver* observer) {
@@ -413,6 +435,9 @@ MediaDialogView::MediaDialogView(
 
 MediaDialogView::~MediaDialogView() {
   for (auto item_pair : observed_items_) {
+    item_pair.second->RemoveObserver(this);
+  }
+  for (auto item_pair : updated_items_) {
     item_pair.second->RemoveObserver(this);
   }
 }
@@ -673,6 +698,15 @@ MediaDialogView::BuildMediaItemUIView(
                           show_devices, media_color_theme_),
       /*notification_theme=*/std::nullopt, media_color_theme_,
       global_media_controls::MediaDisplayPage::kMediaDialogView);
+}
+
+std::unique_ptr<global_media_controls::MediaItemUIUpdatedView>
+MediaDialogView::BuildMediaItemUIUpdatedView(
+    const std::string& id,
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  CHECK(media_color_theme_);
+  return std::make_unique<global_media_controls::MediaItemUIUpdatedView>(
+      id, item, media_color_theme_.value());
 }
 
 BEGIN_METADATA(MediaDialogView)
