@@ -186,8 +186,6 @@ TEST(SlimLayerTest, UIResourceLayerProperties) {
 
   layer->SetUV(gfx::PointF(0.25f, 0.25f), gfx::PointF(0.75f, 0.75f));
 
-  layer->SetVertexOpacity(0.1f, 0.2f, 0.3f, 0.4f);
-
   TestLayerTreeClient client;
   auto layer_tree = LayerTree::Create(&client);
   layer_tree->SetRoot(layer);

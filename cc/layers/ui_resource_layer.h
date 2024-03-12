@@ -44,12 +44,6 @@ class CC_EXPORT UIResourceLayer : public Layer {
   // Sets a UV transform to be used at draw time. Defaults to (0, 0) and (1, 1).
   void SetUV(const gfx::PointF& top_left, const gfx::PointF& bottom_right);
 
-  // Sets an opacity value per vertex. It will be multiplied by the layer
-  // opacity value.
-  void SetVertexOpacity(float bottom_left,
-                        float top_left,
-                        float top_right,
-                        float bottom_right);
 
  protected:
   UIResourceLayer();
@@ -72,7 +66,6 @@ class CC_EXPORT UIResourceLayer : public Layer {
 
   ProtectedSequenceReadable<gfx::PointF> uv_top_left_;
   ProtectedSequenceReadable<gfx::PointF> uv_bottom_right_;
-  ProtectedSequenceReadable<float[4]> vertex_opacity_;
 };
 
 }  // namespace cc

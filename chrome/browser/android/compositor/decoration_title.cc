@@ -228,7 +228,12 @@ void DecorationTitle::setBounds(const gfx::Size& bounds) {
     layer_fade_->SetBounds(gfx::Size(fade_space, title_size_.height()));
     layer_fade_->SetPosition(gfx::PointF(x, title_offset_y));
     layer_fade_->SetUV(gfx::PointF(u1, 0.f), gfx::PointF(u2, 1.f));
-    layer_fade_->SetVertexOpacity(a1, a1, a2, a2);
+    // Left to right gradient.
+    gfx::LinearGradient gradient;
+    gradient.AddStep(0.f, a1 * 255);
+    gradient.AddStep(1.f, a2 * 255);
+    gradient.set_angle(0);
+    layer_fade_->SetGradientMask(gradient);
   } else {
     layer_fade_->SetIsDrawable(false);
   }

@@ -32,12 +32,6 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
   // Sets a UV transform to be used at draw time. Defaults to (0, 0) and (1, 1).
   void SetUV(const gfx::PointF& top_left, const gfx::PointF& bottom_right);
 
-  // Sets an opacity value per vertex. It will be multiplied by the layer
-  // opacity value.
-  void SetVertexOpacity(float bottom_left,
-                        float top_left,
-                        float top_right,
-                        float bottom_right);
 
   // Layer implementation.
   void SetLayerTree(LayerTree* tree) override;
@@ -51,7 +45,6 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
   cc::UIResourceId resource_id() const { return resource_id_; }
   auto uv_top_left() const { return uv_top_left_; }
   auto uv_bottom_right() const { return uv_bottom_right_; }
-  const auto& vertex_opacity() const { return vertex_opacity_; }
 
   bool HasDrawableContent() const override;
   void AppendQuads(viz::CompositorRenderPass& render_pass,
@@ -70,7 +63,6 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
   SkBitmap bitmap_;
   gfx::PointF uv_top_left_;
   gfx::PointF uv_bottom_right_{1.0f, 1.0f};
-  float vertex_opacity_[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 
 }  // namespace cc::slim

@@ -597,10 +597,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
     EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
     EXPECT_EQ(gfx::PointF(0.0f, 0.0f), texture_quad->uv_top_left);
     EXPECT_EQ(gfx::PointF(1.0f, 1.0f), texture_quad->uv_bottom_right);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[0]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[1]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[2]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[3]);
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
@@ -614,7 +610,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
 
   ui_resource_layer->SetUV(gfx::PointF(0.25f, 0.25f),
                            gfx::PointF(0.75f, 0.75f));
-  ui_resource_layer->SetVertexOpacity(0.1f, 0.2f, 0.3f, 0.4f);
   {
     auto image_info =
         SkImageInfo::Make(2, 2, kN32_SkColorType, kPremul_SkAlphaType);
@@ -636,10 +631,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
     EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
     EXPECT_EQ(gfx::PointF(0.25f, 0.25f), texture_quad->uv_top_left);
     EXPECT_EQ(gfx::PointF(0.75f, 0.75f), texture_quad->uv_bottom_right);
-    EXPECT_EQ(0.1f, texture_quad->vertex_opacity[0]);
-    EXPECT_EQ(0.2f, texture_quad->vertex_opacity[1]);
-    EXPECT_EQ(0.3f, texture_quad->vertex_opacity[2]);
-    EXPECT_EQ(0.4f, texture_quad->vertex_opacity[3]);
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());

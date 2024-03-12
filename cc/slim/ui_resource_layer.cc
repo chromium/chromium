@@ -53,27 +53,6 @@ void UIResourceLayer::SetUV(const gfx::PointF& top_left,
   NotifyPropertyChanged();
 }
 
-void UIResourceLayer::SetVertexOpacity(float bottom_left,
-                                       float top_left,
-                                       float top_right,
-                                       float bottom_right) {
-  // Indexing according to the quad vertex generation:
-  // 1--2
-  // |  |
-  // 0--3
-  auto& opacity = vertex_opacity_;
-  if (opacity[0] == bottom_left && opacity[1] == top_left &&
-      opacity[2] == top_right && opacity[3] == bottom_right) {
-    return;
-  }
-
-  opacity[0] = bottom_left;
-  opacity[1] = top_left;
-  opacity[2] = top_right;
-  opacity[3] = bottom_right;
-  NotifyPropertyChanged();
-}
-
 void UIResourceLayer::SetLayerTree(LayerTree* tree) {
   if (tree == layer_tree()) {
     return;
@@ -134,7 +113,6 @@ void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                viz_resource_id, kPremultiplied, uv_top_left(),
                uv_bottom_right(), SkColors::kTransparent, kFlipped, kNearest,
                kSecureOutputOnly, kVideoType);
-  quad->set_vertex_opacity(vertex_opacity_);
 }
 
 }  // namespace cc::slim
