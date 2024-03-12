@@ -45,7 +45,8 @@ class VaapiUtilsTest : public testing::Test {
                              EncryptionScheme::kUnencrypted,
                              base::BindRepeating([](VaapiFunctions function) {
                                LOG(FATAL) << "Oh noes! Decoder failed";
-                             }));
+                             }))
+            .value_or(nullptr);
     ASSERT_TRUE(vaapi_wrapper_);
   }
 

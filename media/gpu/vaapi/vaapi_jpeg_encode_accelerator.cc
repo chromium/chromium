@@ -142,22 +142,27 @@ void VaapiJpegEncodeAccelerator::Encoder::Initialize(
     return;
   }
 
-  vaapi_wrapper_ = VaapiWrapper::Create(
-      VaapiWrapper::kEncodeConstantBitrate, VAProfileJPEGBaseline,
-      EncryptionScheme::kUnencrypted,
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiJpegEncodeAccelerator.VAAPIError"));
+  vaapi_wrapper_ =
+      VaapiWrapper::Create(
+          VaapiWrapper::kEncodeConstantBitrate, VAProfileJPEGBaseline,
+          EncryptionScheme::kUnencrypted,
+          base::BindRepeating(&ReportVaapiErrorToUMA,
+                              "Media.VaapiJpegEncodeAccelerator.VAAPIError"))
+          .value_or(nullptr);
   if (!vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI";
     std::move(init_cb).Run(PLATFORM_FAILURE);
     return;
   }
 
-  vpp_vaapi_wrapper_ = VaapiWrapper::Create(
-      VaapiWrapper::kVideoProcess, VAProfileNone,
-      EncryptionScheme::kUnencrypted,
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiJpegEncodeAccelerator.Vpp.VAAPIError"));
+  vpp_vaapi_wrapper_ =
+      VaapiWrapper::Create(
+          VaapiWrapper::kVideoProcess, VAProfileNone,
+          EncryptionScheme::kUnencrypted,
+          base::BindRepeating(
+              &ReportVaapiErrorToUMA,
+              "Media.VaapiJpegEncodeAccelerator.Vpp.VAAPIError"))
+          .value_or(nullptr);
   if (!vpp_vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI wrapper for VPP";
     std::move(init_cb).Run(PLATFORM_FAILURE);

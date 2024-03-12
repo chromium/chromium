@@ -123,7 +123,8 @@ VaapiDmaBufVideoFrameMapper::VaapiDmaBufVideoFrameMapper(
       vaapi_wrapper_(VaapiWrapper::Create(VaapiWrapper::kVideoProcess,
                                           VAProfileNone,
                                           EncryptionScheme::kUnencrypted,
-                                          base::DoNothing())) {}
+                                          base::DoNothing())
+                         .value_or(nullptr)) {}
 
 VaapiDmaBufVideoFrameMapper::~VaapiDmaBufVideoFrameMapper() {}
 

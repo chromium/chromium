@@ -177,11 +177,14 @@ void VaapiMjpegDecodeAccelerator::Decoder::Initialize(
     return;
   }
 
-  vpp_vaapi_wrapper_ = VaapiWrapper::Create(
-      VaapiWrapper::kVideoProcess, VAProfileNone,
-      EncryptionScheme::kUnencrypted,
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError"));
+  vpp_vaapi_wrapper_ =
+      VaapiWrapper::Create(
+          VaapiWrapper::kVideoProcess, VAProfileNone,
+          EncryptionScheme::kUnencrypted,
+          base::BindRepeating(
+              &ReportVaapiErrorToUMA,
+              "Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError"))
+          .value_or(nullptr);
   if (!vpp_vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI for VPP";
     std::move(init_cb).Run(false);

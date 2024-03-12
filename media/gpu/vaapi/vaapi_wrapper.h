@@ -28,6 +28,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
@@ -205,7 +206,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Return an instance of VaapiWrapper initialized for |va_profile| and
   // |mode|. |report_error_to_uma_cb| will be called independently from
   // reporting errors to clients via method return values.
-  static scoped_refptr<VaapiWrapper> Create(
+  // TODO(mcasas): Add and use a VaapiWrapperStatus instead of reusing here
+  // DecoderStatus.
+  static base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus> Create(
       CodecMode mode,
       VAProfile va_profile,
       EncryptionScheme encryption_scheme,
@@ -216,12 +219,14 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // |profile| to VAProfile.
   // |report_error_to_uma_cb| will be called independently from reporting
   // errors to clients via method return values.
-  static scoped_refptr<VaapiWrapper> CreateForVideoCodec(
-      CodecMode mode,
-      VideoCodecProfile profile,
-      EncryptionScheme encryption_scheme,
-      const ReportErrorToUMACB& report_error_to_uma_cb,
-      bool enforce_sequence_affinity = true);
+  // TODO(mcasas): Add and use a VaapiWrapperStatus instead of reusing here
+  // DecoderStatus.
+  static base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus>
+  CreateForVideoCodec(CodecMode mode,
+                      VideoCodecProfile profile,
+                      EncryptionScheme encryption_scheme,
+                      const ReportErrorToUMACB& report_error_to_uma_cb,
+                      bool enforce_sequence_affinity = true);
 
   VaapiWrapper(const VaapiWrapper&) = delete;
   VaapiWrapper& operator=(const VaapiWrapper&) = delete;
@@ -603,8 +608,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   [[nodiscard]] bool Initialize(VAProfile va_profile,
                                 EncryptionScheme encryption_scheme);
   void Deinitialize();
-  [[nodiscard]] bool VaInitialize(
-      const ReportErrorToUMACB& report_error_to_uma_cb);
+  void VaInitialize(const ReportErrorToUMACB& report_error_to_uma_cb);
 
   // Tries to allocate |num_surfaces| VASurfaceIDs of |size| and |va_format|.
   // Fills |va_surfaces| and returns true if successful, or returns false.

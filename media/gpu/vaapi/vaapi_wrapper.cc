@@ -1669,7 +1669,7 @@ int VaapiWrapper::GetMaxNumDecoderInstances() {
 }
 
 // static
-scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
+base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus> VaapiWrapper::Create(
     CodecMode mode,
     VAProfile va_profile,
     EncryptionScheme encryption_scheme,
@@ -1677,7 +1677,7 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
     bool enforce_sequence_affinity) {
   if (!VASupportedProfiles::Get().IsProfileSupported(mode, va_profile)) {
     DVLOG(1) << "Unsupported va_profile: " << vaProfileStr(va_profile);
-    return nullptr;
+    return base::unexpected(DecoderStatus::Codes::kUnsupportedProfile);
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In protected decode |mode| we need to ensure that |va_profile| is supported
@@ -1687,13 +1687,13 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
       !VASupportedProfiles::Get().IsProfileSupported(mode,
                                                      VAProfileProtected)) {
     LOG(ERROR) << "Protected content profile not supported";
-    return nullptr;
+    return base::unexpected(DecoderStatus::Codes::kUnsupportedEncryptionMode);
   }
 #endif
 
   auto va_display_state_handle = VADisplayStateSingleton::GetHandle();
   if (!va_display_state_handle) {
-    return nullptr;
+    return base::unexpected(DecoderStatus::Codes::kFailed);
   }
 
   if (mode == kDecode) {
@@ -1704,26 +1704,27 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
         !base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances);
     if (!can_create_decoder) {
       num_decoder_instances_.Decrement();
-      return nullptr;
+      return base::unexpected(DecoderStatus::Codes::kTooManyDecoders);
     }
   }
 
   scoped_refptr<VaapiWrapper> vaapi_wrapper(new VaapiWrapper(
       std::move(va_display_state_handle), mode, enforce_sequence_affinity));
-  if (vaapi_wrapper->VaInitialize(report_error_to_uma_cb)) {
-    if (vaapi_wrapper->Initialize(va_profile, encryption_scheme))
-      return vaapi_wrapper;
-  }
+  vaapi_wrapper->VaInitialize(report_error_to_uma_cb);
+  if (vaapi_wrapper->Initialize(va_profile, encryption_scheme))
+    return vaapi_wrapper;
+
   LOG(ERROR) << "Failed to create VaapiWrapper for va_profile: "
              << vaProfileStr(va_profile);
-  return nullptr;
+  return base::unexpected(DecoderStatus::Codes::kFailed);
 }
 
 // static
 base::AtomicRefCount VaapiWrapper::num_decoder_instances_(0);
 
 // static
-scoped_refptr<VaapiWrapper> VaapiWrapper::CreateForVideoCodec(
+base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus>
+VaapiWrapper::CreateForVideoCodec(
     CodecMode mode,
     VideoCodecProfile profile,
     EncryptionScheme encryption_scheme,
@@ -3288,7 +3289,7 @@ void VaapiWrapper::Deinitialize() {
   }
 }
 
-bool VaapiWrapper::VaInitialize(
+void VaapiWrapper::VaInitialize(
     const ReportErrorToUMACB& report_error_to_uma_cb) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
@@ -3299,8 +3300,6 @@ bool VaapiWrapper::VaInitialize(
       !UseGlobalVaapiLock(va_display_state_handle_->implementation_type())) {
     va_lock_ = nullptr;
   }
-
-  return true;
 }
 
 bool VaapiWrapper::HasContext() const {

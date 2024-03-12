@@ -174,11 +174,13 @@ void VaapiImageProcessorBackend::ProcessFrame(
     // where the VPP is needed for processing protected content after decoding.
     // That's because when calling VaapiWrapper::BlitSurface(), we re-use the
     // protected session ID created at decoding time.
-    auto vaapi_wrapper = VaapiWrapper::Create(
-        VaapiWrapper::kVideoProcess, VAProfileNone,
-        EncryptionScheme::kUnencrypted,
-        base::BindRepeating(&ReportVaapiErrorToUMA,
-                            "Media.VaapiImageProcessorBackend.VAAPIError"));
+    auto vaapi_wrapper =
+        VaapiWrapper::Create(
+            VaapiWrapper::kVideoProcess, VAProfileNone,
+            EncryptionScheme::kUnencrypted,
+            base::BindRepeating(&ReportVaapiErrorToUMA,
+                                "Media.VaapiImageProcessorBackend.VAAPIError"))
+            .value_or(nullptr);
     if (!vaapi_wrapper) {
       VLOGF(1) << "Failed to create VaapiWrapper";
       error_cb_.Run();

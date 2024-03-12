@@ -263,11 +263,8 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 #endif
   }
 
-  // TODO(b/266003084): Consider returning a std::expected or std::optional and
-  // figure out whether there are too many instances, returning kTooManyDecoders
-  // in that case.
   const VideoCodecProfile profile = config.profile();
-  vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
+  auto vaapi_wrapper_or_error = VaapiWrapper::CreateForVideoCodec(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       (!cdm_context_ref_ || transcryption_) ? VaapiWrapper::kDecode
                                             : VaapiWrapper::kDecodeProtected,
@@ -280,14 +277,15 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiVideoDecoder.VAAPIError"));
   UMA_HISTOGRAM_BOOLEAN("Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess",
-                        vaapi_wrapper_.get());
-  if (!vaapi_wrapper_.get()) {
+                        vaapi_wrapper_or_error.has_value());
+  if (!vaapi_wrapper_or_error.has_value()) {
     SetErrorState(
         base::StringPrintf("failed initializing VaapiWrapper for profile %s, ",
                            GetProfileName(profile).c_str()));
-    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedProfile);
+    std::move(init_cb).Run(vaapi_wrapper_or_error.error());
     return;
   }
+  vaapi_wrapper_ = std::move(vaapi_wrapper_or_error.value());
 
   profile_ = profile;
   color_space_ = config.color_space_info();
@@ -753,16 +751,19 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   if (profile_ != decoder_->GetProfile()) {
     // When a profile is changed, we need to re-initialize VaapiWrapper.
     profile_ = decoder_->GetProfile();
-    auto new_vaapi_wrapper = VaapiWrapper::CreateForVideoCodec(
+    auto new_vaapi_wrapper =
+        VaapiWrapper::CreateForVideoCodec(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        (!cdm_context_ref_ || transcryption_) ? VaapiWrapper::kDecode
-                                              : VaapiWrapper::kDecodeProtected,
+            (!cdm_context_ref_ || transcryption_)
+                ? VaapiWrapper::kDecode
+                : VaapiWrapper::kDecodeProtected,
 #else
-        VaapiWrapper::kDecode,
+            VaapiWrapper::kDecode,
 #endif
-        profile_, encryption_scheme_,
-        base::BindRepeating(&ReportVaapiErrorToUMA,
-                            "Media.VaapiVideoDecoder.VAAPIError"));
+            profile_, encryption_scheme_,
+            base::BindRepeating(&ReportVaapiErrorToUMA,
+                                "Media.VaapiVideoDecoder.VAAPIError"))
+            .value_or(nullptr);
     if (!new_vaapi_wrapper.get()) {
       SetErrorState("failed (re)creating VaapiWrapper");
       return;
