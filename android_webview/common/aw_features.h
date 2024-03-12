@@ -55,6 +55,7 @@ BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList);
 BASE_DECLARE_FEATURE(kWebViewUmaUploadQualityOfServiceSetToDefault);
 BASE_DECLARE_FEATURE(kWebViewUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kWebViewZoomKeyboardShortcuts);
+BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 
 }  // namespace features
 }  // namespace android_webview

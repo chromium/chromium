@@ -159,6 +159,13 @@ std::string GetUserAgent() {
           switches::kUseMobileUserAgent)) {
     product += " Mobile";
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewReduceUAAndroidVersionDeviceModel)) {
+    return content::BuildUnifiedPlatformUAFromProductAndExtraOs(product,
+                                                                "; wv");
+  }
+
   return content::BuildUserAgentFromProductAndExtraOSInfo(
       product, "; wv", content::IncludeAndroidBuildNumber::Include);
 }

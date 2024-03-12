@@ -370,6 +370,14 @@ std::string BuildUserAgentFromProductAndExtraOSInfo(
   return BuildUserAgentFromOSAndProduct(os_info, product);
 }
 
+std::string BuildUnifiedPlatformUAFromProductAndExtraOs(
+    const std::string& product,
+    const std::string& extra_os_info) {
+  std::string os_info;
+  base::StrAppend(&os_info, {GetUnifiedPlatform(), extra_os_info});
+  return BuildUserAgentFromOSAndProduct(os_info, product);
+}
+
 std::string GetAndroidOSInfo(
     IncludeAndroidBuildNumber include_android_build_number,
     IncludeAndroidModel include_android_model) {

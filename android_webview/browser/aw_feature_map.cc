@@ -44,6 +44,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
     &features::kWebViewMuteAudio,
     &features::kWebViewUseInitialNetworkStateAtStartup,
+    &features::kWebViewReduceUAAndroidVersionDeviceModel,
 };
 
 // static

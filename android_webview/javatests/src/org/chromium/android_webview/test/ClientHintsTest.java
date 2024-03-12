@@ -73,6 +73,10 @@ public class ClientHintsTest extends AwParameterizedTest {
 
     private static final String CHROME_PRODUCT_PATTERN = "Chrome/(\\d+).(\\d+).(\\d+).(\\d+)";
 
+    private static final String WEBVIEW_REDUCED_UA_PATTERN =
+            "Mozilla/5\\.0 \\((.+)\\) AppleWebKit\\/537\\.36 \\(KHTML, like Gecko\\) Version/4\\.0"
+                    + " Chrome/(\\d+)\\.0\\.0\\.0( Mobile)? Safari/537\\.36";
+
     private static class ClientHintsTestResult {
         public Map<String, String> mHttpHeaderClientHints;
         public JSONObject mJsClientHints;
@@ -950,6 +954,21 @@ public class ClientHintsTest extends AwParameterizedTest {
                 "0.0.0",
                 String.format(
                         "%s.%s.%s", uaMatcher.group(2), uaMatcher.group(3), uaMatcher.group(4)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
+    @CommandLineFlags.Add({
+        "enable-features=ReduceUserAgentMinorVersion,WebViewReduceUAAndroidVersionDeviceModel"
+    })
+    public void testDefaultUserAgentEnableAllReduction() throws Throwable {
+        String defaultUserAgent = getDefaultUserAgent();
+        // Verify user-agent is reduced.
+        Matcher uaMatcher = Pattern.compile(WEBVIEW_REDUCED_UA_PATTERN).matcher(defaultUserAgent);
+        Assert.assertTrue(uaMatcher.find());
+        Assert.assertEquals("Linux; Android 10; K; wv", uaMatcher.group(1));
     }
 
     private void verifyOverrideUaAndOverrideUaMetadata(String overrideUserAgent) throws Throwable {
