@@ -1135,6 +1135,9 @@
     "includes": [7580],
     "structures": [7600],
   },
+  "ash/system/mahi/resources/mahi_resources.grd": {
+    "structures":[7610],
+  },
   "base/tracing/protos/resources.grd": {
     "includes": [7620],
   },
