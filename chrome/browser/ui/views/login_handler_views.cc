@@ -14,6 +14,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,6 +53,14 @@ class LoginHandlerViews : public LoginHandler {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK(!dialog_);
 
+    // A WebContentsModalDialogManager is necessary to show the Dialog. A
+    // manager may not be available during the shutdown process of the
+    // WebContents, which can trigger DidFinishNavigation events.
+    // See https://crbug.com/328462789.
+    if (!web_modal::WebContentsModalDialogManager::FromWebContents(
+            constrained_window::GetTopLevelWebContents(web_contents()))) {
+      return false;
+    }
     dialog_ = new Dialog(this, web_contents(), authority, explanation,
                          login_model_data);
     return true;
