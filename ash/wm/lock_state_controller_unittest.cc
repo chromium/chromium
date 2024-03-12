@@ -1203,23 +1203,4 @@ TEST_F(LockStateControllerPineTest, ShutdownWithAlwaysOnTopWindow) {
   VerifyPineImageOnDisk();
 }
 
-TEST_F(LockStateControllerPineTest, TakeScreenshotTimeout) {
-  // Create an empty file to simulate an old pine image.
-  ASSERT_TRUE(base::WriteFile(file_path(), ""));
-
-  std::unique_ptr<aura::Window> window(CreateTestWindow());
-  base::RunLoop run_loop;
-  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
-  lock_state_controller_->RequestShutdown(
-      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
-
-  // Fire the screenshot timeout before taking the screenshot completes. Then no
-  // screenshot should be saved, the existing one should be deleted as well and
-  // the shutdown process should be triggered directly.
-  lock_state_test_api_->trigger_take_screenshot_timeout();
-  run_loop.Run();
-  EXPECT_FALSE(base::PathExists(file_path()));
-  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
-}
-
 }  // namespace ash

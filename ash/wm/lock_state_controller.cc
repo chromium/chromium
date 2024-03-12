@@ -103,10 +103,6 @@ constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
 constexpr int kResizedPineImageWidthInLandscape = 344;
 constexpr int kResizedPineImageWidthInPortrait = 384;
 
-// Amount of time to wait after starting to take the pine screenshot. The task
-// will be stopped if it takes longer than this time duration.
-constexpr base::TimeDelta kTakeScreenshotFailTimeout = base::Milliseconds(800);
-
 // Records the given `duration` to the given `pref_name` so it can be recorded
 // as an UMA metric on the next startup.
 void SavePineScreenshotDuration(PrefService* local_state,
@@ -158,19 +154,6 @@ void MaybeAppendTestCallback(Callback& callback,
         base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
                            std::move(for_test_callback)));
   }
-}
-
-// Deletes any existing pine image if we should shutdown without taking the
-// screenshot, then no stale screenshot will be shown on next startup.
-void DeletePineImage(base::OnceClosure& for_test_callback,
-                     const base::FilePath& file_path) {
-  auto delete_image_cb =
-      base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path);
-  MaybeAppendTestCallback(delete_image_cb, for_test_callback);
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::HIGHEST,
-                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                             std::move(delete_image_cb));
 }
 
 // TODO(minch): Check whether the screenshot should be taken in kiosk mode or
@@ -761,12 +744,21 @@ void LockStateController::ShutdownOnPine(bool with_pre_animation) {
 }
 
 void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
-  // TODO(b/319921650): Finalize the expected behavior on multi-display.
+  // TODO: Finalize the expected behavior on multi-display.
   auto* root = Shell::GetRootWindowForNewWindows();
   const base::FilePath file_path = GetShutdownPineImagePath();
 
   if (!ShouldTakePineScreeshot()) {
-    DeletePineImage(pine_image_callback_for_test_, file_path);
+    // Delete any existing pine image if we should not take the screenshot on
+    // this shutdown, then no stale screenshot will be shown on next startup.
+    auto delete_image_cb =
+        base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_path);
+    MaybeAppendTestCallback(delete_image_cb, pine_image_callback_for_test_);
+    base::ThreadPool::PostTask(FROM_HERE,
+                               {base::MayBlock(), base::TaskPriority::HIGHEST,
+                                base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                               std::move(delete_image_cb));
+
     StartShutdownProcess(with_pre_animation);
     return;
   }
@@ -793,14 +785,8 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
   shutdown_screenshot_layer->Add(mirror_wallpaper_layer_.get());
   shutdown_screenshot_layer->StackAtBottom(mirror_wallpaper_layer_.get());
 
-  // Trigger the `take_screenshot_fail_timer_` and start taking the screenshot
-  // at the same time. If the timer timeouts before receiving the screenshot,
-  // shutdown process will be triggered without the screenshot.
-  take_screenshot_fail_timer_.Start(
-      FROM_HERE, kTakeScreenshotFailTimeout,
-      base::BindOnce(&LockStateController::OnTakeScreenshotFailTimeout,
-                     base::Unretained(this), with_pre_animation));
-
+  // TODO(b/321117233): Cancel the operation to take the screenshot and proceed
+  // with the shutdown immediately if it takes too long.
   // Take the screenshot on the shutdown screenshot container, thus the float
   // and the always on top windows will be included in the screenshot as well.
   ui::GrabWindowSnapshot(
@@ -824,26 +810,10 @@ void LockStateController::StartShutdownProcess(bool with_pre_animation) {
   }
 }
 
-void LockStateController::OnTakeScreenshotFailTimeout(bool with_pre_animation) {
-  SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
-                             kTakeScreenshotFailTimeout);
-  mirror_wallpaper_layer_.reset();
-  DeletePineImage(pine_image_callback_for_test_, GetShutdownPineImagePath());
-  StartShutdownProcess(with_pre_animation);
-}
-
 void LockStateController::OnPineImageTaken(bool with_pre_animation,
                                            const base::FilePath& file_path,
                                            base::TimeTicks start_time,
                                            gfx::Image pine_image) {
-  // Do not proceed if the `take_screenshot_fail_timer_` is stopped, which means
-  // taking screenshot process took too long and the shutdown process has been
-  // triggered without the pine image.
-  if (!take_screenshot_fail_timer_.IsRunning()) {
-    return;
-  }
-
-  take_screenshot_fail_timer_.Stop();
   SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
                              base::TimeTicks::Now() - start_time);
 

@@ -46,10 +46,6 @@ class LockStateControllerTestApi {
     controller_->pine_image_callback_for_test_ = std::move(callback);
   }
 
-  void trigger_take_screenshot_timeout() const {
-    controller_->take_screenshot_fail_timer_.FireNow();
-  }
-
  private:
   raw_ptr<LockStateController, DanglingUntriaged> controller_;  // not owned
 };
