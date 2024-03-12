@@ -1872,8 +1872,6 @@ config("default_warnings") {
       }
 
       cflags += [
-        "-Wenum-compare-conditional",
-
         # Ignore warnings about MSVC optimization pragmas.
         # TODO(thakis): Only for no_chromium_code? http://crbug.com/912662
         "-Wno-ignored-pragma-optimize",
@@ -1895,6 +1893,11 @@ config("default_warnings") {
 
         # TODO(https://crbug.com/1490607): Fix and re-enable.
         "-Wno-thread-safety-reference-return",
+      ]
+
+      cflags_cc += [
+        # TODO(crbug.com/328490295): Fix and re-enable for C flags.
+        "-Wenum-compare-conditional",
       ]
 
       if (!is_nacl) {
