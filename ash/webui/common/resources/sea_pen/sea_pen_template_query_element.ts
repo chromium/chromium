@@ -73,6 +73,12 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         type: Array,
       },
 
+      // A boolean indicates whether the user is still selecting chip options.
+      isSelectingOptions: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       thumbnails_: Object,
 
       thumbnailsLoading_: Boolean,
@@ -105,6 +111,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private thumbnailsLoading_: boolean;
   private searchButtonText_: string;
   private searchButtonIcon_: string;
+  private isSelectingOptions: boolean;
 
   static get observers() {
     return ['updateSearchButton_(path, thumbnails_)'];
@@ -133,6 +140,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private clearSelectedChipState() {
     this.selectedChip_ = null;
     this.options_ = null;
+    this.isSelectingOptions = false;
   }
 
   private onClickChip_(event: Event&{model: {token: ChipToken}}) {
@@ -145,6 +153,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
           this.seaPenTemplate_.options.has(this.selectedChip_.id),
           'options must exist');
       this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
+      this.isSelectingOptions = true;
     }
   }
 

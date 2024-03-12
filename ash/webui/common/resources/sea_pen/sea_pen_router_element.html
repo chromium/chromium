@@ -67,8 +67,21 @@
   sea-pen-recent-wallpapers {
     margin-top: 8px;
   }
-</style>
 
+  #topContainer:has(sea-pen-template-query[is-selecting-options]) + #bottomContainer sea-pen-images {
+    pointer-events: none;
+  }
+
+  #topContainer:has(sea-pen-template-query[is-selecting-options]) + #bottomContainer sea-pen-images::after {
+    background-color: var(--cros-sys-scrim);
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+</style>
 <div id="topContainer">
   <slot></slot>
   <template is="dom-if" if="[[shouldShowTextInputQuery_(relativePath_, queryParams_.seaPenTemplateId)]]" restamp>

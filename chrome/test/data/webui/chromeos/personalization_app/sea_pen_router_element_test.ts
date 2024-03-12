@@ -300,4 +300,66 @@ suite('SeaPenRouterElementTest', function() {
         routerElement.shadowRoot!.querySelector('sea-pen-images');
     assertTrue(!!seaPenImages, 'sea-pen-images now exists');
   });
+
+  test(
+      'show shadow overlay when sea pen options are being selected',
+      async () => {
+        const routerElement =
+            initElement(SeaPenRouterElement, {basePath: '/base'});
+        await waitAfterNextRender(routerElement);
+
+        // Navigate to a template, zero state is first shown.
+        routerElement.goToRoute(
+            SeaPenPaths.RESULTS,
+            {seaPenTemplateId: SeaPenTemplateId.kFlower.toString()});
+        await waitAfterNextRender(routerElement);
+
+        const seaPenTemplateQuery =
+            routerElement.shadowRoot!.querySelector('sea-pen-template-query');
+        assertTrue(
+            !!seaPenTemplateQuery, 'sea-pen-template-query should exist');
+
+        const seaPenImages =
+            routerElement.shadowRoot!.querySelector('sea-pen-images');
+        assertTrue(!!seaPenImages, 'sea-pen-images should exist');
+
+        assertEquals(
+            'auto', window.getComputedStyle(seaPenImages).pointerEvents,
+            'sea-pen-images should have pointer-events');
+
+        assertEquals(
+            'none', window.getComputedStyle(seaPenImages, '::after')!.content,
+            'sea-pen-images has no after style content ');
+
+        // Click on a chip in sea-pen-template-query. This should disable
+        // pointer events of sea-pen-images.
+        const chips =
+            seaPenTemplateQuery.shadowRoot!.querySelectorAll('.chip-text');
+        const chip = chips[0] as HTMLElement;
+        chip!.click();
+        await waitAfterNextRender(routerElement);
+
+        assertEquals(
+            'none', window.getComputedStyle(seaPenImages).pointerEvents,
+            'sea-pen-images now has no pointer-events');
+
+        // an overlay shadow displays for sea-pen-images.
+        assertEquals(
+            '""', window.getComputedStyle(seaPenImages, '::after')!.content,
+            'after style content should match');
+
+        // Click on the prior selected chip again. Chip state should be cleared
+        // and pointer events are enabled again for sea-pen-images.
+        chip!.click();
+        await waitAfterNextRender(routerElement);
+
+        assertEquals(
+            'auto', window.getComputedStyle(seaPenImages).pointerEvents,
+            'sea-pen-images should have pointer-events again');
+
+        // The overlay shadow is no longer shown.
+        assertEquals(
+            'none', window.getComputedStyle(seaPenImages, '::after')!.content,
+            'sea-pen-images no longer has after style content');
+      });
 });
