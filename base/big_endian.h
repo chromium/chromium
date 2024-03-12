@@ -55,51 +55,6 @@ inline uint8_t ByteSwapIfLittleEndian(uint8_t val) {
 
 }  // namespace internal
 
-// Read an integer (signed or unsigned) from |buf| in Big Endian order.
-// Note: this loop is unrolled with -O1 and above.
-// NOTE(szym): glibc dns-canon.c use ntohs(*(uint16_t*)ptr) which is
-// potentially unaligned.
-// This would cause SIGBUS on ARMv5 or earlier and ARMv6-M.
-//
-// DEPRECATED: Use base::numerics::*FromBigEndian to convert big-endian byte
-// encoding to primitives.
-template <typename T>
-inline void ReadBigEndian(span<const uint8_t, sizeof(T)> buffer, T* out) {
-  static_assert(std::is_integral_v<T>, "T has to be an integral type.");
-  // Make an unsigned version of the output type to make shift possible
-  // without UB.
-  std::make_unsigned_t<T> raw;
-  byte_span_from_ref(raw).copy_from(buffer);
-  *out = static_cast<T>(internal::ByteSwapIfLittleEndian(raw));
-}
-
-// TODO(crbug.com/40284755): Remove this function when there are no callers.
-template <typename T>
-inline void ReadBigEndian(const uint8_t buf[], T* out) {
-  ReadBigEndian(span<const uint8_t, sizeof(T)>(buf, sizeof(T)), out);
-}
-
-// Write an integer (signed or unsigned) `val` to `buffer` in Big Endian order.
-// The `buffer` must be the same size (in bytes) as the integer `val`.
-//
-// DEPRECATED: Use base::numerics::*ToBigEndian to convert primitives to big-
-// endian byte encoding.
-template <typename T>
-  requires(std::is_integral_v<T>)
-inline void WriteBigEndian(span<uint8_t, sizeof(T)> buffer, T val) {
-  const auto unsigned_val = static_cast<std::make_unsigned_t<T>>(val);
-  const auto raw = internal::ByteSwapIfLittleEndian(unsigned_val);
-  buffer.copy_from(byte_span_from_ref(raw));
-}
-
-// TODO(crbug.com/40284755): Remove this function when there are no callers.
-template <typename T>
-  requires(std::is_integral_v<T>)
-inline void WriteBigEndian(char buf[], T val) {
-  return WriteBigEndian(
-      as_writable_bytes(span<char, sizeof(T)>(buf, sizeof(T))), val);
-}
-
 // Allows reading integers in network order (big endian) while iterating over
 // an underlying buffer. All the reading functions advance the internal pointer.
 class BASE_EXPORT BigEndianReader {
