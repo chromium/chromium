@@ -42,14 +42,14 @@ macro_rules! crate_version {
 #[macro_export]
 macro_rules! crate_authors {
     ($sep:expr) => {{
-        static authors: &str = env!("CARGO_PKG_AUTHORS");
-        if authors.contains(':') {
+        static AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
+        if AUTHORS.contains(':') {
             static CACHED: std::sync::OnceLock<String> = std::sync::OnceLock::new();
-            let s = CACHED.get_or_init(|| authors.replace(':', $sep));
+            let s = CACHED.get_or_init(|| AUTHORS.replace(':', $sep));
             let s: &'static str = &*s;
             s
         } else {
-            authors
+            AUTHORS
         }
     }};
     () => {
