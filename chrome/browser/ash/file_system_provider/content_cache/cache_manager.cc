@@ -53,18 +53,32 @@ void CacheManager::InitializeForProvider(
                      provider_mount_path));
 }
 
+void CacheManager::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void CacheManager::RemoveObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.RemoveObserver(observer);
+}
+
 void CacheManager::OnInitializeForProvider(
     FileErrorOrContentCacheCallback callback,
     base::FilePath mount_path,
     base::File::Error result) {
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(base::unexpected(result));
-    return;
+  } else {
+    initialized_providers_.emplace(mount_path);
+    std::move(callback).Run(std::make_unique<ContentCache>(
+        profile_path_.Append(kFspContentCacheDirName).Append(mount_path)));
   }
 
-  initialized_providers_.emplace(mount_path);
-  std::move(callback).Run(std::make_unique<ContentCache>(
-      profile_path_.Append(kFspContentCacheDirName).Append(mount_path)));
+  // Notify all observers once the ContentCache is initialisation is complete.
+  for (auto& observer : observers_) {
+    observer.OnContentCacheInitializeComplete(mount_path, result);
+  }
 }
 
 }  // namespace ash::file_system_provider

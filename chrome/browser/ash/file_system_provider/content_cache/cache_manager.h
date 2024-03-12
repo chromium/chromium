@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -35,6 +36,15 @@ inline constexpr char kFspContentCacheDirName[] = "FspContentCache";
 // Supply the flag `in_memory_only` to avoid creating the FSP cache directory.
 class CacheManager {
  public:
+  // Observer class to be notified about changes happening in the CacheManager.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the initialization for a ContentCache for a
+    // FileSystemProvider is complete.
+    virtual void OnContentCacheInitializeComplete(base::FilePath mount_path,
+                                                  base::File::Error result) {}
+  };
+
   explicit CacheManager(const base::FilePath& profile_path,
                         bool in_memory_only = false);
 
@@ -47,6 +57,9 @@ class CacheManager {
   void InitializeForProvider(const base::FilePath& provider_mount_path,
                              FileErrorOrContentCacheCallback callback);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   // Responds to the FSP with the a `ContentCache` instance if directory
   // creation was successful (or `in_memory_only` is true).
@@ -57,6 +70,7 @@ class CacheManager {
   const base::FilePath profile_path_;
   bool in_memory_only_ = false;
   std::set<base::FilePath> initialized_providers_;
+  base::ObserverList<Observer> observers_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
       base::ThreadPool::CreateSequencedTaskRunner(

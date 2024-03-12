@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,16 +29,28 @@ const char kFileSystemId[] = "cloud-fs-id";
 const char kDisplayName[] = "Cloud FS";
 const base::FilePath kTestFilePath1 = base::FilePath("/test.txt");
 
-class FileSystemProviderCloudFileSystemTest : public testing::Test {
+class MockCacheManagerObserver : public CacheManager::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnContentCacheInitializeComplete,
+              (const base::FilePath mount_path, base::File::Error result),
+              (override));
+};
+
+class FileSystemProviderCloudFileSystemTest : public testing::Test,
+                                              public CacheManager::Observer {
  protected:
   FileSystemProviderCloudFileSystemTest() = default;
   ~FileSystemProviderCloudFileSystemTest() override = default;
 
   void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
 
+  // Creates a CloudFileSystem which wraps a FakeProvidedFileSystem. If
+  // `with_cache_manager` is true, wait until the CloudFileSystem's content
+  // cache has been initialized.
   std::unique_ptr<CloudFileSystem> CreateCloudFileSystem(
-      bool with_content_cache) {
-    const base::FilePath mount_path = util::GetMountPath(
+      bool with_cache_manager) {
+    base::FilePath mount_path = util::GetMountPath(
         profile_.get(), ProviderId::CreateFromExtensionId(kExtensionId),
         kFileSystemId);
     MountOptions mount_options;
@@ -46,14 +62,28 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test {
         std::make_unique<ProvidedFileSystemInfo>(
             kExtensionId, mount_options, mount_path, false /*configurable=*/,
             true /* watchable */, extensions::SOURCE_NETWORK, IconSet(),
-            with_content_cache ? CacheType::LRU : CacheType::NONE);
+            with_cache_manager ? CacheType::LRU : CacheType::NONE);
     std::unique_ptr<FakeProvidedFileSystem> provided_file_system =
         std::make_unique<FakeProvidedFileSystem>(*file_system_info.get());
     std::unique_ptr<CacheManager> cache_manager =
         std::make_unique<CacheManager>(profile_->GetPath());
-    return std::make_unique<CloudFileSystem>(
-        std::move(provided_file_system),
-        with_content_cache ? cache_manager.get() : nullptr);
+    // Observe the CacheManager.
+    MockCacheManagerObserver observer;
+    cache_manager->AddObserver(&observer);
+    // Start the CloudFileSystem initialisation.
+    std::unique_ptr<CloudFileSystem> cloud_file_system =
+        std::make_unique<CloudFileSystem>(
+            std::move(provided_file_system),
+            with_cache_manager ? cache_manager.get() : nullptr);
+    // Wait until the CloudFileSystem content cache has been initialised.
+    if (with_cache_manager) {
+      base::RunLoop run_loop;
+      EXPECT_CALL(observer, OnContentCacheInitializeComplete(
+                                mount_path.BaseName(), base::File::FILE_OK))
+          .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+      run_loop.Run();
+    }
+    return cloud_file_system;
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -65,7 +95,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test {
 TEST_F(FileSystemProviderCloudFileSystemTest,
        WatcherOnRootIsAddedWhenCacheManagerExists) {
   std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateCloudFileSystem(/*with_content_cache=*/true);
+      CreateCloudFileSystem(/*with_cache_manager=*/true);
 
   // Expect recursive root watcher added.
   EXPECT_THAT(cloud_file_system->GetWatchers(),
@@ -79,7 +109,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 TEST_F(FileSystemProviderCloudFileSystemTest,
        WatcherOnRootIsNotAddedWhenCacheManagerDoesNotExist) {
   std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateCloudFileSystem(/*with_content_cache=*/false);
+      CreateCloudFileSystem(/*with_cache_manager=*/false);
 
   // Expect no watchers are added.
   EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));
