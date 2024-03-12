@@ -18,21 +18,20 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-import android.app.Activity;
 import android.content.Intent;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DisabledTest;
@@ -53,7 +52,9 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -65,18 +66,26 @@ import org.chromium.ui.test.util.DeviceRestriction;
 public class SigninAndHistoryOptInIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    /*
+     * The tested SigninAndHistoryOptInActivity will be on top of the BlankUiTestActivity.
+     * Given the bottom sheet dismissal without sign-in action closes SigninAndHistoryOptInActivity,
+     * using BlankUiTestActivity allows to:
+     *   - avoid `NoActivityResumedException` during the backpress action;
+     *   - better approximate the normal behavior of the new sign-in flow which is always opened
+     *     on top of another activity.
+     */
+    @Rule(order = 1)
+    public final BaseActivityTestRule<BlankUiTestActivity> mBlankActivityTestRule =
+            new BaseActivityTestRule(BlankUiTestActivity.class);
+
+    @Rule(order = 2)
     public final BaseActivityTestRule<SigninAndHistoryOptInActivity> mActivityTestRule =
             new BaseActivityTestRule(SigninAndHistoryOptInActivity.class);
 
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
-
-    // Fake sign-in environment needs to be destroyed after the activity in case there are
-    // observers registered in the AccountManagerFacade mock.
-    @Rule
-    public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
-
-    private Activity mActivity;
+    private SigninAndHistoryOptInActivity mActivity;
 
     @Before
     public void setUp() {
@@ -105,8 +114,8 @@ public class SigninAndHistoryOptInIntegrationTest {
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()))
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
         // Verify signed-in state.
@@ -139,8 +148,8 @@ public class SigninAndHistoryOptInIntegrationTest {
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()))
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
         // Verify signed-in state.
@@ -173,8 +182,8 @@ public class SigninAndHistoryOptInIntegrationTest {
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()))
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
         // Verify signed-in state.
@@ -206,8 +215,8 @@ public class SigninAndHistoryOptInIntegrationTest {
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()))
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
         // Verify signed-in state.
@@ -233,15 +242,11 @@ public class SigninAndHistoryOptInIntegrationTest {
         onView(
                         allOf(
                                 withId(R.id.account_picker_dismiss_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()))
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
-        // Verify that no account is signed-in and that history sync is not enabled.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
-        assertFalse(SyncTestUtil.isHistorySyncEnabled());
-
-        // TODO(crbug.com/41493758): Verify flow completion.
+        verifySigninCancelled();
     }
 
     @Test
@@ -259,8 +264,8 @@ public class SigninAndHistoryOptInIntegrationTest {
         onView(
                         allOf(
                                 withText(SigninTestRule.TEST_ACCOUNT_EMAIL),
-                                isDescendantOfA(withId(R.id.account_picker_state_expanded))))
-                .check(matches(isDisplayed()))
+                                isDescendantOfA(withId(R.id.account_picker_state_expanded)),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
@@ -269,8 +274,8 @@ public class SigninAndHistoryOptInIntegrationTest {
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed))))
-                .check(matches(isDisplayed()))
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
         // Verify signed-in state and flow completion.
@@ -279,7 +284,63 @@ public class SigninAndHistoryOptInIntegrationTest {
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
 
-        // TODO(crbug.com/41493758): Verify that history sync is not enabled.
+        // Verify that history sync is not enabled.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testWithExistingAccount_dismissBottomSheet_backPress() {
+        mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mBlankActivityTestRule.launchActivity(null);
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.OPTIONAL);
+
+        // Verifies that the default account sign-in bottom-sheet is shown and select the account.
+        onView(
+                        allOf(
+                                withText(SigninTestRule.TEST_ACCOUNT_EMAIL),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+
+        // Verify that the account list is shown.
+        onView(withId(R.id.account_picker_state_expanded)).check(matches(isDisplayed()));
+
+        Espresso.pressBack();
+
+        // Verify that the default account bottom sheet is shown.
+        onView(
+                        allOf(
+                                withText(SigninTestRule.TEST_ACCOUNT_EMAIL),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
+                .check(matches(isDisplayed()));
+
+        // Press on the back button.
+        Espresso.pressBack();
+
+        verifySigninCancelled();
+    }
+
+    @Test
+    @MediumTest
+    public void testWithExistingAccount_dismissExpandedBottomSheet_backPress() {
+        mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mBlankActivityTestRule.launchActivity(null);
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.OPTIONAL);
+
+        // Verifies that the expanded sign-in bottom-sheet is shown.
+        ViewUtils.waitForVisibleView(
+                allOf(withId(R.id.account_picker_state_expanded), isCompletelyDisplayed()));
+
+        Espresso.pressBack();
+
+        verifySigninCancelled();
     }
 
     @Test
@@ -290,14 +351,25 @@ public class SigninAndHistoryOptInIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.NONE);
 
-        // Verify that no account is signed-in.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        verifySigninCancelled();
+    }
 
-        // Verify that the flow completion callback, which finishes the activity, is called.
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    @Test
+    @MediumTest
+    public void testWithNoAccount_dismissBottomSheet_backPress() {
+        mBlankActivityTestRule.launchActivity(null);
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.OPTIONAL);
 
-        // Verify history sync state.
-        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        // Verifies that the no account sign-in bottom-sheet is shown.
+        ViewUtils.waitForVisibleView(
+                allOf(withId(R.id.account_picker_state_no_account), isCompletelyDisplayed()));
+
+        Espresso.pressBack();
+
+        verifySigninCancelled();
     }
 
     private void launchActivity(
@@ -306,12 +378,19 @@ public class SigninAndHistoryOptInIntegrationTest {
             @HistoryOptInMode int historyOptInMode) {
         Intent intent =
                 SigninAndHistoryOptInActivity.createIntent(
-                        ContextUtils.getApplicationContext(),
+                        ApplicationProvider.getApplicationContext(),
                         noAccountSigninMode,
                         withAccountSigninMode,
                         historyOptInMode,
                         SigninAccessPoint.NTP_SIGNED_OUT_ICON);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
+    }
+
+    // Verifies that the activity finishes, no account is signed in, and history sync is disabled.
+    private void verifySigninCancelled() {
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 }

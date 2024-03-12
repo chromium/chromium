@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -44,7 +45,7 @@ public class SigninAndHistoryOptInCoordinator
         implements SigninAccountPickerCoordinator.Delegate,
                 HistorySyncCoordinator.HistorySyncDelegate {
     private final WindowAndroid mWindowAndroid;
-    private final Activity mActivity;
+    private final ComponentActivity mActivity;
     private final ViewGroup mContainerView;
 
     private final Delegate mDelegate;
@@ -127,7 +128,7 @@ public class SigninAndHistoryOptInCoordinator
      */
     public SigninAndHistoryOptInCoordinator(
             @NonNull WindowAndroid windowAndroid,
-            @NonNull Activity activity,
+            @NonNull ComponentActivity activity,
             @NonNull Delegate delegate,
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull OneshotSupplier<Profile> profileSupplier,
@@ -158,14 +159,22 @@ public class SigninAndHistoryOptInCoordinator
     /** Called when the sign-in successfully finishes. */
     @Override
     public void onSignInComplete() {
+        if (mAccountPickerCoordinator == null) {
+            return;
+        }
+
         mAccountPickerCoordinator.destroy();
         mAccountPickerCoordinator = null;
         showHistoryOptInOrFinish();
     }
 
-    /** Called when the sign-in is aborted. */
+    /** Called when the sign-in bottom sheet is dismissed without sign-in completion. */
     @Override
     public void onSignInCancel() {
+        if (mAccountPickerCoordinator == null) {
+            return;
+        }
+
         mAccountPickerCoordinator.destroy();
         mAccountPickerCoordinator = null;
         onFlowComplete();
@@ -333,7 +342,6 @@ public class SigninAndHistoryOptInCoordinator
                                 new OnBackPressedCallback(true) {
                                     @Override
                                     public void handleOnBackPressed() {
-                                        // TODO(crbug.com/41493758): Better handle back press.
                                         if (mHistorySyncCoordinator != null) {
                                             dismissHistorySync();
                                         } else {

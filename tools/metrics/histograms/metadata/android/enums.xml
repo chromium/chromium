@@ -1384,6 +1384,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="LightWeightFirstRun"/>
   <int value="4" label="History"/>
   <int value="5" label="Settings"/>
+  <int value="6" label="BookmarkFolderPicker"/>
+  <int value="7" label="SigninAndHistoryOptIn"/>
 </enum>
 
 <enum name="SecureCookieAction">

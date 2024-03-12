@@ -13,10 +13,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.activity.ComponentActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
 
@@ -70,7 +70,7 @@ public class SigninAccountPickerCoordinatorTest {
     @Mock private AccountPickerBottomSheetMediator mMediator;
 
     private final @SigninAccessPoint int mAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
-    private Activity mActivity;
+    private ComponentActivity mActivity;
     private ViewGroup mContainerView;
     private SigninAccountPickerCoordinator mCoordinator;
 
