@@ -2055,6 +2055,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="photos" label="Module ID for Google Photos module"/>
   <suffix name="recipe_tasks" label="Module ID for Recipe Tasks"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
+  <suffix name="tab_resumption" label="Module ID for Tab Resumption"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
   <affected-histogram name="NewTabPage.Modules.EnabledOnNTPLoad"/>
   <affected-histogram name="NewTabPage.Modules.Impression"/>
