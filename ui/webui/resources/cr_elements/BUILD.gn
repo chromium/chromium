@@ -23,16 +23,10 @@ build_webui("build") {
   if (include_polymer) {
     web_component_files += [
       "cr_a11y_announcer/cr_a11y_announcer.ts",
-      "cr_action_menu/cr_action_menu.ts",
       "cr_button/cr_button.ts",
-      "cr_checkbox/cr_checkbox.ts",
       "cr_chip/cr_chip.ts",
-      "cr_dialog/cr_dialog.ts",
-      "cr_drawer/cr_drawer.ts",
-      "cr_expand_button/cr_expand_button.ts",
       "cr_feedback_buttons/cr_feedback_buttons.ts",
       "cr_grid/cr_grid.ts",
-      "cr_icon_button/cr_icon_button.ts",
       "cr_input/cr_input.ts",
       "cr_link_row/cr_link_row.ts",
       "cr_loading_gradient/cr_loading_gradient.ts",
@@ -47,7 +41,6 @@ build_webui("build") {
       "cr_segmented_button/cr_segmented_button.ts",
       "cr_segmented_button/cr_segmented_button_option.ts",
       "cr_slider/cr_slider.ts",
-      "cr_tabs/cr_tabs.ts",
       "cr_toast/cr_toast_manager.ts",
       "cr_toast/cr_toast.ts",
       "cr_toggle/cr_toggle.ts",
@@ -67,11 +60,8 @@ build_webui("build") {
     ]
 
     non_web_component_files += [
-      "cr_auto_img/cr_auto_img.ts",
       "cr_container_shadow_mixin.ts",
       "cr_container_shadow_mixin_lit.ts",
-      "cr_lazy_render/cr_lazy_render.ts",
-      "cr_menu_selector/cr_menu_selector.ts",
       "cr_paper_ripple_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
@@ -86,6 +76,27 @@ build_webui("build") {
       "policy/cr_policy_indicator_mixin.ts",
       "store_client/store_client.ts",
       "web_ui_listener_mixin.ts",
+
+      # Web components files that either
+      #  - don't have a corresponding .html file or
+      #  - have a checked-in *.html.ts wrapper file instead of auto-generated
+      "cr_action_menu/cr_action_menu.ts",
+      "cr_action_menu/cr_action_menu.html.ts",
+      "cr_auto_img/cr_auto_img.ts",
+      "cr_checkbox/cr_checkbox.ts",
+      "cr_checkbox/cr_checkbox.html.ts",
+      "cr_dialog/cr_dialog.ts",
+      "cr_dialog/cr_dialog.html.ts",
+      "cr_drawer/cr_drawer.ts",
+      "cr_drawer/cr_drawer.html.ts",
+      "cr_expand_button/cr_expand_button.ts",
+      "cr_expand_button/cr_expand_button.html.ts",
+      "cr_icon_button/cr_icon_button.ts",
+      "cr_icon_button/cr_icon_button.html.ts",
+      "cr_lazy_render/cr_lazy_render.ts",
+      "cr_menu_selector/cr_menu_selector.ts",
+      "cr_tabs/cr_tabs.ts",
+      "cr_tabs/cr_tabs.html.ts",
     ]
 
     css_files = [

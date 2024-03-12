@@ -1,6 +1,13 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrDialogElement} from './cr_dialog.js';
 import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
-#html_wrapper_imports_end -->
+
+export function getHtml(this: CrDialogElement) {
+  return html`
 <dialog id="dialog" @close="${this.onNativeDialogClose_}"
     @cancel="${this.onNativeDialogCancel_}" part="dialog"
     aria-labelledby="title"
@@ -26,4 +33,5 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     <slot name="button-container"></slot>
     <slot name="footer"></slot>
   </div>
-</dialog>
+</dialog>`;
+}
