@@ -526,8 +526,6 @@ export namespace BrowsingContext {
      * Must be greater than or equal to `1`.
      */
     maxNodeCount?: JsUint;
-    ownership?: Script.ResultOwnership;
-    sandbox?: string;
     serializationOptions?: Script.SerializationOptions;
     startNodes?: [Script.SharedReference, ...Script.SharedReference[]];
   };

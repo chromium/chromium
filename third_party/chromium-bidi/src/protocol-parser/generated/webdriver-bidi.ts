@@ -684,8 +684,6 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       locator: BrowsingContext.LocatorSchema,
       maxNodeCount: JsUintSchema.gte(1).optional(),
-      ownership: Script.ResultOwnershipSchema.optional(),
-      sandbox: z.string().optional(),
       serializationOptions: Script.SerializationOptionsSchema.optional(),
       startNodes: z.array(Script.SharedReferenceSchema).min(1).optional(),
     })

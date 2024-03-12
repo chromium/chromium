@@ -32,7 +32,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -1022,12 +1022,6 @@ export class BrowsingContextImpl {
       // TODO: implement.
       throw new UnsupportedOperationException(`maxNodeCount is not supported`);
     }
-    if (params.ownership === Script.ResultOwnership.Root) {
-      // TODO: implement.
-      throw new UnsupportedOperationException(
-        `ownership:root is not supported`
-      );
-    }
     if (params.serializationOptions !== undefined) {
       // TODO: implement.
       throw new UnsupportedOperationException(
@@ -1041,9 +1035,7 @@ export class BrowsingContextImpl {
       );
     }
 
-    const realm = await this.getOrCreateSandbox(params.sandbox);
-
-    return await this.#locateNodesByLocator(realm, params.locator);
+    return await this.#locateNodesByLocator(this.#defaultRealm, params.locator);
   }
 
   #getLocatorFunction(locator: BrowsingContext.Locator): string {
