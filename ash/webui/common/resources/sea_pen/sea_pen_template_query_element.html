@@ -32,6 +32,14 @@
     grid-template-areas: 'chip';
   }
 
+  .chip-container[disabled] {
+    cursor: text;
+  }
+
+  .chip-container[disabled] > .chip-text {
+    pointer-events: none;
+  }
+
   .template-text {
     padding: 0 4px;
   }
@@ -115,11 +123,20 @@
   <div id="template">
     <template is="dom-repeat" items="[[templateTokens_]]" as="token">
       <template is="dom-if" if="[[isChip_(token)]]">
-        <div class$="chip-container [[getChipClassName_(token, selectedChip_)]]">
-          <div class="underline"></div>
-          <div class="chip-text" tabindex="0" on-click="onClickChip_" on-keypress="onClickChip_">
-            [[token.translation]]
-          </div>
+        <div class$="chip-container [[getChipClassName_(token, selectedChip_)]]"
+            disabled$="[[thumbnailsLoading_]]">
+          <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
+            <div class="underline"></div>
+            <div class="chip-text" tabindex="0" on-click="onClickChip_"
+                on-keypress="onClickChip_">
+              [[token.translation]]
+            </div>
+          </template>
+          <template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
+            <div class="chip-text">
+              [[token.translation]]
+            </div>
+          </template>
         </div>
       </template>
       <template is="dom-if" if="[[!isChip_(token)]]">
