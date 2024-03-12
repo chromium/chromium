@@ -338,3 +338,10 @@ void LensOverlayController::CloseRequestedByOverlay() {
       FROM_HERE, base::BindOnce(&LensOverlayController::CloseUI,
                                 weak_factory_.GetWeakPtr()));
 }
+
+void LensOverlayController::IssueLensRequest(const ::gfx::RectF& region) {
+  // TODO(b/328255310): Use region to build an actual request. For now, just
+  // open side panel.
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
+}

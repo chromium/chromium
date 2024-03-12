@@ -142,6 +142,7 @@ class LensOverlayController : public TabStripModelObserver,
 
   // lens::mojom::LensPageHandler overrides.
   void CloseRequestedByOverlay() override;
+  void IssueLensRequest(const ::gfx::RectF& region) override;
 
   // Owns this class.
   raw_ptr<tabs::TabModel> tab_model_;

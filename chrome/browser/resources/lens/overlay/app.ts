@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -21,6 +22,13 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onCloseButtonClick_() {
     this.browserProxy_.handler.closeRequestedByOverlay();
+  }
+
+  private onSidePanelButtonClick_() {
+    // TODO(b/328294932): Remove this hard coded region once region selection
+    // works.
+    const region: RectF = {x: 0.5, y: 0.5, width: 0.1, height: 0.1};
+    this.browserProxy_.handler.issueLensRequest(region);
   }
 }
 
