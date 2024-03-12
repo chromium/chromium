@@ -1153,6 +1153,14 @@ void WebGPUDecoderImpl::Destroy(bool have_context) {
   queued_request_device_calls_.clear();
 
   associated_shared_image_map_.clear();
+
+  // Destroy all known devices to ensure that any service-side objects holding
+  // refs to these objects observe that the devices are lost and can drop their
+  // refs as well as any associated state they are holding.
+  for (auto& device_it : known_device_metadata_) {
+    device_it.first.Destroy();
+  }
+
   known_device_metadata_.clear();
   wire_server_ = nullptr;
 
