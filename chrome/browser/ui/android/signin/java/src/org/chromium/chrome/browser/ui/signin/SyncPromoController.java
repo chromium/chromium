@@ -554,8 +554,21 @@ public class SyncPromoController {
 
     private void signinWithNotDefaultAccount(Context context) {
         recordShowCountHistogram(UserAction.CONTINUED);
-        mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
-                context, mAccessPoint, mProfileData.getAccountEmail());
+        if (mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER
+                && SyncFeatureMap.isEnabled(
+                        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+            mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
+                    context,
+                    mProfile,
+                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                            .CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                    mAccessPoint);
+        } else {
+            mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
+                    context, mAccessPoint, mProfileData.getAccountEmail());
+        }
     }
 
     private void recordShowCountHistogram(@UserAction String actionType) {

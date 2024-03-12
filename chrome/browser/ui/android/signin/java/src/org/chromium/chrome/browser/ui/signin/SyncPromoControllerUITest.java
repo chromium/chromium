@@ -173,7 +173,7 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void testBookmarkSyncPromoLaunchesSigninFlow() throws Throwable {
+    public void testBookmarkSyncPromoContinueButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         setUpSyncPromoView(
@@ -199,7 +199,7 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void testBookmarkSyncPromoLaunchesSyncFlow() throws Throwable {
+    public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlow() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         setUpSyncPromoView(
@@ -214,6 +214,55 @@ public class SyncPromoControllerUITest {
 
         verify(mSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(
+                        any(Context.class),
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER),
+                        any(String.class));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
+        mSigninTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        setUpSyncPromoView(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                profileDataCache,
+                R.layout.sync_promo_view_bookmarks);
+        onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
+
+        verify(mSigninAndHistoryOptInActivityLauncher)
+                .launchActivityIfAllowed(
+                        any(Context.class),
+                        any(Profile.class),
+                        eq(NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET),
+                        eq(HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testBookmarkSyncPromoChooseAccountButtonLaunchesSyncFlow() throws Throwable {
+        mSigninTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        setUpSyncPromoView(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                profileDataCache,
+                R.layout.sync_promo_view_bookmarks);
+        onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
+
+        verify(mSyncConsentActivityLauncher)
+                .launchActivityForPromoChooseAccountFlow(
                         any(Context.class),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER),
                         any(String.class));
