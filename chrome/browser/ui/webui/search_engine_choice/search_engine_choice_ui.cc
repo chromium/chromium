@@ -52,6 +52,7 @@ std::string GetChoiceListJSON(Profile& profile) {
     choice_value.Set("url", choice->url());
     choice_value.Set("marketingSnippet",
                      search_engines::GetMarketingSnippetString(choice->data()));
+    choice_value.Set("showMarketingSnippet", false);
     choice_value_list.Append(std::move(choice_value));
   }
   std::string json_choice_list;

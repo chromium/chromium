@@ -10,7 +10,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './strings.m.js';
 
@@ -160,6 +159,10 @@ export class SearchEngineChoiceAppElement extends
     if (chevronExpanded) {
       chrome.metricsPrivate.recordUserAction('ExpandSearchEngineDescription');
     }
+  }
+
+  private getMarketingSnippetClass(showMarketingSnippet: boolean) {
+    return showMarketingSnippet ? '' : 'truncate-text';
   }
 
   private onInfoDialogButtonClicked_() {

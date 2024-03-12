@@ -6,8 +6,10 @@
     --action-button-margins: 40px;
     --choice-list-bottom-padding: 50px;
     --choice-list-horizontal-padding: 8px;
-    --choice-title-line-height: 20px;
-    --content-container-max-width: 500px;
+    --content-container-width: 500px;
+    --radio-button-horizontal-padding: 24px;
+    --choice-gap: 16px;
+    --cr-expand-button-icon-size: 20px;
     color: var(--cr-primary-text-color);
   }
 
@@ -25,7 +27,7 @@
   }
 
   #actionButton {
-    --panel-width: calc((100% - var(--content-container-max-width)) / 2);
+    --panel-width: calc((100% - var(--content-container-width)) / 2);
     height: unset;
     margin: var(--action-button-margins);
     /* The max-width is needed to stop the button from overlapping with
@@ -43,8 +45,8 @@
     flex-direction: column;
     height: 100vh;
     margin: auto;
-    max-width: var(--content-container-max-width);
     text-align: center;
+    width: var(--content-container-width);
   }
 
   .tangible-sync-style .title {
@@ -68,15 +70,21 @@
   }
 
   .choice {
+    align-items: center;
     display: flex;
     flex-direction: row;
-    gap: 16px;
+    gap: var(--choice-gap);
   }
 
   .choice-text {
+    --choice-text-width: calc(var(--content-container-width) -
+        2 * var(--radio-button-horizontal-padding) -
+        var(--search-engine-icon-size) - 3*var(--choice-gap) -
+        var(--cr-expand-button-icon-size) - var(--cr-radio-button-label-spacing)
+        - var(--cr-radio-button-size));
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: var(--choice-text-width);
   }
 
   .choice-icon {
@@ -91,7 +99,7 @@
     font-family: Roboto, Arial;
     font-size: 0.8125rem;
     font-weight: 400;
-    line-height: var(--choice-title-line-height);
+    line-height: 20px;
     text-align: start;
   }
 
@@ -102,18 +110,12 @@
   }
 
   cr-radio-button {
-    /* To center the radio button disc inside the content excluding the
-    marketing snippet text. */
-    --cr-radio-button-disc-margin-block-start:
-        calc((max(var(--choice-title-line-height),
-        var(--search-engine-icon-size)) - var(--cr-radio-button-size))/2);
     --cr-radio-button-label-spacing: 12px;
     --cr-radio-button-size: 20px;
-    align-items: start;
     background-color: var(--google-grey-100);
     border-bottom: 1px solid var(--background-color);
     border-radius: 2px;
-    padding: 16px 24px;
+    padding: 16px var(--radio-button-horizontal-padding);
   }
 
   cr-radio-button:first-of-type {
@@ -208,11 +210,16 @@
   .vertical-separator {
     border-left: 0.5px solid var(--google-grey-300);
     height: 24px;
-    margin-inline-start: 12px;
   }
 
-  iron-collapse {
+  .secondary {
     color: var(--cr-secondary-text-color);
+  }
+
+  .truncate-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -288,12 +295,12 @@
   }
 
   @media screen and (max-width: 640px) {
-    .tangible-sync-style .title {
-      font-size: 2rem;
+    :host {
+      --content-container-width: 420px;
     }
 
-    .content-container {
-      margin: 0 40px;
+    .tangible-sync-style .title {
+      font-size: 2rem;
     }
   }
 
@@ -341,19 +348,19 @@
             <div class="choice-icon"
                 style$="background-image: [[item.iconPath]];"></div>
             <div class="choice-text">
-              <div class="choice-title">
-                <span aria-hidden="true">[[item.name]]</span>
-                <cr-expand-button class="chevron" no-hover role="button"
-                    expanded="{{item.showMarketingSnippet}}"
-                    aria-label="$i18n{chevronA11yLabel}"
-                    on-click="[[onChevronClicked_(item.showMarketingSnippet)]]">
-                </cr-expand-button>
-                <div class="vertical-separator"></div>
-              </div>
-              <iron-collapse opened="[[item.showMarketingSnippet]]">
+              <div aria-hidden="true">[[item.name]]</div>
+              <div class$="secondary
+                  [[getMarketingSnippetClass(item.showMarketingSnippet)]]">
                 [[item.marketingSnippet]]
-              </iron-collapse>
+              </div>
             </div>
+            <cr-expand-button class="chevron"
+                no-hover role="button"
+                expanded="{{item.showMarketingSnippet}}"
+                aria-label="$i18n{chevronA11yLabel}"
+                on-click="[[onChevronClicked_(item.showMarketingSnippet)]]">
+            </cr-expand-button>
+            <div class="vertical-separator"></div>
           </div>
         </cr-radio-button>
     </template>
