@@ -7,8 +7,10 @@ package org.chromium.components.privacy_sandbox;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -21,6 +23,10 @@ public class IpProtectionSettingsFragment extends PreferenceFragmentCompat {
     private static final String PREF_IP_PROTECTION_SWITCH = "ip_protection_switch";
 
     private static final String PREF_IP_PROTECTION_SUMMARY = "ip_protection_summary";
+
+    @VisibleForTesting
+    protected static final String IP_PROTECTION_PREF_HISTOGRAM_NAME =
+            "Settings.IpProtection.Enabled";
 
     private IpProtectionDelegate mDelegate;
 
@@ -50,6 +56,8 @@ public class IpProtectionSettingsFragment extends PreferenceFragmentCompat {
         ipProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     mDelegate.setIpProtection((boolean) newValue);
+                    RecordHistogram.recordBooleanHistogram(
+                            IP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
                     return true;
                 });
 

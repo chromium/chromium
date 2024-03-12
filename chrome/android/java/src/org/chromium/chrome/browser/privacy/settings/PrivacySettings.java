@@ -87,6 +87,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         Preference ipProtectionPreference = findPreference(PREF_IP_PROTECTION);
         ipProtectionPreference.setVisible(shouldShowIpProtectionUI());
+        ipProtectionPreference.setOnPreferenceClickListener(
+                preference -> {
+                    RecordUserAction.record("Settings.IpProtection.OpenedFromPrivacyPage");
+                    return false;
+                });
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
         // Overwrite the click listener to pass a correct referrer to the fragment.

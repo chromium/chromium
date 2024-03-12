@@ -162,6 +162,7 @@ public class PrivacySettingsFragmentTest {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+        mActionTester = new UserActionTester();
     }
 
     @After
@@ -242,6 +243,21 @@ public class PrivacySettingsFragmentTest {
         onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
         // Verify that the right view is shown depending on feature state.
         onView(withText(R.string.ad_privacy_page_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
+    public void testIpProtectionFragment() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        // Scroll down and open Privacy Sandbox page.
+        scrollToSetting(withText(R.string.ip_protection_title));
+        onView(withText(R.string.ip_protection_title)).perform(click());
+        // Verify that the right view is shown depending on feature state.
+        onView(withText(R.string.ip_protection_title)).check(matches(isDisplayed()));
+        // Verify that the user action is emitted when ip protection is clicked
+        assertTrue(
+                mActionTester.getActions().contains("Settings.IpProtection.OpenedFromPrivacyPage"));
     }
 
     @Test
@@ -338,7 +354,6 @@ public class PrivacySettingsFragmentTest {
     @LargeTest
     public void testPrivacyGuideLinkRowEntryPointUserAction() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
-        mActionTester = new UserActionTester();
         // Scroll down and open Privacy Guide page.
         scrollToSetting(withText(R.string.privacy_guide_pref_summary));
         onView(withText(R.string.privacy_guide_pref_summary)).perform(click());

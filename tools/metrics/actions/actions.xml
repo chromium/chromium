@@ -31846,6 +31846,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.IpProtection.OpenedFromPrivacyPage">
+  <owner>dembski@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Reported when user navigates to Ip Protection Settings via the Ip Protection
+    link row in the Privacy Page.
+  </description>
+</action>
+
 <action name="Settings.MyAccount">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
