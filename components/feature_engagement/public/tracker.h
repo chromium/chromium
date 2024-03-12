@@ -159,7 +159,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
       const base::FilePath& storage_dir,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
-      base::WeakPtr<TrackerEventExporter> event_exporter,
+      std::unique_ptr<TrackerEventExporter> event_exporter,
       const ConfigurationProviderList& configuration_providers =
           GetDefaultConfigurationProviders(),
       std::unique_ptr<SessionController> session_controller =

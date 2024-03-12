@@ -120,7 +120,7 @@ Tracker* Tracker::Create(
     const base::FilePath& storage_dir,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
-    base::WeakPtr<TrackerEventExporter> event_exporter,
+    std::unique_ptr<TrackerEventExporter> event_exporter,
     const ConfigurationProviderList& configuration_providers,
     std::unique_ptr<SessionController> session_controller) {
   DVLOG(2) << "Creating Tracker";
@@ -174,8 +174,8 @@ Tracker* Tracker::Create(
   return new TrackerImpl(
       std::move(event_model), std::move(availability_model),
       std::move(configuration), std::make_unique<DisplayLockControllerImpl>(),
-      std::move(condition_validator), std::move(time_provider), event_exporter,
-      std::move(session_controller));
+      std::move(condition_validator), std::move(time_provider),
+      std::move(event_exporter), std::move(session_controller));
 }
 
 TrackerImpl::TrackerImpl(
@@ -185,7 +185,7 @@ TrackerImpl::TrackerImpl(
     std::unique_ptr<DisplayLockController> display_lock_controller,
     std::unique_ptr<ConditionValidator> condition_validator,
     std::unique_ptr<TimeProvider> time_provider,
-    base::WeakPtr<TrackerEventExporter> event_exporter,
+    std::unique_ptr<TrackerEventExporter> event_exporter,
     std::unique_ptr<SessionController> session_controller)
     : event_model_(std::move(event_model)),
       availability_model_(std::move(availability_model)),
@@ -193,7 +193,7 @@ TrackerImpl::TrackerImpl(
       display_lock_controller_(std::move(display_lock_controller)),
       condition_validator_(std::move(condition_validator)),
       time_provider_(std::move(time_provider)),
-      event_exporter_(event_exporter),
+      event_exporter_(std::move(event_exporter)),
       session_controller_(std::move(session_controller)),
       event_model_initialization_finished_(false),
       availability_model_initialization_finished_(false) {

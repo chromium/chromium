@@ -335,7 +335,8 @@ class TrackerImplTest : public ::testing::Test {
     time_provider_ = time_provider.get();
     time_provider->SetCurrentDay(1u);
 
-    event_exporter_ = std::make_unique<TestTrackerEventExporter>();
+    auto event_exporter = std::make_unique<TestTrackerEventExporter>();
+    event_exporter_ = event_exporter.get();
 
     auto session_controller = std::make_unique<TestSessionController>();
     session_controller_ = session_controller.get();
@@ -344,7 +345,7 @@ class TrackerImplTest : public ::testing::Test {
         std::move(event_model), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
         std::move(condition_validator), std::move(time_provider),
-        event_exporter_->AsWeakPtr(), std::move(session_controller));
+        std::move(event_exporter), std::move(session_controller));
   }
 
   void VerifyEventTrigger(std::string event_name, uint32_t count) {
@@ -557,7 +558,7 @@ class TrackerImplTest : public ::testing::Test {
   raw_ptr<TestTrackerAvailabilityModel> availability_model_;
   raw_ptr<TestTrackerDisplayLockController> display_lock_controller_;
   raw_ptr<EditableConfiguration> configuration_;
-  std::unique_ptr<TestTrackerEventExporter> event_exporter_;
+  raw_ptr<TestTrackerEventExporter> event_exporter_;
   raw_ptr<TestSessionController> session_controller_;
   base::HistogramTester histogram_tester_;
   raw_ptr<ConditionValidator> condition_validator_;
@@ -834,20 +835,18 @@ TEST_F(TrackerImplTest, TestMigrateSameEventMultipleTimes) {
 }
 
 TEST_F(TrackerImplTest, TestNoMigration) {
-  EXPECT_FALSE(tracker_->IsInitialized());
-
-  // Reset the event provider to simulate not providing one.
-  event_exporter_.reset();
+  std::unique_ptr<Tracker> tracker = feature_engagement::CreateTestTracker();
+  EXPECT_FALSE(tracker->IsInitialized());
 
   StoringInitializedCallback callback;
-  tracker_->AddOnInitializedCallback(base::BindOnce(
+  tracker->AddOnInitializedCallback(base::BindOnce(
       &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
   EXPECT_FALSE(callback.invoked());
 
   // Ensure all initialization is finished and no crash or NPE happens.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(tracker->IsInitialized());
   EXPECT_TRUE(callback.invoked());
   EXPECT_TRUE(callback.success());
 }
