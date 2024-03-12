@@ -37,6 +37,7 @@ class CONTENT_EXPORT AXMainNodeAnnotator : public AXAnnotator {
   void EnableAnnotations() override;
   void CancelAnnotations() override;
   uint32_t GetAXModeToEnableAnnotations() override;
+  bool HasAXActionToEnableAnnotations() override;
   ax::mojom::Action GetAXActionToEnableAnnotations() override;
   void AddDebuggingAttributes(
       const std::vector<ui::AXTreeUpdate>& updates) override {}

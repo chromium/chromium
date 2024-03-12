@@ -66,7 +66,8 @@ void AXAnnotatorsManager::CancelAnnotations() {
 void AXAnnotatorsManager::PerformAction(ax::mojom::Action action) {
   bool applied_annotations = false;
   for (const auto& annotator : ax_annotators_) {
-    if (action != annotator->GetAXActionToEnableAnnotations()) {
+    if (!annotator->HasAXActionToEnableAnnotations() ||
+        action != annotator->GetAXActionToEnableAnnotations()) {
       continue;
     }
     applied_annotations = true;

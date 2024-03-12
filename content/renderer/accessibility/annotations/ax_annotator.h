@@ -38,6 +38,9 @@ class CONTENT_EXPORT AXAnnotator {
   // Returns the AXMode which enables this AXAnnotator.
   virtual uint32_t GetAXModeToEnableAnnotations() = 0;
 
+  // Returns whether this AXAnnotator has an action which enables it.
+  virtual bool HasAXActionToEnableAnnotations() = 0;
+
   // Returns the action which enables this AXAnnotator.
   virtual ax::mojom::Action GetAXActionToEnableAnnotations() = 0;
 

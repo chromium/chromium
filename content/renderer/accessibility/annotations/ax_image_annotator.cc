@@ -245,6 +245,10 @@ uint32_t AXImageAnnotator::GetAXModeToEnableAnnotations() {
   return ui::AXMode::kLabelImages;
 }
 
+bool AXImageAnnotator::HasAXActionToEnableAnnotations() {
+  return true;
+}
+
 ax::mojom::Action AXImageAnnotator::GetAXActionToEnableAnnotations() {
   return ax::mojom::Action::kAnnotatePageImages;
 }

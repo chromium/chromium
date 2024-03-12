@@ -45,9 +45,12 @@ uint32_t AXMainNodeAnnotator::GetAXModeToEnableAnnotations() {
   return ui::AXMode::kAnnotateMainNode;
 }
 
+bool AXMainNodeAnnotator::HasAXActionToEnableAnnotations() {
+  return false;
+}
+
 ax::mojom::Action AXMainNodeAnnotator::GetAXActionToEnableAnnotations() {
-  // TODO: Change to the Action for main node.
-  return ax::mojom::Action::kAnnotatePageImages;
+  NOTREACHED_NORETURN();
 }
 
 void AXMainNodeAnnotator::Annotate(const WebDocument& document,
