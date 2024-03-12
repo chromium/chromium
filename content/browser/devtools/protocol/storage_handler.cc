@@ -464,7 +464,15 @@ void StorageHandler::Wire(UberDispatcher* dispatcher) {
 void StorageHandler::SetRenderer(int process_host_id,
                                  RenderFrameHostImpl* frame_host) {
   RenderProcessHost* process = RenderProcessHost::FromID(process_host_id);
-  storage_partition_ = process ? process->GetStoragePartition() : nullptr;
+  StoragePartition* new_storage_partition =
+      process ? process->GetStoragePartition() : nullptr;
+  if (interest_group_tracking_enabled_) {
+    // Transfer observer registration from old frame's StoragePartition to new;
+    // SetInterestGroupTrackingInternal() will handle any nulls.
+    SetInterestGroupTrackingInternal(storage_partition_, false);
+    SetInterestGroupTrackingInternal(new_storage_partition, true);
+  }
+  storage_partition_ = new_storage_partition;
   frame_host_ = frame_host;
 }
 
@@ -1133,12 +1141,19 @@ void StorageHandler::GetInterestGroupDetails(
 }
 
 Response StorageHandler::SetInterestGroupTracking(bool enable) {
-  if (!storage_partition_) {
+  interest_group_tracking_enabled_ = enable;
+  return SetInterestGroupTrackingInternal(storage_partition_, enable);
+}
+
+Response StorageHandler::SetInterestGroupTrackingInternal(
+    StoragePartition* storage_partition,
+    bool enable) {
+  if (!storage_partition) {
     return Response::InternalError();
   }
 
   InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
-      storage_partition_->GetInterestGroupManager());
+      storage_partition->GetInterestGroupManager());
   if (!manager) {
     return Response::ServerError("Interest group storage is disabled.");
   }
