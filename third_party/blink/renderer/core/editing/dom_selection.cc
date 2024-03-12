@@ -616,14 +616,6 @@ void DOMSelection::addRange(Range* new_range) {
                          new_range, SetSelectionOptions());
     return;
   }
-
-  Range* original_range = PrimaryRangeOrNull();
-  DCHECK(original_range);
-
-  if (original_range->startContainer()->GetTreeScope() !=
-      new_range->startContainer()->GetTreeScope()) {
-    return;
-  }
 }
 
 // https://www.w3.org/TR/selection-api/#dom-selection-deletefromdocument
