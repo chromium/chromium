@@ -112,7 +112,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     stripLayoutTabsToRender,
                     selectedTabId,
                     hoveredTabId);
-            pushGroupTitles(stripLayoutGroupTitlesToRender);
+            pushGroupTitles(stripLayoutGroupTitlesToRender, layerTitleCache);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
@@ -256,7 +256,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         }
     }
 
-    private void pushGroupTitles(StripLayoutGroupTitle[] groupTitles) {
+    private void pushGroupTitles(
+            StripLayoutGroupTitle[] groupTitles, LayerTitleCache layerTitleCache) {
         final int titlesCount = groupTitles != null ? groupTitles.length : 0;
 
         for (int i = 0; i < titlesCount; i++) {
@@ -266,6 +267,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     .putGroupTitleLayer(
                             mNativePtr,
                             TabStripSceneLayer.this,
+                            gt.getRootId(),
                             gt.getTint(),
                             gt.getDrawX() * mDpToPx,
                             gt.getDrawY() * mDpToPx,
@@ -273,7 +275,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             gt.getHeight() * mDpToPx,
                             gt.getDefaultMargin() * mDpToPx,
                             gt.getTopMargin() * mDpToPx,
-                            gt.getCornerRadius() * mDpToPx);
+                            gt.getTitleTextPadding() * mDpToPx,
+                            gt.getCornerRadius() * mDpToPx,
+                            layerTitleCache);
         }
     }
 
@@ -407,6 +411,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         void putGroupTitleLayer(
                 long nativeTabStripSceneLayer,
                 TabStripSceneLayer caller,
+                int id,
                 int tint,
                 float x,
                 float y,
@@ -414,7 +419,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float height,
                 float defaultMargin,
                 float topMargin,
-                float cornerRadius);
+                float titleTextPadding,
+                float cornerRadius,
+                LayerTitleCache layerTitleCache);
 
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);

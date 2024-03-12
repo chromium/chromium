@@ -11,6 +11,7 @@
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/android/chrome_jni_headers/TabStripSceneLayer_jni.h"
+#include "chrome/browser/android/compositor/decoration_title.h"
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -479,6 +480,7 @@ void TabStripSceneLayer::PutStripTabLayer(
 void TabStripSceneLayer::PutGroupTitleLayer(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobj,
+    jint id,
     jint tint,
     jfloat x,
     jfloat y,
@@ -486,20 +488,41 @@ void TabStripSceneLayer::PutGroupTitleLayer(
     jfloat height,
     jfloat default_margin,
     jfloat top_margin,
-    jfloat corner_radius) {
+    jfloat title_text_padding,
+    jfloat corner_radius,
+    const JavaParamRef<jobject>& jlayer_title_cache) {
+  LayerTitleCache* layer_title_cache =
+      LayerTitleCache::FromJavaObject(jlayer_title_cache);
+
   // Reuse existing layer if it exists.
   scoped_refptr<cc::slim::SolidColorLayer> layer = GetNextGroupTitleLayer();
 
+  // Adjust position values.
+  x += default_margin;
+  y += top_margin;
+  width -= (default_margin * 2);
+  height -= (default_margin + top_margin);
+
   // Set container properties.
-  layer->SetPosition(gfx::PointF(x + default_margin, y + top_margin));
-  layer->SetBounds(gfx::Size(width - (default_margin * 2),
-                             height - default_margin - top_margin));
+  layer->SetPosition(gfx::PointF(x, y));
+  layer->SetBounds(gfx::Size(width, height));
   layer->SetRoundedCorner(gfx::RoundedCornersF(corner_radius, corner_radius,
                                                corner_radius, corner_radius));
   layer->SetBackgroundColor(SkColor4f::FromColor(tint));
 
   // Set title.
-  // TODO(crbug.com/327289979): Add title bitmap.
+  DecorationTitle* title_layer = layer_title_cache->GetGroupTitleLayer(id);
+  if (title_layer) {
+    title_layer->setOpacity(1.0f);
+    title_layer->setBounds(gfx::Size(width - (title_text_padding * 2), height));
+    title_layer->layer()->SetPosition(gfx::PointF(title_text_padding, 0));
+    if (layer->children().size() == 0) {
+      layer->AddChild(title_layer->layer());
+    } else {
+      layer->ReplaceChild(layer->children()[0].get(), title_layer->layer());
+    }
+    title_layer->SetUIResourceIds();
+  }
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(

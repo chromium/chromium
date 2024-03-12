@@ -26,6 +26,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int MAX_VISUAL_WIDTH_DP = 156;
     private static final int DEFAULT_MARGIN_DP = 9;
     private static final int TOP_MARGIN_DP = 7;
+    private static final int TEXT_PADDING_DP = 8;
     private static final int CORNER_RADIUS_DP = 7;
 
     private final float mEffectiveMinWidth;
@@ -135,7 +136,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     /**
      * @return The group's root ID.
      */
-    protected int getRootId() {
+    public int getRootId() {
         return mRootId;
     }
 
@@ -159,6 +160,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public int getTopMargin() {
         return TOP_MARGIN_DP;
+    }
+
+    /**
+     * @return The padding for the title text.
+     */
+    public int getTitleTextPadding() {
+        return TEXT_PADDING_DP;
     }
 
     /**

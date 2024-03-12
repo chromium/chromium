@@ -78,6 +78,30 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
   }
 }
 
+void LayerTitleCache::UpdateGroupLayer(JNIEnv* env,
+                                       const JavaParamRef<jobject>& obj,
+                                       jint group_root_id,
+                                       jint title_resource_id,
+                                       bool is_incognito,
+                                       bool is_rtl) {
+  DecorationTitle* title_layer = group_layer_cache_.Lookup(group_root_id);
+  if (title_layer) {
+    if (title_resource_id != -1) {
+      title_layer->Update(title_resource_id, kInvalidResourceId, fade_width_,
+                          kEmptyWidth, kEmptyWidth, is_incognito, is_rtl);
+    } else {
+      group_layer_cache_.Remove(group_root_id);
+    }
+  } else {
+    group_layer_cache_.AddWithID(
+        std::make_unique<DecorationTitle>(
+            resource_manager_, title_resource_id, kInvalidResourceId,
+            kInvalidResourceId, kInvalidResourceId, fade_width_, kEmptyWidth,
+            kEmptyWidth, is_incognito, is_rtl),
+        group_root_id);
+  }
+}
+
 void LayerTitleCache::UpdateFavicon(JNIEnv* env,
                                     const JavaParamRef<jobject>& obj,
                                     jint tab_id,
@@ -113,8 +137,17 @@ DecorationTitle* LayerTitleCache::GetTitleLayer(int tab_id) {
   return layer_cache_.Lookup(tab_id);
 }
 
-LayerTitleCache::~LayerTitleCache() {
+DecorationTitle* LayerTitleCache::GetGroupTitleLayer(int group_root_id) {
+  if (!group_layer_cache_.Lookup(group_root_id)) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_LayerTitleCache_buildUpdatedGroupTitle(
+        env, weak_java_title_cache_.get(env), group_root_id);
+  }
+
+  return group_layer_cache_.Lookup(group_root_id);
 }
+
+LayerTitleCache::~LayerTitleCache() = default;
 
 // ----------------------------------------------------------------------------
 // Native JNI methods

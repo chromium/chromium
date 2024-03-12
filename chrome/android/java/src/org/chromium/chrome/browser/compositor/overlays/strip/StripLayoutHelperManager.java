@@ -1027,7 +1027,7 @@ public class StripLayoutHelperManager
                     @Override
                     public void tabClosureCommitted(Tab tab) {
                         if (mLayerTitleCacheSupplier.hasValue()) {
-                            mLayerTitleCacheSupplier.get().remove(tab.getId());
+                            mLayerTitleCacheSupplier.get().removeTabTitle(tab.getId());
                         }
                     }
 

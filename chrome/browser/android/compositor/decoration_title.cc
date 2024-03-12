@@ -88,7 +88,7 @@ void DecorationTitle::SetUIResourceIds() {
     title_size_ = title_resource->size();
   }
 
-  if (!is_loading_) {
+  if (!is_loading_ && favicon_resource_id_ != -1) {
     ui::Resource* favicon_resource = resource_manager_->GetResource(
         ui::ANDROID_RESOURCE_TYPE_DYNAMIC_BITMAP, favicon_resource_id_);
     if (favicon_resource) {
@@ -98,7 +98,8 @@ void DecorationTitle::SetUIResourceIds() {
       layer_favicon_->SetUIResourceId(0);
     }
     layer_favicon_->SetTransform(gfx::Transform());
-  } else {
+  } else if (spinner_resource_id_ != -1 &&
+             spinner_incognito_resource_id_ != -1) {
     int resource_id =
         is_incognito_ ? spinner_incognito_resource_id_ : spinner_resource_id_;
 
@@ -173,13 +174,16 @@ void DecorationTitle::setBounds(const gfx::Size& bounds) {
   float title_offset_y = (size_.height() - title_size_.height()) / 2.f;
 
   // Step 1. Place favicon.
-  int favicon_x = favicon_start_padding_;
-  if (sys_rtl) {
-    favicon_x = bounds.width() - favicon_size_.width() - favicon_start_padding_;
+  if (favicon_resource_id_ != -1) {
+    int favicon_x = favicon_start_padding_;
+    if (sys_rtl) {
+      favicon_x =
+          bounds.width() - favicon_size_.width() - favicon_start_padding_;
+    }
+    layer_favicon_->SetIsDrawable(true);
+    layer_favicon_->SetBounds(favicon_size_);
+    layer_favicon_->SetPosition(gfx::PointF(favicon_x, favicon_offset_y));
   }
-  layer_favicon_->SetIsDrawable(true);
-  layer_favicon_->SetBounds(favicon_size_);
-  layer_favicon_->SetPosition(gfx::PointF(favicon_x, favicon_offset_y));
 
   // Step 2. Place the opaque title component.
   if (title_space > 0.f) {

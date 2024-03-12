@@ -159,16 +159,20 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
-  void PutGroupTitleLayer(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& jobj,
-                          jint tint,
-                          jfloat x,
-                          jfloat y,
-                          jfloat width,
-                          jfloat height,
-                          jfloat default_margin,
-                          jfloat top_margin,
-                          jfloat corner_radius);
+  void PutGroupTitleLayer(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jobj,
+      jint id,
+      jint tint,
+      jfloat x,
+      jfloat y,
+      jfloat width,
+      jfloat height,
+      jfloat default_margin,
+      jfloat top_margin,
+      jfloat title_text_padding,
+      jfloat corner_radius,
+      const base::android::JavaParamRef<jobject>& jlayer_title_cache);
 
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;
