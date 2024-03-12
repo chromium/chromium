@@ -84,6 +84,9 @@ vs-chromium-project.txt
 # gclient-new-workdir.
 .vscode
 .vscode-server
+# VS Code Bazel Extension
+/MODULE.bazel
+/MODULE.bazel.lock
 
 /_out
 /android_emulator_sdk
