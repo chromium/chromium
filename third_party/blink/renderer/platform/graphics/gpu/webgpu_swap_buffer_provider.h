@@ -134,10 +134,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     gpu::SyncToken access_finished_token;
   };
 
-  std::tuple<uint32_t, bool> GetTextureTargetAndOverlayCandidacy() const;
-  uint32_t GetTextureTarget() const;
-  bool IsOverlayCandidate() const;
-
   scoped_refptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
       gpu::SharedImageInterface* sii,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
