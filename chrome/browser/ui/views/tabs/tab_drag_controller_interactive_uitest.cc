@@ -116,8 +116,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
@@ -2496,14 +2494,6 @@ void DragAllStep2(DetachToBrowserTabDragControllerTest* test,
                   const BrowserList* browser_list) {
   // Should only be one window.
   ASSERT_EQ(1u, browser_list->size());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/324562919) This is a short-term workaround for
-  // Lacros to ensure that there is a sufficient delay between touch move and
-  // touch release events in Ash to guarantee that the events are not
-  // interpreted as a fling gesture. See linked bug for long-term fix.
-  base::PlatformThread::Sleep(base::Milliseconds(100));
-#endif
 
   // Windows hangs if you use a sync mouse event here.
   ASSERT_TRUE(test->ReleaseInput(0, true));

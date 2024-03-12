@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <ui-controls-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
+
+#include <limits>
 #include <variant>
 
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -28,6 +30,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -323,6 +326,13 @@ UiControls::UiControls(Server* server)
     state_->original_displays_.push_back(
         display_manager->GetDisplayInfo(display.id()));
   }
+  // TODO(crbug.com/324562919) This hardcodes fling gesture detection to be
+  // disabled when ui_controls is in use, so that it does not interfere with
+  // tests that don't intend to trigger fling gestures. Some future tests will
+  // intentionally trigger fling gestures, so this will need to become
+  // configurable by clients at some point.
+  ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(
+      std::numeric_limits<float>::max());
 }
 
 UiControls::~UiControls() = default;

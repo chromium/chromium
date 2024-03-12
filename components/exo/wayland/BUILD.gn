@@ -244,6 +244,7 @@ static_library("ui_controls_protocol") {
     "//ui/base:test_support",
     "//ui/base/wayland:wayland_display_util",
     "//ui/events",
+    "//ui/events:gesture_detection",
   ]
 }
 
