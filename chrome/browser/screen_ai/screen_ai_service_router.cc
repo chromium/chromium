@@ -108,6 +108,12 @@ std::unique_ptr<ComponentFiles> ComponentFiles::Load(
       files_list_file_name);
 }
 
+// TODO(https://crbug.com/41489907): Remove after the issue is fixed.
+void RecordComponentAvailablity(bool available) {
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Available",
+                            available);
+}
+
 }  // namespace
 
 namespace screen_ai {
@@ -144,6 +150,7 @@ void ScreenAIServiceRouter::GetServiceStateAsync(
   if (service_state) {
     // Either service is already initialized or disabled.
     std::move(callback).Run(*service_state);
+    RecordComponentAvailablity(true);
     return;
   }
 
@@ -188,6 +195,7 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
       for (Service service : all_services) {
         CallPendingStatusRequests(service, false);
       }
+      RecordComponentAvailablity(false);
       break;
     }
 
@@ -196,6 +204,7 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
       for (Service service : all_services) {
         InitializeServiceIfNeeded(service);
       }
+      RecordComponentAvailablity(true);
       break;
     }
   }

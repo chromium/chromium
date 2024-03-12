@@ -2279,6 +2279,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Component.Available"
+    enum="BooleanSuccess" expires_after="2025-02-28">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if the component was available or could be downloaded when it was
+    needed.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.Component.BinaryAvailable"
     enum="BooleanSuccess" expires_after="2024-05-05">
   <owner>rhalavati@chromium.org</owner>
