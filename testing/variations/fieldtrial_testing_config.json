@@ -10146,7 +10146,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledAltClick",
+                    "params": {
+                        "trigger_type": "alt_click"
+                    },
                     "enable_features": [
                         "LinkPreview"
                     ]
