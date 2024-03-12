@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -61,6 +62,11 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
   virtual void ClearThumbnail() = 0;
   virtual void ClearMetadata() = 0;
   virtual void UpdateDisplay() = 0;
+
+  // Helpers for testing only.
+  static void SetVisibilityChangedCallbackForTesting(
+      base::RepeatingCallback<void(bool)>*);
+  virtual bool GetVisibilityForTesting() const = 0;
 };
 
 }  // namespace system_media_controls

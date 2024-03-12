@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread_win.h"
@@ -75,6 +76,12 @@ class WebAppSystemMediaControlsBrowserTest
 
     // And finally a similar thing for the watching media key run loop.
     start_watching_media_key_run_loop_.emplace();
+  }
+
+  void TearDownOnMainThread() override {
+    system_media_controls::SystemMediaControls::
+        SetVisibilityChangedCallbackForTesting(nullptr);
+    ContentBrowserTest::TearDownOnMainThread();
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
@@ -182,6 +189,37 @@ class WebAppSystemMediaControlsBrowserTest
     // Reset the runloop for the next use.
     start_watching_media_key_run_loop_.emplace();
     return cached_last_watch_was_for_pwa;
+  }
+
+  // Waits for the visibility of the given WebApp's SystemMediaControls to match
+  // `desired_visibility`. Returns true if the visibility has successfully
+  // matched the expectation. Returns false if we time out before the state
+  // changes.
+  bool WaitForVisibility(const base::UnguessableToken& request_id,
+                         bool desired_visibility) {
+    // If the controls are already in the desired visibility state, early
+    // return success.
+    if (GetSystemMediaControlsForWebApp(request_id)
+            ->GetVisibilityForTesting() == desired_visibility) {
+      return true;
+    }
+
+    // Otherwise, wait for the visibility state to change.
+    base::RunLoop wait_for_desired_visibility;
+    auto visibility_changed_callback =
+        base::BindLambdaForTesting([&](bool is_visible) {
+          if (is_visible == desired_visibility) {
+            wait_for_desired_visibility.Quit();
+          }
+        });
+
+    system_media_controls::SystemMediaControls::
+        SetVisibilityChangedCallbackForTesting(&visibility_changed_callback);
+    wait_for_desired_visibility.Run();
+
+    // Return true if the state is now correct.
+    return GetSystemMediaControlsForWebApp(request_id)
+               ->GetVisibilityForTesting() == desired_visibility;
   }
 
  protected:
@@ -562,6 +600,51 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TwoBrowserTest) {
 
   // The browser is still playing.
   EXPECT_FALSE(IsPlaying(shell(), "long-video-loop"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
+                       SMTCHiddenOnNavigationAway) {
+  // Set up a media session in 1 PWA.
+  GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
+  Shell* web_app = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(web_app, http_url));
+  SetAlwaysAssumeWebAppForTesting();
+  SetAlwaysIgnoreMediaSessionForTesting(web_app->web_contents());
+
+  // Start the media session and wait for the controls to become visible.
+  StartPlaybackAndWait(web_app, "long-video-loop");
+  base::UnguessableToken request_id = WaitForWebAppAdded();
+  EXPECT_TRUE(WaitForVisibility(request_id, /*desired_visibility=*/true));
+
+  // Check the pwa is still playing, and navigate away to a different url.
+  EXPECT_TRUE(IsPlaying(web_app, "long-video-loop"));
+  GURL http_url2(https_server()->GetURL("/media/session/title1.html"));
+  EXPECT_TRUE(NavigateToURL(web_app, http_url2));
+
+  // The controls should hide now.
+  EXPECT_TRUE(WaitForVisibility(request_id, /*desired_visibility=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
+                       SMTCHiddenOnAudioEnd) {
+  // Set up a media session in 1 PWA.
+  GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
+  Shell* web_app = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(web_app, http_url));
+  SetAlwaysAssumeWebAppForTesting();
+  SetAlwaysIgnoreMediaSessionForTesting(web_app->web_contents());
+
+  // Start the media session and wait for the controls to become visible.
+  StartPlaybackAndWait(web_app, "short-video");
+  base::UnguessableToken request_id = WaitForWebAppAdded();
+  EXPECT_TRUE(WaitForVisibility(request_id, /*desired_visibility=*/true));
+
+  // Wait for the audio track to end on its own.
+  WaitForStop(web_app);
+  EXPECT_FALSE(IsPlaying(web_app, "short-video"));
+
+  // The controls should hide now.
+  EXPECT_TRUE(WaitForVisibility(request_id, /*desired_visibility=*/false));
 }
 
 }  // namespace content

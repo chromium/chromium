@@ -52,6 +52,7 @@ class SystemMediaControlsWin : public SystemMediaControls {
   void ClearThumbnail() override;
   void ClearMetadata() override;
   void UpdateDisplay() override;
+  bool GetVisibilityForTesting() const override;
 
  private:
   HRESULT ButtonPressed(
@@ -76,6 +77,11 @@ class SystemMediaControlsWin : public SystemMediaControls {
   // Converts PlaybackStatus values to SMTC-friendly values.
   ABI::Windows::Media::MediaPlaybackStatus GetSmtcPlaybackStatus(
       PlaybackStatus status);
+
+  // Test only helper. Called from everywhere `put_IsEnabled` is called (except
+  // `SetEnabled` as that's only used for timing out the controls when the
+  // screen is locked)
+  void OnEnabledStatusChangedForTesting();
 
   // Control and keep track of the metadata.
   Microsoft::WRL::ComPtr<ABI::Windows::Media::ISystemMediaTransportControls>

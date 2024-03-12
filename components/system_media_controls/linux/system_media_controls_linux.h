@@ -83,6 +83,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void ClearThumbnail() override {}
   void ClearMetadata() override;
   void UpdateDisplay() override {}
+  bool GetVisibilityForTesting() const override;
 
   // Returns the generated service name.
   std::string GetServiceName() const;

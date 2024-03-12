@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +27,10 @@
 
 namespace system_media_controls {
 
+// For testing only.
+base::RepeatingCallback<void(bool)>*
+    g_on_visibility_changed_for_testing_callback = nullptr;
+
 // static
 std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
     const std::string& product_name,
@@ -33,6 +39,13 @@ std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
   if (service->Initialize())
     return std::move(service);
   return nullptr;
+}
+
+// static
+void SystemMediaControls::SetVisibilityChangedCallbackForTesting(
+    base::RepeatingCallback<void(bool)>* callback) {
+  CHECK_IS_TEST();
+  g_on_visibility_changed_for_testing_callback = callback;
 }
 
 namespace internal {
@@ -121,6 +134,8 @@ bool SystemMediaControlsWin::Initialize() {
   hr = system_media_controls_->put_IsEnabled(true);
   if (FAILED(hr))
     return false;
+
+  OnEnabledStatusChangedForTesting();
 
   hr = system_media_controls_->get_DisplayUpdater(&display_updater_);
   if (FAILED(hr))
@@ -395,6 +410,8 @@ void SystemMediaControlsWin::ClearMetadata() {
   // SMTC, we need to tell them that we are disabled.
   hr = system_media_controls_->put_IsEnabled(false);
   DCHECK(SUCCEEDED(hr));
+
+  OnEnabledStatusChangedForTesting();
 }
 
 void SystemMediaControlsWin::UpdateDisplay() {
@@ -404,6 +421,8 @@ void SystemMediaControlsWin::UpdateDisplay() {
   HRESULT hr = system_media_controls_->put_IsEnabled(true);
   DCHECK(SUCCEEDED(hr));
 
+  OnEnabledStatusChangedForTesting();
+
   // |ClearAll()| unsets the type, if we don't set it again then the artist
   // won't be displayed.
   hr = display_updater_->put_Type(
@@ -412,6 +431,14 @@ void SystemMediaControlsWin::UpdateDisplay() {
 
   hr = display_updater_->Update();
   DCHECK(SUCCEEDED(hr));
+}
+
+bool SystemMediaControlsWin::GetVisibilityForTesting() const {
+  DCHECK(initialized_);
+  boolean is_enabled;
+  HRESULT hr = system_media_controls_->get_IsEnabled(&is_enabled);
+  DCHECK(SUCCEEDED(hr));
+  return is_enabled;
 }
 
 void SystemMediaControlsWin::OnPlay() {
@@ -517,6 +544,13 @@ HRESULT SystemMediaControlsWin::PlaybackPositionChangeRequested(
   OnSeekTo(base::TimeDelta::FromWinrtTimeSpan(position));
 
   return S_OK;
+}
+
+void SystemMediaControlsWin::OnEnabledStatusChangedForTesting() {
+  if (g_on_visibility_changed_for_testing_callback) {
+    g_on_visibility_changed_for_testing_callback->Run(
+        GetVisibilityForTesting());
+  }
 }
 
 }  // namespace internal

@@ -1984,6 +1984,7 @@ test("content_browsertests") {
     ]
 
     deps += [
+      "//components/system_media_controls:system_media_controls",
       "//net:net_resources",
       "//sandbox",
       "//third_party/blink/public:resources",
