@@ -8993,7 +8993,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  RenderFrameHostImpl* initial_frame_host = current_frame_host();
+  RenderFrameHostImplWrapper initial_frame_host(current_frame_host());
 
   // Make a prerendered page from the initial page.
   int host_id = AddPrerender(kPrerenderingUrl);
@@ -9007,7 +9007,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
     case BackForwardCacheType::kDisabled:
       // The BFCache is disabled, so the initial page is not in the
       // back/forward cache.
-      ASSERT_FALSE(initial_frame_host->IsInBackForwardCache());
+      if (ShouldCreateNewHostForAllFrames()) {
+        ASSERT_TRUE(initial_frame_host.WaitUntilRenderFrameDeleted());
+      } else {
+        ASSERT_FALSE(initial_frame_host->IsInBackForwardCache());
+      }
       break;
     case BackForwardCacheType::kEnabled:
       // The back/forward cache is enabled, so the initial page is in the
@@ -9037,7 +9041,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
 
   // Navigate to a next page.
   ASSERT_TRUE(NavigateToURL(shell(), kNextUrl));
-  RenderFrameHostImpl* next_frame_host = current_frame_host();
+  RenderFrameHostImplWrapper next_frame_host(current_frame_host());
 
   // Make a prerendered page from the next page.
   int host_id = AddPrerender(kPrerenderingUrl);
@@ -9054,7 +9058,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
     case BackForwardCacheType::kDisabled:
       // The back/forward cache is disabled, so the next page is not in the
       // back/forward cache.
-      ASSERT_FALSE(next_frame_host->IsInBackForwardCache());
+      if (ShouldCreateNewHostForAllFrames()) {
+        ASSERT_TRUE(next_frame_host.WaitUntilRenderFrameDeleted());
+      } else {
+        ASSERT_FALSE(next_frame_host->IsInBackForwardCache());
+      }
       break;
     case BackForwardCacheType::kEnabled:
       // The back/forward cache is enabled, so the next page is in the
