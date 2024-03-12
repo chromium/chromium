@@ -250,7 +250,15 @@ using feed::FeedUserActionType;
     // PrefService.
 
     // Also calculate total aggregate for the time in feed aggregate metric.
-    self.timeSpentInFeed = base::Time::Now() - self.feedBecameVisibleTime;
+
+    // When the user opens the browser directly to a website while they
+    // originally were on the NTP. Set `feedBecameVisibleTime` to now if it has
+    // never been set before.
+    base::Time now = base::Time::Now();
+    if (self.feedBecameVisibleTime.is_null()) {
+      self.feedBecameVisibleTime = now;
+    }
+    self.timeSpentInFeed = now - self.feedBecameVisibleTime;
 
     [self checkEngagementGoodVisitWithInteraction:NO];
     self.prefService->SetDouble(kTimeSpentInFeedAggregateKey,
@@ -1246,8 +1254,11 @@ using feed::FeedUserActionType;
   if (additionalTimeInFeed.is_negative()) {
     base::debug::DumpWithoutCrashing();
   }
+  // Temporary fix to resolve negative values in prefs.
+  // TODO(crbug.com/329274886): Remove fix once crashes are down to zero.
   if (self.previousTimeInFeedForGoodVisitSession < 0) {
     base::debug::DumpWithoutCrashing();
+    self.previousTimeInFeedForGoodVisitSession = 0;
   }
   self.previousTimeInFeedForGoodVisitSession =
       self.previousTimeInFeedForGoodVisitSession +
