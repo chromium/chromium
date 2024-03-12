@@ -1420,8 +1420,9 @@ export class FileManager {
       }
     }
 
-    // If there is no target select MyFiles by default.
-    if (!nextCurrentDirEntry) {
+    // If there is no target select MyFiles by default, but only if local files
+    // are enabled.
+    if (!nextCurrentDirEntry && this.localUserFilesAllowed) {
       assert(this.ui.directoryTree);
       if (isXfTree(this.ui.directoryTree)) {
         const myFiles = getMyFiles(this.store_.getState());
@@ -1439,6 +1440,9 @@ export class FileManager {
             this.ui.directoryTree.dataModel.myFilesModel.entry;
       }
     }
+
+    // TODO(b/328031885): Handle !nextCurrentDirEntry case here - it means some
+    // error occurred and we should show the appropriate UI.
 
     // Check directory change.
     if (!tracker.hasChanged) {

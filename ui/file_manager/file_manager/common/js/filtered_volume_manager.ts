@@ -399,6 +399,8 @@ export class FilteredVolumeManager extends VolumeManager {
         this.volumeManager_.getCurrentProfileVolumeInfo(volumeType));
   }
 
+  // TODO(b/328030489): when local files are disabled, we should fall back
+  // to an available root, like OneDrive or Google Drive.
   override getDefaultDisplayRoot(
       callback: (entry: DirectoryEntry|null) => void) {
     this.ensureInitialized(() => {
