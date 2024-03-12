@@ -8,11 +8,13 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/url_schemes.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -29,6 +31,11 @@ bool HasWebUIOrigin(const url::Origin& origin) {
   return origin.scheme() == content::kChromeUIScheme ||
          origin.scheme() == content::kChromeUIUntrustedScheme ||
          origin.scheme() == content::kChromeDevToolsScheme;
+}
+
+bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
+  return base::Contains(
+      GetContentClient()->GetPdfInternalPluginAllowedOrigins(), origin);
 }
 
 bool IsSavableURL(const GURL& url) {

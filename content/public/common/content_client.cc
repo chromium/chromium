@@ -94,6 +94,10 @@ ContentClient::ContentClient()
 ContentClient::~ContentClient() {
 }
 
+std::vector<url::Origin> ContentClient::GetPdfInternalPluginAllowedOrigins() {
+  return {};
+}
+
 std::u16string ContentClient::GetLocalizedString(int message_id) {
   return std::u16string();
 }

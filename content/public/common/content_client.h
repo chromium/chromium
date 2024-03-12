@@ -103,6 +103,9 @@ class CONTENT_EXPORT ContentClient {
   // Gives the embedder a chance to register its own plugins.
   virtual void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) {}
 
+  // Returns a list of origins that are allowed to use PDF internal plugin.
+  virtual std::vector<url::Origin> GetPdfInternalPluginAllowedOrigins();
+
   // Gives the embedder a chance to register the Content Decryption Modules
   // (CDM) it supports, as well as the CDM host file paths to verify CDM host.
   // |cdms| or |cdm_host_file_paths| can be null which means that specific list

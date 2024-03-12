@@ -5,9 +5,9 @@
 #include "chrome/common/pdf_util.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/renderer_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/common/url_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -49,15 +49,9 @@ bool IsPdfExtensionOrigin(const url::Origin& origin) {
 }
 
 bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
-  if (IsPdfExtensionOrigin(origin))
-    return true;
-
-  // Allow embedding the internal PDF plugin in chrome://print.
-  if (origin == url::Origin::Create(GURL(chrome::kChromeUIPrintURL)))
-    return true;
-
   // Only allow the PDF plugin in the known, trustworthy origins that are
-  // allowlisted above.  See also https://crbug.com/520422 and
+  // allowlisted. See also https://crbug.com/520422 and
   // https://crbug.com/1027173.
-  return false;
+  return IsPdfExtensionOrigin(origin) ||
+         content::IsPdfInternalPluginAllowedOrigin(origin);
 }
