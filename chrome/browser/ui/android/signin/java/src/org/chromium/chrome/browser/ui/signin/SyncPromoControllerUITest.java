@@ -27,6 +27,7 @@ import android.widget.LinearLayout.LayoutParams;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +49,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
@@ -170,11 +173,52 @@ public class SyncPromoControllerUITest {
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
+    // TODO(crbug.com/329216953): Move these tests into SyncPromoControllerTest after it's converted
+    // to device unit tests.
+    @Test
+    @MediumTest
+    public void testExistsNonGmailAccountReturnsTrue() {
+        SigninManager signinManager =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () ->
+                                IdentityServicesProvider.get()
+                                        .getSigninManager(
+                                                ProfileManager.getLastUsedRegularProfile()));
+        List<CoreAccountInfo> accounts =
+                List.of(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                "test1@" + SyncPromoController.GMAIL_DOMAIN, "unused"),
+                        CoreAccountInfo.createFromEmailAndGaiaId("test2@nongmail.com", "unused"));
+
+        Assert.assertTrue(SyncPromoController.existsNonGmailAccount(signinManager, accounts));
+    }
+
+    // TODO(crbug.com/329216953): Move these tests into SyncPromoControllerTest after it's converted
+    // to device unit tests.
+    @Test
+    @MediumTest
+    public void testExistsNonGmailAccountReturnsFalse() {
+        SigninManager signinManager =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () ->
+                                IdentityServicesProvider.get()
+                                        .getSigninManager(
+                                                ProfileManager.getLastUsedRegularProfile()));
+        List<CoreAccountInfo> accounts =
+                List.of(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                "test1@" + SyncPromoController.GMAIL_DOMAIN, "unused"),
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                "test2@" + SyncPromoController.GMAIL_DOMAIN, "unused"));
+
+        Assert.assertFalse(SyncPromoController.existsNonGmailAccount(signinManager, accounts));
+    }
+
     @Test
     @MediumTest
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoContinueButtonLaunchesSigninFlow() throws Throwable {
-        mSigninTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
@@ -223,7 +267,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
-        mSigninTestRule.addAccount(TEST_EMAIL);
+        mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,

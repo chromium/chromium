@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
@@ -51,6 +52,7 @@ import org.chromium.components.sync.UserSelectableType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -95,6 +97,7 @@ public class SyncPromoController {
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
     private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
             "SyncAndroidNTPPromoMaxImpressions";
+    @VisibleForTesting static final String GMAIL_DOMAIN = "gmail.com";
 
     /** Strings used for promo shown count histograms. */
     @StringDef({UserAction.CONTINUED, UserAction.DISMISSED, UserAction.SHOWN})
@@ -507,10 +510,16 @@ public class SyncPromoController {
         view.getTitle().setText(mTitleStringId);
         view.getDescription().setText(mDescriptionStringId);
 
-        view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
-        if (IdentityServicesProvider.get()
-                .getIdentityManager(mProfile)
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        List<CoreAccountInfo> accounts =
+                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().getResult();
+        boolean launchSigninFlow =
+                shouldLaunchSigninFlow(mAccessPoint, identityManager, signinManager, accounts);
+        view.getPrimaryButton()
+                .setOnClickListener(v -> signinWithDefaultAccount(context, launchSigninFlow));
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
             view.getSecondaryButton().setVisibility(View.GONE);
             return;
@@ -523,7 +532,9 @@ public class SyncPromoController {
             view.getSecondaryButton().setVisibility(View.GONE);
         } else {
             view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
-            view.getSecondaryButton().setOnClickListener(v -> signinWithNotDefaultAccount(context));
+            view.getSecondaryButton()
+                    .setOnClickListener(
+                            v -> signinWithNotDefaultAccount(context, launchSigninFlow));
             view.getSecondaryButton().setVisibility(View.VISIBLE);
         }
     }
@@ -533,11 +544,9 @@ public class SyncPromoController {
         mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(context, mAccessPoint);
     }
 
-    private void signinWithDefaultAccount(Context context) {
+    private void signinWithDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
-        if (mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER
-                && SyncFeatureMap.isEnabled(
-                        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+        if (launchSigninFlow) {
             mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
                     context,
                     mProfile,
@@ -552,11 +561,9 @@ public class SyncPromoController {
         }
     }
 
-    private void signinWithNotDefaultAccount(Context context) {
+    private void signinWithNotDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
-        if (mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER
-                && SyncFeatureMap.isEnabled(
-                        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+        if (launchSigninFlow) {
             mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
                     context,
                     mProfile,
@@ -616,5 +623,38 @@ public class SyncPromoController {
 
     public static int getMaxImpressionsBookmarksForTests() {
         return MAX_IMPRESSIONS_BOOKMARKS;
+    }
+
+    @VisibleForTesting
+    static boolean shouldLaunchSigninFlow(
+            @SigninAccessPoint int accessPoint,
+            IdentityManager identityManager,
+            SigninManager signinManager,
+            @Nullable List<CoreAccountInfo> accounts) {
+        if (!SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+            return false;
+        }
+        if (accessPoint != SigninAccessPoint.BOOKMARK_MANAGER) {
+            return false;
+        }
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+            return false;
+        }
+        return accounts != null
+                && !accounts.isEmpty()
+                && !existsNonGmailAccount(signinManager, accounts);
+    }
+
+    // Returns whether at least one non-gmail account exist in `accounts`.
+    @VisibleForTesting
+    static boolean existsNonGmailAccount(
+            SigninManager signinManager, List<CoreAccountInfo> accounts) {
+        assert accounts != null && !accounts.isEmpty();
+        return !accounts.stream()
+                .allMatch(
+                        coreAccountInfo ->
+                                signinManager
+                                        .extractDomainName(coreAccountInfo.getEmail())
+                                        .equals(GMAIL_DOMAIN));
     }
 }
