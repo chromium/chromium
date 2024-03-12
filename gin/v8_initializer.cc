@@ -336,6 +336,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
           "--efficiency-mode-delay-turbofan=%i",
           delay);
     }
+  } else {
+    SetV8FlagsFormatted("--no-efficiency-mode-for-tiering-heuristics");
   }
 
   if (base::FeatureList::IsEnabled(
