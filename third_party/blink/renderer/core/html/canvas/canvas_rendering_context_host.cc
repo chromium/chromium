@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -170,8 +171,10 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
     // in such mode. It will first try a PassThrough provider and, if that is
     // not possible, it will try a SharedImage with the appropriate flags.
     if ((RenderingContext() && RenderingContext()->UsingSwapChain()) ||
-        RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
-        base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium)) {
+        (SharedGpuContext::MaySupportImageChromium() &&
+         (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
+          base::FeatureList::IsEnabled(
+              features::kLowLatencyWebGLImageChromium)))) {
       // If either SwapChain is enabled or WebGLImage mode is enabled, we can
       // try a passthrough provider.
       DCHECK(LowLatencyEnabled());
@@ -185,9 +188,10 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       // and if WebGLImageChromium is enabled, add concurrent read write and
       // usage scanout (overlay).
       uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      if (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
-          base::FeatureList::IsEnabled(
-              features::kLowLatencyWebGLImageChromium)) {
+      if (SharedGpuContext::MaySupportImageChromium() &&
+          (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
+           base::FeatureList::IsEnabled(
+               features::kLowLatencyWebGLImageChromium))) {
         shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
         shared_image_usage_flags |=
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -198,11 +202,12 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
           shared_image_usage_flags, this);
     }
   } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    // If there is no LawLatency mode, and GPU is enabled, will try a GPU
-    // SharedImage that should support Usage Display and probably Usage Canbout
+    // If there is no LowLatency mode, and GPU is enabled, will try a GPU
+    // SharedImage that should support Usage Display and probably Usage Scanout
     // if WebGLImageChromium is enabled.
     uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
+    if (SharedGpuContext::MaySupportImageChromium() &&
+        RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     provider = CanvasResourceProvider::CreateSharedImageProvider(
@@ -259,9 +264,10 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // Concurrent Read and Write if possible.
     if (!provider) {
       uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
-          base::FeatureList::IsEnabled(
-              features::kLowLatencyCanvas2dImageChromium)) {
+      if (SharedGpuContext::MaySupportImageChromium() &&
+          (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
+           base::FeatureList::IsEnabled(
+               features::kLowLatencyCanvas2dImageChromium))) {
         shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
         shared_image_usage_flags |=
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -276,14 +282,16 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // hardware compositing, we also try to enable the usage of the image as
     // scanout buffer (overlay)
     uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+    if (SharedGpuContext::MaySupportImageChromium() &&
+        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, this);
-  } else if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+  } else if (SharedGpuContext::MaySupportImageChromium() &&
+             RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
     const uint32_t shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     provider = CanvasResourceProvider::CreateSharedImageProvider(

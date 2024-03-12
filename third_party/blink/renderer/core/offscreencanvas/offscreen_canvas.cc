@@ -528,6 +528,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
       (HasPlaceholderCanvas() && SharedGpuContext::IsGpuCompositingEnabled());
   const bool use_scanout =
       use_shared_image && HasPlaceholderCanvas() &&
+      SharedGpuContext::MaySupportImageChromium() &&
       (IsWebGPU() ||
        (IsWebGL() && RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) ||
        (IsRenderingContext2D() &&

@@ -6,6 +6,7 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -218,5 +219,21 @@ bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
               .IsWorkaroundEnabled(
                   gpu::DISABLE_SOFTWARE_TO_ACCELERATED_CANVAS_UPGRADE);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool SharedGpuContext::MaySupportImageChromium() {
+  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  this_ptr->CreateContextProviderIfNeeded(/*only_if_gpu_compositing=*/true);
+  if (!this_ptr->context_provider_wrapper_) {
+    return false;
+  }
+  const gpu::GpuFeatureInfo& gpu_feature_info =
+      this_ptr->context_provider_wrapper_->ContextProvider()
+          ->GetGpuFeatureInfo();
+  return gpu_feature_info
+             .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
+         gpu::kGpuFeatureStatusEnabled;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // blink

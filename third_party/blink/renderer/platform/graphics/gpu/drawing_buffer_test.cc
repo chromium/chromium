@@ -358,6 +358,10 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     auto provider =
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
 
+    provider->GetMutableGpuFeatureInfo()
+        .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
+        gpu::kGpuFeatureStatusEnabled;
+
     // DrawingBuffer requests MappableSharedImages with usage SCANOUT, whereas
     // TestSII by default creates backing SharedMemory GMBs that don't support
     // this usage. Configure the TestSII to instead use test GMBs that have
