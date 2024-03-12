@@ -245,6 +245,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kGetActionsAccessDenied:
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
+              case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
               case OfficeOneDriveOpenErrors::
                   kAndroidOneDriveUnsupportedLocation:
@@ -282,6 +283,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kGetActionsAccessDenied:
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
+              case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
@@ -383,6 +385,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kGetActionsAccessDenied:
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
+              case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
                 break;
               case OfficeOneDriveOpenErrors::kSuccess:
@@ -441,6 +444,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kGetActionsAccessDenied:
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
+              case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
               case OfficeOneDriveOpenErrors::
                   kAndroidOneDriveUnsupportedLocation:

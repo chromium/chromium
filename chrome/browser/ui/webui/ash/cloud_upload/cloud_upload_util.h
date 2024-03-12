@@ -120,7 +120,8 @@ enum class OfficeOneDriveOpenErrors {
   kConversionToODFSUrlError = 11,
   kEmailsDoNotMatch = 12,
   kAndroidOneDriveUnsupportedLocation = 13,
-  kMaxValue = kAndroidOneDriveUnsupportedLocation,
+  kAndroidOneDriveInvalidUrl = 14,
+  kMaxValue = kAndroidOneDriveInvalidUrl,
 };
 
 // Records the source volume that an office file is opened from. The values up

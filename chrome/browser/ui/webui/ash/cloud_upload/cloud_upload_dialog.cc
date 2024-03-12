@@ -766,7 +766,7 @@ void CloudOpenTask::OpenAndroidOneDriveUrl(
         << "Android OneDrive documents provider path is not as expected.";
     LogOneDriveOpenResultUMA(
         OfficeTaskResult::kOpened,
-        OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
+        OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl);
     return;
   }
   if (components[0] != "Files") {
