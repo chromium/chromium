@@ -62,7 +62,7 @@
 #include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
-#include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/devtools_serialization.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -1089,69 +1089,15 @@ void SendGetInterestGroup(
     return;
   }
 
-  const blink::InterestGroup& group = storage_group.value()->interest_group;
-  auto trusted_bidding_signals_keys =
-      std::make_unique<protocol::Array<std::string>>();
-  if (group.trusted_bidding_signals_keys) {
-    for (const auto& key : group.trusted_bidding_signals_keys.value()) {
-      trusted_bidding_signals_keys->push_back(key);
-    }
-  }
-  auto ads =
-      std::make_unique<protocol::Array<protocol::Storage::InterestGroupAd>>();
-  if (group.ads) {
-    for (const auto& ad : *group.ads) {
-      auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
-                             .SetRenderURL(ad.render_url())
-                             .Build();
-      if (ad.metadata) {
-        protocol_ad->SetMetadata(*ad.metadata);
-      }
-      ads->push_back(std::move(protocol_ad));
-    }
-  }
-  auto ad_components =
-      std::make_unique<protocol::Array<protocol::Storage::InterestGroupAd>>();
-  if (group.ad_components) {
-    for (const auto& ad : *group.ad_components) {
-      auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
-                             .SetRenderURL(ad.render_url())
-                             .Build();
-      if (ad.metadata) {
-        protocol_ad->SetMetadata(*ad.metadata);
-      }
-      ad_components->push_back(std::move(protocol_ad));
-    }
-  }
-  auto protocol_group =
-      protocol::Storage::InterestGroupDetails::Create()
-          .SetOwnerOrigin(group.owner.Serialize())
-          .SetName(group.name)
-          .SetExpirationTime(group.expiry.InSecondsFSinceUnixEpoch())
-          .SetJoiningOrigin(storage_group.value()->joining_origin.Serialize())
-          .SetTrustedBiddingSignalsKeys(std::move(trusted_bidding_signals_keys))
-          .SetAds(std::move(ads))
-          .SetAdComponents(std::move(ad_components))
-          .Build();
-  if (group.bidding_url) {
-    protocol_group->SetBiddingLogicURL(group.bidding_url->spec());
-  }
-  if (group.bidding_wasm_helper_url) {
-    protocol_group->SetBiddingWasmHelperURL(
-        group.bidding_wasm_helper_url->spec());
-  }
-  if (group.update_url) {
-    protocol_group->SetUpdateURL(group.update_url->spec());
-  }
-  if (group.trusted_bidding_signals_url) {
-    protocol_group->SetTrustedBiddingSignalsURL(
-        group.trusted_bidding_signals_url->spec());
-  }
-  if (group.user_bidding_signals) {
-    protocol_group->SetUserBiddingSignals(*group.user_bidding_signals);
-  }
+  base::Value::Dict ig_serialization =
+      SerializeInterestGroupForDevtools(storage_group.value()->interest_group);
 
-  callback->sendSuccess(std::move(protocol_group));
+  // "joiningOrigin" is in StorageInterestGroup, not InterestGroup, so it needs
+  // to be added in separately.
+  ig_serialization.Set("joiningOrigin",
+                       storage_group.value()->joining_origin.Serialize());
+  callback->sendSuccess(
+      std::make_unique<base::Value::Dict>(std::move(ig_serialization)));
 }
 
 }  // namespace

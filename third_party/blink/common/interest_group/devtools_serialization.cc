@@ -259,6 +259,57 @@ base::Value SerializeIntoValue(const AdSize& ad_size) {
   return base::Value(std::move(result));
 }
 
+template <>
+base::Value SerializeIntoValue(
+    const blink::mojom::InterestGroup::ExecutionMode& in) {
+  switch (in) {
+    case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
+      return SerializeIntoValue("compatibility");
+
+    case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
+      return SerializeIntoValue("group-by-origin");
+
+    case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
+      return SerializeIntoValue("frozen-context");
+  }
+}
+
+template <>
+base::Value SerializeIntoValue(const InterestGroup::AdditionalBidKey& in) {
+  return base::Value(base::Base64Encode(in));
+}
+
+template <>
+base::Value SerializeIntoValue(const InterestGroup::Ad& ad) {
+  base::Value::Dict result;
+  SerializeIntoDict("renderURL", ad.render_url(), result);
+  SerializeIntoDict("metadata", ad.metadata, result);
+  SerializeIntoDict("buyerReportingId", ad.buyer_reporting_id, result);
+  SerializeIntoDict("buyerAndSellerReportingId",
+                    ad.buyer_and_seller_reporting_id, result);
+  SerializeIntoDict("adRenderId", ad.ad_render_id, result);
+  SerializeIntoDict("allowedReportingOrigins", ad.allowed_reporting_origins,
+                    result);
+  return base::Value(std::move(result));
+}
+
+template <>
+base::Value SerializeIntoValue(const AuctionServerRequestFlags& flags) {
+  base::Value::List result;
+  for (auto flag : flags) {
+    switch (flag) {
+      case AuctionServerRequestFlagsEnum::kOmitAds:
+        result.Append("omit-ads");
+        break;
+
+      case AuctionServerRequestFlagsEnum::kIncludeFullAds:
+        result.Append("include-full-ads");
+        break;
+    }
+  }
+  return base::Value(std::move(result));
+}
+
 template <typename T>
 void SerializeIntoDict(std::string_view field,
                        const T& value,
@@ -376,6 +427,58 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
                     result);
   SerializeIntoDict("aggregationCoordinatorOrigin",
                     conf.aggregation_coordinator_origin, result);
+
+  return result;
+}
+
+base::Value::Dict SerializeInterestGroupForDevtools(const InterestGroup& ig) {
+  base::Value::Dict result;
+  // This used to have its own type in Devtools protocol
+  // ("InterestGroupDetails"); the fields that existed there are named to match;
+  // otherwise the WebIDL is generally followed.
+  SerializeIntoDict("expirationTime", ig.expiry.InSecondsFSinceUnixEpoch(),
+                    result);
+  SerializeIntoDict("ownerOrigin", ig.owner, result);
+  SerializeIntoDict("name", ig.name, result);
+
+  SerializeIntoDict("priority", ig.priority, result);
+  SerializeIntoDict("enableBiddingSignalsPrioritization",
+                    ig.enable_bidding_signals_prioritization, result);
+  SerializeIntoDict("priorityVector", ig.priority_vector, result);
+  SerializeIntoDict("prioritySignalsOverrides", ig.priority_signals_overrides,
+                    result);
+
+  SerializeIntoDict(
+      "sellerCapabilities",
+      SerializeSplitMapHelper(std::make_optional(ig.all_sellers_capabilities),
+                              ig.seller_capabilities),
+      result);
+  SerializeIntoDict("executionMode", ig.execution_mode, result);
+
+  SerializeIntoDict("biddingLogicURL", ig.bidding_url, result);
+  SerializeIntoDict("biddingWasmHelperURL", ig.bidding_wasm_helper_url, result);
+  SerializeIntoDict("updateURL", ig.update_url, result);
+  SerializeIntoDict("trustedBiddingSignalsURL", ig.trusted_bidding_signals_url,
+                    result);
+  SerializeIntoDict("trustedBiddingSignalsKeys",
+                    ig.trusted_bidding_signals_keys, result);
+
+  SerializeIntoDict("trustedBiddingSignalsSlotSizeMode",
+                    InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+                        ig.trusted_bidding_signals_slot_size_mode),
+                    result);
+  SerializeIntoDict("maxTrustedBiddingSignalsURLLength",
+                    ig.max_trusted_bidding_signals_url_length, result);
+  SerializeIntoDict("userBiddingSignals", ig.user_bidding_signals, result);
+  SerializeIntoDict("ads", ig.ads, result);
+  SerializeIntoDict("adComponents", ig.ad_components, result);
+  SerializeIntoDict("adSizes", ig.ad_sizes, result);
+  SerializeIntoDict("sizeGroups", ig.size_groups, result);
+  SerializeIntoDict("auctionServerRequestFlags",
+                    ig.auction_server_request_flags, result);
+  SerializeIntoDict("additionalBidKey", ig.additional_bid_key, result);
+  SerializeIntoDict("aggregationCoordinatorOrigin",
+                    ig.aggregation_coordinator_origin, result);
 
   return result;
 }

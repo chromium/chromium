@@ -45,8 +45,6 @@ interestGroupAccessed {
     uniqueAuctionId : global
 }
 interestGroupDetails {
-    adComponents : [
-    ]
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
@@ -54,12 +52,11 @@ interestGroupDetails {
         }
     ]
     biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-    expirationTime : 0
+    executionMode : compatibility
     joiningOrigin : https://a.test:8443
     name : 0
     ownerOrigin : https://a.test:8443
-    trustedBiddingSignalsKeys : [
-    ]
+    priority : 0
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -69,8 +66,6 @@ interestGroupAccessed {
     uniqueAuctionId : global
 }
 interestGroupDetails {
-    adComponents : [
-    ]
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
@@ -78,12 +73,11 @@ interestGroupDetails {
         }
     ]
     biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-    expirationTime : 0
+    executionMode : compatibility
     joiningOrigin : https://a.test:8443
     name : 1
     ownerOrigin : https://a.test:8443
-    trustedBiddingSignalsKeys : [
-    ]
+    priority : 0
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -93,8 +87,6 @@ interestGroupAccessed {
     uniqueAuctionId : 1
 }
 interestGroupDetails {
-    adComponents : [
-    ]
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
@@ -102,12 +94,11 @@ interestGroupDetails {
         }
     ]
     biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-    expirationTime : 0
+    executionMode : compatibility
     joiningOrigin : https://a.test:8443
     name : 0
     ownerOrigin : https://a.test:8443
-    trustedBiddingSignalsKeys : [
-    ]
+    priority : 0
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -117,8 +108,6 @@ interestGroupAccessed {
     uniqueAuctionId : 1
 }
 interestGroupDetails {
-    adComponents : [
-    ]
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
@@ -126,12 +115,11 @@ interestGroupDetails {
         }
     ]
     biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-    expirationTime : 0
+    executionMode : compatibility
     joiningOrigin : https://a.test:8443
     name : 1
     ownerOrigin : https://a.test:8443
-    trustedBiddingSignalsKeys : [
-    ]
+    priority : 0
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -142,8 +130,6 @@ interestGroupAccessed {
     uniqueAuctionId : 1
 }
 interestGroupDetails {
-    adComponents : [
-    ]
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
@@ -151,12 +137,11 @@ interestGroupDetails {
         }
     ]
     biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-    expirationTime : 0
+    executionMode : compatibility
     joiningOrigin : https://a.test:8443
     name : 0
     ownerOrigin : https://a.test:8443
-    trustedBiddingSignalsKeys : [
-    ]
+    priority : 0
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -167,8 +152,6 @@ interestGroupAccessed {
     uniqueAuctionId : 1
 }
 interestGroupDetails {
-    adComponents : [
-    ]
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
@@ -176,12 +159,11 @@ interestGroupDetails {
         }
     ]
     biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-    expirationTime : 0
+    executionMode : compatibility
     joiningOrigin : https://a.test:8443
     name : 1
     ownerOrigin : https://a.test:8443
-    trustedBiddingSignalsKeys : [
-    ]
+    priority : 0
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -191,8 +173,6 @@ interestGroupAccessed {
     uniqueAuctionId : 1
 }
 interestGroupDetails {
-    adComponents : [
-    ]
     ads : [
         [0] : {
             metadata : {"ad":"metadata","here":[1,2,3]}
@@ -200,12 +180,11 @@ interestGroupDetails {
         }
     ]
     biddingLogicURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
-    expirationTime : 0
+    executionMode : compatibility
     joiningOrigin : https://a.test:8443
     name : 1
     ownerOrigin : https://a.test:8443
-    trustedBiddingSignalsKeys : [
-    ]
+    priority : 0
 }
 Stop Tracking IG Events
 Logged IG events:

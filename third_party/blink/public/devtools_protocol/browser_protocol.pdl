@@ -9655,28 +9655,6 @@ experimental domain Storage
       bidderTrustedSignals
       sellerTrustedSignals
 
-  # Ad advertising element inside an interest group.
-  type InterestGroupAd extends object
-    properties
-      string renderURL
-      optional string metadata
-
-  # The full details of an interest group.
-  type InterestGroupDetails extends object
-    properties
-      string ownerOrigin
-      string name
-      Network.TimeSinceEpoch expirationTime
-      string joiningOrigin
-      optional string biddingLogicURL
-      optional string biddingWasmHelperURL
-      optional string updateURL
-      optional string trustedBiddingSignalsURL
-      array of string trustedBiddingSignalsKeys
-      optional string userBiddingSignals
-      array of InterestGroupAd ads
-      array of InterestGroupAd adComponents
-
   # Enum of shared storage access types.
   type SharedStorageAccessType extends string
     enum
@@ -9933,7 +9911,11 @@ experimental domain Storage
       string ownerOrigin
       string name
     returns
-      InterestGroupDetails details
+      # This largely corresponds to:
+      # https://wicg.github.io/turtledove/#dictdef-generatebidinterestgroup
+      # but has absolute expirationTime instead of relative lifetimeMs and
+      # also adds joiningOrigin.
+      object details
 
   # Enables/Disables issuing of interestGroupAccessed events.
   experimental command setInterestGroupTracking

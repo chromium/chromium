@@ -180,6 +180,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
+* SerializeInterestGroupForDevtools()
+    (in devtools_serialization.cc; test in devtools_serialization_unittest.cc)
 * auction_ad_interest_group.idl
 * navigator_auction.cc
 * interest_group_types.mojom
