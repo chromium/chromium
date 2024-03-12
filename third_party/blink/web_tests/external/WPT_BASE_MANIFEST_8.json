@@ -7956,6 +7956,13 @@
        {}
       ]
      ],
+     "selection-modify-line-boundary-around-shadow.html": [
+      "bfca0402a7096a61b17d8dfa68f736f76fd3dcfa",
+      [
+       null,
+       {}
+      ]
+     ],
      "selection-modify-line-next-to-textarea.html": [
       "b685add01c004885a32e22211acad17843f1d132",
       [
@@ -71342,7 +71349,7 @@
       ]
      ],
      "anchor-scroll-chained-fallback.tentative.html": [
-      "32cd9de0054b713c623d3adab27fe53d981bdf92",
+      "4000eb54a5db61d5aa29c2c6a49f30c455751b7e",
       [
        null,
        [
@@ -326076,12 +326083,20 @@
         "35b0684b26febc6255702b0560a46cb816596725",
         []
        ],
+       "prefer-targeted-element-main-frame-target.html": [
+        "6bc47d15efd151e252aa5e34e516cefc310205ac",
+        []
+       ],
        "resources": {
         "common.js": [
-         "2d74baae577c9c16ca5c4a2f60363d292a596c10",
+         "1fd88949b39b56d65e096e0822f0709232e2d8e5",
          []
         ]
-       }
+       },
+       "stash.py": [
+        "a70672ecf008efb3d5f3a8f797fad29abeb0fe97",
+        []
+       ]
       }
      },
      "snap-to-combination-of-two-elements-2.tentative-expected.txt": [
@@ -344698,7 +344713,7 @@
        []
       ],
       "scroll_support.js": [
-       "c0c198f236654924cf9c115379b9ab80ef00fdbb",
+       "4ecc13ec745a2bb95239ec5c73d4d87105b4fec9",
        []
       ],
       "scrollend-event-fires-to-iframe-inner-frame.html": [
@@ -382631,6 +382646,14 @@
     ],
     "script-and-style-elements-expected.txt": [
      "bfb7c0c8a38c389d0642166907c14f5b269e96ac",
+     []
+    ],
+    "selection-range-in-shadow-after-the-shadow-removed.tentative_mode=closed-expected.txt": [
+     "c085d44010f677c179d1ee6bc58db490a04348b1",
+     []
+    ],
+    "selection-range-in-shadow-after-the-shadow-removed.tentative_mode=open-expected.txt": [
+     "c085d44010f677c179d1ee6bc58db490a04348b1",
      []
     ],
     "setBaseAndExtent-expected.txt": [
@@ -438145,7 +438168,7 @@
       ]
      ],
      "at-position-try-invalidation-shadow-dom.html": [
-      "e5d6c51a0b95bcd3ba873b05d982054a7d1a49f9",
+      "50e67de1aef6d9a5ae647d30b36cd9fad880476e",
       [
        null,
        {}
@@ -438216,14 +438239,14 @@
      ],
      "parsing": {
       "position-try-options-computed.html": [
-       "ac84b8fa4b312890070a0c256e9f6561304d8196",
+       "f0944b7faaa6e1960163d560c0a0f64d4c1bed9e",
        [
         null,
         {}
        ]
       ],
       "position-try-options-parsing.html": [
-       "cb250a178d4236405ba26bdf19935f4d8c1b3c87",
+       "303cc4d0dd2de76ac8e3e33d6a498f6d203041a7",
        [
         null,
         {}
@@ -438244,7 +438267,7 @@
        ]
       ],
       "position-try-parsing.html": [
-       "8c36ddbaace11770b015c2f2d55c77c9b736b7db",
+       "7f50459710629cefd0282a8d78a60e8d760e719f",
        [
         null,
         {}
@@ -438308,7 +438331,7 @@
       ]
      ],
      "position-try-001.html": [
-      "a15c808d95658ee022723ff37985ad66c279c31e",
+      "47fcbb8393962aff84d21c85db140ee7c7dd95cf",
       [
        null,
        {}
@@ -438336,7 +438359,7 @@
       ]
      ],
      "position-try-cascade-layer-reorder.html": [
-      "6c09fd0ea17b17b27428408751f7b60230382391",
+      "4f38806f604f612065783c9b3253fb1f6bda0184",
       [
        null,
        {}
@@ -438378,7 +438401,7 @@
       ]
      ],
      "position-try-tree-scoped.html": [
-      "a8fe0106833d08d8c015c7c9ebe6ecb2efb52dca",
+      "d0c94fd6797dc7a87d129769f06a55cfca3d88a5",
       [
        null,
        {}
@@ -456978,6 +457001,15 @@
        ]
       ],
       "multiple-aligned-targets": {
+       "common-to-both-axes-supercedes-first-in-tree-order.html": [
+        "d9989316e40d18d13b69c74bcabead8551b469fe",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "nested-supercedes-common-to-both-axes.html": [
         "15743026bc3ea726e573d5a6311f87f8a68e8cab",
         [
@@ -456989,6 +457021,15 @@
        ],
        "prefer-common-to-both-axes.html": [
         "09b81e7c0dad69746012a6738b2f21689b699806",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "prefer-first-in-tree-order.html": [
+        "f4b32e10c72b618268e18b63e0e50cc310a9c4f0",
         [
          null,
          {
@@ -457023,6 +457064,15 @@
          }
         ]
        ],
+       "prefer-targeted-element-main-frame.html": [
+        "6221b0e4b51c238e10a4ec32c47737da62a1d13a",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "prefer-targeted-element-positioned.html": [
         "3a2b1a90892436f1a074f89d06c633b40330ed50",
         [
@@ -457033,7 +457083,7 @@
         ]
        ],
        "prefer-targeted-element.html": [
-        "1f7f087180df8377130b8284e5c3a50a186e280d",
+        "ceb9bd2ee06139720a085b0a932e1a779454546d",
         [
          null,
          {
@@ -480324,6 +480374,17 @@
        {
         "timeout": "long"
        }
+      ]
+     ],
+     "Range-in-shadow-after-the-shadow-removed.html": [
+      "54ea8aabeab7337e15fd51bfb121b7a73066d6b1",
+      [
+       "dom/ranges/Range-in-shadow-after-the-shadow-removed.html?mode=closed",
+       {}
+      ],
+      [
+       "dom/ranges/Range-in-shadow-after-the-shadow-removed.html?mode=open",
+       {}
       ]
      ],
      "Range-insertNode.html": [
@@ -603790,6 +603851,15 @@
         "testdriver": true
        }
       ]
+     ],
+     "pointerevent_touch_target_after_pointerdown_target_removed.tentative.html": [
+      "124133d25ccd199441847fe4f86509e745c6e79a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
      ]
     },
     "idlharness.https.window.js": [
@@ -623748,6 +623818,43 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "selection-range-after-editinghost-removed.html": [
+     "921903062ac6089ec6608acb7c664056c38844f4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "selection-range-after-textcontrol-removed.html": [
+     "e618f10f1d88e14f379f2db0df7c3896d75182dc",
+     [
+      "selection/selection-range-after-textcontrol-removed.html?textControl=number",
+      {}
+     ],
+     [
+      "selection/selection-range-after-textcontrol-removed.html?textControl=password",
+      {}
+     ],
+     [
+      "selection/selection-range-after-textcontrol-removed.html?textControl=text",
+      {}
+     ],
+     [
+      "selection/selection-range-after-textcontrol-removed.html?textControl=textarea",
+      {}
+     ]
+    ],
+    "selection-range-in-shadow-after-the-shadow-removed.tentative.html": [
+     "e9f63715a2f15453f3aec8624b2d8af098f0604e",
+     [
+      "selection/selection-range-in-shadow-after-the-shadow-removed.tentative.html?mode=closed",
+      {}
+     ],
+     [
+      "selection/selection-range-in-shadow-after-the-shadow-removed.tentative.html?mode=open",
+      {}
      ]
     ],
     "setBaseAndExtent.html": [
@@ -710314,7 +710421,7 @@
          ]
         ],
         "invalid.py": [
-         "056f6827281e9e0a56b01f76ca296133f38fadf4",
+         "e553a2e501ebfcef65dc302bcf53c22af975e496",
          [
           null,
           {}
@@ -710337,7 +710444,7 @@
          ]
         ],
         "invalid.py": [
-         "9039f27e47c49798c55f568ee13e21f2d60cd956",
+         "c286bc09ee04d72aa4048e67078084d985bdcdc3",
          [
           null,
           {}
