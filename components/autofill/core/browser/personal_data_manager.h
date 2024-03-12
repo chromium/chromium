@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_update_strike_database.h"
@@ -45,6 +46,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -611,6 +613,27 @@ class PersonalDataManager : public KeyedService,
   // updates. Does nothing if the strike database is not available.
   void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
 
+  // Returns true if a specific field on the web identified by its host form
+  // signature, field signature and domain is blocked for address suggestions.
+  // Returns false if the database is not available.
+  bool AreAddressSuggestionsBlocked(FormSignature form_signature,
+                                    FieldSignature field_signature,
+                                    const GURL& gurl) const;
+
+  // Adds a strike to block a specific field on the web identified by its host
+  // form signature, field signature and domain from having address suggestions
+  // displayed. Does nothing if the database is not available.
+  void AddStrikeToBlockAddressSuggestions(FormSignature form_signature,
+                                          FieldSignature field_signature,
+                                          const GURL& gurl);
+
+  // Clears all strikes to block a specific field on the web identified by its
+  // host form signature, field signature and domain from having address
+  // suggestions displayed. Does nothing if the database is not available.
+  void ClearStrikesToBlockAddressSuggestions(FormSignature form_signature,
+                                             FieldSignature field_signature,
+                                             const GURL& gurl);
+
   // Returns true if Sync-the-feature is enabled and
   // UserSelectableType::kAutofill is among the user's selected data types.
   // TODO(crbug.com/40066949): Remove this method once ConsentLevel::kSync and
@@ -717,6 +740,13 @@ class PersonalDataManager : public KeyedService,
   AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
   virtual const AutofillProfileUpdateStrikeDatabase*
   GetProfileUpdateStrikeDatabase() const;
+
+  // Used to get a pointer to the strike database for updating existing
+  // profiles. Note, the result can be a nullptr, for example, on incognito
+  // mode.
+  AddressSuggestionStrikeDatabase* GetAddressSuggestionStrikeDatabase();
+  virtual const AddressSuggestionStrikeDatabase*
+  GetAddressSuggestionStrikeDatabase() const;
 
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
@@ -827,6 +857,12 @@ class PersonalDataManager : public KeyedService,
   // of existing profiles.
   std::unique_ptr<AutofillProfileUpdateStrikeDatabase>
       profile_update_strike_database_;
+
+  // The database that is used to count form-field-domain-keyed strikes to
+  // suppress the display of the Autofill popup for address suggestions on a
+  // field.
+  std::unique_ptr<AddressSuggestionStrikeDatabase>
+      address_suggestion_strike_database_;
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;

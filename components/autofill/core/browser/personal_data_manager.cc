@@ -53,8 +53,10 @@
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
@@ -65,7 +67,9 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -82,6 +86,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -107,6 +112,28 @@ enum class MigrateUserOptedInWalletSyncType {
   kNotMigratedUnexpectedPrimaryAccountIdWithEmail = 3,
   kMaxValue = kNotMigratedUnexpectedPrimaryAccountIdWithEmail,
 };
+
+template <typename T>
+void ClearStrikesWithHistory(HistoryClearableStrikeDatabase<T>& strike_database,
+                             const history::DeletionInfo& deletion_info) {
+  if (deletion_info.IsAllHistory()) {
+    // If the whole history is deleted, clear all strikes.
+    strike_database.ClearAllStrikes();
+    return;
+  }
+  std::set<std::string> deleted_hosts;
+  for (const auto& url_row : deletion_info.deleted_rows()) {
+    deleted_hosts.insert(url_row.url().host());
+  }
+  if (!deletion_info.time_range().IsValid() ||
+      deletion_info.time_range().IsAllTime()) {
+    strike_database.ClearStrikesByOrigin(deleted_hosts);
+    return;
+  }
+  strike_database.ClearStrikesByOriginAndTime(
+      deleted_hosts, deletion_info.time_range().begin(),
+      deletion_info.time_range().end());
+}
 
 }  // namespace
 
@@ -183,6 +210,8 @@ void PersonalDataManager::Init(
         std::make_unique<AutofillProfileSaveStrikeDatabase>(strike_database);
     profile_update_strike_database_ =
         std::make_unique<AutofillProfileUpdateStrikeDatabase>(strike_database);
+    address_suggestion_strike_database_ =
+        std::make_unique<AddressSuggestionStrikeDatabase>(strike_database);
   }
 
   // WebDataService may not be available in tests.
@@ -228,25 +257,12 @@ void PersonalDataManager::OnURLsDeleted(
   if (!deletion_info.is_from_expiration() && deletion_info.IsAllHistory()) {
     AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
-
   if (profile_save_strike_database_) {
-    if (deletion_info.IsAllHistory()) {
-      // If the whole history is deleted, clear all strikes.
-      profile_save_strike_database_->ClearAllStrikes();
-    } else {
-      std::set<std::string> deleted_hosts;
-      for (const auto& url_row : deletion_info.deleted_rows()) {
-        deleted_hosts.insert(url_row.url().host());
-      }
-      if (deletion_info.time_range().IsValid() &&
-          !deletion_info.time_range().IsAllTime()) {
-        profile_save_strike_database_->ClearStrikesByOriginAndTime(
-            deleted_hosts, deletion_info.time_range().begin(),
-            deletion_info.time_range().end());
-      } else {
-        profile_save_strike_database_->ClearStrikesByOrigin(deleted_hosts);
-      }
-    }
+    ClearStrikesWithHistory(*profile_save_strike_database_, deletion_info);
+  }
+  if (address_suggestion_strike_database_) {
+    ClearStrikesWithHistory(*address_suggestion_strike_database_,
+                            deletion_info);
   }
 }
 
@@ -955,6 +971,42 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
   GetProfileUpdateStrikeDatabase()->ClearStrikes(guid);
 }
 
+bool PersonalDataManager::AreAddressSuggestionsBlocked(
+    FormSignature form_signature,
+    FieldSignature field_signature,
+    const GURL& gurl) const {
+  if (!GetAddressSuggestionStrikeDatabase()) {
+    return false;
+  }
+  return GetAddressSuggestionStrikeDatabase()->ShouldBlockFeature(
+      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
+                                             gurl));
+}
+
+void PersonalDataManager::AddStrikeToBlockAddressSuggestions(
+    FormSignature form_signature,
+    FieldSignature field_signature,
+    const GURL& gurl) {
+  if (!GetAddressSuggestionStrikeDatabase()) {
+    return;
+  }
+  GetAddressSuggestionStrikeDatabase()->AddStrike(
+      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
+                                             gurl));
+}
+
+void PersonalDataManager::ClearStrikesToBlockAddressSuggestions(
+    FormSignature form_signature,
+    FieldSignature field_signature,
+    const GURL& gurl) {
+  if (!GetAddressSuggestionStrikeDatabase()) {
+    return;
+  }
+  GetAddressSuggestionStrikeDatabase()->ClearStrikes(
+      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
+                                             gurl));
+}
+
 bool PersonalDataManager::IsSyncFeatureEnabledForAutofill() const {
   // TODO(crbug.com/40066949): Remove this method in favor of
   // `IsUserSelectableTypeEnabled` once ConsentLevel::kSync and
@@ -1163,6 +1215,17 @@ PersonalDataManager::GetProfileUpdateStrikeDatabase() {
 const AutofillProfileUpdateStrikeDatabase*
 PersonalDataManager::GetProfileUpdateStrikeDatabase() const {
   return profile_update_strike_database_.get();
+}
+
+AddressSuggestionStrikeDatabase*
+PersonalDataManager::GetAddressSuggestionStrikeDatabase() {
+  return const_cast<AddressSuggestionStrikeDatabase*>(
+      std::as_const(*this).GetAddressSuggestionStrikeDatabase());
+}
+
+const AddressSuggestionStrikeDatabase*
+PersonalDataManager::GetAddressSuggestionStrikeDatabase() const {
+  return address_suggestion_strike_database_.get();
 }
 
 void PersonalDataManager::SetCreditCards(
