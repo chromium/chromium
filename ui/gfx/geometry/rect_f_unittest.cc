@@ -525,4 +525,46 @@ TEST(RectFTest, MapRect) {
                           RectF(0, 1, 6, 8)));
 }
 
+TEST(RectFTest, ApproximatelyEqual) {
+  RectF rect1(10, 20, 1920, 1080);
+  RectF rect2(10, 20, 1920, 1080);
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.0f, 0.0f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.001f, 0.001f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.001f, 0.00001f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.00001f, 0.001f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.00001f, 0.00001f));
+
+  RectF rect3(9.999965732, 20, 1920, 1080);
+  RectF rect4(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect3.ApproximatelyEqual(rect4, 0.0f, 0.0f));
+  EXPECT_TRUE(rect3.ApproximatelyEqual(rect4, 0.001f, 0.001f));
+  EXPECT_TRUE(rect3.ApproximatelyEqual(rect4, 0.001f, 0.000001f));
+  EXPECT_FALSE(rect3.ApproximatelyEqual(rect4, 0.000001f, 0.001f));
+  EXPECT_FALSE(rect3.ApproximatelyEqual(rect4, 0.000001f, 0.000001f));
+
+  RectF rect5(10, 20.000001, 1920, 1080);
+  RectF rect6(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect5.ApproximatelyEqual(rect6, 0.0f, 0.0f));
+  EXPECT_TRUE(rect5.ApproximatelyEqual(rect6, 0.001f, 0.001f));
+  EXPECT_FALSE(rect5.ApproximatelyEqual(rect6, 0.001f, 0.0000001f));
+  EXPECT_TRUE(rect5.ApproximatelyEqual(rect6, 0.0000001f, 0.001f));
+  EXPECT_FALSE(rect5.ApproximatelyEqual(rect6, 0.0000001f, 0.0000001f));
+
+  RectF rect7(10, 20, 1919.99987792969, 1080);
+  RectF rect8(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect7.ApproximatelyEqual(rect8, 0.0f, 0.0f));
+  EXPECT_TRUE(rect7.ApproximatelyEqual(rect8, 0.001f, 0.001f));
+  EXPECT_TRUE(rect7.ApproximatelyEqual(rect8, 0.001f, 0.00001f));
+  EXPECT_FALSE(rect7.ApproximatelyEqual(rect8, 0.00001f, 0.001f));
+  EXPECT_FALSE(rect7.ApproximatelyEqual(rect8, 0.00001f, 0.00001f));
+
+  RectF rect9(10, 20, 1920, 1080.0001);
+  RectF rect10(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect9.ApproximatelyEqual(rect10, 0.0f, 0.0f));
+  EXPECT_TRUE(rect9.ApproximatelyEqual(rect10, 0.001f, 0.001f));
+  EXPECT_FALSE(rect9.ApproximatelyEqual(rect10, 0.001f, 0.000001f));
+  EXPECT_TRUE(rect9.ApproximatelyEqual(rect10, 0.000001f, 0.001f));
+  EXPECT_FALSE(rect9.ApproximatelyEqual(rect10, 0.000001f, 0.000001f));
+}
+
 }  // namespace gfx
