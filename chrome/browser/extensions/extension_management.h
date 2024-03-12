@@ -198,10 +198,6 @@ class ExtensionManagement : public KeyedService {
   // Returns false if an individual scoped setting isn't defined.
   bool UsesDefaultPolicyHostRestrictions(const Extension* extension);
 
-  // Checks if a URL is on the blocked host permissions list for a specific
-  // extension.
-  bool IsPolicyBlockedHost(const Extension* extension, const GURL& url);
-
   // Returns blocked permission set for |extension|.
   std::unique_ptr<const PermissionSet> GetBlockedPermissions(
       const Extension* extension);

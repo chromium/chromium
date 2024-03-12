@@ -419,14 +419,6 @@ bool ExtensionManagement::UsesDefaultPolicyHostRestrictions(
   return GetSettingsForId(extension->id()) == nullptr;
 }
 
-bool ExtensionManagement::IsPolicyBlockedHost(const Extension* extension,
-                                              const GURL& url) {
-  auto* setting = GetSettingsForId(extension->id());
-  if (setting)
-    return setting->policy_blocked_hosts.MatchesURL(url);
-  return default_settings_->policy_blocked_hosts.MatchesURL(url);
-}
-
 std::unique_ptr<const PermissionSet> ExtensionManagement::GetBlockedPermissions(
     const Extension* extension) {
   // Only api permissions are supported currently.
