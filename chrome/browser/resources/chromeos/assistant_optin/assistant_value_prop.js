@@ -534,10 +534,10 @@ class AssistantValueProp extends AssistantValuePropBase {
    */
   showContentForStep_(step) {
     for (const subtitle of this.$['subtitle-container'].children) {
-      subtitle.hidden = subtitle.getAttribute('step') !== step;
+      subtitle.hidden = parseInt(subtitle.getAttribute('step')) !== step;
     }
     for (const zippy of this.$['consents-container'].children) {
-      zippy.hidden = zippy.getAttribute('step') !== step;
+      zippy.hidden = parseInt(zippy.getAttribute('step')) !== step;
     }
   }
 
