@@ -35,6 +35,7 @@ import time
 
 from blinkpy.common.system import path
 from blinkpy.common.system.profiler import ProfilerFactory
+from blinkpy.web_tests.models.testharness_results import is_all_pass_test_result
 
 _log = logging.getLogger(__name__)
 
@@ -522,6 +523,10 @@ class Driver(object):
         # startup to be slower (if the workaround is triggered via the
         # --initialize-webgpu-adapter-at-startup flag, right above in the
         # code in _start()).
+        #
+        # TODO(crbug.com/329003665): See if `wpt_internal/webgpu/` is runnable
+        # with wptrunner + chromedriver + chrome, which would obviate the need
+        # for `000_run_me_first.https.html`.
         init_timeout = self._port.get_option(
             'initialize_webgpu_adapter_at_startup_timeout_ms')
         startup_input = DriverInput(
@@ -533,7 +538,8 @@ class Driver(object):
             startup_trace_file=None,
             args=per_test_args)
         output = self._run_one_input(startup_input, start_time=time.time())
-        if output.text and b'PASS 000_run_me_first' in output.text:
+        if output.text and is_all_pass_test_result(
+                output.text.decode(errors='replace')):
             return True, None
 
         output.text = (b'Failed to initialize WebGPU adapter at startup via '
