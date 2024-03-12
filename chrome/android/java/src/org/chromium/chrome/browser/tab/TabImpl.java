@@ -1420,6 +1420,8 @@ class TabImpl implements Tab {
     /** This is currently called when committing a pre-rendered page or activating a portal. */
     @CalledByNative
     void swapWebContents(WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
+        mNavigationInPrimaryMainFrameInProgress = false;
+
         boolean hasWebContents = mContentView != null && mWebContents != null;
         Rect original =
                 hasWebContents
@@ -1462,8 +1464,6 @@ class TabImpl implements Tab {
             // Simulate the PAGE_LOAD_FINISHED notification that we did not get.
             if (didFinishLoad) didFinishPageLoad(getUrl());
         }
-
-        mNavigationInPrimaryMainFrameInProgress = false;
 
         for (TabObserver observer : mObservers) {
             observer.onWebContentsSwapped(this, didStartLoad, didFinishLoad);
