@@ -244,32 +244,32 @@ void WaylandToplevelWindow::Maximize() {
 }
 
 void WaylandToplevelWindow::Minimize() {
-  // Do not allow to minimize the window if it has never been configured. That
-  // is, if the browser is minimized (there are at least two windows) and the
-  // session is restored after crash or logout, which forced the browser to
-  // close, the session will only restore one window, while all the other
-  // windows will be set to minimized. That means windows will be never ack
-  // configured and they will stay forever minimized as a Wayland compositor
-  // will not activate those windows (upon user interaction) because the before
-  // mentioned initial configure/ack_configure messaging hasn't happened.
-  //
-  // TODO(crbug.com/1293740): find a solution to this workaround.
-  if (IsSurfaceConfigured()) {
-    fullscreen_display_id_ = display::kInvalidDisplayId;
-    shell_toplevel_->SetMinimized();
-    if (!SupportsConfigureMinimizedState()) {
-      // Wayland standard does not have API to notify client apps about
-      // window minimized, while exo has an extension (in
-      // zaura_shell::configure) for it.
-      // In the former case we update the window state here synchronously,
-      // while in the latter case update the window state in the handler of
-      // configure (HandleAuraToplevelConfigure) asynchronously.
-      previous_state_ = state_;
-      state_ = PlatformWindowState::kMinimized;
-      delegate()->OnWindowStateChanged(previous_state_, state_);
-    }
-  } else {
-    SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
+  if (!shell_toplevel_) {
+    // TODO(crbug.com/1466385): Store `PlatformWindowState::kMinimized` to a
+    // pending state.
+    return;
+  }
+
+  fullscreen_display_id_ = display::kInvalidDisplayId;
+  shell_toplevel_->SetMinimized();
+
+  if (!SupportsConfigureMinimizedState() && IsSurfaceConfigured()) {
+    // Wayland standard does not have API to notify client apps about
+    // window minimized, while exo has an extension (in
+    // zaura_shell::configure) for it.
+    // In the former case we update the window state here synchronously,
+    // while in the latter case update the window state in the handler of
+    // configure (HandleAuraToplevelConfigure) asynchronously.
+    // We also need to check if the surface is already configured in case of a
+    // synchronous minimize because a minimized window cannot ack configure.
+    // This can happen if a minimized window is restored by a session restore.
+    //
+    // TODO(crbug.com/1293740): Verify that the claim about a window initialized
+    // as a minimized window cannot ack configure. If not
+    // `IsSurfaceConfigured()` condition can be removed.
+    previous_state_ = state_;
+    state_ = PlatformWindowState::kMinimized;
+    delegate()->OnWindowStateChanged(previous_state_, state_);
   }
 }
 
