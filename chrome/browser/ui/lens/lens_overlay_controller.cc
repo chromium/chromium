@@ -172,7 +172,6 @@ views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {
 
 void LensOverlayController::ResetUIBounds() {
   content::WebContents* active_web_contents = tab_model_->contents();
-  // TODO(b/329103641): Use correct coordinate system.
   overlay_widget_->SetBounds(active_web_contents->GetContainerBounds());
 }
 
@@ -273,7 +272,6 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
   params.layer_type = ui::LAYER_NOT_DRAWN;
 #endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  // TODO(b/329103641): Use correct coordinate system.
   params.bounds = active_web_contents->GetContainerBounds();
   return params;
 }

@@ -659,6 +659,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   std::string GetWorkspace() const;
 
   // Sizes and/or places the widget to the specified bounds, size or position.
+  // `bounds` is in screen coordinates.
   void SetBounds(const gfx::Rect& bounds);
   void SetSize(const gfx::Size& size);
 
