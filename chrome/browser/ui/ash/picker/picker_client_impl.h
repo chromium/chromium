@@ -83,11 +83,6 @@ class PickerClientImpl
     PickerAppListControllerDelegate();
     ~PickerAppListControllerDelegate() override;
 
-    // Returns the URL for the given search result.
-    // TODO: b/324154130 - Remove this once we have an API to get the URL from
-    // CrOS Search.
-    std::optional<GURL> GetUrlForSearchResult(ChromeSearchResult& result);
-
     // AppListControllerDelegate overrides:
     void DismissView() override;
     aura::Window* GetAppListWindow() override;
@@ -103,9 +98,6 @@ class PickerClientImpl
                  const GURL& url,
                  ui::PageTransition transition,
                  WindowOpenDisposition disposition) override;
-
-   private:
-    std::optional<GURL> last_opened_url_;
   };
 
   void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,

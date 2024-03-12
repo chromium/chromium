@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/app_list/search/scoring.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "url/gurl.h"
 
 namespace ui {
 class ImageModel;
@@ -194,6 +195,9 @@ class ChromeSearchResult {
 
   // Maybe returns a Drive file ID for this result, if applicable.
   virtual std::optional<std::string> DriveId() const;
+
+  // Maybe returns a url for this result, if applicable.
+  virtual std::optional<GURL> url() const;
 
   // Invokes a custom action on the result. It does nothing by default.
   virtual void InvokeAction(ash::SearchResultActionType action);

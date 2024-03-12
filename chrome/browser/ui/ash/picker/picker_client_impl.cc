@@ -229,9 +229,8 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
   for (const std::unique_ptr<ChromeSearchResult>& result : results) {
     switch (result->result_type()) {
       case ash::AppListSearchResultType::kOmnibox: {
-        std::optional<GURL> result_url =
-            app_list_controller_delegate_.GetUrlForSearchResult(*result);
-        if (result_url.has_value()) {
+        if (std::optional<GURL> result_url = result->url();
+            result_url.has_value()) {
           picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
               *result_url, result->title(), result->icon().icon));
         } else {
@@ -327,15 +326,6 @@ PickerClientImpl::PickerAppListControllerDelegate::
 PickerClientImpl::PickerAppListControllerDelegate::
     ~PickerAppListControllerDelegate() = default;
 
-std::optional<GURL>
-PickerClientImpl::PickerAppListControllerDelegate::GetUrlForSearchResult(
-    ChromeSearchResult& result) {
-  last_opened_url_ = std::nullopt;
-  // This may call `OpenURL`, which will set `last_opened_url_`.
-  result.Open(0);
-  return std::exchange(last_opened_url_, std::nullopt);
-}
-
 void PickerClientImpl::PickerAppListControllerDelegate::DismissView() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
@@ -392,5 +382,5 @@ void PickerClientImpl::PickerAppListControllerDelegate::OpenURL(
     const GURL& url,
     ui::PageTransition transition,
     WindowOpenDisposition disposition) {
-  last_opened_url_ = url;
+  NOTIMPLEMENTED_LOG_ONCE();
 }

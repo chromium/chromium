@@ -155,6 +155,10 @@ double OmniboxResult::CalculateTitleRelevance() const {
                          kStripDiacritics, kUseAcronymMatcher);
 }
 
+std::optional<GURL> OmniboxResult::url() const {
+  return search_result_->destination_url;
+}
+
 void OmniboxResult::Open(int event_flags) {
   list_controller_->OpenURL(profile_, *search_result_->destination_url,
                             crosapi::PageTransitionToUiPageTransition(

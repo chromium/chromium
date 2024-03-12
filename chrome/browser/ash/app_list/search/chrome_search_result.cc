@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_context_menu.h"
 #include "ui/base/models/image_model.h"
+#include "url/gurl.h"
 
 ChromeSearchResult::ChromeSearchResult()
     : metadata_(std::make_unique<ash::SearchResultMetadata>()) {}
@@ -217,6 +218,10 @@ void ChromeSearchResult::SetSearchResultMetadata() {
 }
 
 std::optional<std::string> ChromeSearchResult::DriveId() const {
+  return std::nullopt;
+}
+
+std::optional<GURL> ChromeSearchResult::url() const {
   return std::nullopt;
 }
 
