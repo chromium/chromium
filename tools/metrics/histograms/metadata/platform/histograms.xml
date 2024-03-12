@@ -1608,7 +1608,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Missive.DeleteEmptyMultigenerationQueueDirectories"
     enum="Boolean" expires_after="2024-12-01">
-  <owner>jrhilke@chromium.com</owner>
+  <owner>jrhilke@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when the Missive daemon attempts to delete empty multigeneration
