@@ -60,7 +60,7 @@ import("//testing/test.gni")
 test("hypothetical_fuzztests") {
   sources = [ "hypothetical_fuzztests.cc" ]
 
-  fuzztests = ['MyApiTest.MyApiCanSuccessfullyParseAnyString']
+  fuzztests = ["MyApiTest.MyApiCanSuccessfullyParseAnyString"]
 
   deps = [
     ":hypothetical_component",
@@ -87,7 +87,7 @@ if (is_linux) {
   test("existing_unit_tests") {
     sources = [ "existing_unit_tests.cc" ] # add FUZZ_TESTs here
 
-    fuzztests = ['MyApiTest.ApiWorksAlways']
+    fuzztests = ["MyApiTest.ApiWorksAlways"]
       # Add this!
 
     deps = [
