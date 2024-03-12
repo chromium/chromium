@@ -638,7 +638,7 @@ const base::FeatureParam<int> kAutofillLogUKMEventsWithSamplingOnSessionRate{
 // requirements or the updated ones.
 BASE_FEATURE(kAutofillUseUpdatedRequiredFieldsForAddressImport,
              "AutofillUseUpdatedRequiredFieldsForAddressImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether virtual card suggestions are shown on the touch to fill
 // surface for credit cards on Android.
