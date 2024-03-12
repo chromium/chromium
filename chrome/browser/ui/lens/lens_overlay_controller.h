@@ -100,7 +100,7 @@ class LensOverlayController : public TabStripModelObserver,
   }
 
   // Testing helper method for checking widget.
-  raw_ptr<views::Widget> GetOverlayWidgetForTesting();
+  views::Widget* GetOverlayWidgetForTesting();
 
   // Resizes the overlay UI. Used when the window size changes.
   void ResetUIBounds();

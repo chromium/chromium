@@ -166,7 +166,7 @@ void LensOverlayController::BindOverlay(
   state_ = State::kOverlay;
 }
 
-raw_ptr<views::Widget> LensOverlayController::GetOverlayWidgetForTesting() {
+views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {
   return overlay_widget_.get();
 }
 
@@ -334,6 +334,8 @@ void LensOverlayController::TabBackgrounded() {
 void LensOverlayController::CloseRequestedByOverlay() {
   state_ = State::kClosing;
 
+  // This callback comes from WebUI. CloseUI synchronously destroys the WebUI.
+  // Dispatch to avoid re-entrancy.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LensOverlayController::CloseUI,
                                 weak_factory_.GetWeakPtr()));

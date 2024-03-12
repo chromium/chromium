@@ -31,9 +31,9 @@ END_METADATA
 namespace lens {
 
 LensOverlaySidePanelCoordinator::LensOverlaySidePanelCoordinator(
-    const raw_ptr<Browser> browser,
-    const raw_ptr<LensOverlayController> lens_overlay_controller,
-    const raw_ptr<SidePanelUI> side_panel_ui,
+    Browser* browser,
+    LensOverlayController* lens_overlay_controller,
+    SidePanelUI* side_panel_ui,
     content::WebContents* web_contents)
     : tab_browser_(browser),
       lens_overlay_controller_(lens_overlay_controller),
