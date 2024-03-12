@@ -6,7 +6,7 @@ import 'chrome://resources/ash/common/network/onc_mojo.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnProperties, DeviceStateProperties, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, DeviceStateProperties, FilterType, ManagedProperties, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 /**
@@ -169,6 +169,60 @@ export function processDeviceState(type, devices, deviceState) {
     shouldGetNetworkDetails = true;
   }
   return {deviceState, shouldGetNetworkDetails};
+}
+
+/**
+ * Returns whether or not the network associated with |managedProperties| is
+ * carrier locked.
+ * @param {boolean} isCellularCarrierLockEnabled
+ * @param {?OncMojo.DeviceStateProperties} deviceState
+ * @param {ManagedProperties|undefined} managedProperties
+ */
+export function isCarrierLockedActiveSim(
+    isCellularCarrierLockEnabled, managedProperties, deviceState) {
+  if (!isCellularCarrierLockEnabled) {
+    return false;
+  }
+  if (!deviceState || deviceState.type !== NetworkType.kCellular) {
+    return false;
+  }
+  if (!managedProperties) {
+    return false;
+  }
+  const networkState =
+      OncMojo.managedPropertiesToNetworkState(managedProperties);
+
+  if (!isActiveSim(networkState, deviceState)) {
+    return false;
+  }
+  const simLockStatus = deviceState.simLockStatus;
+  if (!simLockStatus) {
+    return false;
+  }
+  return simLockStatus.lockType === 'network-pin';
+}
+
+/**
+ * Returns whether or not the network associated with |managedProperties| should
+ * allow modification of its properties via the UI.
+ * @param {boolean} isCellularCarrierLockEnabled
+ * @param {?OncMojo.DeviceStateProperties} deviceState
+ * @param {ManagedProperties|undefined} managedProperties
+ */
+export function shouldDisallowNetworkModifications(
+    isCellularCarrierLockEnabled, deviceState, managedProperties) {
+  if (!deviceState || deviceState.type !== NetworkType.kCellular) {
+    return false;
+  }
+  // If device is carrier locked, all the settings should be
+  // disabled for non compatible SIMs.
+  if (isCarrierLockedActiveSim(
+          isCellularCarrierLockEnabled, managedProperties, deviceState)) {
+    return true;
+  }
+  // If this is a cellular device and inhibited, state cannot be changed, so
+  // the page's inputs should be disabled.
+  return OncMojo.deviceIsInhibited(deviceState);
 }
 
 /**

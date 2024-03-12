@@ -39,15 +39,15 @@ import './tether_connection_dialog.js';
 
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
-import {getApnDisplayName, isActiveSim, processDeviceState} from 'chrome://resources/ash/common/network/cellular_utils.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {getApnDisplayName, isActiveSim, isCarrierLockedActiveSim, processDeviceState, shouldDisallowNetworkModifications} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -1142,8 +1142,9 @@ export class SettingsInternetDetailPageElement extends
       }
     }
 
-    if (this.isCellularCarrierLockEnabled_ &&
-        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+    if (isCarrierLockedActiveSim(
+            this.isCellularCarrierLockEnabled_, managedProperties,
+            deviceState)) {
       return this.i18n('networkMobileProviderLocked');
     }
 
@@ -1184,8 +1185,9 @@ export class SettingsInternetDetailPageElement extends
     }
 
     // Display carrier locked network as warning
-    if (this.isCellularCarrierLockEnabled_ &&
-        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+    if (isCarrierLockedActiveSim(
+            this.isCellularCarrierLockEnabled_, managedProperties,
+            deviceState)) {
       return true;
     }
 
@@ -1887,9 +1889,9 @@ export class SettingsInternetDetailPageElement extends
                    managedProperties, globalPolicy, managedNetworkAvailable,
                    isWifiSyncEnabled)) {
       first = 'synced';
-    } else if (
-        this.isCellularCarrierLockEnabled_ &&
-        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+    } else if (isCarrierLockedActiveSim(
+                   this.isCellularCarrierLockEnabled_, managedProperties,
+                   deviceState)) {
       first = 'carrierlocked';
     }
 
@@ -1907,7 +1909,9 @@ export class SettingsInternetDetailPageElement extends
       managedProperties: ManagedProperties, _globalPolicy: GlobalPolicy,
       _managedNetworkAvailable: boolean,
       deviceState: OncMojo.DeviceStateProperties|null): boolean {
-    if (this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+    if (isCarrierLockedActiveSim(
+            this.isCellularCarrierLockEnabled_, managedProperties,
+            deviceState)) {
       return false;
     }
 
@@ -1919,26 +1923,8 @@ export class SettingsInternetDetailPageElement extends
   private isCarrierLockedActiveSim_(
       managedProperties: ManagedProperties|undefined,
       deviceState: OncMojo.DeviceStateProperties|null): boolean {
-    if (!this.isCellularCarrierLockEnabled_) {
-      return false;
-    }
-    if (!deviceState || deviceState.type !== NetworkType.kCellular) {
-      return false;
-    }
-    if (!managedProperties) {
-      return false;
-    }
-    const networkState =
-        OncMojo.managedPropertiesToNetworkState(managedProperties);
-
-    if (!isActiveSim(networkState, deviceState)) {
-      return false;
-    }
-    const simLockStatus = deviceState.simLockStatus;
-    if (!simLockStatus) {
-      return false;
-    }
-    return simLockStatus.lockType === 'network-pin';
+    return isCarrierLockedActiveSim(
+        this.isCellularCarrierLockEnabled_, managedProperties, deviceState);
   }
 
   private showAutoConnect_(
@@ -2369,20 +2355,9 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private computeDisabled_(): boolean {
-    if (!this.deviceState_ ||
-        this.deviceState_.type !== NetworkType.kCellular) {
-      return false;
-    }
-    // If device is carrier locked, all the settings should be
-    // disabled for non compatible SIMs.
-    if (this.isCellularCarrierLockEnabled_ &&
-        this.isCarrierLockedActiveSim_(
-            this.managedProperties_, this.deviceState_)) {
-      return true;
-    }
-    // If this is a cellular device and inhibited, state cannot be changed, so
-    // the page's inputs should be disabled.
-    return OncMojo.deviceIsInhibited(this.deviceState_);
+    return shouldDisallowNetworkModifications(
+        this.isCellularCarrierLockEnabled_, this.deviceState_,
+        this.managedProperties_);
   }
 
   private shouldShowMacAddress_(): boolean {
