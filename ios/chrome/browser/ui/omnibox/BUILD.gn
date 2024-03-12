@@ -243,10 +243,16 @@ source_set("eg_test_support+eg2") {
     "omnibox_app_interface_stub.mm",
     "omnibox_earl_grey.h",
     "omnibox_earl_grey.mm",
+    "omnibox_test_util.h",
+    "omnibox_test_util.mm",
   ]
   deps = [
     "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//net:test_support",
     "//ui/base",
   ]
 }
@@ -254,11 +260,15 @@ source_set("eg_test_support+eg2") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "omnibox_egtest.mm" ]
+  sources = [
+    "omnibox_edit_egtest.mm",
+    "omnibox_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     ":features",
     "//components/feature_engagement/public",
+    "//components/omnibox/common",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/iph_for_new_chrome_user/model:features",
