@@ -4070,6 +4070,9 @@ extern const char kProjectorAppDebugDescription[];
 extern const char kProjectorServerSideSpeechRecognitionName[];
 extern const char kProjectorServerSideSpeechRecognitionDescription[];
 
+extern const char kProjectorServerSideUsmName[];
+extern const char kProjectorServerSideUsmDescription[];
+
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 

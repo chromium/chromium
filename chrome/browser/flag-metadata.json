@@ -3463,6 +3463,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-projector-server-side-usm",
+    "owners": [ "cros-projector@google.com" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by network administrators to debug

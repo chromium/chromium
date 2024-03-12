@@ -7074,6 +7074,12 @@ const char kProjectorServerSideSpeechRecognitionName[] =
 const char kProjectorServerSideSpeechRecognitionDescription[] =
     "Adds server side speech recognition capability to Projector.";
 
+const char kProjectorServerSideUsmName[] =
+    "Enable USM for Projector server side speech recognition";
+const char kProjectorServerSideUsmDescription[] =
+    "Allows Screencast to ues the latest model for server side speech "
+    "recognition.";
+
 const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =

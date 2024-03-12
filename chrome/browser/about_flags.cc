@@ -9434,6 +9434,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProjectorServerSideSpeechRecognitionDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kInternalServerSideSpeechRecognition)},
+
+    {"enable-projector-server-side-usm",
+     flag_descriptions::kProjectorServerSideUsmName,
+     flag_descriptions::kProjectorServerSideUsmDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kProjectorUseUSMForS3)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"omit-cors-client-cert", flag_descriptions::kOmitCorsClientCertName,

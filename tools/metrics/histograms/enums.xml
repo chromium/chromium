@@ -18282,6 +18282,7 @@ from previous Chrome versions.
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
   <int value="-1150980351" label="CrosWebAppInstallDialog:enabled"/>
   <int value="-1150485573" label="HistoryClustersPersistedClusters:enabled"/>
+  <int value="-1148269796" label="ProjectorUseUSMForS3:disabled"/>
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
   <int value="-1146521164" label="EcheNetworkConnectionState:disabled"/>
   <int value="-1146310028" label="HardwareSecureDecryptionFallback:enabled"/>
@@ -22618,6 +22619,7 @@ from previous Chrome versions.
   <int value="811374216" label="disable-new-bookmark-apps"/>
   <int value="811726957" label="SlideTopChromeWithPageScrolls:enabled"/>
   <int value="812710781" label="SyncUSSBookmarks:disabled"/>
+  <int value="813120521" label="ProjectorUseUSMForS3:enabled"/>
   <int value="813211869" label="ScrollCapture:disabled"/>
   <int value="813302293" label="RemoveStatusBarInWebApps:disabled"/>
   <int value="813466537" label="CrOSLateBootAudioA2DPAdvancedCodecs:enabled"/>
