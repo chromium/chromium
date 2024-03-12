@@ -1606,6 +1606,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.DeleteEmptyMultigenerationQueueDirectories"
+    enum="Boolean" expires_after="2024-12-01">
+  <owner>jrhilke@chromium.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when the Missive daemon attempts to delete empty multigeneration
+    queue directories on startup or when the periodic timer triggers. A value of
+    True indicates that no errors occurred while attempting to delete
+    directories and that zero or more directories were deleted. False indicates
+    that at least one directory that should have been deleted was not deleted
+    due to an error.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.KeyDeliveryResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2024-07-10">
   <owner>jrhilke@chromium.org</owner>
