@@ -104,6 +104,8 @@ struct GFX_EXPORT TextRunHarfBuzz {
     sk_sp<SkTypeface> skia_face;
     FontRenderParams render_params;
     Font::Weight weight = Font::Weight::NORMAL;
+    cc::PaintFlags::Style fill_style = cc::PaintFlags::kFill_Style;
+    SkScalar stroke_width = 0.0f;
     int font_size = 0;
     int baseline_offset = 0;
     BaselineStyle baseline_type = BaselineStyle::kNormalBaseline;

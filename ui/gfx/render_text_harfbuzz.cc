@@ -807,6 +807,8 @@ internal::TextRunHarfBuzz::FontParams CreateFontParams(
   font_params.underline = style.style(TEXT_STYLE_UNDERLINE);
   font_params.heavy_underline = style.style(TEXT_STYLE_HEAVY_UNDERLINE);
   font_params.weight = style.weight();
+  font_params.fill_style = style.fill_style();
+  font_params.stroke_width = style.stroke_width();
   font_params.level = bidi_level;
   font_params.script = script;
   // Odd BiDi embedding levels correspond to RTL runs.
@@ -890,7 +892,8 @@ bool TextRunHarfBuzz::FontParams::operator==(const FontParams& other) const {
          baseline_type == other.baseline_type && italic == other.italic &&
          strike == other.strike && underline == other.underline &&
          heavy_underline == other.heavy_underline && is_rtl == other.is_rtl &&
-         level == other.level;
+         level == other.level && fill_style == other.fill_style &&
+         stroke_width == other.stroke_width;
 }
 
 void TextRunHarfBuzz::FontParams::
@@ -935,7 +938,8 @@ size_t TextRunHarfBuzz::FontParams::Hash::operator()(
          static_cast<size_t>(key.font_size) << 12 ^
          static_cast<size_t>(key.baseline_type) << 16 ^
          static_cast<size_t>(key.level) << 20 ^
-         static_cast<size_t>(key.script) << 24;
+         static_cast<size_t>(key.script) << 24 ^
+         static_cast<size_t>(key.fill_style) << 28;
 }
 
 bool TextRunHarfBuzz::FontParams::SetRenderParamsRematchFont(
@@ -1817,6 +1821,8 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
       base::debug::Alias(&segment_run_size);
 
       const internal::TextRunHarfBuzz& run = *run_list->runs()[segment.run];
+      renderer->SetFillStyle(run.font_params.fill_style);
+      renderer->SetStrokeWidth(run.font_params.stroke_width);
       renderer->SetTypeface(run.font_params.skia_face);
       renderer->SetTextSize(SkIntToScalar(run.font_params.font_size));
       renderer->SetFontRenderParams(run.font_params.render_params,

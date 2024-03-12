@@ -67,6 +67,14 @@ class RenderTextTestApi {
     return render_text_->weights();
   }
 
+  const BreakList<cc::PaintFlags::Style>& fill_styles() const {
+    return render_text_->fill_styles();
+  }
+
+  const BreakList<SkScalar>& stroke_widths() const {
+    return render_text_->stroke_widths();
+  }
+
   const internal::StyleArray& styles() const { return render_text_->styles(); }
 
   const std::vector<internal::Line>& lines() const {

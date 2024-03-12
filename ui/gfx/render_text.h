@@ -75,6 +75,8 @@ class GFX_EXPORT SkiaTextRenderer {
   void SetTextSize(SkScalar size);
   void SetForegroundColor(SkColor foreground);
   void SetShader(sk_sp<cc::PaintShader> shader);
+  void SetFillStyle(cc::PaintFlags::Style fill_style);
+  void SetStrokeWidth(SkScalar stroke_width);
   // TODO(vmpstr): Change this API to mimic SkCanvas::drawTextBlob instead.
   virtual void DrawPosText(const SkPoint* pos,
                            const uint16_t* glyphs,
@@ -95,6 +97,7 @@ struct TextToDisplayIndex {
   size_t text_index = 0;
   size_t display_index = 0;
 };
+
 using TextToDisplaySequence = std::vector<TextToDisplayIndex>;
 using GraphemeIterator = TextToDisplaySequence::const_iterator;
 using StyleArray = std::array<BreakList<bool>, TEXT_STYLE_COUNT>;
@@ -106,6 +109,8 @@ class StyleIterator {
                 const BreakList<BaselineStyle>* baselines,
                 const BreakList<int>* font_size_overrides,
                 const BreakList<Font::Weight>* weights,
+                const BreakList<cc::PaintFlags::Style>* fill_styles,
+                const BreakList<SkScalar>* stroke_widths,
                 const StyleArray* styles);
   StyleIterator(const StyleIterator& style);
   ~StyleIterator();
@@ -117,6 +122,8 @@ class StyleIterator {
   int font_size_override() const { return font_size_override_->second; }
   bool style(TextStyle s) const { return style_[s]->second; }
   Font::Weight weight() const { return weight_->second; }
+  cc::PaintFlags::Style fill_style() const { return fill_style_->second; }
+  SkScalar stroke_width() const { return stroke_width_->second; }
 
   // Get the intersecting range of the current iterator set.
   Range GetRange() const;
@@ -135,12 +142,16 @@ class StyleIterator {
   raw_ptr<const BreakList<BaselineStyle>> baselines_;
   raw_ptr<const BreakList<int>> font_size_overrides_;
   raw_ptr<const BreakList<Font::Weight>> weights_;
+  raw_ptr<const BreakList<cc::PaintFlags::Style>> fill_styles_;
+  raw_ptr<const BreakList<SkScalar>> stroke_widths_;
   raw_ptr<const StyleArray> styles_;
 
   BreakList<SkColor>::const_iterator color_;
   BreakList<BaselineStyle>::const_iterator baseline_;
   BreakList<int>::const_iterator font_size_override_;
   BreakList<Font::Weight>::const_iterator weight_;
+  BreakList<cc::PaintFlags::Style>::const_iterator fill_style_;
+  BreakList<SkScalar>::const_iterator stroke_width_;
   std::array<BreakList<bool>::const_iterator, TEXT_STYLE_COUNT> style_;
 };
 
@@ -446,6 +457,16 @@ class GFX_EXPORT RenderText {
   void SetWeight(Font::Weight weight);
   void ApplyWeight(Font::Weight weight, const Range& range);
 
+  // Set the fill style over the entire text or a logical character range.
+  void SetFillStyle(cc::PaintFlags::Style fill_style);
+  void ApplyFillStyle(cc::PaintFlags::Style fill_style, const Range& range);
+
+  // Set the stroke width over the entire text or a logical character range.
+  // Stroke width only applies to stroke styles and must be >= 0 to have an
+  // effect.
+  void SetStrokeWidth(SkScalar stroke_width);
+  void ApplyStrokeWidth(SkScalar stroke_width, const Range& range);
+
   // Replace the elided text by an ellipsis. This property is getting rewritten
   // by the use of SetElideBehavior(...).
   void SetEliding(bool value);
@@ -672,6 +693,10 @@ class GFX_EXPORT RenderText {
   }
   const BreakList<Font::Weight>& weights() const { return weights_; }
   const internal::StyleArray& styles() const { return styles_; }
+  const BreakList<cc::PaintFlags::Style>& fill_styles() const {
+    return fill_styles_;
+  }
+  const BreakList<SkScalar>& stroke_widths() const { return stroke_widths_; }
   SkScalar strike_thickness_factor() const { return strike_thickness_factor_; }
 
   const BreakList<SkColor>& layout_colors() const { return layout_colors_; }
@@ -957,6 +982,8 @@ class GFX_EXPORT RenderText {
   BreakList<BaselineStyle> baselines_{BaselineStyle::kNormalBaseline};
   BreakList<int> font_size_overrides_{0};
   BreakList<Font::Weight> weights_{Font::Weight::NORMAL};
+  BreakList<cc::PaintFlags::Style> fill_styles_{cc::PaintFlags::kFill_Style};
+  BreakList<SkScalar> stroke_widths_{0.f};
   internal::StyleArray styles_;
   BreakList<bool> elidings_;
 
@@ -964,6 +991,8 @@ class GFX_EXPORT RenderText {
   mutable BreakList<BaselineStyle> layout_baselines_;
   mutable BreakList<int> layout_font_size_overrides_;
   mutable BreakList<Font::Weight> layout_weights_;
+  mutable BreakList<cc::PaintFlags::Style> layout_fill_styles_;
+  mutable BreakList<SkScalar> layout_stroke_widths_;
   mutable internal::StyleArray layout_styles_;
 
   // A mapping from text to display text indices for each grapheme. The vector
