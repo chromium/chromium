@@ -101,41 +101,45 @@ bool DOMSelection::IsAnchorFirstInSelection() const {
 }
 
 Node* DOMSelection::anchorNode() const {
-  if (Range* range = PrimaryRangeOrNull()) {
+  TemporaryRange temp_range(this, PrimaryRangeOrNull());
+  if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
-      return range->startContainer();
+      return temp_range.GetRange()->startContainer();
     }
-    return range->endContainer();
+    return temp_range.GetRange()->endContainer();
   }
   return nullptr;
 }
 
 unsigned DOMSelection::anchorOffset() const {
-  if (Range* range = PrimaryRangeOrNull()) {
+  TemporaryRange temp_range(this, PrimaryRangeOrNull());
+  if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
-      return range->startOffset();
+      return temp_range.GetRange()->startOffset();
     }
-    return range->endOffset();
+    return temp_range.GetRange()->endOffset();
   }
   return 0;
 }
 
 Node* DOMSelection::focusNode() const {
-  if (Range* range = PrimaryRangeOrNull()) {
+  TemporaryRange temp_range(this, PrimaryRangeOrNull());
+  if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
-      return range->endContainer();
+      return temp_range.GetRange()->endContainer();
     }
-    return range->startContainer();
+    return temp_range.GetRange()->startContainer();
   }
   return nullptr;
 }
 
 unsigned DOMSelection::focusOffset() const {
-  if (Range* range = PrimaryRangeOrNull()) {
+  TemporaryRange temp_range(this, PrimaryRangeOrNull());
+  if (temp_range.GetRange()) {
     if (!DomWindow() || IsAnchorFirstInSelection()) {
-      return range->endOffset();
+      return temp_range.GetRange()->endOffset();
     }
-    return range->startOffset();
+    return temp_range.GetRange()->startOffset();
   }
   return 0;
 }
@@ -168,8 +172,10 @@ bool DOMSelection::isCollapsed() const {
     return true;
   }
 
-  if (Range* range = PrimaryRangeOrNull())
-    return range->collapsed();
+  TemporaryRange temp_range(this, PrimaryRangeOrNull());
+  if (temp_range.GetRange()) {
+    return temp_range.GetRange()->collapsed();
+  }
   return true;
 }
 
@@ -580,8 +586,10 @@ void DOMSelection::ClearCachedRangeIfSelectionOfDocument() {
 
 void DOMSelection::removeRange(Range* range) {
   DCHECK(range);
-  if (IsAvailable() && range == PrimaryRangeOrNull())
+  TemporaryRange temp_range(this, PrimaryRangeOrNull());
+  if (IsAvailable() && range == temp_range.GetRange()) {
     Selection().Clear();
+  }
 }
 
 void DOMSelection::removeAllRanges() {
@@ -796,6 +804,22 @@ void DOMSelection::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
+}
+
+DOMSelection::TemporaryRange::TemporaryRange(const DOMSelection* selection,
+                                             Range* range) {
+  owner_dom_selection_ = selection;
+  range_ = range;
+}
+
+DOMSelection::TemporaryRange::~TemporaryRange() {
+  if (range_ && range_ != owner_dom_selection_->DocumentCachedRange()) {
+    range_->Dispose();
+  }
+}
+
+Range* DOMSelection::TemporaryRange::GetRange() {
+  return range_;
 }
 
 }  // namespace blink
