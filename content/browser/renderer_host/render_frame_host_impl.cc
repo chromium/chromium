@@ -7069,13 +7069,19 @@ void RenderFrameHostImpl::DispatchLoad() {
   // Only active and prerendered documents are allowed to dispatch load events
   // to the parent.
   if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
+    // If we ignored the last commit callback, this RenderFrameHost might be
+    // stuck on the kPendingCommit stage. In this case, just ignore the load.
+    if (did_ignore_last_commit_callback_) {
+      return;
+    }
     // Don't forward the load event to the parent on behalf of inactive
-    // RenderFrameHost. This can happen in a race where this inactive
+    // RenderFrameHost, which can happen in a race where this inactive
     // RenderFrameHost finishes loading just after the frame navigates away.
     // See https://crbug.com/626802.
     if (IsInactiveAndDisallowActivation(
-            DisallowActivationReasonId::kDispatchLoad))
+            DisallowActivationReasonId::kDispatchLoad)) {
       return;
+    }
   }
 
   DCHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
@@ -14377,8 +14383,10 @@ bool RenderFrameHostImpl::MaybeInterceptCommitCallback(
     mojom::DidCommitProvisionalLoadParamsPtr* params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params) {
   if (commit_callback_interceptor_) {
-    return commit_callback_interceptor_->WillProcessDidCommitNavigation(
-        navigation_request, params, interface_params);
+    did_ignore_last_commit_callback_ =
+        !commit_callback_interceptor_->WillProcessDidCommitNavigation(
+            navigation_request, params, interface_params);
+    return !did_ignore_last_commit_callback_;
   }
   return true;
 }

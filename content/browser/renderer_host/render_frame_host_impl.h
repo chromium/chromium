@@ -4773,6 +4773,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Used to intercept DidCommit* calls in tests.
   raw_ptr<CommitCallbackInterceptor> commit_callback_interceptor_ = nullptr;
 
+  // Whether the last interception to DidCommit* causes us to ignore the commit.
+  bool did_ignore_last_commit_callback_ = false;
+
   // Used to hear about CreateNewPopupWidget calls in tests.
   CreateNewPopupWidgetCallbackForTesting create_new_popup_widget_callback_;
 
