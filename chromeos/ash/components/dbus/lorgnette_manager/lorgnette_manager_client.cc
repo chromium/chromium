@@ -43,6 +43,7 @@ LorgnetteManagerClient* g_instance = nullptr;
 
 constexpr base::TimeDelta kDiscoveryMonitorInterval = base::Seconds(1);
 constexpr base::TimeDelta kDiscoveryMaxInactivity = base::Seconds(20);
+constexpr base::TimeDelta kSlowOperationTimeout = base::Seconds(60);
 
 // The LorgnetteManagerClient implementation used in production.
 class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
@@ -199,7 +200,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
     lorgnette_daemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, kSlowOperationTimeout.InMilliseconds(),
         base::BindOnce(&LorgnetteManagerClientImpl::OnStartPreparedScanResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -251,7 +252,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
     lorgnette_daemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, kSlowOperationTimeout.InMilliseconds(),
         base::BindOnce(&LorgnetteManagerClientImpl::OnReadScanDataResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }

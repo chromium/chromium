@@ -566,9 +566,9 @@ class LorgnetteManagerClientTest : public testing::Test {
   // called. When called, |mock_proxy_| will respond with |response|.
   void SetStartPreparedScanExpectation(dbus::Response* response) {
     start_prepared_scan_response_ = response;
-    EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kStartPreparedScanMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+    EXPECT_CALL(
+        *mock_proxy_.get(),
+        DoCallMethod(HasMember(lorgnette::kStartPreparedScanMethod), _, _))
         .WillOnce(
             Invoke(this, &LorgnetteManagerClientTest::OnStartPreparedScan));
   }
@@ -588,8 +588,7 @@ class LorgnetteManagerClientTest : public testing::Test {
   void SetReadScanDataExpectation(dbus::Response* response) {
     read_scan_data_response_ = response;
     EXPECT_CALL(*mock_proxy_.get(),
-                DoCallMethod(HasMember(lorgnette::kReadScanDataMethod),
-                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+                DoCallMethod(HasMember(lorgnette::kReadScanDataMethod), _, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnReadScanData));
   }
 
