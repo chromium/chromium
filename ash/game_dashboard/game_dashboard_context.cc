@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
@@ -89,6 +91,13 @@ std::unique_ptr<views::Widget> CreateTransientChildWidget(
   return widget;
 }
 
+// Tells the camera preview to maybe update its position. This will ensure that
+// the preview doesn't overlap with the toolbar.
+void MaybeUpdateCameraPreview() {
+  CaptureModeController::Get()->camera_controller()->MaybeUpdatePreviewWidget(
+      /*animate=*/true);
+}
+
 }  // namespace
 
 GameDashboardContext::GameDashboardContext(aura::Window* game_window)
@@ -136,6 +145,7 @@ void GameDashboardContext::SetToolbarSnapLocation(
     ToolbarSnapLocation new_location) {
   toolbar_snap_location_ = new_location;
   AnimateToolbarWidgetBoundsChange(CalculateToolbarWidgetBounds());
+  MaybeUpdateCameraPreview();
 }
 
 void GameDashboardContext::OnWindowBoundsChanged() {
@@ -241,11 +251,17 @@ void GameDashboardContext::CloseToolbar() {
 void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
   if (toolbar_widget_) {
     toolbar_widget_->SetBounds(CalculateToolbarWidgetBounds());
+    MaybeUpdateCameraPreview();
   }
 }
 
 bool GameDashboardContext::IsToolbarVisible() const {
   return toolbar_widget_ && toolbar_widget_->IsVisible();
+}
+
+gfx::Rect GameDashboardContext::GetToolbarBoundsInScreen() const {
+  return IsToolbarVisible() ? toolbar_widget_->GetWindowBoundsInScreen()
+                            : gfx::Rect{};
 }
 
 void GameDashboardContext::OnRecordingStarted(bool is_recording_game_window) {

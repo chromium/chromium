@@ -15,6 +15,7 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -200,7 +201,8 @@ gfx::Rect GetTargetBoundsForBoundsAnimation(
   return result;
 }
 
-gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window) {
+gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window,
+                                    aura::Window* preview_parent) {
   DCHECK(root_window);
 
   auto* status_area_widget =
@@ -220,6 +222,15 @@ gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window) {
         collision_avoidance_rect.Union(
             tray_bubble_widget->GetWindowBoundsInScreen());
       }
+    }
+  }
+
+  if (auto* game_dashboard_controller = GameDashboardController::Get()) {
+    if (auto* game_dashboard_context =
+            game_dashboard_controller->GetGameDashboardContext(
+                preview_parent)) {
+      collision_avoidance_rect.Union(
+          game_dashboard_context->GetToolbarBoundsInScreen());
     }
   }
 
@@ -939,7 +950,7 @@ gfx::Rect CaptureModeCameraController::CalculatePreviewWidgetTargetBounds(
           : controller->GetOnCaptureSurfaceWidgetParentWindow();
   DCHECK(parent);
   const gfx::Rect collision_rect_screen =
-      GetCollisionAvoidanceRect(parent->GetRootWindow());
+      GetCollisionAvoidanceRect(parent->GetRootWindow(), parent);
 
   std::vector<CameraPreviewSnapPosition> snap_positions = {
       CameraPreviewSnapPosition::kBottomRight,
@@ -948,10 +959,7 @@ gfx::Rect CaptureModeCameraController::CalculatePreviewWidgetTargetBounds(
 
   // Move `camera_preview_snap_position_` to the beginning of `snap_positions`
   // vector, since we should always try the current snap position first.
-  std::erase_if(snap_positions,
-                [this](CameraPreviewSnapPosition snap_position) {
-                  return snap_position == camera_preview_snap_position_;
-                });
+  std::erase(snap_positions, camera_preview_snap_position_);
   snap_positions.insert(snap_positions.begin(), camera_preview_snap_position_);
 
   // Cache the current preview bounds and return it directly when we find no

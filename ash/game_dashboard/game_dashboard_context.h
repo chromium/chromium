@@ -99,6 +99,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   bool IsToolbarVisible() const;
 
+  // Returns the toolbar bounds if `IsToolbarVisible`, otherwise an empty rect.
+  gfx::Rect GetToolbarBoundsInScreen() const;
+
   // Called only when `CaptureModeController` has started a recording session.
   // If `is_recording_game_window` is true, then the recording session was
   // initiated by the Game Dashboard and the `game_window_` is being recorded.
