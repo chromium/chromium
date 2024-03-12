@@ -203,7 +203,7 @@
 	gclient-condition = checkout_crubit
 [submodule "third_party/depot_tools"]
 	path = third_party/depot_tools
-	url = https://chromium.googlesource.com/chromium/tools/depot_tools
+	url = https://github.com/columbia/depot_tools.git
 [submodule "third_party/devtools-frontend/src"]
 	path = third_party/devtools-frontend/src
 	url = https://github.com/columbia/devtools-frontend
