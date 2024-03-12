@@ -1778,10 +1778,20 @@ void RenderViewContextMenu::AppendLinkItems() {
       // TODO(b:325390312): Update trigger for ChromeOS and show
       // in-production-help.
 #if !BUILDFLAG(IS_CHROMEOS)
-      menu_model_.SetMinorText(
-          menu_model_.GetItemCount() - 1,
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTCLICK));
+      int string_id;
+      switch (blink::features::kLinkPreviewTriggerType.Get()) {
+        case blink::features::LinkPreviewTriggerType::kAltClick:
+          string_id = IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTCLICK;
+          break;
+        case blink::features::LinkPreviewTriggerType::kAltHover:
+          string_id = IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_ALTHOVER;
+          break;
+        case blink::features::LinkPreviewTriggerType::kLongPress:
+          string_id = IDS_CONTENT_CONTEXT_OPENLINKPREVIEW_TRIGGER_LONGPRESS;
+          break;
+      }
+      menu_model_.SetMinorText(menu_model_.GetItemCount() - 1,
+                               l10n_util::GetStringUTF16(string_id));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
