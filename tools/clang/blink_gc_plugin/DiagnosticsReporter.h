@@ -161,8 +161,11 @@ class DiagnosticsReporter {
   unsigned diag_raw_ptr_to_gc_managed_class_note_;
   unsigned diag_ref_ptr_to_gc_managed_class_note_;
   unsigned diag_reference_ptr_to_gc_managed_class_note_;
-  unsigned diag_own_ptr_to_gc_managed_class_note_;
   unsigned diag_unique_ptr_to_gc_managed_class_note_;
+  unsigned diag_raw_ptr_to_traceable_class_note_;
+  unsigned diag_ref_ptr_to_traceable_class_note_;
+  unsigned diag_reference_ptr_to_traceable_class_note_;
+  unsigned diag_unique_ptr_to_traceable_class_note_;
   unsigned diag_member_to_gc_unmanaged_class_note_;
   unsigned diag_stack_allocated_field_note_;
   unsigned diag_member_in_unmanaged_class_note_;

@@ -57,6 +57,22 @@ void CheckFieldsVisitor::AtIterator(Iterator* edge) {
     invalid_fields_.push_back(std::make_pair(current_, kIteratorToGCManaged));
 }
 
+namespace {
+
+CheckFieldsVisitor::Error InvalidSmartPtr(Edge* ptr, bool is_gced) {
+  if (ptr->IsRefPtr()) {
+    return is_gced ? CheckFieldsVisitor::Error::kRefPtrToGCManaged
+                   : CheckFieldsVisitor::Error::kRefPtrToTraceable;
+  }
+  if (ptr->IsUniquePtr()) {
+    return is_gced ? CheckFieldsVisitor::Error::kUniquePtrToGCManaged
+                   : CheckFieldsVisitor::Error::kUniquePtrToTraceable;
+  }
+  llvm_unreachable("Unknown smart pointer kind");
+}
+
+}  // namespace
+
 void CheckFieldsVisitor::AtValue(Value* edge) {
   RecordInfo* record = edge->value();
 
@@ -113,20 +129,28 @@ void CheckFieldsVisitor::AtValue(Value* edge) {
     return;
   }
 
-  if (!Parent() || !edge->value()->IsGCAllocated())
+  if (!Parent() || (!edge->value()->IsGCAllocated() &&
+                    (!options_.enable_ptrs_to_traceable_check ||
+                     !edge->value()
+                          ->NeedsTracing(Edge::NeedsTracingOption::kRecursive)
+                          .IsNeeded()))) {
     return;
+  }
 
   // Disallow unique_ptr<T>, scoped_refptr<T>
   if (Parent()->IsUniquePtr() ||
       (Parent()->IsRefPtr() && (Parent()->Kind() == Edge::kStrong))) {
     invalid_fields_.push_back(std::make_pair(
-        current_, InvalidSmartPtr(Parent())));
+        current_, InvalidSmartPtr(Parent(), edge->value()->IsGCAllocated())));
     return;
   }
   if (Parent()->IsRawPtr() && !stack_allocated_host_) {
     RawPtr* rawPtr = static_cast<RawPtr*>(Parent());
-    Error error = rawPtr->HasReferenceType() ?
-        kReferencePtrToGCManaged : kRawPtrToGCManaged;
+    Error error = edge->value()->IsGCAllocated()
+                      ? (rawPtr->HasReferenceType() ? kReferencePtrToGCManaged
+                                                    : kRawPtrToGCManaged)
+                      : (rawPtr->HasReferenceType() ? kReferencePtrToTraceable
+                                                    : kRawPtrToTraceable);
     invalid_fields_.push_back(std::make_pair(current_, error));
   }
 }
@@ -140,12 +164,4 @@ void CheckFieldsVisitor::AtCollection(Collection* edge) {
   }
   if (edge->on_heap() && Parent() && Parent()->IsUniquePtr())
     invalid_fields_.push_back(std::make_pair(current_, kUniquePtrToGCManaged));
-}
-
-CheckFieldsVisitor::Error CheckFieldsVisitor::InvalidSmartPtr(Edge* ptr) {
-  if (ptr->IsRefPtr())
-    return kRefPtrToGCManaged;
-  if (ptr->IsUniquePtr())
-    return kUniquePtrToGCManaged;
-  llvm_unreachable("Unknown smart pointer kind");
 }
