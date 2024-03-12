@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/processed_study.h"
@@ -360,13 +361,18 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   if (processed_study.total_probability() <= 0)
     return;
 
-  const auto& entropy_provider =
+  base::optional_ref<const base::FieldTrial::EntropyProvider> entropy_provider =
       layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  if (!entropy_provider.has_value()) {
+    // Do not randomize because no suitable entropy provider can be applied to
+    // the study.
+    return;
+  }
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           study.name(), processed_study.total_probability(),
-          processed_study.GetDefaultExperimentName(), entropy_provider,
+          processed_study.GetDefaultExperimentName(), entropy_provider.value(),
           study.randomization_seed(), StudyIsLowAnonymity(study)));
 
   bool has_overrides = false;

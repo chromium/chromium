@@ -324,10 +324,12 @@ MockEntropyProviders::MockEntropyProviders(
     uint32_t low_entropy_domain)
     : EntropyProviders(results.high_entropy.has_value() ? "client_id" : "",
                        {0, low_entropy_domain},
-                       // Use a non-empty value for test coverage.
-                       "limited_entropy_randomization_source"),
+                       results.limited_entropy.has_value()
+                           ? "limited_entropy_randomization_source"
+                           : std::string_view()),
       low_provider_(results.low_entropy),
-      high_provider_(results.high_entropy.value_or(0)) {}
+      high_provider_(results.high_entropy.value_or(0)),
+      limited_provider_(results.limited_entropy.value_or(0)) {}
 
 MockEntropyProviders::~MockEntropyProviders() = default;
 
@@ -342,6 +344,12 @@ const base::FieldTrial::EntropyProvider& MockEntropyProviders::default_entropy()
     return high_provider_;
   }
   return low_provider_;
+}
+
+const base::FieldTrial::EntropyProvider& MockEntropyProviders::limited_entropy()
+    const {
+  CHECK(has_limited_entropy());
+  return limited_provider_;
 }
 
 std::string GZipAndB64EncodeToHexString(const VariationsSeed& seed) {

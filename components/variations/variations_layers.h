@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
+#include "base/types/optional_ref.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -76,8 +77,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   bool ActiveLayerMemberDependsOnHighEntropy(uint32_t layer_id) const;
 
   // Returns the entropy provider that should be used to randomize the group
-  // assignments of the given study.
-  const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
+  // assignments of the given study. Or an empty optional if there is no
+  // suitable entropy provider. The caller should drop the study upon receiving
+  // an empty optional.
+  base::optional_ref<const base::FieldTrial::EntropyProvider>
+  SelectEntropyProviderForStudy(
       const ProcessedStudy& processed_study,
       const EntropyProviders& entropy_providers) const;
 
@@ -105,6 +109,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // conditioned on the layer's active member.
   const base::FieldTrial::EntropyProvider& GetRemainderEntropy(
       uint32_t layer_id) const;
+
+  // Returns the entropy mode of layer with `layer_id`. The optional will not
+  // have a value if there isn't a layer with this id, the layer is invalid, or
+  // the layer is not active.
+  std::optional<Layer::EntropyMode> GetEntropyMode(uint32_t layer_id) const;
 
   NormalizedMurmurHashEntropyProvider nil_entropy;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;

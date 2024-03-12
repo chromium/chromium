@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
@@ -125,6 +126,7 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
     MockEntropyProviders entropy_providers({
         .low_entropy = kAlwaysUseLastGroup,
         .high_entropy = kAlwaysUseFirstGroup,
+        .limited_entropy = kAlwaysUseLastGroup,
     });
     return ConvertSimulationResultToString(
         SimulateSeedStudies(seed, *client_state, entropy_providers));
@@ -265,19 +267,45 @@ TEST_F(VariationsSeedSimulatorTest,
   ConstrainToLayer(*study, kLimitedLayerId, kLimitedLayerMemberId);
   *seed.add_layers() = limited_layer;
 
-  // Upon receiving the seed, the client should still pick group B. Therefore no
-  // group change is expected.
-  //
-  // Note that although constrained to a limited layer, without an experiment
-  // with |google_web_experiment_id|, the study should use the default entropy
-  // provider.
-  EXPECT_EQ("0 0 0", SimulateStudyDifferences(seed));
+  // Upon receiving the seed, the client should use the limited entropy provider
+  // to randomize this study since it is constrained to the |limited_layer|. The
+  // entropy provider will select "Default" (from |kAlwaysUseLastGroup|). Thus
+  // the group change.
+  EXPECT_EQ("1 0 0", SimulateStudyDifferences(seed));
 
-  // Adding a |google_web_experiment_id| causes the client to randomize with the
-  // limited entropy provider, which will select "Default". Thus the group
-  // change.
+  // The limited entropy provider should still be used if the study is
+  // associated with a Google web experiment ID. Therefore the group assignment
+  // is the same as above.
   experiment_b->set_google_web_experiment_id(1234);
   EXPECT_EQ("1 0 0", SimulateStudyDifferences(seed));
+}
+
+TEST_F(VariationsSeedSimulatorTest,
+       PermanentGroupChangeDueToExperimentID_NoLimitedSource) {
+  CreateTrial("A", "B");
+
+  VariationsSeed seed;
+  *seed.add_study() = CreateStudy("A", Study_Consistency_PERMANENT);
+  Study* study = seed.mutable_study(0);
+  AddExperiment("B", 50, study);
+  AddExperiment("Default", 50, study);
+  Layer limited_layer =
+      CreateLimitedLayer(kLimitedLayerId, kLimitedLayerMemberId);
+  ConstrainToLayer(*study, kLimitedLayerId, kLimitedLayerMemberId);
+  *seed.add_layers() = limited_layer;
+
+  auto client_state = CreateDummyClientFilterableState();
+  EntropyProviders entropy_providers(
+      "high_entropy_value", {0, 1},
+      /*limited_entropy_value=*/std::string_view());
+
+  auto result = ConvertSimulationResultToString(
+      SimulateSeedStudies(seed, *client_state, entropy_providers));
+
+  // Without a limited entropy randomization source, the study that requires the
+  // limited entropy provider is not assigned and therefore is skipped in the
+  // seed simulator.
+  EXPECT_EQ("0 0 0", result);
 }
 
 TEST_F(VariationsSeedSimulatorTest, SessionRandomized) {

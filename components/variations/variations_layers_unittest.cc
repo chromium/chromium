@@ -177,10 +177,13 @@ enum EntropyProviderSelection {
 
 class FakeEntropyProviders : public EntropyProviders {
  public:
-  explicit FakeEntropyProviders(std::string_view high_entropy_value)
+  explicit FakeEntropyProviders(
+      std::string_view high_entropy_value,
+      std::string_view limited_entropy_randomization_source =
+          kTestLimitedEntropyRandomizationSource)
       : EntropyProviders(high_entropy_value,
                          {.value = 0, .range = 100},
-                         "limited_entropy_value") {}
+                         limited_entropy_randomization_source) {}
   ~FakeEntropyProviders() override = default;
 
   const base::FieldTrial::EntropyProvider& default_entropy() const override {
@@ -367,16 +370,20 @@ TEST_F(VariationsLayersTest, StudyEntropyProviderSelection_SelectLowEntropy) {
 
   VariationsSeed seed;
   *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);  // No layers.
 
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study));
-  layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
 
   // Permanently consistent, non layer constrained studies with Google
   // experiment IDs should use the low entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::LOW);
+  EXPECT_EQ(study_entropy_providers.selection(), EntropyProviderSelection::LOW);
 }
 
 TEST_F(VariationsLayersTest,
@@ -386,16 +393,21 @@ TEST_F(VariationsLayersTest,
 
   VariationsSeed seed;
   *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);  // No layers.
 
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study));
-  layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
 
   // Session consistent, non layer constrained studies with Google
   // experiment IDs should use the session entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::SESSION);
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::SESSION);
 }
 
 TEST_F(VariationsLayersTest,
@@ -404,16 +416,21 @@ TEST_F(VariationsLayersTest,
 
   VariationsSeed seed;
   *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);  // No layers.
 
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study));
-  layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
 
   // Permanently consistent, non layer constrained studies without Google
   // experiment IDs should use the default entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::DEFAULT);
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::DEFAULT);
 }
 
 TEST_F(VariationsLayersTest, StudyEntropyProviderSelection_NoHighEntropyValue) {
@@ -421,16 +438,53 @@ TEST_F(VariationsLayersTest, StudyEntropyProviderSelection_NoHighEntropyValue) {
 
   VariationsSeed seed;
   *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers(/*high_entropy_value=*/"");
-  VariationsLayers layers(seed, entropy_providers);
+  FakeEntropyProviders slot_entropy_providers(/*high_entropy_value=*/"");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);  // No layers.
 
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study));
-  layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  FakeEntropyProviders study_entropy_providers(/*high_entropy_value=*/"");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
 
   // Without an high entropy value, low entropy provider should be used although
   // the study is eligible for high entropy.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::LOW);
+  EXPECT_EQ(study_entropy_providers.selection(), EntropyProviderSelection::LOW);
+}
+
+TEST_F(
+    VariationsLayersTest,
+    StudyEntropyProviderSelection_NoHighEntropy_ConstrainedToHighEntropyLayer) {
+  Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::DEFAULT);
+  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
+  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+
+  VariationsSeed seed;
+  *seed.add_study() = study;
+  *seed.add_layers() = layer;
+  FakeEntropyProviders slot_entropy_providers(/*high_entropy_value=*/"");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  // Default entropy is low entropy when there is no high entropy value.
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::DEFAULT);
+
+  ProcessedStudy processed_study;
+  EXPECT_TRUE(processed_study.Init(&study));
+  FakeEntropyProviders study_entropy_providers(/*high_entropy_value=*/"");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
+
+  // Without a high entropy value, the slot selection should use the default
+  // entropy (which is low entropy in this case). A study that allows high
+  // entropy should be also randomized with low entropy. Because the de facto
+  // low entropy study is constrained to the de facto low entropy layer, the
+  // study should use the remainder entropy. The following shows that
+  // `study_entropy_providers` is not selected since the remainder entropy from
+  // slot selection is used.
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);
 }
 
 TEST_F(VariationsLayersTest,
@@ -442,16 +496,21 @@ TEST_F(VariationsLayersTest,
   VariationsSeed seed;
   *seed.add_study() = study;
   *seed.add_layers() = layer;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::DEFAULT);
 
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study));
-  layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
 
   // A study that is eligible to use high entropy and constrained to a layer
   // with `EntropyMode.DEFAULT` should use the default entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::DEFAULT);
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::DEFAULT);
 }
 
 TEST_F(VariationsLayersTest,
@@ -464,16 +523,22 @@ TEST_F(VariationsLayersTest,
   VariationsSeed seed;
   *seed.add_study() = study;
   *seed.add_layers() = layer;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(), EntropyProviderSelection::LOW);
 
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study));
-  layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
 
   // A study that is NOT eligible to use high entropy and constrained to a layer
-  // with `EntropyMode.LOW` should use the low entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::LOW);
+  // with `EntropyMode.LOW` should use the remainder entropy from slot
+  // randomization. Therefore a selection is not made on
+  // `study_entropy_providers`.
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);
 }
 
 TEST_F(VariationsLayersTest,
@@ -485,16 +550,104 @@ TEST_F(VariationsLayersTest,
   VariationsSeed seed;
   *seed.add_study() = study;
   *seed.add_layers() = layer;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(), EntropyProviderSelection::LOW);
 
   ProcessedStudy processed_study;
   EXPECT_TRUE(processed_study.Init(&study));
-  layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
 
   // A study that is eligible to use high entropy AND constrained to a layer
   // with `EntropyMode.LOW` should use the default entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::DEFAULT);
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::DEFAULT);
 }
 
+TEST_F(VariationsLayersTest,
+       StudyEntropyProviderSelection_LimitedEntropyStudyInLimitedEntropyLayer) {
+  Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LIMITED);
+  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
+  AddGoogleExperimentIds(&study);
+  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+
+  VariationsSeed seed;
+  *seed.add_study() = study;
+  *seed.add_layers() = layer;
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::LIMITED);
+
+  ProcessedStudy processed_study;
+  EXPECT_TRUE(processed_study.Init(&study));
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
+
+  // A study with Google web experiment ID and is constrained to a layer with
+  // `EntropyMode.LIMITED` should use the limited entropy provider.
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::LIMITED);
+}
+
+TEST_F(
+    VariationsLayersTest,
+    StudyEntropyProviderSelection_NonLimitedEntropyStudyInLimitedEntropyLayer) {
+  Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LIMITED);
+  // Constructs a study without Google web experiment ID.
+  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
+  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+
+  VariationsSeed seed;
+  *seed.add_study() = study;
+  *seed.add_layers() = layer;
+  FakeEntropyProviders slot_entropy_providers("high_entropy_value");
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::LIMITED);
+
+  ProcessedStudy processed_study;
+  EXPECT_TRUE(processed_study.Init(&study));
+  FakeEntropyProviders study_entropy_providers("high_entropy_value");
+  layers.SelectEntropyProviderForStudy(processed_study,
+                                       study_entropy_providers);
+
+  // A study constrained to a layer with `EntropyMode.LIMITED` should use the
+  // limited entropy provider, regardless of whether it has Google web
+  // experiment IDs or not.
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::LIMITED);
+}
+
+TEST_F(VariationsLayersTest, StudyEntropyProviderSelection_NoLimitedSource) {
+  Layer layer = CreateSimpleLayer(/*entropy_mode=*/Layer::LIMITED);
+  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
+  AddGoogleExperimentIds(&study);
+  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
+
+  VariationsSeed seed;
+  *seed.add_study() = study;
+  *seed.add_layers() = layer;
+  FakeEntropyProviders slot_entropy_providers(
+      "high_entropy_value",
+      /*limited_entropy_randomization_source=*/std::string_view());
+  VariationsLayers layers(seed, slot_entropy_providers);
+  EXPECT_EQ(slot_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);
+  EXPECT_FALSE(layers.IsLayerActive(kLayerId));
+
+  ProcessedStudy processed_study;
+  EXPECT_TRUE(processed_study.Init(&study));
+  FakeEntropyProviders study_entropy_providers(
+      "high_entropy_value",
+      /*limited_entropy_randomization_source=*/std::string_view());
+  auto selected = layers.SelectEntropyProviderForStudy(processed_study,
+                                                       study_entropy_providers);
+  EXPECT_FALSE(selected.has_value());
+  EXPECT_EQ(study_entropy_providers.selection(),
+            EntropyProviderSelection::NOT_SELECTED);
+}
 }  // namespace variations

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 #include "base/check_op.h"
@@ -251,15 +252,14 @@ bool VariationsLayers::ActiveLayerMemberDependsOnHighEntropy(
   return layer_info && layer_info->entropy_mode == Layer::DEFAULT;
 }
 
-const base::FieldTrial::EntropyProvider&
+base::optional_ref<const base::FieldTrial::EntropyProvider>
 VariationsLayers::SelectEntropyProviderForStudy(
     const ProcessedStudy& processed_study,
     const EntropyProviders& entropy_providers) const {
-  const Study* study = processed_study.study();
-  CHECK(study);
+  const Study& study = *processed_study.study();
 
-  if (!study->has_consistency() ||
-      study->consistency() != Study_Consistency_PERMANENT ||
+  if (!study.has_consistency() ||
+      study.consistency() != Study_Consistency_PERMANENT ||
       // If all assignments are to a single group, no need to enable one time
       // randomization (which is more expensive to compute), since the result
       // will be the same.
@@ -267,20 +267,39 @@ VariationsLayers::SelectEntropyProviderForStudy(
     return entropy_providers.session_entropy();
   }
 
+  // Next check whether the study should use the limited entropy provider. This
+  // needs to follow the session consistency criteria but supersedes anything
+  // else.
+  if (study.has_layer()) {
+    auto entropy_mode = GetEntropyMode(study.layer().layer_id());
+    if (!entropy_mode.has_value()) {
+      // The caller of this function should have already checked that the layer
+      // referenced is active. Otherwise, this study should not be randomized.
+      // Returning an empty optional for the caller to drop this study.
+      return std::nullopt;
+    }
+    if (entropy_mode.value() == Layer::LIMITED) {
+      // This confirms that the study is constrained to an *active* limited
+      // layer (see documentation of `GetEntropyMode`), the existence of which
+      // implies that there is a limited entropy provider. Therefore the study
+      // can and must use the limited entropy provider.
+      return entropy_providers.limited_entropy();
+    }
+  }
+
   if (entropy_providers.default_entropy_is_high_entropy() &&
-      AllowsHighEntropy(*study)) {
+      AllowsHighEntropy(study)) {
     // We can use the high entropy source to randomize this study, which will
     // be uniform even if the study is conditioned on layer membership.
     return entropy_providers.default_entropy();
   }
 
-  // Unless eligible to use session, or default entropy, a layer constrained
-  // study should be randomized with the remainder entropy from the slot
-  // randomization.
-  if (study->has_layer()) {
-    return GetRemainderEntropy(study->layer().layer_id());
+  // At this point a low entropy provider must be used. If it's layer
+  // constrained the study needs to be randomized with the remainder entropy
+  // from the slot randomization.
+  if (study.has_layer()) {
+    return GetRemainderEntropy(study.layer().layer_id());
   }
-
   return entropy_providers.low_entropy();
 }
 
@@ -382,6 +401,15 @@ const base::FieldTrial::EntropyProvider& VariationsLayers::GetRemainderEntropy(
     return nil_entropy;
   }
   return layer_info->remainder_entropy;
+}
+
+std::optional<Layer::EntropyMode> VariationsLayers::GetEntropyMode(
+    uint32_t layer_id) const {
+  const auto* layer_info = FindActiveLayer(layer_id);
+  if (layer_info == nullptr) {
+    return std::nullopt;
+  }
+  return layer_info->entropy_mode;
 }
 
 }  // namespace variations
