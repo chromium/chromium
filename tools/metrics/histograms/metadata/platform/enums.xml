@@ -170,10 +170,14 @@ chromium-metrics-reviews@google.com.
 
 <enum name="Cr50BoardIdFlags">
   <int value="-1" label="Unprogrammed (0xffffffff)"/>
-  <int value="127" label="Legacy pre-pvt (0x7f)"/>
+  <int value="16" label="test pre-pvt (0x10)"/>
+  <int value="127" label="Legacy pre-pvt1 (0x7f)"/>
+  <int value="16255" label="Whitelabel Pre-pvt (0x3f7f)"/>
+  <int value="16256" label="Whitelabel Prod (0x3f80)"/>
   <int value="32639" label="Pre-pvt (0x7f7f)"/>
   <int value="32640" label="Prod (0x7f80)"/>
   <int value="65280" label="Corrected (0xff00)"/>
+  <int value="65407" label="Legacy pre-pvt2 (0xff7f)"/>
 </enum>
 
 <enum name="Cr50CrosRlzCodes">
