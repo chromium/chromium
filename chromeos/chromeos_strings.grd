@@ -352,7 +352,7 @@
         Try it
       </message>
       <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode." translateable="false">
-        Writing help
+        Help me write
       </message>
       <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
         Enter a prompt like "write a thank you note"
