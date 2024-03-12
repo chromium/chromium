@@ -318,8 +318,11 @@ void VolumeManager::Initialize() {
     fusebox_daemon_ = file_manager::FuseBoxDaemon::GetInstance();
   }
 
-  // TODO(b/325006828): Mount only if local files enabled.
-  MountDownloadsVolume();
+  local_user_files_allowed_ = policy::local_user_files::LocalUserFilesAllowed();
+  if (local_user_files_allowed_) {
+    // Add local folders - My Files and ARC if enabled.
+    OnLocalUserFilesEnabled();
+  }
 
   // Subscribe to DriveIntegrationService.
   Observe(drive_integration_service_);
@@ -333,9 +336,6 @@ void VolumeManager::Initialize() {
       base::BindOnce(&VolumeManager::OnDiskMountManagerRefreshed,
                      weak_ptr_factory_.GetWeakPtr()),
       false /* force */);
-
-  // Subscribe to ARC DocumentsProvider events about roots.
-  documents_provider_root_manager_->AddObserver(this);
 
   // Subscribe to FileSystemProviderService and register currently mounted
   // volumes for the profile.
@@ -369,9 +369,6 @@ void VolumeManager::Initialize() {
         base::BindOnce(&VolumeManager::OnStorageMonitorInitialized,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-
-  // TODO(b/327204609): Subscribe only if local files enabled.
-  SubscribeAndMountArc();
 
   // Subscribe to clipboard events.
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
@@ -954,6 +951,7 @@ void VolumeManager::ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(
   *volume_id = volume_id->substr(prefix).insert(0, "provided:");
 }
 
+// TODO(aidazolic): Figure out why it's called twice for every update.
 void VolumeManager::OnLocalUserFilesPolicyChanged() {
   if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
     return;
@@ -963,13 +961,13 @@ void VolumeManager::OnLocalUserFilesPolicyChanged() {
   if (allowed == local_user_files_allowed_) {
     return;
   }
+  local_user_files_allowed_ = allowed;
 
   if (allowed) {
     OnLocalUserFilesEnabled();
   } else {
     OnLocalUserFilesDisabled();
   }
-  local_user_files_allowed_ = allowed;
 }
 
 void VolumeManager::OnProvidedFileSystemUnmount(
@@ -1681,7 +1679,7 @@ void VolumeManager::SubscribeAndMountArc() {
   if (!IsArcEnabled(profile_)) {
     return;
   }
-
+  documents_provider_root_manager_->AddObserver(this);
   // Registers a mount point for Android files only when the flag is enabled.
   RegisterAndroidFilesMountPoint();
   if (arc::ArcSessionManager* const session_manager =
@@ -1699,6 +1697,7 @@ void VolumeManager::UnsubscribeAndUnmountArc() {
   if (!IsArcEnabled(profile_)) {
     return;
   }
+  documents_provider_root_manager_->RemoveObserver(this);
   UnsubscribeFromArcEvents();
   UnmountArcRoots();
   RevokeAndroidFilesMountPoint();
@@ -1708,14 +1707,12 @@ void VolumeManager::OnLocalUserFilesEnabled() {
   CHECK(policy::local_user_files::LocalUserFilesAllowed());
   MountDownloadsVolume();
   SubscribeAndMountArc();
-  // TODO(b/322779967): Mount crostini.
 }
 
 void VolumeManager::OnLocalUserFilesDisabled() {
   CHECK(!policy::local_user_files::LocalUserFilesAllowed());
   UnsubscribeAndUnmountArc();
   UnmountDownloadsVolume();
-  // TODO(b/322779967): Unmount crostini.
 }
 
 }  // namespace file_manager

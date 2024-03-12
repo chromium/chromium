@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/policy/local_user_files/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
@@ -745,11 +746,18 @@ std::vector<fmp::MountableGuest> CreateMountableGuestList(Profile* profile) {
     return {};
   }
 
+  bool local_user_files_allowed =
+      policy::local_user_files::LocalUserFilesAllowed();
+
   auto* registry = service->MountProviderRegistry();
   std::vector<fmp::MountableGuest> guests;
   for (const auto id : registry->List()) {
     fmp::MountableGuest guest;
     auto* provider = registry->Get(id);
+    if (!local_user_files_allowed &&
+        provider->vm_type() == guest_os::VmType::ARCVM) {
+      continue;
+    }
     guest.id = id;
     guest.display_name = provider->DisplayName();
     guest.vm_type = VmTypeToJs(provider->vm_type());
