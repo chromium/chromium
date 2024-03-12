@@ -33,6 +33,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -698,8 +699,10 @@ void LogMessage::Flush() {
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
     !BUILDFLAG(IS_AIX)
-  // Include a stack trace on a fatal, unless a debugger is attached.
-  if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
+  // Include a stack trace on a fatal, unless running within a death test proc
+  // or a debugger is attached.
+  if (severity_ == LOGGING_FATAL && !::base::internal::InDeathTestChild() &&
+      !base::debug::BeingDebugged()) {
     base::debug::StackTrace stack_trace;
     stream_ << std::endl;  // Newline to separate from log message.
     stack_trace.OutputToStream(&stream_);

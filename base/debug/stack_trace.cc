@@ -10,7 +10,6 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -267,12 +266,6 @@ void StackTrace::Print() const {
 }
 
 void StackTrace::OutputToStream(std::ostream* os) const {
-  if (::base::internal::InDeathTestChild()) {
-    // Backtraces are not visible in death test children, so do not waste
-    // resources by generating any.
-    (*os) << "Backtrace suppresed in death test.";
-    return;
-  }
   OutputToStreamWithPrefix(os, nullptr);
 }
 
@@ -282,11 +275,6 @@ std::string StackTrace::ToString() const {
 std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
   std::stringstream stream;
 #if !defined(__UCLIBC__) && !defined(_AIX)
-  if (::base::internal::InDeathTestChild()) {
-    // Backtraces are not visible in death test children, so do not waste
-    // resources by generating any.
-    return "Backtrace suppresed in death test.";
-  }
   OutputToStreamWithPrefix(&stream, prefix_string);
 #endif
   return stream.str();
