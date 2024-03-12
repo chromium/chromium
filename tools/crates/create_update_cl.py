@@ -14,6 +14,7 @@ import subprocess
 import sys
 import textwrap
 import toml
+from typing import List, Set, Dict
 
 THIS_DIR = os.path.dirname(__file__)
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
@@ -27,6 +28,8 @@ INCLUSIVE_LANG_SCRIPT = os.path.join(
 INCLUSIVE_LANG_CONFIG = os.path.join(
     CHROMIUM_DIR, "infra", "inclusive_language_presubmit_exempt_dirs.txt")
 RUN_GNRT = os.path.join(THIS_DIR, "run_gnrt.py")
+UPDATE_RUST_SCRIPT = os.path.join(CHROMIUM_DIR, "tools", "rust",
+                                  "update_rust.py")
 
 timestamp = datetime.datetime.now()
 BRANCH_BASENAME = "rust-crates-update"
@@ -58,17 +61,17 @@ def RunCommandAndCheckForErrors(args, check_stdout: bool):
     return result.stdout
 
 
-def Git(*args):
+def Git(*args) -> str:
     """Runs a git command."""
     return RunCommandAndCheckForErrors(['git'] + list(args), False)
 
 
-def Gnrt(*args):
+def Gnrt(*args) -> str:
     """Runs a gnrt command."""
     return RunCommandAndCheckForErrors([RUN_GNRT] + list(args), True)
 
 
-def GetCurrentCrateVersions():
+def GetCurrentCrateVersions() -> Dict[str, str]:
     """Parses Cargo.lock and returns a dictionary from crate name to version."""
     t = toml.load(open(CARGO_LOCK))
     result = dict()
@@ -79,7 +82,8 @@ def GetCurrentCrateVersions():
     return result
 
 
-def DiffCrateVersions(old_versions, new_versions):
+def DiffCrateVersions(old_versions: Dict[str, str],
+                      new_versions: Dict[str, str]) -> Set[str]:
     """Compares two results of `GetCurrentCrateVersions` and returns a `set` of
     old package identifiers (e.g. "syn@2.0.50") that have a different version in
     `new_versions`"""
@@ -91,11 +95,11 @@ def DiffCrateVersions(old_versions, new_versions):
     return result
 
 
-def ConvertCrateIdToCrateName(crate_id):
+def ConvertCrateIdToCrateName(crate_id: str) -> str:
     return crate_id[:crate_id.find("@")]
 
 
-def FindUpdateableCrates():
+def FindUpdateableCrates() -> List[str]:
     """Runs `gnrt update` and returns a `list` of old package identifiers (e.g.
     "syn@2.0.50") that can be updated to a new version.  (Idempotent -
     afterwards it runs `git reset --hard` to undo any changes.)"""
@@ -112,7 +116,7 @@ def FindUpdateableCrates():
     return sorted(crate_ids)
 
 
-def FindSizeOfCrateUpdate(crate_id):
+def FindSizeOfCrateUpdate(crate_id: str) -> int:
     """Runs `gnrt update <crate_id>` and returns how many crates this would
     update.  (`crate_id` typically looks like "syn@2.0.50".  This function is
     idempotent - at the end it runs `git reset --hard` to undo any changes.)"""
@@ -126,28 +130,89 @@ def FindSizeOfCrateUpdate(crate_id):
     return update_size
 
 
-def SortedMarkdownList(input_list):
-    input_list = [f"* {item}" for item in sorted(input_list)]
+def FormatMarkdownItem(item: str) -> str:
+    return textwrap.fill(f"* {item}",
+                         width=72,
+                         subsequent_indent='  ',
+                         break_long_words=False,
+                         break_on_hyphens=False).strip()
+
+
+def SortedMarkdownList(input_list: List[str]) -> str:
+    input_list = [FormatMarkdownItem(item) for item in sorted(input_list)]
     return "\n".join(input_list)
 
 
-def CreateCommitDescription(crate_id, old_versions, new_versions):
-    description = f"""Updating //third_party/rust libraries: {crate_id}.
+def CreateVetPolicyDescription(crate_names: List[str],
+                               crate_versions: Dict[str, str]) -> str:
+    """Returns a textual description of the required `cargo vet`'s
+    certifications.
+
+    Args:
+        crate_names: List of crate names (e.g. `["clap", "clap_derive"]`)
+        crate_versions: Dict from crate names to crate versions
+
+    Returns:
+        String suitable for including in the CL description.
+    """
+    vet_config = toml.load(open(VET_CONFIG))
+    crate_to_criteria = dict()
+    for crate_name in crate_names:
+        crate_version = crate_versions[crate_name]
+        policy = vet_config["policy"][f"{crate_name}:{crate_version}"][
+            "criteria"]
+        policy.sort()
+        crate_to_criteria[crate_name] = policy
+
+    criteria_to_crates = dict()
+    for crate_name, criteria in crate_to_criteria.items():
+        criteria = ', '.join(criteria)
+        if criteria not in criteria_to_crates:
+            criteria_to_crates[criteria] = []
+        criteria_to_crates[criteria].append(crate_name)
+
+    items = []
+    for criteria, crate_names in criteria_to_crates.items():
+        crate_names.sort()
+        crate_names = ', '.join(crate_names)
+        if not criteria:
+            criteria = "No audit criteria found. Crates with no audit " \
+                       "criteria can be submitted without an update to " \
+                       "audits.toml."
+        items.append(f"{crate_names}: {criteria}")
+
+    description = "The following `cargo vet` audit criteria are required:\n\n"
+    description += SortedMarkdownList(items)
+
+    return description
+
+
+def CreateCommitDescription(crate_id: str, old_versions: Dict[str, str],
+                            new_versions: Dict[str, str],
+                            include_vet_criteria: bool) -> str:
+    crate_name = ConvertCrateIdToCrateName(crate_id)
+    old_version = old_versions[crate_name]
+    new_version = new_versions[crate_name]
+    roll_summary = f"{crate_name}: {old_version} => {new_version}"
+    description = f"""Roll {roll_summary} in //third_party/rust.
 
 This CL has been created semi-automatically.  The expected review
 process and other details can be found at
 //tools/crates/create_update_cl.md
 """
 
+    new_or_updated_crate_names = []
     update_descriptions = []
     new_crate_descriptions = []
     for name, new_version in new_versions.items():
         if name in old_versions:
             old_version = old_versions[name]
             if old_version != new_version:
+                new_or_updated_crate_names.append(name)
                 update_descriptions.append(
                     f"{name}: {old_version} => {new_version}")
         else:
+            new_or_updated_crate_names.append(name)
             new_crate_descriptions.append(f"{name} {new_version}")
     removed_crate_descriptions = []
     for name, old_version in old_versions.items():
@@ -163,24 +228,10 @@ process and other details can be found at
     if removed_crate_descriptions:
         description += f"\nRemoved crates:\n\n{removed_crate_descriptions}\n"
 
-    vet_config = toml.load(open(VET_CONFIG))
-    criteria_list = vet_config["policy"][crate_id.replace("@", ":")]["criteria"]
-    if criteria:
-        criteria = f"""
-The following `cargo vet` audit criteria are required for {crate_id}:
-{'', ''.join(criteria_list)}
-"""
-    else:
-        criteria = """
-No audit criteria found. Crates with no audit criteria can be submitted
-without an update to audits.toml.
-"""
-    description += "\n"
-    description += textwrap.fill(criteria,
-                                 width=72,
-                                 break_long_words=False,
-                                 break_on_hyphens=False).strip()
-    description += "\n"
+    if include_vet_criteria:
+        vet_policies = CreateVetPolicyDescription(new_or_updated_crate_names,
+                                                  new_versions)
+        description += f"\n{vet_policies}"
 
     description += """
 Bug: None
@@ -197,7 +248,7 @@ Disable-Rts: True
     return description
 
 
-def UpdateCrate(crate_id, upstream_branch):
+def UpdateCrate(crate_id: str, upstream_branch: str):
     """Runs `gnrt update <crate_id>` and other follow-up commands to actually
     update the crate."""
 
@@ -215,7 +266,8 @@ def UpdateCrate(crate_id, upstream_branch):
         print("  `gnrt update` resulted in no changes - "\
               "maybe other steps will handle this crate...")
         return upstream_branch
-    description = CreateCommitDescription(crate_id, old_versions, new_versions)
+    description = CreateCommitDescription(crate_id, old_versions, new_versions,
+                                          False)
 
     # Checkout a new git branch + `git cl upload`
     new_branch = f"{BRANCH_BASENAME}--{crate_id.replace('@', '-')}"
@@ -253,14 +305,20 @@ def UpdateCrate(crate_id, upstream_branch):
     print(f"  Running `gnrt vendor`...")
     Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
     Gnrt("vendor")
+    Git("add", "-f", "third_party/rust")
+    # `INCLUSIVE_LANG_SCRIPT` below uses `git grep` and therefore depends on the
+    # earlier `Git("add"...)` above.  Please don't reorder/coalesce the `add`.
     new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT], False)
     with open(INCLUSIVE_LANG_CONFIG, "w") as f:
         f.write(new_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
-    Git("add", "-f", "third_party/rust")
     Git("commit", "-m", "gnrt vendor")
     print(f"  Running `git cl upload ...` ...")
     Git("cl", "upload", "--bypass-hooks", "--force", "-m", "gnrt vendor")
+    print(f"  Running `git cl description ...` ...")
+    description = CreateCommitDescription(crate_id, old_versions, new_versions,
+                                          True)
+    Git("cl", "description", f"--new-description={description}")
 
     # gnrt gen
     print(f"  Running `gnrt gen`...")
@@ -279,6 +337,8 @@ def UpdateCrate(crate_id, upstream_branch):
 
 
 def main():
+    # TODO(lukasza): Consider allowing overriding `upstream_branch` through a
+    # command-line parameter - this may aid with resumability of this script.
     upstream_branch = "origin/main"
 
     # Checkout `upstream_branch` branch.
@@ -290,6 +350,10 @@ def main():
     if Git("status", "--porcelain"):
         raise RuntimeError("Dirty `git status` - save you local changes "\
                            "before rerunning the script")
+
+    # Ensure the //third_party/rust-toolchain version matches the branch.
+    print("Running //tools/rust/update_rust.py (hopefully a no-op)...")
+    RunCommandAndCheckForErrors([UPDATE_RUST_SCRIPT], False)
 
     crate_ids = FindUpdateableCrates()
     if not crate_ids:
