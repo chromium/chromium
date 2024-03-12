@@ -102,6 +102,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/328884121: Remove this when LKGM reaches 15813 or newer.
   "network.DiagFailDNSResolution",
 
+  # b/328683519: Remove this when LKGM reaches 15816 or newer.
+  "crostini.GPUEnabled.gpu_bullseye_lowperf",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
