@@ -29,6 +29,7 @@
 #include "ash/wm/session_state_animator_impl.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -54,6 +55,7 @@
 #include "ui/gfx/image/image_util.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_manager.h"
 
@@ -662,8 +664,19 @@ void LockStateController::PostLockAnimationFinished(bool aborted) {
   OnLockStateEvent(LockStateObserver::EVENT_LOCK_ANIMATION_FINISHED);
   if (!lock_screen_displayed_callback_.is_null())
     std::move(lock_screen_displayed_callback_).Run();
+  views::MenuController* active_menu_controller =
+      views::MenuController::GetActiveInstance();
 
-  CHECK(!views::MenuController::GetActiveInstance());
+  if (active_menu_controller) {
+    // TODO(http://b/328064674): Please remove the below crash keys once the
+    // the crash is fixed. It seems after post lock animation finished there
+    // is active menu.
+
+    views::Widget* owner = active_menu_controller->owner();
+    SCOPED_CRASH_KEY_STRING256("LockStateController", "PostLockAnimation",
+                               owner ? owner->GetName() : "ownerless");
+    CHECK(false);
+  }
 }
 
 void LockStateController::UnlockAnimationAfterLockUIDestroyedFinished(
