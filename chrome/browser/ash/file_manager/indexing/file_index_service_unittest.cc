@@ -86,6 +86,31 @@ TEST_F(FileIndexServiceTest, MultiTermMatch) {
   EXPECT_THAT(starred_and_pinned_files, testing::ElementsAre(file_info));
 }
 
+TEST_F(FileIndexServiceTest, AugmentTerms) {
+  FileInfo file_info(MakeLocalURL("foot.txt"), 1024, base::Time());
+
+  // Label file_info as pinned and starred.
+  index_service_->UpdateFile({downloaded_}, file_info);
+
+  // Can find by downloaded.
+  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+              testing::ElementsAre(file_info));
+  // Cannot find by starred.
+  EXPECT_THAT(index_service_->Search(Query({starred_})),
+              testing::ElementsAre());
+
+  index_service_->AugmentFile({starred_}, file_info);
+  // Can find by downloaded.
+  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+              testing::ElementsAre(file_info));
+  // And by starred.
+  EXPECT_THAT(index_service_->Search(Query({starred_})),
+              testing::ElementsAre(file_info));
+  // And by starred and downloaded.
+  EXPECT_THAT(index_service_->Search(Query({starred_, downloaded_})),
+              testing::ElementsAre(file_info));
+}
+
 TEST_F(FileIndexServiceTest, ReplaceTerms) {
   FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
 
