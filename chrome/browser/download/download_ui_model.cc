@@ -770,6 +770,10 @@ DownloadUIModel::TailoredWarningType DownloadUIModel::GetTailoredWarningType()
   return TailoredWarningType::kNoTailoredWarning;
 }
 
+DownloadUIModel::DangerUiPattern DownloadUIModel::GetDangerUiPattern() const {
+  return DangerUiPattern::kNormal;
+}
+
 bool DownloadUIModel::ShouldShowInBubble() const {
   return ShouldShowInShelf();
 }

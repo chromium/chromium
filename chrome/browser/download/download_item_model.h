@@ -122,6 +122,7 @@ class DownloadItemModel : public DownloadUIModel,
   void ExecuteCommand(DownloadCommands* download_commands,
                       DownloadCommands::Command command) override;
   TailoredWarningType GetTailoredWarningType() const override;
+  DangerUiPattern GetDangerUiPattern() const override;
   bool ShouldShowInBubble() const override;
   bool IsEphemeralWarning() const override;
 #endif
