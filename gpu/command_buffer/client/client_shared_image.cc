@@ -136,6 +136,14 @@ void ClientSharedImage::SetColorSpaceOnNativeBuffer(
 }
 #endif
 
+uint32_t ClientSharedImage::GetTextureTargetForOverlays() {
+#if BUILDFLAG(IS_MAC)
+  return GetPlatformSpecificTextureTarget();
+#else
+  return GL_TEXTURE_2D;
+#endif
+}
+
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferFormat format) {
   return NativeBufferNeedsPlatformSpecificTextureTarget(format)
              ? GetPlatformSpecificTextureTarget()
