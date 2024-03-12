@@ -310,7 +310,7 @@ export class NetworkProcessor {
           if (urlPattern.pathname) {
             urlPattern.pathname = unescapeURLPattern(urlPattern.pathname);
             if (urlPattern.pathname[0] !== '/') {
-              urlPattern.search = `/${urlPattern.search}`;
+              urlPattern.pathname = `/${urlPattern.pathname}`;
             }
             if (
               urlPattern.pathname.includes('#') ||
@@ -318,7 +318,10 @@ export class NetworkProcessor {
             ) {
               throw new InvalidArgumentException('Forbidden characters');
             }
+          } else if (urlPattern.pathname === '') {
+            urlPattern.pathname = '*';
           }
+
           if (urlPattern.search) {
             urlPattern.search = unescapeURLPattern(urlPattern.search);
             if (urlPattern.search[0] !== '?') {

@@ -20,6 +20,7 @@
  * @fileoverview Utility functions for the Network domain.
  */
 import type {Protocol} from 'devtools-protocol';
+import type {URLPatternInit} from 'urlpattern-polyfill/dist/types.js';
 
 import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
@@ -253,12 +254,29 @@ export function isSpecialScheme(protocol: string): boolean {
     protocol.replace(/:$/, '')
   );
 }
+
+type RequireStringPattern = Omit<
+  Required<URLPatternInit>,
+  'baseURL' | 'hash' | 'username' | 'password'
+>;
+
 /** Matches the given URLPattern against the given URL. */
 export function matchUrlPattern(
   urlPattern: Network.UrlPattern,
   url: string | undefined
 ): boolean {
-  return new URLPattern(
-    urlPattern.type === 'string' ? urlPattern.pattern : urlPattern
-  ).test(url);
+  switch (urlPattern.type) {
+    case 'string': {
+      const pattern = new URLPattern(urlPattern.pattern);
+      return new URLPattern({
+        protocol: pattern.protocol,
+        hostname: pattern.hostname,
+        port: pattern.port,
+        pathname: pattern.pathname,
+        search: pattern.search,
+      } satisfies RequireStringPattern).test(url);
+    }
+    case 'pattern':
+      return new URLPattern(urlPattern).test(url);
+  }
 }
