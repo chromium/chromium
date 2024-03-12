@@ -265,7 +265,10 @@ export namespace Session {
   export function parseSubscribeParams(
     params: unknown
   ): Protocol.Session.SubscriptionRequest {
-    return parseObject(params, WebDriverBidi.Session.SubscriptionRequestSchema);
+    return parseObject(
+      params,
+      WebDriverBidi.Session.SubscriptionRequestSchema
+    ) as Protocol.Session.SubscriptionRequest;
   }
 }
 

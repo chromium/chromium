@@ -248,8 +248,11 @@ export namespace Session {
 export namespace Session {
   export const SubscriptionRequestSchema = z.lazy(() =>
     z.object({
-      events: z.array(z.string()),
-      contexts: z.array(BrowsingContext.BrowsingContextSchema).optional(),
+      events: z.array(z.string()).min(1),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
     })
   );
 }

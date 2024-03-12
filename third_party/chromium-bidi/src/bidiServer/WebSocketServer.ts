@@ -82,9 +82,31 @@ export class WebSocketServer {
     });
     this.#wsServer.on('request', this.#onWsRequest.bind(this));
 
-    this.#server.listen(this.#port, () => {
-      debugInfo('BiDi server is listening on port', this.#port);
-    });
+    void this.#listen();
+  }
+
+  async #listen() {
+    try {
+      this.#server.listen(this.#port, () => {
+        debugInfo('BiDi server is listening on port', this.#port);
+      });
+    } catch (error) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'EADDRINUSE'
+      ) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 500);
+        });
+        debugInfo('Retrying to run BiDi server');
+        this.#server.listen(this.#port, () => {
+          debugInfo('BiDi server is listening on port', this.#port);
+        });
+      }
+      throw error;
+    }
   }
 
   async #onRequest(

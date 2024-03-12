@@ -177,8 +177,11 @@ export namespace Session {
 }
 export namespace Session {
   export type SubscriptionRequest = {
-    events: [...string[]];
-    contexts?: [...BrowsingContext.BrowsingContext[]];
+    events: [string, ...string[]];
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
   };
 }
 export namespace Session {
