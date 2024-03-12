@@ -1610,10 +1610,6 @@ void Browser::MediaWatchTimeChanged(
     const content::MediaPlayerWatchTime& watch_time) {
 }
 
-base::WeakPtr<content::WebContentsDelegate> Browser::GetDelegateWeakPtr() {
-  return AsWeakPtr();
-}
-
 bool Browser::IsPointerLocked() const {
   return exclusive_access_manager_->pointer_lock_controller()
       ->IsPointerLocked();

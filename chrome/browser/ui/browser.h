@@ -771,7 +771,6 @@ class Browser : public TabStripModelObserver,
   bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
   void MediaWatchTimeChanged(
       const content::MediaPlayerWatchTime& watch_time) override;
-  base::WeakPtr<content::WebContentsDelegate> GetDelegateWeakPtr() override;
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;

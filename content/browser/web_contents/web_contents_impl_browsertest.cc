@@ -6112,15 +6112,11 @@ class MediaWatchTimeChangedDelegate : public WebContentsDelegate {
   void MediaWatchTimeChanged(const MediaPlayerWatchTime& watch_time) override {
     watch_time_ = watch_time;
   }
-  base::WeakPtr<WebContentsDelegate> GetDelegateWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
 
   const MediaPlayerWatchTime& watch_time() { return watch_time_; }
 
  private:
   MediaPlayerWatchTime watch_time_;
-  base::WeakPtrFactory<MediaWatchTimeChangedDelegate> weak_factory_{this};
 };
 
 // Tests that a media in a fenced frame reports the watch time with the url from

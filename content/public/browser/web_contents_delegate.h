@@ -45,8 +45,6 @@ class GURL;
 
 namespace base {
 class FilePath;
-template <typename T>
-class WeakPtr;
 }
 
 namespace blink {
@@ -753,9 +751,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // installed webapp; otherwise returns nullptr.
   virtual device::mojom::GeolocationContext*
   GetInstalledWebappGeolocationContext();
-
-  // Returns a weak ptr to the web contents delegate.
-  virtual base::WeakPtr<WebContentsDelegate> GetDelegateWeakPtr();
 
   // Whether the WebContents is privileged.
   // It's used to prevent drag and drop between privileged and non-privileged
