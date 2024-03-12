@@ -143,7 +143,15 @@ NSAttributedString* Strikethrough(NSString* text) {
       [tryButton.widthAnchor constraintEqualToConstant:kTryButtonWidth],
     ]];
     [contentStack addArrangedSubview:tryButton];
+    self.accessibilityHint = l10n_util::GetNSString(
+        IDS_IOS_SET_UP_LIST_TRY_BUTTON_ACCESSIBILITY_HINT);
+  } else {
+    self.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
+
+  self.isAccessibilityElement = YES;
+  self.accessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", title.text, description.text];
 }
 
 // Creates the title label.
@@ -233,6 +241,16 @@ NSAttributedString* Strikethrough(NSString* text) {
 // Handles button tap.
 - (void)tryTapped {
   [self.tapDelegate didSelectSetUpListItem:_data.type];
+}
+
+#pragma mark - UIAccessibility
+
+- (BOOL)accessibilityActivate {
+  if (_data.complete) {
+    return NO;
+  }
+  [self tryTapped];
+  return YES;
 }
 
 @end

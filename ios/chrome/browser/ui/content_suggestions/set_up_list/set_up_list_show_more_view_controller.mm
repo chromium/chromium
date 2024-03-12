@@ -89,6 +89,7 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
   title.numberOfLines = 0;
   title.lineBreakMode = NSLineBreakByWordWrapping;
   title.textAlignment = NSTextAlignmentCenter;
+  title.accessibilityTraits |= UIAccessibilityTraitHeader;
   [self.view addSubview:title];
 
   UILabel* subtitle = [[UILabel alloc] init];
