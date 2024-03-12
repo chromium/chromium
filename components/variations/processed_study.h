@@ -36,8 +36,6 @@ enum class InvalidStudyReason {
 };
 
 class Study;
-class EntropyProviders;
-class VariationsLayers;
 
 // Wrapper over Study with extra information computed during pre-processing,
 // such as whether the study is expired and its total probability.
@@ -62,14 +60,6 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
   bool all_assignments_to_one_group() const {
     return all_assignments_to_one_group_;
   }
-
-  bool AllowsHighEntropy() const;
-
-  // Returns the entropy provider that should be used to select a group for
-  // this study.
-  const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
-      const EntropyProviders& entropy_providers,
-      const VariationsLayers& layers) const;
 
   // Gets the index of the experiment with the given |name|. Returns -1 if no
   // experiment is found.

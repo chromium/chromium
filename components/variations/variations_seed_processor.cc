@@ -361,7 +361,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     return;
 
   const auto& entropy_provider =
-      processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
+      layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(

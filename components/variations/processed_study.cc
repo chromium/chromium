@@ -234,42 +234,6 @@ bool ProcessedStudy::Init(const Study* study) {
   return true;
 }
 
-bool ProcessedStudy::AllowsHighEntropy() const {
-  // This should be kept in sync with the server-side layer validation
-  // code: go/chrome-variations-layer-validation
-  for (const auto& experiment : study_->experiment()) {
-    if (experiment.has_google_web_experiment_id() ||
-        experiment.has_google_web_trigger_experiment_id() ||
-        experiment.has_chrome_sync_experiment_id()) {
-      return false;
-    }
-  }
-  return true;
-}
-
-const base::FieldTrial::EntropyProvider&
-ProcessedStudy::SelectEntropyProviderForStudy(
-    const EntropyProviders& entropy_providers,
-    const VariationsLayers& layers) const {
-  if (!study_->has_consistency() ||
-      study_->consistency() != Study_Consistency_PERMANENT ||
-      // If all assignments are to a single group, no need to enable one time
-      // randomization (which is more expensive to compute), since the result
-      // will be the same.
-      all_assignments_to_one_group_) {
-    return entropy_providers.session_entropy();
-  }
-  if (entropy_providers.default_entropy_is_high_entropy() &&
-      AllowsHighEntropy()) {
-    // We can use the high entropy source to randomize this study, which will
-    // be uniform even if the study is conditioned on layer membership.
-    return entropy_providers.default_entropy();
-  }
-  if (study_->has_layer())
-    return layers.GetRemainderEntropy(study_->layer().layer_id());
-  return entropy_providers.low_entropy();
-}
-
 int ProcessedStudy::GetExperimentIndexByName(const std::string& name) const {
   for (int i = 0; i < study_->experiment_size(); ++i) {
     if (study_->experiment(i).name() == name)

@@ -113,7 +113,7 @@ ChangeType PermanentStudyGroupChanged(
   DCHECK_EQ(Study_Consistency_PERMANENT, study.consistency());
 
   const auto& entropy_provider =
-      processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
+      layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
 
   const std::string simulated_group =
       SimulateGroupAssignment(entropy_provider, processed_study);

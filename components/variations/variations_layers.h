@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "components/variations/entropy_provider.h"
+#include "components/variations/processed_study.h"
 #include "components/variations/proto/variations_seed.pb.h"
 
 namespace variations {
@@ -55,6 +56,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // the layer.
   static bool AreSlotBoundsValid(const Layer& layer_proto);
 
+  // True iff a high entropy provider can be used to randomize the study.
+  static bool AllowsHighEntropy(const Study& study);
+
   // Returns whether the layer that's associated with the `layer_id` is active.
   // If not, for the same `layer_id`, IsLayerMemberActive() and
   // ActiveLayerMemberDependsOnHighEntropy() will always be false, and
@@ -71,10 +75,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // not the client _has_ a high entropy source).
   bool ActiveLayerMemberDependsOnHighEntropy(uint32_t layer_id) const;
 
-  // Gets an EntropyProvider for low entropy randomization of studies
-  // conditioned on the layer's active member.
-  const base::FieldTrial::EntropyProvider& GetRemainderEntropy(
-      uint32_t layer_id) const;
+  // Returns the entropy provider that should be used to randomize the group
+  // assignments of the given study.
+  const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
+      const ProcessedStudy& processed_study,
+      const EntropyProviders& entropy_providers) const;
 
  private:
   struct LayerInfo {
@@ -95,6 +100,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // Finds the layer with the given `layer_id`. Returns nullptr if there isn't a
   // layer with this id or the layer is invalid.
   const LayerInfo* FindActiveLayer(uint32_t layer_id) const;
+
+  // Gets an EntropyProvider for low entropy randomization of studies
+  // conditioned on the layer's active member.
+  const base::FieldTrial::EntropyProvider& GetRemainderEntropy(
+      uint32_t layer_id) const;
 
   NormalizedMurmurHashEntropyProvider nil_entropy;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;

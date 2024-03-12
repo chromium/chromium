@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 
 namespace variations {
@@ -306,7 +307,7 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
       return false;
     }
 
-    if (!processed_study.AllowsHighEntropy() &&
+    if (!VariationsLayers::AllowsHighEntropy(study) &&
         layers.ActiveLayerMemberDependsOnHighEntropy(
             study.layer().layer_id())) {
       DVLOG(1)

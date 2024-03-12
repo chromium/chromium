@@ -21,9 +21,6 @@ const char kInvalidStudyReasonHistogram[] = "Variations.InvalidStudyReason";
 const uint32_t kMaxProbabilityValue =
     std::numeric_limits<base::FieldTrial::Probability>::max();
 
-const int kLayerId = 101;
-const int kLayerMemberId = 1001;
-
 // Adds an experiment with the given name and probability to a study.
 Study::Experiment* AddExperiment(const std::string& name,
                                  uint32_t probability,
@@ -39,22 +36,6 @@ Study CreateStudy(const std::string& name) {
   Study study;
   study.set_name(name);
   return study;
-}
-
-// Creates a study with the given `consistency`, and two 50% groups.
-Study CreateTwoArmStudy(Study_Consistency consistency) {
-  Study study = CreateStudy("Study");
-  study.set_consistency(consistency);
-  AddExperiment("Group1", 50, &study);
-  AddExperiment("Group2", 50, &study);
-  return study;
-}
-
-void AddGoogleExperimentIds(Study* study) {
-  for (int i = 0; i < study->experiment_size(); ++i) {
-    Study::Experiment* experiment = study->mutable_experiment(i);
-    experiment->set_google_web_experiment_id(100001 + i);
-  }
 }
 
 // Creates a valid study named "Study". This study has min and max version
@@ -83,67 +64,6 @@ Study CreateValidStudy() {
 
   return study;
 }
-
-Layer CreateLayer(Layer::EntropyMode entropy_mode) {
-  Layer layer;
-  layer.set_id(kLayerId);
-  layer.set_num_slots(100);
-  layer.set_entropy_mode(entropy_mode);
-
-  Layer_LayerMember* layer_member = layer.add_members();
-  layer_member->set_id(kLayerMemberId);
-  Layer_LayerMember_SlotRange* slot = layer_member->add_slots();
-  slot->set_start(0);
-  slot->set_end(99);
-
-  return layer;
-}
-
-void ConstrainToLayer(Study* study, int layer_id, int layer_member_id) {
-  LayerMemberReference* layer_member_reference = study->mutable_layer();
-  layer_member_reference->set_layer_id(layer_id);
-  layer_member_reference->set_layer_member_id(layer_member_id);
-}
-
-enum EntropyProviderSelection {
-  NOT_SELECTED = 0,
-  SESSION = 1,
-  DEFAULT = 2,
-  LOW = 3,
-  LIMITED = 4,
-};
-
-class FakeEntropyProviders : public EntropyProviders {
- public:
-  explicit FakeEntropyProviders(std::string_view high_entropy_value)
-      : EntropyProviders(high_entropy_value,
-                         {.value = 0, .range = 100},
-                         "limited_entropy_value") {}
-  ~FakeEntropyProviders() override = default;
-
-  const base::FieldTrial::EntropyProvider& default_entropy() const override {
-    selection_ = EntropyProviderSelection::DEFAULT;
-    return EntropyProviders::default_entropy();
-  }
-  const base::FieldTrial::EntropyProvider& low_entropy() const override {
-    selection_ = EntropyProviderSelection::LOW;
-    return EntropyProviders::low_entropy();
-  }
-  const base::FieldTrial::EntropyProvider& session_entropy() const override {
-    selection_ = EntropyProviderSelection::SESSION;
-    return EntropyProviders::session_entropy();
-  }
-  const base::FieldTrial::EntropyProvider& limited_entropy() const override {
-    selection_ = EntropyProviderSelection::LIMITED;
-    return EntropyProviders::limited_entropy();
-  }
-  EntropyProviderSelection selection() { return selection_; }
-
- private:
-  // The "mutable" keyword allows `selection_` to be updated in const functions.
-  mutable EntropyProviderSelection selection_ =
-      EntropyProviderSelection::NOT_SELECTED;
-};
 
 }  // namespace
 
@@ -498,138 +418,6 @@ TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
   AddExperiment("abc", 12, &study2);
   EXPECT_TRUE(processed_study.Init(&study2));
   EXPECT_FALSE(processed_study.all_assignments_to_one_group());
-}
-
-TEST(SelectEntropyProviderForStudyTest, UseLowEntropyProvider) {
-  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  AddGoogleExperimentIds(&study);
-
-  VariationsSeed seed;
-  *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
-
-  // Permanently consistent, non layer constrained studies with Google
-  // experiment IDs should use the low entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::LOW);
-}
-
-TEST(SelectEntropyProviderForStudyTest, UseSessionEntropyProvider) {
-  Study study = CreateTwoArmStudy(Study_Consistency_SESSION);
-  AddGoogleExperimentIds(&study);
-
-  VariationsSeed seed;
-  *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
-
-  // Session consistent, non layer constrained studies with Google
-  // experiment IDs should use the session entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::SESSION);
-}
-
-TEST(SelectEntropyProviderForStudyTest, UseDefaultEntropyProvider) {
-  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-
-  VariationsSeed seed;
-  *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
-
-  // Permanently consistent, non layer constrained studies without Google
-  // experiment IDs should use the default entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::DEFAULT);
-}
-
-TEST(SelectEntropyProviderForStudyTest, NoHighEntropyValue) {
-  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-
-  VariationsSeed seed;
-  *seed.add_study() = study;
-  FakeEntropyProviders entropy_providers(/*high_entropy_value=*/"");
-  VariationsLayers layers(seed, entropy_providers);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
-
-  // Without an high entropy value, low entropy provider should be used although
-  // the study is eligible for high entropy.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::LOW);
-}
-
-TEST(SelectEntropyProviderForStudyTest, UseDefaultEntropyProviderFromLayer) {
-  Layer layer = CreateLayer(/*entropy_mode=*/Layer::DEFAULT);
-  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
-
-  VariationsSeed seed;
-  *seed.add_study() = study;
-  *seed.add_layers() = layer;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
-
-  // A study that is eligible to use high entropy and constrained to a layer
-  // with `EntropyMode.DEFAULT` should use the default entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::DEFAULT);
-}
-
-TEST(SelectEntropyProviderForStudyTest, UseLowEntropyProviderFromLayer) {
-  Layer layer = CreateLayer(/*entropy_mode=*/Layer::LOW);
-  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  AddGoogleExperimentIds(&study);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
-
-  VariationsSeed seed;
-  *seed.add_study() = study;
-  *seed.add_layers() = layer;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
-
-  // A study that is NOT eligible to use high entropy and constrained to a layer
-  // with `EntropyMode.LOW` should use the low entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::LOW);
-}
-
-TEST(SelectEntropyProviderForStudyTest,
-     UseDefaultProviderWhenHighEntropyStudyIsConstrainedToLowEntropyLayer) {
-  Layer layer = CreateLayer(/*entropy_mode=*/Layer::LOW);
-  Study study = CreateTwoArmStudy(Study_Consistency_PERMANENT);
-  ConstrainToLayer(&study, kLayerId, kLayerMemberId);
-
-  VariationsSeed seed;
-  *seed.add_study() = study;
-  *seed.add_layers() = layer;
-  FakeEntropyProviders entropy_providers("high_entropy_value");
-  VariationsLayers layers(seed, entropy_providers);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
-
-  // A study that is eligible to use high entropy AND constrained to a layer
-  // with `EntropyMode.LOW` should use the default entropy provider.
-  EXPECT_EQ(entropy_providers.selection(), EntropyProviderSelection::DEFAULT);
 }
 
 }  // namespace variations
