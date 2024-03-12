@@ -153,7 +153,62 @@ class MediaDevicesSelectionHandlerTest
   std::optional<MediaDevicesSelectionHandler> handler_;
 };
 
-TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices) {
+TEST_F(MediaDevicesSelectionHandlerTest, InitializeCaptureDevices_Mic) {
+  const media::AudioDeviceDescription kDefaultDevice{
+      /*device_name=*/"Default",
+      /*unique_id=*/media::AudioDeviceDescription::kDefaultDeviceId,
+      /*group_id=*/"default_group_id",
+      /*is_system_default=*/true};
+  const media::AudioDeviceDescription kIntegratedDevice{
+      /*device_name=*/"Integrated Device",
+      /*unique_id=*/"integrated_device",
+      /*group_id=*/"integrated_group_id",
+      /*is_system_default=*/true};
+  const media::AudioDeviceDescription kExpectedIntegratedDevice{
+      /*device_name=*/"Integrated Device (System default)",
+      /*unique_id=*/"integrated_device",
+      /*group_id=*/"integrated_group_id",
+      /*is_system_default=*/true};
+  const media::AudioDeviceDescription kUsbDevice{/*device_name=*/"USB Device",
+                                                 /*unique_id=*/"usb_device",
+                                                 /*group_id=*/"usb_group_id"};
+
+  for (const auto& device : {kDefaultDevice, kIntegratedDevice, kUsbDevice}) {
+    fake_audio_service_.AddFakeInputDevice(device);
+  }
+
+  ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kMic));
+
+  // Verify that the list order is unmodified if pref is unset. Also verify that
+  // the virtual system default is removed.
+  ASSERT_NO_FATAL_FAILURE(VerifyUpdateDevicesMenu(
+      {kExpectedIntegratedDevice, kUsbDevice}, kExpectedIntegratedDevice));
+
+  SendSetPreferredCaptureDeviceMessage(kMic, kUsbDevice.unique_id);
+  SendInitializeCaptureDevicesMessage(kMic);
+
+  ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kMic));
+  // Verify that the previously set preferred device is at the beginning of the
+  // list.
+  ASSERT_NO_FATAL_FAILURE(VerifyUpdateDevicesMenu(
+      {kUsbDevice, kExpectedIntegratedDevice}, kUsbDevice));
+}
+
+// Verify that the virtual system default device stays in the list when we can't
+// map to the real system default. Note that this is only for micrphones as
+// cameras don't have system defaults.
+TEST_F(MediaDevicesSelectionHandlerTest,
+       InitializeCaptureDevices_Mic_KeepVirtualSystemDefault) {
+  const media::AudioDeviceDescription kDefaultDevice{
+      /*device_name=*/"Default",
+      /*unique_id=*/media::AudioDeviceDescription::kDefaultDeviceId,
+      /*group_id=*/"default_group_id",
+      /*is_system_default=*/true};
+  const media::AudioDeviceDescription kExpectedDefaultDevice{
+      /*device_name=*/"System default",
+      /*unique_id=*/media::AudioDeviceDescription::kDefaultDeviceId,
+      /*group_id=*/"default_group_id",
+      /*is_system_default=*/true};
   const media::AudioDeviceDescription kIntegratedDevice{
       /*device_name=*/"Integrated Device",
       /*unique_id=*/"integrated_device",
@@ -162,8 +217,8 @@ TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices) {
                                                  /*unique_id=*/"usb_device",
                                                  /*group_id=*/"usb_group_id"};
 
-  std::vector<media::AudioDeviceDescription> devices{kIntegratedDevice,
-                                                     kUsbDevice};
+  std::vector<media::AudioDeviceDescription> devices{
+      kDefaultDevice, kIntegratedDevice, kUsbDevice};
 
   for (const auto& device : devices) {
     fake_audio_service_.AddFakeInputDevice(device);
@@ -172,7 +227,9 @@ TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices) {
   ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kMic));
 
   // Verify that the list order is unmodified if pref is unset.
-  VerifyUpdateDevicesMenu(devices, kIntegratedDevice);
+  ASSERT_NO_FATAL_FAILURE(VerifyUpdateDevicesMenu(
+      {kExpectedDefaultDevice, kIntegratedDevice, kUsbDevice},
+      kExpectedDefaultDevice));
 
   SendSetPreferredCaptureDeviceMessage(kMic, kUsbDevice.unique_id);
   SendInitializeCaptureDevicesMessage(kMic);
@@ -180,7 +237,8 @@ TEST_F(MediaDevicesSelectionHandlerTest, GetDefaultCaptureDevices) {
   ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kMic));
   // Verify that the previously set preferred device is at the beginning of the
   // list.
-  VerifyUpdateDevicesMenu({kUsbDevice, kIntegratedDevice}, kUsbDevice);
+  ASSERT_NO_FATAL_FAILURE(VerifyUpdateDevicesMenu(
+      {kUsbDevice, kExpectedDefaultDevice, kIntegratedDevice}, kUsbDevice));
 }
 
 TEST_F(MediaDevicesSelectionHandlerTest, InitializeCaptureDevices_Camera) {
@@ -203,7 +261,7 @@ TEST_F(MediaDevicesSelectionHandlerTest, InitializeCaptureDevices_Camera) {
   ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kCamera));
 
   // Verify that the list order is unmodified if pref is unset.
-  VerifyUpdateDevicesMenu(devices, kIntegratedDevice);
+  ASSERT_NO_FATAL_FAILURE(VerifyUpdateDevicesMenu(devices, kIntegratedDevice));
 
   SendSetPreferredCaptureDeviceMessage(kCamera, kUsbDevice.device_id);
   SendInitializeCaptureDevicesMessage(kCamera);
@@ -211,7 +269,8 @@ TEST_F(MediaDevicesSelectionHandlerTest, InitializeCaptureDevices_Camera) {
   ASSERT_TRUE(WaitForUpdateDevicesMenuCall(kCamera));
   // Verify that the previously set preferred device is at the beginning of the
   // list.
-  VerifyUpdateDevicesMenu({kUsbDevice, kIntegratedDevice}, kUsbDevice);
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyUpdateDevicesMenu({kUsbDevice, kIntegratedDevice}, kUsbDevice));
 }
 
 }  // namespace settings

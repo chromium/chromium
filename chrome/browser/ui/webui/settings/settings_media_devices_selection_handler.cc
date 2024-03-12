@@ -156,16 +156,26 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
     const std::vector<media::AudioDeviceDescription>& devices) {
   AllowJavascript();
 
+  auto real_default_device_id = media_effects::GetRealDefaultDeviceId(devices);
+
+  std::string selected_device_id;
   // Build the list of devices to send to JS.
   base::Value::List device_list;
   for (const auto& device : devices) {
+    if (real_default_device_id.has_value() &&
+        media::AudioDeviceDescription::IsDefaultDevice(device.unique_id)) {
+      continue;
+    }
+    if (selected_device_id.empty()) {
+      selected_device_id = device.unique_id;
+    }
     base::Value::Dict entry;
     entry.Set("name", GetDeviceDisplayName(device));
     entry.Set("id", device.unique_id);
     device_list.Append(std::move(entry));
   }
 
-  base::Value selected_value(devices.empty() ? "" : devices.front().unique_id);
+  base::Value selected_value(selected_device_id);
   base::Value type_value(kAudio);
 
   FireWebUIListener("updateDevicesMenu", type_value, device_list,
@@ -185,12 +195,12 @@ void MediaDevicesSelectionHandler::UpdateDevicesMenu(
     device_list.Append(std::move(entry));
   }
 
-  base::Value selected_value(
+  base::Value selected_device_id(
       devices.empty() ? "" : devices.front().descriptor.device_id);
   base::Value type_value(kVideo);
 
   FireWebUIListener("updateDevicesMenu", type_value, device_list,
-                    selected_value);
+                    selected_device_id);
 }
 
 std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(
@@ -199,6 +209,11 @@ std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(
       media::AudioDeviceDescription::IsDefaultDevice(device.unique_id);
   if (is_virtual_default_device) {
     return l10n_util::GetStringUTF8(IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC);
+  }
+  if (device.is_system_default) {
+    return l10n_util::GetStringFUTF8(
+        IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC_PARENTHETICAL,
+        base::UTF8ToUTF16(device.device_name));
   }
   return device.device_name;
 }

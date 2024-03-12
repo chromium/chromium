@@ -40,4 +40,8 @@
     System default
   </message>
 
+  <message name="IDS_MEDIA_PREVIEW_SYSTEM_DEFAULT_MIC_PARENTHETICAL" desc="A label for the system default mic. It adds 'System Default' in parenthesis next to the device name. This is used when sublabel isn't available">
+    <ph name="DEVICE_NAME">$1</ph> (System default)
+  </message>
+
 </grit-part>
