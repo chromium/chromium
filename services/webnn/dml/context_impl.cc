@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/buffer_impl.h"
 #include "services/webnn/dml/command_queue.h"
@@ -20,10 +21,12 @@ namespace webnn::dml {
 ContextImpl::ContextImpl(scoped_refptr<Adapter> adapter,
                          mojo::PendingReceiver<mojom::WebNNContext> receiver,
                          WebNNContextProviderImpl* context_provider,
-                         std::unique_ptr<CommandRecorder> command_recorder)
+                         std::unique_ptr<CommandRecorder> command_recorder,
+                         const gpu::GpuFeatureInfo& gpu_feature_info)
     : WebNNContextImpl(std::move(receiver), context_provider),
       adapter_(std::move(adapter)),
-      command_recorder_(std::move(command_recorder)) {
+      command_recorder_(std::move(command_recorder)),
+      gpu_feature_info_(gpu_feature_info) {
   CHECK(command_recorder_);
 }
 
@@ -33,7 +36,9 @@ void ContextImpl::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
   GraphImpl::CreateAndBuild(adapter_->command_queue(), adapter_->dml_device(),
-                            std::move(graph_info), std::move(callback));
+                            std::move(graph_info), std::move(callback),
+                            gpu_feature_info_->IsWorkaroundEnabled(
+                                gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(

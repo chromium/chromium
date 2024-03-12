@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_DML_CONTEXT_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::dml {
@@ -22,7 +23,8 @@ class ContextImpl final : public WebNNContextImpl {
   ContextImpl(scoped_refptr<Adapter> adapter,
               mojo::PendingReceiver<mojom::WebNNContext> receiver,
               WebNNContextProviderImpl* context_provider,
-              std::unique_ptr<CommandRecorder> command_recorder);
+              std::unique_ptr<CommandRecorder> command_recorder,
+              const gpu::GpuFeatureInfo& gpu_feature_info);
 
   ContextImpl(const WebNNContextImpl&) = delete;
   ContextImpl& operator=(const ContextImpl&) = delete;
@@ -43,6 +45,8 @@ class ContextImpl final : public WebNNContextImpl {
 
   // The `CommandRecorder` instance used exclusively by this context.
   std::unique_ptr<CommandRecorder> command_recorder_;
+
+  const raw_ref<const gpu::GpuFeatureInfo> gpu_feature_info_;
 };
 
 }  // namespace webnn::dml

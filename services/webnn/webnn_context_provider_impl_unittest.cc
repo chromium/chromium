@@ -83,8 +83,12 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
+  gpu::GpuFeatureInfo input;
+  input.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] =
+      gpu::kGpuFeatureStatusBlocklisted;
+
   WebNNContextProviderImpl::Create(provider_remote.BindNewPipeAndPassReceiver(),
-                                   /*is_gpu_supported=*/false);
+                                   input);
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
