@@ -266,7 +266,7 @@ void SaveAddressBubbleController::OnUserDecision(
 
 void SaveAddressBubbleController::OnEditButtonClicked() {
   if (delegate_) {
-    delegate_->OnEditButtonClicked(GetEditorFooterMessage());
+    delegate_->ShowEditor(GetEditorFooterMessage());
   }
 }
 

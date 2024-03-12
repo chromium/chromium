@@ -17,11 +17,15 @@ namespace autofill {
 // `SaveAddressBubbleController`) communicate to `AddressBubblesController`.
 class AddressBubbleControllerDelegate {
  public:
+  // Requests to open the address editor bubble with the address presented in
+  // the prompt bubble, it can be a new address to edit before saving or
+  // existing one to update. Called by an explicit user action, such as a click
+  // on the edit button in the update bubble.
+  virtual void ShowEditor(const std::u16string& editor_footer_message) = 0;
+
   virtual void OnUserDecision(
       AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> profile) = 0;
-  virtual void OnEditButtonClicked(
-      const std::u16string& editor_footer_message) = 0;
   virtual void OnBubbleClosed() = 0;
 };
 

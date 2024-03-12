@@ -42,7 +42,7 @@ class MockDelegate : public AddressBubbleControllerDelegate,
               (AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile),
               (override));
-  MOCK_METHOD(void, OnEditButtonClicked, (const std::u16string&), (override));
+  MOCK_METHOD(void, ShowEditor, (const std::u16string&), (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
 };
 }  // namespace

@@ -164,6 +164,20 @@ void AddressBubblesController::SetUpAndShowAddNewAddressBubble(
                                  nullptr, {}, std::move(callback));
 }
 
+void AddressBubblesController::ShowEditor(
+    const std::u16string& editor_footer_message) {
+  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
+  EditAddressProfileDialogControllerImpl* controller =
+      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
+  controller->OfferEdit(
+      *address_profile_, base::OptionalToPtr(original_profile_),
+      editor_footer_message,
+      base::BindOnce(&AddressBubblesController::OnUserDecision,
+                     weak_ptr_factory_.GetWeakPtr()),
+      is_migration_to_account_);
+  HideBubble();
+}
+
 void AddressBubblesController::OnUserDecision(
     AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile) {
@@ -176,20 +190,6 @@ void AddressBubblesController::OnUserDecision(
   if (address_profile_save_prompt_callback_) {
     std::move(address_profile_save_prompt_callback_).Run(decision, profile);
   }
-}
-
-void AddressBubblesController::OnEditButtonClicked(
-    const std::u16string& editor_footer_message) {
-  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
-  EditAddressProfileDialogControllerImpl* controller =
-      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  controller->OfferEdit(
-      *address_profile_, base::OptionalToPtr(original_profile_),
-      editor_footer_message,
-      base::BindOnce(&AddressBubblesController::OnUserDecision,
-                     weak_ptr_factory_.GetWeakPtr()),
-      is_migration_to_account_);
-  HideBubble();
 }
 
 void AddressBubblesController::OnBubbleClosed() {

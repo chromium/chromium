@@ -50,7 +50,7 @@ void AddNewAddressBubbleController::OnUserDecision(
 
 void AddNewAddressBubbleController::OnAddButtonClicked() {
   if (delegate_) {
-    delegate_->OnEditButtonClicked(GetFooterMessage());
+    delegate_->ShowEditor(GetFooterMessage());
   }
 }
 

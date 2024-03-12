@@ -58,11 +58,10 @@ class AddressBubblesController
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   // AddressBubbleControllerDelegate:
+  void ShowEditor(const std::u16string& editor_footer_message) override;
   void OnUserDecision(
       AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> profile) override;
-  void OnEditButtonClicked(
-      const std::u16string& editor_footer_message) override;
   void OnBubbleClosed() override;
 
   // SaveAddressProfileIconController:
