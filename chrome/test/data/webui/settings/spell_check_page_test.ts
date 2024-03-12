@@ -16,6 +16,7 @@ import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/ch
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 // <if expr="_google_chrome">
 import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
 
 // <if expr="not is_macosx">
@@ -312,12 +313,13 @@ suite('SpellCheck', function() {
 
   // <if expr="_google_chrome">
   suite('OfficialBuild', function() {
-    test('enabling and disabling the spelling service', () => {
+    test('enabling and disabling the spelling service', async () => {
       const previousValue =
           spellcheckPage.prefs.spellcheck.use_spelling_service.value;
       spellcheckPage.shadowRoot!
           .querySelector<HTMLElement>('#spellingServiceEnable')!.click();
       flush();
+      await microtasksFinished();
       assertNotEquals(
           previousValue,
           spellcheckPage.prefs.spellcheck.use_spelling_service.value);
