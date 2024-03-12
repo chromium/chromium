@@ -110,7 +110,8 @@ class ClientBase {
   std::unique_ptr<Buffer> CreateBuffer(const gfx::Size& size,
                                        int32_t drm_format,
                                        int32_t bo_usage,
-                                       bool add_buffer_listener = true);
+                                       bool add_buffer_listener = true,
+                                       bool use_vulkan = false);
   std::unique_ptr<Buffer> CreateDrmBuffer(const gfx::Size& size,
                                           int32_t drm_format,
                                           const uint64_t* modifiers,

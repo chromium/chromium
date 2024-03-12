@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <drm_fourcc.h>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -181,6 +183,7 @@ int main(int argc, char* argv[]) {
     return 1;
 
   params.use_vulkan = true;
+  params.drm_format = DRM_FORMAT_ABGR8888;
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   exo::wayland::clients::VulkanClient client;
   client.Run(params);

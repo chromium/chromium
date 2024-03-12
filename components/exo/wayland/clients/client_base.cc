@@ -109,6 +109,7 @@ namespace {
 
 // Buffer format.
 const int32_t kShmFormat = WL_SHM_FORMAT_ARGB8888;
+const int32_t kShmFormatVulkan = WL_SHM_FORMAT_ABGR8888;
 const SkColorType kColorType = kBGRA_8888_SkColorType;
 #if defined(USE_GBM)
 const GLenum kSizedInternalFormat = GL_BGRA8_EXT;
@@ -591,7 +592,8 @@ bool ClientBase::Init(const InitParams& params) {
     for (size_t i = 0; i < params.num_buffers; ++i) {
       auto buffer =
           CreateBuffer(size_, params.drm_format, params.bo_usage,
-                       /*add_buffer_listener=*/!params.use_release_fences);
+                       /*add_buffer_listener=*/!params.use_release_fences,
+                       params.use_vulkan);
       if (!buffer) {
         LOG(ERROR) << "Failed to create buffer";
         return false;
@@ -849,7 +851,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     const gfx::Size& size,
     int32_t drm_format,
     int32_t bo_usage,
-    bool add_buffer_listener) {
+    bool add_buffer_listener,
+    bool use_vulkan) {
   std::unique_ptr<Buffer> buffer;
 #if defined(USE_GBM)
   if (device_) {
@@ -932,9 +935,11 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
           buffer->shared_memory_mapping.size()));
     }
 
+    int32_t format = use_vulkan ? kShmFormatVulkan : kShmFormat;
+
     buffer->buffer.reset(static_cast<wl_buffer*>(
         wl_shm_pool_create_buffer(buffer->shm_pool.get(), 0, size.width(),
-                                  size.height(), stride, kShmFormat)));
+                                  size.height(), stride, format)));
     if (!buffer->buffer) {
       LOG(ERROR) << "Can't create buffer";
       return nullptr;
