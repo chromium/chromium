@@ -10,7 +10,7 @@ namespace storage {
 
 BASE_FEATURE(kDefaultBucketUsesRelaxedDurability,
              "DefaultBucketUsesRelaxedDurability",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::StorageKey storage_key,

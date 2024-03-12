@@ -5272,30 +5272,6 @@
             ]
         }
     ],
-    "DefaultBucketUsesRelaxedDurability": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DefaultBucketUsesRelaxedDurability"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultGpuDiskCacheSize": [
         {
             "platforms": [
