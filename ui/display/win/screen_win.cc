@@ -322,7 +322,13 @@ std::vector<ScreenWinDisplay> DisplayInfosToScreenWinDisplays(
       display_infos_remaining, [](const internal::DisplayInfo& display_info) {
         return display_info.screen_rect().origin().IsOrigin();
       });
-  DCHECK(primary_display_iter != display_infos_remaining.end());
+
+  // If we can't find the primary display, we likely witnessed a race condition
+  // when querying the OS for display info. We expect another OS notification to
+  // trigger this lookup again soon, so just return an empty list for now.
+  if (primary_display_iter == display_infos_remaining.end()) {
+    return {};
+  }
 
   // Build the tree and determine DisplayPlacements along the way.
   DisplayLayoutBuilder builder(primary_display_iter->id());
