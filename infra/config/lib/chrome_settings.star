@@ -41,7 +41,7 @@ def per_builder_outputs_config():
     """
     node = _PER_BUILDER_OUTPUTS.get()
     if node == None:
-        fail("In order to generate per-builder outputs, project.per_builder_outputs must be called")
+        fail("In order to generate per-builder outputs, chrome_settings.per_builder_outputs must be called")
     return node.props
 
 chrome_settings = struct(
