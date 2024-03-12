@@ -2459,8 +2459,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.MoveWindowFromActiveDesk"
-    enum="DesksMoveWindowFromActiveDeskSource" expires_after="2024-02-25">
-  <owner>afakhry@chromium.org</owner>
+    enum="DesksMoveWindowFromActiveDeskSource" expires_after="2025-02-25">
+  <owner>dandersson@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
     Emitted when a window is moved from the current active desk to another desk.
