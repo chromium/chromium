@@ -160,6 +160,8 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
         password_manager::prefs::
             kUserAcknowledgedLocalPasswordsMigrationWarning,
         false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kSettingsMigratedToUPMLocal, false);
 
     SetPasswordSyncEnabledPref(false);
     base::WriteFile(login_db_directory_.Append(
@@ -326,6 +328,41 @@ TEST_F(
       ActivationError::kNone, 1);
   histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
                                        true, 1);
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_SignedOutNoPasswordsAndCustomSettings) {
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+       password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration},
+      {});
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
+  pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
+                             false);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
+      false);
+  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOff));
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  // The migration is pending.
+  // Even though the migration warning was not acknowledged, the migration
+  // should happen because there are no local passwords. Only settings should be
+  // migrated.
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOffAndMigrationPending));
+  histogram_tester->ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
+      ActivationError::kNone, 1);
+  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                       false, 1);
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,

@@ -152,15 +152,17 @@ bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
   if (channel == version_info::Channel::STABLE) {
     return false;
   }
+  // If there are no passwords to migrate and migration is still needed for
+  // settings, there is no need to acknowledge the password migration warning.
+  if (pref_service->GetBoolean(
+          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
+    return false;
+  }
   return !pref_service->GetBoolean(
       password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
 }
 
-bool MustMigrateLocalPasswordsOrSettingsOnActivation(
-    PrefService* pref_service,
-    const base::FilePath& login_db_directory) {
-  CHECK(!IsPasswordSyncEnabled(pref_service));
-
+bool HasCustomPasswordSettings(PrefService* pref_service) {
   bool has_custom_enable_service_setting =
       !pref_service
            ->FindPreference(password_manager::prefs::kCredentialsEnableService)
@@ -170,6 +172,14 @@ bool MustMigrateLocalPasswordsOrSettingsOnActivation(
            ->FindPreference(
                password_manager::prefs::kCredentialsEnableAutosignin)
            ->IsDefaultValue();
+  return has_custom_enable_service_setting || has_custom_auto_signin_setting;
+}
+
+bool MustMigrateLocalPasswordsOrSettingsOnActivation(
+    PrefService* pref_service,
+    const base::FilePath& login_db_directory) {
+  CHECK(!IsPasswordSyncEnabled(pref_service));
+
   // It's not possible to ask the (profile) PasswordStore whether it is empty,
   // the object wasn't created yet. Instead, that information is written to the
   // kEmptyProfileStoreLoginDatabase pref during the previous execution and read
@@ -179,7 +189,7 @@ bool MustMigrateLocalPasswordsOrSettingsOnActivation(
           password_manager::prefs::kEmptyProfileStoreLoginDatabase) &&
       base::PathExists(login_db_directory.Append(
           password_manager::kLoginDataForProfileFileName));
-  return has_custom_enable_service_setting || has_custom_auto_signin_setting ||
+  return HasCustomPasswordSettings(pref_service) ||
          has_passwords_in_profile_login_db;
 }
 
