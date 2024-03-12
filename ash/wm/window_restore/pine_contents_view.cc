@@ -32,6 +32,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_types.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_animations.h"
@@ -93,7 +94,7 @@ PineContentsView::PineContentsView() {
                       l10n_util::GetStringUTF16(IDS_ASH_PINE_DIALOG_TITLE)),
               // Description.
               views::Builder<views::Label>()
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
+                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
                   .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                              kContentsDescriptionFontSize,
                                              gfx::Font::Weight::NORMAL))
@@ -157,6 +158,12 @@ PineContentsView::PineContentsView() {
     preview->SetImage(pine_image);
     preview->SetImageSize(pine_image.size());
   }
+
+  // Add a highlight border to match the Quick Settings menu, i.e.,
+  // `TrayBubbleView`.
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kContentsRounding,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 }
 
 PineContentsView::~PineContentsView() = default;
