@@ -302,6 +302,12 @@ Grepped for \"crypt\", \"cipher\" - there were no hits
 (except for benign hits in `MODULE.bazel.lock`)
 """
 
+[[audits.cxx]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.117 -> 1.0.119"
+notes = "Reviewed in https://crrev.com/c/5362739"
+
 [[audits.cxxbridge]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -379,6 +385,18 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.110 -> 1.0.115"
 notes = 'Grepped for \"crypt\", \"cipher\" - there were no hits'
+
+[[audits.cxxbridge-flags]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.117 -> 1.0.119"
+notes = "Reviewed in https://crrev.com/c/5362739"
+
+[[audits.cxxbridge-macro]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.117 -> 1.0.119"
+notes = "Reviewed in https://crrev.com/c/5362739"
 
 [[audits.either]]
 who = "agl@chromium.org"

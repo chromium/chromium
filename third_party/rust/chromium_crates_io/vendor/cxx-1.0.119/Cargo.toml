@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.60"
 name = "cxx"
-version = "1.0.117"
+version = "1.0.119"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 links = "cxxbridge1"
 exclude = [
@@ -70,13 +70,13 @@ targets = ["x86_64-unknown-linux-gnu"]
 doc-scrape-examples = false
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.117"
+version = "=1.0.119"
 
 [dependencies.link-cplusplus]
 version = "1.0.9"
 
 [dev-dependencies.cxx-build]
-version = "=1.0.117"
+version = "=1.0.119"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -92,10 +92,10 @@ version = "1.0.81"
 features = ["diff"]
 
 [build-dependencies.cc]
-version = "1.0.79"
+version = "1.0.83"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.117"
+version = "=1.0.119"
 default-features = false
 
 [features]
