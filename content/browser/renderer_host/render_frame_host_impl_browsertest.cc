@@ -6515,7 +6515,13 @@ class DestructorLifetimePageUserData
     auto& page = render_frame_host.GetPage();
     // Check returned Page reference is valid.
     EXPECT_EQ(page_.get(), &page);
-    EXPECT_TRUE(page.IsPrimary());
+    // The page is considered as primary if its RenderFrameHost is active. This
+    // will be true unless we changed RenderFrameHosts.
+    EXPECT_EQ(page.IsPrimary(), !ShouldCreateNewHostForAllFrames());
+    if (ShouldCreateNewHostForAllFrames()) {
+      EXPECT_EQ(render_frame_host.GetLifecycleState(),
+                RenderFrameHost::LifecycleState::kPendingDeletion);
+    }
   }
 
  private:
@@ -6533,7 +6539,7 @@ PAGE_USER_DATA_KEY_IMPL(DestructorLifetimePageUserData);
 // reasonable state.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        PageUserDataDestructorLifetime) {
-  // The test assumes that the main frame RFH will be reused when navigating.
+  // The test assumes that the Page will get destructed after navigation.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
