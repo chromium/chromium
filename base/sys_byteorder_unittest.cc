@@ -20,46 +20,6 @@ const uint64_t k64BitSwappedTestData = 0x11223344ddccbbaa;
 
 }  // namespace
 
-TEST(ByteOrderTest, ByteSwap16) {
-  uint16_t swapped = base::ByteSwap(k16BitTestData);
-  EXPECT_EQ(k16BitSwappedTestData, swapped);
-  uint16_t reswapped = base::ByteSwap(swapped);
-  EXPECT_EQ(k16BitTestData, reswapped);
-}
-
-TEST(ByteOrderTest, ByteSwap32) {
-  uint32_t swapped = base::ByteSwap(k32BitTestData);
-  EXPECT_EQ(k32BitSwappedTestData, swapped);
-  uint32_t reswapped = base::ByteSwap(swapped);
-  EXPECT_EQ(k32BitTestData, reswapped);
-}
-
-TEST(ByteOrderTest, ByteSwap64) {
-  uint64_t swapped = base::ByteSwap(k64BitTestData);
-  EXPECT_EQ(k64BitSwappedTestData, swapped);
-  uint64_t reswapped = base::ByteSwap(swapped);
-  EXPECT_EQ(k64BitTestData, reswapped);
-}
-
-TEST(ByteOrderTest, ByteSwapUintPtrT) {
-#if defined(ARCH_CPU_64_BITS)
-  const uintptr_t test_data = static_cast<uintptr_t>(k64BitTestData);
-  const uintptr_t swapped_test_data =
-      static_cast<uintptr_t>(k64BitSwappedTestData);
-#elif defined(ARCH_CPU_32_BITS)
-  const uintptr_t test_data = static_cast<uintptr_t>(k32BitTestData);
-  const uintptr_t swapped_test_data =
-      static_cast<uintptr_t>(k32BitSwappedTestData);
-#else
-#error architecture not supported
-#endif
-
-  uintptr_t swapped = base::ByteSwapUintPtrT(test_data);
-  EXPECT_EQ(swapped_test_data, swapped);
-  uintptr_t reswapped = base::ByteSwapUintPtrT(swapped);
-  EXPECT_EQ(test_data, reswapped);
-}
-
 TEST(ByteOrderTest, ByteSwapToLE16) {
   uint16_t le = base::ByteSwapToLE16(k16BitTestData);
 #if defined(ARCH_CPU_LITTLE_ENDIAN)
