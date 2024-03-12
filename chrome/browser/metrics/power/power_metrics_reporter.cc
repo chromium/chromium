@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -113,6 +114,10 @@ void PowerMetricsReporter::OnFirstBatteryStateSampled(
 }
 
 void PowerMetricsReporter::StartNextLongInterval() {
+  // TODO(fdoray): Remove when no longer referenced by server-side trace
+  // configs, planned for 06/2024.
+  base::trace_event::EmitNamedTrigger("power-metrics-interval-start");
+
   interval_timer_.Start(FROM_HERE, kLongPowerMetricsIntervalDuration,
                         base::BindOnce(&PowerMetricsReporter::OnLongIntervalEnd,
                                        base::Unretained(this)));
