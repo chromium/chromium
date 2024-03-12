@@ -1431,7 +1431,7 @@ BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
 // directly to display), even if regular canvas are not in overlay
 // (WebGLImageChromium is disabled).
 BASE_FEATURE(kLowLatencyWebGLImageChromium,
-             "kLowLatencyWebGLImageChromium",
+             "LowLatencyWebGLImageChromium",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLowPriorityAsyncScriptExecution,
