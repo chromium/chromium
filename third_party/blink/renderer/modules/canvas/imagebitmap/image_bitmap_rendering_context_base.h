@@ -50,6 +50,8 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   // TODO(junov): handle lost contexts when content is GPU-backed
   void LoseContext(LostContextMode) override {}
 
+  void Reset() override;
+
   void Stop() override;
 
   bool IsPaintable() const final;

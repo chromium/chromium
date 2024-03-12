@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="output" width="300" height="300"></canvas>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+}
+const canvas = document.getElementById('output');
+const canvas1 = canvas.transferControlToOffscreen();
+const context1 = canvas1.getContext('bitmaprenderer');
+const canvas2 = new OffscreenCanvas(300, 300);
+const context2 = canvas2.getContext('2d');
+
+context2.fillStyle = 'blue';
+context2.fillRect(0, 0, canvas2.width, canvas2.height);
+context1.transferFromImageBitmap(canvas2.transferToImageBitmap());
+
+requestAnimationFrame(function () {
+    canvas1.width = canvas2.width = 350;
+    context2.fillStyle = 'green';
+    context2.fillRect(0, 0, canvas2.width, canvas2.height);
+    context1.transferFromImageBitmap(canvas2.transferToImageBitmap());
+
+    function waitForCanvasToDraw() {
+        if (canvas.width == canvas1.width) {
+            testRunner.notifyDone();
+        } else {
+            requestAnimationFrame(waitForCanvasToDraw);
+        }
+    }
+
+    if (window.testRunner) {
+        waitForCanvasToDraw();
+    }
+});
+</script>
+</body>
+</html>
