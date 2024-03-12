@@ -20,6 +20,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
@@ -128,6 +129,13 @@ class PrivacySandboxAttestationsFeatureEnabledTest
             kDefaultAllowPrivacySandboxAttestations) {
     scoped_feature_list_.InitAndEnableFeature(
         kEnforcePrivacySandboxAttestations);
+  }
+
+  void SetUp() override {
+    PrivacySandboxAttestationsTestBase::SetUp();
+
+    // Reset the singleton recorder to avoid interference across test cases.
+    startup_metric_utils::GetBrowser().ResetSessionForTesting();
   }
 
   bool IsAttestationsDefaultAllowed() { return IsParamFeatureEnabled(); }
@@ -424,6 +432,28 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 5);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA, Status::kAllowed,
                                        3);
+}
+
+TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
+       AttestationFirstCheckTimeHistogram) {
+  histogram_tester().ExpectTotalCount(kAttestationFirstCheckTimeUMA, 0);
+
+  std::string site = "https://example.com";
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kProtectedAudience),
+            GetExpectedStatus(Status::kAttestationsFileNotYetReady));
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
+  histogram_tester().ExpectTotalCount(kAttestationFirstCheckTimeUMA, 1);
+
+  // The first attestation check histogram should be only recorded once for each
+  // Chrome session.
+  EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+                net::SchemefulSite(GURL(site)),
+                PrivacySandboxAttestationsGatedAPI::kTopics),
+            GetExpectedStatus(Status::kAttestationsFileNotYetReady));
+  histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 2);
+  histogram_tester().ExpectTotalCount(kAttestationFirstCheckTimeUMA, 1);
 }
 
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,

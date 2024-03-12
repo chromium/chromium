@@ -27,6 +27,7 @@ if (use_blink) {
 
     public_deps = [
       "//base",
+      "//components/startup_metric_utils",
       "//net:net",
     ]
   }

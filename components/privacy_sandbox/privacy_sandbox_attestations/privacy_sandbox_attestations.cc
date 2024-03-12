@@ -29,12 +29,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/types/expected.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "net/base/schemeful_site.h"
@@ -278,6 +280,11 @@ PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
   PrivacySandboxSettingsImpl::Status status =
       IsSiteAttestedInternal(site, invoking_api);
   base::UmaHistogramEnumeration(kAttestationStatusUMA, status);
+
+  // Record the time when the first Privacy Sandbox API attestation check takes
+  // place.
+  startup_metric_utils::GetBrowser().RecordPrivacySandboxAttestationFirstCheck(
+      base::TimeTicks::Now());
 
   // If the attestations map is absent and feature
   // `kDefaultAllowPrivacySandboxAttestations` is on, default allow.

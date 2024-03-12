@@ -275,7 +275,8 @@ void BrowserStartupMetricRecorder::ResetSessionForTesting() {
   message_loop_start_ticks_ = base::TimeTicks();
   browser_window_display_ticks_ = base::TimeTicks();
   browser_window_first_paint_ticks_ = base::TimeTicks();
-  is_privacy_sandbox_attestations_histogram_recorded_ = false;
+  is_privacy_sandbox_attestations_component_ready_recorded_ = false;
+  is_privacy_sandbox_attestations_first_check_recorded_ = false;
 }
 
 bool BrowserStartupMetricRecorder::WasMainWindowStartupInterrupted() const {
@@ -551,41 +552,58 @@ void BrowserStartupMetricRecorder::RecordExternalStartupMetric(
 // To reduce the noise introduced by non-browser UI, we measure from the first
 // browser window paint if it has been recorded. If it is not recorded, the
 // measurement is taken from application start.
+// TODO(crbug.com/329235182): The Privacy Sandbox Attestation start up related
+// histograms are not using the temperature breakouts. The logic for all these
+// histograms could just live in the privacy sandbox component itself, which
+// pulls from startup code just to get the application start timeticks.
 void BrowserStartupMetricRecorder::RecordPrivacySandboxAttestationsFirstReady(
     base::TimeTicks ticks) {
   DCHECK(!ticks.is_null());
 
   // This metric should be recorded at most once for each Chrome session.
-  if (is_privacy_sandbox_attestations_histogram_recorded_) {
+  if (is_privacy_sandbox_attestations_component_ready_recorded_) {
     return;
   }
 
   // The first browser window paint has been recorded.
   if (!browser_window_first_paint_ticks_.is_null()) {
-    is_privacy_sandbox_attestations_histogram_recorded_ = true;
-    UmaHistogramWithTraceAndTemperature(
-        &base::UmaHistogramLongTimes100,
+    is_privacy_sandbox_attestations_component_ready_recorded_ = true;
+    base::UmaHistogramLongTimes100(
         privacy_sandbox::kComponentReadyFromBrowserWindowFirstPaintUMA,
-        browser_window_first_paint_ticks_, ticks);
+        ticks - browser_window_first_paint_ticks_);
     return;
   }
 
   // Otherwise, this implies the component is installed before first browser
   // window paint.
-  is_privacy_sandbox_attestations_histogram_recorded_ = true;
+  is_privacy_sandbox_attestations_component_ready_recorded_ = true;
   if (WasMainWindowStartupInterrupted()) {
     // The durations should be a few minutes.
-    UmaHistogramWithTraceAndTemperature(
-        &base::UmaHistogramLongTimes100,
+    base::UmaHistogramLongTimes100(
         privacy_sandbox::kComponentReadyFromApplicationStartWithInterruptionUMA,
-        GetCommon().application_start_ticks_, ticks);
+        ticks - GetCommon().application_start_ticks_);
   } else {
     // The durations should be a few milliseconds.
-    UmaHistogramWithTraceAndTemperature(
-        &base::UmaHistogramLongTimes100,
+    base::UmaHistogramLongTimes100(
         privacy_sandbox::kComponentReadyFromApplicationStartUMA,
-        GetCommon().application_start_ticks_, ticks);
+        ticks - GetCommon().application_start_ticks_);
   }
+}
+
+void BrowserStartupMetricRecorder::RecordPrivacySandboxAttestationFirstCheck(
+    base::TimeTicks ticks) {
+  DCHECK(!ticks.is_null());
+
+  // This metric should be recorded at most once for each Chrome session.
+  if (is_privacy_sandbox_attestations_first_check_recorded_) {
+    return;
+  }
+
+  is_privacy_sandbox_attestations_first_check_recorded_ = true;
+
+  // Record the first time a Privacy Sandbox API is checked for attestation.
+  base::UmaHistogramLongTimes100(privacy_sandbox::kAttestationFirstCheckTimeUMA,
+                                 ticks - GetCommon().application_start_ticks_);
 }
 
 }  // namespace startup_metric_utils
