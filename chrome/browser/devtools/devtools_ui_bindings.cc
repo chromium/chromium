@@ -1619,7 +1619,7 @@ void DevToolsUIBindings::RecordResize(const ResizeEvent& event) {
     return;
   }
   metrics::structured::StructuredMetricsClient::Record(std::move(
-      metrics::structured::events::v2::dev_tools::Impression()
+      metrics::structured::events::v2::dev_tools::Resize()
           .SetVeId(event.veid)
           .SetWidth(event.width)
           .SetHeight(event.height)
