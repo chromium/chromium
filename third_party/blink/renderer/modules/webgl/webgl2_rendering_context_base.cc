@@ -131,7 +131,7 @@ bool ValidateSubSourceAndGetData(DOMArrayBufferView* view,
     // type size is at most 8, so no overflow.
     byte_offset = sub_offset * type_size;
   }
-  base::CheckedNumeric<int64_t> total = byte_offset;
+  base::CheckedNumeric<size_t> total = byte_offset;
   total += byte_length;
   if (!total.IsValid() || total.ValueOrDie() > view->byteLength()) {
     return false;
