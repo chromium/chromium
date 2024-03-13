@@ -13,16 +13,24 @@
 #include "ash/birch/birch_ranker.h"
 #include "ash/birch/birch_weather_provider.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
 namespace {
 
 constexpr int kDataFetchTimeoutInMs = 1000;
+
+// Returns the pref service to use for Birch prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
 
 }  // namespace
 
@@ -41,6 +49,15 @@ BirchModel::BirchModel() {
 BirchModel::~BirchModel() {
   SimpleGeolocationProvider::GetInstance()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
+}
+
+// static
+void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kBirchUseCalendar, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseFileSuggest, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseRecentTabs, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
 }
 
 void BirchModel::SetCalendarItems(
@@ -103,6 +120,12 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
     return;
   }
 
+  PrefService* prefs = GetPrefService();
+  if (!prefs) {
+    std::move(callback).Run();
+    return;
+  }
+
   const bool fetch_in_progress = !pending_requests_.empty();
 
   size_t request_id = next_request_id_++;
@@ -118,17 +141,41 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
     return;
   }
 
-  MarkDataNotFresh();
-
+  bool did_fetch = false;
   // TODO(b/305094143): Call this before we begin showing birch views.
   if (birch_client_) {
-    birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
-    birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
-    birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
-    birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
+    if (prefs->GetBoolean(prefs::kBirchUseCalendar)) {
+      is_calendar_data_fresh_ = false;
+      is_attachment_data_fresh_ = false;  // Attachments use the same provider.
+      birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
+      did_fetch = true;
+    }
+    if (prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
+      is_files_data_fresh_ = false;
+      birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
+      did_fetch = true;
+    }
+    if (prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
+      is_tabs_data_fresh_ = false;
+      birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
+      did_fetch = true;
+    }
+    if (prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
+      is_release_notes_data_fresh_ = false;
+      birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
+      did_fetch = true;
+    }
   }
-  if (weather_provider_) {
+  if (weather_provider_ && prefs->GetBoolean(prefs::kBirchUseWeather)) {
+    is_weather_data_fresh_ = false;
     weather_provider_->RequestBirchDataFetch();
+    did_fetch = true;
+  }
+
+  // If we didn't actually fetch, respond immediately.
+  if (!did_fetch) {
+    std::move(request.callback).Run();
+    pending_requests_.erase(request_id);
   }
 }
 
@@ -192,17 +239,35 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
 }
 
 bool BirchModel::IsDataFresh() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs) {
+    return false;
+  }
+  // Data types are considered fresh if their prefs are disabled, since a
+  // disabled pref means the data type won't be fetched.
+  bool calendar_fresh =
+      is_calendar_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseCalendar);
+  bool file_suggest_fresh =
+      is_files_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseFileSuggest);
+  bool recent_tabs_fresh =
+      is_tabs_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseRecentTabs);
+  bool release_notes_fresh = is_release_notes_data_fresh_ ||
+                             !prefs->GetBoolean(prefs::kBirchUseReleaseNotes);
   bool is_birch_client_fresh =
-      !birch_client_ || (is_calendar_data_fresh_ && is_files_data_fresh_ &&
-                         is_tabs_data_fresh_ && is_release_notes_data_fresh_);
-  bool is_weather_fresh = !weather_provider_ || is_weather_data_fresh_;
+      !birch_client_ || (calendar_fresh && file_suggest_fresh &&
+                         recent_tabs_fresh && release_notes_fresh);
+
+  // Use the same logic for weather.
+  bool is_weather_fresh = !weather_provider_ || is_weather_data_fresh_ ||
+                          !prefs->GetBoolean(prefs::kBirchUseWeather);
   return is_birch_client_fresh && is_weather_fresh;
 }
 
 void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
   if (!has_active_user_session_changed_) {
-    // This is the initial notification on signin. Don't do anything.
+    // This is the initial notification on signin.
     has_active_user_session_changed_ = true;
+    InitPrefChangeRegistrars();
     return;
   }
 
@@ -282,6 +347,71 @@ void BirchModel::MarkDataNotFresh() {
   is_tabs_data_fresh_ = false;
   is_weather_data_fresh_ = false;
   is_release_notes_data_fresh_ = false;
+}
+
+void BirchModel::InitPrefChangeRegistrars() {
+  PrefService* prefs = GetPrefService();
+  calendar_pref_registrar_.Init(prefs);
+  calendar_pref_registrar_.Add(
+      prefs::kBirchUseCalendar,
+      base::BindRepeating(&BirchModel::OnCalendarPrefChanged,
+                          base::Unretained(this)));
+  file_suggest_pref_registrar_.Init(prefs);
+  file_suggest_pref_registrar_.Add(
+      prefs::kBirchUseFileSuggest,
+      base::BindRepeating(&BirchModel::OnFileSuggestPrefChanged,
+                          base::Unretained(this)));
+  recent_tab_pref_registrar_.Init(prefs);
+  recent_tab_pref_registrar_.Add(
+      prefs::kBirchUseRecentTabs,
+      base::BindRepeating(&BirchModel::OnRecentTabPrefChanged,
+                          base::Unretained(this)));
+  weather_pref_registrar_.Init(prefs);
+  weather_pref_registrar_.Add(
+      prefs::kBirchUseWeather,
+      base::BindRepeating(&BirchModel::OnWeatherPrefChanged,
+                          base::Unretained(this)));
+  release_notes_pref_registrar_.Init(prefs);
+  release_notes_pref_registrar_.Add(
+      prefs::kBirchUseReleaseNotes,
+      base::BindRepeating(&BirchModel::OnReleaseNotesPrefChanged,
+                          base::Unretained(this)));
+}
+
+void BirchModel::OnCalendarPrefChanged() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs->GetBoolean(prefs::kBirchUseCalendar)) {
+    calendar_items_.clear();
+    attachment_items_.clear();  // Attachments come from the same provider.
+  }
+}
+
+void BirchModel::OnFileSuggestPrefChanged() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
+    file_suggest_items_.clear();
+  }
+}
+
+void BirchModel::OnRecentTabPrefChanged() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
+    recent_tab_items_.clear();
+  }
+}
+
+void BirchModel::OnWeatherPrefChanged() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs->GetBoolean(prefs::kBirchUseWeather)) {
+    weather_items_.clear();
+  }
+}
+
+void BirchModel::OnReleaseNotesPrefChanged() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
+    release_notes_items_.clear();
+  }
 }
 
 }  // namespace ash

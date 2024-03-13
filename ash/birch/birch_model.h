@@ -16,13 +16,17 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class PrefRegistrySimple;
 
 namespace ash {
 
 class BirchDataProvider;
 
 // Birch model, which is used to aggregate and store relevant information from
-// different providers.
+// different providers. Both data and prefs are associated with the primary user
+// account.
 class ASH_EXPORT BirchModel : public SessionObserver,
                               public SimpleGeolocationProvider::Observer {
  public:
@@ -30,6 +34,8 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   BirchModel(const BirchModel&) = delete;
   BirchModel& operator=(const BirchModel&) = delete;
   ~BirchModel() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sends a request to the birch keyed service to fetch data into the model.
   // `callback` will run once either all data is fresh or the request timeout
@@ -112,6 +118,16 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Marks all data types as not fresh.
   void MarkDataNotFresh();
 
+  // Initializes the pref change registrars to observe for pref changes.
+  void InitPrefChangeRegistrars();
+
+  // Called when a data provider pref changes.
+  void OnCalendarPrefChanged();
+  void OnFileSuggestPrefChanged();
+  void OnRecentTabPrefChanged();
+  void OnWeatherPrefChanged();
+  void OnReleaseNotesPrefChanged();
+
   // Whether the calendar event data is freshly fetched.
   bool is_calendar_data_fresh_ = false;
 
@@ -167,6 +183,12 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Whether an active user session changed notification has been seen. Used to
   // detect the initial notification on signin.
   bool has_active_user_session_changed_ = false;
+
+  PrefChangeRegistrar calendar_pref_registrar_;
+  PrefChangeRegistrar file_suggest_pref_registrar_;
+  PrefChangeRegistrar recent_tab_pref_registrar_;
+  PrefChangeRegistrar weather_pref_registrar_;
+  PrefChangeRegistrar release_notes_pref_registrar_;
 };
 
 }  // namespace ash

@@ -2054,6 +2054,21 @@ inline constexpr char kGameDashboardShowWelcomeDialog[] =
 static constexpr char kSoftwareScanningEnabled[] =
     "ash.nearby.software_scanning_enabled";
 
+// A boolean pref indicating whether Birch should use Google Calendar data.
+inline constexpr char kBirchUseCalendar[] = "ash.birch.use_calendar";
+
+// A boolean pref indicating whether Birch should use file suggestions.
+inline constexpr char kBirchUseFileSuggest[] = "ash.birch.use_file_suggest";
+
+// A boolean pref indicating whether Birch should use recent tab data.
+inline constexpr char kBirchUseRecentTabs[] = "ash.birch.use_recent_tabs";
+
+// A boolean pref indicating whether Birch should use weather data.
+inline constexpr char kBirchUseWeather[] = "ash.birch.use_weather";
+
+// A boolean pref indicating whether Birch should use release notes data.
+inline constexpr char kBirchUseReleaseNotes[] = "ash.birch.use_release_notes";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

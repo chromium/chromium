@@ -9,6 +9,7 @@
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -19,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +35,11 @@ class StubBirchDataProvider : public BirchDataProvider {
   ~StubBirchDataProvider() override = default;
 
   // BirchDataProvider:
-  void RequestBirchDataFetch() override {}
+  void RequestBirchDataFetch() override {
+    did_request_birch_data_fetch_ = true;
+  }
+
+  bool did_request_birch_data_fetch_ = false;
 };
 
 // A BirchClient that returns data providers that do nothing.
@@ -43,19 +49,23 @@ class StubBirchClient : public BirchClient {
   ~StubBirchClient() override = default;
 
   // BirchClient:
-  BirchDataProvider* GetCalendarProvider() override { return &data_provider_; }
+  BirchDataProvider* GetCalendarProvider() override {
+    return &calendar_provider_;
+  }
   BirchDataProvider* GetFileSuggestProvider() override {
-    return &data_provider_;
+    return &file_suggest_provider_;
   }
   BirchDataProvider* GetRecentTabsProvider() override {
-    return &data_provider_;
+    return &recent_tabs_provider_;
   }
   BirchDataProvider* GetReleaseNotesProvider() override {
-    return &data_provider_;
+    return &release_notes_provider_;
   }
 
- private:
-  StubBirchDataProvider data_provider_;
+  StubBirchDataProvider calendar_provider_;
+  StubBirchDataProvider file_suggest_provider_;
+  StubBirchDataProvider recent_tabs_provider_;
+  StubBirchDataProvider release_notes_provider_;
 };
 
 class TestModelConsumer {
@@ -214,6 +224,176 @@ TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
 
   // The model is empty.
   EXPECT_TRUE(model->GetAllItems().empty());
+}
+
+TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
+  BirchModel* model = Shell::Get()->birch_model();
+  TestModelConsumer consumer;
+
+  // Set all the data types so the data is considered fresh.
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetFileSuggestItems({});
+  model->SetRecentTabItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+  ASSERT_TRUE(model->IsDataFresh());
+
+  // Disable all the prefs.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Install a stub weather provider.
+  auto weather_provider = std::make_unique<StubBirchDataProvider>();
+  auto* weather_provider_ptr = weather_provider.get();
+  model->OverrideWeatherProviderForTest(std::move(weather_provider));
+
+  // Request a data fetch.
+  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+                                              base::Unretained(&consumer),
+                                              /*id=*/"0"));
+
+  // The fetch callback was called immediately because nothing was fetched.
+  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
+
+  // Nothing was fetched and the (empty) data is still fresh.
+  auto& client = stub_birch_client_;
+  EXPECT_FALSE(client.calendar_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
+  EXPECT_TRUE(model->IsDataFresh());
+}
+
+TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Disable all the prefs except calendar.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, true);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Install a stub weather provider.
+  auto weather_provider = std::make_unique<StubBirchDataProvider>();
+  auto* weather_provider_ptr = weather_provider.get();
+  model->OverrideWeatherProviderForTest(std::move(weather_provider));
+
+  // Request a fetch.
+  model->RequestBirchDataFetch(base::DoNothing());
+
+  // Only calendar was fetched.
+  auto& client = stub_birch_client_;
+  EXPECT_TRUE(client.calendar_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
+}
+
+TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Populate the model with every data type.
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Event 1");
+  model->SetCalendarItems(std::move(calendar_item_list));
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  attachment_item_list.emplace_back(u"Attachment 1");
+  model->SetAttachmentItems(std::move(attachment_item_list));
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
+  model->SetFileSuggestItems(std::move(file_item_list));
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
+                             GURL("favicon"), "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
+  model->SetRecentTabItems(std::move(tab_item_list));
+  std::vector<BirchWeatherItem> weather_item_list;
+  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  model->SetWeatherItems(std::move(weather_item_list));
+  std::vector<BirchReleaseNotesItem> release_notes_item_list;
+  release_notes_item_list.emplace_back(u"note", 1, u"explore", GURL("foo.bar"),
+                                       base::Time());
+  model->SetReleaseNotesItems(release_notes_item_list);
+  ASSERT_TRUE(model->IsDataFresh());
+
+  // Disable all the prefs for data providers.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // The model is now empty.
+  EXPECT_TRUE(model->GetAllItems().empty());
+  EXPECT_TRUE(model->GetCalendarItemsForTest().empty());
+  EXPECT_TRUE(model->GetAttachmentItemsForTest().empty());
+  EXPECT_TRUE(model->GetFileSuggestItemsForTest().empty());
+  EXPECT_TRUE(model->GetTabsForTest().empty());
+  EXPECT_TRUE(model->GetWeatherForTest().empty());
+  EXPECT_TRUE(model->GetReleaseNotesItemsForTest().empty());
+}
+
+TEST_F(BirchModelTest, DisablingPrefsMarksDataFresh) {
+  BirchModel* model = Shell::Get()->birch_model();
+  ASSERT_FALSE(model->IsDataFresh());
+
+  // Disable all the prefs for data providers.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // The data is reported as fresh.
+  EXPECT_TRUE(model->IsDataFresh());
+}
+
+TEST_F(BirchModelTest, FetchWithOnePrefDisabledMarksDataFresh) {
+  BirchModel* model = Shell::Get()->birch_model();
+  TestModelConsumer consumer;
+  ASSERT_FALSE(model->IsDataFresh());
+
+  // Disable the weather data type via prefs.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Request a fetch.
+  model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
+                                              base::Unretained(&consumer),
+                                              /*id=*/"0"));
+  // Reply with everything but weather.
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetFileSuggestItems({});
+  model->SetRecentTabItems({});
+  model->SetReleaseNotesItems({});
+
+  // Consumer was notified that fetch was complete.
+  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
+
+  // Data is fresh.
+  EXPECT_TRUE(model->IsDataFresh());
 }
 
 // TODO(https://crbug.com/324963992): Fix `BirchModel*Test.DataFetchTimeout`
