@@ -73,7 +73,7 @@ MahiProvider::~MahiProvider() = default;
 void MahiProvider::Summarize(const std::string& input,
                              MantaGenericCallback done_callback) {
   proto::Request request;
-  request.set_feature_name(proto::FeatureName::CHROMEOS_READER);
+  request.set_feature_name(proto::FeatureName::CHROMEOS_READER_SUMMARY);
 
   auto* input_data = request.add_input_data();
   input_data->set_tag("model_input");
@@ -87,6 +87,37 @@ void MahiProvider::Outline(const std::string& input,
   std::move(done_callback)
       .Run(base::Value::Dict(),
            {MantaStatusCode::kGenericError, "Unimplemented"});
+}
+
+void MahiProvider::QuestionAndAnswer(const std::string& original_content,
+                                     const std::vector<MahiQAPair> QAHistory,
+                                     const std::string& question,
+                                     MantaGenericCallback done_callback) {
+  // TODO(b:318566801): format of the request and response protos are TBD.
+  proto::Request request;
+  request.set_feature_name(proto::FeatureName::CHROMEOS_READER_Q_AND_A);
+
+  auto* input_data = request.add_input_data();
+  input_data->set_tag("model_input");
+  input_data->set_text(original_content);
+
+  input_data = request.add_input_data();
+  input_data->set_tag("user_question");
+  input_data->set_text(question);
+
+  for (const auto& [history_question, history_answer] : QAHistory) {
+    input_data = request.add_input_data();
+    input_data->set_tag("history_question");
+    input_data->set_text(history_question);
+
+    input_data = request.add_input_data();
+    input_data->set_tag("history_answer");
+    input_data->set_text(history_answer);
+  }
+
+  std::move(done_callback)
+      .Run(base::Value::Dict(),
+           {MantaStatusCode::kGenericError, request.SerializeAsString()});
 }
 
 void MahiProvider::RequestInternal(const proto::Request& request,

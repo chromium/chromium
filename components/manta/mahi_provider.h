@@ -51,6 +51,12 @@ class COMPONENT_EXPORT(MANTA) MahiProvider
   // Similar to `Summarize` but outlines the `input`.
   void Outline(const std::string& input, MantaGenericCallback done_callback);
 
+  using MahiQAPair = std::pair<std::string, std::string>;
+  void QuestionAndAnswer(const std::string& content,
+                         const std::vector<MahiQAPair> QAHistory,
+                         const std::string& question,
+                         MantaGenericCallback done_callback);
+
   // signin::IdentityManager::Observer:
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
