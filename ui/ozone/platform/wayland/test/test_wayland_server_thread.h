@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "base/threading/thread.h"
@@ -112,6 +113,10 @@ class TestWaylandServerThread : public TestOutput::Delegate,
   // callable is run and all pending Wayland requests and events are delivered.
   void RunAndWait(base::OnceCallback<void(TestWaylandServerThread*)> callback);
   void RunAndWait(base::OnceClosure closure);
+
+  // Posts a 'callback' or 'closure' to the server thread.
+  void Post(base::OnceCallback<void(TestWaylandServerThread*)> callback);
+  void Post(base::OnceClosure closure);
 
   // Returns WpPresentation. If it hasn't been initialized yet, initializes that
   // first and then returns.
@@ -269,6 +274,8 @@ class TestWaylandServerThread : public TestOutput::Delegate,
   raw_ptr<OutputDelegate> output_delegate_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<TestWaylandServerThread> weak_ptr_factory_{this};
 };
 
 class TestWaylandServerThread::OutputDelegate {

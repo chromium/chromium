@@ -101,24 +101,36 @@ void WaylandTestBase::TearDown() {
 }
 
 void WaylandTestBase::PostToServerAndWait(
-    base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback) {
-  // Sync with the display to ensure client's requests are processed.
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
-
-  server_.RunAndWait(std::move(callback));
-
-  // Sync with the display to ensure server's events are received and processed.
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+    base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback,
+    bool no_nested_runloops) {
+  PostToServerAndWait(
+      base::BindOnce(std::move(callback), base::Unretained(&server_)),
+      no_nested_runloops);
 }
 
-void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure) {
-  // Sync with the display to ensure client's requests are processed.
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure,
+                                          bool no_nested_runloops) {
+  if (no_nested_runloops) {
+    // Ensure server processes pending requests.
+    connection_->RoundTripQueue();
 
-  server_.RunAndWait(std::move(closure));
+    // Post the closure to the server's thread.
+    server_.Post(std::move(closure));
+    // Wait for server thread to complete running posted tasks.
+    server_.FlushForTesting();
 
-  // Sync with the display to ensure server's events are received and processed
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+    // Flush all non-delayed tasks.
+    task_environment_.RunUntilIdle();
+  } else {
+    // Sync with the display to ensure client's requests are processed.
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+
+    server_.RunAndWait(std::move(closure));
+
+    // Sync with the display to ensure server's events are received and
+    // processed
+    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  }
 }
 
 void WaylandTestBase::DisableSyncOnTearDown() {

@@ -221,6 +221,20 @@ void TestWaylandServerThread::RunAndWait(base::OnceClosure closure) {
   run_loop.Run();
 }
 
+void TestWaylandServerThread::Post(
+    base::OnceCallback<void(TestWaylandServerThread*)> callback) {
+  base::OnceClosure closure =
+      base::BindOnce(std::move(callback), base::Unretained(this));
+  Post(std::move(closure));
+}
+
+void TestWaylandServerThread::Post(base::OnceClosure closure) {
+  task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TestWaylandServerThread::DoRun,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(closure)));
+}
+
 MockWpPresentation* TestWaylandServerThread::EnsureAndGetWpPresentation() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (wp_presentation_.resource())

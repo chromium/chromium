@@ -8,7 +8,10 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/nix/scoped_xdg_activation_token_injector.h"
+#include "base/process/launch.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -482,6 +485,32 @@ TEST(XDGUtilTest, ScopedXdgActivationTokenInjector) {
     EXPECT_TRUE(cmd_line.HasSwitch(pair.first));
   }
   EXPECT_FALSE(cmd_line.HasSwitch(nix::kXdgActivationTokenSwitch));
+}
+
+TEST(XDGUtilTest, LaunchOptionsWithXdgActivation) {
+  bool received_empty_launch_options = false;
+  CreateLaunchOptionsWithXdgActivation(base::BindLambdaForTesting(
+      [&received_empty_launch_options](LaunchOptions options) {
+        EXPECT_TRUE(options.environment.empty());
+        received_empty_launch_options = true;
+      }));
+  EXPECT_TRUE(received_empty_launch_options);
+
+  ScopedClosureRunner reset_token_creator(base::BindOnce(
+      &SetXdgActivationTokenCreator, XdgActivationTokenCreator()));
+  SetXdgActivationTokenCreator(
+      base::BindRepeating([](XdgActivationTokenCallback callback) {
+        std::move(callback).Run(kXdgActivationTokenFromEnv);
+      }));
+
+  bool received_launch_options_with_test_token = false;
+  CreateLaunchOptionsWithXdgActivation(base::BindLambdaForTesting(
+      [&received_launch_options_with_test_token](LaunchOptions options) {
+        EXPECT_EQ(options.environment["XDG_ACTIVATION_TOKEN"],
+                  kXdgActivationTokenFromEnv);
+        received_launch_options_with_test_token = true;
+      }));
+  EXPECT_TRUE(received_launch_options_with_test_token);
 }
 
 }  // namespace nix

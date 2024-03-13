@@ -13,12 +13,14 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 
 namespace base {
 
 class CommandLine;
 class Environment;
 class FilePath;
+struct LaunchOptions;
 
 namespace nix {
 
@@ -54,6 +56,12 @@ enum class SessionType {
   kWayland = 5,
   kMir = 6,
 };
+
+using XdgActivationTokenCallback = base::OnceCallback<void(std::string token)>;
+using XdgActivationTokenCreator =
+    base::RepeatingCallback<void(XdgActivationTokenCallback callback)>;
+using XdgActivationLaunchOptionsCallback =
+    base::OnceCallback<void(LaunchOptions)>;
 
 // The default XDG config directory name.
 BASE_EXPORT extern const char kDotConfigDir[];
@@ -128,6 +136,15 @@ BASE_EXPORT void ExtractXdgActivationTokenFromCmdLine(
 
 // Transfers ownership of the currently set global activation token if set.
 BASE_EXPORT std::optional<std::string> TakeXdgActivationToken();
+
+// Sets the global token creator.
+BASE_EXPORT void SetXdgActivationTokenCreator(
+    XdgActivationTokenCreator token_creator);
+
+// Tries to create an xdg-activation token and invokes the `callback` with
+// `LaunchOptions` containing the token if available, or empty `LaunchOptions`.
+BASE_EXPORT void CreateLaunchOptionsWithXdgActivation(
+    XdgActivationLaunchOptionsCallback callback);
 
 }  // namespace nix
 }  // namespace base

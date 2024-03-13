@@ -5,10 +5,14 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_ACTIVATION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_ACTIVATION_H_
 
+#include <memory>
+#include <string>
+
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/nix/xdg_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -17,7 +21,6 @@ namespace ui {
 class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
  public:
   static constexpr char kInterfaceName[] = "xdg_activation_v1";
-  using RequestNewTokenCallback = base::OnceCallback<void(std::string token)>;
 
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
@@ -37,30 +40,25 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
 
   // Request a new activation token from the compositor for launching an
   // external app.
-  // The token is received asynchronously, after a round trip to the server, at
-  // which point the provided `callback` is called.
-  // If there is another unfinished request, the method chains the new request
-  // in the `request_token_queue_` and handles it after the current request is
-  // completed.
-  // TODO(https://crbug.com/40747285): Make use of this new API when launching
-  // external apps.
-  void RequestNewToken(RequestNewTokenCallback callback) const;
+  // The token is received asynchronously and the provided `callback` is called
+  // after the server responds to the request or if the request times out.
+  // If there is an unfinished request, the method chains the new request in the
+  // `token_request_queue_` and initiates the next token request to the server
+  // after the server responds to the current request or timeout occurs.
+  void RequestNewToken(base::nix::XdgActivationTokenCallback callback) const;
 
  private:
-  class Token;
+  class TokenRequest;
 
-  void OnTokenReceived(RequestNewTokenCallback callback, std::string token);
+  void OnTokenRequestCompleted(base::nix::XdgActivationTokenCallback callback,
+                               std::string token);
 
   // Wayland object wrapped by this class.
   wl::Object<xdg_activation_v1> xdg_activation_v1_;
-  // The actual activation token.
-  mutable std::unique_ptr<Token> token_;
   // Pending token requests.
-  mutable base::queue<RequestNewTokenCallback> request_token_queue_;
+  mutable base::queue<std::unique_ptr<TokenRequest>> token_request_queue_;
 
   const raw_ptr<WaylandConnection> connection_;
-
-  base::WeakPtrFactory<XdgActivation> weak_factory_{this};
 };
 
 }  // namespace ui
