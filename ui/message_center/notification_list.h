@@ -84,6 +84,14 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   virtual ~NotificationList();
 
+  int size() const { return notifications_.size(); }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns the oldest child (not group parent, and not pinned) notification.
+  // Returns an empty string if there is no valid notification to return.
+  std::string GetOldestNonGroupedNotificationId();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Makes a message "read". Collects the set of ids whose state have changed
   // and set to |udpated_ids|. NULL if updated ids don't matter.
   void SetNotificationsShown(const NotificationBlockers& blockers,

@@ -75,6 +75,25 @@ NotificationList::NotificationList(MessageCenter* message_center)
 
 NotificationList::~NotificationList() = default;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::string NotificationList::GetOldestNonGroupedNotificationId() {
+  auto oldest_lowest_priority_notification_iter = --notifications_.end();
+
+  // Do not return a parent notification with grouped children because this kind
+  // of notification is a container of child notifications, and do not return a
+  // pinned notification.
+  while (oldest_lowest_priority_notification_iter->first->pinned() ||
+         oldest_lowest_priority_notification_iter->first->group_parent()) {
+    // If all of the notifications are pinned or grouped, return nothing.
+    if (oldest_lowest_priority_notification_iter == notifications_.begin()) {
+      return std::string();
+    }
+    --oldest_lowest_priority_notification_iter;
+  }
+  return oldest_lowest_priority_notification_iter->first->id();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void NotificationList::SetNotificationsShown(
     const NotificationBlockers& blockers,
     std::set<std::string>* updated_ids) {

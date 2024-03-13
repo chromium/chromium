@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -43,6 +44,10 @@ bool IsNotificationsGroupingEnabled() {
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr int kChromeOSNotificationLimit = 75;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -342,10 +347,11 @@ void MessageCenterImpl::AddNotification(
     blocker->CheckState();
   }
 
-  // Sometimes the notification can be added with the same id and the
+  // Sometimes the notifications can be added with the same id and the
   // |notification_list| will replace the notification instead of adding new.
   // This is essentially an update rather than addition.
-  bool already_exists = notification_list_->GetNotificationById(id) != nullptr;
+  const bool already_exists =
+      notification_list_->GetNotificationById(id) != nullptr;
   if (already_exists) {
     UpdateNotification(id, std::move(notification));
     return;
@@ -358,11 +364,16 @@ void MessageCenterImpl::AddNotification(
   }
 
   notification_list_->AddNotification(std::move(notification));
+
   visible_notifications_ =
       notification_list_->GetVisibleNotifications(blockers_);
   for (MessageCenterObserver& observer : observer_list_) {
     observer.OnNotificationAdded(id);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  RemoveLastNotificationIfOverLimit();
+#endif  // IS_CHROMEOS_ASH
 }
 
 void MessageCenterImpl::UpdateNotification(
@@ -586,6 +597,24 @@ void MessageCenterImpl::ClickOnNotificationUnlocked(
     RemoveNotification(id, /*by_user=*/true);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void MessageCenterImpl::RemoveLastNotificationIfOverLimit() {
+  // Some clients have large notification cache's, to reduce memory footprint,
+  // limit the number of notifications a user can have.
+  if (!ash::features::IsNotificationLimitEnabled()) {
+    return;
+  }
+
+  if (notification_list_->size() > kChromeOSNotificationLimit) {
+    auto oldest_notification_id =
+        notification_list_->GetOldestNonGroupedNotificationId();
+    if (!oldest_notification_id.empty()) {
+      RemoveNotification(oldest_notification_id, /*by_user=*/false);
+    }
+  }
+}
+#endif  // IS_CHROMEOS_ASH
 
 void MessageCenterImpl::ClickOnSettingsButton(const std::string& id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

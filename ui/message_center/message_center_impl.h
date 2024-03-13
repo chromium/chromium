@@ -132,6 +132,12 @@ class MessageCenterImpl : public MessageCenter,
                                    const std::optional<int>& button_index,
                                    const std::optional<std::u16string>& reply);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Removes the lowest priority, unpinned, non group parent notification if the
+  // number of notifications stored is over the limit.
+  void RemoveLastNotificationIfOverLimit();
+#endif  // IS_CHROMEOS_ASH
+
   const std::unique_ptr<LockScreenController> lock_screen_controller_;
 
   std::unique_ptr<NotificationList> notification_list_;
