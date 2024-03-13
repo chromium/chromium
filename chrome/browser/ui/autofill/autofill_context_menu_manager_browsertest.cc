@@ -14,6 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,6 +33,8 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
@@ -55,7 +58,8 @@ MATCHER(ContainsAnyAutofillFallbackEntries, "") {
   const auto kForbiddenLabels = base::MakeFlatSet<std::u16string>(
       std::array{IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE,
                  IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS},
+                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
+                 IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU},
       /*comp=*/{},
       /*proj=*/[](auto id) { return l10n_util::GetStringUTF16(id); });
   const auto kForbiddenCommands =
@@ -765,6 +769,11 @@ class PlusAddressContextMenuManagerTest
         "plus@plus.plus", signin::ConsentLevel::kSignin);
   }
 
+  plus_addresses::PlusAddressService* plus_address_service() {
+    return PlusAddressServiceFactory::GetForBrowserContext(
+        web_contents()->GetBrowserContext());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -781,6 +790,37 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, UnclassifiedForm) {
 
 // Tests that Plus Address fallbacks are added to classified forms.
 IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
+}
+
+// Tests that Plus Address fallbacks are not added in incognito mode if the user
+// does not have a Plus Address for the domain.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
+                       IncognitoModeWithoutPlusAddress) {
+  autofill_client()->set_is_off_the_record(true);
+  FormData form = CreateAndAttachClassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_THAT(menu_model(), Not(ContainsAnyAutofillFallbackEntries()));
+}
+
+// Tests that Plus Address fallbacks are added in incognito mode if the user
+// has a Plus Address for the domain.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
+                       IncognitoModeWithPlusAddress) {
+  const auto kUrl = GURL("https://foo.bar");
+  autofill_client()->set_is_off_the_record(true);
+  autofill_client()->set_last_committed_primary_main_frame_url(kUrl);
+  plus_address_service()->SavePlusAddress(url::Origin::Create(kUrl),
+                                          "plus+plus@plus.plus");
+
   FormData form = CreateAndAttachClassifiedForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id, form.fields[0].renderer_id));

@@ -152,17 +152,11 @@ bool ShouldAddPlusAddressManualFallbackItem(ContentAutofillDriver& driver) {
   const plus_addresses::PlusAddressService* plus_address_service =
       PlusAddressServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  // For determining whether to show a fallback, we act as if we are not in
-  // incognito mode because once there are affiliations, we will not be able to
-  // determine synchronously whether there is an existing plus address. There is
-  // a separate check when creating suggestions for whether to show a "create
-  // new plus address" suggestion.
+  AutofillClient& client = driver.GetAutofillManager().client();
   return plus_address_service &&
          plus_address_service->SupportsPlusAddresses(
-             driver.GetAutofillManager()
-                 .client()
-                 .GetLastCommittedPrimaryMainFrameOrigin(),
-             /*is_off_the_record=*/false) &&
+             client.GetLastCommittedPrimaryMainFrameOrigin(),
+             client.IsOffTheRecord()) &&
          base::FeatureList::IsEnabled(
              plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
