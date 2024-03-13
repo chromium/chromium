@@ -57,12 +57,11 @@ class DIPSDatabase {
   // was called.
   bool MigrateToVersion3();
 
-  // Migrates from v2 to v3 of the DIPS database schema. This migration adds a
-  // Popups table for recording popupts with a current or prior user
-  // interaction.
+  // Migrates from v3 to v4 of the DIPS database schema. This migration adds a
+  // Popups table for recording popups with a current or prior user interaction.
   bool MigrateToVersion4();
 
-  // Migrates from v2 to v3 of the DIPS database schema. This migration adds an
+  // Migrates from v4 to v5 of the DIPS database schema. This migration adds an
   // `is_current_interaction` field to the Popups table.
   bool MigrateToVersion5();
 
