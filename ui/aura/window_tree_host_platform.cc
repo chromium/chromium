@@ -388,9 +388,8 @@ void WindowTreeHostPlatform::SetFrameRateThrottleEnabled(bool enabled) {
     HostFrameRateThrottler::GetInstance().RemoveHost(this);
 }
 
-bool WindowTreeHostPlatform::IsNativeWindowOcclusionTrackingAlwaysEnabled() {
-  return NativeWindowOcclusionTracker::
-      IsNativeWindowOcclusionTrackingAlwaysEnabled(this);
+void WindowTreeHostPlatform::DisableNativeWindowOcclusion() {
+  SetNativeWindowOcclusionEnabled(false);
 }
 
 }  // namespace aura

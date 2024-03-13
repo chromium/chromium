@@ -105,7 +105,7 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   int64_t OnStateUpdate(const PlatformWindowDelegate::State& old,
                         const PlatformWindowDelegate::State& latest) override;
   void SetFrameRateThrottleEnabled(bool enabled) override;
-  bool IsNativeWindowOcclusionTrackingAlwaysEnabled() override;
+  void DisableNativeWindowOcclusion() override;
 
   // Overridden from aura::WindowTreeHost:
   gfx::Point GetLocationOnScreenInPixels() const override;

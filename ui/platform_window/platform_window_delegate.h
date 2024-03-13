@@ -273,8 +273,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual gfx::PointF ConvertScreenPointToLocalDIP(
       const gfx::Point& screen_in_pixels) const;
 
-  // Returns true if native window occlusion tracking is always enabled.
-  virtual bool IsNativeWindowOcclusionTrackingAlwaysEnabled();
+  // Disables native window occlusion.
+  virtual void DisableNativeWindowOcclusion();
 };
 
 }  // namespace ui

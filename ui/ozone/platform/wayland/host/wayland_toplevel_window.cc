@@ -1241,15 +1241,13 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     if (auto* zaura_surface = root_surface()->CreateZAuraSurface()) {
       zaura_surface->set_delegate(AsWeakPtr());
 
-      // If native window occlusion tracking is disabled (meaning compositor
-      // visibility is not controlled by occlusion) then enable the old
-      // unsynchronized occlusion pathway. Also, if the server does not support
-      // the synchronized occlusion pathway, enable the unsynchronized occlusion
-      // pathway.
-      if (!delegate()->IsNativeWindowOcclusionTrackingAlwaysEnabled() ||
-          !shell_toplevel_->IsSupportedOnAuraToplevel(
+      // If the server does not support the synchronized occlusion pathway,
+      // enable the unsynchronized occlusion pathway and disable native
+      // occlusion.
+      if (!shell_toplevel_->IsSupportedOnAuraToplevel(
               ZAURA_TOPLEVEL_CONFIGURE_OCCLUSION_STATE_SINCE_VERSION)) {
         zaura_surface->SetOcclusionTracking();
+        delegate()->DisableNativeWindowOcclusion();
       }
     }
 
