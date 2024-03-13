@@ -209,8 +209,8 @@ chromium-metrics-reviews@google.com.
   <owner>etienneb@google.com</owner>
   <summary>
     Records the percentage of time a thread stayed on-cpu during an active
-    ThreadController period of {Length} on {NamedThread}. Recorded when an
-    active period ends. Sub-sampled to 0.1% of intervals.
+    ThreadController period {Length} on {NamedThread}. Recorded when an active
+    period ends. Sub-sampled to 0.1% of intervals.
   </summary>
   <token key="Length" variants="Length"/>
   <token key="NamedThread" variants="NamedThread"/>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>
-    Records the duration of an idle period of {Length} using ThreadController on
+    Records the duration of an idle period {Length} using ThreadController on
     {NamedThread}. Recorded when an active period begins. Sub-sampled to 0.1% of
     intervals.
   </summary>

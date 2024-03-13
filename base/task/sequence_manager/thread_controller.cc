@@ -46,6 +46,10 @@ std::atomic<bool> g_thread_controller_sets_profiler_metadata{true};
 constexpr TimeDelta kNonTrivialActiveIntervalLength = Milliseconds(1);
 constexpr TimeDelta kMediumActiveIntervalLength = Milliseconds(100);
 
+std::string MakeSuffix(StringPiece time_suffix, StringPiece thread_name) {
+  return base::StrCat({".", time_suffix, ".", thread_name});
+}
+
 }  // namespace
 
 ThreadController::ThreadController(const TickClock* time_source)
@@ -83,24 +87,28 @@ bool ThreadController::RunLevelTracker::RunLevel::ShouldRecordSampleMetadata() {
       std::memory_order_relaxed);
 }
 
-std::string ThreadController::RunLevelTracker::RunLevel::GetSuffixForHistogram(
-    TimeDelta duration) {
-  StringPiece time_suffix;
-  // No time specified
-  if (duration == TimeDelta()) {
-    time_suffix = "Any";
-  } else if (duration < kNonTrivialActiveIntervalLength) {
-    time_suffix = "Short";
-  } else if (duration < kMediumActiveIntervalLength) {
-    time_suffix = "Medium";
-  }
-
+StringPiece ThreadController::RunLevelTracker::RunLevel::GetThreadName() {
   StringPiece thread_name = "Other";
   if (!time_keeper_->thread_name().empty()) {
     thread_name = time_keeper_->thread_name();
   }
+  return thread_name;
+}
 
-  return base::StrCat({".", time_suffix, ".", thread_name});
+std::string
+ThreadController::RunLevelTracker::RunLevel::GetSuffixForCatchAllHistogram() {
+  return MakeSuffix("Any", GetThreadName());
+}
+
+std::string ThreadController::RunLevelTracker::RunLevel::GetSuffixForHistogram(
+    TimeDelta duration) {
+  StringPiece time_suffix;
+  if (duration < kNonTrivialActiveIntervalLength) {
+    time_suffix = "Short";
+  } else if (duration < kMediumActiveIntervalLength) {
+    time_suffix = "Medium";
+  }
+  return MakeSuffix(time_suffix, GetThreadName());
 }
 
 void ThreadController::EnableMessagePumpTimeKeeperMetrics(
@@ -333,8 +341,8 @@ void ThreadController::RunLevelTracker::RunLevel::LogPercentageMetric(
     const char* name,
     int percentage,
     base::TimeDelta interval_duration) {
-  UmaHistogramPercentage(
-      base::StrCat({name, GetSuffixForHistogram(TimeDelta())}), percentage);
+  UmaHistogramPercentage(base::StrCat({name, GetSuffixForCatchAllHistogram()}),
+                         percentage);
   UmaHistogramPercentage(
       base::StrCat({name, GetSuffixForHistogram(interval_duration)}),
       percentage);
@@ -344,8 +352,8 @@ void ThreadController::RunLevelTracker::RunLevel::LogIntervalMetric(
     const char* name,
     base::TimeDelta value,
     base::TimeDelta interval_duration) {
-  // Log towards "Any" thread suffix first.
-  UmaHistogramTimes(base::StrCat({name, GetSuffixForHistogram(TimeDelta())}),
+  // Log towards "Any" time suffix first.
+  UmaHistogramTimes(base::StrCat({name, GetSuffixForCatchAllHistogram()}),
                     value);
   if (interval_duration < kNonTrivialActiveIntervalLength) {
     UmaHistogramCustomMicrosecondsTimes(

@@ -425,6 +425,9 @@ class BASE_EXPORT ThreadController {
       // TimeDelta() when not applicable.
       std::string GetSuffixForHistogram(TimeDelta duration);
 
+      std::string GetSuffixForCatchAllHistogram();
+      StringPiece GetThreadName();
+
       const raw_ref<TimeKeeper> time_keeper_;
       // Must be set shortly before ~RunLevel.
       raw_ptr<LazyNow> exit_lazy_now_ = nullptr;
