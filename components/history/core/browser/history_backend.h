@@ -620,6 +620,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   bool GetVisitsForURL(URLID id, VisitVector* visits);
 
+  std::map<GURL, VisitRow> GetMostRecentVisitForEachURL(
+      const std::vector<GURL>& urls);
+
   bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;
 
   // Fetches up to `max_visits` most recent visits for the passed URL.
