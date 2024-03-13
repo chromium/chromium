@@ -147,7 +147,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
       SecureDnsPolicy secure_dns_policy) {
     return base::MakeRefCounted<HttpProxySocketParams>(
         CreateProxyTransportSocketParams(secure_dns_policy),
-        /*ssl_params=*/nullptr, kHostHttp, kHttpProxyChain,
+        /*ssl_params=*/nullptr, /*quic_ssl_config=*/std::nullopt, kHostHttp,
+        kHttpProxyChain,
         /*proxy_server_index=*/0,
         /*tunnel=*/true, TRAFFIC_ANNOTATION_FOR_TESTS,
         NetworkAnonymizationKey(), secure_dns_policy);

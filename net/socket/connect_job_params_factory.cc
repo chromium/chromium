@@ -267,10 +267,18 @@ ConnectJobParams CreateProxyParams(
         MaybeTransportSocketParams(params);
     scoped_refptr<SSLSocketParams> ssl_socket_params =
         MaybeSSLSocketParams(params);
+    std::optional<SSLConfig> quic_ssl_config;
+    if (proxy_server.is_quic()) {
+      // For QUIC, we only need the SSL config, not the full SSLSocketParams.
+      // A subsequent CL will remove the redundant SSLSocketParams creation.
+      quic_ssl_config = ssl_socket_params->ssl_config();
+      ssl_socket_params = nullptr;
+    }
     params = ConnectJobParams(base::MakeRefCounted<HttpProxySocketParams>(
         std::move(transport_socket_params), std::move(ssl_socket_params),
-        host_port_pair, proxy_chain, proxy_chain_index, should_tunnel,
-        *proxy_annotation_tag, network_anonymization_key, secure_dns_policy));
+        std::move(quic_ssl_config), host_port_pair, proxy_chain,
+        proxy_chain_index, should_tunnel, *proxy_annotation_tag,
+        network_anonymization_key, secure_dns_policy));
   } else {
     DCHECK(proxy_server.is_socks());
     DCHECK_EQ(1u, proxy_chain.length());

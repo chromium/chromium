@@ -166,6 +166,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
     return base::MakeRefCounted<HttpProxySocketParams>(
         CreateHttpProxyParams(secure_dns_policy),
         CreateHttpsProxyParams(secure_dns_policy),
+        /*quic_ssl_config=*/std::nullopt,
         HostPortPair(kEndpointHost, tunnel ? 443 : 80),
         GetParam() == HTTP ? kHttpProxyChain : kHttpsProxyChain,
         /*proxy_chain_index=*/0, tunnel, TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -241,9 +242,10 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
       connect_host_port_pair = HostPortPair(kEndpointHost, tunnel ? 443 : 80);
     }
     return base::MakeRefCounted<HttpProxySocketParams>(
-        nullptr, std::move(ssl_params), connect_host_port_pair, proxy_chain,
-        proxy_chain_index, tunnel, TRAFFIC_ANNOTATION_FOR_TESTS,
-        NetworkAnonymizationKey(), secure_dns_policy);
+        nullptr, std::move(ssl_params), /*quic_ssl_config=*/std::nullopt,
+        connect_host_port_pair, proxy_chain, proxy_chain_index, tunnel,
+        TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
+        secure_dns_policy);
   }
 
   std::unique_ptr<HttpProxyConnectJob> CreateConnectJobForHttpRequest(
