@@ -37,10 +37,12 @@ src/common/util/navigator_gpu.ts
 src/common/runtime/helper/sys.ts
 src/common/runtime/cmdline.ts
 src/common/runtime/server.ts
+src/common/runtime/helper/utils_worker.ts
 src/common/runtime/helper/test_worker.ts
 src/common/runtime/standalone.ts
 src/common/runtime/wpt.ts
 src/common/runtime/helper/test_worker-worker.ts
+src/common/runtime/helper/wrap_for_worker.ts
 src/common/tools/checklist.ts
 src/common/tools/crawl.ts
 src/common/tools/dev_server.ts
@@ -48,6 +50,7 @@ src/common/util/crc32.ts
 src/common/util/parse_imports.ts
 src/common/tools/gen_cache.ts
 src/common/tools/gen_listings.ts
+src/common/tools/gen_listings_and_webworkers.ts
 src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/image_utils.ts
 src/common/tools/merge_listing_times.ts
@@ -373,6 +376,9 @@ src/webgpu/shader/execution/shadow.spec.ts
 src/webgpu/shader/execution/stage.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/expression/expression.ts
+src/webgpu/shader/execution/expression/access/array/index.spec.ts
+src/webgpu/shader/execution/expression/access/vector/components.spec.ts
+src/webgpu/shader/execution/expression/access/vector/index.spec.ts
 src/webgpu/shader/execution/expression/binary/af_addition.cache.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/af_addition.spec.ts
@@ -700,7 +706,9 @@ src/webgpu/shader/validation/decl/ptr_spelling.spec.ts
 src/webgpu/shader/validation/decl/var.spec.ts
 src/webgpu/shader/validation/decl/var_access_mode.spec.ts
 src/webgpu/shader/validation/expression/access/vector.spec.ts
+src/webgpu/shader/validation/expression/binary/and_or_xor.spec.ts
 src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
+src/webgpu/shader/validation/expression/binary/comparison.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/const_override_validation.ts
 src/webgpu/shader/validation/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acos.spec.ts
@@ -742,10 +750,13 @@ src/webgpu/shader/validation/expression/call/builtin/sin.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sinh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/textureSample.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/workgroupUniformLoad.spec.ts
 src/webgpu/shader/validation/expression/unary/address_of_and_indirection.spec.ts
+src/webgpu/shader/validation/expression/unary/bitwise_complement.spec.ts
+src/webgpu/shader/validation/expression/unary/logical_negation.spec.ts
 src/webgpu/shader/validation/extension/pointer_composite_access.spec.ts
 src/webgpu/shader/validation/extension/readonly_and_readwrite_storage_textures.spec.ts
 src/webgpu/shader/validation/functions/alias_analysis.spec.ts
