@@ -92,6 +92,16 @@ el.style.getPropertyValue('text-underline-position') is under right
 getComputedStyle(el).getPropertyValue('text-underline-position') is under right
 
 
+el.style.setProperty('appearance', 'none')
+el.style.getPropertyValue('appearance') is none
+getComputedStyle(el).getPropertyValue('appearance') is none
+
+
+el.style.setProperty('appearance', 'bikeshed')
+el.style.getPropertyValue('appearance') is bikeshed
+getComputedStyle(el).getPropertyValue('appearance') is bikeshed
+
+
 PASS successfullyParsed is true
 
 TEST COMPLETE

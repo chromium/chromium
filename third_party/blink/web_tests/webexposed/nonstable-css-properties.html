@@ -41,6 +41,11 @@ var properties = [
 ['text-underline-position', 'right'],
 ['text-underline-position', 'under left'],
 ['text-underline-position', 'right under'],
+
+// Check that we don't ship appearance:bikeshed without giving it a better
+// name first.
+['appearance', 'none'],
+['appearance', 'bikeshed'],
 ];
 
 properties.forEach(function(args) {
