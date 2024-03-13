@@ -1,17 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] Label: el-image (empty label due to missing image>title element)
-  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
-[FAIL] Label: el-image (label from w/ aria-label)
-  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
 [FAIL] Label: el-image (label from image>title element)
-  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
-[FAIL] Role: el-image (empty label due to missing image>title element)
-  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
-[FAIL] Role: el-image (label from w/ aria-label)
-  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
-[FAIL] Role: el-image (label from image>title element)
-  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+  assert_equals: <img data-testname="el-image (label from image&gt;title element)" data-expectedrole="image" data-expectedlabel="x" class="ex-role-label ex-label-only ex-role-only"> expected "x" but got ""
 [FAIL] el-image (generic, explicitly empty image>title element)
-  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-image (generic, explicitly empty image&gt;title element)" class="ex-generic"> expected false got true
 Harness: the test ran to completion.
 

@@ -510,6 +510,14 @@
     return internals.getNamedCookie(name);
   }
 
+  window.test_driver_internal.get_computed_label = function(element) {
+    return internals.getComputedLabel(element);
+  }
+
+  window.test_driver_internal.get_computed_role = function(element) {
+    return internals.getComputedRole(element);
+  }
+
   window.test_driver_internal.minimize_window = async () => {
     window.testRunner.setFrameWindowHidden(true);
     // Wait until the new state is reflected in the document
