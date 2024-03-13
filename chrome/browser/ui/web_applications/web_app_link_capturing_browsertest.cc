@@ -325,10 +325,10 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 
   // Must wait for link capturing launch to complete so that its keep alives go
   // out of scope.
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<bool /*closed_web_contents*/> future;
   apps::LinkCapturingNavigationThrottle::
       GetLinkCaptureLaunchCallbackForTesting() = future.GetCallback();
-  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get<bool /*closed_web_contents*/>());
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,

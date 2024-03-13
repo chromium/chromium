@@ -77,6 +77,19 @@ bool IsNavigateFromNonFormNonContextMenuLink(
          !navigation_handle->WasStartedFromContextMenu();
 }
 
+bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
+  switch (handle->GetNavigationInitiatorActivationAndAdStatus()) {
+    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kDidNotStartWithTransientActivation:
+      return false;
+    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kStartedWithTransientActivationFromNonAd:
+    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kStartedWithTransientActivationFromAd:
+      return true;
+  }
+}
+
 }  // namespace
 
 bool LinkCapturingNavigationThrottle::IsCapturableLinkNavigation(
@@ -175,9 +188,9 @@ LinkCapturingNavigationThrottle::MaybeCreate(
       new LinkCapturingNavigationThrottle(handle, std::move(delegate)));
 }
 
-base::OnceClosure&
+LinkCapturingNavigationThrottle::LaunchCallbackForTesting&
 LinkCapturingNavigationThrottle::GetLinkCaptureLaunchCallbackForTesting() {
-  static base::NoDestructor<base::OnceClosure> callback;
+  static base::NoDestructor<LaunchCallbackForTesting> callback;
   return *callback;
 }
 
@@ -289,15 +302,16 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   // if we wait until after the launch completes to close the tab, then it will
   // cause the old window to come to the front hiding the newly launched app
   // window.
+  bool closed_web_contents = false;
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
-      // After clicking a link in various apps (eg gchat), a blank redirect
-      // page is left behind. Remove it to clean up.
-      // WasInitiatedByLinkClick()
-      // returns false for links clicked from apps.
-      !handle->WasInitiatedByLinkClick()) {
+      // Some navigations are via JavaScript `location.href = url;`.
+      // This can be used for user clicked buttons as well as redirects.
+      // Check whether the action was in the context of a user activation to
+      // distinguish redirects from click event handlers.
+      !IsNavigationUserInitiated(handle)) {
     browser_keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_LAUNCH, KeepAliveRestartOption::ENABLED);
     if (!profile->IsOffTheRecord()) {
@@ -305,18 +319,22 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
           profile, ProfileKeepAliveOrigin::kAppWindow);
     }
     web_contents->ClosePage();
+    closed_web_contents = true;
   }
 
+  // Note: This callback currently serves to own the "keep alive" objects
+  // until the launch is complete.
   base::OnceClosure launch_callback = base::BindOnce(
       [](std::unique_ptr<ScopedKeepAlive> browser_keep_alive,
-         std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {
-        // Note: This callback currently serves to own the "keep alive" objects
-        // until the launch is complete.
-        if (GetLinkCaptureLaunchCallbackForTesting()) {               // IN-TEST
-          std::move(GetLinkCaptureLaunchCallbackForTesting()).Run();  // IN-TEST
+         std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+         bool closed_web_contents) {
+        if (GetLinkCaptureLaunchCallbackForTesting()) {        // IN-TEST
+          std::move(GetLinkCaptureLaunchCallbackForTesting())  // IN-TEST
+              .Run(closed_web_contents);                       // IN-TEST
         }
       },
-      std::move(browser_keep_alive), std::move(profile_keep_alive));
+      std::move(browser_keep_alive), std::move(profile_keep_alive),
+      closed_web_contents);
 
   // The tab may have been closed, which runs async and causes the browser
   // window to be refocused. Post a task to launch the app to ensure launching

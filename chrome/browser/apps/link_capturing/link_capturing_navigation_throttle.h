@@ -63,7 +63,9 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
       content::NavigationHandle* handle,
       std::unique_ptr<Delegate> delegate);
 
-  static base::OnceClosure& GetLinkCaptureLaunchCallbackForTesting();
+  using LaunchCallbackForTesting =
+      base::OnceCallback<void(bool closed_web_contents)>;
+  static LaunchCallbackForTesting& GetLinkCaptureLaunchCallbackForTesting();
 
   LinkCapturingNavigationThrottle(const LinkCapturingNavigationThrottle&) =
       delete;
