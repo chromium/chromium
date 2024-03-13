@@ -186,7 +186,10 @@ ShellSurface::ShellSurface(Surface* surface)
     : ShellSurfaceBase(surface,
                        gfx::Point(),
                        /*can_minimize=*/true,
-                       ash::desks_util::GetActiveDeskContainerId()) {}
+                       ash::desks_util::GetActiveDeskContainerId()) {
+  CHECK(surface->window());
+  occlusion_observer_.emplace(this, surface->window());
+}
 
 ShellSurface::~ShellSurface() {
   DCHECK(!scoped_configure_);
@@ -910,6 +913,11 @@ bool ShellSurface::OnPreWidgetCommit() {
 void ShellSurface::ShowWidget(bool activate) {
   ScopedConfigure scoped_configure(this, false);
   ShellSurfaceBase::ShowWidget(activate);
+
+  // Now that the shell surface is ready, make sure it has up to date occlusion
+  // state.
+  CHECK(IsReady());
+  occlusion_observer_->MaybeConfigure(root_surface()->window());
 }
 
 std::unique_ptr<views::NonClientFrameView>

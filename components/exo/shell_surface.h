@@ -239,13 +239,13 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
     aura::Window::OcclusionState GetInitialStateForConfigure(
         chromeos::WindowStateType state_type);
 
+    void MaybeConfigure(aura::Window* window);
+
     // aura::WindowObserver:
     void OnWindowDestroying(aura::Window* window) override;
     void OnWindowOcclusionChanged(aura::Window* window) override;
 
    private:
-    void MaybeConfigure(aura::Window* window);
-
     // Keeps track of what the current state should be. During initialization,
     // we want to defer sending occlusion messages until everything is ready,
     // so this may be different to the current occlusion state.

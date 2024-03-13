@@ -4860,6 +4860,39 @@ TEST_F(ShellSurfaceTest, InitiallyMaximizedWindowIsOpaque) {
   EXPECT_FALSE(shell_surface->GetWidget()->GetNativeWindow()->GetTransparent());
 }
 
+TEST_F(ShellSurfaceTest, ConfigureOcclusionSentAfterShellSurfaceIsReady) {
+  std::vector<ConfigureData> config_vec;
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100})
+          .SetConfigureCallback(base::BindRepeating(
+              &ConfigureSerialVec, base::Unretained(&config_vec)))
+          .SetWindowState(chromeos::WindowStateType::kMinimized)
+          .SetNoRootBuffer()
+          .BuildShellSurface();
+
+  Surface* root_surface = shell_surface->root_surface();
+  root_surface->Commit();
+
+  // Expect initial configure with no content (buffer for root surface).
+  EXPECT_EQ(1u, config_vec.size());
+
+  // TODO(crbug.com/328172097): We use VISIBLE window state for minimized
+  // windows on initial configure for now.
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
+            config_vec[0].occlusion_state);
+
+  constexpr gfx::Size kBufferSize(256, 256);
+  auto buffer = exo_test_helper()->CreateBuffer(kBufferSize);
+  root_surface->Attach(buffer.get());
+  root_surface->Commit();
+
+  // Once we provide a buffer for the root surface, expect that the occlusion
+  // state is updated to HIDDEN, since it is a minimized window.
+  EXPECT_EQ(2u, config_vec.size());
+  EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
+            config_vec[1].occlusion_state);
+}
+
 // Regression test for crbug.com/322388171. Ensure shell surfaces with no
 // backing widget handle display changes without crashing.
 TEST_F(ShellSurfaceTest, HandlesDisplayChangeNoWidget) {
