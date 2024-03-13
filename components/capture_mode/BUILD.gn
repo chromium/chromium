@@ -23,4 +23,8 @@ component("capture_mode") {
     "//ui/compositor",
     "//ui/gfx",
   ]
+
+  if (is_mac) {
+    deps += [ "//media/capture:capture_lib" ]
+  }
 }

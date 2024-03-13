@@ -36,6 +36,10 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"
+#endif
+
 namespace capture_mode {
 
 namespace {
@@ -186,6 +190,15 @@ void AdjustWinParamsForCurrentConfig(media::VideoCaptureParams* params,
     } else {
       params->requested_format.pixel_format = media::PIXEL_FORMAT_I420;
     }
+  }
+}
+#endif
+
+#if BUILDFLAG(IS_MAC)
+void AdjustMacParamsForCurrentConfig(media::VideoCaptureParams* params,
+                                     const std::string& device_id) {
+  if (media::ShouldEnableGpuMemoryBuffer(device_id)) {
+    params->buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
 }
 #endif
@@ -692,7 +705,8 @@ std::unique_ptr<BufferHandleHolder> BufferHandleHolder::Create(
 CameraVideoFrameHandler::CameraVideoFrameHandler(
     ui::ContextFactory* context_factory,
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
-    const media::VideoCaptureFormat& capture_format)
+    const media::VideoCaptureFormat& capture_format,
+    const std::string& device_id)
     : context_factory_(context_factory),
       camera_video_source_remote_(std::move(camera_video_source)) {
   CHECK(camera_video_source_remote_);
@@ -707,6 +721,8 @@ CameraVideoFrameHandler::CameraVideoFrameHandler(
   AdjustParamsForCurrentConfig(&capture_params);
 #elif BUILDFLAG(IS_WIN)
   AdjustWinParamsForCurrentConfig(&capture_params, context_factory_);
+#elif BUILDFLAG(IS_MAC)
+  AdjustMacParamsForCurrentConfig(&capture_params, device_id);
 #endif
 
   camera_video_source_remote_->CreatePushSubscription(
