@@ -1204,9 +1204,11 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrefetchURLLoaderInterceptorBecomeNotServableTest,
-    testing::Combine(testing::ValuesIn(PrefetchReusableValuesForTests()),
-                     testing::Values(NotServableReason::kOnCompleteFailure,
-                                     NotServableReason::kAnotherRequest)));
+    testing::Combine(
+        testing::ValuesIn(PrefetchReusableValuesForTests()),
+        testing::Values(NotServableReason::kOnCompleteFailure,
+                        NotServableReason::kAnotherRequest,
+                        NotServableReason::kAnotherRequestCompleted)));
 
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
   base::test::ScopedFeatureList scoped_feature_list(
