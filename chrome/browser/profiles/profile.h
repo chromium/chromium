@@ -358,24 +358,22 @@ class Profile : public content::BrowserContext {
   virtual void set_last_selected_directory(const base::FilePath& path) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  enum AppLocaleChangedVia {
-    // Caused by chrome://settings change.
-    APP_LOCALE_CHANGED_VIA_SETTINGS,
-    // Locale has been reverted via LocaleChangeGuard.
-    APP_LOCALE_CHANGED_VIA_REVERT,
-    // From login screen.
-    APP_LOCALE_CHANGED_VIA_LOGIN,
-    // From login to a public session.
-    APP_LOCALE_CHANGED_VIA_PUBLIC_SESSION_LOGIN,
-    // From AllowedLanguages policy.
-    APP_LOCALE_CHANGED_VIA_POLICY,
-    // From demo session.
-    APP_LOCALE_CHANGED_VIA_DEMO_SESSION,
-    // From system tray.
-    APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY,
-    // Source unknown.
-    APP_LOCALE_CHANGED_VIA_UNKNOWN
-  };
+  enum AppLocaleChangedVia{// Caused by chrome://settings change.
+                           APP_LOCALE_CHANGED_VIA_SETTINGS,
+                           // Locale has been reverted via LocaleChangeGuard.
+                           APP_LOCALE_CHANGED_VIA_REVERT,
+                           // From login screen.
+                           APP_LOCALE_CHANGED_VIA_LOGIN,
+                           // From login to a public session.
+                           APP_LOCALE_CHANGED_VIA_PUBLIC_SESSION_LOGIN,
+                           // From AllowedLanguages policy.
+                           APP_LOCALE_CHANGED_VIA_POLICY,
+                           // Locale is reverted in the next demo session.
+                           APP_LOCALE_CHANGED_VIA_DEMO_SESSION_REVERT,
+                           // From system tray.
+                           APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY,
+                           // Source unknown.
+                           APP_LOCALE_CHANGED_VIA_UNKNOWN};
 
   // Changes application locale for a profile.
   virtual void ChangeAppLocale(

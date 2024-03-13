@@ -1549,8 +1549,12 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
       GetPrefs()->SetString(prefs::kApplicationLocaleBackup, new_locale);
       break;
     }
-    case APP_LOCALE_CHANGED_VIA_UNKNOWN:
-    default: {
+    case APP_LOCALE_CHANGED_VIA_DEMO_SESSION_REVERT:
+    case APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY: {
+      // no-op
+      break;
+    }
+    case APP_LOCALE_CHANGED_VIA_UNKNOWN: {
       NOTREACHED();
       break;
     }
