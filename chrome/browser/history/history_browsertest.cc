@@ -468,14 +468,14 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, DownloadNoHistory) {
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemovesTemplateURL) {
-  constexpr char origin[] = "foo.com";
-  constexpr char16_t origin16[] = u"foo.com";
+  constexpr char kOrigin[] = "foo.com";
+  constexpr char16_t kOrigin16[] = u"foo.com";
 
-  GURL url(embedded_https_test_server().GetURL(origin, "/title3.html"));
+  GURL url(embedded_https_test_server().GetURL(kOrigin, "/title3.html"));
 
   // Creating keyword shortcut manually.
   TemplateURLData data;
-  data.SetShortName(origin16);
+  data.SetShortName(kOrigin16);
   data.SetKeyword(u"keyword");
   data.SetURL(url.spec());
   data.safe_for_autoreplace = true;
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemovesTemplateURL) {
 
   TemplateURL* t_url = model->Add(std::make_unique<TemplateURL>(data));
 
-  EXPECT_EQ(t_url, model->GetTemplateURLForHost(origin));
+  EXPECT_EQ(t_url, model->GetTemplateURLForHost(kOrigin));
 
   auto* history_service = HistoryServiceFactory::GetForProfile(
       browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemovesTemplateURL) {
   history_service->FlushForTest(run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_FALSE(model->GetTemplateURLForHost(origin));
+  EXPECT_FALSE(model->GetTemplateURLForHost(kOrigin));
 }
 
 namespace {
@@ -995,101 +995,100 @@ class HistoryPrerenderBrowserTest : public HistoryMPArchBrowserTest {
 // Verify a prerendered page is not recorded if we do not activate it.
 IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
                        PrerenderPageIsNotRecordedUnlessActivated) {
-  const GURL initial_url = embedded_https_test_server().GetURL("/empty.html");
-  const GURL prerendering_url =
+  const GURL kInitialUrl = embedded_https_test_server().GetURL("/empty.html");
+  const GURL kPrerenderingUrl =
       embedded_https_test_server().GetURL("/empty.html?prerender");
 
   // Navigate to an initial page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender, but we don't activate it.
-  const int host_id = prerender_helper().AddPrerender(prerendering_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  const int kHostId = prerender_helper().AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(kHostId, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // The prerendered page should not be recorded.
-  EXPECT_THAT(GetHistoryContents(), testing::ElementsAre(initial_url));
+  EXPECT_THAT(GetHistoryContents(), testing::ElementsAre(kInitialUrl));
 }
 
 // Verify a prerendered page is recorded if we activate it.
 IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
                        PrerenderPageIsRecordedIfActivated) {
-  const GURL initial_url = embedded_https_test_server().GetURL("/empty.html");
-  const GURL prerendering_url =
+  const GURL kInitialUrl = embedded_https_test_server().GetURL("/empty.html");
+  const GURL kPrerenderingUrl =
       embedded_https_test_server().GetURL("/empty.html?prerender");
 
   // Navigate to an initial page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender.
-  const int host_id = prerender_helper().AddPrerender(prerendering_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  const int kHostId = prerender_helper().AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(kHostId, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Activate.
-  prerender_helper().NavigatePrimaryPage(prerendering_url);
-  ASSERT_EQ(prerendering_url, web_contents()->GetLastCommittedURL());
+  prerender_helper().NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(kPrerenderingUrl, web_contents()->GetLastCommittedURL());
 
   // The prerendered page should be recorded.
   EXPECT_THAT(GetHistoryContents(),
-              testing::ElementsAre(prerendering_url, initial_url));
+              testing::ElementsAre(kPrerenderingUrl, kInitialUrl));
 }
 
 // Verify a prerendered page's last committed URL is recorded if we activate it.
 IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
                        PrerenderLastCommitedURLIsRecordedIfActivated) {
-  const GURL initial_url = embedded_https_test_server().GetURL("/empty.html");
-  const GURL prerendering_url =
+  const GURL kInitialUrl = embedded_https_test_server().GetURL("/empty.html");
+  const GURL kPrerenderingUrl =
       embedded_https_test_server().GetURL("/empty.html?prerender");
-  const GURL prerendering_fragment_url =
+  const GURL kPrerenderingFragmentUrl =
       embedded_https_test_server().GetURL("/empty.html?prerender#test");
 
   // Navigate to an initial page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender.
-  const int host_id = prerender_helper().AddPrerender(prerendering_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  const int kHostId = prerender_helper().AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(kHostId, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Do a fragment navigation in the prerendered page.
-  prerender_helper().NavigatePrerenderedPage(host_id,
-                                             prerendering_fragment_url);
-  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+  prerender_helper().NavigatePrerenderedPage(kHostId, kPrerenderingFragmentUrl);
+  prerender_helper().WaitForPrerenderLoadCompletion(kHostId);
 
   // Activate.
-  prerender_helper().NavigatePrimaryPage(prerendering_url);
-  ASSERT_EQ(prerendering_fragment_url, web_contents()->GetLastCommittedURL());
+  prerender_helper().NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(kPrerenderingFragmentUrl, web_contents()->GetLastCommittedURL());
 
   // The last committed URL of the prerendering page, instead of the original
   // prerendering URL, should be recorded.
   EXPECT_THAT(GetHistoryContents(),
-              testing::ElementsAre(prerendering_fragment_url, initial_url));
+              testing::ElementsAre(kPrerenderingFragmentUrl, kInitialUrl));
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
                        RedirectedPrerenderPageIsRecordedIfActivated) {
-  const GURL initial_url = embedded_https_test_server().GetURL("/empty.html");
+  const GURL kInitialUrl = embedded_https_test_server().GetURL("/empty.html");
 
   // Navigate to an initial page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start prerendering a URL that causes same-origin redirection.
-  const GURL redirected_url =
+  const GURL kRedirectedUrl =
       embedded_https_test_server().GetURL("/empty.html?prerender");
-  const GURL prerendering_url = embedded_https_test_server().GetURL(
-      "/server-redirect?" + redirected_url.spec());
-  prerender_helper().AddPrerender(prerendering_url);
-  EXPECT_EQ(prerender_helper().GetRequestCount(prerendering_url), 1);
-  EXPECT_EQ(prerender_helper().GetRequestCount(redirected_url), 1);
+  const GURL kPrerenderingUrl = embedded_https_test_server().GetURL(
+      "/server-redirect?" + kRedirectedUrl.spec());
+  prerender_helper().AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(prerender_helper().GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(prerender_helper().GetRequestCount(kRedirectedUrl), 1);
 
   // The prerendering page should not be recorded.
-  EXPECT_THAT(GetHistoryContents(), testing::ElementsAre(initial_url));
+  EXPECT_THAT(GetHistoryContents(), testing::ElementsAre(kInitialUrl));
 
   // Activate.
-  prerender_helper().NavigatePrimaryPage(prerendering_url);
+  prerender_helper().NavigatePrimaryPage(kPrerenderingUrl);
 
   // The redirected URL of the prerendering page, instead of the original
   // prerendering URL, should be recorded.
   EXPECT_THAT(GetHistoryContents(),
-              testing::ElementsAre(redirected_url, initial_url));
+              testing::ElementsAre(kRedirectedUrl, kInitialUrl));
 }
 
 // For tests which use fenced frame.
