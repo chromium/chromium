@@ -198,6 +198,9 @@ message OmniboxEventProto {
     // enum is used in other places too, and not only OmniboxEventProto.)
     OTHER_ZPS_PREFETCH = 23;
 
+    // The contextual searchbox in the lens overlay or the side panel.
+    CONTEXTUAL_SEARCHBOX = 24;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.
